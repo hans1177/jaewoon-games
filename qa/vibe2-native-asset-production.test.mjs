@@ -196,6 +196,14 @@ test('Vibe emits exact-source-bound object interaction guidance for editable ser
   assert.match(valid,/TREASURE_CHEST/);
   assert.match(valid,/CreateContainerInteractionPrompt/);
   assert.match(valid,/Preserve per-object InteractionKind, InteractionId/);
+  const scoped={...order,source:{root:'roblox-games/daechung-rpg'}};
+  const relative='server/Game.server.luau';
+  const actualWorker=buildPrompt(scoped,{files:[{path:relative,content,editable:true}]},[relative]);
+  assert.match(actualWorker,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(actualWorker,/"editPath":"server\\/Game\\.server\\.luau"/);
+  const wrongGame=buildPrompt({...scoped,source:{root:'roblox-games/other-game'}},
+    {files:[{path:relative,content,editable:true}]},[relative]);
+  assert.doesNotMatch(wrongGame,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
   const stale=buildPrompt(order,{files:[{path:file,content:content+'\n-- stale',editable:true}]},[file]);
   assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
   const notEditable=buildPrompt(order,{files:[{path:file,content,editable:false}]},[file]);
