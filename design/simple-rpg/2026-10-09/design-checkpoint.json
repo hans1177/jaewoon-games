@@ -345,21 +345,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1334614,
-      "lastMs": 104688,
+      "totalMs": 1441030,
+      "lastMs": 106416,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:40:27.766Z"
+      "updatedAt": "2026-10-08T21:42:14.185Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:40:27.768Z",
+  "updatedAt": "2026-10-08T21:42:14.189Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2428,7 +2428,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": 1,
     "designer_draft_slices::identity-core": 1,
-    "local_authoring_parts::a597a0f22bc70ae4a7366813cd02d0e0b672a4468e34a99e09aa589da300d851:signatureSystems:1": 1
+    "local_authoring_parts::a597a0f22bc70ae4a7366813cd02d0e0b672a4468e34a99e09aa589da300d851:signatureSystems:1": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2443,9 +2443,9 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:40:27.766Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:42:14.185Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
   "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
