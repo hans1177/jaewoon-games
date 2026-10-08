@@ -138,7 +138,7 @@ test('character and merchant pages use actual replicated state and server reques
  const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
  const shared=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
  assert.match(model,/function Model\.character\(attributes,config\)/);
- assert.match(model,/function Model\.shop\(attributes,config\)/);
+ assert.match(model,/function Model\.shop\(attributes,config,merchantAccess\)/);
  assert.match(model,/source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"/);
  assert.match(model,/sellSupported=false/);
  assert.match(server,/local prices=isWeapon and C\.WeaponPrices or C\.ArmorPrices/);
@@ -147,7 +147,7 @@ test('character and merchant pages use actual replicated state and server reques
    assert.match(menu,new RegExp('"' + name + '"'));
  }
  assert.match(menu,/character=Model\.character\(a,config\)/);
- assert.match(menu,/offers=Model\.shop\(a,config\)/);
+ assert.match(menu,/offers=Model\.shop\(a,config,access\)/);
  assert.match(menu,/buyWeapon\.Activated:Connect/);
  assert.match(menu,/buyArmor\.Activated:Connect/);
  assert.match(menu,/if options\.buyWeapon then options\.buyWeapon\(\)end/);
@@ -157,6 +157,14 @@ test('character and merchant pages use actual replicated state and server reques
  assert.match(config,/BUY_WEAPON="BUY_WEAPON",BUY_ARMOR="BUY_ARMOR"/);
  assert.match(client,/buyWeapon=function\(\)remote:FireServer\(C\.Actions\.BUY_WEAPON\)end/);
  assert.match(client,/buyArmor=function\(\)remote:FireServer\(C\.Actions\.BUY_ARMOR\)end/);
+ assert.match(client,/merchantAccess=function\(\)/);
+ assert.match(client,/\(playerRoot\.Position-weapon\.Position\)\.Magnitude<=16/);
+ assert.match(client,/\(playerRoot\.Position-armor\.Position\)\.Magnitude<=16/);
+ assert.match(client,/p:GetAttribute\("InCombat"\)~=true/);
+ assert.match(menu,/options\.merchantAccess\(\)/);
+ assert.match(menu,/Heartbeat:Connect\(function\(\)/);
+ assert.match(menu,/activeTab~="상점"then return/);
+ assert.match(model,/proximityObserved=merchantAccess~=nil/);
  const buy=server.slice(server.indexOf('local function purchaseMerchantEquipment('),server.indexOf('local function makeVillage()'));
  assert.match(buy,/merchant=village and village:FindFirstChild\(merchantName\)/);
  assert.match(buy,/health\.Health<=0/);
@@ -183,6 +191,10 @@ assert(c.weaponTier==1 and c.armorTier==2 and c.attack==35)
 local shop=Model.shop(a,config)
 assert(shop.weapon.price==120 and shop.weapon.canBuy and shop.weapon.nextTier==2)
 assert(shop.armor.price==220 and not shop.armor.canBuy)
+local far=Model.shop(a,config,{weapon=false,armor=false})
+assert(far.proximityObserved and not far.weapon.canBuy and not far.armor.canBuy)
+local near=Model.shop(a,config,{weapon=true,armor=false})
+assert(near.proximityObserved and near.weapon.canBuy and not near.armor.canBuy)
 assert(not shop.sellSupported)
 a.Gold=0
 assert(not Model.shop(a,config).weapon.canBuy)
