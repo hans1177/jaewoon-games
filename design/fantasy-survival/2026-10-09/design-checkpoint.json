@@ -34,25 +34,40 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::ca34eeebd079a29233c162c95cb16108bdcab4c939cea8ae2963e780eaa323a2:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_RESULT",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "ACCESSABILITY_MODIFICATION"
+      ],
+      "name": "세계 인과법칙",
+      "purpose": "플레이어가 환경의 위험과 압박 속에서 즉각적인 상태 변화를 경험하며, 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 한 선택 결과에 따라 월드 상태와 접근 가능성을 실제 바꾼다.",
+      "playerChoice": "'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 253014,
-      "lastMs": 34993,
+      "totalMs": 312884,
+      "lastMs": 59870,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:33:22.441Z"
+      "updatedAt": "2026-10-08T18:34:22.314Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:09.382Z",
-  "updatedAt": "2026-10-08T18:33:22.441Z",
+  "updatedAt": "2026-10-08T18:34:22.314Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:33:22.441Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:34:22.314Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
