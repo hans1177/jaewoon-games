@@ -1206,10 +1206,40 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
-          const value=await runCheckpointTask('local_authoring_parts',`${identity}:${field}:${index}`,()=>callLocalDesignerModel(
-            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\n이 항목은 ${grammarRole} 역할만 설계한다. 앞 항목의 id·name·purpose·playerChoice를 복사하지 않는다. 서로 다른 실제 규칙 ID와 대표 선택을 직접 작성하고 읽는 상태와 바꾸는 상태를 명시한다. 이 역할은 하위 필드를 따로 작성할 때도 유지한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
-          ));
-          rows.push(value);
+          // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/c/@ 역할별 원본 설계 검사
+          const itemKey=`${identity}:${field}:${index}`;
+          const itemTaskKey=`local_authoring_parts::${itemKey}`;
+          const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
+          for(let roleAttempt=0;;roleAttempt++){
+            const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
+            const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+            ));
+            if(!grammarRole){rows.push(value);break;}
+            const roleIssues=[];
+            if(!clean(value.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
+            if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value[key])===clean(row[key])).length>=2))
+              roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
+            if([...value.stateInputs,...value.stateOutputs].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
+              roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
+            if(!value.stateInputs.length||!value.stateOutputs.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
+            if(!roleIssues.length){
+              if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
+              rows.push(value);break;
+            }
+            // 실패한 역할만 무효화하고 나머지 역할과 이미 완료된 필드는 재사용한다.
+            delete designCheckpoint.tasks[itemTaskKey];
+            designCheckpoint.sliceRepairFeedback||={};
+            designCheckpoint.sliceRepairAttempts||={};
+            designCheckpoint.sliceRepairFeedback[itemTaskKey]=roleIssues.map(code=>({code,grammarRole,previousRuleIds:rows.map(row=>row.id)}));
+            designCheckpoint.sliceRepairAttempts[itemTaskKey]=(designCheckpoint.sliceRepairAttempts[itemTaskKey]||0)+1;
+            designCheckpoint.failedPhase='local_authoring_parts';
+            designCheckpoint.failedTask=`${field}:${grammarRole}`;
+            designCheckpoint.lastError=`DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED ${roleIssues.join(',')}`;
+            persistDesignCheckpoint();
+            console.log(`DESIGN_GRAMMAR_ROLE_REPAIR=${grammarRole}|${roleIssues.join(',')}|attempt=${designCheckpoint.sliceRepairAttempts[itemTaskKey]}`);
+            if(roleAttempt>=1)throw new Error(designCheckpoint.lastError);
+          }
         }
         merged[field]=rows;
       }else{
