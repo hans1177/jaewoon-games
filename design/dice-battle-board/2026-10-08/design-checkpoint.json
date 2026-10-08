@@ -440,25 +440,59 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::f801d53d4bdf6ede85f6ab809a98d8d26bdc3165deb9177eac9ba48b13e000cf:signatureSystems:0": {
+      "id": "P1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "stateOutputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "name": "Puzzle Board State Transition",
+      "purpose": "Define the causal relationship between dice outcomes, board states, and player choices in a puzzle-based game.",
+      "playerChoice": "Player selects a starting configuration, faces obstacles, and navigates through evolving board states based on dice rolls and strategic moves."
+    },
+    "local_authoring_parts::f801d53d4bdf6ede85f6ab809a98d8d26bdc3165deb9177eac9ba48b13e000cf:signatureSystems:1": {
+      "id": "P2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "stateOutputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new"
+      ],
+      "name": "Puzzle Board State Transition",
+      "purpose": "Define the causal relationship between dice outcomes, board states, and player choices in a puzzle-based game.",
+      "playerChoice": "Player selects a starting configuration, faces obstacles, and navigates through evolving board states based on dice rolls and strategic moves."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1095552,
-      "lastMs": 44440,
+      "totalMs": 1261013,
+      "lastMs": 82498,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:15:05.095Z"
+      "updatedAt": "2026-10-08T13:17:50.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:49.507Z",
-  "updatedAt": "2026-10-08T13:15:05.103Z",
+  "updatedAt": "2026-10-08T13:17:50.568Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2426,10 +2460,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:15:05.098Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:17:50.568Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
