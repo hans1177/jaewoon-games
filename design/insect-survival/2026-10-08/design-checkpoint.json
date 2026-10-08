@@ -68,25 +68,42 @@
       "name": "EcoRiskHandler",
       "purpose": "Manage ecological risk through adaptive survival choices",
       "playerChoice": "Assess environmental hazards and make risk-based decisions to secure survival resources or safer paths in a small-scale habitat ecosystem"
+    },
+    "local_authoring_parts::db37f802c1d389df4277f32ef08d605ff87f8e89cd54606928d3150920f63861:signatureSystems:2": {
+      "id": "signature-systems-2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "playerChoice",
+        "environmentalRisk",
+        "ecologicalThreshold"
+      ],
+      "stateOutputs": [
+        "survivalTool",
+        "safeRoute",
+        "ecologicalInsight"
+      ],
+      "name": "EcoRiskAdaptation",
+      "purpose": "Adaptively adjust survival strategies based on ecological thresholds and environmental risks",
+      "playerChoice": "Evaluate ecological thresholds and environmental risks to dynamically adjust survival strategies for optimal outcomes in a small-scale habitat ecosystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 816569,
-      "lastMs": 74537,
+      "totalMs": 892141,
+      "lastMs": 75572,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:15:47.714Z"
+      "updatedAt": "2026-10-08T12:17:03.288Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:02:11.066Z",
-  "updatedAt": "2026-10-08T12:15:47.715Z",
+  "updatedAt": "2026-10-08T12:17:03.288Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2318,7 +2335,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:15:47.714Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:17:03.288Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
