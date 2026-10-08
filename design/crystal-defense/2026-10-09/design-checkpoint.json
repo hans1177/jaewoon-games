@@ -618,25 +618,38 @@
     },
     "local_authoring_parts::a319387f1825e91f9d136a11c1c847d3ad2d34ff0d71eb219aa3b585d1393756:toId": {
       "toId": "DELVE"
+    },
+    "local_authoring_parts::a319387f1825e91f9d136a11c1c847d3ad2d34ff0d71eb219aa3b585d1393756:stateKeys": {
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ]
+    },
+    "local_authoring_parts::a319387f1825e91f9d136a11c1c847d3ad2d34ff0d71eb219aa3b585d1393756:fromSystem": {
+      "fromSystem": "DELVE"
+    },
+    "local_authoring_parts::a319387f1825e91f9d136a11c1c847d3ad2d34ff0d71eb219aa3b585d1393756:toSystem": {
+      "toSystem": "DELVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3170134,
-      "lastMs": 89405,
+      "totalMs": 3438314,
+      "lastMs": 89436,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:22:58.387Z"
+      "updatedAt": "2026-10-08T23:27:26.573Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T23:22:58.387Z",
+  "updatedAt": "2026-10-08T23:27:26.573Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3048,7 +3061,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:22:58.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:27:26.573Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
