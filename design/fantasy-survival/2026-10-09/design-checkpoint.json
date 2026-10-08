@@ -571,25 +571,35 @@
         "riskPressure": "재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결하며, 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률 및 중단 후 이어하기를 게임에 맞게 설계해야 한다.",
         "recoveryRules": "실패 시 플레이어는 재도전 준비를 통해 해결책을 찾고 실행할 수 있으며, 이 과정에서 보상 조건과 비용이 명확히 설정되어야 하며, 중단 후 이어지는 방식으로 게임을 진행해야 한다."
       }
+    },
+    "local_authoring_parts::6b23e3756e1f48bf2f415cb84734a3744a6663cbf5efc773e1624caf9d9e02e8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1555137,
-      "lastMs": 176959,
+      "totalMs": 1648352,
+      "lastMs": 93215,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T21:58:25.981Z"
+      "updatedAt": "2026-10-08T21:59:59.205Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T21:58:25.988Z",
+  "updatedAt": "2026-10-08T21:59:59.205Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2849,10 +2859,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:58:25.983Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:59:59.205Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
