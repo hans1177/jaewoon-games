@@ -47,25 +47,40 @@
       "name": "KARMA_RETURN",
       "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
       "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
+    },
+    "local_authoring_parts::7e01e1356da4a87934032246e483443d54296c590ff71095b9130e96e54b9378:signatureSystems:1": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun",
+        "INPUT: 플레이어가 'positioning around enemy pressure'"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다.",
+        "OUTPUT: ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음狀態"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 415724,
-      "lastMs": 51305,
+      "totalMs": 528443,
+      "lastMs": 112719,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:41.700Z"
+      "updatedAt": "2026-10-08T17:52:34.421Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:43:45.948Z",
-  "updatedAt": "2026-10-08T17:50:41.700Z",
+  "updatedAt": "2026-10-08T17:52:34.422Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2279,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:41.700Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:34.421Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
