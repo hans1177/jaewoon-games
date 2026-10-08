@@ -70,25 +70,61 @@
       "name": "MAIN",
       "purpose": "기존의 인과문법을 비튼다",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::eb79bed293fcc4a7559a777cf4fa547c2dd5a5717a3f32505086a4ea983bbdbd:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "Reward",
+        "ProgressionBenefit"
+      ],
+      "name": "B",
+      "purpose": "기존의 인과문법을 비튼다",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::eb79bed293fcc4a7559a777cf4fa547c2dd5a5717a3f32505086a4ea983bbdbd:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "Reward",
+        "ProgressionBenefit"
+      ],
+      "name": "c",
+      "purpose": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다",
+      "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 708564,
-      "lastMs": 96674,
+      "totalMs": 903959,
+      "lastMs": 99496,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:10:55.750Z"
+      "updatedAt": "2026-10-08T13:14:11.149Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:10:55.751Z",
+  "updatedAt": "2026-10-08T13:14:11.149Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2174,7 +2210,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:10:55.750Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:14:11.149Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
