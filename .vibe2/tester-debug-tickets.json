@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-08T03:05:24.196Z",
+  "updatedAt": "2026-10-08T03:18:10.315Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -195,8 +195,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T11:54:41.174Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 365,
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 366,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -368,8 +368,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T07:13:17.730Z",
-      "updatedAt": "2026-10-08T02:16:25.856Z",
-      "occurrenceCount": 365,
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 366,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -480,8 +480,8 @@
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 281,
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 282,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -3732,8 +3732,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-30T21:54:48.103Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 159
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 160
     },
     {
       "id": "bug-c7db2be1bdc6c06c3fa4",
@@ -5144,8 +5144,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 524
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 525
     },
     {
       "id": "bug-aeaf9db6cfc39c4713f6",
@@ -5171,8 +5171,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-02T14:20:51.093Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 524
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 525
     },
     {
       "id": "bug-7391f6e22431967dcb01",
@@ -6858,8 +6858,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:11:53.993Z",
-      "updatedAt": "2026-10-07T09:22:32.442Z",
-      "occurrenceCount": 85
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 86
     },
     {
       "id": "bug-a6f5d3b250499c30aca4",
@@ -6872,7 +6872,8 @@
       "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
       "responsibleFiles": [],
       "evidence": [
-        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd0b85e715fa00e9823ee69e4705c8d0e9afc003\",\"sourceRootTreeSha\":\"ab0aca9561f9efb5e26473d8f5a19011e9e468db\",\"sourceFingerprint\":\"758df3c8fdedfaa61773c2ab874d48676a744ba7bbde873c5ae94f6510d63a26\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:e6ddbf73dd4bf76e7050af6f1933eb48dbf39a0b69f100f0016d4bd280e455fd\",\"runtimePassed\":true,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3\"}"
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"bd0b85e715fa00e9823ee69e4705c8d0e9afc003\",\"sourceRootTreeSha\":\"ab0aca9561f9efb5e26473d8f5a19011e9e468db\",\"sourceFingerprint\":\"758df3c8fdedfaa61773c2ab874d48676a744ba7bbde873c5ae94f6510d63a26\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:e6ddbf73dd4bf76e7050af6f1933eb48dbf39a0b69f100f0016d4bd280e455fd\",\"runtimePassed\":true,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3\"}",
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"7abae1ff53bbd80b34e987110fb73089bc509b4d\",\"sourceRootTreeSha\":\"cbc1e9082e1e14fdff92b96a10f87ca01c5a5a30\",\"sourceFingerprint\":\"5453f8b9d2627d241e7e0f5bde1a40f920749866a5a2cbf809791f33f6504c7f\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:5982182e4d66e1185ada803321681421437d4a8d4ed0743e1f9fb1adbee315f0\",\"runtimePassed\":true,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3\"}"
       ],
       "exactFailedStage": "F7_MULTIPLAYER_FOUNDATION",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -6881,8 +6882,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-05T16:20:05.482Z",
-      "updatedAt": "2026-10-07T09:22:32.442Z",
-      "occurrenceCount": 85
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 86
     },
     {
       "id": "bug-80d915aca0a7f0595b57",
@@ -7019,8 +7020,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 36
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 37
     },
     {
       "id": "bug-e9d9b62b52b6ecac8146",
@@ -7042,8 +7043,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 36
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 37
     },
     {
       "id": "bug-bbf717741590cf4f61fa",
@@ -7088,8 +7089,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 36
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 37
     },
     {
       "id": "bug-a33b92fc547c2fed253b",
@@ -7111,8 +7112,31 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-07T09:52:13.719Z",
-      "updatedAt": "2026-10-08T03:05:24.193Z",
-      "occurrenceCount": 36
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 37
+    },
+    {
+      "id": "bug-8d21a7e760769184367b",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":4,\"platform\":\"UNITY\",\"sourceRevision\":\"e0cfe6d97d5635fd0143ff357171cb7d4f886e63\",\"sourceRootTreeSha\":\"7389762baca189f8f991a8a59e63eb0cbf80a193\",\"sourceFingerprint\":\"467b61e282ae5e6927f7d80e3f7368670e91b09e017c7b173fc122aa2c98290b\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:a9a65f3427aadf1efb36ac31c0f87d1124e86b34b0955a0b449acee6c4ba6cc4\",\"runtimePassed\":true,\"independentQaPassed\":true,\"multiplayerPassed\":false,\"regressionPassed\":true,\"rawStageResults\":{\"runtime\":true,\"independentQa\":true,\"regression\":true},\"canonicalEvidenceBound\":true,\"f0ToF9Passed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"F6_CORE_SERVICES\",\"failureStage\":\"F7_MULTIPLAYER_FOUNDATION\",\"failureSignature\":\"dc2402408797a1a47dc928b14bbc51a2fab3760b1a39d4dbd519b2fcdd24d9f3\"}"
+      ],
+      "exactFailedStage": "F7_MULTIPLAYER_FOUNDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-08T03:18:10.312Z",
+      "updatedAt": "2026-10-08T03:18:10.312Z",
+      "occurrenceCount": 1
     }
   ]
 }
