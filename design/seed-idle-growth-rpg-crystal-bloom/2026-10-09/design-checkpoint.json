@@ -849,25 +849,28 @@
     },
     "local_authoring_parts::dcceb7d1b975dc877ccef00d3a1b9319bcc12cc36f2673f858cb63702ac4a9cf:milestone": {
       "milestone": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
+    },
+    "local_authoring_parts::dcceb7d1b975dc877ccef00d3a1b9319bcc12cc36f2673f858cb63702ac4a9cf:newGameplay": {
+      "newGameplay": "플레이어가 리소스 생성 과정에서 'resourceFlow' 상태가 발생하면, 이 상태가 'balanceRules' 상태로 전환되어 리소스 관리 로직이 실행되도록 설정해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 61,
-      "successes": 61,
+      "calls": 62,
+      "successes": 62,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2192458,
-      "lastMs": 33211,
+      "totalMs": 2225413,
+      "lastMs": 32955,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:21:41.574Z"
+      "updatedAt": "2026-10-08T19:22:14.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:21:41.574Z",
+  "updatedAt": "2026-10-08T19:22:14.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3622,7 +3625,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:21:41.574Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:22:14.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
