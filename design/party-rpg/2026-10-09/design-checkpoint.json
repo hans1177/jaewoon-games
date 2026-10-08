@@ -472,25 +472,38 @@
       "name": "파티 RPG",
       "purpose": "플레이어가 시작하는 게임 공간에서 단순한 퀴즈나 관문을 승계하지 않고, 진입부터 선택, 위험, 보상, 다음 선택 사이에 연결되는 반복 가능한 핵심 루프를 만든다.",
       "playerChoice": "매번 새로운 상태로 이동하며 콘텐츠의 재사용 가능성과 다양한 해법을 열어간다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며 주체는 플레이어 자신이다. 이 과정에서 플레이어는 성장, 발견, 숙련 등의 단계를 거쳐 게임의 깊이와 유연성을 증대시킨다."
+    },
+    "local_authoring_parts::d11d75923c95ec95db9564a5a985ae4185b793569fdc556a4ea5c8759ee2b441:signatureSystems:4": {
+      "id": "파티 RPG",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "파티 RPG",
+      "purpose": "플레이어가 시작하는 게임 공간에서 단순한 퀴즈나 관문을 승계하지 않고, 진입부터 선택, 위험, 보상, 다음 선택 사이에 연결되는 반복 가능한 핵심 루프를 만든다.",
+      "playerChoice": "매번 새로운 상태로 이동하며 콘텐츠의 재사용 가능성과 다양한 해법을 열어간다. 게임의 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이며 주체는 플레이어 자신이다. 이 과정에서 플레이어는 성장, 발견, 숙련 등의 단계를 거쳐 게임의 깊이와 유연성을 증대시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1228305,
-      "lastMs": 108981,
+      "totalMs": 1336010,
+      "lastMs": 107705,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:10:50.430Z"
+      "updatedAt": "2026-10-08T18:12:38.136Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:50:22.065Z",
-  "updatedAt": "2026-10-08T18:10:50.430Z",
+  "updatedAt": "2026-10-08T18:12:38.143Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2572,7 +2585,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2587,10 +2600,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:10:50.430Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:12:38.138Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
