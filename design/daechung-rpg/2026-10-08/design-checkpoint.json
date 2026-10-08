@@ -3,211 +3,18 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "4ed694200fb059add979bbaa4b2b40db8b3f992d156c7838c58afe62fb85f08d",
-  "policyDigest": "3f4811ca9629af2c397827d992f6d61757d6dd2171fc285b4f91adc38f30fa08",
-  "engineDigest": "b34250293fbb10e5ebe393ec4c5a5cd2f96221f46f5eaa5fea61fc80b6365d11",
+  "fingerprint": "b2caef3a61bc26a19b401a72574c7da97961800df5d1eebf17ee95a75f94afea",
+  "policyDigest": "1dbb604bfc4d31a128142eb4bef2a0c2c59982ba445fb23028d3c603bfb6c824",
+  "engineDigest": "ce27c2959a92f3da420ee10a0b149c993f5a9539f13896402ff7635909acbc50",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "designer_draft_slices::identity-core": {
-      "identity": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
-      "playerFantasy": "4직업/전직 시스템을 활용한 3D 액션 RPG, AI 유저와 파티를 구성해 보스를 공략하는 전투, 퀘스트와 장비 준비, 포탈로 이동, 몬스터 전투, 보스 첫 처치, AI 동료, 15킬 파티, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
-      "coreFun": "4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙",
-      "coreLoop": [
-        "마을에서 장비와 퀘스트 준비, 5포탈 사냥터 돌파, AI 유저와 파티 구성, 보스 공략",
-        "포탈로 이동, 몬스터 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상",
-        "레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙"
-      ],
-      "signatureSystems": [
-        {
-          "name": "5포탈 지역",
-          "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터.",
-          "playerChoice": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략."
-        },
-        {
-          "name": "레벨 성장",
-          "purpose": "레벨업마다 최대체력 +10, 공격력 +10.",
-          "playerChoice": "레벨업마다 최대체력과 공격력이 증가하며 보스 공략 능력이 강화."
-        },
-        {
-          "name": "1차 전직",
-          "purpose": "Lv.15 직업 시험 후 각 시작 직업에서 2개 분기 중 하나를 선택한다.",
-          "playerChoice": "1차 전직 분기별 고유 2차 완성형으로 자동 승급, 2차에서 다시 분기하지 않는다."
-        },
-        {
-          "name": "파티 토글",
-          "purpose": "AI를 두 번 클릭해 즉시 파티 초대/제외.",
-          "playerChoice": "AI를 두 번 클릭해 파티 구성, 파티 토글 조작으로 파티 상태를 조절."
-        },
-        {
-          "name": "15킬 파티사냥",
-          "purpose": "15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상.",
-          "playerChoice": "15마리 처치 시 파티 종료, 기여도에 따라 보상 제공."
-        },
-        {
-          "name": "전투 귀환 잠금",
-          "purpose": "전투 중 마을 귀환 차단, 귀환 성공 시 풀회복.",
-          "playerChoice": "전투 중 마을 귀환 금지, 귀환 성공 시 풀회복."
-        }
-      ]
-    },
-    "designer_draft_slices::systems-progression": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "마을",
-          "toSystem": "포탈",
-          "trigger": "포탈 이동",
-          "stateChange": "포탈 이동 완료"
-        },
-        {
-          "fromSystem": "포탈",
-          "toSystem": "보스",
-          "trigger": "몬스터 전투",
-          "stateChange": "보스 처치"
-        },
-        {
-          "fromSystem": "보스",
-          "toSystem": "동료",
-          "trigger": "AI 동료 영입",
-          "stateChange": "동료 영입 완료"
-        },
-        {
-          "fromSystem": "동료",
-          "toSystem": "파티",
-          "trigger": "파티 토글",
-          "stateChange": "파티 상태 변경"
-        },
-        {
-          "fromSystem": "파티",
-          "toSystem": "레벨 성장",
-          "trigger": "15킬 파티 종료",
-          "stateChange": "레벨 증가"
-        }
-      ],
-      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
-      "progressionEconomyBalance": {
-        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
-        "resourceFlow": "마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 기본 50골드+50XP, 레벨업 최대체력+10/공격력+10, 파티사냥 15킬, RoomCode 1~10",
-        "balanceRules": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "마을 준비",
-          "newGameplay": "4직업/전직 시스템, 5포탈 사냥터 돌파, AI 유저와 파티 구성, 보스 공략",
-          "systemImpact": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략"
-        },
-        {
-          "milestone": "포탈 전투",
-          "newGameplay": "몬스터 직접 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상",
-          "systemImpact": "몬스터 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상"
-        },
-        {
-          "milestone": "Lv.15 1차 전직",
-          "newGameplay": "1차 전직 분기별 고유 2차 완성형으로 자동 승급, 2차에서 다시 분기하지 않는다",
-          "systemImpact": "1차 전직 분기별 고유 2차 완성형으로 자동 승급"
-        },
-        {
-          "milestone": "Lv.60 만렙/숙련",
-          "newGameplay": "Lv.60 레벨캡, 비전투력 직업 숙련, 무기/방어구/유물 3슬롯, 보스 첫 처치 AI 동료 해금",
-          "systemImpact": "Lv.60 레벨캡, 비전투력 직업 숙련"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "전투 중 마을 귀환 금지",
-          "보스 첫 처치 동료 해금 저장",
-          "플레이어+동료 최대3명 파티"
-        ],
-        "retryFlow": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
-        "riskPressure": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡",
-        "recoveryRules": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡"
-      }
-    },
-    "designer_draft_slices::platform-profiles": {
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
-        "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
-        "sessionConstraints": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합"
-      },
-      "platformProfiles": {
-        "ROBLOX": {
-          "platform": "ROBLOX",
-          "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
-          "sessionModel": "마을 편성→포탈 전투→보스 격파/영입→귀환. 싱글은 플레이어1+보스동료 최대3, 멀티는 실제 플레이어와 각자 해금한 동료를 혼합",
-          "multiplayerRuntime": "서버가 실제 플레이어 상태·보스 동료 해금·최대3 동료 편성·전투/보상 상태를 authoritative하게 관리",
-          "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
-          "uiUx": "전투 HUD와 파티/장비 화면 분리",
-          "saveAndNetwork": "직업·전직·장비·보스동료 해금·레벨/숙련·RoomCode를 DataStore 저장",
-          "platformContentAdaptation": "플레이어는 Roblox R15 직업형 캐릭터. AI 동료는 보스 모델의 고유 실루엣을 재사용하며 별도 인간형 캐릭터 로스터를 만들지 않는다",
-          "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-          "validationEvidence": "Exact source revision + Rojo artifact SHA256, Server/client authority + Remote security contract, Mobile input/UI contract, Save/rejoin contract when applicable, Multiplayer state-sync contract when applicable, Headless exact-artifact regression, Open Cloud private/restricted publish"
-        },
-        "UNITY": {
-          "platform": "UNITY",
-          "inputModel": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "sessionModel": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "multiplayerRuntime": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "performanceBudget": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "uiUx": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "saveAndNetwork": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "platformContentAdaptation": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "internalReleaseTarget": "Unity 프로젝트의 네이티브/WebGL 실행 증거",
-          "validationEvidence": "Unity 프로젝트의 네이티브/WebGL 실행 증거"
-        }
-      }
-    },
-    "local_authoring_parts::27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed:role,designAuthority": {
-      "role": "WEB_DETAILED_GAME_ORIGINAL",
-      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY"
-    },
-    "local_authoring_parts::27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed:playerFlow,worldAndTraversal": {
-      "playerFlow": [
-        "마을에서 장비와 퀘스트를 준비하고, 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
-        "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략.",
-        "AI 유저와 파티를 구성하고, 보스를 공략.",
-        "보스 첫 처치 후, AI 동료를 영입하고, 15킬 파티를 진행하며 기여도에 따라 보상 제공.",
-        "15킬 파티 종료 시, 레벨이 증가하고, 기여도에 따라 XP/골드 보상 제공.",
-        "레벨이 증가하며, 어그로 해제 및 파티 토글 조작을 수행.",
-        "1차 전직 분기 선택 후, 2차 완성형으로 자동 승급.",
-        "Lv.60 만렙/숙련을 달성하고, 레벨캡을 달성하며, 레벨 성장과 어그로 해제를 수행."
-      ],
-      "worldAndTraversal": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙. 모든 설명은 구체적인 장면·행동·상태 전이로 작성된다. 공격/상호작용의 선행조건·범위·자원·재사용 시간·전조·대응과 실패 복구를 원본 근거에 연결한다."
-    },
-    "local_authoring_parts::4cf43f35dafab1812a4c1e5bb1ec2a6cc72fc145ebda49a238fdeea816cc8a25:role,designAuthority,playerFlow,worldAndTraversal": {
-      "role": "WEB_DETAILED_GAME_ORIGINAL",
-      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-      "playerFlow": [
-        "마을에서 장비와 퀘스트를 준비하고, 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG.",
-        "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략.",
-        "AI 유저와 파티를 구성하고, 보스를 공략.",
-        "보스 첫 처치 후, AI 동료를 영입하고, 15킬 파티를 진행하며 기여도에 따라 보상 제공.",
-        "15킬 파티 종료 시, 레벨이 증가하고, 기여도에 따라 XP/골드 보상 제공.",
-        "레벨이 증가하며, 어그로 해제 및 파티 토글 조작을 수행.",
-        "1차 전직 분기 선택 후, 2차 완성형으로 자동 승급.",
-        "Lv.60 만렙/숙련을 달성하고, 레벨캡을 달성하며, 레벨 성장과 어그로 해제를 수행."
-      ],
-      "worldAndTraversal": "Roblox R15 3D Action RPG: 4직업/전직 시스템, 5포탈 사냥, 15킬 파티, 보스 동료, 런 보스, 레벨 성장, 어그로 해제, 파티 토글, 1차 전직, 2차 완성형, Lv.60 만렙. 모든 설명은 구체적인 장면·행동·상태 전이로 작성된다. 공격/상호작용의 선행조건·범위·자원·재사용 시간·전조·대응과 실패 복구를 원본 근거에 연결한다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 891029,
-      "lastMs": 127116,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T01:52:55.459Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T01:38:04.183Z",
-  "updatedAt": "2026-10-08T01:52:55.460Z",
+  "createdAt": "2026-10-08T02:33:06.288Z",
+  "updatedAt": "2026-10-08T02:33:06.289Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1621,21 +1428,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "cb1fdaa5e0fa2a8f41219ab8cc1e4c64b1215049d76cd6c15b1249e39f6b196c",
-    "designer_draft_slices::platform-profiles": "86973feaae1976ad8fb3bab2e48d8090be502fd7205152b056963731f7e8661b"
-  },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T01:52:55.460Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
-  "localAuthoringSplits": {
-    "27d772bbd2873403e41ece36d7ce1af09994bcea41809060ef5b20af19523fed": true
   }
 }
