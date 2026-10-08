@@ -3,30 +3,18 @@
   "gameId": "cozy-island",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-COZY-ISLAND",
-  "fingerprint": "05a51f94b6950b683527fdefd1dde67417a319951c3e9bc9e8e4ffdeeb8ab93c",
-  "policyDigest": "3f4811ca9629af2c397827d992f6d61757d6dd2171fc285b4f91adc38f30fa08",
-  "engineDigest": "b34250293fbb10e5ebe393ec4c5a5cd2f96221f46f5eaa5fea61fc80b6365d11",
+  "fingerprint": "1ac38e03101fa0758439084705874ab58725e6c02ba7b683c21aa92607c4196c",
+  "policyDigest": "1dbb604bfc4d31a128142eb4bef2a0c2c59982ba445fb23028d3c603bfb6c824",
+  "engineDigest": "fb372881439e5e3419dd2733998335826ce453f6fa0d66c58044e91fdf95858b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 155640,
-      "lastMs": 52310,
-      "lastError": null,
-      "updatedAt": "2026-10-08T01:40:26.748Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T01:37:51.001Z",
-  "updatedAt": "2026-10-08T01:40:26.750Z",
+  "createdAt": "2026-10-08T02:11:31.235Z",
+  "updatedAt": "2026-10-08T02:11:31.236Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -576,36 +564,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "identity",
-          "value": "COZY_ISLAND_KINGDOM_GROWTH_GAME"
-        },
-        "requiredAction": "identity의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "identity"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T01:40:26.748Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT"
+  }
 }
