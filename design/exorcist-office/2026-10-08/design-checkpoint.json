@@ -98,25 +98,214 @@
       "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
       "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
       "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+    },
+    "local_authoring_parts::a63c52307be79ee91b48581623a292e09415c58cab55968ffa568e42f9b2abe9:signatureSystems:4": {
+      "id": "exorcist-office",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "input: one-thumb tap or swipe",
+        "input: clear score, distance, or short-session goal"
+      ],
+      "stateOutputs": [
+        "state: START",
+        "state: RUN",
+        "state: FINISH"
+      ],
+      "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+      "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+      "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+    },
+    "local_authoring_parts::89aa2ab758223e5f8ca221cd046f63e4f13fad573e34283d4216b7111bc09c9a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "exorcist-office",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "A",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "B",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "c",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        }
+      ]
+    },
+    "local_authoring_parts::94b85fdd2e15b5bda0adc8cabc99192d290a92120a4ab07ee0d8fc8485ff2bb5:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "exorcist-office",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "A",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "B",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "c",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        },
+        {
+          "id": "exorcist-office",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "input: one-thumb tap or swipe",
+            "input: clear score, distance, or short-session goal"
+          ],
+          "stateOutputs": [
+            "state: START",
+            "state: RUN",
+            "state: FINISH"
+          ],
+          "name": "퇴마 사무소의 핵심 재미와 시스템 연결",
+          "purpose": "simple one-thumb input, score chase, and fast retry benchmark",
+          "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 982147,
-      "lastMs": 101327,
+      "totalMs": 1083423,
+      "lastMs": 101276,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:59:08.699Z"
+      "updatedAt": "2026-10-08T08:00:49.977Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T07:59:08.699Z",
+  "updatedAt": "2026-10-08T08:00:49.980Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2040,7 +2229,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:59:08.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:00:49.980Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
