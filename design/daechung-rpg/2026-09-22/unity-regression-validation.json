@@ -1,0 +1,94 @@
+{
+  "version": 3,
+  "state": "PASS",
+  "regression": "PASS",
+  "regressionPassed": true,
+  "exactArtifactRegression": true,
+  "runtimeReplayPerformed": false,
+  "f9Mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
+  "upstreamBuildRunId": 37718493651,
+  "runtimeRunId": 37720573438,
+  "independentQaRunId": 37721018141,
+  "buildId": "a9a65f3427aadf1efb36ac31c0f87d1124e86b34b0955a0b449acee6c4ba6cc4",
+  "apkSha256": "a9a65f3427aadf1efb36ac31c0f87d1124e86b34b0955a0b449acee6c4ba6cc4",
+  "buildSourceCommit": "e0cfe6d97d5635fd0143ff357171cb7d4f886e63",
+  "sourceTreeSha": "ec4cf033b4d7b7763f0f75e1dbe53a687e00cc4d",
+  "foundationFloors": {
+    "F1": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "EXACT_ACTIVITY_LAUNCH",
+        "PROCESS_ALIVE",
+        "NO_FATAL_RUNTIME_ERROR"
+      ]
+    },
+    "F2": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "FOREGROUND_ACTIVITY",
+        "RENDERED_FRAME",
+        "PRE_INPUT_SCREEN_CAPTURE"
+      ]
+    },
+    "F3": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT",
+        "INPUT_RESPONSE_OBSERVED"
+      ]
+    },
+    "F4": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "CONTROLLED_INPUT_DELIVERED",
+        "VISIBLE_RUNTIME_STATE_DELTA",
+        "PROCESS_ALIVE_AFTER_INPUT"
+      ]
+    },
+    "F5": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "TOUCH_INPUT_PATH",
+        "VISIBLE_INPUT_RESPONSE",
+        "POST_INPUT_SCREEN_CAPTURE"
+      ]
+    },
+    "F6": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "UPDATE_INSTALL",
+        "SAVE_SIGNAL_WHEN_REQUIRED",
+        "RUNTIME_ERROR_BOUNDARY"
+      ]
+    },
+    "F7": {
+      "state": "DEFER_TO_MULTIPLAYER_APPLICABILITY",
+      "authority": "DESIGN_AND_MULTIPLAYER_QA_EVIDENCE",
+      "signals": []
+    },
+    "F8": {
+      "state": "PASS",
+      "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+      "signals": [
+        "GAMEPLAY_INTERACTION_RESPONSE",
+        "CORE_ACTION_OR_VISIBLE_STATE_TRANSITION"
+      ]
+    }
+  },
+  "reviewedIndependentChecks": {
+    "architectureCompatibleRuntime": "PASS",
+    "freshInstall": "PASS",
+    "processLaunch": "PASS",
+    "rapidInputStress": "PASS",
+    "backgroundResume": "PASS",
+    "processAliveAfterStress": "PASS",
+    "fatalCrashScan": "PASS",
+    "screenshotCaptured": "PASS"
+  }
+}

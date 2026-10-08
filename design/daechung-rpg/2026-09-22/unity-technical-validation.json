@@ -1,46 +1,131 @@
 {
   "version": 2,
   "gameId": "daechung-rpg",
-  "state": "FAIL",
-  "pass": false,
-  "validated": false,
+  "state": "PASS",
+  "pass": true,
+  "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-01T17:22:17.174Z",
+  "checkedAt": "2026-10-08T03:10:12.715Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 36861804899,
-    "sourceCommit": "dcb0c574594500da5c1eba3830e956dacd6aab6c",
-    "sourceTreeSha": "ff12df5902915630778c9bdda9fb864acdac5d91",
-    "apkSha256": "e57a85a9d710549f5fadba89855b0936797eb938ac6167ec7125278d0422cb95",
-    "sameBinding": false
+    "upstreamBuildRunId": 37718493651,
+    "sourceCommit": "e0cfe6d97d5635fd0143ff357171cb7d4f886e63",
+    "sourceTreeSha": "ec4cf033b4d7b7763f0f75e1dbe53a687e00cc4d",
+    "apkSha256": "a9a65f3427aadf1efb36ac31c0f87d1124e86b34b0955a0b449acee6c4ba6cc4",
+    "sameBinding": true
+  },
+  "foundationAdapter": {
+    "version": 1,
+    "platform": "UNITY",
+    "mode": "F0_COMPILE_PLUS_ONE_EXACT_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+    "f1ThroughF8SingleRuntimeSession": true,
+    "f9RuntimeReplayRequired": false,
+    "blackBoxContractPass": true,
+    "blackBoxFoundationPass": true,
+    "foundationFloors": {
+      "F0": {
+        "state": "PASS",
+        "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+      },
+      "F1": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "EXACT_ACTIVITY_LAUNCH",
+          "PROCESS_ALIVE",
+          "NO_FATAL_RUNTIME_ERROR"
+        ]
+      },
+      "F2": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "FOREGROUND_ACTIVITY",
+          "RENDERED_FRAME",
+          "PRE_INPUT_SCREEN_CAPTURE"
+        ]
+      },
+      "F3": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT",
+          "INPUT_RESPONSE_OBSERVED"
+        ]
+      },
+      "F4": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "CONTROLLED_INPUT_DELIVERED",
+          "VISIBLE_RUNTIME_STATE_DELTA",
+          "PROCESS_ALIVE_AFTER_INPUT"
+        ]
+      },
+      "F5": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "TOUCH_INPUT_PATH",
+          "VISIBLE_INPUT_RESPONSE",
+          "POST_INPUT_SCREEN_CAPTURE"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F6": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "UPDATE_INSTALL",
+          "SAVE_SIGNAL_WHEN_REQUIRED",
+          "RUNTIME_ERROR_BOUNDARY"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F7": {
+        "state": "DEFER_TO_MULTIPLAYER_APPLICABILITY",
+        "authority": "DESIGN_AND_MULTIPLAYER_QA_EVIDENCE"
+      },
+      "F8": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "GAMEPLAY_INTERACTION_RESPONSE",
+          "CORE_ACTION_OR_VISIBLE_STATE_TRANSITION"
+        ],
+        "independentQaCorroborated": true
+      }
+    }
   },
   "realEvidence": {
-    "runtimeSmoke": false,
+    "runtimeSmoke": true,
     "independentQa": true,
     "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
-    "metricSamples": 1,
-    "platformMetricsPass": false,
+    "metricSamples": 7,
+    "platformMetricsPass": true,
     "seedRuntimeRequired": false,
     "seedSignalsPass": true,
     "actionObserved": true,
     "saveObserved": true,
-    "pauseResumeObserved": true
+    "pauseResumeObserved": true,
+    "visualDeltaObserved": true,
+    "foregroundActivityObserved": true
   },
   "coverage": {
     "ANDROID_FPS_FRAME_STABILITY": {
-      "state": "FAIL",
+      "state": "PASS",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "sampleCount": 1,
-      "totalFramesRendered": 0,
+      "sampleCount": 7,
+      "totalFramesRendered": 127,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": null,
-      "avgFps": null,
+      "minFps": 10.4,
+      "avgFps": 13.88,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
-      "state": "FAIL",
+      "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 220956672,
+      "maxAllocatedMemoryBytes": 88048089,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -58,7 +143,7 @@
       "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
     },
     "ASPECT_RATIO_TOUCH": {
-      "state": "FAIL",
+      "state": "PASS",
       "evidence": "Android emulator black-box taps/swipes plus in-app action log."
     },
     "SAVE_LOAD_UPDATE_COMPATIBILITY": {
@@ -92,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/daechung-rpg-android-cloud-36861804899-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36861804899/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36271132804/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/daechung-rpg-android-cloud-37718493651-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37718493651/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37718493651/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/daechung-rpg"
   }
 }
