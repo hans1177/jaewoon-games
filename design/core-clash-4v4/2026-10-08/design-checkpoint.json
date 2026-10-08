@@ -463,25 +463,46 @@
       "name": "Core Loop Design",
       "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
       "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::42df7aca7860b5a80ced5b54940449d68a739585980bbef8edc341533196e2b0:signatureSystems:3": {
+      "id": "core-loop-design",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Loop Design",
+      "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
+      "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 595063,
-      "lastMs": 39732,
+      "totalMs": 634649,
+      "lastMs": 39586,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:25:37.189Z"
+      "updatedAt": "2026-10-08T08:26:16.776Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T08:25:37.189Z",
+  "updatedAt": "2026-10-08T08:26:16.776Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2716,7 +2737,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:25:37.189Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:26:16.776Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
