@@ -27,25 +27,32 @@
       "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 Read the incoming insect wave and its threat pattern.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순한 전략 게임이 아니라, 진입 시점에서 즉각적이고 의미 있는 상태 변화를 만들어내는 주체인 플레이어가 참여하는 심리적 및 행동적 체험을 제공한다.",
       "playerFantasy": "플레이어는 Read the incoming insect wave and its threat pattern.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순한 전략 게임이 아니라, 진입 시점에서 즉각적이고 의미 있는 상태 변화를 만들어내는 주체인 플레이어가 참여하는 심리적 및 행동적 체험을 제공한다.",
       "coreFun": "플레이어는 Read the incoming insect wave and its threat pattern.을 중심으로 세계 상태와 다음 선택을 바꾼다. 이 게임은 단순한 전략 게임이 아니라, 진입 시점에서 즉각적이고 의미 있는 상태 변화를 만들어내는 주체인 플레이어가 참여하는 심리적 및 행동적 체험을 제공한다."
+    },
+    "local_authoring_parts::9a1e70a57f7d7254b3edd45d18b5e6b2abc9646deeaf8b3295ddc197b748aff1:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "SELECT: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "OUTPUT: Status change in world state, new strategy, and expanded gameplay possibilities."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 256360,
-      "lastMs": 28047,
+      "totalMs": 287545,
+      "lastMs": 31185,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:49:29.315Z"
+      "updatedAt": "2026-10-08T20:50:00.503Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T20:49:29.317Z",
+  "updatedAt": "2026-10-08T20:50:00.504Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:49:29.317Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:50:00.503Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
