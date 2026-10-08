@@ -756,25 +756,45 @@
         "newFeedbackType"
       ],
       "fromSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
+    },
+    "local_authoring_parts::366da1b4ed1729761459bfa87c0b4bb6b7b5635f7b677bfa6f7a2ddcfe8e7c36:toSystem,trigger,stateChange": {
+      "toSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "coreLoop→signatureSystems[0]",
+      "stateChange": "newLevelGoal,newMoveLimit,newObstacleSet,newComboTrigger,newFeedbackType"
+    },
+    "local_authoring_parts::540f4e55c2f5fa2760395bc3c46f7bad5e88195a5fd7cb7f6d9d8655ce69c283:systemInterconnections:0": {
+      "fromId": "coreLoop",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "newLevelGoal",
+        "newMoveLimit",
+        "newObstacleSet",
+        "newComboTrigger",
+        "newFeedbackType"
+      ],
+      "fromSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "toSystem": "coreLoopSystemBase_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "coreLoop→signatureSystems[0]",
+      "stateChange": "newLevelGoal,newMoveLimit,newObstacleSet,newComboTrigger,newFeedbackType"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 13,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1955739,
-      "lastMs": 108519,
+      "totalMs": 2062098,
+      "lastMs": 106359,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:37:15.643Z"
+      "updatedAt": "2026-10-08T12:39:02.004Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:37:15.644Z",
+  "updatedAt": "2026-10-08T12:39:02.006Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2993,7 +3013,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:37:15.643Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:39:02.006Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
