@@ -769,25 +769,44 @@
         "strategy_tree"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE"
+    },
+    "local_authoring_parts::1b65f9bf4e370f29dbeb33504c00e38c65fc098c29adb700e8db6a6f80e9ebe6:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::7ab0773b722d9c2f43dc1941621b25905da0679248f1320246a922aa6f5756d4:systemInterconnections:0": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource_pool",
+        "strategy_tree"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2061097,
-      "lastMs": 58653,
+      "totalMs": 2114965,
+      "lastMs": 53868,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:55:10.867Z"
+      "updatedAt": "2026-10-08T09:56:04.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T09:55:10.867Z",
+  "updatedAt": "2026-10-08T09:56:04.739Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3138,7 +3157,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:55:10.867Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:56:04.739Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
