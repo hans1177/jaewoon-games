@@ -457,25 +457,42 @@
         "RUN_RESULT"
       ],
       "fromSystem": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE"
+    },
+    "local_authoring_parts::4f2da41a368cd4ea2cc0b683e53d3210af4998999c81ac9f777969b9de591810:toSystem,trigger,stateChange": {
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION",
+      "trigger": "Run result and enemy pressure determine the progression choice and state change effect.",
+      "stateChange": "From MAIN to A, with state keys FIGHT_STATE and RUN_RESULT."
+    },
+    "local_authoring_parts::c74d9f9eaac1ea6600d4b1dbeed2d5f6e71e74e0250958feca8cc2f8a2ebe174:systemInterconnections:0": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "FIGHT_STATE",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE",
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION",
+      "trigger": "Run result and enemy pressure determine the progression choice and state change effect.",
+      "stateChange": "From MAIN to A, with state keys FIGHT_STATE and RUN_RESULT."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 11,
+      "calls": 15,
+      "successes": 12,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1989934,
-      "lastMs": 202708,
+      "totalMs": 2016372,
+      "lastMs": 26438,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:45:55.413Z"
+      "updatedAt": "2026-10-08T19:46:21.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:12:45.424Z",
-  "updatedAt": "2026-10-08T19:45:55.413Z",
+  "updatedAt": "2026-10-08T19:46:21.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2676,7 +2693,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:45:55.413Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:46:21.853Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
