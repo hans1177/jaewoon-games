@@ -94,25 +94,203 @@
       "name": "KARMA RETURN - C",
       "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
       "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+    },
+    "local_authoring_parts::d6798b11f7b635c2a87c50c8165e5e042c5715c153c66bb88aac07770ebce825:signatureSystems:4": {
+      "id": "KARMA_RETURN_C",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "ACTION_EFFECT"
+      ],
+      "name": "KARMA RETURN - C",
+      "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+      "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+    },
+    "local_authoring_parts::91bffa7e913812c5be6372466fd46fdf0a3446cf9bf778ef0946d632acd4b85e:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - B",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - C",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_C",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - C",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        }
+      ]
+    },
+    "local_authoring_parts::78db357abaeb2ba89c0b748a8027ae0231ee0d6eafb7262e919b475779ea5a87:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - B",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - C",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        },
+        {
+          "id": "KARMA_RETURN_C",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "ACTION_EFFECT"
+          ],
+          "name": "KARMA RETURN - C",
+          "purpose": "Action's result is delayed to affect the player, relationship, and future generations.",
+          "playerChoice": "Delay the consequence of the action to create new dynamics in the game world."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 557607,
-      "lastMs": 95923,
+      "totalMs": 652884,
+      "lastMs": 95277,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:09:45.106Z"
+      "updatedAt": "2026-10-08T19:11:20.384Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:00:27.464Z",
-  "updatedAt": "2026-10-08T19:09:45.106Z",
+  "updatedAt": "2026-10-08T19:11:20.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2149,7 +2327,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:09:45.106Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:11:20.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
