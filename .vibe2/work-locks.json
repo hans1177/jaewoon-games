@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1hcvbym",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html",
+        "web-games/cozy-island/style.css",
+        "web-games/cozy-island/game.js"
+      ],
+      "baseSha": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
+      "runId": "37841225394",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T21:35:16.331Z",
+      "expiresAt": "2026-10-08T22:20:16.331Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
