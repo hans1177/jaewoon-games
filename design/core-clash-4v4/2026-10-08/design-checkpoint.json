@@ -568,25 +568,46 @@
       "name": "Core Clash 4v4",
       "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::c240b269c8441f1231eb4a910a382284f0ace193717859eae1097c44c7c97b38:signatureSystems:3": {
+      "id": "core-clash-4v4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Clash 4v4",
+      "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 990011,
-      "lastMs": 105835,
+      "totalMs": 1086328,
+      "lastMs": 96317,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:14:54.899Z"
+      "updatedAt": "2026-10-08T10:16:31.218Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:14:54.899Z",
+  "updatedAt": "2026-10-08T10:16:31.218Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2821,7 +2842,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:14:54.899Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:16:31.218Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
