@@ -31,6 +31,8 @@ namespace JaewoonGames.DaechungRpg
         public List<string> ownedWeapons = new();
         public List<string> ownedArmors = new();
         public List<string> completedHiddenQuests = new();
+        // 저장: 기존 세이브 키/전투·보상 필드는 보존하고 기존 플레이어 상태의 선택형 이야기만 추가한다.
+        public List<string> witnessedStoryEvents = new();
     }
 
     [Serializable]
@@ -220,6 +222,46 @@ namespace JaewoonGames.DaechungRpg
             return Mathf.Max(1, attack);
         }
 
+        // 메인: 게임 소스에서 실제 발생한 사건에만 연결되는 마을·보스 이야기.
+        // 캐릭터 대사나 AI 추측 자체는 퀘스트 완료/재화/경험치/전투 상태를 바꿀 수 없다.
+        public bool TryRecordStoryEvent(string eventId)
+        {
+            if (string.IsNullOrEmpty(eventId)) return false;
+            Player.witnessedStoryEvents ??= new List<string>();
+            if (Player.witnessedStoryEvents.Contains(eventId)) return false;
+            bool town = Player.currentRegionId == "town";
+            bool valid = eventId switch
+            {
+                "chief-introduction" => town,
+                "smith-visit" => town && Player.witnessedStoryEvents.Contains("chief-introduction"),
+                "ogre-sighted" => Player.currentRegionId == "field-6",
+                "ogre-defeated" => Player.currentRegionId == "field-6" && Player.witnessedStoryEvents.Contains("ogre-sighted"),
+                "chief-ogre-report" => town && Player.witnessedStoryEvents.Contains("ogre-defeated"),
+                _ => false
+            };
+            if (!valid) return false;
+            Player.witnessedStoryEvents.Add(eventId);
+            Save();
+            return true;
+        }
+
+        public bool HasStoryEvent(string eventId)
+        {
+            return Player.witnessedStoryEvents != null
+                && !string.IsNullOrEmpty(eventId)
+                && Player.witnessedStoryEvents.Contains(eventId);
+        }
+
+        public string GetStoryGuidance()
+        {
+            if (!HasStoryEvent("chief-introduction")) return "마을 주민들과 대화해 첫 단서를 얻자.";
+            if (!HasStoryEvent("smith-visit")) return "대장장이에게 장비와 균열 소식을 물어보자.";
+            if (!HasStoryEvent("ogre-sighted")) return "성장 후 6번 사냥터의 오우거를 조사하자.";
+            if (!HasStoryEvent("ogre-defeated")) return "오우거를 처치해 마을의 위협을 줄이자.";
+            if (!HasStoryEvent("chief-ogre-report")) return "촌장에게 돌아가 사건을 보고하자.";
+            return "마을 사건의 한 고비를 넘겼다. 다음 지역을 탐험하자.";
+        }
+
         public bool TryBuyWeapon(string weaponId)
         {
             if (string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
@@ -334,6 +376,11 @@ namespace JaewoonGames.DaechungRpg
                 if (Player.completedHiddenQuests == null)
                 {
                     Player.completedHiddenQuests = new List<string>();
+                }
+                // 유틸: 이전 v1 저장은 새 스토리 기록이 없어도 기존 진행/장비/보상을 유지한다.
+                if (Player.witnessedStoryEvents == null)
+                {
+                    Player.witnessedStoryEvents = new List<string>();
                 }
                 if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))
                 {
