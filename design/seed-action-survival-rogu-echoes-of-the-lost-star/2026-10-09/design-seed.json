@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "2ab308477f6c302af26e8c32812845a3a026f773780e09f9ec6d6d396d407e17",
+  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
+  "contentDigest": "c75b01bf51a01466e5fdba1217a834389f423bd42f00965a66f17546ece135d1",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "잃어버린 별의 메아리: 진입, 선택, 위험, 보상, 재방문의 반복 루프로 구성된 ACTION_SURVIVAL_ROGUELITE 게임 정체성입니다. 이 게임은 플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만듭니다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, A/B/c/@와 시그니처 세계 규칙에 연결됩니다. 게임은 모바일에서도 즉시 이해되는 입력/피드백 구조를 유지하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다.",
+    "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만든 ACTION_SURVIVAL_ROGUELITE 게임입니다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, A/B/c/@와 시그니처 세계 규칙에 연결됩니다. 이 게임은 모바일에서도 즉시 이해되는 입력/피드백 구조를 유지하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다.",
+    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SIGNATURE_SYSTEM_0",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "FIGHT_STATE",
+          "RUN_RESULT"
+        ],
+        "stateOutputs": [
+          "PROGRESSION_CHOICE",
+          "STATE_CHANGE_EFFECT"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE",
+        "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.와 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용이 발생합니다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "RUN_RESULT",
+          "ENEMY_PRESSURE"
+        ],
+        "stateOutputs": [
+          "PROGRESSION_CHOICE",
+          "STATE_CHANGE_EFFECT"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION",
+        "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+        "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "RUN_RESULT",
+          "ENEMY_PRESSURE"
+        ],
+        "stateOutputs": [
+          "PROGRESSION_CHOICE",
+          "STATE_CHANGE_EFFECT"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION_B",
+        "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+        "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "RUN_RESULT",
+          "ENEMY_PRESSURE"
+        ],
+        "stateOutputs": [
+          "PROGRESSION_CHOICE",
+          "STATE_CHANGE_EFFECT"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE_CONTENT_EXPANSION",
+        "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+        "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
+      },
+      {
+        "id": "ACTION_SURVIVAL_ROGUELITE_DELVE",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "RUN_RESULT",
+          "ENEMY_PRESSURE"
+        ],
+        "stateOutputs": [
+          "PROGRESSION_CHOICE",
+          "STATE_CHANGE_EFFECT"
+        ],
+        "name": "ACTION_SURVIVAL_ROGUELITE_CONTENT_EXPANSION",
+        "purpose": "플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만드는 시그니처 세계 규칙입니다.",
+        "playerChoice": "Run result and enemy pressure determine the progression choice and state change effect."
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-08T19:27:32.533Z"
+}
