@@ -750,25 +750,49 @@
         "riskPressure": "보스 공략 실패 시, 파티 구성 전략 재수립 및 보스 공략 로직 재설정, 보상 분배 로직 확장의 기회를 제공한다.",
         "recoveryRules": "보스 공략 실패 시, 파티 구성 전략 재수립 및 보스 공략 로직 재설정, 보상 분배 로직 확장의 기회를 제공한다."
       }
+    },
+    "local_authoring_parts::a5dd465d36f11381e078246f92154008bcff25fc61af43d2dc6edf16faf58932:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "identity-core",
+      "toId": "signature-systems-5",
+      "stateKeys": [
+        "signatureSystems"
+      ],
+      "fromSystem": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG\",\"toSystem\":\"AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG\","
+    },
+    "local_authoring_parts::a5dd465d36f11381e078246f92154008bcff25fc61af43d2dc6edf16faf58932:toSystem,trigger,stateChange": {
+      "toSystem": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "trigger": "signatureSystems",
+      "stateChange": "signatureSystems"
+    },
+    "local_authoring_parts::2258a4739c89941d71a3d2d4f78db9256f48ddc26b76b4adfbe0397366b71a62:systemInterconnections:0": {
+      "fromId": "identity-core",
+      "toId": "signature-systems-5",
+      "stateKeys": [
+        "signatureSystems"
+      ],
+      "fromSystem": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG\",\"toSystem\":\"AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG\",",
+      "toSystem": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "trigger": "signatureSystems",
+      "stateChange": "signatureSystems"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 19,
+      "calls": 23,
+      "successes": 21,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2236684,
-      "lastMs": 146405,
+      "totalMs": 2426204,
+      "lastMs": 92334,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:52:23.965Z"
+      "updatedAt": "2026-10-08T10:55:33.496Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:15:07.214Z",
-  "updatedAt": "2026-10-08T10:52:23.972Z",
+  "updatedAt": "2026-10-08T10:55:33.498Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,10 +2304,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:52:23.967Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:55:33.498Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
