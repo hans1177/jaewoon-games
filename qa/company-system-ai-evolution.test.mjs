@@ -475,3 +475,79 @@ test('system AI control-plane jobs stay off heavy game runners while model worke
   assert.match(workflow,/\n  worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.match(workflow,/\n  fan_in:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
 });
+
+/* ── 게임별 F0~F9 원인 추적 및 독립 파동 회귀 ── */
+test('per-game F0 evidence is reused only for exact source and package; quality blocker cannot be bypassed',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision:source,artifactIdentity:artifact,artifactRunId:177},
+    robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
+  };
+  const snapshot=analyzeSystemAiBottlenecks({
+    developmentQueue:{items:[
+      {...base,gameId:'alpha',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source},
+      {...base,gameId:'beta',robloxFoundationF0Evidence:{...base.robloxFoundationF0Evidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},
+      {...base,gameId:'gamma'}
+    ]},
+    maxBatch:2
+  });
+  assert.equal(snapshot.development.total,3);
+  assert.equal(snapshot.development.exactF0Count,2);
+  assert.equal(snapshot.development.f0RepairCount,1);
+  assert.equal(snapshot.development.qualityBlockedCount,1);
+  assert.equal(snapshot.development.pendingCandidateCount,1);
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='alpha').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='beta').classification,'F0_NOT_VERIFIED_FOR_EXACT_PACKAGE');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='gamma').classification,'F0_PASSED_CANDIDATE_NOT_PUBLISHED');
+  assert.ok(snapshot.development.rows.every(x=>x.automaticPassClaim===false));
+  assert.ok(snapshot.actions.includes('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF'));
+  assert.ok(snapshot.actions.includes('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF'));
+});
+
+test('external Roblox runtime failure preserves same immutable candidate without claiming F9',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'f'.repeat(64);
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision:source,artifactIdentity:artifact,artifactRunId:193},
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:source,artifactIdentity:artifact,versionNumber:5,placeId:'place-193'},
+    robloxFailureSignature:'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE',
+    robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+    unityF9ReleaseRegressionPassed:true,
+    unityF0ThroughF9Evidence:{sourceRevision:source,artifactIdentity:artifact}
+  };
+  const snapshot=analyzeSystemAiBottlenecks({developmentQueue:{items:[
+    {...base,gameId:'alpha'},
+    {...base,gameId:'beta'},
+    {...base,gameId:'gamma',robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,sourceRevision:'0'.repeat(40)}}
+  ]}});
+  assert.equal(snapshot.development.exactCandidateCount,2);
+  assert.equal(snapshot.development.unityF9ReportedCount,3);
+  assert.equal(snapshot.development.unityF9IdentityBoundCount,3);
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='alpha').classification,'EXTERNAL_RUNTIME_TRANSIENT');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='gamma').classification,'F0_PASSED_CANDIDATE_NOT_PUBLISHED');
+  assert.equal(snapshot.development.commonFailureCohorts.length,1);
+  assert.deepEqual(snapshot.development.commonFailureCohorts[0].gameIds,['alpha','beta']);
+  assert.equal(snapshot.development.commonFailureCohorts[0].representativeGameId,'alpha');
+  assert.ok(snapshot.development.rows.every(x=>x.unityF9IndependentRuntimeReviewRequired&&x.automaticPassClaim===false));
+});
+
+test('portfolio refill dispatches existing independent game workflows rather than awaiting all F0-F9 runtimes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  assert.doesNotMatch(workflow,/uses:\s*\.\/\.github\/workflows\/(?:company-development-(?:roblox|unity)-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  for(const name of [
+    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml',
+    'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
+  ])assert.ok(workflow.includes('gh workflow run '+name),'missing existing game handoff: '+name);
+  assert.match(workflow,/continue-cycle:\n\s+name: Refill after dispatching independent game workflows/);
+  assert.match(workflow,/DEVELOPMENT_PARENT_FAN_IN_WAITS_FOR_GAME_COMPLETION=NO/);
+  assert.match(workflow,/fail-fast: false/);
+  const sensor=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(sensor,/--development-queue=\/tmp\/system-ai-development-queue\.json/);
+  assert.match(sensor,/SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE/);
+});
