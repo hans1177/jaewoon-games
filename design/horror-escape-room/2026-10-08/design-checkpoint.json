@@ -85,25 +85,42 @@
       "name": "감염 공격",
       "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
       "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
+    },
+    "local_authoring_parts::da7fe0dfedfa2b3f580374a317d41b49133dd7cdd343aad784f7dcb1872decc6:signatureSystems:3": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT: PLAYER_ROLE_SELECTION",
+        "INPUT: FIRST_CONTACT",
+        "INPUT: INFECTION_ATTACK"
+      ],
+      "stateOutputs": [
+        "STATE: ROLE_ASSIGNMENT",
+        "STATE: ROLE_BALANCE",
+        "STATE: ROLE_RECONFIGURATION"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+      "playerChoice": "감염 공격을 선택하고, 적중한 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 535263,
-      "lastMs": 43840,
+      "totalMs": 586221,
+      "lastMs": 50958,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:26:09.123Z"
+      "updatedAt": "2026-10-08T08:27:00.081Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:17:13.829Z",
-  "updatedAt": "2026-10-08T08:26:09.123Z",
+  "updatedAt": "2026-10-08T08:27:00.081Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -820,7 +837,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:26:09.123Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:27:00.081Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
