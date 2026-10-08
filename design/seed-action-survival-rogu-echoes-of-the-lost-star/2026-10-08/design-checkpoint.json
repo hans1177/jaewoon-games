@@ -34,25 +34,40 @@
         "PROCESS: 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다.",
         "OUTCOME: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다."
       ]
+    },
+    "local_authoring_parts::1484752f4dce35b12b3b102cdb9e1be8fe69f0c21ded45f5c63aa20cc5b4fd03:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "stateOutputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+      "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 448853,
-      "lastMs": 73552,
+      "totalMs": 498976,
+      "lastMs": 50123,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:09:40.406Z"
+      "updatedAt": "2026-10-08T13:10:30.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:09:40.406Z",
+  "updatedAt": "2026-10-08T13:10:30.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:09:40.406Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:10:30.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
