@@ -655,25 +655,50 @@
     },
     "local_authoring_parts::41d6f303d74c0f0ffdf8df64e98376ffaad9a4181fec570253e047ed46b2db69:riskPressure": {
       "riskPressure": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다."
+    },
+    "local_authoring_parts::41d6f303d74c0f0ffdf8df64e98376ffaad9a4181fec570253e047ed46b2db69:recoveryRules": {
+      "recoveryRules": "[플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.]"
+    },
+    "local_authoring_parts::ecf092e72f548301b6f04ea95e07345a598b3a070f57c4033cf28c2ecdfc1bdf:failureRetryRisk": {
+      "failureStates": [
+        "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+        "선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미한다.",
+        "클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계된다."
+      ],
+      "retryFlow": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.",
+      "riskPressure": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.",
+      "recoveryRules": "[플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.]"
+    },
+    "local_authoring_parts::4ada10465a5a9e5fc843e42a0a17eb65a60c056acc5ca0a81851135cff8dfb58:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
+          "선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미한다.",
+          "클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계된다."
+        ],
+        "retryFlow": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.",
+        "riskPressure": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.",
+        "recoveryRules": "[플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다는 것은 해당 레벨을 클리어하여 다음 스테이지로 진입하는 것을 의미합니다. 클리어 후에는 새로운 패턴이나 오브젝트 조합이 추가되어 게임 진행이 계속되도록 설계됩니다.]"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1723733,
-      "lastMs": 39757,
+      "totalMs": 1763092,
+      "lastMs": 39359,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:58:21.700Z"
+      "updatedAt": "2026-10-08T18:59:01.061Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:29:37.860Z",
-  "updatedAt": "2026-10-08T18:58:21.700Z",
+  "updatedAt": "2026-10-08T18:59:01.069Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2713,16 +2738,15 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_REPEATED_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CONTENT_EXPANSION_PLAN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "failureRetryRisk.failureStates[1]",
-          "value": "NEXT_LEVEL_PATTERN"
+          "name": "failureRetryRisk"
         },
-        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2737,9 +2761,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2754,9 +2778,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2771,9 +2795,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2788,9 +2812,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2805,9 +2829,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→NEXT_LEVEL_PATTERN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2834,7 +2858,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2863,10 +2887,10 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:58:21.700Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:59:01.065Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
