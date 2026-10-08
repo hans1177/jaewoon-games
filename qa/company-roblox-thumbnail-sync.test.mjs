@@ -10,6 +10,7 @@ import {
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
+const validationCandidateIds=['amusement-tycoon','line-defense','seed-single-defense-strat-celestial-bastion'];
 
 test('current internal Roblox exposure games share one canonical thumbnail with homepage',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
@@ -31,6 +32,35 @@ test('current internal Roblox exposure games share one canonical thumbnail with 
   assert.equal(images.size,ids.length);
 });
 
+test('release-near Roblox validation candidates use canonical shared 16:9 thumbnails',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  for(const id of validationCandidateIds){
+    const game=catalog.games.find(row=>row.id===id);
+    assert.ok(game,id);
+    const expected='assets/roblox-thumbnails/'+id+'.svg';
+    assert.equal(game.marketingThumbnail,expected);
+    assert.equal(game.image,expected);
+    assert.equal(game.canonical?.marketing?.thumbnail,expected);
+    assert.equal(game.canonical?.identity?.image,expected);
+    assert.ok(fs.existsSync(expected),expected);
+    const svg=fs.readFileSync(expected,'utf8');
+    assert.match(svg,/viewBox="0 0 1920 1080"/);
+    assert.ok(svg.includes('../homepage-covers/'+id+'.webp'),id);
+    assert.ok(svg.length>1000,id);
+  }
+});
+
+test('thumbnail target resolves current validation universe without changing publication target',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const queue={items:[{
+    gameId:'amusement-tycoon',
+    robloxRuntimeCandidateEvidence:{published:true,universeId:'10768993758',placeId:'128296622757615',versionNumber:9}
+  }]};
+  const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:'amusement-tycoon'});
+  assert.equal(target.universeId,'10768993758');
+  assert.equal(target.placeId,'128296622757615');
+  assert.equal(target.source,'assets/roblox-thumbnails/amusement-tycoon.svg');
+});
 test('homepage renderer and manager prefer canonical marketing thumbnail',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
@@ -97,6 +127,9 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/github\.event_name == 'push'/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
   assert.match(workflow,/internalReleaseReady===true/);
+  assert.match(workflow,/robloxRuntimeCandidateEvidence/);
+  assert.match(workflow,/candidate\?\.published===true/);
+  assert.match(workflow,/DEVELOPMENT_CONFIRMED/);
   assert.match(workflow,/assets\/roblox-thumbnails\//);
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
