@@ -77,25 +77,39 @@
       "name": "생존의 인과 문법 - B",
       "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
       "playerChoice": "채집/제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
+    },
+    "local_authoring_parts::c0b9e8991375873ee4ac6a87c18912783c1ed58ac203ecd8a75b54761428db3e:signatureSystems:3": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "CORE_FUN",
+        "SIGNATURE_SYSTEMS"
+      ],
+      "stateOutputs": [
+        "GAME_CATEGORY"
+      ],
+      "name": "생존의 인과 문법 - C",
+      "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
+      "playerChoice": "채집/제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 377895,
-      "lastMs": 38032,
+      "totalMs": 419723,
+      "lastMs": 41828,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:02:55.710Z"
+      "updatedAt": "2026-10-08T19:03:37.539Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:56:37.782Z",
-  "updatedAt": "2026-10-08T19:02:55.710Z",
+  "updatedAt": "2026-10-08T19:03:37.539Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2308,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:02:55.710Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:03:37.539Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
