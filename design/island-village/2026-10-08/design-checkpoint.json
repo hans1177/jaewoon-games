@@ -693,25 +693,31 @@
     },
     "local_authoring_parts::4679a2aed125065bd74cff0e1d1d319872e7dcdbddb8a6b0c74e9d438254edff:toId": {
       "toId": "B-core"
+    },
+    "local_authoring_parts::4679a2aed125065bd74cff0e1d1d319872e7dcdbddb8a6b0c74e9d438254edff:stateKeys": {
+      "stateKeys": [
+        "READ: 주민의 목표·두려움·비밀",
+        "WRITE: 게임의 핵심 루프와 보상/위험/다음 선택을 반영한 월드 상태"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3989827,
-      "lastMs": 89390,
+      "totalMs": 4082423,
+      "lastMs": 92596,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:09:16.977Z"
+      "updatedAt": "2026-10-08T10:10:49.575Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:31:29.567Z",
-  "updatedAt": "2026-10-08T10:09:16.977Z",
+  "updatedAt": "2026-10-08T10:10:49.575Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2957,7 +2963,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:09:16.977Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:10:49.575Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
