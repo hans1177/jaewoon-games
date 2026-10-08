@@ -1,3 +1,5 @@
+// 파일명: tools/company-baseline-gate.mjs
+// 임포트
 import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
