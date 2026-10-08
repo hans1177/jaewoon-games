@@ -354,25 +354,42 @@
       "name": "Board State Transition System",
       "purpose": "플레이어가 매 게임 시작 시 새로운 레벨을 설정하며, 단순한 목표에 한해 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 접근할 수 있는 PUZZLE 게임입니다. 선택 결과가 다음 월드 상태를 바꾸며, 성장은 즉각적인 상태 변화와 새 행동/경로/조합/관계/대응법의 열림을 통해 이루어집니다.",
       "playerChoice": "Start a new board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the current objective. Clear the goal to earn rewards and unlock the next stage."
+    },
+    "local_authoring_parts::ab761fede12e64ed80329ea3eec6f3e5def58e0b2115990066ba8665b5ff27f9:signatureSystems:2": {
+      "id": "SHARDBOUND_ODYSSEY_REIMAGINED_PUZZLE_LOOP_WITH_DYNAMIC_BOARD_STATES_AND_PLAYER_B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE_1",
+        "BOARD_STATE_2",
+        "BOARD_STATE_3"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_1",
+        "STATE_CHANGE_2",
+        "STATE_CHANGE_3"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "플레이어가 매 게임 시작 시 새로운 레벨을 설정하며, 단순한 목표에 한해 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 접근할 수 있는 PUZZLE 게임입니다. 선택 결과가 다음 월드 상태를 바꾸며, 성장은 즉각적인 상태 변화와 새 행동/경로/조합/관계/대응법의 열림을 통해 이루어집니다.",
+      "playerChoice": "Start a new board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the current objective. Clear the goal to earn rewards and unlock the next stage."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 617742,
-      "lastMs": 55804,
+      "totalMs": 728857,
+      "lastMs": 111115,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:55:15.470Z"
+      "updatedAt": "2026-10-08T17:57:06.586Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:57.674Z",
-  "updatedAt": "2026-10-08T17:55:15.470Z",
+  "updatedAt": "2026-10-08T17:57:06.586Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2469,7 +2486,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:55:15.470Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:57:06.586Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
