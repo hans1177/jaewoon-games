@@ -687,25 +687,34 @@
       "toSystem": "SurvivalResourceSystem",
       "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
       "stateChange": "worldState updated to reflect resource consolidation, playerAction adjusted to prioritize resource management strategies"
+    },
+    "local_authoring_parts::26a6750d3fa81e4cdb8636d78e3731ef7dce7417baa2728b6d6696e438676aa7:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalHordeSystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2127656,
-      "lastMs": 61751,
+      "totalMs": 2208457,
+      "lastMs": 80801,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:33:35.018Z"
+      "updatedAt": "2026-10-08T16:32:49.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T16:31:29.004Z",
+  "updatedAt": "2026-10-08T16:32:49.808Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3060,10 +3069,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:33:35.021Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:32:49.808Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
