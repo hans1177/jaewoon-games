@@ -562,25 +562,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM",
       "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
       "playerChoice": "플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다."
+    },
+    "local_authoring_parts::bf2e8e0ce658c0b6e5ff855a0468ce5351d79b4707d78a2674daa696dae077a6:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READABLE_STATE_01",
+        "CHANGABLE_STATE_01"
+      ],
+      "stateOutputs": [
+        "READABLE_STATE_02",
+        "CHANGABLE_STATE_02"
+      ],
+      "name": "시그니처 세계 규칙",
+      "purpose": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며,이",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1159590,
-      "lastMs": 78154,
+      "totalMs": 1198298,
+      "lastMs": 38708,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:24:06.494Z"
+      "updatedAt": "2026-10-08T16:24:45.211Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T16:24:06.501Z",
+  "updatedAt": "2026-10-08T16:24:45.211Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2815,10 +2830,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:24:06.496Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:24:45.211Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
