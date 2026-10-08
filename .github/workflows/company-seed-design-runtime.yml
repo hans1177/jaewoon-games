@@ -439,6 +439,9 @@ jobs:
           set -euo pipefail
           node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
           echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
+          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
+          echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
+          echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
 
       - name: Skip only superseded design work
         id: target

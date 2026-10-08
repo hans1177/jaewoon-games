@@ -24636,7 +24636,9 @@
               "preAuthoringCatalogClassGate": false,
               "draftScoreAdmissionGate": false,
               "contentRepairDuringAuthoring": true,
-              "finalStrictReviewRequired": true
+              "finalStrictReviewRequired": true,
+              "finalConsumer": "tools/company-baseline-gate.mjs",
+              "preparedSeedFieldsRequiredAfterVerifiedAuthorship": false
             }
           }
         },

@@ -19,6 +19,24 @@ import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+test('final review consumes the current designer seed without demanding a second prepared seed',()=>{
+  const baseline=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
+  const section=baseline.slice(baseline.indexOf('  const revisedRecord='),baseline.indexOf('  designMultiplayerMode=clean(revised?.multiplayerMode)'));
+  const fields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'];
+  const content={identity:'검사용 게임의 정체성',playerFantasy:'검사용 플레이어의 역할',coreFun:'검사용 실제 선택과 상태 변화',coreLoop:['입력','판정','상태 변화'],signatureSystems:[{id:'MAIN'}],multiplayerMode:'COMPETITIVE'};
+  const seed={gameId:'demo',date:'2026-10-08',seedId:'input',authorRole:'GAME_DESIGNER_AI',authorModel:'ollama:test',sourceStage:'identity-core',engineDigest:'engine',content,contentDigest:createHash('sha256').update(JSON.stringify(content)).digest('hex')};
+  const revised={authorModel:seed.authorModel,gameSeedSource:'design/demo/2026-10-08/design-seed.json',content};
+  const evaluate=(candidate,record=revised)=>runInNewContext(section+'\n({blockers,designerSeedEvidence})',{
+    path,crypto:{createHash},gameId:'demo',date:'2026-10-08',seedActive:{seedId:'input'},status:{runtimeMetrics:{checkpoint:{engineDigest:'engine'}}},blockers:[],designerSeedEvidence:null,
+    clean:v=>String(v??'').trim(),hasValue:v=>Array.isArray(v)?v.length>0:Boolean(v),GAME_SEED_REQUIRED_FIELDS:['DISTINCT_IDENTITY','CORE_LOOP'],readJson:file=>file.endsWith('design-seed.json')?candidate:record
+  });
+  assert.equal(evaluate(seed).blockers.length,0);
+  assert.equal(evaluate(seed).designerSeedEvidence.source,revised.gameSeedSource);
+  for(const changed of [{...seed,engineDigest:'stale'},{...seed,contentDigest:'wrong'},{...seed,authorRole:'INTAKE_SCRIPT'},{...seed,date:'2026-10-07'}])assert.ok(evaluate(changed).blockers.includes('designer-authored-seed-evidence-mismatch'));
+  assert.ok(evaluate(seed,{...revised,content:{...content,coreFun:'다른 설계'}}).blockers.includes('designer-authored-seed-evidence-mismatch'));
+  assert.ok(evaluate(null).blockers.includes('designer-authored-seed-evidence-mismatch'));
+});
+
 test('design admission accepts a missing seed while skipping superseded work and retaining final review',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const decision=workflow.split('\n').filter(line=>/const (targetStillCurrent|shouldRun)=/.test(line)).join('\n');
