@@ -434,25 +434,41 @@
         "worldState"
       ],
       "fromSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16"
+    },
+    "local_authoring_parts::9433cdaa2ac0869271a19c2ce85a5ce5afb7522da99a3d6386bffdfc12ec4547:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURESYSTEMS[1]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
+    },
+    "local_authoring_parts::96f5ad161c2d97707dd954e8ba73664a60a860092d63abfe69207dc09e0cb273:systemInterconnections:1": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState"
+      ],
+      "fromSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16",
+      "toSystem": "SIGNATURESYSTEMS[1]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1620270,
-      "lastMs": 101602,
+      "totalMs": 1718422,
+      "lastMs": 98152,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:27:27.146Z"
+      "updatedAt": "2026-10-08T18:29:05.299Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:27:27.146Z",
+  "updatedAt": "2026-10-08T18:29:05.300Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2459,7 +2475,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:27:27.146Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:29:05.300Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
