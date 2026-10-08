@@ -34,25 +34,40 @@
         "INPUT: Survive the wave, learn from leaks or losses.\nSTATE CHANGE: Player gains knowledge about enemy patterns and resource allocation.\nOUTPUT: Player prepares new defense strategy using learned information.\nACTION: Player implements new strategy that modifies world state for subsequent waves.",
         "INPUT: Use reward to prepare a materially different next defense decision.\nSTATE CHANGE: Player configures defenses with optimized resource distribution.\nOUTPUT: Player achieves improved survival rate in upcoming waves.\nACTION: Player executes new strategy that reconfigures world state for future battles."
       ]
+    },
+    "local_authoring_parts::80022b36efc072dcdf5e0bd7a845716e706c3178368f1e2d59d2f1571bf1c154:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "threat pattern",
+        "defender configuration"
+      ],
+      "stateOutputs": [
+        "resource allocation",
+        "enemy behavior analysis"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "Player's strategic decision impacts future world state through delayed consequences.",
+      "playerChoice": "Adjust defender positions and resource distribution based on enemy threat patterns, with long-term effects on survival rates and strategy evolution."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 336432,
-      "lastMs": 53210,
+      "totalMs": 371105,
+      "lastMs": 34673,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:37:36.802Z"
+      "updatedAt": "2026-10-08T18:38:11.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:32:00.339Z",
-  "updatedAt": "2026-10-08T18:37:36.802Z",
+  "updatedAt": "2026-10-08T18:38:11.477Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:37:36.802Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:38:11.477Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
