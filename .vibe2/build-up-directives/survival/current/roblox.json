@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g15-2e2562978fd8",
-  "directiveFingerprint": "2e2562978fd825e1fb1b2deeb9008dfb156a000b7d2d268c1ef9dc1ec171f328",
-  "previousDirectiveFingerprint": "e6c487a4ff6d97342fe53ce9f908eeb054c621d9107f8f03f78d12cec169e138",
-  "forbiddenRepeatFingerprint": "e6c487a4ff6d97342fe53ce9f908eeb054c621d9107f8f03f78d12cec169e138",
+  "directiveId": "survival-build-up-g16-528e82641f58",
+  "directiveFingerprint": "528e82641f5833edaef3a5e62c356c3c79ff3dbc21ff556a8742ca25e66da48e",
+  "previousDirectiveFingerprint": "2e2562978fd825e1fb1b2deeb9008dfb156a000b7d2d268c1ef9dc1ec171f328",
+  "forbiddenRepeatFingerprint": "2e2562978fd825e1fb1b2deeb9008dfb156a000b7d2d268c1ef9dc1ec171f328",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 15,
+  "generation": 16,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,11 +14,11 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
-  "designFingerprint": "ba809446a74c9a7fd760dccbbf0cbc4c78eca1b1a536cee83ea713fc89a2d71d",
+  "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+  "designFingerprint": "e60723e2b180470e9c4e29084c252a3ee96b3241f3e92fbe7c1678720f1f2986",
   "identityReinforcement": {
     "appliesToAllGenres": true,
-    "genre": "Strategy",
+    "genre": "GAME_SPECIFIC",
     "oneLineFantasy": "황무지의 고독한 생존자가 되어, 매일 밤 쏟아지는 위협을 나만의 독창적인 장비 조합으로 돌파하고, 다음 날을 위한 자원을 확보하며 점차 강해지는 성취감을 느낍니다.",
     "representativeAction": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
     "representativeChoice": "어제 실패했던 구역을 다시 도전할지, 새로운 자원을 찾아 위험한 지역으로 이동할지 결정합니다.",
@@ -104,7 +104,7 @@
           "Late-Game Challenge (Days 21+)",
           "Boss waves, complex environmental hazards, and advanced skill trees."
         ],
-        "sourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+        "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -221,8 +221,40 @@
         "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
       }
     },
-    "webCanonicalDesign": {},
-    "platformExpansionPolicy": {},
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+        "밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.",
+        "전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.",
+        "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다."
+      ],
+      "worldAndTraversal": "",
+      "systemsAndContent": "name: 일일 생존 기록 시스템; purpose: 플레이어의 매일 생존 결과를 데이터화하여 다음 날의 난이도와 자원 배치를 조정하고, 장기적인 성장 목표를 제시합니다.; playerChoice: 어제 실패했던 구역을 다시 도전할지, 새로운 자원을 찾아 위험한 지역으로 이동할지 결정합니다. / name: 즉석 제작 및 개조 시스템; purpose: 전투 중 획득한 자원을 즉시 사용하여 무기를 강화하거나 일회성 함정을 설치하여 전술적 우위를 점하게 합니다.; playerChoice: 공격력을 높이는 무기 강화에 집중할지, 방어적인 함정 설치에 자원을 투자할지 선택합니다.",
+      "combatAndInteraction": "실시간 액션의 긴박함과 자원 관리의 전략적 선택이 결합된 재미입니다. 적의 파상공세를 버텨내는 피지컬과, 어떤 장비를 제작하고 어떤 스킬을 선택할지 결정하는 빌드 구성의 쾌감이 핵심입니다.",
+      "progressionAndEconomy": "progressionLoop: Daytime exploration yields raw materials; Nighttime survival yields XP and rare blueprints. Players spend XP on permanent stat upgrades and materials on temporary gear, creating a cycle of increasing power.; resourceFlow: Raw materials are consumed for immediate survival (traps/ammo). Rare materials are saved for permanent gear upgrades. XP is the primary currency for meta-progression.; balanceRules: Difficulty scales based on survival day count and previous day's performance. Resource scarcity increases as the player progresses to force strategic choices between hoarding and spending.",
+      "sessionFailureRecovery": "failureStates: Player HP reaches zero during night wave. / Failure to secure enough resources for essential defense. / Over-extension leading to resource depletion.; retryFlow: Upon death, the current run ends. Player retains a portion of XP for meta-upgrades but loses current day's gathered resources, forcing a restart of the daily cycle.; riskPressure: The 'Daily Survival Log' creates pressure by showing the player how close they were to a new record, making each death feel like a loss of potential progress.; recoveryRules: Players can use 'Survival Points' earned from previous successful days to mitigate some loss upon death, providing a safety net for long-term progression.",
+      "uiMenuAndOnboarding": "hudPriorities: Health bar, current wave timer, and quick-craft button are prioritized for high visibility.; touchAndInput: Large, responsive touch zones for movement and skill buttons to prevent mis-taps.; readability: High-contrast color palette to distinguish enemies from the environment; clear icons for resource types.; accessibility: Adjustable text size for log entries and color-blind friendly indicators for enemy threat levels.",
+      "inputCameraAccessibility": "Virtual joystick for movement; auto-aim with manual skill/trap activation buttons for combat.",
+      "presentationAndAudio": "visualIdentity: Low-poly aesthetic with a desaturated, gritty color palette that shifts to high-contrast neon/warning colors during combat.; audioIdentity: Ambient, lonely wind sounds during the day; intense, rhythmic percussive music during night waves.; gameplayFeedbackSync: Audio cues for low health and enemy proximity; visual screen shakes and flashes on successful trap triggers.",
+      "multiplayerPersistence": "SINGLE; 싱글 플레이의 완성도를 우선 확보한 뒤, 비동기식 경쟁 요소인 '생존 기록 공유' 및 '주간 생존 챌린지' 모드를 추후 업데이트로 고려합니다.",
+      "expansionSpace": "milestone: Early Survival (Days 1-7); newGameplay: Basic movement, simple melee weapon crafting, and wave defense.; systemImpact: Establishes core loop and baseline resource economy. / milestone: Mid-Game Expansion (Days 8-20); newGameplay: Introduction of ranged weapons, trap synergies, and elite enemy types.; systemImpact: Requires balancing of crafting complexity and combat difficulty. / milestone: Late-Game Challenge (Days 21+); newGameplay: Boss waves, complex environmental hazards, and advanced skill trees.; systemImpact: Introduces high-tier resource sinks and meta-progression depth."
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    },
     "visualDirection": "황폐하지만 매력적인 로우 폴리곤 스타일의 환경과, 적들의 압박감을 시각적으로 명확히 전달하는 대비 높은 컬러 팔레트를 사용합니다. UI는 생존자의 일기장 컨셉을 차용하여 직관적이고 몰입감을 높입니다.",
     "mobileUx": "한 손 조작이 가능한 가상 조이스틱 기반의 이동과, 자동 공격/수동 스킬 발동의 하이브리드 방식을 채택합니다. 짧은 세션(5-10분)에 최적화된 UI 배치로 이동 중에도 쾌적한 플레이를 지원합니다.",
     "uxAccessibilityPlan": {
@@ -297,44 +329,44 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 145,
+      "combat": 178,
       "progression": 139,
-      "ai": 39,
-      "save": 49,
+      "ai": 46,
+      "save": 51,
       "multiplayer": 13,
       "animation": 46,
-      "motionStates": 192,
-      "gameFeel": 29,
-      "vfx": 25,
+      "motionStates": 206,
+      "gameFeel": 32,
+      "vfx": 51,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 15,
       "ui": 62,
-      "uiFlow": 34,
+      "uiFlow": 38,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 68,
-      "map": 144,
+      "input": 70,
+      "map": 174,
       "landmark": 10,
-      "interaction": 29,
+      "interaction": 54,
       "inventory": 10,
-      "equipment": 13,
+      "equipment": 14,
       "settings": 2,
       "feedback": 69,
-      "session": 16,
-      "content": 159,
-      "choice": 28,
+      "session": 19,
+      "content": 165,
+      "choice": 30,
       "connection": 6,
-      "performance": 34,
+      "performance": 43,
       "lighting": 39,
-      "primitive": 14,
+      "primitive": 15,
       "todo": 0,
       "errorRecovery": 13
     },
     "topFiles": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "score": 297
+        "score": 373
       },
       {
         "file": "roblox-games/survival/shared/GameConfig.luau",
@@ -352,7 +384,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 199,
+        "line": 368,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player, damage)",
@@ -368,7 +400,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 215,
+        "line": 384,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "context": "local function updateProgressionRecord(player)",
@@ -376,7 +408,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 246,
+        "line": 424,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "context": "local function startNightWave(player)",
@@ -384,7 +416,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 130,
+        "line": 136,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player)",
@@ -392,7 +424,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 191,
+        "line": 360,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "context": "local function awardEnemyDefeat(player, enemy)",
@@ -400,7 +432,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 229,
+        "line": 398,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "context": "local function exploreGatherAndCraft(player)",
@@ -408,7 +440,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 238,
+        "line": 416,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "context": "local function fightCurrentEnemy(player)",
@@ -416,7 +448,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 269,
+        "line": 447,
         "kind": "FUNCTION",
         "symbol": "resetNextDayStrategy",
         "context": "local function resetNextDayStrategy(player)",
@@ -424,7 +456,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 277,
+        "line": 455,
         "kind": "FUNCTION",
         "symbol": "useEquippedTool",
         "context": "local function useEquippedTool(player)",
@@ -440,7 +472,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 158,
+        "line": 164,
         "kind": "FUNCTION",
         "symbol": "currentEnemyFor",
         "context": "local function currentEnemyFor(player)",
@@ -448,7 +480,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 220,
+        "line": 389,
         "kind": "FUNCTION",
         "symbol": "startDayPhase",
         "context": "local function startDayPhase(player)",
@@ -456,7 +488,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 256,
+        "line": 434,
         "kind": "FUNCTION",
         "symbol": "finishNightWave",
         "context": "local function finishNightWave(player)",
@@ -480,7 +512,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 93,
+        "line": 99,
         "kind": "FUNCTION",
         "symbol": "bindEnemyAi",
         "context": "local function bindEnemyAi(enemy, owner)",
@@ -488,10 +520,18 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 27,
+        "line": 33,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/survival/server/Game.server.luau",
+        "line": 349,
+        "kind": "FUNCTION",
+        "symbol": "craftAndEquipTool",
+        "context": "local function craftAndEquipTool(player)",
         "score": 74
       },
       {
@@ -512,7 +552,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 37,
+        "line": 43,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, actionId, learningPattern)",
@@ -520,15 +560,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 180,
-        "kind": "FUNCTION",
-        "symbol": "craftAndEquipTool",
-        "context": "local function craftAndEquipTool(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 406,
+        "line": 604,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -552,10 +584,18 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 167,
+        "line": 173,
         "kind": "FUNCTION",
         "symbol": "gatherResource",
-        "context": "local function gatherResource(player)",
+        "context": "local function gatherResource(player, sourcePart, approvedDropAmount)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/survival/server/Game.server.luau",
+        "line": 261,
+        "kind": "FUNCTION",
+        "symbol": "interactWithResource",
+        "context": "local function interactWithResource(player, part, rule, alreadyRateLimited)",
         "score": 50
       },
       {
@@ -576,7 +616,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 18,
+        "line": 24,
         "kind": "FUNCTION",
         "symbol": "readNumber",
         "context": "local function readNumber(player, name, fallback)",
@@ -584,10 +624,18 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 23,
+        "line": 29,
         "kind": "FUNCTION",
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/survival/server/Game.server.luau",
+        "line": 189,
+        "kind": "FUNCTION",
+        "symbol": "validResourceRule",
+        "context": "local function validResourceRule(nodeName)",
         "score": 42
       },
       {
@@ -600,7 +648,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 60,
+        "line": 66,
         "kind": "FUNCTION",
         "symbol": "buildSurvivalWorld",
         "context": "local function buildSurvivalWorld()",
@@ -608,10 +656,10 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 351,
+        "line": 310,
         "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationCharacter",
-        "context": "local function bindNativeFoundationCharacter(character)",
+        "symbol": "bindResourcePrompts",
+        "context": "local function bindResourcePrompts()",
         "score": 34
       },
       {
@@ -637,36 +685,37 @@
         "symbol": "applySurvivalCharacterPresentation",
         "context": "local function applySurvivalCharacterPresentation(character)",
         "score": 26
-      },
-      {
-        "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 43,
-        "kind": "FUNCTION",
-        "symbol": "ensureWorldPart",
-        "context": "local function ensureWorldPart(parent, name, size, position, material, color)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 14,
-    "previousSourceTreeFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
-    "currentSourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+    "previousGeneration": 15,
+    "previousSourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+    "currentSourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
+    "failureStage": "",
+    "failureSignature": "",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
+  },
+  "multiplayerImplementation": {
+    "required": true,
+    "policyVersion": 1,
+    "developmentAdmissionGate": false,
+    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
+    "otherGamesAndIndependentWorkContinue": true,
+    "actualMultiplayerPlayVerified": false,
+    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -852,7 +901,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -1370,7 +1419,7 @@
       "state": "PASS",
       "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "멀티가 적용되는 게임만 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1798,7 +1847,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 117132,
+        "sourceBytes": 155594,
         "largestFileBytes": 48537,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1831,8 +1880,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 9,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=5.",
+    "themeDepth": 10,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1842,14 +1891,14 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 9
+        "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1891,7 +1940,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 84,
+        "score": 66,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2005,11 +2054,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 15,
-    "previousGeneration": 14,
+    "generation": 16,
+    "previousGeneration": 15,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
-    "priorSourceFingerprint": "cbb8ec1e288f0ffe58d75e96e8f6742664c684b128d6c0b9cae849e5dc87e9fc",
+    "sourceFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "priorSourceFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2241,12 +2290,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: WEB 상세 게임 원본과 공통 큰틀을 기준으로 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. WEB 자체 시스템·콘텐츠·지역·세션·UI·카메라·연출 확장에는 다른 플랫폼과의 세부 parity 제한을 두지 않는다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: WEB 상세 게임 원본에서 공통 큰틀만 이어받아 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 경험으로 재해석한다. Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장에는 인위적 parity 제한을 두지 않는다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 게임당 하나인 공통 설계 원본을 기준으로 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "UNREAL": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.: 동일 공통 목표 \"나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2254,15 +2303,15 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 199,
+        "line": 368,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "currentBehavior": "local function attackEnemy(player, damage)",
@@ -2280,7 +2329,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 215,
+        "line": 384,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "currentBehavior": "local function updateProgressionRecord(player)",
@@ -2289,7 +2338,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 246,
+        "line": 424,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "currentBehavior": "local function startNightWave(player)",
@@ -2298,7 +2347,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 130,
+        "line": 136,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(player)",
@@ -2307,7 +2356,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 191,
+        "line": 360,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "currentBehavior": "local function awardEnemyDefeat(player, enemy)",
@@ -2316,7 +2365,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 229,
+        "line": 398,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "currentBehavior": "local function exploreGatherAndCraft(player)",
@@ -2325,7 +2374,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 238,
+        "line": 416,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "currentBehavior": "local function fightCurrentEnemy(player)",
@@ -2409,15 +2458,15 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "survival",
-    "genreProfile": "STRATEGY",
+    "genreProfile": "SURVIVAL",
     "conceptIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
-    "coreAction": "자원·배치·순서 선택",
+    "coreAction": "탐색·수급·위험 대응",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2432,20 +2481,21 @@
       "즉석 제작 및 개조 시스템"
     ],
     "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
+    "depthAndReward": null,
     "ideas": [
       {
-        "id": "STRATEGY:SOURCE_REPAIR",
+        "id": "SURVIVAL:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
+      "id": "SURVIVAL:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
+      "SURVIVAL:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2470,7 +2520,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+    "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2500,15 +2552,15 @@
     "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
   },
   "robloxProductionPlan": {
-    "version": 2,
+    "version": 3,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
     "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "survival",
-    "genreProfile": "STRATEGY",
+    "genreProfile": "SURVIVAL",
     "conceptIdentity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
-    "coreAction": "자원·배치·순서 선택",
+    "coreAction": "탐색·수급·위험 대응",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -2523,20 +2575,21 @@
       "즉석 제작 및 개조 시스템"
     ],
     "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
+    "depthAndReward": null,
     "ideas": [
       {
-        "id": "STRATEGY:SOURCE_REPAIR",
+        "id": "SURVIVAL:SOURCE_REPAIR",
         "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
         "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
+      "id": "SURVIVAL:SOURCE_REPAIR",
       "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
       "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
+      "SURVIVAL:SOURCE_REPAIR"
     ],
     "implementationPackages": [
       {
@@ -2561,7 +2614,9 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+    "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -2598,15 +2653,15 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 199,
+        "line": 368,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player, damage)",
@@ -2630,7 +2685,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 215,
+        "line": 384,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "context": "local function updateProgressionRecord(player)",
@@ -2642,7 +2697,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 246,
+        "line": 424,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "context": "local function startNightWave(player)",
@@ -2654,7 +2709,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 130,
+        "line": 136,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player)",
@@ -2666,7 +2721,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 191,
+        "line": 360,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "context": "local function awardEnemyDefeat(player, enemy)",
@@ -2678,7 +2733,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 229,
+        "line": 398,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "context": "local function exploreGatherAndCraft(player)",
@@ -2690,7 +2745,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 238,
+        "line": 416,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "context": "local function fightCurrentEnemy(player)",
@@ -2742,9 +2797,9 @@
     "gameId": "survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/survival/client/Game.client.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau",
       "roblox-games/survival/default.project.json"
     ],
     "impact": {
@@ -2819,11 +2874,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+      "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2874,7 +2929,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 16,
+    "nextGeneration": 17,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2938,5 +2993,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-07T13:47:02.227Z"
+  "generatedAt": "2026-10-08T13:10:53.970Z"
 }
