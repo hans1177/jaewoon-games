@@ -3000,6 +3000,7 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.codingMethod.learningAuthorityExpanded,false);
   assert.equal(result.developmentAuthority.owner,'VIBE2_VIBE3');
   assert.equal(result.developmentAuthority.provider,'LOCAL_OLLAMA');
+  assert.equal(result.developmentAuthority.codexRole,'DISABLED');
   assert.equal(result.developmentAuthority.codexGameSourceWrite,'FORBIDDEN');
   assert.equal(result.developmentAuthority.paidOpenAiApiAllowed,false);
   assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /1 \+ 1/);
@@ -3477,6 +3478,38 @@ test('Codex game source write override is rejected before generation', async () 
   } finally {
     if (previous === undefined) delete process.env.VIBE2_CODEX_GAME_SOURCE_WRITE;
     else process.env.VIBE2_CODEX_GAME_SOURCE_WRITE = previous;
+  }
+});
+
+test('Codex tool role is disabled even for previous CI tooling scope and local Ollama remains sole model provider', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model.json');
+  const previousRole=process.env.VIBE2_CODEX_ROLE;
+  const previousProvider=process.env.VIBE2_GAME_SOURCE_PROVIDER;
+  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    responsibleFiles:['unity-games/demo/Assets/Player.cs'],taskId:'codex-role-disabled'
+  }),null,2));
+  write(responseFile,JSON.stringify({edits:[{path:'Assets/Player.cs',find:'return 1;',replace:'return 2;'}],newFiles:[]}));
+  try{
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='LOCAL_OLLAMA';
+    process.env.VIBE2_CODEX_ROLE='SYSTEM_TOOLING_CI_TEST_INFRA_ONLY';
+    await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/CODEX_USE_FORBIDDEN/);
+    process.env.VIBE2_CODEX_ROLE='ENABLED';
+    await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/CODEX_USE_FORBIDDEN/);
+    process.env.VIBE2_CODEX_ROLE='DISABLED';
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='CODEX';
+    await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/GAME_SOURCE_PROVIDER_INVALID/);
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='LOCAL_OLLAMA';
+    const result=await runVibe2SourceWorker({cwd,responseFile});
+    assert.equal(result.developmentAuthority.codexRole,'DISABLED');
+    assert.equal(result.developmentAuthority.provider,'LOCAL_OLLAMA');
+    assert.equal(result.developmentAuthority.codexGameSourceWrite,'FORBIDDEN');
+  }finally{
+    if(previousRole===undefined)delete process.env.VIBE2_CODEX_ROLE;
+    else process.env.VIBE2_CODEX_ROLE=previousRole;
+    if(previousProvider===undefined)delete process.env.VIBE2_GAME_SOURCE_PROVIDER;
+    else process.env.VIBE2_GAME_SOURCE_PROVIDER=previousProvider;
   }
 });
 
