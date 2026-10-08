@@ -456,25 +456,44 @@
       "name": "감염 공격",
       "purpose": "감염된 인간이 몬스터로 전환되며, 인간 직업별 고유 감염 스킬을 얻는다. 감염 공격은 몬스터의 서버 권한으로 이루어진다.",
       "playerChoice": "감염 스킬 선택"
+    },
+    "local_authoring_parts::f3162198e2eb53d16c1e1d512c40ba62fff4dc4085659a9272fd5d029f1cc757:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Energy"
+      ],
+      "stateOutputs": [
+        "InfectedHuman",
+        "InfectedMonster",
+        "PurifiedMonster",
+        "PurifiedHuman"
+      ],
+      "name": "감염 전환",
+      "purpose": "인간의 고유 감염 스킬을 통해 몬스터로 전환되며, 감염된 인간은 몬스터로 전환되고, 인간 직업별 고유 감염 스킬을 얻는다.",
+      "playerChoice": "고유 감염 스킬 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 620308,
-      "lastMs": 38939,
+      "totalMs": 722844,
+      "lastMs": 102536,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:49.119Z"
+      "updatedAt": "2026-10-08T15:09:02.267Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:28.511Z",
-  "updatedAt": "2026-10-08T15:07:19.726Z",
+  "updatedAt": "2026-10-08T15:09:02.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1212,7 +1231,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1227,10 +1246,10 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:49.119Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:09:02.268Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
