@@ -85,25 +85,242 @@
       "name": "IDLE_GROWTH_RPG",
       "purpose": "Player-driven progression system with emergent gameplay",
       "playerChoice": "Choose which hero or stat path receives the next investment"
+    },
+    "local_authoring_parts::fe74b14ad898d78bd501b02f93329849b99d7a781832a30d7c0ad2430c02eec6:signatureSystems:3": {
+      "id": "seed-idle-growth-rpg-crystal-bloom-3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ACTIVE_SESSION",
+        "INACTIVE_SESSION",
+        "GROWTH_LAYER"
+      ],
+      "stateOutputs": [
+        "REWARD_CYCLE",
+        "LEVEL_UP",
+        "GROWTH_RESOURCE"
+      ],
+      "name": "IDLE_GROWTH_RPG",
+      "purpose": "Player-driven progression system with emergent gameplay",
+      "playerChoice": "Choose which hero or stat path receives the next investment"
+    },
+    "local_authoring_parts::fe74b14ad898d78bd501b02f93329849b99d7a781832a30d7c0ad2430c02eec6:signatureSystems:4": {
+      "id": "seed-idle-growth-rpg-crystal-bloom-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ACTIVE_SESSION",
+        "INACTIVE_SESSION",
+        "GROWTH_LAYER"
+      ],
+      "stateOutputs": [
+        "REWARD_CYCLE",
+        "LEVEL_UP",
+        "GROWTH_RESOURCE"
+      ],
+      "name": "IDLE_GROWTH_RPG",
+      "purpose": "Player-driven progression system with emergent gameplay",
+      "playerChoice": "Choose which hero or stat path receives the next investment"
+    },
+    "local_authoring_parts::48e2f6a4ed22ac284bee9eb852d145375994fcfafe9f1b71d2fdd479de4cfc5c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        }
+      ]
+    },
+    "local_authoring_parts::2149d8da752e769e9f0a183bee87718dc06def782fb57c0d31766500019e2bfd:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "seed-idle-growth-rpg-crystal-bloom-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ACTIVE_SESSION",
+            "INACTIVE_SESSION",
+            "GROWTH_LAYER"
+          ],
+          "stateOutputs": [
+            "REWARD_CYCLE",
+            "LEVEL_UP",
+            "GROWTH_RESOURCE"
+          ],
+          "name": "IDLE_GROWTH_RPG",
+          "purpose": "Player-driven progression system with emergent gameplay",
+          "playerChoice": "Choose which hero or stat path receives the next investment"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 329257,
-      "lastMs": 36164,
+      "totalMs": 400457,
+      "lastMs": 35765,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:16:45.770Z"
+      "updatedAt": "2026-10-08T10:17:56.974Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:16:45.770Z",
+  "updatedAt": "2026-10-08T10:17:56.976Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2335,7 +2552,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:16:45.770Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:17:56.976Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
