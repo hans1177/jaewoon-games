@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T08:47:04.647Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T08:49:47.487Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/party-rpg/2026-10-08/design-seed.json",
     "contentDigest": "4dd9745ccececc3a6cfa24f235e73a9bdb96743bd55920b24560edbdc805f1c9",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 758993,
-      "lastMs": 85973,
+      "totalMs": 921823,
+      "lastMs": 162830,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:47:04.644Z"
+      "updatedAt": "2026-10-08T08:49:47.487Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T08:47:04.656Z"
+  "updatedAt": "2026-10-08T08:49:47.492Z"
 }
