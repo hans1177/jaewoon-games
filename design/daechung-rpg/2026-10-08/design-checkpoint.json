@@ -51,25 +51,97 @@
           "playerChoice": "전투 중 마을 귀환 금지, 귀환 성공 시 풀회복."
         }
       ]
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "마을",
+          "toSystem": "포탈",
+          "trigger": "포탈 이동",
+          "stateChange": "포탈 이동 완료"
+        },
+        {
+          "fromSystem": "포탈",
+          "toSystem": "보스",
+          "trigger": "몬스터 전투",
+          "stateChange": "보스 처치"
+        },
+        {
+          "fromSystem": "보스",
+          "toSystem": "동료",
+          "trigger": "AI 동료 영입",
+          "stateChange": "동료 영입 완료"
+        },
+        {
+          "fromSystem": "동료",
+          "toSystem": "파티",
+          "trigger": "파티 토글",
+          "stateChange": "파티 상태 변경"
+        },
+        {
+          "fromSystem": "파티",
+          "toSystem": "레벨 성장",
+          "trigger": "15킬 파티 종료",
+          "stateChange": "레벨 증가"
+        }
+      ],
+      "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "progressionEconomyBalance": {
+        "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "resourceFlow": "마을 귀환 시 풀회복, 전투 중 귀환 금지, 퀘스트 기본 50골드+50XP, 레벨업 최대체력+10/공격력+10, 파티사냥 15킬, RoomCode 1~10",
+        "balanceRules": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "마을 준비",
+          "newGameplay": "4직업/전직 시스템, 5포탈 사냥터 돌파, AI 유저와 파티 구성, 보스 공략",
+          "systemImpact": "5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략"
+        },
+        {
+          "milestone": "포탈 전투",
+          "newGameplay": "몬스터 직접 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상",
+          "systemImpact": "몬스터 전투, 보스 첫 처치, AI 동료 영입, 15킬 파티, 기여도 보상"
+        },
+        {
+          "milestone": "Lv.15 1차 전직",
+          "newGameplay": "1차 전직 분기별 고유 2차 완성형으로 자동 승급, 2차에서 다시 분기하지 않는다",
+          "systemImpact": "1차 전직 분기별 고유 2차 완성형으로 자동 승급"
+        },
+        {
+          "milestone": "Lv.60 만렙/숙련",
+          "newGameplay": "Lv.60 레벨캡, 비전투력 직업 숙련, 무기/방어구/유물 3슬롯, 보스 첫 처치 AI 동료 해금",
+          "systemImpact": "Lv.60 레벨캡, 비전투력 직업 숙련"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전투 중 마을 귀환 금지",
+          "보스 첫 처치 동료 해금 저장",
+          "플레이어+동료 최대3명 파티"
+        ],
+        "retryFlow": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+        "riskPressure": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡",
+        "recoveryRules": "전투/보상 서버 authoritative, DataStore 저장, 보스 첫 처치 동료 해금 저장, 플레이어+동료 최대3명, 보스 동료 리더 레벨 자동 동기화, 동료 전용 장비 없음, Lv60 레벨캡"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 173402,
-      "lastMs": 173402,
+      "totalMs": 380952,
+      "lastMs": 207550,
       "lastError": null,
-      "updatedAt": "2026-10-08T01:40:57.817Z"
+      "updatedAt": "2026-10-08T01:44:25.371Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T01:38:04.183Z",
-  "updatedAt": "2026-10-08T01:40:57.820Z",
+  "updatedAt": "2026-10-08T01:44:25.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1485,11 +1557,12 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "cb1fdaa5e0fa2a8f41219ab8cc1e4c64b1215049d76cd6c15b1249e39f6b196c"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T01:40:57.817Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T01:44:25.371Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
