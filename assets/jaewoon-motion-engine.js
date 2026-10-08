@@ -131,14 +131,24 @@
     setLod({ tier = 'NEAR' } = {}) {
       const value = String(tier || 'NEAR').toUpperCase();
       this.lodTier = ['NEAR', 'MID', 'FAR', 'OFFSCREEN'].includes(value) ? value : 'NEAR';
+      // 화면 밖 전환에서 지난 좌표의 잔상을 즉시 폐기한다.
+      if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') this.history = [];
       return this;
     }
 
     setBasePose(pose = {}, { snap = false } = {}) {
+      let rebased = false;
       for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha']) {
         if (pose[key] == null) continue;
-        if (snap) this.channels[key].snap(pose[key]);
-        else this.channels[key].setTarget(pose[key]);
+        if (snap) {
+          // 스폰·순간이동은 물리 좌표를 그대로 적용하고, 과거 위치의 잔상을 남기지 않는다.
+          if (this.channels[key].value !== finite(pose[key], this.channels[key].value)) rebased = true;
+          this.channels[key].snap(pose[key]);
+        } else this.channels[key].setTarget(pose[key]);
+      }
+      if (snap) {
+        if (rebased) this.history = [];
+        this.lastSample = this.sample();
       }
       return this;
     }
