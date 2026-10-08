@@ -107,6 +107,33 @@ test('WebGL 브리지가 서버 이벤트를 Unity 본체에 전달하고 재접
     assert.match(gameplay, /PlayCoopAction/);
 });
 
+test('2인 원격 좌표·재접속 순서·타게임 방 차단·Android 동시 전송 보호를 유지한다', () => {
+    assert.match(networking, /class RoomResponse \{ public string roomId; public string gameId;/);
+    assert.match(networking, /result\.gameId != GameId/);
+    assert.match(networking, /public float positionX;/);
+    assert.match(networking, /public float positionY;/);
+    assert.match(networking, /public int sequence;/);
+    assert.match(networking, /message\.state\.sequence <= _peerSequence/);
+    assert.match(networking, /message\.userId != _peerId/);
+    assert.match(networking, /GameCatalog\.Regions\.ContainsKey\(message\.state\.regionId\)/);
+    assert.match(networking, /float\.IsNaN\(message\.state\.positionX\)/);
+    assert.match(networking, /float\.IsInfinity\(message\.state\.positionY\)/);
+    assert.match(networking, /public bool HasFreshPartnerState/);
+    assert.match(networking, /Time\.unscaledTime - _peerLastSeen <= 4f/);
+    assert.match(networking, /SemaphoreSlim _nativeSendGate/);
+    assert.match(networking, /await _nativeSendGate\.WaitAsync\(token\)/);
+    assert.match(networking, /socket != _socket/);
+    assert.match(networking, /finally \{ _nativeSendGate\.Release\(\); \}/);
+    assert.match(gameplay, /var partnerVisible = _multiplayer\.HasFreshPartnerState/);
+    assert.match(gameplay, /_multiplayer\.PeerRegion == _core\.Player\.currentRegionId/);
+    assert.match(gameplay, /SetCoopPartnerPosition\(_multiplayer\.PeerPosition\)/);
+    assert.match(visuals, /public Vector3 PlayerPosition =>/);
+    assert.match(visuals, /SetCoopPartnerPosition\(Vector2 remotePosition\)/);
+    assert.match(visuals, /Vector3\.Lerp\(_coopPartner\.Position, target/);
+    assert.match(networking, /원격 이벤트는 표시 전용/);
+    assert.doesNotMatch(networking, /PlayerPrefs|currentHp\s*[-+]=|gold\s*\+=|experience\s*\+=/);
+});
+
 test('기존 모바일 전투 버튼과 비정식 공개 테스트 빌드 요청을 보존한다', () => {
     assert.match(gameplay, /private void DrawPrimaryCombatActionButton\(\)/);
     assert.match(gameplay, /MOBILE_TARGET game=daechung-rpg role=action/);
