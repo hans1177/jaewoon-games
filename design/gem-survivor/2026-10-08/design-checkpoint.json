@@ -97,25 +97,46 @@
       "name": "DELVE(@)",
       "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
       "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::aa99d7705fa14c25f5fc4cdbd51109f4f9b0fc94657cf408097330e9ff45f4f3:signatureSystems:3": {
+      "id": "DELVE(@)",
+      "grammarRole": "c",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runResult",
+        "upgradeSet",
+        "waveDifficulty"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "newBuild",
+        "updatedUpgrades",
+        "modifiedPerks",
+        "rewardsCollected"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+      "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 826133,
-      "lastMs": 102685,
+      "totalMs": 929058,
+      "lastMs": 102925,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:18:25.127Z"
+      "updatedAt": "2026-10-08T12:20:08.054Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:18:25.127Z",
+  "updatedAt": "2026-10-08T12:20:08.054Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2314,7 +2335,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:18:25.127Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:20:08.054Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
