@@ -242,25 +242,103 @@
           "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
         }
       ]
+    },
+    "local_authoring_parts::531226cf19b94227d5cfd1b0d00eb603c271ef10ee8a4153230850f0b623c091:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c2f6900e46df0902dca4fc00fb03d40e916ddbbe99a7c8bb3b31ebe492f31b9f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "STATE CHANGE: The world state shifts to reflect new defensive strategies, increasing pressure and resource availability.",
+        "OUTPUT: Player earns resources and spends them on upgrades, placements, or tactical changes before pressure increases."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "STRATEGIC_DETERRENCE_SYSTEM",
+          "purpose": "The player's decision to read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_SYSTEM",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_READING"
+          ],
+          "stateOutputs": [
+            "TOWER_PLACEMENT_STRATEGY"
+          ],
+          "name": "DEFENSE_ADAPTATION_REACTION",
+          "purpose": "The player's decision to adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss directly alters the world state, increasing pressure and resource availability.",
+          "playerChoice": "Adapt the defense to enemy types and wave compositions, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 593965,
-      "lastMs": 102762,
+      "totalMs": 822555,
+      "lastMs": 228590,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:02:33.362Z"
+      "updatedAt": "2026-10-08T19:06:21.957Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T19:02:33.365Z",
+  "updatedAt": "2026-10-08T19:06:21.966Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2451,12 +2529,74 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:02:33.365Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매 단계에서 전략적 결정을 내며, 이 결정은 세계 상태에 직접 영향을 미친다. 주체는 천상의 보루에서 플레이어이며, 그 역할은 적군의 방어 전략을 제안하는 데 있다. 대표 행동은 'Enemy Wave Reading'이고, 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다.",
+      "playerFantasy": "천상의 보루에서 플레이어는 매 단계에서 전략적 결정을 내며, 이 결정은 세계 상태에 직접 영향을 미친다. 주체는 천상의 보루에서 플레이어이며, 그 역할은 적군의 방어 전략을 제안하는 데 있다. 대표 행동은 'Enemy Wave Reading'이고, 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다.",
+      "coreFun": "천상의 보루에서는 매 단계에서 플레이어는 적군의 방어 전략을 제안하는 데 주체 역할을 수행하며, 이 결정은 세계 상태에 직접 영향을 미친다. 대표 행동은 'Enemy Wave Reading', 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다.",
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "STATE CHANGE: The world state shifts to reflect new defensive strategies, increasing pressure and resource availability.",
+        "OUTPUT: Player earns resources and spends them on upgrades, placements, or tactical changes before pressure increases."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T19:06:21.960Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
