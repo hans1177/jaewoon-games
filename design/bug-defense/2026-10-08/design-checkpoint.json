@@ -928,25 +928,34 @@
         "Read the incoming insect wave and its threat pattern.",
         "World state change and next selection"
       ]
+    },
+    "local_authoring_parts::b671f3811d63884009b4b23679c2a66933b285d431f619c668dddda0d9ca7448:fromSystem": {
+      "fromSystem": "Read the incoming insect wave and its threat pattern.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이. 플레이어는 세계 상태와 다음 선택을 바꾼다."
+    },
+    "local_authoring_parts::b671f3811d63884009b4b23679c2a66933b285d431f619c668dddda0d9ca7448:toSystem": {
+      "toSystem": "World state change and next selection"
+    },
+    "local_authoring_parts::b671f3811d63884009b4b23679c2a66933b285d431f619c668dddda0d9ca7448:trigger": {
+      "trigger": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 32,
+      "calls": 38,
+      "successes": 35,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3012024,
-      "lastMs": 31577,
+      "totalMs": 3109198,
+      "lastMs": 32918,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:39:48.870Z"
+      "updatedAt": "2026-10-08T15:41:26.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:39:48.870Z",
+  "updatedAt": "2026-10-08T15:41:26.048Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3372,7 +3381,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:39:48.870Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:41:26.048Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
