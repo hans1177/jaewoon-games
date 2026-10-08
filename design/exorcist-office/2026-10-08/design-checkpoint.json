@@ -433,25 +433,43 @@
       "name": "Readable Input State",
       "purpose": "Establish the core gameplay mechanism by which players interact with the game through a readable input, receive feedback, and make a small risk or route choice before the run ends.",
       "playerChoice": "Players choose a small risk or route choice based on a readable input, which affects the status change and progression benefit."
+    },
+    "local_authoring_parts::fad4d834943d3cfc6c930ff2389982815f961b5c2ec859cf361eff010057ce21:signatureSystems:3": {
+      "id": "READABLE_INPUT_STATE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "readable-input",
+        "score",
+        "distance",
+        "short-session-goal"
+      ],
+      "stateOutputs": [
+        "status-change",
+        "progression-benefit",
+        "retry-quickly-with-minimal-friction"
+      ],
+      "name": "Readable Input State",
+      "purpose": "Establish the core gameplay mechanism by which players interact with the game through a readable input, receive feedback, and make a small risk or route choice before the run ends.",
+      "playerChoice": "Players choose a small risk or route choice based on a readable input, which affects the status change and progression benefit."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1481372,
-      "lastMs": 101585,
+      "totalMs": 1583473,
+      "lastMs": 102101,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:07:27.945Z"
+      "updatedAt": "2026-10-08T08:09:10.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T08:07:27.945Z",
+  "updatedAt": "2026-10-08T08:09:10.048Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2411,7 +2429,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:07:27.945Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:09:10.048Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
