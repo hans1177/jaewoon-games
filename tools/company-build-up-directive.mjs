@@ -573,6 +573,137 @@ export function extractDesignContext(record={}){
   });
 }
 
+// 단일 디자이너 원본의 MAIN/A/B/c/@를 실제 플랫폼 소스에 연결한다.
+// 파일/함수 발견은 '구현 완료' 증거가 아니며 BUILD_UP/독립 런타임 QA의 책임을 바꾸지 않는다.
+export function buildDesignToPlatformCodingTrace({
+  gameId='',design={},platform='COMMON',sourceRoot='',sourceObservation={},
+  responsibleFiles=[],repoRoot=process.cwd(),multiplayerRequired=true
+}={}){
+  const id=clean(gameId);
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(id))throw new Error('DESIGN_CODING_GAME_ID_INVALID');
+  const roots=Object.freeze({
+    ROBLOX:`roblox-games/${id}`,
+    UNITY_WEB:`unity-games/${id}`,
+    UNITY_APP:`unity-games/${id}`
+  });
+  const declared=clean(platform).toUpperCase();
+  const observedRoot=posix(clean(sourceRoot||sourceObservation?.sourceRoot));
+  const selected=declared==='ROBLOX'?'ROBLOX':
+    declared==='UNITY_WEB'?'UNITY_WEB':
+    declared==='UNITY_APP'||declared==='UNITY'?'UNITY_APP':
+    declared==='WEB'&&(observedRoot.split('|').includes(roots.UNITY_WEB))?'UNITY_WEB':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.ROBLOX)?'ROBLOX':
+    declared==='COMMON'&&observedRoot.split('|').includes(roots.UNITY_WEB)?'UNITY_APP':
+    'NOT_SELECTED_NATIVE_PLATFORM';
+  const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
+  const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
+  const roles=['MAIN','A','B','c','DELVE'];
+  const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
+  const mode=clean(design.multiplayerMode).toUpperCase();
+  const modeReady=['COOP','COMPETITIVE','HYBRID'].includes(mode);
+  const selectedRoot=roots[selected]||'';
+  const rootReal=path.resolve(repoRoot);
+  const safeSourcePath=value=>{
+    const raw=posix(clean(value));
+    if(!selectedRoot||!raw)return'';
+    const candidate=raw.startsWith(selectedRoot+'/')?raw:`${selectedRoot}/${raw}`;
+    if(!candidate.startsWith(selectedRoot+'/')||!/(?:\\.lua|\\.luau|\\.cs)$/i.test(candidate))return'';
+    const full=path.resolve(rootReal,candidate);
+    if(!full.startsWith(rootReal+path.sep))return'';
+    try{
+      if(!fs.statSync(full).isFile())return'';
+      const real=fs.realpathSync(full);
+      if(!real.startsWith(rootReal+path.sep))return'';
+      return candidate;
+    }catch{return'';}
+  };
+  const observedFiles=uniq([
+    ...(sourceObservation?.topFiles||[]).map(row=>row?.file),
+    ...(sourceObservation?.sourceAnchors||[]).map(row=>row?.file),
+    ...responsibleFiles
+  ].map(safeSourcePath).filter(Boolean));
+  const symbols=(sourceObservation?.sourceAnchors||[]).map(row=>({
+    file:safeSourcePath(row?.file),symbol:clean(row?.symbol),kind:clean(row?.kind)
+  })).filter(row=>row.file&&row.symbol).slice(0,24);
+  const priority=(file,role)=>{
+    const name=file.toLowerCase();
+    if(selected==='ROBLOX'){
+      if(role==='c')return /\\/client\\//.test(name)?6:/\\/shared\\//.test(name)?3:0;
+      if(role==='DELVE')return /\\/server\\//.test(name)?6:/\\/shared\\//.test(name)?4:0;
+      return /\\/server\\//.test(name)?6:/\\/shared\\//.test(name)?4:/\\/client\\//.test(name)?1:0;
+    }
+    if(role==='c')return /visual|render|anim|present|camera|vfx/.test(name)?6:/runtime|bootstrap/.test(name)?3:1;
+    if(role==='DELVE')return /gamecore|save|progress|session/.test(name)?6:/runtime/.test(name)?4:1;
+    return /gamecore|floor|combat|gameplay/.test(name)?6:/runtime|bootstrap/.test(name)?5:1;
+  };
+  const bindings=roles.map(role=>{
+    const rows=roleByName.get(role)||[];
+    const system=rows[0]||{};
+    const candidates=observedFiles
+      .map(file=>({file,score:priority(file,role)}))
+      .sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file))
+      .slice(0,3).map(row=>row.file);
+    const inputKeys=uniq(system.stateInputs||[]);
+    const outputKeys=uniq(system.stateOutputs||[]);
+    const id=clean(system.id);
+    const connected=connections.filter(edge=>edge?.fromId===id||edge?.toId===id).map(edge=>({
+      fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:uniq(edge.stateKeys||[])
+    })).slice(0,12);
+    return Object.freeze({
+      role:role==='DELVE'?'@':role,grammarRole:role,systemId:id||null,
+      name:clean(system.name)||null,
+      stateInputs:inputKeys,stateOutputs:outputKeys,connections:connected,
+      suggestedExistingOwnerFiles:candidates,
+      inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
+      designStatus:rows.length===1&&id&&inputKeys.length&&outputKeys.length?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
+      codingStatus:!selectedRoot?'PLATFORM_NOT_SELECTED':!candidates.length?'SOURCE_OWNER_MISSING':'SOURCE_OWNER_CANDIDATE_UNVERIFIED',
+      executableBehaviorVerified:false,
+      actualRuntimeVerified:false,
+      evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
+    });
+  });
+  const authoredRolesComplete=roles.every(role=>(roleByName.get(role)||[]).length===(['MAIN','A','B'].includes(role)?1:1))
+    &&bindings.every(row=>row.designStatus==='AUTHORED');
+  const mandatory=multiplayerRequired===true;
+  const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
+  const spatialReady=['2.5D','3D'].includes(unityDepth.dimension)
+    &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
+      .every(field=>clean(unityDepth[field]).length>=32);
+  const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
+    platform:name,canonicalGameSourceRoot:roots[name],
+    sharedUnitySource:name!=='ROBLOX',
+    gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
+    requiresSameServerTwoClientPlay:mandatory,
+    requiresNativeRuntimeResult:true,
+    ...name==='UNITY_WEB'?{minimumRenderedDimension:'2.5D',spatialDesignReady:spatialReady}: {},
+    inspectedInThisDirective:name===selected
+  }));
+  const observedCode=selectedRoot&&observedFiles.length>0;
+  const gapReasons=[
+    ...(!authoredRolesComplete?['DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
+    ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
+    ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
+    ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
+    ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
+  ];
+  return Object.freeze({
+    version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
+    gameId:id,requestedPlatform:declared,activePlatform:selected,
+    designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
+    multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
+    platformCodingPlans:Object.freeze(platforms),
+    roleBindings:Object.freeze(bindings),
+    observedGameCodeFiles:Object.freeze(observedFiles),
+    gapReasons:Object.freeze(uniq(gapReasons)),
+    codingReviewState:gapReasons.length?'GAME_STAGE_LOCAL_REPAIR_REQUIRED':'SOURCE_CANDIDATES_PRESENT_NOT_IMPLEMENTATION_PASS',
+    sourceImplementationPassed:false,actualTwoClientPassed:false,actualWebglRenderPassed:false,independentQaPassed:false,
+    stageLocalAction:'IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME',
+    schemaAndMarkersAloneCannotPass:true,newPipeline:false,changesDevelopmentAdmission:false,
+    saveBalanceAndExistingMultiplayerMeaningPreserved:true
+  });
+}
+
 function qualitySignalText(values=[]){return uniq(values).join(' | ').toLowerCase();}
 function focusFromSignals({signals=[],source={}}={}){
   const text=qualitySignalText(signals);
