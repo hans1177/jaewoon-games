@@ -2760,6 +2760,7 @@ function RobloxCommonUI.CreateCodexScreen(options)
   local entries,filters={},{}
   local selectedCategory="전체"
   local selectedId=nil
+  local latestRevision="UNKNOWN"
   local function renderEntry()
     local selected=nil
     for _,row in ipairs(shown)do
@@ -2777,6 +2778,7 @@ function RobloxCommonUI.CreateCodexScreen(options)
   local function sync(state)
     state=type(state)=="table"and state or {}
     entries=type(state.entries)=="table"and state.entries or {}
+    latestRevision=tostring(state.revision or latestRevision)
     filters={"전체"}
     local categoriesSeen={["전체"]=true}
     for _,row in ipairs(entries)do
@@ -2795,7 +2797,7 @@ function RobloxCommonUI.CreateCodexScreen(options)
         button.Activated:Connect(function()
           local chosen=filters[index]
           if not chosen then return end
-          selectedCategory=chosen;sync({entries=entries,revision=state.revision})
+          selectedCategory=chosen;sync({entries=entries,revision=latestRevision})
         end)
       end
       local button=categoryButtons[i]
@@ -2820,7 +2822,7 @@ function RobloxCommonUI.CreateCodexScreen(options)
         button.LayoutOrder=i;button.Parent=list;entryButtons[i]=button
         button.Activated:Connect(function()
           local current=shown[index]
-          if current and current.id~=nil then
+          if current and current.id~=nil and current.unlocked==true then
             selectedId=current.id;renderEntry()
             if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
           end
@@ -2829,7 +2831,8 @@ function RobloxCommonUI.CreateCodexScreen(options)
       local button=entryButtons[i]
       button.Visible=true;button.Name="CodexEntry"..i;button.LayoutOrder=i
       button.Text=row.unlocked==true and tostring(row.name or row.title or "") or "미발견"
-      button.Active=row.id~=nil;button.AutoButtonColor=row.id~=nil
+      button.Active=row.id~=nil and row.unlocked==true
+      button.AutoButtonColor=button.Active
       button:SetAttribute("BoundCodexEntryId",tostring(row.id or ""))
       button:SetAttribute("BoundFromGameState",true)
       button:SetAttribute("Discovered",row.unlocked==true)
@@ -2837,7 +2840,7 @@ function RobloxCommonUI.CreateCodexScreen(options)
     for i=#shown+1,#entryButtons do entryButtons[i].Visible=false end
     renderEntry()
     root:SetAttribute("BoundCodexEntryCount",#entries)
-    root:SetAttribute("CodexStateRevision",tostring(state.revision or "UNKNOWN"))
+    root:SetAttribute("CodexStateRevision",latestRevision)
   end
   local function layout()
     local compact=body.AbsoluteSize.X<560
