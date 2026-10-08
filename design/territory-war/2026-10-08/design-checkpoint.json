@@ -289,25 +289,213 @@
           "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
         }
       ]
+    },
+    "local_authoring_parts::44100aaba0430d7e8ca5369274ee8340759d874dd3e2293e4128ff4d78c0145e:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::bd4a5039209b0e97369fd31c4a4853698ae486ea2246c0af71b6018521b87546:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the current border pressure and choose one territory objective.",
+        "STATE CHANGE: Main state is updated based on player choice.",
+        "REWARD: New territory is secured, resources are reallocated, and new strategic options are introduced.",
+        "NEXT STEP: Player must adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System B",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System C",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_",
+      "playerFantasy": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 이 월드 상태는 영토의 전선 변화와 지역 특성의 조합을 중심으로 압축형 전략 게임의 구조를 형성한다. 플레이어는 이 월드 상태에서 영토의 경계 압박을 읽고, 영토 확장의 목표를 선택하여, 이 선택이 다음 월드 상태와 상호작용을 통해 영토 전쟁의 실제 플레이를 이어간다. 이 게임은 단순한 반복을 넘어, 영토 전선의 변화와 지역 특성의 조합을 통해 새로운 전략과 경로를 탐색하고, 성장의 가능성을 확장하는 게임으로 설계된다.",
+      "coreFun": "영토전쟁에서 플레이어는 영토의 전선 변화와 지역 특성의 조합을 중심으로 압축형 전략 게임의 구조를 형성하며, 이 선택이 다음 월드 상태와 상호작용을 통해 영토 전쟁의 실제 플레이를 이어간다. 이 게임은 단순한 반복을 넘어, 영토 전선의 변화와 지역 특성의 조합을 통해 새로운 전략과 경로를 탐색하고, 성장의 가능성을 확장하는 게임으로 설계된다.",
+      "coreLoop": [
+        "INPUT: Read the current border pressure and choose one territory objective.",
+        "STATE CHANGE: Main state is updated based on player choice.",
+        "REWARD: New territory is secured, resources are reallocated, and new strategic options are introduced.",
+        "NEXT STEP: Player must adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System B",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System C",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjectives"
+          ],
+          "stateOutputs": [
+            "updatedFrontLine",
+            "reallocatedResources",
+            "introducedStrategicOptions"
+          ],
+          "name": "Territory Dynamics System",
+          "purpose": "Manages the dynamic interplay between border pressure and territory objectives, ensuring strategic adaptability and resource reallocation.",
+          "playerChoice": "Select and prioritize territory objectives based on current border pressure, balancing expansion with defensive needs and resource allocation constraints."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 952663,
-      "lastMs": 102522,
+      "totalMs": 1041816,
+      "lastMs": 89153,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:02:31.516Z"
+      "updatedAt": "2026-10-08T08:04:00.674Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T08:02:31.519Z",
+  "updatedAt": "2026-10-08T08:04:00.683Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2327,12 +2515,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:02:31.519Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:04:00.677Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/territory-war/2026-10-08/design-seed.json",
+    "contentDigest": "af5e1af07201873b2aa07574453219c907c51ef11201a8a8facce0ddf2fbcd33",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
