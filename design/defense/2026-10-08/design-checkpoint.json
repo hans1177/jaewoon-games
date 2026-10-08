@@ -641,25 +641,38 @@
       "name": "coreLoop",
       "purpose": "게임의 반복 가능한 핵심 루프를 구현하여 플레이어의 선택과 결과가 서로 영향을 주는 시스템을 강화",
       "playerChoice": "읽는 상태: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택, 바꾸는 상태: 방어 구조를 재설계하여 다음 웨이브를 대비할 수 있음"
+    },
+    "local_authoring_parts::72378bd8f08107719e85761c1fc6a95dcefdb46e60a0ed528cfa32e03a1713b1:signatureSystems:0": {
+      "id": "coreLoop_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력: 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 선택"
+      ],
+      "stateOutputs": [
+        "상태변화: 방어 구조의 변화로 인해 위험 수치가 감소"
+      ],
+      "name": "방어 전략 조정",
+      "purpose": "플레이어가 다음 적의 웨이브를 읽고, 방어 구조를 조정하여 위험을 줄이는 단일 방어 전략을 실행하는 데 사용된다.",
+      "playerChoice": "방어 구조를 조정하거나, 방어 전략을 재조정하여 다음 웨이브를 대비한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2276232,
-      "lastMs": 109592,
+      "totalMs": 2303565,
+      "lastMs": 27333,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:56:40.103Z"
+      "updatedAt": "2026-10-08T09:57:07.447Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:50:07.728Z",
-  "updatedAt": "2026-10-08T09:56:40.112Z",
+  "updatedAt": "2026-10-08T09:57:07.447Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2892,10 +2905,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:56:40.105Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:57:07.447Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
