@@ -432,25 +432,40 @@
       "name": "coreRule_02",
       "purpose": "게임의 핵심 루프를 구현하고, 선택과 세계 상태 변화의 연결을 강화하는 중간 규칙",
       "playerChoice": "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다."
+    },
+    "local_authoring_parts::1cfe07306c4f73f86d60dd5f75c8efa30a3aa0eeb377fb6b4ca1c3a13cb771fc:signatureSystems:2": {
+      "id": "coreRule_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다.",
+        "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear sc"
+      ],
+      "stateOutputs": [
+        "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다.",
+        "게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+      ],
+      "name": "coreRule_03",
+      "purpose": "게임의 핵심 루프를 구현하고, 선택과 세계 상태 변화의 연결을 강화하며, 위험과 보상의 관계를 구체화하는 추가 규칙",
+      "playerChoice": "게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1508587,
-      "lastMs": 115721,
+      "totalMs": 1625149,
+      "lastMs": 116562,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:16:31.908Z"
+      "updatedAt": "2026-10-08T11:18:28.472Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:23.271Z",
-  "updatedAt": "2026-10-08T11:16:31.908Z",
+  "updatedAt": "2026-10-08T11:18:28.472Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2410,7 +2425,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:16:31.908Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:18:28.472Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
