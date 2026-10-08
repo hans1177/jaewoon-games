@@ -85,25 +85,42 @@
       "name": "Core Progression System",
       "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
       "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+    },
+    "local_authoring_parts::1c711359d7d8c5fecc1aa12e60ff28e374f9c2eafcc2a4efba506db7c61799ce:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "stateOutputs": [
+        "NewScore",
+        "NewDistance",
+        "NewProgressionBenefit"
+      ],
+      "name": "Core Progression System",
+      "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+      "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 855105,
-      "lastMs": 98854,
+      "totalMs": 959327,
+      "lastMs": 104222,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:01:52.440Z"
+      "updatedAt": "2026-10-08T11:03:36.663Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:47:37.298Z",
-  "updatedAt": "2026-10-08T11:01:52.440Z",
+  "updatedAt": "2026-10-08T11:03:36.664Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2189,7 +2206,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:01:52.440Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:03:36.663Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
