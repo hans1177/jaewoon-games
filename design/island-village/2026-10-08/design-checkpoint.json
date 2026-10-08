@@ -838,25 +838,55 @@
       "toSystem": "VillageProgressionSystem",
       "trigger": "Select a new village goal",
       "stateChange": "Acquire a focused set of resources, and unlock a new resident, activity, or area to proceed to the next stage of village development"
+    },
+    "local_authoring_parts::32b44c14da5c46085df3b3667ce8db11480f02eb685808299b32229a6ede2c6d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "IslandResourceManagementSystem"
+    },
+    "local_authoring_parts::32b44c14da5c46085df3b3667ce8db11480f02eb685808299b32229a6ede2c6d:toSystem,trigger,stateChange": {
+      "toSystem": "IslandResourceManagementSystem",
+      "trigger": "Gather a focused set of island resources",
+      "stateChange": "Build or improve one village function, and unlock a new resident, activity, or area"
+    },
+    "local_authoring_parts::d9385963ad794d288f92bbfd2b4091a77e82bb4f71df2d913cea34a63ad41040:systemInterconnections:0": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "IslandResourceManagementSystem",
+      "toSystem": "IslandResourceManagementSystem",
+      "trigger": "Gather a focused set of island resources",
+      "stateChange": "Build or improve one village function, and unlock a new resident, activity, or area"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2604724,
-      "lastMs": 34459,
+      "totalMs": 2632938,
+      "lastMs": 13941,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:08:56.025Z"
+      "updatedAt": "2026-10-08T16:09:24.250Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T16:08:56.032Z",
+  "updatedAt": "2026-10-08T16:09:24.251Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3083,10 +3113,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:08:56.028Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:09:24.251Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
