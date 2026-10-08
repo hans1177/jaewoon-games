@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "gameId": "core-clash-4v4",
+  "date": "2026-10-08",
+  "seedId": "OWNER-ALL-DESIGN-RESET-CORE-CLASH-4V4-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "a2c46c8063f16660de827f925a4069381674be325362ba06596c82d217f6926b",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
+  "contentDigest": "b7f7d67984826bdcac212852b903e0dc1437683df93e5f58bf5c14d1d18ab8fb",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "코어 전장 4대4의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 반복 가능한 핵심 루프, 즉시 이해 가능한 입력/피드백, 그리고 다양한 상황별 대응을 포함합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성됩니다. 게임은 모바일에서도 즉시 이해 가능한 입력과 피드백을 제공합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결합하여, 게임의 깊이와 재미를 강화합니다. 게임의 플레이어 역할은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then create",
+    "playerFantasy": "코어 전장 4대4는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 플레이어가 즉시 이해 가능한 입력/피드백을 제공하는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다.",
+    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 게임의 중심 행동과 선택으로, 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 이는 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "id": "CORE-LOOP-1",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "RUN_RESULT",
+          "UPGRADES",
+          "BUILD_STATE"
+        ],
+        "stateOutputs": [
+          "NEXT_PROGRESSION_CHOICE",
+          "RUN_PROGRESS",
+          "BUILD_UPGRADE"
+        ],
+        "name": "CORE-LOOP-1",
+        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      },
+      {
+        "id": "CORE-LOOP-2",
+        "grammarRole": "A",
+        "stateInputs": [
+          "RUN_RESULT",
+          "UPGRADES",
+          "BUILD_STATE"
+        ],
+        "stateOutputs": [
+          "NEXT_PROGRESSION_CHOICE",
+          "RUN_PROGRESS",
+          "BUILD_UPGRADE"
+        ],
+        "name": "CORE-LOOP-2",
+        "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      },
+      {
+        "id": "CORE-LOOP-3",
+        "grammarRole": "B",
+        "stateInputs": [
+          "RUN_RESULT",
+          "UPGRADES",
+          "BUILD_STATE"
+        ],
+        "stateOutputs": [
+          "NEXT_PROGRESSION_CHOICE",
+          "RUN_PROGRESS",
+          "BUILD_UPGRADE"
+        ],
+        "name": "CORE-LOOP-3",
+        "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      },
+      {
+        "id": "CORE-LOOP-4",
+        "grammarRole": "c",
+        "stateInputs": [
+          "RUN_RESULT",
+          "UPGRADES",
+          "BUILD_STATE"
+        ],
+        "stateOutputs": [
+          "NEXT_PROGRESSION_CHOICE",
+          "RUN_PROGRESS",
+          "BUILD_UPGRADE"
+        ],
+        "name": "CORE-LOOP-4",
+        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Use the run result to unlock new progression choices and adjust the build accordingly."
+      },
+      {
+        "id": "CORE-LOOP-5",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "RUN_RESULT",
+          "UPGRADES",
+          "BUILD_STATE"
+        ],
+        "stateOutputs": [
+          "NEXT_PROGRESSION_CHOICE",
+          "RUN_PROGRESS",
+          "BUILD_UPGRADE"
+        ],
+        "name": "CORE-LOOP-5",
+        "purpose": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Use the run result to unlock new progression choices and adjust the build accordingly."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T10:25:56.124Z"
+}
