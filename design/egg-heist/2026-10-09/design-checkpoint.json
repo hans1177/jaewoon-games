@@ -48,25 +48,38 @@
       "name": "세계 원인 시스템",
       "purpose": "플레이어가 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
       "playerChoice": "지역, 캐릭터, 적, 아이템, UI와의 관계 및 위험/보상 차이를 시각 언어로 표현하기 위한 선택"
+    },
+    "local_authoring_parts::52b7d201dbd2de40945ed7ff605114318d91978afe5960f871a05ef2dc856dd2:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "탐험 시스템",
+      "purpose": "플레이어가 탐험(타겟 식별) 과정에서 세계의 역사, 생활, 경제, 지역 기능에 대한 인식과 이해를 강화하는 시스템",
+      "playerChoice": "타겟 위치 및 위험 요소를 파악하여 새로운 월드 상태를 생성하는 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 633117,
-      "lastMs": 106944,
+      "totalMs": 738760,
+      "lastMs": 105643,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:10:59.961Z"
+      "updatedAt": "2026-10-08T18:12:45.606Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:10:59.961Z",
+  "updatedAt": "2026-10-08T18:12:45.606Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1928,7 +1941,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:10:59.961Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:12:45.606Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
