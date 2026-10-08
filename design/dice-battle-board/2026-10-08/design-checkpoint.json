@@ -3,30 +3,18 @@
   "gameId": "dice-battle-board",
   "date": "2026-10-08",
   "seedId": "OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
-  "fingerprint": "d1f8b839bf9e2e48f6e880cd08a0aa11785c8ca40681460d110947b1158849d3",
+  "fingerprint": "e189ad9de61c4a3ca9c4d52c078b25f89f41d4b9a7e075ac4463e3a5ce073ece",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 600204,
-      "lastMs": 300102,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:33:10.164Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T07:44:32.808Z",
-  "updatedAt": "2026-10-08T10:33:10.171Z",
+  "createdAt": "2026-10-08T12:56:49.507Z",
+  "updatedAt": "2026-10-08T12:56:49.519Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1953,12 +1941,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
