@@ -292,6 +292,18 @@ assert.ok(generated.vegetation.length>0);
 assert.ok(generated.vegetation.length<=64);
 assert.equal(generated.mobileBudget.vegetationLimit,64);
 assert.ok(generated.routeGraph.pass);
+assert.equal(generated.worldObjectBinding.status,'GAMEPLAY_BINDING_REQUIRED');
+assert.equal(generated.worldObjectBinding.runtimeInteractionVerified,false);
+assert.equal(generated.worldObjectBinding.duplicateRewardGuardRequired,true);
+const stableIds=new Set();
+for(const object of [...generated.buildings,...generated.vegetation]){
+  assert.ok(object.stableObjectId.startsWith(generated.worldObjectBinding.namespace+':'));
+  assert.equal(object.interactionBinding.stableObjectId,object.stableObjectId);
+  assert.equal(object.interactionBinding.authoritativeState,false);
+  assert.equal(stableIds.has(object.stableObjectId),false,'world objects need stable unique save/interaction identity');
+  stableIds.add(object.stableObjectId);
+}
+
 assert.equal(generated.sourceMutationPerformed,false);
 assert.equal(generated.nativeAssetInstancingPerformed,false);
 assert.equal(generated.runtimeVerified,false);
@@ -305,6 +317,11 @@ const riverKeys=new Set(generated.river.map(c=>c.x+','+c.z));
 const occupiedKeys=new Set();
 for(const building of generated.buildings){
   assert.ok(roadKeys.has(building.roadAccess.x+','+building.roadAccess.z));
+  assert.deepEqual(building.doorway.roadCell,building.roadAccess);
+  assert.equal(building.doorway.roadAdjacencyVerified,true);
+  assert.equal(building.doorway.runtimeNavigationVerified,false);
+  assert.equal(building.doorway.facing,building.doorFacing);
+  assert.equal(building.interactionBinding.kind,'ENTER');
   assert.equal(building.modules.every(item=>item.startsWith(building.style+':')),true);
   assert.equal(building.modules.some(item=>item.endsWith(':DOOR')),true);
   assert.equal(building.foundation.levelY>=building.foundation.terrainMaxY,true);
@@ -325,6 +342,7 @@ for(const item of generated.vegetation){
   assert.equal(riverKeys.has(key),false);
   assert.equal(occupiedKeys.has(key),false);
   assert.equal(item.physicsColliderGenerated,false);
+  assert.ok(['MINE','GATHER'].includes(item.interactionBinding.kind));
 }
 assert.equal(generated.instancingPlan.reduce((sum,item)=>sum+item.count,0),generated.buildings.length*7+generated.vegetation.length);
 assert.equal(generated.mobileBudget.actualDrawCallsMeasured,false);
@@ -353,6 +371,14 @@ assert.equal(generated2D.coordinateSystem,'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED');
 assert.equal(generated2D.native2DPositionProjectionProvided,true);
 assert.equal(generated2D.native2DWorldCoordinateMappingRequired,true);
 assert.equal(generated2D.terrain.length,generated.terrain.length);
+assert.deepEqual(generated2D.buildings.map(item=>item.stableObjectId),generated.buildings.map(item=>item.stableObjectId));
+assert.deepEqual(generated2D.vegetation.map(item=>item.stableObjectId),generated.vegetation.map(item=>item.stableObjectId));
+const denserWorld=createVibeProceduralWorldLayout({...seedWorld,density:.9});
+const beforeIds=new Map(generated.buildings.map(item=>[item.footprint[0].x+','+item.footprint[0].z,item.stableObjectId]));
+for(const item of denserWorld.buildings){
+  const id=beforeIds.get(item.footprint[0].x+','+item.footprint[0].z);
+  if(id)assert.equal(item.stableObjectId,id,'same seed and cell must preserve stable id across density changes');
+}
 const aridWorld=createVibeProceduralWorldLayout({...seedWorld,biome:'DESERT',climate:'ARID'});
 assert.equal(aridWorld.riverType,'SEASONAL_DRY_CHANNEL');
 assert.ok(generated.terrain.some(tile=>tile.biome==='WATER'),'temperate valleys need grounded natural waterways');
