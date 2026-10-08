@@ -23,6 +23,8 @@ namespace JaewoonGames.DaechungRpg
 
         private AnimatedActor _player;
         private AnimatedActor _enemy;
+        private AnimatedActor _coopPartner;
+        private bool _hasCoopPartner;
         private bool _ready;
         private bool _battleVisible;
         private string _loadError = string.Empty;
@@ -70,6 +72,8 @@ namespace JaewoonGames.DaechungRpg
             _player = new AnimatedActor("PrototypePlayer", new Vector3(0f, -1.65f, 0f), true);
             _enemy = new AnimatedActor("PrototypeEnemy", new Vector3(2.85f, -1.65f, 0f), false);
             _enemy.SetVisible(false);
+            _coopPartner = new AnimatedActor("CoopPartner", new Vector3(-0.8f, -1.65f, 0f), true);
+            _coopPartner.SetVisible(false);
             var backdropObject = new GameObject("DaechungRegionBackground");
             backdropObject.transform.SetParent(transform, false);
             _backdrop = backdropObject.AddComponent<SpriteRenderer>();
@@ -77,6 +81,8 @@ namespace JaewoonGames.DaechungRpg
             SetRegionVisual("town");
             InstallLocalActor(_player, "hero");
             InstallLocalActor(_enemy, "skeleton");
+            InstallLocalActor(_coopPartner, "hero");
+            _coopPartner.SetTint(new Color(0.64f, 1.0f, 0.8f, 1f));
             _ready = true;
             ShowTown();
             StartCoroutine(LoadAll());
@@ -86,6 +92,7 @@ namespace JaewoonGames.DaechungRpg
         {
             _player?.Tick(Time.time);
             _enemy?.Tick(Time.time);
+            _coopPartner?.Tick(Time.time);
         }
 
         public void ShowTown()
@@ -104,6 +111,9 @@ namespace JaewoonGames.DaechungRpg
             _enemy.Dead = false;
             _player.SetVisible(true);
             _enemy.SetVisible(false);
+            _coopPartner.SetVisible(_hasCoopPartner);
+            _coopPartner.Position = new Vector3(-1.9f, -1.65f, 0f);
+            if (_hasCoopPartner) _coopPartner.Play("idle", true, true);
             _player.Position = new Vector3(0f, -1.65f, 0f);
             _player.Play("idle", true, true);
         }
@@ -155,6 +165,26 @@ namespace JaewoonGames.DaechungRpg
             _backdrop.sprite = sprite;
             _backdrop.transform.position = new Vector3(0, 0, 6);
             _backdrop.transform.localScale = Vector3.one * 1.8f;
+        }
+
+        public void SetCoopParty(bool hasPartner)
+        {
+            if (_hasCoopPartner == hasPartner) return;
+            _hasCoopPartner = hasPartner;
+            if (_coopPartner == null) return;
+            _coopPartner.SetVisible(hasPartner);
+            _coopPartner.Dead = false;
+            if (hasPartner)
+            {
+                _coopPartner.Position = new Vector3(_battleVisible ? -0.65f : -1.9f, -1.65f, 0f);
+                _coopPartner.Play("idle", true, true);
+            }
+        }
+
+        public void PlayCoopAction()
+        {
+            if (_hasCoopPartner && _coopPartner != null && _battleVisible)
+                _coopPartner.Play("attack", false, true);
         }
 
         public void SetEnemyIdentity(string id)
@@ -511,6 +541,9 @@ namespace JaewoonGames.DaechungRpg
         {
             _player.SetVisible(true);
             _enemy.SetVisible(true);
+            _coopPartner.SetVisible(_hasCoopPartner);
+            _coopPartner.Position = new Vector3(-0.65f, -1.65f, 0f);
+            if (_hasCoopPartner) _coopPartner.Play("walk", true, true);
             _player.Dead = false;
             _enemy.Dead = false;
             _player.Position = new Vector3(-3.4f, -1.65f, 0f);
@@ -570,6 +603,9 @@ namespace JaewoonGames.DaechungRpg
             _enemy.Dead = false;
             _player.SetVisible(true);
             _enemy.SetVisible(true);
+            _coopPartner.SetVisible(_hasCoopPartner);
+            _coopPartner.Position = new Vector3(-0.65f, -1.65f, 0f);
+            if (_hasCoopPartner) _coopPartner.Play("idle", true, true);
             _player.Position = new Vector3(-2.65f, -1.65f, 0f);
             _enemy.Position = new Vector3(2.65f, -1.65f, 0f);
             _player.Play("idle", true, true);
@@ -628,6 +664,8 @@ namespace JaewoonGames.DaechungRpg
                 _renderer.flipX = faceRight;
                 _renderer.sortingOrder = 10;
             }
+
+            public void SetTint(Color tint) { _renderer.color = tint; }
 
             public bool Loaded { get; set; }
             public bool Dead { get; set; }
