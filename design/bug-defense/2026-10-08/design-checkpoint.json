@@ -1045,25 +1045,43 @@
     },
     "local_authoring_parts::0778c45b8ee50a972b2f360b32aa19e0e8c86da134962c86a87f4553d7d54290:trigger": {
       "trigger": "Players must interpret the incoming insect wave and its threat pattern, then choose an appropriate enemy type to counter, adjust defenders, and spend limited resources on the highest-value counter to optimize survival and progression."
+    },
+    "local_authoring_parts::0778c45b8ee50a972b2f360b32aa19e0e8c86da134962c86a87f4553d7d54290:stateChange": {
+      "stateChange": "Players must interpret the incoming insect wave and its threat pattern, then choose an appropriate enemy type to counter, adjust defenders, and spend limited resources on the highest-value counter to optimize survival and progression. This action directly results in a world state change, where the game's environment is altered based on the player's strategic"
+    },
+    "local_authoring_parts::fd068eb9e85a5bf32ad84b5a07f0168ad54abc0c9ae0895fd93e9d592cee4317:systemInterconnections:3": {
+      "fromId": "Enemy type counterplay",
+      "toId": "World state change and next selection",
+      "stateKeys": [
+        "Enemy type counterplay",
+        "World state change and next selection"
+      ],
+      "fromSystem": "Enemy type counterplay의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 플레이. 플레이어는 세계 상태와 다음 선택을 바꾼다.",
+      "toSystem": "World state change and next selection",
+      "trigger": "Players must interpret the incoming insect wave and its threat pattern, then choose an appropriate enemy type to counter, adjust defenders, and spend limited resources on the highest-value counter to optimize survival and progression.",
+      "stateChange": "Players must interpret the incoming insect wave and its threat pattern, then choose an appropriate enemy type to counter, adjust defenders, and spend limited resources on the highest-value counter to optimize survival and progression. This action directly results in a world state change, where the game's environment is altered based on the player's strategic"
+    },
+    "local_authoring_parts::723e338acccdebc1093de79b2fc9226bb9d3e3c3252e771927db29be5a9d2aef:fromId": {
+      "fromId": "Enemy type counterplay"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 59,
-      "successes": 56,
+      "calls": 61,
+      "successes": 58,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3800424,
-      "lastMs": 32443,
+      "totalMs": 3863648,
+      "lastMs": 29742,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:52:57.312Z"
+      "updatedAt": "2026-10-08T15:54:00.540Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:52:57.312Z",
+  "updatedAt": "2026-10-08T15:54:00.540Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3489,7 +3507,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:52:57.312Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:54:00.540Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
