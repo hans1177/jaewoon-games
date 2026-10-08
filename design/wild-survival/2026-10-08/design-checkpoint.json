@@ -34,25 +34,51 @@
         "실제 입력을 수행하고, 월드·대상·자원·위험·진행 상태가 변한다.",
         "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다."
       ]
+    },
+    "local_authoring_parts::3f6e147ecd50b1c6f13d866caf35fad2c43f6d447e2d1e9e9531e2155d451599:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 상태",
+        "플레이어의 현재 목표",
+        "실제 입력",
+        "대상/공간 선택",
+        "자원 상태",
+        "위험 상태",
+        "보상 상태"
+      ],
+      "stateOutputs": [
+        "변화된 월드 상태",
+        "변화된 대상/공간 상태",
+        "변화된 자원 상태",
+        "변화된 위험 상태",
+        "변화된 보상 상태",
+        "플레이어의 다음 목표",
+        "다음 지역/상호작용",
+        "다음 전략 선택"
+      ],
+      "name": "생존의 실질적 행동과 선택",
+      "purpose": "플레이어가 현재 상황과 목표를 읽고, 야생 생존의 실제 플레이 핵심 행동을 선택하며, 월드·대상·자원·위험·진행 상태를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다.",
+      "playerChoice": "실제 입력을 수행하고, 월드·대상·자원·위험·진행 상태가 변한다. 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 517957,
-      "lastMs": 92074,
+      "totalMs": 571425,
+      "lastMs": 53468,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:06:13.258Z"
+      "updatedAt": "2026-10-08T13:07:06.727Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:35.274Z",
-  "updatedAt": "2026-10-08T13:06:13.258Z",
+  "updatedAt": "2026-10-08T13:07:06.727Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2136,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:06:13.258Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:07:06.727Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
