@@ -212,4 +212,16 @@ test('Vibe common character equipment inventory and trading screens sync exact o
  assert.match(shop,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
  assert.match(shop,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
  assert.match(shop,/root:SetAttribute\("BoundShopItemCount",#shown\)/);
+ const trade=section('CreateBuySellPanel','CreateBuybackPanel');
+ assert.match(trade,/name=options.name or "BuySellPanel",size=options.size or UDim2.new\(1,-24,1,-24\)/);
+ assert.match(trade,/local function sync\(state\)/);
+ assert.match(trade,/item.sellPrice/);
+ assert.match(trade,/mode=="SELL"/);
+ assert.match(trade,/action\.Activated:Connect\(function\(\)/);
+ assert.match(trade,/options.onBuy\(item.id,item\)/);
+ assert.match(trade,/options.onSell\(item.id,item\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsTradeAuthority",false\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(trade,/Sync=sync/);
+ assert.doesNotMatch(trade,/DataStoreService|SetAsync|UpdateAsync|FireServer|RemoteEvent/);
 });
