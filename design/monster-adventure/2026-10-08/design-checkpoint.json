@@ -563,25 +563,90 @@
           "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
         }
       ]
+    },
+    "local_authoring_parts::6030342837b0903141b2434c740710ac144722fbb56bc8fde03dfba85119ca8d:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN_01",
+          "toId": "A_01",
+          "stateKeys": [
+            "WorldState"
+          ],
+          "fromSystem": "MAIN",
+          "toSystem": "A",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "WorldState is transformed into NextAction through a causal chain."
+        },
+        {
+          "fromId": "A_01",
+          "toId": "B_01",
+          "stateKeys": [
+            "WorldState"
+          ],
+          "fromSystem": "A",
+          "toSystem": "B",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "WorldState is transformed into NextAction through a causal chain."
+        },
+        {
+          "fromId": "B_01",
+          "toId": "c_01",
+          "stateKeys": [
+            "WorldState"
+          ],
+          "fromSystem": "B",
+          "toSystem": "c",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "WorldState is transformed into NextAction through a causal chain."
+        },
+        {
+          "fromId": "c_01",
+          "toId": "DELVE_01",
+          "stateKeys": [
+            "WorldState"
+          ],
+          "fromSystem": "c",
+          "toSystem": "DELVE",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "WorldState is transformed into NextAction through a causal chain."
+        },
+        {
+          "fromId": "DELVE_01",
+          "toId": "MAIN_01",
+          "stateKeys": [
+            "WorldState"
+          ],
+          "fromSystem": "DELVE",
+          "toSystem": "MAIN",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "WorldState is transformed into NextAction through a causal chain."
+        }
+      ],
+      "progressionDirection": "sequential",
+      "progressionEconomyBalance": {
+        "progressionLoop": "linear",
+        "resourceFlow": "incremental",
+        "balanceRules": "balanced"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1868991,
-      "lastMs": 300101,
+      "totalMs": 2153056,
+      "lastMs": 284065,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:30:16.209Z"
+      "updatedAt": "2026-10-08T13:35:00.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:30:16.209Z",
+  "updatedAt": "2026-10-08T13:35:00.275Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2671,7 +2736,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:25:16.103Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:35:00.275Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
