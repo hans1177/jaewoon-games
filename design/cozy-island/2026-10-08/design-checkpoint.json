@@ -430,25 +430,209 @@
           "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
         }
       ]
+    },
+    "local_authoring_parts::036bdd60d2ce4070d1bb764d06333edb16c732e9ece5ba77a9db391eec7bfcb7:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::512a9c50be292c150ffdd93eb75d086ee171106a806f371a9103f7f9d9001224:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+        "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+        "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+        "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+        "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+        "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+            "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+            "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+            "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+            "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+            "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+            "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+          ],
+          "stateOutputs": [
+            "STATE: 나무·식량 수집 상태 → OUTPUT: 직접 채집",
+            "STATE: 주민 자동화 상태 → OUTPUT: 주민 고용",
+            "STATE: 병영 강화 상태 → OUTPUT: 병사 모집",
+            "STATE: 자원 거점 선택 상태 → OUTPUT: 자원 거점 선택",
+            "STATE: 자동전투 상태 → OUTPUT: 자동전투 시작",
+            "STATE: 점령 상태 → OUTPUT: 점령 보상 획득",
+            "STATE: 협동 지원 상태 → OUTPUT: 협동 지원"
+          ],
+          "name": "자원 거점 점령 시스템",
+          "purpose": "자원 거점 선택과 점령을 위한 시스템으로, 각 거점은 서로 다른 자원과 보상을 제공하며, 플레이어는 자원을 수집하고 점령을 통해 왕국을 확장한다.",
+          "playerChoice": "자원 거점 선택, 자원 수집, 점령 보상 획득, 협동 지원을 통해 왕국 확장"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::87e54f7dc94fe4d52752902d479a94fc8cc1ca4ebe22dfbf0084503d7db76ea8:signatureSystems:0": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "나무·식량 수집 상태",
+        "주민 자동화 상태",
+        "병영 강화 상태",
+        "자원 거점 선택 상태",
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "stateOutputs": [
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다. 주민은 자동화로 생산, 병사는 자원으로 전환하며 전투력을 확장한다. 5개 거점을 순차적으로 점령하며 확장한다. 자동전투와 협동 지원은 서버 권한으로 계산 및 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
+      "playerChoice": "나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다."
+    },
+    "local_authoring_parts::87e54f7dc94fe4d52752902d479a94fc8cc1ca4ebe22dfbf0084503d7db76ea8:signatureSystems:1": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "A",
+      "stateInputs": [
+        "나무·식량 수집 상태",
+        "주민 자동화 상태",
+        "병영 강화 상태",
+        "자원 거점 선택 상태",
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "stateOutputs": [
+        "자동전투 상태",
+        "점령 상태",
+        "협동 지원 상태"
+      ],
+      "name": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다. 주민은 자동화로 생산, 병사는 자원으로 전환하며 전투력을 확장한다. 5개 거점을 순차적으로 점령하며 확장한다. 자동전투와 협동 지원은 서버 권한으로 계산 및 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
+      "playerChoice": "나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 429344,
-      "lastMs": 65882,
+      "totalMs": 577558,
+      "lastMs": 41295,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:32:51.121Z"
+      "updatedAt": "2026-10-08T15:35:19.346Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T15:25:41.713Z",
-  "updatedAt": "2026-10-08T15:32:51.123Z",
+  "updatedAt": "2026-10-08T15:35:19.346Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -999,12 +1183,54 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:32:51.123Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다. 손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다. 기본 섬 노동과 주민 자동화는",
+      "playerFantasy": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
+      "coreFun": "손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감. 나무·식량 직접 채집, 주민 고용과 벌목/농업 자동화, 병영 강화와 병사 모집, 다음 자원 거점 선택, 보이는 자동전투와 점령 보상, 협동 지원으로 강한 거점 공략. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다. 기본 섬 노동과 주민 자동화는 실제 성장 상태로 연결한다. 서버 권한으로 자동전투와 점령 상태를 시각적으로 표시한다.",
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무·식량 수집 상태",
+        "ACTION: 주민 고용 → STATE: 주민 자동화 상태",
+        "INPUT: 병사 모집 → STATE: 병영 강화 상태",
+        "ACTION: 자원 거점 선택 → STATE: 자원 거점 선택 상태",
+        "OUTPUT: 자동전투 시작 → STATE: 자동전투 상태",
+        "OUTPUT: 점령 보상 획득 → STATE: 점령 상태",
+        "ACTION: 협동 지원 → STATE: 협동 지원 상태"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T15:35:19.346Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
