@@ -34,25 +34,61 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::906644e9347d28f1a16aa52b9e6eacdf5c888319f459093d699a3aa31043fe62:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "matchFound",
+        "comboCreated",
+        "levelCompleted"
+      ],
+      "name": "Board Pattern",
+      "purpose": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle.",
+      "playerChoice": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then attempt to solve it by creating matches, combos, and using immediate feedback to achieve the objective."
+    },
+    "local_authoring_parts::906644e9347d28f1a16aa52b9e6eacdf5c888319f459093d699a3aa31043fe62:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "matchFound",
+        "comboCreated",
+        "levelCompleted"
+      ],
+      "name": "Puzzle Constraint",
+      "purpose": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle.",
+      "playerChoice": "Player selects a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. They then attempt to solve it by creating matches, combos, and using immediate feedback to achieve the objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 461652,
-      "lastMs": 64623,
+      "totalMs": 669997,
+      "lastMs": 104668,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:57:24.163Z"
+      "updatedAt": "2026-10-08T13:00:52.511Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T12:57:24.163Z",
+  "updatedAt": "2026-10-08T13:00:52.512Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2125,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:57:24.163Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:00:52.511Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
