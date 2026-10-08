@@ -130,7 +130,7 @@ test('genre UI detection rejects unowned menu keywords and platform-incompatible
     assert.equal(stub.candidateFeatures.find(row=>row.role==='TRADE').status,
       'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED','stubs may not become live shop features');
     fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
-      'local function purchaseMerchantEquipment(player,kind)\\n local cost=50\\n player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)\\n end');
+      'local function purchaseMerchantEquipment(player,kind)\n local cost=50\n player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)\n end');
     const owned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
     assert.equal(owned.candidateFeatures.find(row=>row.role==='TRADE').status,
       'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
