@@ -503,25 +503,100 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::96fdbaf90b7e3782a77c8f9dbcbdd0e51489046567018a3d86ab48cfd2df9d3b:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "Player selects and refines the next progression choice based on evolving build, enemy pressure, and run outcomes",
+          "stateChange": "The build evolves dynamically based on player decisions, enemy pressure, and run results"
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "Player combines upgrades into a stronger build, survives harder waves or a boss, then converts the run result into the next progression choice",
+          "stateChange": "The progression choice becomes more complex and strategic, incorporating adaptive challenge layers and emergent narrative"
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "Player refines the progression choice based on evolving build, enemy pressure, and run outcomes",
+          "stateChange": "The progression choice becomes more nuanced, incorporating dynamic gameplay mechanics and adaptive challenge layers"
+        },
+        {
+          "fromId": "C",
+          "toId": "MAIN",
+          "stateKeys": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "Player refines the progression choice based on evolving build, enemy pressure, and run outcomes",
+          "stateChange": "The progression choice becomes more refined, incorporating dynamic gameplay mechanics and adaptive challenge layers"
+        },
+        {
+          "fromId": "MAIN",
+          "toId": "DELVE",
+          "stateKeys": [
+            "nextProgressionChoice",
+            "modifiedBuild",
+            "updatedRunResult"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "Player refines the progression choice based on evolving build, enemy pressure, and run outcomes",
+          "stateChange": "The progression choice becomes more exploratory, allowing players to refine their progression choice while maintaining core gameplay mechanics"
+        }
+      ],
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Iterative",
+        "resourceFlow": "Dynamic",
+        "balanceRules": "Adaptive"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
-      "failures": 1,
-      "timeouts": 1,
+      "calls": 13,
+      "successes": 11,
+      "failures": 2,
+      "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1562962,
-      "lastMs": 300101,
+      "totalMs": 2066617,
+      "lastMs": 300033,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:59:58.532Z"
+      "updatedAt": "2026-10-08T09:08:22.192Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:55.519Z",
-  "updatedAt": "2026-10-08T08:59:58.533Z",
+  "updatedAt": "2026-10-08T09:08:22.192Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2722,7 +2797,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:54:58.422Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:03:22.157Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -2735,6 +2810,7 @@
     "status": "AUTHORED_CANDIDATE"
   },
   "localAuthoringSplits": {
-    "96fdbaf90b7e3782a77c8f9dbcbdd0e51489046567018a3d86ab48cfd2df9d3b": true
+    "96fdbaf90b7e3782a77c8f9dbcbdd0e51489046567018a3d86ab48cfd2df9d3b": true,
+    "002a0009f534b701c20e61374d4f2b43d30b48599d17967dddfcf2e8b7950012": true
   }
 }
