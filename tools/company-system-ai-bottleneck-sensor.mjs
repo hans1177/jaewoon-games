@@ -146,7 +146,9 @@ function developmentFloorSnapshot(developmentQueue={}) {
   const cohorts=new Map();
   for(const row of rows){
     if(!row.failureSignature)continue;
-    const key=[row.platform,row.stage,row.failureSignature].join('|');
+    const key=[row.platform,row.stage,row.failureSignature,
+      row.failureSignature.startsWith('ROBLOX_FIRST_FRAME_')?row.classification:null
+    ].filter(Boolean).join('|');
     if(!cohorts.has(key))cohorts.set(key,[]);
     cohorts.get(key).push(row.gameId);
   }
