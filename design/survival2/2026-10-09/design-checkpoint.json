@@ -94,25 +94,203 @@
       "name": "DEEPENED_EXPLORATION",
       "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
       "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+    },
+    "local_authoring_parts::67250332aad7a4baa4991ef43e59eab37cfcb053f87fbbd5bf2bec1a29c31c6c:signatureSystems:4": {
+      "id": "DELVE_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "resources",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "new status with altered environment",
+        "changed group dynamics"
+      ],
+      "name": "DEEPENED_EXPLORATION",
+      "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+      "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+    },
+    "local_authoring_parts::c20ea9f931defe08dc7bd686779693e2bf2d813a6108d973cd41db5f874388a0:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        }
+      ]
+    },
+    "local_authoring_parts::4c1af297f8f0a6d72e1f12b012cac6ae07719cd4fa1ef218e358fd4920578e41:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change to reflect new resources, risks, and group dynamics.\nACTION: Main loop continues with new state, leading to next choice.",
+        "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk.\nOUTPUT: New status reflects improved capabilities, altered environment, or preparedness for higher threats.\nACTION: Main loop adapт",
+        "INPUT: Discover hidden patterns in the forest, understand ecological shifts, and make decisions based on knowledge gained.\nSELECT: Make choices that alter the world state through discovery, mastery, or re-exploration.\nOUTPUT: New status includes learned patterns, changed environment, or redefined goals.\nACTION: Main loop continues with re"
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "To reflect the impact of past decisions on current state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        },
+        {
+          "id": "DELVE_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "resources",
+            "group readiness"
+          ],
+          "stateOutputs": [
+            "new status with altered environment",
+            "changed group dynamics"
+          ],
+          "name": "DEEPENED_EXPLORATION",
+          "purpose": "To reflect the impact of deepened exploration on world state and future choices.",
+          "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 668962,
-      "lastMs": 98087,
+      "totalMs": 764926,
+      "lastMs": 95964,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:34:51.054Z"
+      "updatedAt": "2026-10-08T18:36:27.020Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:34:51.055Z",
+  "updatedAt": "2026-10-08T18:36:27.022Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2340,7 +2518,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:34:51.054Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:36:27.022Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
