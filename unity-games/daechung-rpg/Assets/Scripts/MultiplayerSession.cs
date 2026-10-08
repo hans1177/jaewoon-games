@@ -99,6 +99,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool Connected => _connected;
         public int ParticipantCount => _participantCount;
+        public int RemoteActionVersion { get; private set; }
         public string Status => _status;
 
         // 모바일: 기존 Unity OnGUI 스크롤 영역에서만 호출하며 가로폭을 소비하지 않는다.
@@ -127,6 +128,7 @@ namespace JaewoonGames.DaechungRpg
                 GUILayout.Label(string.IsNullOrEmpty(_peerName) ? "Waiting for partner" :
                     "PARTNER " + _peerName + " · " + _peerRegion);
                 if (!string.IsNullOrEmpty(_peerAction)) GUILayout.Label("PARTNER ACTION " + _peerAction);
+                if (!string.IsNullOrEmpty(_peerRegion)) GUILayout.Label("PARTNER ENEMY HP " + _peerEnemyHp);
                 if (_peerLastSeen > 0f && Time.unscaledTime - _peerLastSeen > 5f)
                     GUILayout.Label("PARTNER STATE DELAYED");
             }
@@ -316,6 +318,7 @@ namespace JaewoonGames.DaechungRpg
                         _peerAction = (message.action ?? "") + " / " + (message.enemyId ?? "")
                             + " / enemy HP " + message.enemyHp;
                         _peerLastSeen = Time.unscaledTime;
+                        RemoteActionVersion++;
                     }
                     // 원격 이벤트는 표시 전용이다. 임의 보상·전투 손실 조작은 금지한다.
                     break;
