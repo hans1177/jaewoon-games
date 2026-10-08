@@ -317,25 +317,128 @@
           "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
         }
       ]
+    },
+    "local_authoring_parts::f4d782c4d0808e6d95680a6a5f5cbe1e9c34af2caf9e67d771fe6d668b3d0be2:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::5a95974c8c1a1adca8bb5f6815800e9829ce1f21846920512718f0ab9f997165:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "MAIN",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "B",
+          "purpose": "기존의 인과문법을 비튼다",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "c",
+          "purpose": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "Reward",
+            "ProgressionBenefit"
+          ],
+          "name": "DELVE",
+          "purpose": "게임의 깊이를 확보하고, 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화한다",
+          "playerChoice": "이를 통해 플레이어의 선택과 세계 규칙 간의 상호작용을 구체화하고, 게임의 깊이를 확보한다"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1002063,
-      "lastMs": 98104,
+      "totalMs": 1088424,
+      "lastMs": 86361,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:15:49.254Z"
+      "updatedAt": "2026-10-08T13:17:15.619Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:15:49.257Z",
+  "updatedAt": "2026-10-08T13:17:15.627Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2417,12 +2520,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:15:49.257Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다",
+      "playerFantasy": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
+      "coreFun": "몬스터 어드벤처는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 MAIN, 두 대축은 A/B, 보조 요소는 c, 발견·숙련·재방문은 @로 구분된다. 게임의 핵심 재미는 반복 가능한 루프, 즉시 이해되는 입력/피드백, 그리고 고유한 시스템 연결을 포함한다. 게임은 모바일에서도 즉시 이해되는 단순한 입력으로 시작하며, 선택 결과가 다음 상태와 세계 규칙에 영향을 주는 CASUAL 게임이다. 게임의 핵심 루프는 Start → Run → Result → Retry의 순환 구조로 구성되며, 각 단계는 즉각적인 피드백과 보상, 위험, 그리고 다음 선택을 포함한다. 게임의 시스템은 MAIN, A, B, c, @로 구성되어, 각각의 상태 변화는 플레이어의 선택과 세계 규칙에 직접 연결되어야 한다. 게임의 인과법칙은 기존의 인과문법을 비튼다. 게임의 설계는 기존의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:17:15.622Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
