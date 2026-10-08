@@ -470,25 +470,33 @@
       "toSystem": "DELVE(@): 세계의 역사, 지역, 캐릭터, 아이템 등 다양한 요소와 연결되어 있으며, 탐험, 위험, 성공, 실패, 성장 상태가 일관되게 강화된다.",
       "trigger": "world_state",
       "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::90bd95e42a42aadb5d0db7d8e0ea51c6857eb25835b724ed2afd1aaa04c5c6c1:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "DELVE(@): 세계의原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1715529,
-      "lastMs": 94249,
+      "totalMs": 1807682,
+      "lastMs": 92153,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:15:51.869Z"
+      "updatedAt": "2026-10-08T21:17:24.025Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T21:15:51.870Z",
+  "updatedAt": "2026-10-08T21:17:24.025Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2501,7 +2509,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:15:51.870Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:17:24.025Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
