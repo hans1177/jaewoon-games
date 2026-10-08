@@ -47,25 +47,38 @@
       "name": "DELVE(@)",
       "purpose": "게임 내 탐험, 위험, 성공, 실패, 성장 상태의 관리 및 변환",
       "playerChoice": "플레이어가 탐험, 위험, 성공, 실패, 성장 상태에 대한 선택 또는 대응 전략을 결정함으로써 세계 상태를 변경합니다."
+    },
+    "local_authoring_parts::b26e8980077c4e956ac75228f625a95ea14b978e5a2e469ee773d52f196b9ec4:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "World exploration and resource acquisition",
+      "playerChoice": "Explore new areas, collect resources, and gain insight into the world's history, geography, and culture through gameplay and interaction with characters, items, and UI elements."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 542442,
-      "lastMs": 97329,
+      "totalMs": 637407,
+      "lastMs": 94965,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:56:18.745Z"
+      "updatedAt": "2026-10-08T20:57:53.712Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-08T20:56:18.745Z",
+  "updatedAt": "2026-10-08T20:57:53.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1927,7 +1940,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:56:18.745Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:57:53.712Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
