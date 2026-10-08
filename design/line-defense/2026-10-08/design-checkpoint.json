@@ -548,25 +548,259 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::4d659565ab7d785673018742d133ff5711ed4efaf3c756aa243f25c3a868bace:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "enemyWave",
+          "stateChange": "towersDefenders"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "enemyWave",
+          "stateChange": "towersDefenders"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "enemyWave",
+          "stateChange": "towersDefenders"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "enemyWave",
+          "stateChange": "towersDefenders"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "resources",
+          "stateChange": "resources"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "resources",
+          "stateChange": "resources"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "resources",
+          "stateChange": "resources"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "resources",
+          "stateChange": "resources"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "defenseStrategy",
+          "stateChange": "defenseStrategy"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "defenseStrategy",
+          "stateChange": "defenseStrategy"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "defenseStrategy",
+          "stateChange": "defenseStrategy"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "defenseStrategy",
+          "stateChange": "defenseStrategy"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "gameProgress",
+          "stateChange": "gameProgress"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "gameProgress",
+          "stateChange": "gameProgress"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "gameProgress",
+          "stateChange": "gameProgress"
+        },
+        {
+          "fromId": "main-1",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "towersDefenders",
+            "resources",
+            "defenseStrategy",
+            "gameProgress"
+          ],
+          "fromSystem": "main-1",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "gameProgress",
+          "stateChange": "gameProgress"
+        }
+      ],
+      "progressionDirection": "선형",
+      "progressionEconomyBalance": {
+        "progressionLoop": "기본",
+        "resourceFlow": "선형",
+        "balanceRules": "기본"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1672327,
-      "lastMs": 300100,
+      "totalMs": 1907890,
+      "lastMs": 235563,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T09:11:10.029Z"
+      "updatedAt": "2026-10-08T09:15:05.594Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:17.650Z",
-  "updatedAt": "2026-10-08T09:11:10.029Z",
+  "updatedAt": "2026-10-08T09:15:05.594Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2763,7 +2997,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:06:09.921Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:15:05.594Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
