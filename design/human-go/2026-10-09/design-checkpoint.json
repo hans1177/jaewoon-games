@@ -34,25 +34,42 @@
         "SELECT: Complete a short interaction or challenge and add its result to progression.",
         "OUTPUT: Add new state to the world through discovery, relationship, or action."
       ]
+    },
+    "local_authoring_parts::a2682e25cd76a972d5183255684ad6df79fdfd62bd2ee0e88a369d54533e5147:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "DISCOVERY",
+        "RELATIONSHIP",
+        "ACTION"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "PROGRESSION",
+        "NEXT_SELECTION"
+      ],
+      "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Explore a compact activity space and discover a person, task or collectible opportunity."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 282064,
-      "lastMs": 37800,
+      "totalMs": 336455,
+      "lastMs": 54391,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:13:28.804Z"
+      "updatedAt": "2026-10-08T21:14:23.197Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:08:46.720Z",
-  "updatedAt": "2026-10-08T21:13:28.804Z",
+  "updatedAt": "2026-10-08T21:14:23.197Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1980,7 +1997,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:13:28.804Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:14:23.197Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
