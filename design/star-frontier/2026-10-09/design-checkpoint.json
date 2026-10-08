@@ -67,25 +67,41 @@
       "name": "별길 개척자 - 중심 행동",
       "purpose": "플레이어가 빌딩 게임의 진입 단계에서 선택 결과를 입력하여 다음 상태로 연결되는 PUZZLE 게임입니다. 진입 과제 해결과 새 빌딩 패턴 도전 두 가지 주요 행동을 수행하며, 상태 변주를 통해 게임의 깊이를 증대시키고, 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하는 핵심 재미와 시스템 연결을 확정합니다.",
       "playerChoice": "진입 과제 해결 또는 새 빌딩 패턴 도전을 선택해 주요 행동을 수행합니다."
+    },
+    "local_authoring_parts::36e79bbeacd8cd7156227a6d244b4ba5f8128f322f7d4870a51b42392293e8f9:signatureSystems:2": {
+      "id": "STAR-FRONTIER-MAIN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT: 플레이어가 빌딩 게임의 진입 단계에서 선택 결과를 입력하여 다음 상태로 연결되는 PUZZLE 게임입니다.",
+        "SELECT: '진입 과제 해결' 또는 '새로운 빌딩 패턴 도전'을 선택해 주요 행동을 수행합니다.",
+        "OUTPUT: 선택 결과에 따른 상태 변주를 통해 게임의 깊이를 증대시키며, 이는 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시검"
+      ],
+      "stateOutputs": [
+        "STATE: 선택 결과와 상태 변주가 실제 월드/시스템 상태 변화로 연결되어 새로운 핵심 재미와 시스템 연결을 확정합니다.",
+        "OUTPUT: 선택 결과에 따른 상태 변주를 통해 게임의 깊이를 증대시켜, 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하는"
+      ],
+      "name": "별길 개척자 - 중심 행동",
+      "purpose": "플레이어가 빌딩 게임의 진입 단계에서 선택 결과를 입력하여 다음 상태로 연결되는 PUZZLE 게임입니다. 진입 과제 해결과 새 빌딩 패턴 도전 두 가지 주요 행동을 수행하며, 상태 변주를 통해 게임의 깊이를 증대시키고, 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하는 핵심 재미와 시스템 연결을 확정합니다.",
+      "playerChoice": "진입 과제 해결 또는 새 빌딩 패턴 도전을 선택해 주요 행동을 수행합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 651962,
-      "lastMs": 134493,
+      "totalMs": 788546,
+      "lastMs": 136584,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:02:30.927Z"
+      "updatedAt": "2026-10-08T18:04:47.512Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:51:38.930Z",
-  "updatedAt": "2026-10-08T18:02:30.927Z",
+  "updatedAt": "2026-10-08T18:04:47.512Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2122,7 +2138,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:02:30.927Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:04:47.512Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
