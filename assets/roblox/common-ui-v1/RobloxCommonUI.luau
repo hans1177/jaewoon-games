@@ -3978,10 +3978,65 @@ function RobloxCommonUI.CreateNpcRelationshipTimeline(options)
   return root,parts
 end
 
+-- 파티창: 기존 게임에서 전달한 멤버/역할/인원 상태만 출력한다.
 function RobloxCommonUI.CreatePartyRoleOverview(options)
-  local root,parts=deepSystemPanel(options,"PARTY_ROLE_OVERVIEW","PARTY_ROLE_OVERVIEW","파티 역할",{"전투 역할","지원 역할","현재 상태","중복/빈 역할"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"PARTY_ROLE_OVERVIEW","PARTY_ROLE_OVERVIEW")
+  local title=commonText(body,"Title",options.title or "파티 역할",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,32),theme.Text,18,true)
+  local summary=commonText(body,"Summary","",
+    UDim2.fromOffset(8,39),UDim2.new(1,-16,0,34),theme.MutedText,13,false)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="PartyMembers";list.Position=UDim2.fromOffset(0,82);list.Size=UDim2.new(1,0,1,-82)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyParty","현재 확인된 파티 구성원이 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local buttons,members={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    members=type(state.members)=="table"and state.members or {}
+    local capacity=tonumber(state.capacity)
+    summary.Text=capacity and string.format("%d / %d",#members,capacity)or tostring(state.summary or "")
+    if state.summary~=nil then summary.Text=tostring(state.summary)end
+    for i,row in ipairs(members)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="PartyMember"..i,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=i+1;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=members[index]
+          if current and current.id~=nil and current.canSelect==true and type(options.onSelect)=="function"then
+            options.onSelect(current.id,current)
+          end
+        end)
+      end
+      local button=buttons[i]
+      button.Name="PartyMember"..i;button.LayoutOrder=i+1;button.Visible=true
+      button.Text=tostring(row.name or "").." · "..tostring(row.role or row.status or "")
+      button:SetAttribute("BoundMemberId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      local selectable=row.id~=nil and row.canSelect==true and type(options.onSelect)=="function"
+      button.Active=selectable;button.AutoButtonColor=selectable
+    end
+    for i=#members+1,#buttons do buttons[i].Visible=false end
+    empty.Visible=#members==0
+    root:SetAttribute("BoundPartyMemberCount",#members)
+    root:SetAttribute("PartyStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.party or {})
+  root:SetAttribute("TouchScrollable",true)
+  root:SetAttribute("OwnsPartyAuthority",false)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=body,list=list,labels=buttons,buttons=buttons,title=title,summary=summary,Sync=sync}
 end
 
 function RobloxCommonUI.CreateRouteRiskPreview(options)
