@@ -1036,25 +1036,41 @@
     },
     "local_authoring_parts::5a860c2f5a03747ab8c6ac1bc22b2e5e15825022f666f2fb9c75119e3b4948ce:trigger": {
       "trigger": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::5a860c2f5a03747ab8c6ac1bc22b2e5e15825022f666f2fb9c75119e3b4948ce:stateChange": {
+      "stateChange": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::da2366406305f9adc8d3105903bd8e4dab8dd4885bb2f3e6ecc8e66ea7faa73c:systemInterconnections:3": {
+      "fromId": "systemInterconnections[3].stateChange",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "START_STATE → RUN_STATE",
+        "RUN_STATE → RESULT_STATE",
+        "RESULT_STATE → NEXT_WORLD_STATE"
+      ],
+      "fromSystem": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+      "toSystem": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+      "trigger": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+      "stateChange": "START_STATE → RUN_STATE: 플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 51,
+      "calls": 55,
+      "successes": 52,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 4135088,
-      "lastMs": 68611,
+      "totalMs": 4203377,
+      "lastMs": 68289,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:48:58.473Z"
+      "updatedAt": "2026-10-08T23:50:06.764Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T23:48:58.473Z",
+  "updatedAt": "2026-10-08T23:50:06.766Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3208,7 +3224,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:48:58.473Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:50:06.766Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
