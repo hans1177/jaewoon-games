@@ -204,6 +204,85 @@ test('common local AI personality changes allowed tactical preference but never 
   assert.equal(boldDecision.gameplayAuthority,false);
 });
 
+// 메인: 실제 AI 제안은 기존 엔진의 대화·파티·좌표·스토리·전투 권한을 대신하지 않는다.
+test('NPC story conversation is event-grounded, proximity gated and idempotent',()=>{
+  const actor=new JaewoonCommonAI({config:{socialCooldownMs:3000}});
+  const beat={id:'village-arrival',sourceEventId:'player-entered-village',eligible:true,engineApproved:true};
+  const context={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,
+    canInitiateDialogue:true,canInteract:false,authoredStoryBeat:beat};
+  const proposal=actor.decide(context);
+  assert.equal(proposal.state,JaewoonCommonAI.State.TALK);
+  assert.equal(proposal.target.sourceEventId,beat.sourceEventId);
+  assert.equal(proposal.gameplayAuthority,false);
+  assert.notEqual(actor.decide({...context,now:21000}).state,JaewoonCommonAI.State.TALK);
+  assert.equal(actor.decide({...context,now:22000,authoredStoryBeat:{...beat,id:'new-episode'}}).state,JaewoonCommonAI.State.TALK);
+  assert.notEqual(new JaewoonCommonAI().decide({...context,playerNearby:false}).state,JaewoonCommonAI.State.TALK);
+  assert.notEqual(new JaewoonCommonAI().decide({...context,authoredStoryBeat:{...beat,engineApproved:false}}).state,JaewoonCommonAI.State.TALK);
+});
+
+test('NPC party invitations require explicit prior engine admission and available slots',()=>{
+  const party={recruitable:true,engineApproved:true,openSlots:1,playerId:'player'};
+  const context={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,canInitiateDialogue:true,
+    partyInvitation:party};
+  const npc=new JaewoonCommonAI();
+  const invitation=npc.decide(context);
+  assert.equal(invitation.state,JaewoonCommonAI.State.INVITE);
+  assert.equal(invitation.targetId,'player');
+  assert.equal(invitation.gameplayAuthority,false);
+  assert.notEqual(npc.decide({...context,now:21000}).state,JaewoonCommonAI.State.INVITE);
+  for(const bad of [{openSlots:0},{engineApproved:false},{recruitable:false}]){
+    assert.notEqual(new JaewoonCommonAI().decide({...context,partyInvitation:{...party,...bad}}).state,JaewoonCommonAI.State.INVITE);
+  }
+});
+
+test('observed hints respect actor silence, danger and explicit companion orders',()=>{
+  const tip={id:'equipment-gap',text:'Check your unlocked weapon before the hunt',observed:true};
+  const npc={entityKind:'npc',now:1000,playerVisible:true,playerNearby:true,canInitiateDialogue:true,knownAdvice:tip};
+  assert.equal(new JaewoonCommonAI().decide(npc).state,JaewoonCommonAI.State.GUIDE);
+  assert.notEqual(new JaewoonCommonAI().decide({...npc,knownAdvice:{...tip,observed:false}}).state,JaewoonCommonAI.State.GUIDE);
+  const companion={entityKind:'companion',now:1000,playerVisible:true,ownerDistance:2,canInitiateDialogue:true,knownAdvice:tip,enemies:[]};
+  assert.equal(new JaewoonCommonAI().decide(companion).state,JaewoonCommonAI.State.GUIDE);
+  const enemy={id:'wolf',distance:2,threat:1,hpRatio:1};
+  assert.equal(new JaewoonCommonAI().decide({...companion,enemies:[enemy]}).state,JaewoonCommonAI.State.ATTACK);
+  const loyal=new JaewoonCommonAI();
+  loyal.setOrder(JaewoonCommonAI.Order.HOLD);
+  assert.equal(loyal.decide(companion).state,JaewoonCommonAI.State.GUARD);
+});
+
+test('NPC life route only proposes real nearby authored anchors and never teleports',()=>{
+  const context={entityKind:'npc',canRoam:true,movementAuthorized:true,regionId:'town',
+    currentActivity:{anchorId:'smith-shop'},authoredAnchors:[
+      {id:'smith-shop',regionId:'town',x:130,y:260},
+      {id:'foreign',regionId:'field-1',x:500,y:200}
+    ],patrolReady:false};
+  const npc=new JaewoonCommonAI();
+  const route=npc.decide(context);
+  assert.equal(route.state,JaewoonCommonAI.State.PATROL);
+  assert.equal(route.reason,'npc_authored_daily_route');
+  assert.equal(route.target.id,'smith-shop');
+  assert.equal(route.gameplayAuthority,false);
+  assert.notEqual(npc.decide({...context,movementAuthorized:false}).reason,'npc_authored_daily_route');
+  assert.notEqual(npc.decide({...context,currentActivity:{anchorId:'foreign'}}).reason,'npc_authored_daily_route');
+  assert.notEqual(npc.decide({...context,authoredAnchors:[{id:'bad',x:Infinity,y:2}]}).reason,'npc_authored_daily_route');
+});
+
+test('boss introduction uses authored dialogue once and preserves current attack logic',()=>{
+  const scene={id:'ogre-intro',sourceEventId:'ogre-seen-player',engineApproved:true,
+    authoredDialogue:'This is my domain.',requiredPhase:'PHASE_1'};
+  const context={entityKind:'boss',playerVisible:true,canPresentBossScene:true,
+    currentPhase:'PHASE_1',bossScene:scene,enemies:[{id:'player',distance:2,threat:1,hpRatio:1}]};
+  const boss=new JaewoonCommonAI();
+  const reveal=boss.decide(context);
+  assert.equal(reveal.state,JaewoonCommonAI.State.TALK);
+  assert.equal(reveal.reason,'boss_authored_cinematic');
+  assert.equal(reveal.target.skipAllowed,true);
+  assert.equal(reveal.target.presentationOnly,true);
+  assert.equal(reveal.gameplayAuthority,false);
+  assert.equal(boss.decide(context).state,JaewoonCommonAI.State.ATTACK);
+  assert.equal(new JaewoonCommonAI().decide({...context,currentPhase:'PHASE_2'}).state,JaewoonCommonAI.State.ATTACK);
+  assert.equal(new JaewoonCommonAI().decide({...context,bossScene:{...scene,engineApproved:false}}).state,JaewoonCommonAI.State.ATTACK);
+});
+
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
   assert.equal(ai.remember({id:'e1',type:'help'}),true);
