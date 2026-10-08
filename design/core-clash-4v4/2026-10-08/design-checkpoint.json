@@ -948,25 +948,53 @@
         "riskPressure": "BALANCED",
         "recoveryRules": "AUTOMATIC"
       }
+    },
+    "local_authoring_parts::49232a819fbc5411dcb830e28018d543d9e5931238a6ca81af0d9feecbfe4789:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-LOOP-1",
+      "toId": "CORE-LOOP-2",
+      "stateKeys": [
+        "RUN_RESULT",
+        "UPGRADES",
+        "BUILD_STATE"
+      ],
+      "fromSystem": "system-progression-core-loop-1-to-2-16chars+16chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+"
+    },
+    "local_authoring_parts::49232a819fbc5411dcb830e28018d543d9e5931238a6ca81af0d9feecbfe4789:toSystem,trigger,stateChange": {
+      "toSystem": "system-progression-core-loop-2-to-3-16chars+16chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars",
+      "trigger": "CORE-LOOP-1→CORE-LOOP-2",
+      "stateChange": "RUN_RESULT→NEXT_PROGRESSION_CHOICE, UPGRADES→BUILD_UPGRADE, BUILD_STATE→RUN_PROGRESS"
+    },
+    "local_authoring_parts::5b4b4c9ed69ebd65950bb76a72e4914ccee6576bfe78a8251bca9ef9998b4054:systemInterconnections:0": {
+      "fromId": "CORE-LOOP-1",
+      "toId": "CORE-LOOP-2",
+      "stateKeys": [
+        "RUN_RESULT",
+        "UPGRADES",
+        "BUILD_STATE"
+      ],
+      "fromSystem": "system-progression-core-loop-1-to-2-16chars+16chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+",
+      "toSystem": "system-progression-core-loop-2-to-3-16chars+16chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars+24chars",
+      "trigger": "CORE-LOOP-1→CORE-LOOP-2",
+      "stateChange": "RUN_RESULT→NEXT_PROGRESSION_CHOICE, UPGRADES→BUILD_UPGRADE, BUILD_STATE→RUN_PROGRESS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 30,
+      "calls": 34,
+      "successes": 32,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2928639,
-      "lastMs": 82912,
+      "totalMs": 3121698,
+      "lastMs": 98704,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:47:13.563Z"
+      "updatedAt": "2026-10-08T10:50:26.633Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:47:13.571Z",
+  "updatedAt": "2026-10-08T10:50:26.635Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3312,10 +3340,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:47:13.568Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:50:26.635Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
