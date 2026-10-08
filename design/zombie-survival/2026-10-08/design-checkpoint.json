@@ -49,25 +49,40 @@
       "name": "RUN_REWARD_SYSTEM",
       "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다."
+    },
+    "local_authoring_parts::511a852a05f9fd4580639a7bd799f4beaad1d3a3f9ce8de4323b2def2ccd6111:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "stateOutputs": [
+        "BUILD_UPGRADE",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "name": "BUILD_UPGRADE_SYSTEM",
+      "purpose": "플레이어의 '진행' - 선택 -> 상태 변화를 구체화한 반복 가능한 핵심 루프",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 428576,
-      "lastMs": 29639,
+      "totalMs": 460022,
+      "lastMs": 31446,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:28:56.583Z"
+      "updatedAt": "2026-10-08T13:29:28.030Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T13:28:56.583Z",
+  "updatedAt": "2026-10-08T13:29:28.030Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2281,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:28:56.583Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:29:28.030Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
