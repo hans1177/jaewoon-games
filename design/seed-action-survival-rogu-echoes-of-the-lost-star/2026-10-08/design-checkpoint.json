@@ -94,25 +94,203 @@
       "name": "KARMA_RETURN_c",
       "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
       "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+    },
+    "local_authoring_parts::1484752f4dce35b12b3b102cdb9e1be8fe69f0c21ded45f5c63aa20cc5b4fd03:signatureSystems:4": {
+      "id": "KARMA_RETURN_c",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "stateOutputs": [
+        "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+        "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+      ],
+      "name": "KARMA_RETURN_c",
+      "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+      "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+    },
+    "local_authoring_parts::51a50d1dc6cd97fed681b48731df5c102251c59d1ffec95aee5098f70b8f9bfa:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_B",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN_c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_c",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN_c",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_c",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        }
+      ]
+    },
+    "local_authoring_parts::e87effc3d86011cc15bf2547b117dbd805776b8a2dfab9cace3dd450b3c76fff:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어의 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "PROCESS: 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성된다.",
+        "OUTCOME: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "B",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_B",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN_c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_c",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        },
+        {
+          "id": "KARMA_RETURN_c",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "stateOutputs": [
+            "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+            "A/B와 c 서브요소가 MAIN의 결과를 읽고 변형할 수 있는 실제 게임 상태"
+          ],
+          "name": "KARMA_RETURN_c",
+          "purpose": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태",
+          "playerChoice": "MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 826706,
-      "lastMs": 110839,
+      "totalMs": 937894,
+      "lastMs": 111188,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:15:58.267Z"
+      "updatedAt": "2026-10-08T13:17:49.458Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:15:58.267Z",
+  "updatedAt": "2026-10-08T13:17:49.461Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:15:58.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:17:49.461Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
