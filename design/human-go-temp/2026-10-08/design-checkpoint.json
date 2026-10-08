@@ -34,25 +34,38 @@
         "INPUT: 선택 결과가 다음 월드 상태로 전환 → 상태 변화: 보상/위험/다음 선택의 순차적 연결",
         "INPUT: 성장이 발생 → 상태 변화: 새 행동 조합/경로/관계/발견/대응법 열림"
       ]
+    },
+    "local_authoring_parts::7269c3d22aa1e8ed3cd1a235ccade63bb78b0bed8fe032f1c0f12d32864d68e9:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_ACTION: Fight through an escalating horde in a short real-time survival r"
+      ],
+      "stateOutputs": [
+        "WORLD_RULE: Fight through an escalating horde in a short real-time survival r"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "Player choice that triggers the emergence of new gameplay mechanics and progression pathways",
+      "playerChoice": "Player selects a strategy to navigate the horde, which results in the activation of new gameplay mechanics and progression pathways"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 448087,
-      "lastMs": 72610,
+      "totalMs": 484466,
+      "lastMs": 36379,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:53:12.494Z"
+      "updatedAt": "2026-10-08T07:53:48.874Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:44.378Z",
-  "updatedAt": "2026-10-08T07:53:12.494Z",
+  "updatedAt": "2026-10-08T07:53:48.874Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:53:12.494Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:53:48.874Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
