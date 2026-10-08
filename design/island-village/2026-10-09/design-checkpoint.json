@@ -34,25 +34,40 @@
         "Use them to build or improve one village function → State change: Infrastructure upgrade → Reward: Enhanced daily life",
         "Unlock new resident/area → State change: New population/land added → Reward: Increased survival chances"
       ]
+    },
+    "local_authoring_parts::c748593721a9422911881fb3e04ec401fe42c55eba090362e9cb5ed2c026c978:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "stateOutputs": [
+        "New population/land added",
+        "Enhanced daily life"
+      ],
+      "name": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "purpose": "Establishes the core mechanism for resource gathering and village improvement, linking player choices to tangible game state changes.",
+      "playerChoice": "Gather focused island resources → Build or improve one village function → Unlock new resident/area → Progress toward next village goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 392870,
-      "lastMs": 45599,
+      "totalMs": 496640,
+      "lastMs": 103770,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:54:30.786Z"
+      "updatedAt": "2026-10-08T20:56:14.557Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T20:54:30.786Z",
+  "updatedAt": "2026-10-08T20:56:14.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2133,7 +2148,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:54:30.786Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:56:14.557Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
