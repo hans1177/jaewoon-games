@@ -86,25 +86,187 @@
       "name": "MATERIAL_CAUSAL_GRAMMAR_C",
       "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::98ea61d175fbc57fef688c1e975209cac52efc6efd7ee3e912604ab448270b59:signatureSystems:4": {
+      "id": "MATERIAL_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short",
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다.",
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ],
+      "name": "MATERIAL_DELVE",
+      "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::26eb6e3e9145c280ef274f94ba81c985d23ae401ec80c467c7ad28183acf1f4d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short",
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다.",
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_DELVE",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
+    },
+    "local_authoring_parts::993b8b8f10e5862c1af343353684a213024509eae9bd97b7636bc6d43cb04cde:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+        "SELECT: 선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'",
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_B",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_CAUSAL_GRAMMAR_C",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short",
+            "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+          ],
+          "stateOutputs": [
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다.",
+            "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+          ],
+          "name": "MATERIAL_DELVE",
+          "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 648887,
-      "lastMs": 114153,
+      "totalMs": 767245,
+      "lastMs": 118358,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:50:17.655Z"
+      "updatedAt": "2026-10-08T18:52:16.014Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:39:28.729Z",
-  "updatedAt": "2026-10-08T18:50:17.655Z",
+  "updatedAt": "2026-10-08T18:52:16.016Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2303,7 +2465,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:50:17.655Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:52:16.016Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
