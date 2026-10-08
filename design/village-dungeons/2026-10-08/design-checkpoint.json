@@ -347,25 +347,251 @@
           "playerChoice": "Player's final task completion in the game"
         }
       ]
+    },
+    "local_authoring_parts::49f0847fd844cbe8fccc397a9612fc637ee2660f87e0b2b62bf2774959e0fc86:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::750e60b6ba644224aaaee7cd4af31acd85d3108c42dd409069160ce54b16a815:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "INPUT_AND_MENU_TRANSITIONS",
+          "purpose": "Player's initial input and menu transitions in the game",
+          "playerChoice": "Player's initial input and menu transitions in the game"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "CONTEXT_LOSS",
+          "purpose": "Player's reaction to contextual loss in the game",
+          "playerChoice": "Player's reaction to contextual loss in the game"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "CONTEXT_LOSS",
+          "purpose": "Player's reaction to contextual loss in the game",
+          "playerChoice": "Player's reaction to contextual loss in the game"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "TASK_COMPLETION",
+          "purpose": "Player's final task completion in the game",
+          "playerChoice": "Player's final task completion in the game"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "TASK_COMPLETION",
+          "purpose": "Player's final task completion in the game",
+          "playerChoice": "Player's final task completion in the game"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "마을 던전 RPG은 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공하는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 통해 세계 상태를 바꾸는 중심 행동을 수행한다. 이는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 게임은 플레이어가 즉시 시작할 수 있는 단순한 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공한다. 게임은 플레이어가 시작 즉시 단순한 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 통해 세계 상태를 바꾸는 중심 행동을 수행한다. 이는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 게임은 플레이어가 즉시 시작할 수 있는 단순한 입력과 명확한 점수, 거리, 또는 짧은 세션 목표를 중심으로, 반복 가능한 핵심 루프와 즉각적인 피드백을 제공한다. 게임은 플레이어가",
+      "playerFantasy": "마을 던전 RPG에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다.",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임의 중심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임은 단순한 반복과 다른 경로, 위험, 결과를 만든다. 성장은 수치 증가뿐만 아니라 새 행동, 경로, 조합, 관계, 발견, 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임은 기존의 RPG식 시스템을 강제하지 않지만, CASUAL의 핵심 재미를 최우선으로 두고, 정체성 질문만 장르에 맞게 적용한다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "INPUT_AND_MENU_TRANSITIONS",
+          "purpose": "Player's initial input and menu transitions in the game",
+          "playerChoice": "Player's initial input and menu transitions in the game"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "CONTEXT_LOSS",
+          "purpose": "Player's reaction to contextual loss in the game",
+          "playerChoice": "Player's reaction to contextual loss in the game"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "CONTEXT_LOSS",
+          "purpose": "Player's reaction to contextual loss in the game",
+          "playerChoice": "Player's reaction to contextual loss in the game"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "TASK_COMPLETION",
+          "purpose": "Player's final task completion in the game",
+          "playerChoice": "Player's final task completion in the game"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "stateOutputs": [
+            "TASK_COMPLETION",
+            "INPUT_AND_MENU_TRANSITIONS",
+            "CONTEXT_LOSS",
+            "ERROR_RECOVERY",
+            "STATE_AND_COST_REGRESSION"
+          ],
+          "name": "TASK_COMPLETION",
+          "purpose": "Player's final task completion in the game",
+          "playerChoice": "Player's final task completion in the game"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 940605,
-      "lastMs": 100487,
+      "totalMs": 1028566,
+      "lastMs": 87961,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:55:35.681Z"
+      "updatedAt": "2026-10-08T12:57:03.647Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:39:54.867Z",
-  "updatedAt": "2026-10-08T12:55:35.684Z",
+  "updatedAt": "2026-10-08T12:57:03.657Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2438,12 +2664,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:55:35.684Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:57:03.650Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/village-dungeons/2026-10-08/design-seed.json",
+    "contentDigest": "e12ba2f2e11537929e12929be1bf9745935571092c7a6cf29f4ab5e28ca922b0",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
