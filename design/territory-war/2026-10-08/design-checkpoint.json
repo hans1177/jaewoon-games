@@ -550,25 +550,147 @@
       "name": "TERRITORY_ADAPTATION_CROSS",
       "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices. This system allows for cross-territory strategic adjustments based on dynamic gameplay conditions.",
       "playerChoice": "Select a territory objective that reflects the player's current strategic priorities, adapts to the evolving border pressure, and considers cross-territory strategic interactions and resource allocation constraints."
+    },
+    "local_authoring_parts::803630fadb3aca58bde4d5c8f400ae562454792042fc0cfe584139955e2036cf:signatureSystems:4": {
+      "id": "signatureSystem_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "borderPressure",
+        "territoryObjective",
+        "movementPath",
+        "positionSelection"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "reward",
+        "nextChoice"
+      ],
+      "name": "TERRITORY_ADAPTATION_DELVE",
+      "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices. This system allows for dynamic strategic adjustments based on real-time gameplay conditions and player decisions.",
+      "playerChoice": "Select a territory objective that reflects the player's current strategic priorities, adapts to the evolving border pressure, and considers cross-territory strategic interactions and resource allocation constraints. The player should also evaluate the impact of their choices on the overall territorial strategy and adjust accordingly."
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_",
+      "playerFantasy": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
+      "coreFun": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+        "ATTACK, REINFORCE, EXPAND ECONOMY",
+        "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
+      ],
+      "multiplayerMode": "HYBRID",
+      "signatureSystems": [
+        {
+          "id": "signatureSystem_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "borderPressure",
+            "territoryObjective",
+            "movementPath",
+            "positionSelection"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "reward",
+            "nextChoice"
+          ],
+          "name": "BORDER_PRESSURE_SYSTEM",
+          "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals.",
+          "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure."
+        },
+        {
+          "id": "signatureSystem_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "borderPressure",
+            "territoryObjective",
+            "movementPath",
+            "positionSelection"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "reward",
+            "nextChoice"
+          ],
+          "name": "TERRITORY_SELECTION_SYSTEM",
+          "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals.",
+          "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure."
+        },
+        {
+          "id": "signatureSystem_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "borderPressure",
+            "territoryObjective",
+            "movementPath",
+            "positionSelection"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "reward",
+            "nextChoice"
+          ],
+          "name": "TERRITORY_ADAPTATION_SYSTEM",
+          "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices.",
+          "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure, considering the player's previous choices and the new frontier line."
+        },
+        {
+          "id": "signatureSystem_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "borderPressure",
+            "territoryObjective",
+            "movementPath",
+            "positionSelection"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "reward",
+            "nextChoice"
+          ],
+          "name": "TERRITORY_ADAPTATION_CROSS",
+          "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices. This system allows for cross-territory strategic adjustments based on dynamic gameplay conditions.",
+          "playerChoice": "Select a territory objective that reflects the player's current strategic priorities, adapts to the evolving border pressure, and considers cross-territory strategic interactions and resource allocation constraints."
+        },
+        {
+          "id": "signatureSystem_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "borderPressure",
+            "territoryObjective",
+            "movementPath",
+            "positionSelection"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "reward",
+            "nextChoice"
+          ],
+          "name": "TERRITORY_ADAPTATION_DELVE",
+          "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices. This system allows for dynamic strategic adjustments based on real-time gameplay conditions and player decisions.",
+          "playerChoice": "Select a territory objective that reflects the player's current strategic priorities, adapts to the evolving border pressure, and considers cross-territory strategic interactions and resource allocation constraints. The player should also evaluate the impact of their choices on the overall territorial strategy and adjust accordingly."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1729974,
-      "lastMs": 42285,
+      "totalMs": 1774345,
+      "lastMs": 44371,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:23:16.058Z"
+      "updatedAt": "2026-10-08T15:24:00.430Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T15:23:16.058Z",
+  "updatedAt": "2026-10-08T15:24:00.436Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2591,48 +2713,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 2
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_",
-      "playerFantasy": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
-      "coreFun": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOS",
-      "coreLoop": [
-        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/ NEXT CHOICE",
-        "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
-        "ATTACK, REINFORCE, EXPAND ECONOMY",
-        "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
-      ],
-      "multiplayerMode": "HYBRID"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:23:16.058Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T15:24:00.431Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/territory-war/2026-10-08/design-seed.json",
+    "contentDigest": "35dc33c7851edbe4e40b74b52448f77e1ed0ae43176aa65fa0b753bffb1fa89d",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
