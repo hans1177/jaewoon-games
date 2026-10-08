@@ -1074,12 +1074,23 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
     requestLocalDesignerRaw:async(prompt,{schema})=>{
       const role=prompt.match(/CURRENT_GRAMMAR_ROLE=(MAIN|A|B|c|DELVE)/)?.[1];
       assert.ok(role);calls.push(role);
-      return JSON.stringify(Object.fromEntries(Object.keys(schema.properties).map(field=>[field,field==='grammarRole'?role:`designer-generated-${role}`])));
+      return JSON.stringify(Object.fromEntries(Object.keys(schema.properties).map(field=>[
+        field,field==='grammarRole'?role
+          :field==='stateInputs'?[role.toLowerCase()+'-available']
+          :field==='stateOutputs'?[role.toLowerCase()+'-resolved']
+          :`designer-generated-${role}`
+      ])));
     }
   });
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole'],properties:{id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']}},additionalProperties:false}}},additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
+    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false}}},additionalProperties:false};
   const result=await author('designer','original game rules',schema,{isolateFields:true});
   assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
+  assert.ok(result.signatureSystems.every(row=>row.stateInputs.length>0&&row.stateOutputs.length>0),
+    'Every complete role rule must declare both consumed and produced state');
   assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
 });
 
