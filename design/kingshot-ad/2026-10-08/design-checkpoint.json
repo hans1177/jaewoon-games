@@ -878,25 +878,36 @@
       "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
       "trigger": "enemy_wave",
       "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::41a2a1142b8265a5d91a9795f41a80b2dd77f83230240f11a1da42218a17a079:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource_pool",
+        "strategy_tree"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 30,
+      "successes": 30,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2445323,
-      "lastMs": 53329,
+      "totalMs": 2502158,
+      "lastMs": 56835,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:01:35.111Z"
+      "updatedAt": "2026-10-08T10:02:31.950Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T10:01:35.113Z",
+  "updatedAt": "2026-10-08T10:02:31.950Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3247,7 +3258,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:01:35.113Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:02:31.950Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
