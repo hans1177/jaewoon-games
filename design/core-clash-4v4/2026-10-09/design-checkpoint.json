@@ -379,25 +379,38 @@
       "name": "Material Causal Grammar",
       "purpose": "Establishes the core emotional and causal dynamics of survival gameplay, where player emotion drives risk-taking and reward-seeking in a real-time environment.",
       "playerChoice": "Player chooses to either pursue immediate rewards or invest in long-term upgrades that alter their current build strategy."
+    },
+    "local_authoring_parts::2d63d7d74c393ace669a6d0d8425d6a3035b627d4bb5f2c9c0b60a7f08c2f1e2:signatureSystems:3": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "c",
+      "stateInputs": [
+        "PLAYER_EMOTIONAL_STATE: Hope and Fear"
+      ],
+      "stateOutputs": [
+        "RISK_REWARD_BALANCE: Dynamic Risk vs Reward System"
+      ],
+      "name": "Material Causal Grammar",
+      "purpose": "Establishes the core emotional and causal dynamics of survival gameplay, where player emotion drives risk-taking and reward-seeking in a real-time environment.",
+      "playerChoice": "Player chooses to either pursue immediate rewards or invest in long-term upgrades that alter their current build strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1353987,
-      "lastMs": 111832,
+      "totalMs": 1463140,
+      "lastMs": 109153,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:02:43.018Z"
+      "updatedAt": "2026-10-08T19:04:32.173Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:08.976Z",
-  "updatedAt": "2026-10-08T19:02:43.018Z",
+  "updatedAt": "2026-10-08T19:04:32.173Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2826,7 +2839,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:02:43.018Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:04:32.173Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
