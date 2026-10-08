@@ -54,25 +54,42 @@
       "name": "감염 공격",
       "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
       "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+    },
+    "local_authoring_parts::eca5d11f21d4b1d23cebf0034828da31c6efb2ccc8b321462b52d683ef36c263:signatureSystems:1": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+      "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 358409,
-      "lastMs": 34635,
+      "totalMs": 392904,
+      "lastMs": 34495,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:32.396Z"
+      "updatedAt": "2026-10-08T17:51:06.892Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:33.961Z",
-  "updatedAt": "2026-10-08T17:50:32.396Z",
+  "updatedAt": "2026-10-08T17:51:06.892Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -789,7 +806,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:32.396Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:51:06.892Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
