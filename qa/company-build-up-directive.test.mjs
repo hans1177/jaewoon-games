@@ -68,7 +68,7 @@ test('web detailed original backfill preserves existing Roblox detailed platform
   });
   assert.deepEqual(repaired.value.platformProfiles.ROBLOX,robloxProfile);
   assert.deepEqual(repaired.value.robloxBuildProfile,robloxBuildProfile);
-  assert.equal(repaired.value.webCanonicalDesign.role,'WEB_DETAILED_GAME_ORIGINAL');
+  assert.equal(repaired.value.webCanonicalDesign.role,'SHARED_DESIGN_WEB_APPLICATION');
   assert.equal(repaired.value.webCanonicalDesign.playerFlow.length>=4,true);
   assert.deepEqual(repaired.value.platformExpansionPolicy.sharedLargeFrame,[
     'CORE_IDENTITY',
@@ -77,7 +77,7 @@ test('web detailed original backfill preserves existing Roblox detailed platform
     'SAVE_PERSISTENCE_MEANING',
     'MULTIPLAYER_INTENT'
   ]);
-  assert.equal(repaired.value.platformExpansionPolicy.expansionLimit,'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME');
+  assert.equal(repaired.value.platformExpansionPolicy.expansionLimit,'GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION');
 });
 
 function design(){
@@ -106,6 +106,8 @@ test('detailed verified design fields survive into build-up and implementation p
     signals:{combat:1,progression:1,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:1,ui:1,uiFlow:1,input:1,map:1,landmark:1,interaction:1,inventory:0,equipment:0,settings:1,feedback:1,session:1,content:1,choice:1,connection:1,performance:1,lighting:1,primitive:0,todo:0,errorRecovery:1}
   };
   const detailed=design();
+  Object.assign(detailed.content.signatureSystems[0],{id:'habitat',grammarRole:'MAIN',stateInputs:['wave'],stateOutputs:['habitat']});
+  detailed.content.systemInterconnections=[{fromId:'habitat',toId:'predator',stateKeys:['habitat'],fromSystem:'서식지',toSystem:'포식',trigger:'배치',stateChange:'피해 반응'}];
   detailed.content.mobileUx='모바일 전투 중 엄지 영역과 메뉴 복귀 흐름을 분리한다.';
   detailed.content.uxAccessibilityPlan={hudPriorities:'체력과 현재 목표 우선',touchAndInput:'하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리',readability:'작은 화면에서도 목표와 버튼 상태를 읽게 한다',accessibility:'진동과 음량을 분리 설정'};
   detailed.content.platformFitPlan={targetPlatform:'ROBLOX',inputModel:'터치/패드/키보드 동일 상태를 사용',performanceBudget:'모바일 전투 프레임 예산',sessionConstraints:'중단 후 복귀 가능'};
@@ -116,20 +118,23 @@ test('detailed verified design fields survive into build-up and implementation p
   detailed.content.selectedDesignPlan={label:'PLAN_A',rationale:'메뉴와 전투 상태를 하나의 진행 흐름으로 연결',identityPreserved:'정원 방어 정체성 유지',creativeDeviation:'온실 조사와 방어 연결',genreChange:false,reversibility:'기존 상태로 복귀 가능'};
   detailed.content.implementationTraceability=[{designElement:'메뉴 버튼 상태',responsibleSystem:'HUD/Menu state',validationEvidence:'버튼 활성/잠금과 실제 상태 일치'}];
   const directive=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
+  assert.deepEqual(directive.designImplementationContext.signatureSystems[0],detailed.content.signatureSystems[0]);
+  assert.deepEqual(directive.designImplementationContext.systemInterconnections,detailed.content.systemInterconnections);
   assert.equal(directive.designImplementationContext.uxAccessibilityPlan.touchAndInput,detailed.content.uxAccessibilityPlan.touchAndInput);
-  assert.equal(directive.designImplementationContext.webCanonicalDesign.role,'WEB_DETAILED_GAME_ORIGINAL');
-  assert.equal(directive.designImplementationContext.platformExpansionPolicy.expansionLimit,'NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME');
+  assert.equal(directive.designImplementationContext.webCanonicalDesign.role,'SHARED_DESIGN_WEB_APPLICATION');
+  assert.equal(directive.designImplementationContext.platformExpansionPolicy.expansionLimit,'GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION');
   assert.equal(directive.designImplementationContext.narrativeDialoguePlan.questStates[0],detailed.content.narrativeDialoguePlan.questStates[0]);
   assert.notEqual(directive.qualityGapMap.find(row=>row.domain==='QUESTS').state,'NOT_APPLICABLE');
   assert.match(directivePrompt(directive),/DESIGN_IMPLEMENTATION_CONTEXT:/);
   assert.match(directivePrompt(directive),/하단 우측 공격 버튼/);
   assert.match(directivePrompt(directive),/온실 단서 조사/);
-  assert.match(directivePrompt(directive),/WEB_DETAILED_GAME_ORIGINAL/);
-  assert.match(directivePrompt(directive),/NO_ARTIFICIAL_PARITY_LIMIT_WITHIN_SHARED_LARGE_FRAME/);
-  assert.match(directivePrompt(directive),/세부 parity 제한을 두지 않는다/);
+  assert.match(directivePrompt(directive),/SHARED_DESIGN_WEB_APPLICATION/);
+  assert.doesNotMatch(directivePrompt(directive),/WEB_DETAILED_GAME_ORIGINAL|독립 확장/);
+  assert.match(directivePrompt(directive),/GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION/);
+  assert.match(directivePrompt(directive),/플랫폼별 재설계는 금지/);
   const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
-  assert.match(directivePrompt(unityDirective),/Unity 전용 시스템·콘텐츠·지역·물리·카메라·애니메이션·세션 구조·UX·연출 확장/);
-  assert.match(directivePrompt(unityDirective),/인위적 parity 제한을 두지 않는다/);
+  assert.match(directivePrompt(unityDirective),/동일 공통 원본의 규칙과 상태를 보존/);
+  assert.match(directivePrompt(unityDirective),/게임 규칙 확장은 공통 원본 개정/);
 });
 
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
