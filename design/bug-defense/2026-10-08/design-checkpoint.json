@@ -420,25 +420,67 @@
       "name": "Wave Defense Readability",
       "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
       "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
+    },
+    "local_authoring_parts::92df1f51403bf02b1c120d64e6cd0f84f295081237aa85f5ccd89542132dd9c1:signatureSystems:1": {
+      "id": "wave-defense-readability",
+      "grammarRole": "A",
+      "stateInputs": [
+        "threatPattern"
+      ],
+      "stateOutputs": [
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
+      "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
+    },
+    "local_authoring_parts::92df1f51403bf02b1c120d64e6cd0f84f295081237aa85f5ccd89542132dd9c1:signatureSystems:2": {
+      "id": "wave-defense-readability",
+      "grammarRole": "B",
+      "stateInputs": [
+        "threatPattern"
+      ],
+      "stateOutputs": [
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
+      "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
+    },
+    "local_authoring_parts::92df1f51403bf02b1c120d64e6cd0f84f295081237aa85f5ccd89542132dd9c1:signatureSystems:3": {
+      "id": "wave-defense-readability",
+      "grammarRole": "c",
+      "stateInputs": [
+        "threatPattern"
+      ],
+      "stateOutputs": [
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "name": "Wave Defense Readability",
+      "purpose": "Read the incoming insect wave and its threat pattern. This is the core gameplay action that players must perform to understand the world state and make strategic decisions.",
+      "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter. This is the representative choice that defines the structure of the game through state changes and causal laws."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 981605,
-      "lastMs": 94984,
+      "totalMs": 1273680,
+      "lastMs": 98440,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:22:20.822Z"
+      "updatedAt": "2026-10-08T10:27:12.901Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:05:59.166Z",
-  "updatedAt": "2026-10-08T10:22:20.822Z",
+  "updatedAt": "2026-10-08T10:27:12.901Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2675,7 +2717,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:22:20.822Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:27:12.901Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
