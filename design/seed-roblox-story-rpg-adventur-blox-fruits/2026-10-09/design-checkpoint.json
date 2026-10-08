@@ -34,25 +34,38 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::e646ada1b503ce490d29280a63d31bca0df3071d6fc25840945b3a49e7667608:signatureSystems:0": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_STATUS"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "Player's initial action defines the game state, with dynamic board feedback shaping subsequent states.",
+      "playerChoice": "Define a new level with clear goal, limited moves, obstacles, or puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265728,
-      "lastMs": 30984,
+      "totalMs": 296772,
+      "lastMs": 31044,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:49:23.432Z"
+      "updatedAt": "2026-10-08T17:49:54.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:57.674Z",
-  "updatedAt": "2026-10-08T17:49:23.432Z",
+  "updatedAt": "2026-10-08T17:49:54.477Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2102,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:49:23.432Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:49:54.477Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
