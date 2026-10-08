@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g16-528e82641f58",
-  "directiveFingerprint": "528e82641f5833edaef3a5e62c356c3c79ff3dbc21ff556a8742ca25e66da48e",
-  "previousDirectiveFingerprint": "2e2562978fd825e1fb1b2deeb9008dfb156a000b7d2d268c1ef9dc1ec171f328",
-  "forbiddenRepeatFingerprint": "2e2562978fd825e1fb1b2deeb9008dfb156a000b7d2d268c1ef9dc1ec171f328",
+  "directiveId": "survival-build-up-g17-fed6c841682a",
+  "directiveFingerprint": "fed6c841682a69639cc3a5becc6d0b0230bcf91b90a87f777805132986922b20",
+  "previousDirectiveFingerprint": "528e82641f5833edaef3a5e62c356c3c79ff3dbc21ff556a8742ca25e66da48e",
+  "forbiddenRepeatFingerprint": "528e82641f5833edaef3a5e62c356c3c79ff3dbc21ff556a8742ca25e66da48e",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 16,
+  "generation": 17,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+  "sourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
   "designFingerprint": "e60723e2b180470e9c4e29084c252a3ee96b3241f3e92fbe7c1678720f1f2986",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -104,7 +104,7 @@
           "Late-Game Challenge (Days 21+)",
           "Boss waves, complex environmental hazards, and advanced skill trees."
         ],
-        "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+        "sourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -330,23 +330,23 @@
     ],
     "signals": {
       "combat": 178,
-      "progression": 139,
+      "progression": 138,
       "ai": 46,
-      "save": 51,
+      "save": 77,
       "multiplayer": 13,
       "animation": 46,
-      "motionStates": 206,
+      "motionStates": 214,
       "gameFeel": 32,
       "vfx": 51,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 15,
       "ui": 62,
-      "uiFlow": 38,
+      "uiFlow": 48,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 70,
-      "map": 174,
+      "map": 178,
       "landmark": 10,
       "interaction": 54,
       "inventory": 10,
@@ -361,12 +361,12 @@
       "lighting": 39,
       "primitive": 15,
       "todo": 0,
-      "errorRecovery": 13
+      "errorRecovery": 14
     },
     "topFiles": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "score": 373
+        "score": 409
       },
       {
         "file": "roblox-games/survival/shared/GameConfig.luau",
@@ -384,7 +384,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 368,
+        "line": 378,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player, damage)",
@@ -400,7 +400,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 384,
+        "line": 394,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "context": "local function updateProgressionRecord(player)",
@@ -408,7 +408,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 424,
+        "line": 434,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "context": "local function startNightWave(player)",
@@ -416,7 +416,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 136,
+        "line": 146,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player)",
@@ -424,7 +424,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 360,
+        "line": 370,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "context": "local function awardEnemyDefeat(player, enemy)",
@@ -432,7 +432,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 398,
+        "line": 408,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "context": "local function exploreGatherAndCraft(player)",
@@ -440,7 +440,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 416,
+        "line": 426,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "context": "local function fightCurrentEnemy(player)",
@@ -448,7 +448,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 447,
+        "line": 457,
         "kind": "FUNCTION",
         "symbol": "resetNextDayStrategy",
         "context": "local function resetNextDayStrategy(player)",
@@ -456,10 +456,18 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 455,
+        "line": 465,
         "kind": "FUNCTION",
         "symbol": "useEquippedTool",
         "context": "local function useEquippedTool(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/survival/server/Game.server.luau",
+        "line": 486,
+        "kind": "FUNCTION",
+        "symbol": "loadPlayer",
+        "context": "local function loadPlayer(player)",
         "score": 98
       },
       {
@@ -472,7 +480,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 164,
+        "line": 174,
         "kind": "FUNCTION",
         "symbol": "currentEnemyFor",
         "context": "local function currentEnemyFor(player)",
@@ -480,7 +488,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 389,
+        "line": 399,
         "kind": "FUNCTION",
         "symbol": "startDayPhase",
         "context": "local function startDayPhase(player)",
@@ -488,7 +496,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 434,
+        "line": 444,
         "kind": "FUNCTION",
         "symbol": "finishNightWave",
         "context": "local function finishNightWave(player)",
@@ -512,7 +520,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 99,
+        "line": 109,
         "kind": "FUNCTION",
         "symbol": "bindEnemyAi",
         "context": "local function bindEnemyAi(enemy, owner)",
@@ -520,7 +528,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 33,
+        "line": 43,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
@@ -528,7 +536,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 349,
+        "line": 359,
         "kind": "FUNCTION",
         "symbol": "craftAndEquipTool",
         "context": "local function craftAndEquipTool(player)",
@@ -552,7 +560,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 43,
+        "line": 53,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, actionId, learningPattern)",
@@ -560,7 +568,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 604,
+        "line": 667,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -584,7 +592,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 173,
+        "line": 183,
         "kind": "FUNCTION",
         "symbol": "gatherResource",
         "context": "local function gatherResource(player, sourcePart, approvedDropAmount)",
@@ -592,7 +600,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 261,
+        "line": 271,
         "kind": "FUNCTION",
         "symbol": "interactWithResource",
         "context": "local function interactWithResource(player, part, rule, alreadyRateLimited)",
@@ -616,7 +624,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 24,
+        "line": 34,
         "kind": "FUNCTION",
         "symbol": "readNumber",
         "context": "local function readNumber(player, name, fallback)",
@@ -624,7 +632,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 29,
+        "line": 39,
         "kind": "FUNCTION",
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
@@ -632,7 +640,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 189,
+        "line": 199,
         "kind": "FUNCTION",
         "symbol": "validResourceRule",
         "context": "local function validResourceRule(nodeName)",
@@ -648,18 +656,10 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 66,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "buildSurvivalWorld",
         "context": "local function buildSurvivalWorld()",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 310,
-        "kind": "FUNCTION",
-        "symbol": "bindResourcePrompts",
-        "context": "local function bindResourcePrompts()",
         "score": 34
       },
       {
@@ -691,9 +691,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 15,
-    "previousSourceTreeFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
-    "currentSourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "previousGeneration": 16,
+    "previousSourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "currentSourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1847,8 +1847,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 155594,
-        "largestFileBytes": 48537,
+        "sourceBytes": 128876,
+        "largestFileBytes": 48546,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1880,8 +1880,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 10,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=5.",
+    "themeDepth": 11,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1891,13 +1891,13 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 10
+        "PRESENTATION_WORLD_COHESION": 11
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1940,7 +1940,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 66,
+        "score": 48,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2054,11 +2054,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 16,
-    "previousGeneration": 15,
+    "generation": 17,
+    "previousGeneration": 16,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
-    "priorSourceFingerprint": "0a83a9a9f378a036fdd7f77e6723722961e0a554cac06847ecd6ecd98e2da797",
+    "sourceFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
+    "priorSourceFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2311,7 +2311,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 368,
+        "line": 378,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "currentBehavior": "local function attackEnemy(player, damage)",
@@ -2329,7 +2329,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 384,
+        "line": 394,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "currentBehavior": "local function updateProgressionRecord(player)",
@@ -2338,7 +2338,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 424,
+        "line": 434,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "currentBehavior": "local function startNightWave(player)",
@@ -2347,7 +2347,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 136,
+        "line": 146,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(player)",
@@ -2356,7 +2356,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 360,
+        "line": 370,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "currentBehavior": "local function awardEnemyDefeat(player, enemy)",
@@ -2365,7 +2365,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 398,
+        "line": 408,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "currentBehavior": "local function exploreGatherAndCraft(player)",
@@ -2374,7 +2374,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 416,
+        "line": 426,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "currentBehavior": "local function fightCurrentEnemy(player)",
@@ -2520,7 +2520,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "sourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2614,7 +2614,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+    "sourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2661,7 +2661,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 368,
+        "line": 378,
         "kind": "FUNCTION",
         "symbol": "attackEnemy",
         "context": "local function attackEnemy(player, damage)",
@@ -2685,7 +2685,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 384,
+        "line": 394,
         "kind": "FUNCTION",
         "symbol": "updateProgressionRecord",
         "context": "local function updateProgressionRecord(player)",
@@ -2697,7 +2697,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 424,
+        "line": 434,
         "kind": "FUNCTION",
         "symbol": "startNightWave",
         "context": "local function startNightWave(player)",
@@ -2709,7 +2709,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 136,
+        "line": 146,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player)",
@@ -2721,7 +2721,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 360,
+        "line": 370,
         "kind": "FUNCTION",
         "symbol": "awardEnemyDefeat",
         "context": "local function awardEnemyDefeat(player, enemy)",
@@ -2733,7 +2733,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 398,
+        "line": 408,
         "kind": "FUNCTION",
         "symbol": "exploreGatherAndCraft",
         "context": "local function exploreGatherAndCraft(player)",
@@ -2745,7 +2745,7 @@
       },
       {
         "file": "roblox-games/survival/server/Game.server.luau",
-        "line": 416,
+        "line": 426,
         "kind": "FUNCTION",
         "symbol": "fightCurrentEnemy",
         "context": "local function fightCurrentEnemy(player)",
@@ -2874,7 +2874,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "f4253a44cfb03b4a4c82dd36509d2cfab87a967d394ae3d1e41c6ab13f8afd29",
+      "sourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2929,7 +2929,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 17,
+    "nextGeneration": 18,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2993,5 +2993,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T13:10:53.970Z"
+  "generatedAt": "2026-10-08T13:56:05.044Z"
 }
