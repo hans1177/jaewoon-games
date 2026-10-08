@@ -698,25 +698,77 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "enemy_wave",
       "stateChange": "resources"
+    },
+    "local_authoring_parts::e8077b2ab91e01107420485ccb352c4fcfe2f856a0272e50911f03b82fb3f4cd:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "resources"
+      ],
+      "fromSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_"
+    },
+    "local_authoring_parts::e8077b2ab91e01107420485ccb352c4fcfe2f856a0272e50911f03b82fb3f4cd:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
+    },
+    "local_authoring_parts::2e31b367dd36bd6d5605b7f12cbaed6a19c692953341bcfb1813a8a6b243e465:systemInterconnections:0": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "resources"
+      ],
+      "fromSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "toSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
+    },
+    "local_authoring_parts::4a7f95de5ad92da22a39f61c0a9c9fc931c3515b25467024143942c5dcf1dbeb:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "resources"
+      ],
+      "fromSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_"
+    },
+    "local_authoring_parts::4a7f95de5ad92da22a39f61c0a9c9fc931c3515b25467024143942c5dcf1dbeb:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
+    },
+    "local_authoring_parts::2e31b367dd36bd6d5605b7f12cbaed6a19c692953341bcfb1813a8a6b243e465:systemInterconnections:1": {
+      "fromId": "threatened_route",
+      "toId": "resources",
+      "stateKeys": [
+        "threatened_route",
+        "resources"
+      ],
+      "fromSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "toSystem": "SYSTEM_INTERDEPENDENCES_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "trigger": "enemy_wave",
+      "stateChange": "resources"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2057654,
-      "lastMs": 92031,
+      "totalMs": 2375857,
+      "lastMs": 78408,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:44:51.852Z"
+      "updatedAt": "2026-10-08T15:56:55.004Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:34.121Z",
-  "updatedAt": "2026-10-08T15:51:36.687Z",
+  "updatedAt": "2026-10-08T15:56:55.006Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3062,10 +3114,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:44:51.855Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:56:55.006Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
