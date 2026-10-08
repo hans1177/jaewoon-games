@@ -1,6 +1,20 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { buildPracticePrompt } from '../tools/vibe2-learning-practice-worker.mjs';
+
+test('practice reuse resolves current verified implementation advice and drops revoked evidence',()=>{
+  const pattern={id:'save-boundary',system:'SAVE_PERSISTENCE',verified:true,independentQa:'PASS',rawCodeStored:false,sourceRevision:'r1',pattern:'Commit memory only after durable save succeeds.'};
+  const entry={id:'distilled-save',domain:'SAVE',verified:true,independentlyVerified:true,retrievalEligible:true,authority:'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE',confirmations:2,verificationEvidence:['code-pattern:save-boundary:r1','another-proof'],candidateText:'UNTRUSTED_INSTRUCTION'};
+  const retrieve=patterns=>retrieveUnifiedLearning({task:{goal:'save persistence repair',target:'unity'},codePatternsInput:{patterns},practiceDistilledInput:{entries:[entry]}});
+  const context=retrieve([pattern]);
+  assert.deepEqual(context.practiceDistilled[0].reusablePatterns,[pattern.pattern]);
+  const prompt=buildPracticePrompt({executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] save repair',unifiedLearning:context});
+  assert(prompt.includes(pattern.pattern));assert(!prompt.includes('UNTRUSTED_INSTRUCTION'));
+  assert.deepEqual(retrieve([{...pattern,verified:false}]).practiceDistilled[0].reusablePatterns,[]);
+  assert.deepEqual(retrieve([{...pattern,retrievalEligible:false}]).practiceDistilled[0].reusablePatterns,[]);
+  assert.deepEqual(retrieve([{...pattern,sourceRevision:'r2'}]).practiceDistilled[0].reusablePatterns,[]);
+});
 import {
   MASTERY_DOMAINS,
   classifyLearningDomains,
@@ -680,7 +694,7 @@ test('learning motor exposes Roblox touch character and UI native domains',()=>{
 
 test('Roblox code practice is cloud-production oriented and covers advanced native coding domains',()=>{
   const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
-  assert.equal(curriculum.version,3);
+  assert.equal(curriculum.version,5);
   assert.equal(curriculum.productionRuntimeAuthority,'ROBLOX_OFFICIAL_CLOUD_API_ONLY');
   assert.equal(curriculum.studioRequired,false);
   assert.equal(curriculum.studioProductionEvidenceAccepted,false);
@@ -2009,7 +2023,9 @@ test('specialized negative markers require explicit verified failure provenance 
 test('platform fault cards enter existing practice queue with executable route contracts',()=>{
   const idle=buildIdlePracticeQueue({});
   const cards=idle.drills.filter(row=>row.kind==='PLATFORM_CODE_REPAIR');
-  assert.deepEqual(cards.map(row=>row.platformProfile).sort(),['unity','web']);
+  assert.deepEqual([...new Set(cards.map(row=>row.platformProfile))].sort(),['unity','web']);
+  const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+  assert.deepEqual(cards.filter(row=>row.platformProfile==='unity').map(row=>row.id).sort(),curriculum.platformDrills.filter(row=>row.platform==='unity').map(row=>row.id).sort());
   for(const card of cards){
     const injected=injectIdlePracticeTask({tasks:[]},{drills:[card]});
     assert.equal(injected.added,true);

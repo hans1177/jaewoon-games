@@ -1276,7 +1276,19 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const domains=inferDomains(clean(task.goal),engine);
   const practiceDistilled=(practiceDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&clean(row.authority)==='VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE'&&knowledgeStateFor(mastery,'PRACTICE_DISTILLED',row?.id)!=='RETIRED'&&domains.includes(upper(row.domain)))
-    .map(row=>({id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:(row.verificationEvidence||[]).map(clean).filter(Boolean).slice(0,6),authority:clean(row.authority),relevance:Math.min(12,4+Math.max(1,Number(row.confirmations)||1))}))
+    .map(row=>{
+      const evidence=new Set((row.verificationEvidence||[]).map(clean));
+      // Resolve instructions from current verified sources, never from raw practice text.
+      // Revoked or revised evidence must stop supplying its previous implementation advice.
+      const patterns=(codePatternsInput.patterns||[]).filter(item=>item.verified===true&&item.rawCodeStored!==true&&item.retrievalEligible!==false&&upper(item.independentQa)==='PASS'&&knowledgeStateFor(mastery,'CODE_PATTERN',item.id)!=='RETIRED'
+        &&evidence.has('code-pattern:'+clean(item.id)+':'+(clean(item.sourceRevision)||clean(item.id))));
+      const experiences=(normalizedExperience.records||[]).filter(item=>item.verified===true&&item.reusable===true&&item.retrievalEligible!==false&&lower(item.taskType)!=='game-study'&&knowledgeStateFor(mastery,'EXPERIENCE',item.id)!=='RETIRED'
+        &&evidence.has('experience:'+clean(item.id||item.fingerprint)+':'+(clean(item.gameId)||clean(item.id))));
+      return{id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:[...evidence].slice(0,6),
+        reusablePatterns:uniq([...patterns.map(item=>item.pattern),...experiences.flatMap(item=>item.reusablePatterns||[])]).slice(0,4),
+        avoidPatterns:uniq(experiences.flatMap(item=>item.avoidPatterns||[])).slice(0,4),
+        authority:clean(row.authority),relevance:Math.min(12,4+Math.max(1,Number(row.confirmations)||1))};
+    })
     .sort((a,b)=>b.relevance-a.relevance||a.domain.localeCompare(b.domain)).slice(0,6);
   const externalAiDistilled=(externalAiDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.distilled===true&&row?.advisoryOnly===true&&row?.reusable===true&&row?.rawOutputStored===false&&row?.directSourceWrite!==true&&row?.directProductionPass!==true&&knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)!=='RETIRED')
@@ -1340,7 +1352,7 @@ export function learningGuidance(context={}){
     lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}${externalTrace}`);
   }
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
-  for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
+  for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
   for(const row of context.playbookReuse||[]){
     lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourcePlaybooks=${(row.sourcePlaybooks||[]).join('|')||'unknown'}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);

@@ -11,6 +11,7 @@ on:
       - 'tools/vibe2-practice-dataset.mjs'
       - 'tools/vibe2-practice-train.py'
       - 'tools/vibe2-train.py'
+      - 'company-learning/roblox-practice.json'
       - 'tools/vibe2-bootstrap-python.ps1'
   schedule:
     - cron: '27 * * * *'
@@ -140,7 +141,7 @@ jobs:
             '--adapter-version', $adapterVersion,
             '--task-type', 'unity',
             '--method', 'lora',
-            '--epochs', '0.25',
+            '--epochs', '1.0',
             '--max-length', '256',
             '--batch-size', '1',
             '--grad-accum', '1',

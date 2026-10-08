@@ -3,6 +3,7 @@ import argparse
 import importlib.util
 import json
 import sys
+import hashlib
 from pathlib import Path
 
 
@@ -34,6 +35,15 @@ def practice_validate(args, manifest, train_rows, eval_rows):
     stats = manifest.get('stats') or {}
     if int(stats.get('train', -1)) != len(train_rows) or int(stats.get('eval', -1)) != len(eval_rows):
         raise RuntimeError('practice dataset row counts do not match manifest')
+    if int(manifest.get('version', 0)) >= 5:
+        for name, rows in [('train', train_rows), ('eval', eval_rows)]:
+            payload = '\n'.join(json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(',', ':')) for row in rows)
+            if hashlib.sha256(payload.encode('utf-8')).hexdigest() != manifest.get(name + 'Sha256'):
+                raise RuntimeError('practice ' + name + ' hash mismatch')
+        train_families = {row.get('familyId') for row in train_rows}
+        eval_families = {row.get('familyId') for row in eval_rows}
+        if None in train_families | eval_families or train_families & eval_families:
+            raise RuntimeError('practice exercise family leakage')
     found_licensed = 0
     for row in train_rows + eval_rows:
         if row.get('taskType') != 'unity' or row.get('practiceOnly') is not True:

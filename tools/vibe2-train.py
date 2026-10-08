@@ -54,6 +54,56 @@ def dataset_hash(rows):
     return hashlib.sha256("\n".join(stable_row(row) for row in rows).encode("utf-8")).hexdigest()
 
 
+def encode_answer_windows(tokenizer, row, max_length):
+    """Supervise every answer token once, retaining causal overlap per window.
+
+    Prefix truncation used to discard the end of a code answer. A small CPU
+    window must not silently train only its opening declaration or prose.
+    """
+    if max_length < 16:
+        raise RuntimeError('max_length must be at least 16')
+    instruction = row['instruction'].strip()
+    user_input = row.get('input', '').strip()
+    answer = row['output'].strip()
+    if not instruction or not answer:
+        raise RuntimeError('nonempty instruction and answer required')
+    user_text = instruction if not user_input else f'{instruction}\n\n입력:\n{user_input}'
+    if getattr(tokenizer, 'chat_template', None):
+        prompt = tokenizer.apply_chat_template(
+            [{'role': 'user', 'content': user_text}], tokenize=False,
+            add_generation_prompt=True, enable_thinking=False,
+        )
+    else:
+        prompt = f'### 지시\n{user_text}\n\n### 답변\n'
+    prompt_ids = tokenizer(prompt, add_special_tokens=False)['input_ids']
+    answer_ids = tokenizer(answer, add_special_tokens=False)['input_ids']
+    if not prompt_ids or not answer_ids:
+        raise RuntimeError('tokenizer produced empty prompt or answer')
+    if tokenizer.eos_token_id is not None:
+        answer_ids = answer_ids + [tokenizer.eos_token_id]
+    full = prompt_ids + answer_ids
+    cursor = len(prompt_ids)
+    windows = []
+    stride = max_length // 2
+    while cursor < len(full):
+        end = min(len(full), max(max_length, cursor + stride))
+        start = max(0, end - max_length)
+        ids = full[start:end]
+        # New target tokens always have left context; overlapping tokens mask out.
+        masked = cursor - start
+        if masked < 1:
+            raise RuntimeError('answer window lost causal context')
+        labels = [-100] * masked + full[cursor:end]
+        windows.append({'input_ids': ids, 'attention_mask': [1] * len(ids), 'labels': labels})
+        cursor = end
+    supervised = sum(sum(label != -100 for label in w['labels']) for w in windows)
+    if supervised != len(answer_ids):
+        raise RuntimeError('answer token coverage mismatch')
+    return windows, {'answerTokens': len(answer_ids), 'supervisedAnswerTokens': supervised,
+                     'windowCount': len(windows), 'promptTokens': len(prompt_ids),
+                     'fullPromptFits': len(prompt_ids) < max_length}
+
+
 def is_external_black_box_qa(row, qa):
     provenance = row.get("provenance") or {}
     source_kind = str(provenance.get("sourceKind") or row.get("sourceKind") or "").lower()
@@ -204,32 +254,13 @@ def main():
         ),
     )
 
-    def encode(row):
-        instruction, user_input, answer = row["instruction"].strip(), row.get("input", "").strip(), row["output"].strip()
-        user_text = instruction if not user_input else f"{instruction}\n\n입력:\n{user_input}"
-        if getattr(tokenizer, "chat_template", None):
-            prompt = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}], tokenize=False, add_generation_prompt=True,
-            )
-            full = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}], tokenize=False, add_generation_prompt=False,
-            )
-        else:
-            prompt = f"### 지시\n{user_text}\n\n### 답변\n"
-            full = f"### 지시\n{user_text}\n\n### 답변\n{answer}{tokenizer.eos_token or ''}"
-        prompt_ids = tokenizer(prompt, add_special_tokens=False)["input_ids"]
-        encoded = tokenizer(full, truncation=True, max_length=args.max_length, add_special_tokens=False)
-        labels = list(encoded["input_ids"])
-        masked = min(len(prompt_ids), len(encoded["input_ids"]))
-        labels[:masked] = [-100] * masked
-        if sum(1 for label in labels if label != -100) == 0:
-            sample_id = (row.get("provenance") or {}).get("drillId") or row.get("sampleId") or row.get("id") or "UNKNOWN"
-            raise RuntimeError(f"answer tokens truncated completely before training: sample={sample_id}, max_length={args.max_length}")
-        encoded["labels"] = labels
-        return encoded
-
     class JsonlDataset(torch.utils.data.Dataset):
-        def __init__(self, rows): self.rows = [encode(row) for row in rows]
+        def __init__(self, rows):
+            self.rows, self.coverage = [], []
+            for row in rows:
+                windows, coverage = encode_answer_windows(tokenizer, row, args.max_length)
+                self.rows.extend(windows)
+                self.coverage.append(coverage)
         def __len__(self): return len(self.rows)
         def __getitem__(self, index): return self.rows[index]
 
@@ -263,7 +294,12 @@ def main():
     model.save_pretrained(output / "adapter")
     tokenizer.save_pretrained(output / "adapter")
     metadata = {
-        "version": 4,
+        "version": 5,
+        "trainingEncoding": "COMPLETE_ANSWER_CAUSAL_WINDOWS_V2",
+        "answerCoverage": {"train": train_dataset.coverage, "eval": eval_dataset.coverage},
+        "encodedTrainWindows": len(train_dataset),
+        "encodedEvalWindows": len(eval_dataset),
+        "codeImplementationTrainSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in train_rows),
         "adapterVersion": args.adapter_version,
         "taskType": args.task_type,
         "baseModel": args.base_model,

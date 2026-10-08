@@ -1242,12 +1242,26 @@ test('persisted Roblox DCC assets bind exact path and hash before local-model re
   assert.ok(promotion.every(row=>row.promotionState==='PENDING_EXACT_NATIVE_RUNTIME'));
 });
 
+function dccFixtureGlb({grounded=false}={}){
+  const bin=Buffer.alloc(104);
+  [0,0,0,2,0,0,0,1,0].forEach((v,i)=>bin.writeFloatLE(v,i*4));
+  [0,0,1,0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,36+i*4));
+  [0,0,1,0,0,1].forEach((v,i)=>bin.writeFloatLE(v,72+i*4));
+  [0,1,2].forEach((v,i)=>bin.writeUInt16LE(v,96+i*2));
+  const doc={asset:{version:'2.0'},buffers:[{byteLength:104}],bufferViews:[{buffer:0,byteOffset:0,byteLength:36},{buffer:0,byteOffset:36,byteLength:36},{buffer:0,byteOffset:72,byteLength:24},{buffer:0,byteOffset:96,byteLength:6}],accessors:[{bufferView:0,componentType:5126,type:'VEC3',count:3,min:[0,0,0],max:[2,1,0]},{bufferView:1,componentType:5126,type:'VEC3',count:3},{bufferView:2,componentType:5126,type:'VEC2',count:3},{bufferView:3,componentType:5123,type:'SCALAR',count:3}],materials:[{pbrMetallicRoughness:{metallicFactor:0,roughnessFactor:.8}}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2},indices:3,material:0}]}],nodes:[{translation:[10,3,-2],children:[1]},{mesh:0,scale:[2,2,2]}],scenes:[{nodes:[0]}],scene:0};
+  if(grounded)doc.nodes[0].translation=[-2,0,0];
+  const text=JSON.stringify(doc),json=Buffer.from(text+' '.repeat((4-Buffer.byteLength(text)%4)%4));
+  const header=Buffer.alloc(20);header.writeUInt32LE(0x46546c67);header.writeUInt32LE(2,4);header.writeUInt32LE(28+json.length+bin.length,8);header.writeUInt32LE(json.length,12);header.writeUInt32LE(0x4e4f534a,16);
+  const binaryHeader=Buffer.alloc(8);binaryHeader.writeUInt32LE(bin.length);binaryHeader.writeUInt32LE(0x004e4942,4);
+  return Buffer.concat([header,json,binaryHeader,bin]);
+}
+
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
   const root=tempRoot();
   try{
     fs.mkdirSync(path.join(root,'assets/test/native/model'),{recursive:true});
     fs.writeFileSync(path.join(root,'assets/test/build.py'),'# fixture recipe\n');
-    fs.writeFileSync(path.join(root,'assets/test/native/model/model.glb'),'fixture-glb');
+    fs.writeFileSync(path.join(root,'assets/test/native/model/model.glb'),dccFixtureGlb());
     fs.writeFileSync(path.join(root,'assets/test/native/model/preview.png'),'fixture-preview');
     fs.writeFileSync(path.join(root,'assets/test/native/model/evidence.json'),JSON.stringify({runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',productionVerified:false}));
     const blender=path.join(root,'fake-blender');
@@ -1258,7 +1272,7 @@ test('declared Blender verification executes only declared recipe and restores t
       'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
       'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
       'fs.mkdirSync(out,{recursive:true});',
-      'fs.writeFileSync(path.join(out,"model.glb"),"fixture-glb");',
+      'fs.writeFileSync(path.join(out,"model.glb"),Buffer.from('+JSON.stringify(dccFixtureGlb().toString('base64'))+',"base64"));',
       'fs.writeFileSync(path.join(out,"preview.png"),"fixture-preview");',
       'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
     ].join('\n')+'\n');
@@ -1280,6 +1294,7 @@ test('declared Blender verification executes only declared recipe and restores t
     assert.equal(result.candidateUsable,true);
     assert.equal(result.status,'DCC_RECIPE_REPRODUCED_EXISTING_ARTIFACT');
     assert.equal(result.recipes[0].runtimeVerified,false);
+    assert.equal(result.recipes[0].glbDataQaPass,true);
     assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -1296,7 +1311,7 @@ test('declared Blender authoring persists exact generated outputs only inside th
       'const at=process.argv.indexOf("--");const args=at>=0?process.argv.slice(at+1):[];',
       'const oi=args.indexOf("--output");const out=oi>=0?args[oi+1]:"assets/test/native/model";',
       'fs.mkdirSync(out,{recursive:true});',
-      'fs.writeFileSync(path.join(out,"model.glb"),"candidate-glb");',
+      'fs.writeFileSync(path.join(out,"model.glb"),Buffer.from('+JSON.stringify(dccFixtureGlb().toString('base64'))+',"base64"));',
       'fs.writeFileSync(path.join(out,"preview.png"),"candidate-preview");',
       'fs.writeFileSync(path.join(out,"evidence.json"),JSON.stringify({runtimeVerificationState:"STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",productionVerified:false}));'
     ].join('\n')+'\n');
@@ -1323,6 +1338,14 @@ test('declared Blender authoring persists exact generated outputs only inside th
     assert.equal(result.status,'DCC_RECIPE_EXECUTED_CANDIDATE_PERSISTED');
     assert.deepEqual([...result.generatedFiles],outputs);
     for(const relative of outputs)assert.ok(fs.existsSync(path.join(root,relative)),relative);
+    // 두 번째 제작 실패는 먼저 성공한 제작까지 같은 묶음으로 되돌린다.
+    fs.writeFileSync(path.join(root,outputs[1]),'preserved-before-batch');
+    const beforeBatch=outputs.map(relative=>fs.readFileSync(path.join(root,relative)));
+    const firstRecipe=workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes[0];
+    workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes=[firstRecipe,{...firstRecipe,id:'invalid-second',executor:'INVALID'}];
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_DCC_EXECUTOR_FORBIDDEN/);
+    for(const [index,relative] of outputs.entries())assert.deepEqual(fs.readFileSync(path.join(root,relative)),beforeBatch[index]);
+    workOrder.assetProduction.nativeAuthoringExecution.dcc.executionRecipes=[firstRecipe];
     const status=execFileSync('git',['status','--porcelain','--untracked-files=all'],{cwd:root,encoding:'utf8'});
     assert.match(status,/assets\/test\/native\/model\/model\.glb/);
     workOrder.compiledWorkContract.workLock.files=['roblox-games/demo/client/Game.client.luau'];
@@ -1330,6 +1353,60 @@ test('declared Blender authoring persists exact generated outputs only inside th
       ()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),
       /NATIVE_DCC_WORK_LOCK_SCOPE_MISSING/
     );
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('declared Blender application rejects desynchronized size axes and pivot and restores outputs',()=>{
+  const root=tempRoot();
+  try{
+    const directory='assets/test/native/model',outputs=[directory+'/model.glb',directory+'/application.json'];
+    const glb=dccFixtureGlb({grounded:true});
+    const material={sourceMaterialIndex:0,name:'material-0',baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:.8,web:{metalness:0,roughness:.8},roblox:{metalness:0,roughness:.8},unity:{metallic:0,smoothness:.2}};
+    const application={version:1,masterSha256:crypto.createHash('sha256').update(glb).digest('hex'),sourceUnits:'METERS',sourceUp:'Y',pivot:'GROUND_CENTER',boundsSizeMeters:[4,2,0],materials:[material],nativeRuntimeVerified:false,automaticPromotionAllowed:false};
+    write(path.join(root,'assets/test/build.py'),'# fixture only\n');
+    write(path.join(root,outputs[0]),'original-model');
+    write(path.join(root,outputs[1]),'original-application');
+    const blender=path.join(root,'fake-blender');
+    const setApplication=(value,binary=glb)=>{
+      fs.writeFileSync(blender,'#!/usr/bin/env node\n'+[
+        'const fs=require("fs");',
+        'if(process.argv.includes("--version")){console.log("Blender fixture");process.exit(0)}',
+        'fs.writeFileSync('+JSON.stringify(outputs[0])+',Buffer.from('+JSON.stringify(binary.toString('base64'))+',"base64"));',
+        'fs.writeFileSync('+JSON.stringify(outputs[1])+','+JSON.stringify(JSON.stringify(value))+');'
+      ].join('\n'));
+      fs.chmodSync(blender,0o755);
+    };
+    setApplication(application);
+    execFileSync('git',['init'],{cwd:root});
+    execFileSync('git',['config','user.email','test@example.invalid'],{cwd:root});
+    execFileSync('git',['config','user.name','test'],{cwd:root});
+    execFileSync('git',['add','.'],{cwd:root});
+    execFileSync('git',['commit','-m','fixture'],{cwd:root});
+    execFileSync('git',['checkout','-b','vibe2/candidate/application'],{cwd:root});
+    const workOrder=order({target:'roblox',taskId:'dcc-application'});
+    workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
+    workOrder.compiledWorkContract={workLock:{files:outputs}};
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{id:'application',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',outputs}]}}};
+    for(const patch of [{boundsSizeMeters:[4,20,0]},{boundsSizeMeters:[4,2]},{boundsSizeMeters:['4',2,0]},{sourceUp:'Z'},{sourceUnits:'CENTIMETERS'},{pivot:'CENTER'}]){
+      setApplication({...application,...patch});
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH/);
+      assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
+      assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
+    }
+    for(const materials of [null,[],[material,material],[{...material,sourceMaterialIndex:1}],[{...material,name:'wrong'}],[{...material,baseColorFactor:[.4,.4,.4,1]}],[{...material,roughnessFactor:'0.8'}],[{...material,metallicFactor:1}],[{...material,unity:{metallic:0,smoothness:.8}}],[{...material,roblox:{metalness:0,roughness:.2}}]]){
+      setApplication({...application,materials});
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_MATERIAL_MISMATCH/);
+      assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
+      assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
+    }
+    const floating=dccFixtureGlb();
+    setApplication({...application,masterSha256:crypto.createHash('sha256').update(floating).digest('hex')},floating);
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH/);
+    setApplication(application);
+    const result=executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true});
+    assert.equal(result.candidateUsable,true);
+    assert.equal(result.recipes[0].runtimeVerified,false);
+    assert.deepEqual(result.recipes[0].platformApplication.boundsSizeMeters,[4,2,0]);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

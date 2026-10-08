@@ -24,7 +24,7 @@ import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} fro
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
-import {evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
+import {inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -482,6 +482,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
   const beforeStatusKey=JSON.stringify(beforeStatus);
   const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-dcc-verify-'));
   const results=[];
+  const batchSnapshots=[];
   try{
     execFileSync(blenderExecutable,['--version'],{cwd,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
     for(const [index,recipe] of recipes.entries()){
@@ -507,10 +508,11 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         if(existed)fs.cpSync(absolute,backup,{recursive:true,force:true});
         snapshots.push({parent,absolute,backup,existed});
       }
+      if(persist)batchSnapshots.push(...snapshots);
       const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
       let stdout='',recipeSucceeded=false;
       try{
-        stdout=execFileSync(blenderExecutable,['--background','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
+        stdout=execFileSync(blenderExecutable,['--background','--python-exit-code','1','--python',scriptAbs,'--',...(recipe?.args||[]).map(value=>String(value))],{cwd,encoding:'utf8',timeout:600000,maxBuffer:64*1024*1024,stdio:['ignore','pipe','pipe']});
         const generated=outputs.map(relative=>{
           const file=path.resolve(cwd,relative);
           if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_OUTPUT_MISSING:'+relative);
@@ -539,6 +541,43 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           masterGlbQa=evaluateCrossPlatform3dMasterGlb({repoRoot:cwd,source:{path:nativeArtifact.path},family,role});
           if(masterGlbQa.pass!==true)throw new Error('CROSS_PLATFORM_MASTER_GLB_QA_FAILED:'+clean(recipe?.id)+':'+(masterGlbQa.blockers||[]).join(','));
         }
+        const glbInspection=/\.glb$/i.test(nativeArtifact.path)?masterGlbQa?.inspection||inspectVibeSourceGlb({repoRoot:cwd,source:{path:nativeArtifact.path,sourceHash:nativeArtifact.sha256}}):null;
+        if(glbInspection&&glbInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT')throw new Error('NATIVE_GLB_DATA_QA_FAILED:'+clean(recipe?.id)+':'+(glbInspection.issues||[]).join(','));
+        const applicationOutput=generated.find(row=>row.path.endsWith('/application.json'));
+        let platformApplication=null;
+        if(applicationOutput){
+          platformApplication=JSON.parse(fs.readFileSync(path.resolve(cwd,applicationOutput.path),'utf8'));
+          if(platformApplication.masterSha256!==nativeArtifact.sha256||platformApplication.nativeRuntimeVerified!==false||platformApplication.automaticPromotionAllowed!==false)throw new Error('NATIVE_GLB_APPLICATION_IDENTITY_INVALID:'+clean(recipe?.id));
+          // 적용 메타데이터도 실제 GLB 정점과 동기화한다. 해시 일치만으로는
+          // 잘못된 단위·축·중심·크기에 따른 부유와 충돌 배치 오류를 막지 못한다.
+          const spatial=glbInspection?.inventory?.spatial;
+          const declaredSize=platformApplication.boundsSizeMeters;
+          const tolerance=Math.max(1e-5,Math.max(...(spatial?.size||[0]))*1e-5);
+          if(!spatial||platformApplication.sourceUnits!=='METERS'||platformApplication.sourceUp!=='Y'||platformApplication.pivot!=='GROUND_CENTER'
+            ||!Array.isArray(declaredSize)||declaredSize.length!==3
+            ||declaredSize.some((value,axis)=>!Number.isFinite(value)||value<0||Math.abs(value-spatial.size[axis])>tolerance)
+            ||spatial.groundTranslation.some(value=>Math.abs(value)>tolerance)){
+            throw new Error('NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH:'+clean(recipe?.id));
+          }
+          // 색·거칠기·금속성도 실제 출력과 대조한다. 플랫폼 변환 값의
+          // 불일치는 원본을 보존한 채 같은 제작 묶음을 복구한다.
+          if(platformApplication.materials!==undefined){
+            const actualMaterials=glbInspection.inventory.materials,declaredMaterials=platformApplication.materials;
+            const sameFactor=(a,b)=>Number.isFinite(a)&&Math.abs(a-b)<=1e-6;
+            const matched=new Set();
+            const valid=Array.isArray(declaredMaterials)&&declaredMaterials.length===actualMaterials.length&&declaredMaterials.every(row=>{
+              const material=Number.isInteger(row?.sourceMaterialIndex)?actualMaterials[row.sourceMaterialIndex]:actualMaterials.find(value=>value.name===row?.name);
+              if(!material||matched.has(material.index)||row.name!==material.name)return false;
+              matched.add(material.index);
+              return Array.isArray(row.baseColorFactor)&&row.baseColorFactor.length===4&&row.baseColorFactor.every((value,channel)=>sameFactor(value,material.baseColorFactor[channel]))
+                &&sameFactor(row.metallicFactor,material.metallicFactor)&&sameFactor(row.roughnessFactor,material.roughnessFactor)
+                &&sameFactor(row.web?.metalness,material.metallicFactor)&&sameFactor(row.web?.roughness,material.roughnessFactor)
+                &&sameFactor(row.roblox?.metalness,material.metallicFactor)&&sameFactor(row.roblox?.roughness,material.roughnessFactor)
+                &&sameFactor(row.unity?.metallic,material.metallicFactor)&&sameFactor(row.unity?.smoothness,1-material.roughnessFactor);
+            });
+            if(!valid)throw new Error('NATIVE_GLB_APPLICATION_MATERIAL_MISMATCH:'+clean(recipe?.id));
+          }
+        }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
         const editableSourceHash=sha256File(scriptAbs);
@@ -564,6 +603,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             animatedJointCount:Number(masterGlbQa?.inspection?.inventory?.animatedJointCount||0),
             sourceHash:masterGlbQa?.sourceHash||null
           }):null,
+          glbDataQaPass:glbInspection?glbInspection.status==='INSPECTED_RECONSTRUCTION_INPUT':null,glbSpatial:glbInspection?.inventory?.spatial||null,platformApplication,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
@@ -593,6 +633,18 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       editableSource:first.editableSource||null,nativeArtifact:first.nativeArtifact||null,artifactHash:first.artifactHash||null,preview:first.preview||null,
       runtimeVerified:false,companyPromotionEligible:false
     });
+  }catch(error){
+    // 하나의 후보 묶음이므로 뒤쪽 제작 또는 최종 범위 검사가 실패하면
+    // 앞서 성공한 출력도 역순으로 복원한다. 같은 출력 폴더의 연속 제작도 보존한다.
+    const rollbackErrors=[];
+    for(const snap of [...batchSnapshots].reverse()){
+      try{
+        fs.rmSync(snap.absolute,{recursive:true,force:true});
+        if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+      }catch(rollbackError){rollbackErrors.push(snap.parent+':'+clean(rollbackError?.message));}
+    }
+    if(rollbackErrors.length)throw new Error('NATIVE_DCC_BATCH_ROLLBACK_FAILED:'+rollbackErrors.join('|'),{cause:error});
+    throw error;
   }finally{fs.rmSync(tempRoot,{recursive:true,force:true});}
 }
 export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}){
@@ -6246,4 +6298,3 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
-

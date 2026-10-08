@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "authority": "PRACTICE_ONLY",
   "sourceKind": "teacher",
   "synthetic": true,
@@ -20,6 +20,9 @@
       "tests": [
         "local solve = require(\"./candidate\")\nfor n = -20, 20 do assert(solve(n, 7) == n + 7) end",
         "local solve = require(\"./candidate\")\nfor n = 1, 25 do assert(solve(n * 3, -n) == n * 2) end"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");assert(f(2,3)==5)"
       ]
     },
     {
@@ -36,6 +39,9 @@
       "tests": [
         "local solve = require(\"./candidate\")\nlocal s={owner=\"a\",count=0,seen={}}; assert(solve(s,\"b\",\"r1\")==false and s.count==0); assert(solve(s,\"a\",\"\")==false); assert(solve(s,\"a\",\"r1\")==true); assert(solve(s,\"a\",\"r1\")==false and s.count==1)",
         "local solve = require(\"./candidate\")\nlocal s={owner=73,count=11,seen={}}; for n=1,31 do local id=tostring(n); assert(solve(s,73,id)); assert(not solve(s,73,id)); assert(not solve(s,74,id)) end; assert(s.count==42)"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local s={owner=\"p\",count=0,seen={}};assert(not f(s,\"x\",\"a\"));assert(f(s,\"p\",\"a\"));assert(not f(s,\"p\",\"a\"));assert(s.count==1)"
       ]
     },
     {
@@ -68,6 +74,9 @@
       "tests": [
         "local solve = require(\"./candidate\")\nlocal s={key=\"progress-v1\",value=9}; assert(not solve(s,12,function() error(\"offline\") end)); assert(s.value==9 and s.key==\"progress-v1\"); assert(not solve(s,14,function() return false end)); assert(s.value==9); assert(solve(s,16,function(v) return v==16 end)); assert(s.value==16 and s.key==\"progress-v1\")",
         "local solve = require(\"./candidate\")\nlocal s={key=\"kept\",value=101}; local calls=0; local function write(v) calls+=1; return calls==3 end; assert(not solve(s,200,write)); assert(not solve(s,200,write)); assert(s.value==101); assert(solve(s,200,write)); assert(s.value==200 and s.key==\"kept\" and calls==3)"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local s={value=1,key=\"kept\"};assert(not f(s,2,function() return false end));assert(s.value==1);assert(f(s,3,function() return true end));assert(s.value==3)"
       ]
     },
     {
@@ -84,6 +93,9 @@
       "tests": [
         "local solve=require(\"./candidate\")\nlocal s={scores={a=7,b=12}}; local x=solve(s,\"c\"); assert(x.a==7 and x.b==12 and x.c==0 and s.scores.c==nil); x.a=99; assert(s.scores.a==7); local y=solve(s,\"a\"); assert(y.a==7 and y.b==12 and y.c==nil)",
         "local solve=require(\"./candidate\")\nfor n=1,29 do local id=\"player\"..n; local s={scores={[id]=n*3}}; local x=solve(s,id); local y=solve(s,\"guest\"..n); s.scores[id]=-n; assert(x[id]==n*3 and y[id]==n*3 and y[\"guest\"..n]==0 and s.scores[\"guest\"..n]==nil) end"
+      ],
+      "feedbackTests": [
+        "local f=require(\"./candidate\");local s={scores={p=1}};local x=f(s,\"q\");assert(x.q==0 and s.scores.q==nil);x.p=7;assert(s.scores.p==1)"
       ]
     },
     {
@@ -220,6 +232,189 @@
       "tests": [
         "var s=new PracticeState(); for(int n=0;n<7;n++){Practice.Apply(s,\"enter\",0);Practice.Apply(s,\"enter\",0);Check(s.Active&&s.InputEnabled&&s.Subscriptions==1);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"spawn\",0);Check(s.LiveObjects==1);Practice.Apply(s,\"collect\",3);Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"collect\",91);Check(!s.InputEnabled&&s.Paused);Practice.Apply(s,\"exit\",0);Check(!s.Active&&!s.InputEnabled&&s.Subscriptions==0&&s.LiveObjects==0);Practice.Apply(s,\"resume\",0);Practice.Apply(s,\"collect\",100);Check(!s.InputEnabled&&s.Score==(n+1)*3&&s.SavedScore==s.Score);}",
         "var s=new PracticeState{Score=37,SavedScore=37};Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"enter\",0);Check(!s.InputEnabled&&s.Subscriptions==1);Practice.Apply(s,\"resume\",0);Check(s.InputEnabled);for(int n=1;n<=17;n++){Practice.Apply(s,\"collect\",n);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"despawn\",0);Practice.Apply(s,\"despawn\",0);Check(s.LiveObjects==0);}Check(s.Score==190&&s.SavedScore==190);Practice.Apply(s,\"exit\",0);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"unknown\",999);Check(s.LiveObjects==0&&s.Score==190);Practice.Apply(s,\"enter\",0);Check(s.InputEnabled&&s.Subscriptions==1&&s.SavedScore==190);"
+      ],
+      "feedbackTests": [
+        "var s=new PracticeState();Practice.Apply(s,\"enter\",0);Practice.Apply(s,\"enter\",0);Check(s.Subscriptions==1);Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"collect\",9);Check(s.Score==0);Practice.Apply(s,\"exit\",0);Check(!s.Active&&!s.InputEnabled);"
+      ]
+    },
+    {
+      "id": "unity-spatial-clearance",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "UNITY_SPATIAL_CLEARANCE",
+      "domains": [
+        "LEVEL_DESIGN",
+        "ENVIRONMENT_COMPOSITION",
+        "UNITY_PHYSICS"
+      ],
+      "scenario": "Implement public static class Practice with bool CanPlace(float[] p, float radius, float[] other, float otherRadius, int dimensions, float clearance). Both positions have x,y,z. In 2D compare x,z only; in 3D compare x,y,z. Accept when squared distance >= (radius+otherRadius+clearance)^2. Reject dimensions other than 2 or 3, null/short arrays, negative radii or clearance, and NaN/infinity in used coordinates or sizes. Ignore y entirely in 2D. Do not mutate inputs. Use float.IsNaN/IsInfinity; no Unity API.",
+      "broken": "public static class Practice { public static bool CanPlace(float[] p,float radius,float[] other,float otherRadius,int dimensions,float clearance){return true;} }",
+      "reference": "public static class Practice {\n static bool Finite(float x){return !float.IsNaN(x)&&!float.IsInfinity(x);}\n public static bool CanPlace(float[] p,float radius,float[] other,float otherRadius,int dimensions,float clearance){\n  if((dimensions!=2&&dimensions!=3)||p==null||other==null||p.Length<3||other.Length<3)return false;\n  if(!Finite(radius)||!Finite(otherRadius)||!Finite(clearance)||radius<0||otherRadius<0||clearance<0)return false;\n  for(int i=0;i<3;i++){if(i==1&&dimensions==2)continue;if(!Finite(p[i])||!Finite(other[i]))return false;}\n  double x=(double)p[0]-other[0],z=(double)p[2]-other[2],y=dimensions==3?(double)p[1]-other[1]:0;\n  double gap=(double)radius+otherRadius+clearance;\n  return x*x+y*y+z*z>=gap*gap;\n }\n}",
+      "supportCode": "",
+      "feedbackTests": [
+        "Check(!Practice.CanPlace(new float[]{0,20,0},1,new float[]{0,0,0},1,2,0));Check(Practice.CanPlace(new float[]{0,20,0},1,new float[]{0,0,0},1,3,0));"
+      ],
+      "tests": [
+        "for(int n=1;n<31;n++){var a=new float[]{n,0,0};var b=new float[]{0,0,0};Check(Practice.CanPlace(a,n/2f,b,n/2f,2,0));Check(!Practice.CanPlace(a,n/2f,b,n/2f,2,0.25f));Check(a[0]==n&&b[0]==0);}",
+        "Check(!Practice.CanPlace(null,1,new float[3],1,3,0));Check(!Practice.CanPlace(new float[2],1,new float[3],1,3,0));Check(!Practice.CanPlace(new float[3],-1,new float[3],1,3,0));Check(!Practice.CanPlace(new float[]{float.NaN,0,0},0,new float[3],0,2,0));Check(!Practice.CanPlace(new float[3],float.PositiveInfinity,new float[3],1,3,0));Check(!Practice.CanPlace(new float[3],0,new float[3],0,4,0));",
+        "Check(Practice.CanPlace(new float[]{3,float.NaN,4},2,new float[3],3,2,0));Check(!Practice.CanPlace(new float[]{3,float.NaN,4},2,new float[3],3,3,0));Check(Practice.CanPlace(new float[]{float.MaxValue,0,0},float.MaxValue,new float[]{-float.MaxValue,0,0},float.MaxValue,3,0));"
+      ]
+    },
+    {
+      "id": "unity-object-dependencies",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "UNITY_OBJECT_DEPENDENCIES",
+      "domains": [
+        "STATE_MACHINE",
+        "LEVEL_DESIGN",
+        "UNITY_RUNTIME"
+      ],
+      "scenario": "Implement public static class Practice with int[] Order(int[] parent). Object i depends on parent[i]; -1 means no parent. Return every object exactly once with its parent before it. At each step choose the lowest currently ready index. Reject null, out-of-range parents, self-dependencies or any cycle by returning null. Empty input returns empty array. Do not mutate parent; no external graph libraries.",
+      "broken": "public static class Practice { public static int[] Order(int[] parent){return parent;} }",
+      "reference": "public static class Practice { public static int[] Order(int[] parent){\n if(parent==null)return null;int n=parent.Length;var done=new bool[n];var result=new int[n];\n for(int i=0;i<n;i++)if(parent[i]<-1||parent[i]>=n||parent[i]==i)return null;\n for(int k=0;k<n;k++){int next=-1;for(int i=0;i<n;i++)if(!done[i]&&(parent[i]==-1||done[parent[i]])){next=i;break;}if(next<0)return null;result[k]=next;done[next]=true;}\n return result;\n} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "var x=Practice.Order(new int[]{2,-1,1});Check(x!=null&&x.Length==3&&x[0]==1&&x[1]==2&&x[2]==0);Check(Practice.Order(new int[]{1,0})==null);"
+      ],
+      "tests": [
+        "for(int n=2;n<25;n++){var p=new int[n];for(int i=0;i<n;i++)p[i]=i==n-1?-1:i+1;var x=Practice.Order(p);Check(x!=null&&x.Length==n);for(int i=0;i<n;i++){Check(x[i]==n-1-i);Check(p[i]==(i==n-1?-1:i+1));}}",
+        "Check(Practice.Order(null)==null);Check(Practice.Order(new int[0]).Length==0);Check(Practice.Order(new int[]{-2})==null);Check(Practice.Order(new int[]{3,-1})==null);Check(Practice.Order(new int[]{0})==null);Check(Practice.Order(new int[]{-1,2,1})==null);",
+        "var x=Practice.Order(new int[]{-1,-1,0,1});for(int i=0;i<4;i++)Check(x[i]==i);"
+      ]
+    },
+    {
+      "id": "unity-menu-batch-transaction",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "UNITY_MENU_BATCH_TRANSACTION",
+      "domains": [
+        "UI_STATE",
+        "ECONOMY",
+        "STATE_MACHINE"
+      ],
+      "scenario": "Implement public static class Practice with bool Commit(BatchState s,int[] indices,int price). The harness provides class BatchState with public int Gold; public bool[] Owned,Locked. Buy selected entries as one atomic transaction. Reject null/mismatched arrays, empty selection, price<0, out-of-range or duplicate indices, already owned or locked entries, or insufficient gold. Validate everything before changing anything; total cost must not overflow. On success mark exactly selected Owned entries true, subtract total cost once, return true. On rejection change nothing and return false. Never alter Locked or indices.",
+      "broken": "public static class Practice { public static bool Commit(BatchState s,int[] indices,int price){s.Gold-=price;return true;} }",
+      "reference": "public static class Practice { public static bool Commit(BatchState s,int[] indices,int price){\n if(s==null||s.Owned==null||s.Locked==null||s.Owned.Length!=s.Locked.Length||indices==null||indices.Length==0||price<0)return false;\n long total=(long)price*indices.Length;if(total>s.Gold)return false;\n var seen=new bool[s.Owned.Length];foreach(int i in indices){if(i<0||i>=seen.Length||seen[i]||s.Owned[i]||s.Locked[i])return false;seen[i]=true;}\n foreach(int i in indices)s.Owned[i]=true;s.Gold-=(int)total;return true;\n} }",
+      "supportCode": "public class BatchState { public int Gold; public bool[] Owned,Locked; }",
+      "feedbackTests": [
+        "var s=new BatchState{Gold=10,Owned=new bool[3],Locked=new bool[3]};Check(Practice.Commit(s,new int[]{0,2},3));Check(s.Gold==4&&s.Owned[0]&&!s.Owned[1]&&s.Owned[2]);Check(!Practice.Commit(s,new int[]{1,1},1));Check(s.Gold==4&&!s.Owned[1]);"
+      ],
+      "tests": [
+        "for(int n=2;n<18;n++){var s=new BatchState{Gold=n*7,Owned=new bool[n],Locked=new bool[n]};s.Locked[n-1]=true;Check(!Practice.Commit(s,new int[]{0,n-1},2));Check(s.Gold==n*7);foreach(bool b in s.Owned)Check(!b);Check(Practice.Commit(s,new int[]{n-2},7));Check(s.Gold==(n-1)*7&&s.Owned[n-2]&&s.Locked[n-1]);}",
+        "var s=new BatchState{Gold=int.MaxValue,Owned=new bool[3],Locked=new bool[3]};Check(!Practice.Commit(s,new int[]{0,1},int.MaxValue));Check(s.Gold==int.MaxValue&&!s.Owned[0]&&!s.Owned[1]);Check(!Practice.Commit(s,new int[]{0,3},0));Check(!s.Owned[0]);Check(!Practice.Commit(s,new int[0],1));Check(!Practice.Commit(s,new int[]{0},-1));",
+        "Check(!Practice.Commit(null,new int[]{0},1));var s=new BatchState{Gold=0,Owned=new bool[2],Locked=new bool[1]};Check(!Practice.Commit(s,new int[]{0},0));s.Locked=new bool[2];var ids=new int[]{1,0};Check(Practice.Commit(s,ids,0));Check(ids[0]==1&&ids[1]==0&&s.Gold==0);"
+      ]
+    },
+    {
+      "id": "unity-reward-prerequisites",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "UNITY_REWARD_PREREQUISITES",
+      "domains": [
+        "PROGRESSION",
+        "ECONOMY",
+        "STATE_MACHINE"
+      ],
+      "scenario": "Implement public static class Practice with bool Complete(Progress s,int node,int[] prerequisites,int reward). The harness provides class Progress with public bool[] Done; public int Currency. A node can complete once after all prerequisites are Done. Reject null state/Done/prerequisites, invalid node or prerequisite index, a self prerequisite, an already completed node, reward<0, or int overflow. Duplicated prerequisites are harmless. Validate the entire request before changing Done or Currency. On success mark only node done and add reward once. Never mutate prerequisites.",
+      "broken": "public static class Practice { public static bool Complete(Progress s,int node,int[] prerequisites,int reward){s.Done[node]=true;s.Currency+=reward;return true;} }",
+      "reference": "public static class Practice { public static bool Complete(Progress s,int node,int[] prerequisites,int reward){\n if(s==null||s.Done==null||prerequisites==null||node<0||node>=s.Done.Length||s.Done[node]||reward<0)return false;\n if((long)s.Currency+reward>int.MaxValue)return false;\n foreach(int p in prerequisites)if(p<0||p>=s.Done.Length||p==node||!s.Done[p])return false;\n s.Done[node]=true;s.Currency+=reward;return true;\n} }",
+      "supportCode": "public class Progress { public bool[] Done; public int Currency; }",
+      "feedbackTests": [
+        "var s=new Progress{Done=new bool[3]};Check(!Practice.Complete(s,1,new int[]{0},5));Check(!s.Done[1]&&s.Currency==0);Check(Practice.Complete(s,0,new int[0],2));Check(Practice.Complete(s,1,new int[]{0},5));Check(!Practice.Complete(s,1,new int[]{0},5));Check(s.Currency==7);"
+      ],
+      "tests": [
+        "for(int n=2;n<22;n++){var s=new Progress{Done=new bool[n],Currency=11};for(int i=0;i<n;i++){var deps=i==0?new int[0]:new int[]{i-1,i-1};Check(Practice.Complete(s,i,deps,3));Check(!Practice.Complete(s,i,deps,3));}Check(s.Currency==11+n*3);}",
+        "var s=new Progress{Done=new bool[]{true,false,false},Currency=int.MaxValue-1};Check(!Practice.Complete(s,1,new int[]{0},2));Check(!s.Done[1]&&s.Currency==int.MaxValue-1);Check(!Practice.Complete(s,1,new int[]{0,2},0));Check(!s.Done[1]);Check(!Practice.Complete(s,1,new int[]{1},0));Check(!Practice.Complete(s,3,new int[0],0));Check(!Practice.Complete(s,1,new int[]{-1},0));",
+        "Check(!Practice.Complete(null,0,new int[0],0));var s=new Progress{Done=new bool[1],Currency=8};Check(!Practice.Complete(s,0,null,0));Check(!Practice.Complete(s,0,new int[0],-1));Check(!s.Done[0]&&s.Currency==8);Check(Practice.Complete(s,0,new int[0],0));Check(s.Currency==8);"
+      ]
+    },
+    {
+      "id": "unity-gltf-material-channels",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "GLTF_MATERIAL_CHANNEL_TRANSFER",
+      "domains": [
+        "ASSET_LIBRARY",
+        "MATERIAL",
+        "PLATFORM_ADAPTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness). glTF metallic-roughness textures contain linear roughness in G and linear metalness in B. Convert to Unity URP Lit metallic and smoothness: metallic=blue*metallicFactor; smoothness=1-green*roughnessFactor. Reject NaN, infinity or any input outside [0,1]. On rejection set both outputs to zero and return false. Do not apply sRGB gamma to data channels. This pure calculation does not prove native renderer quality.",
+      "broken": "public static class Practice { public static bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness){metallic=green;smoothness=blue;return true;} }",
+      "reference": "public static class Practice { private static bool Unit(float v){return !float.IsNaN(v)&&!float.IsInfinity(v)&&v>=0&&v<=1;} public static bool Convert(float green,float blue,float roughnessFactor,float metallicFactor,out float metallic,out float smoothness){metallic=0;smoothness=0;if(!Unit(green)||!Unit(blue)||!Unit(roughnessFactor)||!Unit(metallicFactor))return false;metallic=blue*metallicFactor;smoothness=1-green*roughnessFactor;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "float m,s;Check(Practice.Convert(.8f,.2f,.5f,1f,out m,out s));Check(m>.199f&&m<.201f&&s>.599f&&s<.601f);Check(!Practice.Convert(float.NaN,0,1,1,out m,out s));Check(m==0&&s==0);"
+      ],
+      "tests": [
+        "float m,s;for(int g=0;g<=10;g++)for(int b=0;b<=10;b++){Check(Practice.Convert(g/10f,b/10f,.4f,.7f,out m,out s));float dm=m-b/10f*.7f,ds=s-(1-g/10f*.4f);Check(dm>-.0001f&&dm<.0001f&&ds>-.0001f&&ds<.0001f);}",
+        "float m,s;foreach(float bad in new float[]{-1,2,float.NaN,float.PositiveInfinity,float.NegativeInfinity}){Check(!Practice.Convert(bad,0,1,1,out m,out s)&&m==0&&s==0);Check(!Practice.Convert(0,bad,1,1,out m,out s));Check(!Practice.Convert(0,0,bad,1,out m,out s));Check(!Practice.Convert(0,0,1,bad,out m,out s));}Check(Practice.Convert(1,1,0,0,out m,out s)&&m==0&&s==1);"
+      ]
+    },
+    {
+      "id": "unity-import-ground-pivot",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "IMPORTED_MESH_FLOATING_PIVOT",
+      "domains": [
+        "ASSET_LIBRARY",
+        "SPATIAL_LAYOUT",
+        "PLATFORM_ADAPTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY). Bounds are already evaluated in the intended unscaled Y-up orientation, not untransformed accessor declarations. Compute rootY so the scaled mesh bottom rests gap units above ground: groundY+gap-minY*scale. Reject nonfinite inputs, minY>maxY, scale<=0, gap<0, or nonfinite result. On rejection set rootY=0 and return false. This is static visual placement only: collider, animation deformation, spawn contact and native runtime need independent verification.",
+      "broken": "public static class Practice { public static bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY){rootY=groundY+(maxY-minY)*.5f;return true;} }",
+      "reference": "public static class Practice { private static bool Finite(float v){return !float.IsNaN(v)&&!float.IsInfinity(v);} public static bool Place(float minY,float maxY,float scale,float groundY,float gap,out float rootY){rootY=0;if(!Finite(minY)||!Finite(maxY)||!Finite(scale)||!Finite(groundY)||!Finite(gap)||minY>maxY||scale<=0||gap<0)return false;float y=groundY+gap-minY*scale;if(!Finite(y))return false;rootY=y;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "float y;Check(Practice.Place(-2,3,2,10,.1f,out y));Check(y>14.09f&&y<14.11f);Check(!Practice.Place(0,1,0,0,0,out y)&&y==0);"
+      ],
+      "tests": [
+        "float y;for(int low=-10;low<10;low++){Check(Practice.Place(low,low+3,1.5f,-4,.25f,out y));float bottom=y+low*1.5f;Check(bottom>-3.751f&&bottom<-3.749f);}",
+        "float y;Check(!Practice.Place(2,1,1,0,0,out y));Check(!Practice.Place(0,1,-1,0,0,out y));Check(!Practice.Place(0,1,1,0,-1,out y));Check(!Practice.Place(float.NaN,1,1,0,0,out y));Check(!Practice.Place(0,float.PositiveInfinity,1,0,0,out y));Check(!Practice.Place(0,1,1,float.NaN,0,out y));Check(!Practice.Place(-float.MaxValue,1,2,0,0,out y)&&y==0);"
+      ]
+    },
+    {
+      "id": "unity-hitstop-frame-budget",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "HITSTOP_FRAME_PARTITION_DRIFT",
+      "domains": [
+        "MOTION",
+        "ACTION_TIMING",
+        "PHYSICS_PRESENTATION"
+      ],
+      "scenario": "Implement public static class Practice with bool Step(double delta,double pause,out double remainingPause,out double activeDelta). Consume only min(delta,pause) seconds of a presentation hitstop; activeDelta is the remaining part of this frame. Reject negative, NaN or infinite inputs, set both outputs to zero and return false. Zero delta is valid. Never freeze a whole frame just because pause was positive at frame start. Hitstop affects presentation time only; authoritative physics, damage and input must use their own clock.",
+      "broken": "public static class Practice { public static bool Step(double delta,double pause,out double remainingPause,out double activeDelta){remainingPause=pause-delta;activeDelta=pause>0?0:delta;return true;} }",
+      "reference": "public static class Practice { public static bool Step(double delta,double pause,out double remainingPause,out double activeDelta){remainingPause=0;activeDelta=0;if(double.IsNaN(delta)||double.IsInfinity(delta)||double.IsNaN(pause)||double.IsInfinity(pause)||delta<0||pause<0)return false;double used=delta<pause?delta:pause;remainingPause=pause-used;activeDelta=delta-used;return true;} }",
+      "supportCode": "",
+      "feedbackTests": [
+        "double p,a;Check(Practice.Step(.1,.025,out p,out a));Check(p==0&&a>.074999&&a<.075001);Check(!Practice.Step(-1,0,out p,out a)&&p==0&&a==0);"
+      ],
+      "tests": [
+        "for(int n=1;n<60;n++){double p=.15,total=0;for(int i=0;i<n;i++){double next,a;Check(Practice.Step(.5/n,p,out next,out a));p=next;total+=a;}Check(p==0&&total>.349999&&total<.350001);}",
+        "double p,a;foreach(double bad in new double[]{double.NaN,double.PositiveInfinity,double.NegativeInfinity,-.1}){Check(!Practice.Step(bad,1,out p,out a)&&p==0&&a==0);Check(!Practice.Step(1,bad,out p,out a)&&p==0&&a==0);}Check(Practice.Step(0,2,out p,out a)&&p==2&&a==0);Check(Practice.Step(3,0,out p,out a)&&p==0&&a==3);"
+      ]
+    },
+    {
+      "id": "unity-menu-modal-focus",
+      "platform": "unity",
+      "level": "응용",
+      "failure": "MENU_MODAL_BACK_FOCUS_LEAK",
+      "domains": [
+        "UI_STATE",
+        "INPUT_OWNERSHIP",
+        "MENU_NAVIGATION"
+      ],
+      "scenario": "Implement public static class Practice with int Back(MenuState s,bool[] available,int fallback). Harness supplies MenuState with public bool Modal; public int Depth; public int[] SavedFocus. Depth is the current stack index. Reject null/malformed state, null availability, negative or out-of-range Depth by returning -1 without mutation. If Modal is true, close only the modal and keep Depth. Otherwise decrement Depth if above zero. Restore SavedFocus at the resulting Depth only when it is a valid available index; else use fallback if valid and available, else -1. Never modify either array. A hidden or disabled control is unavailable. This pure state transition is not native UI runtime proof.",
+      "broken": "public static class Practice { public static int Back(MenuState s,bool[] available,int fallback){s.Depth--;s.Modal=false;return s.SavedFocus[s.Depth];} }",
+      "reference": "public static class Practice { public static int Back(MenuState s,bool[] available,int fallback){if(s==null||s.SavedFocus==null||available==null||s.Depth<0||s.Depth>=s.SavedFocus.Length)return -1;if(s.Modal)s.Modal=false;else if(s.Depth>0)s.Depth--;int focus=s.SavedFocus[s.Depth];if(focus>=0&&focus<available.Length&&available[focus])return focus;if(fallback>=0&&fallback<available.Length&&available[fallback])return fallback;return -1;} }",
+      "supportCode": "public class MenuState { public bool Modal; public int Depth; public int[] SavedFocus; }",
+      "feedbackTests": [
+        "var s=new MenuState{Modal=true,Depth=1,SavedFocus=new int[]{0,2}};var a=new bool[]{true,false,true};Check(Practice.Back(s,a,0)==2&&!s.Modal&&s.Depth==1);Check(Practice.Back(s,a,0)==0&&s.Depth==0);"
+      ],
+      "tests": [
+        "for(int n=1;n<15;n++){var f=new int[n];for(int i=0;i<n;i++)f[i]=i;var a=new bool[n];a[0]=true;var s=new MenuState{Modal=true,Depth=n-1,SavedFocus=f};Check(Practice.Back(s,a,0)==0&&s.Depth==n-1&&!s.Modal);for(int i=n-1;i>=0;i--){Check(Practice.Back(s,a,0)==0);Check(s.Depth==(i>0?i-1:0));}for(int i=0;i<n;i++)Check(f[i]==i&&a[i]==(i==0));}",
+        "Check(Practice.Back(null,new bool[0],0)==-1);var s=new MenuState{Modal=true,Depth=2,SavedFocus=new int[]{0}};Check(Practice.Back(s,new bool[]{true},0)==-1&&s.Modal&&s.Depth==2);s.Depth=0;Check(Practice.Back(s,null,0)==-1&&s.Modal);s.SavedFocus[0]=99;Check(Practice.Back(s,new bool[]{false},0)==-1&&!s.Modal&&s.Depth==0);"
       ]
     }
   ],

@@ -55,7 +55,11 @@
     ASSET_LOAD_FAILURE:['asset','sprite','render','ui'],LICENSE_LEDGER_MISSING:['asset'],STYLE_DNA_MISMATCH:['visual','render','style','ui','vfx'],
   });
 
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+  // 유틸: 렌더링 계측 실패(Infinity/NaN)를 최고 점수로 취급하지 않는다.
+  const clamp = (value, min, max) => {
+    const measured = Number(value);
+    return Number.isFinite(measured) ? Math.max(min, Math.min(max, measured)) : min;
+  };
   const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
   const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
   const posix = value => String(value ?? '').replaceAll('\\','/').replace(/^\.\//,'');
@@ -179,6 +183,8 @@
   function visualFileAuthority(file='') {
     const rel=posix(file),lower=rel.toLowerCase();
     if(!rel)return Object.freeze({file:rel,safe:false,reason:'EMPTY_PATH'});
+    // 메인: 시각 책임 후보여도 절대 경로·상위 폴더·URI로 저장소 범위를 벗어나면 거부한다.
+    if(rel.startsWith('/')||rel.startsWith('~')||/^[a-z][a-z0-9+.-]*:/i.test(rel)||rel.split('/').includes('..')||rel.includes('\0'))return Object.freeze({file:rel,safe:false,reason:'UNSAFE_VISUAL_PATH'});
     if(lower.startsWith('.github/')||lower.startsWith('.autonomous/')||lower.startsWith('company-learning/')||/\.(?:md|txt)$/.test(lower))return Object.freeze({file:rel,safe:false,reason:'NON_VISUAL_META'});
     const strongVisual=/\.(?:css|svg|shader|mat|anim|controller|prefab|unity)$/.test(lower)||/(?:^|[\/_-])(?:ui|hud|render|visual|sprite|animation|animator|effect|vfx|particle|shader|material|camera|environment)(?:[\/_\-.]|$)/.test(lower);
     const strongGameplay=/(?:gamecore|game-state|gamestate|playerstate|save|economy|balance|combat|quest|inventory|reward|damage|health|spawn)/.test(lower);
