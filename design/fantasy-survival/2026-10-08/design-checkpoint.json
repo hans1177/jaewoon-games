@@ -275,25 +275,133 @@
         "resourceFlow": "기존 월드 상태, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태를 그대로 유지",
         "balanceRules": "기존 저장 의미와 인과를 유지하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명"
       }
+    },
+    "local_authoring_parts::c5302068a166312cc0042d4ea7589123ef99b306cf1f8fd14a437a632ad12723:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "시그니처 상호작용 결과",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 구체적인 영향을 보존"
+        },
+        {
+          "milestone": "다음 상태와 접근 가능성이 바뀐 월드 상태",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "월드 상태의 변화 및 접근 가능성의 변화를 구체적으로 설명"
+        },
+        {
+          "milestone": "시그니처 상호작용 결과",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 구체적인 영향을 보존"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "월드 상태의 변화",
+          "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "시그니처 상호작용 결과"
+        ],
+        "retryFlow": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "riskPressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 변화에 따른 위험과 기회 비용을 구체적으로 설명",
+        "recoveryRules": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+      }
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "stateChange": "시그니처 상호작용 결과"
+        },
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "다음 상태와 접근 가능성이 바뀐 월드 상태",
+          "stateChange": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+        },
+        {
+          "stateKeys": [
+            "월드 상태",
+            "플레이어 이동",
+            "채집",
+            "전투",
+            "제작",
+            "퀘스트 상태"
+          ],
+          "fromSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "toSystem": "SIGNATURE_FIGHT_SURVIVAL",
+          "trigger": "시그니처 상호작용 결과",
+          "stateChange": "다음 상태와 접근 가능성이 바뀐 월드 상태"
+        }
+      ],
+      "progressionDirection": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "resourceFlow": "기존 월드 상태, 플레이어 이동, 채집, 전투, 제작, 퀘스트 상태를 그대로 유지",
+        "balanceRules": "기존 저장 의미와 인과를 유지하며, 새로운 플레이와 기존 시스템 영향을 구체적으로 설명"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시그니처 상호작용 결과",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 구체적인 영향을 보존"
+        },
+        {
+          "milestone": "다음 상태와 접근 가능성이 바뀐 월드 상태",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "월드 상태의 변화 및 접근 가능성의 변화를 구체적으로 설명"
+        },
+        {
+          "milestone": "시그니처 상호작용 결과",
+          "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+          "systemImpact": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 구체적인 영향을 보존"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "월드 상태의 변화",
+          "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결",
+          "시그니처 상호작용 결과"
+        ],
+        "retryFlow": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하",
+        "riskPressure": "플레이어 이동, 채집, 전투, 제작, 퀘스트 상태 연결 및 시그니처 상호작용 결과의 변화에 따른 위험과 기회 비용을 구체적으로 설명",
+        "recoveryRules": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택이 기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1282712,
-      "lastMs": 159243,
+      "totalMs": 1471204,
+      "lastMs": 188492,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T12:36:37.728Z"
+      "updatedAt": "2026-10-08T12:39:46.222Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T12:36:37.728Z",
+  "updatedAt": "2026-10-08T12:39:46.228Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2489,12 +2597,13 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "d6ce40b4c81d9825410cb7921f5d4df27ddde3a005a4f619cb072512097894ac"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:36:37.728Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:39:46.224Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
