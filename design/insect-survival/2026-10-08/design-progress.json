@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 40,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:31:35.269Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 41,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:33:04.526Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/insect-survival/2026-10-08/design-seed.json",
     "contentDigest": "da0c317dde5042a05623a0585d4b004e2044ed75a38f370ec08f5f4faf2d069f",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2858747,
-      "lastMs": 122420,
+      "totalMs": 2947996,
+      "lastMs": 89249,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:31:35.267Z"
+      "updatedAt": "2026-10-08T15:33:04.526Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:31:35.275Z"
+  "updatedAt": "2026-10-08T15:33:04.528Z"
 }
