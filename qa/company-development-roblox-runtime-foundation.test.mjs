@@ -1479,3 +1479,18 @@ print("FOUNDATION_PHYSICS_LOGIC_ONLY")
   assert.match(run.stdout,/FOUNDATION_PHYSICS_LOGIC_ONLY/);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('survival anchored world ground contains the camp, resources and enemy spawn',()=>{
+  const source=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
+  const ground=source.match(/ensureWorldPart\(world, "SurvivalGround", Vector3\.new\((\d+), (\d+), (\d+)\), Vector3\.new\(0, (-?[\d.]+), 0\)/);
+  assert.ok(ground,'the existing Roblox world builder must create a collision ground');
+  const halfWidth=Number(ground[1])/2;
+  const halfLength=Number(ground[3])/2;
+  const groundTop=Number(ground[4])+Number(ground[2])/2;
+  assert.ok(halfWidth>=15 && halfLength>=26,'existing resource and enemy spawns must remain on the ground');
+  assert.ok(groundTop>=0,'resource nodes must rest on a collision floor');
+  assert.match(source,/local enemySpawn = ensureWorldPart\(world, "SurvivalEnemySpawn",.*Vector3\.new\(0, 0\.25, 24\)/);
+  assert.match(source,/spawnHit\.Position\.Y \+ nativeFoundationSpawn\.Size\.Y \* 0\.5 \+ 0\.05/);
+  assert.doesNotMatch(source,/spawnHit\.Position\.Y - nativeFoundationSpawn\.Size\.Y \* 0\.5/);
+  assert.match(source,/params\.ExcludeInstances = \{character, nativeFoundationSpawn\}/);
+});
