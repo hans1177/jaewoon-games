@@ -109,25 +109,42 @@
       "name": "DELVE",
       "purpose": "Role Assignment and Infection Status Tracking",
       "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+    },
+    "local_authoring_parts::1075ebc5f081adf8ca162e1654cc91a00eaaa42c883055e171936a6665cb4c98:id,grammarRole,stateInputs,stateOutputs": {
+      "id": "DELVE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Energy"
+      ],
+      "stateOutputs": [
+        "RoleAssignment",
+        "InfectionStatus",
+        "SurvivalProgress",
+        "CombatOutcome",
+        "InfectionProgress"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 8,
+      "calls": 13,
+      "successes": 9,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 649851,
-      "lastMs": 34288,
+      "totalMs": 687356,
+      "lastMs": 37505,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:38:28.171Z"
+      "updatedAt": "2026-10-08T03:39:05.678Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:27:38.135Z",
-  "updatedAt": "2026-10-08T03:38:28.172Z",
+  "updatedAt": "2026-10-08T03:39:05.678Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -883,7 +900,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:38:28.172Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:39:05.678Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
