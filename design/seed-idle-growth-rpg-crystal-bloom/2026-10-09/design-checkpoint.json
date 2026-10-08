@@ -637,25 +637,52 @@
         "PLAYER_FIGHT_AUTO",
         "PROGRESSION_RESOURCES"
       ]
+    },
+    "local_authoring_parts::d8d0c3461801d04cfebc05554e2838080857f18f273e7869c87dbf08e211f7f8:fromSystem": {
+      "fromSystem": "플레이어가 자동으로 적군을 공격하는 과정에서, 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+    },
+    "local_authoring_parts::d8d0c3461801d04cfebc05554e2838080857f18f273e7869c87dbf08e211f7f8:toSystem": {
+      "toSystem": "PROGRESSION_RESOURCES"
+    },
+    "local_authoring_parts::d8d0c3461801d04cfebc05554e2838080857f18f273e7869c87dbf08e211f7f8:trigger": {
+      "trigger": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+    },
+    "local_authoring_parts::d8d0c3461801d04cfebc05554e2838080857f18f273e7869c87dbf08e211f7f8:stateChange": {
+      "stateChange": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+    },
+    "local_authoring_parts::37b3cff431c9e6906fe62ba8002809405ad274ba0fe19e69fd6537700b44dafc:systemInterconnections:2": {
+      "fromId": "AUTO_FIGHT→PROGRESSION_RESOURCES",
+      "toId": "PROGRESSION_RESOURCES",
+      "stateKeys": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "fromSystem": "플레이어가 자동으로 적군을 공격하는 과정에서, 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+      "toSystem": "PROGRESSION_RESOURCES",
+      "trigger": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다.",
+      "stateChange": "플레이어가 자동으로 적군을 공격하는 과정에서 'PLAYER_FIGHT_AUTO' 상태가 발생하여 'PROGRESSION_RESOURCES' 리소스 생성에 기초한 상태 교환을 수행해야 한다."
+    },
+    "local_authoring_parts::da68e8d28d0a951c052ceeb07a654b75e34615c97755e6782bc234b655457958:fromId": {
+      "fromId": "AUTO_FIGHT→PROGRESSION_RESOURCES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 33,
+      "calls": 38,
+      "successes": 38,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1270153,
-      "lastMs": 32839,
+      "totalMs": 1432867,
+      "lastMs": 31477,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:06:19.157Z"
+      "updatedAt": "2026-10-08T19:09:01.881Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T19:06:19.157Z",
+  "updatedAt": "2026-10-08T19:09:01.882Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3410,7 +3437,7 @@
       "progressionDirection": "{\"from\": \"AUTO_FIGHT\", \"to\": \"RESOURCE_COLLECTION\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:06:19.157Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:09:01.882Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
