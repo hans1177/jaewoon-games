@@ -452,21 +452,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
+      "calls": 11,
       "successes": 10,
-      "failures": 0,
-      "timeouts": 0,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 817345,
-      "lastMs": 56353,
-      "lastError": null,
-      "updatedAt": "2026-10-08T13:11:44.491Z"
+      "totalMs": 1117420,
+      "lastMs": 300075,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T13:16:44.612Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:11:44.535Z",
+  "updatedAt": "2026-10-08T13:16:44.612Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2678,5 +2678,8 @@
     "contentDigest": "e91638d416838eefc69a34dbda3bbaaf6a469870be1ed00dea4f99c647af5e6c",
     "authorModel": "ollama:qwen3:1.7b",
     "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "9a53442f2757810f313016d10c6ea65e51aa1e71c7cb75f0bacd646f5f7f50fa": true
   }
 }
