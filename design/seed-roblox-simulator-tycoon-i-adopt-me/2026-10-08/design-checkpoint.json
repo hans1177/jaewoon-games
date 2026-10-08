@@ -785,25 +785,45 @@
         "positions"
       ],
       "fromSystem": "GAME_CATEGORY"
+    },
+    "local_authoring_parts::1b07745f0c37c5d12a69d803627ed6f43c037110f360ff9e825d0d582f7de4d4:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_CATEGORY",
+      "trigger": "enemyWave→worldState",
+      "stateChange": "enemyWave, towers, defenders, lanes, positions → worldState"
+    },
+    "local_authoring_parts::3e1d90f690cf88276ad34895db0f9ca7747f6a17f0c5e6693c7bb82b0032ecc0:systemInterconnections:4": {
+      "fromId": "enemyWave",
+      "toId": "worldState",
+      "stateKeys": [
+        "enemyWave",
+        "towers",
+        "defenders",
+        "lanes",
+        "positions"
+      ],
+      "fromSystem": "GAME_CATEGORY",
+      "toSystem": "GAME_CATEGORY",
+      "trigger": "enemyWave→worldState",
+      "stateChange": "enemyWave, towers, defenders, lanes, positions → worldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2726159,
-      "lastMs": 46016,
+      "totalMs": 2774331,
+      "lastMs": 48172,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:06:37.698Z"
+      "updatedAt": "2026-10-08T10:07:25.872Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T10:06:37.698Z",
+  "updatedAt": "2026-10-08T10:07:25.879Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3025,9 +3045,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "towers→worldState의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: towers→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3042,9 +3062,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "defenders→worldState의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: defenders→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3059,9 +3079,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "lanes→worldState의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: lanes→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3076,9 +3096,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "positions→worldState의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: positions→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: enemyWave→worldState의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3106,7 +3126,7 @@
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3155,10 +3175,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:06:37.698Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:07:25.875Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
