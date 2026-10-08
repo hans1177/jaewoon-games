@@ -943,25 +943,46 @@
         "ProgressionBenefit"
       ],
       "fromSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::78779a2b0ad1d0261a55f5b3caac7ae9d566d9758863c4ac5c413e8f1df1a96c:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "RULE_01→RULE_02",
+      "stateChange": "HumanCount,MonsterCount,EliminatedCount,Score,Distance,ProgressionBenefit"
+    },
+    "local_authoring_parts::3e7605f3e40d756aecdb0270196c92e72faf2dac10626b9d129ff17c22746869:systemInterconnections:3": {
+      "fromId": "RULE_01",
+      "toId": "RULE_02",
+      "stateKeys": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "fromSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "GAME_CORE_LOOP_AVOIDANCE_ZONE_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01",
+      "trigger": "RULE_01→RULE_02",
+      "stateChange": "HumanCount,MonsterCount,EliminatedCount,Score,Distance,ProgressionBenefit"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 34,
+      "calls": 36,
+      "successes": 35,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3621949,
-      "lastMs": 78054,
+      "totalMs": 3700633,
+      "lastMs": 78684,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:15:56.196Z"
+      "updatedAt": "2026-10-08T16:17:14.882Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T16:15:56.196Z",
+  "updatedAt": "2026-10-08T16:17:14.884Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3031,7 +3052,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:15:56.196Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:17:14.884Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
