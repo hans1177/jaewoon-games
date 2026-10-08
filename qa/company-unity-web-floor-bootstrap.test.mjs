@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 
 const tool=new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.url);
 
@@ -308,7 +309,10 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     const project='unity-games/approved-world';
     const manifest=JSON.parse(fs.readFileSync(path.join(project,'unity-web-floor-source.json'),'utf8'));
     const dataFile=path.join(project,'Assets/Resources/vibe-world-layout.json');
-    const layout=JSON.parse(fs.readFileSync(dataFile,'utf8'));
+    const rawLayout=fs.readFileSync(dataFile,'utf8');
+    const layout=JSON.parse(rawLayout);
+    assert.equal(manifest.proceduralEnvironment.layoutHash,createHash('sha256').update(rawLayout).digest('hex'));
+    assert.equal(manifest.proceduralEnvironment.seed,'unity-web-layout-1');
     const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
     assert.equal(manifest.proceduralEnvironment.approval,'APPROVED_DESIGN_3D_ONLY');
     assert.equal(manifest.proceduralEnvironment.status,'DATA_AUTHORED_RUNTIME_UNVERIFIED');
@@ -340,6 +344,8 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
+    assert.match(runtime,/primitive.GetComponent<Collider>\(\).enabled=false/);
+    assert.match(runtime,/primitive.SetActive\(false\);Destroy\(primitive\);/);
     assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
     assert.match(runtime,/data\.mobile&&\(data\.width>48/);
     assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
