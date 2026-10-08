@@ -1213,25 +1213,28 @@
           "to": "다음 상태와 접근 가능성이 바뀐 월드 상태"
         }
       ]
+    },
+    "local_authoring_parts::14219239534ce129639b683cd9cbb0f583afae4f1ef8dfd7a3f39e187ee0fb44:stateKey": {
+      "stateKey": "월드 상태"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 29,
+      "calls": 34,
+      "successes": 30,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 4665103,
-      "lastMs": 92796,
+      "totalMs": 4755269,
+      "lastMs": 90166,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:57:10.602Z"
+      "updatedAt": "2026-10-08T15:58:40.774Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:15:14.939Z",
-  "updatedAt": "2026-10-08T15:57:10.606Z",
+  "updatedAt": "2026-10-08T15:58:40.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3497,7 +3500,7 @@
   "slicePartialResults": {
     "designer_draft_slices::alternatives": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:57:10.606Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:58:40.774Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
