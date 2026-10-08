@@ -687,25 +687,33 @@
     },
     "local_authoring_parts::82ebd93f7f27cf53551b318ed756a65dab582f1b45b92475989918b2ec00d44c:newGameplay": {
       "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::82ebd93f7f27cf53551b318ed756a65dab582f1b45b92475989918b2ec00d44c:systemImpact": {
+      "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::70d7a8df9dd0fc330b14cffb2348e1c979e1da57bccb648f4bb19670315c84f4:contentExpansionPlan:1": {
+      "milestone": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+      "newGameplay": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다.",
+      "systemImpact": "RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3450628,
-      "lastMs": 49430,
+      "totalMs": 3500543,
+      "lastMs": 49915,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:26:33.981Z"
+      "updatedAt": "2026-10-08T23:27:23.898Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T23:26:33.982Z",
+  "updatedAt": "2026-10-08T23:27:23.899Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3084,7 +3092,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:26:33.981Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:27:23.899Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
