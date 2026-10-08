@@ -725,25 +725,41 @@
         "DefensiveStrategy"
       ],
       "fromSystem": "EnemyDefenseSynergy"
+    },
+    "local_authoring_parts::f8649ece1f8530529335098cc54194ed454e17b1a8e1132590db3e406f57ef7d:toSystem,trigger,stateChange": {
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::1115cc5b2fdeedcda9816180d6f21e38d3348200f29c3aa1b42baca017bfe53e:systemInterconnections:1": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy",
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1264553,
-      "lastMs": 92140,
+      "totalMs": 1355158,
+      "lastMs": 90605,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:15:11.910Z"
+      "updatedAt": "2026-10-08T16:16:42.516Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:15:11.910Z",
+  "updatedAt": "2026-10-08T16:16:42.518Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3096,7 +3112,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:15:11.910Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:16:42.518Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
