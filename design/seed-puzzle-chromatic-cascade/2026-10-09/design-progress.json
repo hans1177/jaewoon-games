@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T18:49:55.316Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 17,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:51:23.676Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
     "contentDigest": "14286eb752fd5137006a4b76cfae69b63ab496eb7da23a21edb9c77a82927916",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1220429,
-      "lastMs": 240106,
+      "totalMs": 1308782,
+      "lastMs": 88353,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:49:55.316Z"
+      "updatedAt": "2026-10-08T18:51:23.676Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T18:49:55.321Z"
+  "updatedAt": "2026-10-08T18:51:23.678Z"
 }
