@@ -34,25 +34,44 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::b960df58b86ded16877a8a1c558abd3ef20dc73aed3e2b196c3844fec871520e:signatureSystems:0": {
+      "id": "main-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemyWave",
+        "towersDefenders",
+        "resources",
+        "defenseStrategy"
+      ],
+      "stateOutputs": [
+        "towersDefenders",
+        "resources",
+        "defenseStrategy",
+        "gameProgress"
+      ],
+      "name": "타워 위치 및 전략 결정 시스템",
+      "purpose": "플레이어가 상대의 공격을 막는 데 사용되는 타워와 방어 위치를 선택하여 전략을 결정하는 과정을 구현",
+      "playerChoice": "타워 위치 선택 및 전략 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 730258,
-      "lastMs": 101025,
+      "totalMs": 839724,
+      "lastMs": 109466,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:55:27.937Z"
+      "updatedAt": "2026-10-08T08:57:17.404Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:43:17.650Z",
-  "updatedAt": "2026-10-08T08:55:27.937Z",
+  "updatedAt": "2026-10-08T08:57:17.405Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:55:27.937Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:57:17.404Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
