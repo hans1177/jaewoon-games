@@ -446,25 +446,38 @@
       "name": "몬스터 어드벤처의 단순한 입력",
       "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::d3168b4b25640c354b716496a01148964e67746f8f38f8f26824c07a04073f12:signatureSystems:2": {
+      "id": "B_01",
+      "grammarRole": "B",
+      "stateInputs": [
+        "WorldState"
+      ],
+      "stateOutputs": [
+        "NextAction"
+      ],
+      "name": "몬스터 어드벤처의 단순한 입력",
+      "purpose": "플레이어가 즉시 이해할 수 있는 단순한 입력을 통해 세계 상태를 바꾸는 중심 행동",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1276362,
-      "lastMs": 95420,
+      "totalMs": 1372790,
+      "lastMs": 96428,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:20:23.569Z"
+      "updatedAt": "2026-10-08T13:21:59.998Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T13:20:23.569Z",
+  "updatedAt": "2026-10-08T13:21:59.998Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2586,7 +2599,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:20:23.569Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:21:59.998Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
