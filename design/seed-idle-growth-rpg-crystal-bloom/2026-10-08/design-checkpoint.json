@@ -677,25 +677,53 @@
         "progressionCycle"
       ],
       "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0\",\"toSystem\":\"IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1\""
+    },
+    "local_authoring_parts::4ad4c86d72eb3e526c66af3db8d2f0f85e4f6c09793f81bd7ba0761c2df2ffda:toSystem,trigger,stateChange": {
+      "toSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "trigger": "playerChoice",
+      "stateChange": "progressionCycle"
+    },
+    "local_authoring_parts::7663367306d27f56e280b257e2ae96a6159069ef70085e2bb90613ede8873d4e:systemInterconnections:3": {
+      "fromId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0",
+      "toId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "worldState",
+        "playerChoice",
+        "progressionCycle"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0\",\"toSystem\":\"IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1\"",
+      "toSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "trigger": "playerChoice",
+      "stateChange": "progressionCycle"
+    },
+    "local_authoring_parts::d80872f88e3b3c2ccba2bb7bef8ff0c0e07614777c575aafdf1e3e15146c12bc:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0",
+      "toId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "worldState",
+        "playerChoice",
+        "progressionCycle"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 986497,
-      "lastMs": 32876,
+      "totalMs": 1049383,
+      "lastMs": 33034,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:27:43.176Z"
+      "updatedAt": "2026-10-08T10:28:46.068Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:27:43.176Z",
+  "updatedAt": "2026-10-08T10:28:46.068Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3074,7 +3102,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:27:43.176Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:28:46.068Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
