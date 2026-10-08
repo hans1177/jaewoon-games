@@ -501,25 +501,48 @@
       "name": "coreLoop",
       "purpose": "왕국 확장 전략",
       "playerChoice": "협동 지원으로 강한 거점 공략"
+    },
+    "local_authoring_parts::f220c84d462ddd813e08a66b1bdbe193f81e155cb64a8ca74aea169e4f5d3a7f:signatureSystems:4": {
+      "id": "coreLoop",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "stateOutputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "name": "coreLoop",
+      "purpose": "왕국 확장 전략",
+      "playerChoice": "협동 지원으로 강한 거점 공략"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1109801,
-      "lastMs": 105892,
+      "totalMs": 1214797,
+      "lastMs": 104996,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:31:35.529Z"
+      "updatedAt": "2026-10-08T10:33:20.527Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:31:35.529Z",
+  "updatedAt": "2026-10-08T10:33:20.532Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1095,7 +1118,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -1113,10 +1136,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:31:35.529Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:33:20.529Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
