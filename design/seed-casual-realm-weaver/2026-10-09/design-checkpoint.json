@@ -360,25 +360,45 @@
       "name": "세계의 직조자 - 캐주경 세계 창조 게임",
       "purpose": "플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여, 다음 상태가 바뀌는 CASUAL 게임이다.",
       "playerChoice": "실제 월드/시스템 상태 변화와 연결되는 플레이 공간의 다음 상태 및 접근 가능성을 실제로 바꾼다."
+    },
+    "local_authoring_parts::87b56b5b4179480e97f586109dabefaf26cf3cb1179f2db4a0cfdca3d817044e:signatureSystems:2": {
+      "id": "세계의 직조자 - 캐주얼 세계 창조 게임",
+      "grammarRole": "B",
+      "stateInputs": [
+        "월드/시스템 상태 변화",
+        "점수",
+        "거리",
+        "세션 목표"
+      ],
+      "stateOutputs": [
+        "새 행동",
+        "새 경로",
+        "새 조합",
+        "새 관계",
+        "새 발견 또는 대응법"
+      ],
+      "name": "세계의 직조자 - 캐주경 세계 창조 게임",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여, 다음 상태가 바뀌는 CASUAL 게임이다.",
+      "playerChoice": "실제 월드/시스템 상태 변화와 연결되는 플레이 공간의 다음 상태 및 접근 가능성을 실제로 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 461055,
-      "lastMs": 44144,
+      "totalMs": 502949,
+      "lastMs": 41894,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:43:41.939Z"
+      "updatedAt": "2026-10-08T18:44:23.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:36:00.823Z",
-  "updatedAt": "2026-10-08T18:43:41.939Z",
+  "updatedAt": "2026-10-08T18:44:23.834Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2362,7 +2382,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:43:41.939Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:44:23.834Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
