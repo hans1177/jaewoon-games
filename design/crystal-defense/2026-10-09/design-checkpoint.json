@@ -520,25 +520,41 @@
     },
     "local_authoring_parts::abee4e394b961ea7a7635f422a57ec11ee873120dd8d20425799d06719d730bf:trigger": {
       "trigger": "ATTACK_PATTERNS"
+    },
+    "local_authoring_parts::abee4e394b961ea7a7635f422a57ec11ee873120dd8d20425799d06719d730bf:stateChange": {
+      "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
+    },
+    "local_authoring_parts::b7aa2a41e14f0c54824bfb2971b7f75398421d8b09f496d351b209cc60e98dd1:systemInterconnections:0": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "PLACEMENT",
+      "toSystem": "RESONANCE",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "플레이어는 주요 선택에 따라 다양한 전략, 경로, 성장 가능성을 생성하며, 이 과정에서 세계 상태와 보상이 서로 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1655469,
-      "lastMs": 89411,
+      "totalMs": 1746994,
+      "lastMs": 91525,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:14:27.622Z"
+      "updatedAt": "2026-10-08T22:15:59.149Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T22:14:27.622Z",
+  "updatedAt": "2026-10-08T22:15:59.151Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2950,7 +2966,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:14:27.622Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:15:59.151Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
