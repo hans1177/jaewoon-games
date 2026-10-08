@@ -642,25 +642,28 @@
           "stateChange": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서, CORE-01 시스템의 START_BOARD 상태를 CORE-02 시스템의 START_MATCH 상태로 전환합니다."
         }
       ]
+    },
+    "local_authoring_parts::0b141b8b558ff0b250536ce3f128a072b021838567c4d6740bebfec359155d74:milestone": {
+      "milestone": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 46,
+      "calls": 47,
+      "successes": 47,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1747850,
-      "lastMs": 34546,
+      "totalMs": 1780712,
+      "lastMs": 32862,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:52:13.597Z"
+      "updatedAt": "2026-10-08T21:52:46.464Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:52:13.600Z",
+  "updatedAt": "2026-10-08T21:52:46.464Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3105,7 +3108,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:52:13.600Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:52:46.464Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
