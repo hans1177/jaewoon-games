@@ -491,25 +491,28 @@
     },
     "local_authoring_parts::b9f7a1d718ad2178cd7ea6a0064f1c0696fc0e610f010408e9f5de33bd747dce:fromId": {
       "fromId": "PLAYER_ACTION"
+    },
+    "local_authoring_parts::b9f7a1d718ad2178cd7ea6a0064f1c0696fc0e610f010408e9f5de33bd747dce:toId": {
+      "toId": "WORLD_STATE_CHANGE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 737854,
-      "lastMs": 31458,
+      "totalMs": 769322,
+      "lastMs": 31468,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:00:16.757Z"
+      "updatedAt": "2026-10-08T19:00:48.226Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:47:58.761Z",
-  "updatedAt": "2026-10-08T19:00:16.757Z",
+  "updatedAt": "2026-10-08T19:00:48.226Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3065,7 +3068,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:00:16.757Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:00:48.226Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
