@@ -398,25 +398,44 @@
       "name": "ACTION_SURVIVAL_ROGUELITE",
       "purpose": "Player engages in a short real-time survival run where they must fight an escalating horde while positioning around enemy pressure, collect rewards, and upgrade their build to survive harder waves or a boss.",
       "playerChoice": "Choose between collecting rewards or experience, upgrading weapons, perks, or skills to change the current build, or combining upgrades to create a stronger build, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::847425197799cd8b86dd7d5c30c5a6f2c70c5e1ce079a9b6c40ad71c4dbc6514:signatureSystems:2": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PlayerPosition",
+        "EnemyPressure",
+        "RunProgression",
+        "BuildComposition"
+      ],
+      "stateOutputs": [
+        "PlayerPosition",
+        "EnemyPressure",
+        "RunProgression",
+        "BuildComposition"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Player engages in a short real-time survival run where they must fight an escalating horde while positioning around enemy pressure, collect rewards, and upgrade their build to survive harder waves or a boss.",
+      "playerChoice": "Choose between collecting rewards or experience, upgrading weapons, perks, or skills to change the current build, or combining upgrades to create a stronger build, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1248139,
-      "lastMs": 112192,
+      "totalMs": 1357281,
+      "lastMs": 109142,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:22:59.721Z"
+      "updatedAt": "2026-10-08T13:24:48.865Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:02:11.526Z",
-  "updatedAt": "2026-10-08T13:22:59.721Z",
+  "updatedAt": "2026-10-08T13:24:48.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2651,7 +2670,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:22:59.721Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:24:48.865Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
