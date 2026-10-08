@@ -516,25 +516,152 @@
       "name": "골목 군단 대전 시스템",
       "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
       "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+    },
+    "local_authoring_parts::02ac01cbbf15d132ac7d4074478e8e3734433c961cde66f7f3a80f44c6545b87:signatureSystems:4": {
+      "id": "signatureSystems_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemyWaveType",
+        "resourcePool",
+        "defenseStrategy",
+        "currentStage"
+      ],
+      "stateOutputs": [
+        "towersPlaced",
+        "defendersDeployed",
+        "resourceSpent",
+        "defenseAdaptation"
+      ],
+      "name": "골목 군단 대전 시스템",
+      "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+      "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 게임의 구현 버그와 설계 모순의 원인·수정 책임은 구분하고, 안정성을 먼저 다룬다. 같은 증상을 설계와구",
+      "playerFantasy": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
+      "coreFun": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "multiplayerMode": "COOP",
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemyWaveType",
+            "resourcePool",
+            "defenseStrategy",
+            "currentStage"
+          ],
+          "stateOutputs": [
+            "towersPlaced",
+            "defendersDeployed",
+            "resourceSpent",
+            "defenseAdaptation"
+          ],
+          "name": "골목 군단 대전 시스템",
+          "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+          "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemyWaveType",
+            "resourcePool",
+            "defenseStrategy",
+            "currentStage"
+          ],
+          "stateOutputs": [
+            "towersPlaced",
+            "defendersDeployed",
+            "resourceSpent",
+            "defenseAdaptation"
+          ],
+          "name": "골목 군단 대전 시스템",
+          "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+          "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemyWaveType",
+            "resourcePool",
+            "defenseStrategy",
+            "currentStage"
+          ],
+          "stateOutputs": [
+            "towersPlaced",
+            "defendersDeployed",
+            "resourceSpent",
+            "defenseAdaptation"
+          ],
+          "name": "골목 군단 대전 시스템",
+          "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+          "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "enemyWaveType",
+            "resourcePool",
+            "defenseStrategy",
+            "currentStage"
+          ],
+          "stateOutputs": [
+            "towersPlaced",
+            "defendersDeployed",
+            "resourceSpent",
+            "defenseAdaptation"
+          ],
+          "name": "골목 군단 대전 시스템",
+          "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+          "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        },
+        {
+          "id": "signatureSystems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemyWaveType",
+            "resourcePool",
+            "defenseStrategy",
+            "currentStage"
+          ],
+          "stateOutputs": [
+            "towersPlaced",
+            "defendersDeployed",
+            "resourceSpent",
+            "defenseAdaptation"
+          ],
+          "name": "골목 군단 대전 시스템",
+          "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+          "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1580862,
-      "lastMs": 105700,
+      "totalMs": 1687064,
+      "lastMs": 106202,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:54:25.825Z"
+      "updatedAt": "2026-10-08T10:56:12.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T10:54:25.825Z",
+  "updatedAt": "2026-10-08T10:56:12.033Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2728,47 +2855,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다. 게임의 구현 버그와 설계 모순의 원인·수정 책임은 구분하고, 안정성을 먼저 다룬다. 같은 증상을 설계와구",
-      "playerFantasy": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
-      "coreFun": "골목 군단 대전은 플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임이다. 이 게임은 단순한 전략 게임이 아니라, 플레이어가 실제 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 갖춘다. 게임의 핵심 재미는 '전략적 선택의 결과가 다음 상태로 이어지는 반복 가능한 루프'이며, 이는 모바일 플랫폼에서도 즉시 이해할 수 있는 입력과 피드백을 제공한다. 게임의 세계 규칙은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'과 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'의 결과가 서로 영향을 주는 시그니처 상호작용을 통해 구축된다. 게임의 시스템은 MAIN, A, B, c, @의 상태 변화를 통해, 플레이어가 반복적으로 수행하는 중심 행동과 독립적인 대축, 보조 요소, 파고들기의 관계를 구체화한다. 게임의 규칙은 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, RPG식 시스템은 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 게임의 성장은 수치 증가뿐만 아니라, 새 행동·경로·조합·관계·발견·대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다. 게임의 설계는 기존의 검증과 보안, 저장, 네트워크 권한을 바꾸지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 성공은決定",
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:54:25.825Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T10:56:12.029Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/line-defense/2026-10-08/design-seed.json",
+    "contentDigest": "2951cdb4553fa4151196507bdd7a9b899009964284c9d40bf06c06fda0358c1d",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
