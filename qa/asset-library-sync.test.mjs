@@ -315,6 +315,37 @@ test('party tycoon farm and defense menus synchronize real source values without
  }
 });
 
+test('real inventory search sort and category controls filter owner data without changing inventory authority',()=>{
+ const src=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=src.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)');
+ const b=src.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)',a);
+ assert.ok(a>=0 && b>a);
+ const inventory=src.slice(a,b);
+ assert.match(inventory,/local rows,shown,filterNames=\{\},\{\},\{\}/);
+ assert.match(inventory,/filterNames\[1\]="전체"/);
+ assert.match(inventory,/local category=tostring\(row\.category or ""\)/);
+ assert.match(inventory,/if not table\.find\(filterNames,currentFilter\)then currentFilter=filterNames\[1\]or"전체"end/);
+ assert.match(inventory,/search:GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+ assert.match(inventory,/sort\.Activated:Connect\(function\(\)/);
+ assert.match(inventory,/sortByName=not sortByName/);
+ assert.match(inventory,/table\.sort\(shown,function\(left,right\)/);
+ assert.match(inventory,/currentFilter=="전체"or currentFilter==category/);
+ assert.match(inventory,/string\.find\(name,query,1,true\)/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/selectedId=current\.id/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(inventory,/root:SetAttribute\("BoundVisibleItemCount",#shown\)/);
+ assert.match(inventory,/root:SetAttribute\("InventorySortByName",sortByName\)/);
+ assert.match(inventory,/root:SetAttribute\("CurrentInventoryFilter",currentFilter\)/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("TouchScrollable",true\)/);
+ for(const field of ['OwnsInventoryAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(inventory,new RegExp('root:SetAttribute\\("'+field+'",false\\)'));
+ }
+ assert.doesNotMatch(inventory,/DataStoreService|FireServer|SetAsync|UpdateAsync|RemoteEvent|RunService/);
+});
+
 test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
  const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
  const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
@@ -335,8 +366,10 @@ test('Vibe common character equipment inventory and trading screens sync exact o
  assert.match(equipment,/if row and row\.id and row\.locked~=true and type\(options\.onEquip\)=="function"then/);
  assert.match(equipment,/options\.onEquip\(row\.id,row\)/);
  assert.match(inventory,/slot:SetAttribute\("BoundItemId",tostring\(row\.id or ""\)\)/);
- assert.match(inventory,/if current and type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
- assert.match(inventory,/for i=#rows\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/if type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
  assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
  assert.match(shop,/if current\.canSell==true and type\(options\.onSell\)=="function"then options\.onSell\(current\.id,current\)/);
  assert.match(shop,/current\.canBuy==true and type\(options\.onBuy\)=="function"then options\.onBuy\(current\.id,current\)/);
