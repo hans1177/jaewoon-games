@@ -19,25 +19,40 @@
     "local_authoring_parts::b73a61d9b9276d7d1e8d6b256403233fe3567580a5dc4052308310c0938dcfb6:identity,playerFantasy": {
       "identity": "엘도리아 연대기은 플레이어가 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
       "playerFantasy": "엘도리아 연대기에서는 플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다. 이 세계는 단순한 스토리 진행보다는 플레이어의 선택과 그 결과로 인해 월드 상태가 변환되며, 적·아이템·NPC들은 이름만 다르게 되었지만 실제 세계 원인과 규칙, 보상·정보·관계에 연결되어 있다."
+    },
+    "local_authoring_parts::b73a61d9b9276d7d1e8d6b256403233fe3567580a5dc4052308310c0938dcfb6:coreFun": {
+      "coreFun": "엘도리아 연대기은 플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다. 이 세계는 단순한 스토리 진행보다는 플레이어의 선택과 그 결과로 인해 월드 상태가 변환되며, 적·아이템·NPC들은 이름만 다르게 되었지만 실제 세계 원인과 규칙, 보상·정보·관계에 연결되어 있다."
+    },
+    "local_authoring_parts::d79cb31b8b96f02ed118180c954ff194501a9fceb456c8a07838d57bf1f8d053:identity,playerFantasy,coreFun": {
+      "identity": "엘도리아 연대기은 플레이어가 Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 STORY_COMPLETE_RPG 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "엘도리아 연대기에서는 플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다. 이 세계는 단순한 스토리 진행보다는 플레이어의 선택과 그 결과로 인해 월드 상태가 변환되며, 적·아이템·NPC들은 이름만 다르게 되었지만 실제 세계 원인과 규칙, 보상·정보·관계에 연결되어 있다.",
+      "coreFun": "엘도리아 연대기은 플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다. 이 세계는 단순한 스토리 진행보다는 플레이어의 선택과 그 결과로 인해 월드 상태가 변환되며, 적·아이템·NPC들은 이름만 다르게 되었지만 실제 세계 원인과 규칙, 보상·정보·관계에 연결되어 있다."
+    },
+    "local_authoring_parts::7dc83a5621871c678302166f9bc4527fcaa19fc05ac1811a013d393a6228117e:coreLoop": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 263450,
-      "lastMs": 57466,
+      "totalMs": 377409,
+      "lastMs": 52601,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:08:23.564Z"
+      "updatedAt": "2026-10-08T19:10:17.529Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:04:00.090Z",
-  "updatedAt": "2026-10-08T19:08:23.566Z",
+  "updatedAt": "2026-10-08T19:10:17.529Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2269,7 +2284,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:08:23.565Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:10:17.529Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
