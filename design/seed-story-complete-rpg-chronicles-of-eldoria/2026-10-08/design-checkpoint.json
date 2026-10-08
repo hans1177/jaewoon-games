@@ -51,25 +51,42 @@
       "name": "KARMA_RETURN",
       "purpose": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE",
       "playerChoice": "ACTION_RESULT_DELAYED_TO_EFFECTIVE_FUTURE"
+    },
+    "local_authoring_parts::e23854294e83dfae9204af6b0a3ea753d517f13ea2ceb846834753c633485326:signatureSystems:1": {
+      "id": "MANDATE_LEGITIMACY",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_LEGITIMACY",
+        "REGION_CONTROL",
+        "MONARCHY_LEGITIMATION"
+      ],
+      "stateOutputs": [
+        "POLITICAL_STABILITY",
+        "CIVIL_WAR_OR_STABILITY",
+        "MONARCHY_LEGITIMATION_EFFECT"
+      ],
+      "name": "MANDATE_LEGITIMACY",
+      "purpose": "PLAYER_LEGITIMACY과 REGION_CONTROL이 실제 통치 가능성을 결정하는 인과법칙",
+      "playerChoice": "PLAYER_LEGITIMACY_AND_REGION_CONTROL"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 570123,
-      "lastMs": 48647,
+      "totalMs": 621853,
+      "lastMs": 51730,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:05:19.663Z"
+      "updatedAt": "2026-10-08T09:06:11.395Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:55:49.512Z",
-  "updatedAt": "2026-10-08T09:05:19.663Z",
+  "updatedAt": "2026-10-08T09:06:11.395Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2301,7 +2318,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T09:05:19.663Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:06:11.395Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
