@@ -106,25 +106,236 @@
       "name": "Human GO",
       "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
       "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+    },
+    "local_authoring_parts::5153ac5c91c3567c310dec88a6eedf78ae420b6f20afff87229e8c6337be1d24:signatureSystems:4": {
+      "id": "human-go",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "ExploreActivitySpace",
+        "DiscoverPerson",
+        "DiscoverTask",
+        "DiscoverCollectible"
+      ],
+      "name": "Human GO",
+      "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+      "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+    },
+    "local_authoring_parts::e270e55f055fedff9579eaa74d4cf4f8c21ece1f5648ab09cb36b223d7a9559a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "human-go",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        }
+      ]
+    },
+    "local_authoring_parts::b6dfd619a53546cbdac9b4a9e30f83270a644e33874b0f07737852c8e2a5d3b8:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Explore a compact activity space and discover a person, task or collectible opportunity.",
+        "Complete a short interaction or challenge and add its result to progression.",
+        "Use the new unlock to reach a different activity or social objective."
+      ],
+      "signatureSystems": [
+        {
+          "id": "human-go",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        },
+        {
+          "id": "human-go",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "ExploreActivitySpace",
+            "DiscoverPerson",
+            "DiscoverTask",
+            "DiscoverCollectible"
+          ],
+          "name": "Human GO",
+          "purpose": "Collect, discover, and grow a light-hearted exploration game focused on human behavior and relationships.",
+          "playerChoice": "Explore a compact activity space and discover a person, task, or collectible opportunity."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 901267,
-      "lastMs": 99021,
+      "totalMs": 998888,
+      "lastMs": 97621,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:32:48.790Z"
+      "updatedAt": "2026-10-08T12:34:26.412Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T12:32:48.790Z",
+  "updatedAt": "2026-10-08T12:34:26.415Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2052,7 +2263,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:32:48.790Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:34:26.415Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
