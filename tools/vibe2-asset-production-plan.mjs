@@ -4349,7 +4349,8 @@ export function buildVibeAssetProductionPlan({
     'roblox-games/'+safeMenuGameId+'/shared/RPGMenu.luau',
     'roblox-games/'+safeMenuGameId+'/shared/RPGMenuModel.luau',
     'roblox-games/'+safeMenuGameId+'/client/Game.client.luau',
-    'roblox-games/'+safeMenuGameId+'/shared/GameConfig.luau'
+    'roblox-games/'+safeMenuGameId+'/shared/GameConfig.luau',
+    'roblox-games/'+safeMenuGameId+'/server/Game.server.luau'
   ]:resolvedTarget==='unity'?[
     'unity-games/'+safeMenuGameId+'/Assets/Scripts/RuntimeBootstrap.cs',
     'unity-games/'+safeMenuGameId+'/Assets/Scripts/GameCore.cs'
@@ -4393,12 +4394,56 @@ export function buildVibeAssetProductionPlan({
       sourceOnlyNotRuntimePass:true,gameplaySaveNetworkEconomyAuthorityRetained:true
     });
   }));
+  // 실제 서버 오브젝트·실제 UI 바인딩을 모두 확인한 경우에만 특정 오브젝트 상호작용 추천.
+  // 기능의 존재와 UI 소스 바인딩은 다르며, 정적 소스 검사가 native runtime PASS가 아니다.
+  const nativeObjectSource=nativeMenuSources.find(row=>/\/server\/Game\.server\.luau$/.test(row.file));
+  const nativeObjectClient=nativeMenuSources.find(row=>/\/client\/Game\.client\.luau$/.test(row.file));
+  const objectInteractionCatalog=freezeList([
+    {kind:'QUEST_NPC',factory:'CreateNpcInteractionPrompt',purpose:'NPC_QUEST_PROGRESS_AND_REAL_SERVER_REQUEST'},
+    {kind:'WEAPON_MERCHANT',factory:'CreateNpcInteractionMenu',purpose:'SERVER_OWNED_WEAPON_PRICE_TIER'},
+    {kind:'ARMOR_MERCHANT',factory:'CreateNpcInteractionMenu',purpose:'SERVER_OWNED_ARMOR_PRICE_TIER'},
+    {kind:'HEALER',factory:'CreateNpcInteractionPrompt',purpose:'LIVE_HUMANOID_HP'},
+    {kind:'ADVANCEMENT_NPC',factory:'CreateNpcInteractionMenu',purpose:'SERVER_OWNED_CLASS_TRIAL'},
+    {kind:'ENTRY_PORTAL',factory:'CreateWorldPropInteractionPrompt',purpose:'REAL_WORLD_DESTINATION_ZONE'},
+    {kind:'RETURN_PORTAL',factory:'CreateWorldPropInteractionPrompt',purpose:'REAL_COMBAT_LOCK_AND_RETURN'},
+    {kind:'EVENT_ALTAR',factory:'CreateReadInspectPanel',purpose:'PER_PLAYER_CLAIMED_EVENT_STATE'},
+    {kind:'TREASURE_CHEST',factory:'CreateContainerInteractionPrompt',purpose:'PER_PLAYER_OPENED_CHEST_STATE'},
+    {kind:'SECRET_RUNE',factory:'CreateReadInspectPanel',purpose:'GLOBAL_REVEALED_SECRET_STATE'},
+    {kind:'BOSS_COMPANION',factory:'CreateNpcInteractionPrompt',purpose:'EXISTING_CLICKDETECTOR_PARTY_STATE'}
+  ]);
+  const objectInteractionRows=freezeList(objectInteractionCatalog.flatMap(row=>{
+    if(!nativeObjectSource)return[];
+    const source=nativeObjectSource.content;
+    const registered=source.split('\n').some(line=>
+      (line.includes('prompt(')||line.includes('SetAttribute("ObjectInteractionKind"'))
+      &&line.includes('"'+row.kind+'"')
+    );
+    if(!registered)return[];
+    const clientBound=nativeObjectClient&&nativeObjectClient.content.includes('refreshObjectInteraction')
+      &&nativeObjectClient.content.includes('BoundInteractionKind')
+      &&nativeObjectClient.content.includes('ProximityPromptService.PromptShown')
+      &&row.kind!=='BOSS_COMPANION';
+    return[freeze({
+      kind:row.kind,factory:row.factory,purpose:row.purpose,
+      gameSourceRefs:freezeList([{path:nativeObjectSource.file,sha256:nativeObjectSource.sha256}]),
+      clientConsumerRefs:freezeList(clientBound?[{path:nativeObjectClient.file,sha256:nativeObjectClient.sha256}]:[]),
+      commonUiFactoryAvailable:uiLibrarySource.includes('function RobloxCommonUI.'+row.factory+'(options)'),
+      status:clientBound?'SERVER_OBJECT_AND_CLIENT_UI_SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :'SERVER_OBJECT_SOURCE_PRESENT_UI_BINDING_REQUIRED',
+      nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true,
+      sourceHashRequiredForUpdate:true,
+      existingTriggerAndRewardUnchanged:true
+    })];
+  }));
   const genreMenuRecommendations=freeze({
     version:1,signals:freezeList(menuSeed.detectedSignals),
     companySeedUiIdeaIds:freezeList(currentMenuIdeaIds.map(row=>row.ideaId)),
     uiFactorySource:uiLibrarySourcePath,uiFactorySha256:uiLibraryHash,
     nativeGameSourceCount:nativeMenuSources.length,
     candidateFeatures:menuFeatureSuggestions,
+    objectInteractions:objectInteractionRows,
+    objectKindsDetected:freezeList(objectInteractionRows.map(row=>row.kind)),
+    objectSourceBoundCount:objectInteractionRows.filter(row=>row.clientConsumerRefs.length>0).length,
     nativeSourceBoundCandidateCount:menuFeatureSuggestions.filter(row=>row.existingNativeUiRefs.length>0).length,
     runtimeVerifiedCount:0,newQueueCreated:false,shadowUiPipelineCreated:false,
     implementationOwner:'VIBE2_VIBE3_EXISTING_GAME_SOURCE',dataOwner:'GAMEPLAY_AND_SERVER',
@@ -4978,6 +5023,9 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
 
+    plan.genreMenuRecommendations?.objectInteractions?.length?'[EXISTING OBJECT-SPECIFIC INTERACTION SYNCHRONIZATION] '+
+      JSON.stringify(plan.genreMenuRecommendations.objectInteractions)+
+      '. 현재 서버 소스에 존재하는 NPC, 상인, 포탈, 상자, 제단, 룬석, 동료의 개별 Kind/ID를 정확한 원본 SHA256과 결합한다. 상호작용의 실제 Triggered/ClickDetector와 플레이어 소유·재화·레벨·전투 잠금·보상·재생성·기존 저장 키는 각 게임의 원본 서버 책임 함수가 계속 통제한다. GUI에는 ProximityPrompt와 서버 복제 속성 기반의 현재 상태만 표시하고 게임 규칙을 새로 만들지 않는다. 거리와 HoldDuration은 기존 계약을 유지한다. 개별 오브젝트는 실제 존재 시에만 추천하며 노출되지 않은 게임 시스템이나 미검증 기능을 구현 완료라고 하지 않는다. 소스 바인딩은 네이티브 런타임 터치/입력/상태 확인 전 PASS가 아니다.':'',
     plan.genreMenuRecommendations?.candidateFeatures?.length?'[GENRE MENU FEATURE SYNCHRONIZATION] '+
       JSON.stringify({
         signals:plan.genreMenuRecommendations.signals,
