@@ -121,17 +121,18 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   };
   const proseFields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
   const enumKeys=new Set(['name','label','role','phase','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
-  const scan=(value,path,root)=>{
-    if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root));return;}
+  const identifierKeys=new Set(['id','fromId','toId','from','to','ruleId','ruleIds','stateInputs','stateOutputs','stateKeys','key','ownerId','abilityId','humanId','humanAbilityId','infectedAbilityId','regionId','stateKey','actorId','targetId','classId','assetId','rangeKey','costKey','cooldownKey','reachableBy','nextPhase']);
+  const scan=(value,path,root,identifier=false)=>{
+    if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root,identifier));return;}
     if(value&&typeof value==='object'){
-      for(const [key,item] of Object.entries(value))if(!enumKeys.has(key))scan(item,`${path}.${key}`,root);
+      for(const [key,item] of Object.entries(value))if(!enumKeys.has(key))scan(item,`${path}.${key}`,root,identifierKeys.has(key));
       return;
     }
     if(typeof value!=='string')return;
     const text=clean(value);
     // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
     if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
-    if(/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text)||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
+    if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
       reject('DESIGN_PLACEHOLDER_CONTENT','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',[root],{path,value:text.slice(0,160)},`${path}의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.`);
     }
   };

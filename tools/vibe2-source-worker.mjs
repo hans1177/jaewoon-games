@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
-import { robloxProductionPromptLines } from './company-roblox-production-plan.mjs';
+import { robloxProductionPromptLines, productionBlueprintContractsForFiles, validateSpatialBlueprint, validateInterfaceBlueprint } from './company-roblox-production-plan.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -1530,7 +1530,7 @@ function fullWebRewriteAllowed(order,target,exploration={}){
   return order?.workerPolicy?.fullFileRewriteAllowed===true||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(goal);
 }
 function parseDirectFullHtml(raw,{responsibleFiles=[]}={}){let text=String(raw??'').replaceAll('\r\n','\n').trim();if(/^\`\`\`(?:html)?\s*/i.test(text))text=text.replace(/^\`\`\`(?:html)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();if(responsibleFiles.length!==1)return null;if(!/^(?:<!doctype\s+html\b|<html\b)/i.test(text))return null;const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd<0||text.slice(htmlEnd+7).trim())return null;const content=text.slice(0,htmlEnd+7).trim();if(!content)return null;return{summary:'Vibe2 recovered direct full HTML candidate',expectedEffect:'playable Web source replacement',edits:[],newFiles:[],replaceFiles:[{path:responsibleFiles[0],content}],tests:[]};}
-function parseFullFileEnvelope(raw){const text=String(raw??'').replaceAll('\r\n','\n'),trimmed=text.trimStart();if(!trimmed.startsWith(FULL_FILE_PREFIX))return null;const prefixOffset=text.indexOf(FULL_FILE_PREFIX),contentAt=text.indexOf(FULL_FILE_CONTENT_MARKER,prefixOffset+FULL_FILE_PREFIX.length);let endAt=text.indexOf(FULL_FILE_END_MARKER,contentAt+FULL_FILE_CONTENT_MARKER.length),recoveredHtmlEnd=false;if(contentAt>=0&&endAt<0){const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd>=contentAt&&!text.slice(htmlEnd+7).trim()){endAt=htmlEnd+7;recoveredHtmlEnd=true;}}if(contentAt<0||endAt<0)throw new Error('전체 파일 응답이 잘렸거나 종료 마커가 없음');const trailing=recoveredHtmlEnd?'':text.slice(endAt+FULL_FILE_END_MARKER.length).trim();if(trailing)throw new Error('전체 파일 종료 마커 뒤에 허용되지 않은 출력이 있음');const header=text.slice(prefixOffset,contentAt).trim().split('\n').map(line=>line.trim()).filter(Boolean);if(header.shift()!==FULL_FILE_PREFIX)throw new Error('전체 파일 응답 헤더 오류');const valueOf=key=>{const line=header.find(row=>row.startsWith(`${key}:`));return line?line.slice(key.length+1).trim():'';};const tests=header.filter(row=>row.startsWith('TEST:')).map(row=>row.slice(5).trim()).filter(Boolean);let content=text.slice(contentAt+FULL_FILE_CONTENT_MARKER.length,endAt);if(content.startsWith('\n'))content=content.slice(1);if(content.endsWith('\n'))content=content.slice(0,-1);if(!content.trim())throw new Error('전체 파일 응답 내용이 비어 있음');return{summary:valueOf('SUMMARY')||'Vibe2 full web source candidate',expectedEffect:valueOf('EXPECTED_EFFECT'),edits:[],newFiles:[],replaceFiles:[{path:valueOf('PATH'),content}],tests};}
+function parseFullFileEnvelope(raw){const text=String(raw??'').replaceAll('\r\n','\n'),trimmed=text.trimStart();if(!trimmed.startsWith(FULL_FILE_PREFIX))return null;const prefixOffset=text.indexOf(FULL_FILE_PREFIX),contentAt=text.indexOf(FULL_FILE_CONTENT_MARKER,prefixOffset+FULL_FILE_PREFIX.length);let endAt=text.indexOf(FULL_FILE_END_MARKER,contentAt+FULL_FILE_CONTENT_MARKER.length),recoveredHtmlEnd=false;if(contentAt>=0&&endAt<0){const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd>=contentAt&&!text.slice(htmlEnd+7).trim()){endAt=htmlEnd+7;recoveredHtmlEnd=true;}}if(contentAt<0||endAt<0)throw new Error('전체 파일 응답이 잘렸거나 종료 마커가 없음');const trailing=recoveredHtmlEnd?'':text.slice(endAt+FULL_FILE_END_MARKER.length).trim();if(trailing)throw new Error('전체 파일 종료 마커 뒤에 허용되지 않은 출력이 있음');const header=text.slice(prefixOffset,contentAt).trim().split('\n').map(line=>line.trim()).filter(Boolean);if(header.shift()!==FULL_FILE_PREFIX)throw new Error('전체 파일 응답 헤더 오류');const valueOf=key=>{const line=header.find(row=>row.startsWith(`${key}:`));return line?line.slice(key.length+1).trim():'';};const tests=header.filter(row=>row.startsWith('TEST:')).map(row=>row.slice(5).trim()).filter(Boolean);let content=text.slice(contentAt+FULL_FILE_CONTENT_MARKER.length,endAt);if(content.startsWith('\n'))content=content.slice(1);if(content.endsWith('\n'))content=content.slice(0,-1);if(!content.trim())throw new Error('전체 파일 응답 내용이 비어 있음');return{summary:valueOf('SUMMARY')||'Vibe2 full web source candidate',expectedEffect:valueOf('EXPECTED_EFFECT'),edits:[],newFiles:[],replaceFiles:[{path:valueOf('PATH'),content}],tests,...(valueOf('SPATIAL_BLUEPRINT')?{spatialBlueprint:JSON.parse(valueOf('SPATIAL_BLUEPRINT'))}:{}),...(valueOf('INTERFACE_BLUEPRINT')?{interfaceBlueprint:JSON.parse(valueOf('INTERFACE_BLUEPRINT'))}:{})};}
 function parseFullWebExpansion(raw){
   const text=String(raw??'').replaceAll('\r\n','\n'),trimmed=text.trimStart();
   if(!trimmed.startsWith(FULL_WEB_EXPANSION_PREFIX))return null;
@@ -1564,7 +1564,7 @@ function recoverFullWebSeed(raw,{target,responsibleFiles=[],sourceRootRelative='
     if(!parsed||!Array.isArray(parsed.replaceFiles)||parsed.replaceFiles.length!==1)return null;
     const file=parsed.replaceFiles[0],relative=normalizeModelPath(file?.path||responsibleFiles[0],{target,responsibleFiles,sourceRootRelative}),content=String(file?.content??'').trim();
     if(!content||!/<\/html>\s*$/i.test(content))return null;
-    return{path:relative,content,summary:clean(parsed.summary)||'Vibe2 full Web seed',expectedEffect:clean(parsed.expectedEffect),tests:(parsed.tests||[]).map(clean).filter(Boolean).slice(0,8)};
+    return{path:relative,content,...(parsed.spatialBlueprint?{spatialBlueprint:parsed.spatialBlueprint}:{}),...(parsed.interfaceBlueprint?{interfaceBlueprint:parsed.interfaceBlueprint}:{}),summary:clean(parsed.summary)||'Vibe2 full Web seed',expectedEffect:clean(parsed.expectedEffect),tests:(parsed.tests||[]).map(clean).filter(Boolean).slice(0,8)};
   }catch{return null;}
 }
 function recoverFullWebExpansionDocumentSeed(raw,{target,responsibleFiles=[],sourceRootRelative=''}={}){
@@ -1813,7 +1813,7 @@ export function evaluateGraphicsReplacementReport({candidate={},contract={}}={})
   return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max,groundedCount:report.replacementEvidence.length};
 }
 
-export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport),...(parsed.motionRepairReport&&typeof parsed.motionRepairReport==='object'?{motionRepairReport:parsed.motionRepairReport}:{})};}
+export function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport),...(parsed.spatialBlueprint?{spatialBlueprint:normalizeBlueprintSourcePaths(parsed.spatialBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.interfaceBlueprint?{interfaceBlueprint:normalizeBlueprintSourcePaths(parsed.interfaceBlueprint,{target,responsibleFiles,sourceRootRelative})}:{}),...(parsed.motionRepairReport&&typeof parsed.motionRepairReport==='object'?{motionRepairReport:parsed.motionRepairReport}:{})};}
 
 const PRESENTATION_PATCH_PATTERNS=Object.freeze({
   ASSET_ADAPTATION:/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition)/i,
@@ -2212,7 +2212,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     }
     if(!compact||line===begin||line===end)return[line];
     if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
-    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)ProductionOWNER=/.test(line))return[line];
+    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2223,7 +2223,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
 
   const essentialPrefixes=[
-    ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER'].map(field=>prefix+field+'=')),
+    ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2248,7 +2248,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)ProductionOWNER=/.test(line))return line;
+    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);
@@ -3852,6 +3852,8 @@ function repeatedFailureStrategyGuidance(failureClass='',repeatCount=0){
 }
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(/SPATIAL_BLUEPRINT_INVALID/i.test(message))return'SPATIAL_BLUEPRINT';
+  if(/INTERFACE_BLUEPRINT_INVALID/i.test(message))return'INTERFACE_BLUEPRINT';
   if(/^SINGLE_MOTION_/.test(message))return'SINGLE_MOTION_SCOPE';
   if(/CANDIDATE_SELF_REVIEW_REQUIRED/i.test(message))return'SELF_REVIEW';
   if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
@@ -3877,10 +3879,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_INTERNAL_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
-function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['SPATIAL_BLUEPRINT','INTERFACE_BLUEPRINT','NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','SELF_REVIEW','DIAGNOSTIC_POSTCONDITION','ROBLOX_INTERNAL_ASSET_APPLICATION','GENERATED_ASSET_BINDING','WEB_NATIVE_AUTHORING','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
+function fullWebFinalRetryAllowed(error){return['SPATIAL_BLUEPRINT','INTERFACE_BLUEPRINT','FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
+  if(/(?:SPATIAL|INTERFACE)_BLUEPRINT_INVALID/i.test(message))return true;
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|ALL_GAME_DYNAMIC_ASSET_BINDING_REQUIRED|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
@@ -4011,6 +4014,24 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
 }
 
+function normalizeBlueprintSourcePaths(blueprint,scope){
+  if(!blueprint||typeof blueprint!=='object'||Array.isArray(blueprint))return blueprint;
+  const row=value=>value?.binding?.path?{...value,binding:{...value.binding,path:normalizeModelPath(value.binding.path,scope)}}:value;
+  return{...blueprint,
+    ...(Array.isArray(blueprint.objects)?{objects:blueprint.objects.map(row)}:{}),
+    ...(Array.isArray(blueprint.connections)?{connections:blueprint.connections.map(row)}:{}),
+    ...(Array.isArray(blueprint.screens)?{screens:blueprint.screens.map(screen=>screen&&Array.isArray(screen.controls)?{...screen,controls:screen.controls.map(row)}:screen)}:{})
+  };
+}
+export function requiredBlueprintFieldsFromPrompt(prompt=''){
+  const fields=[];
+  for(const line of String(prompt).split('\n')){
+    const match=line.match(/^(?:(?:roblox|game)Production|(?:ROBLOX|UNITY|WEB)_PRODUCTION_)(SPATIAL|INTERFACE)=(.*)$/);
+    if(!match)continue;
+    try{if(JSON.parse(match[2]).required===true)fields.push(match[1]==='SPATIAL'?'spatialBlueprint':'interfaceBlueprint');}catch{throw new Error('BLUEPRINT_CONTRACT_JSON_INVALID');}
+  }
+  return [...new Set(fields)];
+}
 export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
   const raw=String(prompt??'');
   const allowedLine=raw.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -4075,7 +4096,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     context=contextSource.slice(start,end);
     if(!robloxTask)context=context.trim();
   }
-  return{path:selected.path,find:selected.find,context};
+  return{path:selected.path,find:selected.find,context,blueprintFields:requiredBlueprintFieldsFromPrompt(raw)};
 }
 export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0,syntaxRecoveryCount=0,failureRepeatCount=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
@@ -4153,7 +4174,8 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
     edits:[{path:clean(spec.path),find:String(spec.find??''),replace}],
     newFiles:[],
     replaceFiles:[],
-    tests:[]
+    tests:[],
+    ...Object.fromEntries((spec.blueprintFields||[]).filter(key=>parsed[key]).map(key=>[key,parsed[key]]))
   };
 }
 
@@ -4601,6 +4623,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
   }catch{return false;}
 }
 export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false}={}){
+  const blueprintFields=requiredBlueprintFieldsFromPrompt(prompt);
   let lastError=null;
   let lastRaw='';
   let lastRejectedCandidate=null;
@@ -4830,6 +4853,11 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       attemptPrompt+='\n'+retryBlock;
       if(retry&&retryBlock!==block)console.log(`VIBE2_RETRY_OBSERVATION_COMPACTED=${label}:${Buffer.byteLength(block,'utf8')}->${Buffer.byteLength(retryBlock,'utf8')}`);
     }
+    if(blueprintFields.length){
+      maxPredict=Math.max(maxPredict,JSON_OUTPUT_RECOVERY_MAX_PREDICT);
+      if(focusedReplaceOnly)focusedReplaceOnly.spec.blueprintFields=blueprintFields;
+      attemptPrompt+='\nBLUEPRINT OUTPUT CONTRACT: '+(allowFullRewrite?'Include single-line JSON headers before the content marker: '+blueprintFields.map(key=>key==='spatialBlueprint'?'SPATIAL_BLUEPRINT:{...}':'INTERFACE_BLUEPRINT:{...}').join(' ; '):'Return the required '+(focusedReplaceOnly?'replace':'edits')+' plus top-level '+blueprintFields.join(', ')+'. This extends any earlier one-key output instruction. Author the task-local blueprint before the source edit.')+' Never claim runtime verification; keep every source binding current.';
+    }
     const focusedBaseContextWindow=robloxRebuildFocused
       ?JSON_CONTEXT_WINDOW
       :(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW);
@@ -4854,7 +4882,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):(target==='roblox'&&focusedReplaceOnly&&syntaxRecoveryCount>=2&&/LUAU_SYNTAX/.test(clean(lastError?.message)))?Math.min(0.24,0.08*syntaxRecoveryCount):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
     const focusedFirstEditEarlyStop=!singleMotionWorkUnit&&focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
-    const completionMode=singleMotionWorkUnit?'JSON_SINGLE_MOTION':(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const completionMode=singleMotionWorkUnit?'JSON_SINGLE_MOTION':(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!blueprintFields.length&&!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
       if(promptCoverage.required===true){
@@ -4893,7 +4921,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
             expectedEffect:accumulatedFullWeb.expectedEffect||'validator-scale playable Web implementation',
             edits:[],newFiles:[],
             replaceFiles:[{path:accumulatedFullWeb.path,content:composed}],
-            tests:accumulatedFullWeb.tests||[]
+            tests:accumulatedFullWeb.tests||[],
+            spatialBlueprint:accumulatedFullWeb.spatialBlueprint,interfaceBlueprint:accumulatedFullWeb.interfaceBlueprint
           },{target,responsibleFiles,sourceRootRelative,allowFullRewrite:true,minFullRewriteBytes});
         }else{
           candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
@@ -5751,6 +5780,15 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     }
     if(target==='roblox'&&!luauCompiler&&(process.env.VIBE2_LUAU_COMPILE_REQUIRED==='true'||order?.source?.internalAssetMotion===true))throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:NOT_CONFIGURED');
     const sourceSyntax=target==='system'||(target==='roblox'&&luauCompiler)?validateCandidateSyntax({candidate,sourceRoot,target,luauCompiler,internalMotionUnit:order?.source?.internalAssetMotion?order.assetProduction.motionRepairWorkUnit:null}):{pass:null,scope:'NOT_EXECUTED',runtimeVerified:false};
+    const blueprintPlan=(order?.selectedTask?.buildUpDirective||order?.buildUpDirective||{}).productionPlan||(order?.selectedTask?.buildUpDirective||order?.buildUpDirective||{}).robloxProductionPlan;
+    const blueprintContracts=productionBlueprintContractsForFiles(blueprintPlan,{responsibleFiles});
+    const blueprintSources=new Map();
+    for(const relative of responsibleFiles){const absolute=path.resolve(sourceRoot,relative);if(absolute.startsWith(path.resolve(sourceRoot)+path.sep)&&fs.existsSync(absolute))blueprintSources.set(posix(relative),fs.readFileSync(absolute,'utf8'));}
+    const blueprintDocuments=robloxInternalAssetApplyCandidateDocuments(blueprintSources,candidate);
+    const spatialBlueprintValidation=validateSpatialBlueprint({contract:blueprintContracts.spatial,blueprint:candidate.spatialBlueprint,sourceFiles:blueprintDocuments,changedFiles:[...touched]});
+    const interfaceBlueprintValidation=validateInterfaceBlueprint({contract:blueprintContracts.interface,blueprint:candidate.interfaceBlueprint,sourceFiles:blueprintDocuments});
+    if(!spatialBlueprintValidation.pass)throw new Error('SPATIAL_BLUEPRINT_INVALID:'+spatialBlueprintValidation.issues.join('|'));
+    if(!interfaceBlueprintValidation.pass)throw new Error('INTERFACE_BLUEPRINT_INVALID:'+interfaceBlueprintValidation.issues.join('|'));
     const candidateSelfReview=evaluateCandidateSelfReview({candidate,order,exploration,responsibleFiles,sourceRoot});
     if(candidateSelfReview.required&&!candidateSelfReview.pass)throw new Error('CANDIDATE_SELF_REVIEW_REQUIRED:'+candidateSelfReview.issues.join('|'));
     const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
@@ -5828,7 +5866,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
       })
       :null;
-    return{...result,sourceSyntax,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,robloxDesignGrounding,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
+    return{...result,sourceSyntax,blueprintContracts,spatialBlueprintValidation,interfaceBlueprintValidation,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,robloxDesignGrounding,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const generatedAssetBindings=persistedGeneratedAssetBindings(order);
@@ -5943,6 +5981,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
   }
   const codingMethod={
+    designBlueprintEvidence:{
+      spatialStatus:semanticDiffEnforcement.spatialBlueprintValidation?.status||'NOT_REQUIRED',
+      interfaceStatus:semanticDiffEnforcement.interfaceBlueprintValidation?.status||'NOT_REQUIRED',
+      spatialHash:semanticDiffEnforcement.spatialBlueprintValidation?.blueprintHash||null,
+      interfaceHash:semanticDiffEnforcement.interfaceBlueprintValidation?.blueprintHash||null,
+      tasks:(Array.isArray(candidate.interfaceBlueprint?.playerTasks)?candidate.interfaceBlueprint.playerTasks:[]).map(row=>({id:row.id,patternId:row.patternId,friction:row.friction,adaptation:row.adaptation})),
+      runtimeVerified:false,playerBenefitMeasured:false
+    },
     version:2,
     strategy:clean(order?.candidateStrategyRole?.strategy)||clean(editContract.strategyHint)||'UNCLASSIFIED',
     compiledStrategyHint:clean(editContract.strategyHint)||null,
@@ -6118,6 +6164,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     imageAssetObservation,
     runtimeVisualObservation,
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
+    spatialBlueprintContract:semanticDiffEnforcement.blueprintContracts?.spatial||null,
+    interfaceBlueprintContract:semanticDiffEnforcement.blueprintContracts?.interface||null,
+    spatialBlueprint:candidate.spatialBlueprint||null,
+    interfaceBlueprint:candidate.interfaceBlueprint||null,
+    spatialBlueprintValidation:semanticDiffEnforcement?.spatialBlueprintValidation||null,
+    interfaceBlueprintValidation:semanticDiffEnforcement?.interfaceBlueprintValidation||null,
     graphicsReplacementReport:candidate.graphicsReplacementReport||null,
     graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
     presentationCandidateDelta,

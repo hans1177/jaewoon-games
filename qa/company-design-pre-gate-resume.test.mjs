@@ -623,4 +623,13 @@ test('ability authoring applies infection-only instructions to infection games',
   assert.match(requirementsFor(true),/roleTransitions/);
 });
 
+test('bound rule and ability identifiers are valid while identifier-only prose is rejected',()=>{
+  const fixture=playableFixture();
+  const rename={MAIN:'MAIN_INFECT_LOOP',infect:'INFECT_ATTACK_COMMAND',north:'SCHOOL_NORTH_CORRIDOR'};
+  fixture.design=JSON.parse(JSON.stringify(fixture.design,(key,value)=>key!=='grammarRole'&&typeof value==='string'&&rename[value]?rename[value]:value));
+  assert.deepEqual(validateDesignAuthoringContent(fixture),[]);
+  fixture.design.contentVarietyPlan.abilities[0].trigger='INFECT_ATTACK_COMMAND';
+  assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'&&row.evidence.path.endsWith('.trigger')));
+});
+
 

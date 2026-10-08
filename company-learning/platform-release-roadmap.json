@@ -1,5 +1,5 @@
 {
-  "version": 548,
+  "version": 549,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -27997,7 +27997,7 @@
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   },
   "robloxStudioProductionFlowContract": {
-    "version": 2,
+    "version": 3,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-10-05",
     "objective": "SAME_GAME_SPECIFIC_CONNECTED_PLAY_AND_PRESENTATION_QUALITY_ACROSS_ROBLOX_UNITY_WEB",
@@ -28105,6 +28105,78 @@
       "ROBLOX",
       "UNITY",
       "WEB"
-    ]
+    ],
+    "spatialBlueprint": {
+      "version": 1,
+      "enabled": true,
+      "owner": "EXISTING_BUILD_UP_AND_VIBE_SOURCE_WORKER",
+      "order": [
+        "APPROVED_DESIGN_AND_CURRENT_SOURCE",
+        "MACRO_REGIONS_AND_ROUTE_SKETCH",
+        "OBJECT_PLACEMENT_AND_CONNECTION_GRAPH",
+        "NATIVE_RESPONSIBLE_SOURCE_IMPLEMENTATION",
+        "EXISTING_INCREMENTAL_QA",
+        "EXACT_TARGET_RUNTIME_QA"
+      ],
+      "dimensions": [
+        "2D",
+        "3D"
+      ],
+      "dimensionFromDesignOrSourceRequired": true,
+      "twoDimensional": [
+        "PLANE_AXES",
+        "TOP_DOWN_OR_SIDE_VIEW",
+        "LAYER_AND_OVERLAP",
+        "PLAYER_CLEARANCE",
+        "REACHABLE_OBJECTIVES"
+      ],
+      "threeDimensional": [
+        "UP_AXIS_AND_WORLD_UNITS",
+        "VOLUME_AND_SCALE",
+        "GROUND_SUPPORT",
+        "HEADROOM",
+        "SLOPE_AND_STEP_LIMITS",
+        "MULTI_LEVEL_ROUTES",
+        "SWEPT_PLAYER_CLEARANCE",
+        "CAMERA_AND_SIGHTLINE_RUNTIME_CHECK"
+      ],
+      "sourceBindingRequired": true,
+      "newStage": false,
+      "modelMayNotClaimRuntimePass": true,
+      "preserveExistingTransformsUnlessSpatialChangeAuthorized": true,
+      "sourceOnlyRepairMayNotRedesignWorld": true,
+      "missingDesignMayNotInventWorld": true,
+      "staticGeometryDoesNotProveEnginePhysics": true,
+      "menuAndConvenience": {
+        "taskLocalBlueprint": true,
+        "genreAndSystemFitRequired": true,
+        "officialReferencesAreDesignHypotheses": true,
+        "playerFrictionAndRouteBudgetRequired": true,
+        "preserveContextAndTransactionGuards": true,
+        "learning": "EXISTING_VERIFIED_EXPERIENCE_ONLY",
+        "freshRuntimeEvidenceRequired": true
+      },
+      "depthAndReward": [
+        "CLUE",
+        "EXPERIMENT_OR_MASTERY",
+        "COST_AND_COUNTERPLAY",
+        "NEW_PLAY_OPTION",
+        "NEXT_QUESTION"
+      ],
+      "taskLocalResponsibilityRequired": true,
+      "depthAndRewardLayers": [
+        "APPROVED_MAIN_A_B_C_CORE",
+        "SHORT_SESSION_SMALL_JOYS",
+        "OPTIONAL_SYSTEMIC_DEPTH"
+      ],
+      "academicSubjectMatterRequired": false,
+      "rewardIntegrity": [
+        "VISIBLE_CONDITIONS",
+        "SAVED_PROGRESS",
+        "GUARANTEED_MILESTONES_AS_DESIGNED",
+        "DUPLICATE_PURPOSE",
+        "EXACTLY_ONCE_CLAIM"
+      ]
+    }
   }
 }

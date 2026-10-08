@@ -14,6 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tools/vibe2-motion-coaching.mjs';
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
+import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
 import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from '../tools/vibe2-asset-production-plan.mjs';
@@ -21,6 +22,37 @@ import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
+
+test('required blueprint metadata survives normal JSON, fixed-anchor recovery and full-file envelope',()=>{
+  const prompt='gameProductionINTERFACE='+JSON.stringify({required:true})+'\ngameProductionSPATIAL='+JSON.stringify({required:false});
+  assert.deepEqual(requiredBlueprintFieldsFromPrompt(prompt),['interfaceBlueprint']);
+  const report={version:1,designFingerprint:'fixture'};
+  const options={target:'web',responsibleFiles:['ui.js'],sourceRootRelative:'web-games/demo'};
+  const normal=normalizeCandidate({edits:[{path:'ui.js',find:'const x=1;',replace:'const x=2;'}],interfaceBlueprint:report},options);
+  assert.deepEqual(normal.interfaceBlueprint,report);
+  const rooted={...report,screens:[{id:'menu',controls:[{id:'back',binding:{path:'web-games/demo/ui.js',symbol:'returnToGame',evidence:'returnToGame()'}}]}]};
+  const normalized=normalizeCandidate({edits:[{path:'ui.js',find:'const x=1;',replace:'const x=2;'}],interfaceBlueprint:rooted},options);
+  assert.equal(normalized.interfaceBlueprint.screens[0].controls[0].binding.path,'ui.js');
+  assert.equal(rooted.screens[0].controls[0].binding.path,'web-games/demo/ui.js');
+  assert.throws(()=>normalizeCandidate({edits:[{path:'ui.js',find:'const x=1;',replace:'const x=2;'}],interfaceBlueprint:{...report,screens:[{controls:[{binding:{path:'../outside.js'}}]}]}},options),/경로|책임 파일/);
+  const focused=normalizeFocusedReplaceOnly({replace:'const x=2;',interfaceBlueprint:report},{path:'ui.js',find:'const x=1;',blueprintFields:['interfaceBlueprint']});
+  assert.deepEqual(normalizeCandidate(focused,options).interfaceBlueprint,report);
+  const html='<!doctype html><html><body>'+('content '.repeat(260))+'</body></html>';
+  const envelope='VIBE2_FULL_FILE\nPATH:index.html\nINTERFACE_BLUEPRINT:'+JSON.stringify(report)+'\n---VIBE2_FILE_CONTENT---\n'+html+'\n---VIBE2_FILE_END---';
+  assert.deepEqual(normalizeCandidate(envelope,{...options,responsibleFiles:['index.html'],allowFullRewrite:true}).interfaceBlueprint,report);
+  assert.equal(shouldRetryGenerationError(new Error('INTERFACE_BLUEPRINT_INVALID:MODAL_EXIT_MISSING')),true);
+  assert.equal(generationFailureClass(new Error('SPATIAL_BLUEPRINT_INVALID:GROUND_SUPPORT_MISSING')),'SPATIAL_BLUEPRINT');
+});
+
+test('blueprint rejection uses the existing generation retry and retains the repaired report',async t=>{
+  const root=tempRoot();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.writeFileSync(path.join(root,'ui.js'),'const x=1;');
+  const first=path.join(root,'first.json'),second=path.join(root,'second.json');
+  const edits=[{path:'ui.js',find:'const x=1;',replace:'const x=2;'}];
+  fs.writeFileSync(first,JSON.stringify({edits}));fs.writeFileSync(second,JSON.stringify({edits,interfaceBlueprint:{version:1,designFingerprint:'checked'}}));
+  const result=await generateCandidateWithRecovery({prompt:'Engine: web\nAllowed edit paths: ui.js\ngameProductionINTERFACE={"required":true}\n=== FILE ui.js [EDITABLE]\nconst x=1;',target:'web',sourceRoot:root,sourceRootRelative:'web-games/demo',responsibleFiles:['ui.js'],allowFullRewrite:false,responseFiles:[first,second],candidateValidator:candidate=>{if(!candidate.interfaceBlueprint)throw new Error('INTERFACE_BLUEPRINT_INVALID:INTERFACE_BLUEPRINT_MISSING');return{pass:true};}});
+  assert.equal(result.generation.attempts,2);assert.equal(result.candidate.interfaceBlueprint.designFingerprint,'checked');
+});
 test('asset source references group shared paths without dropping any selected asset',()=>{
   const candidates=Array.from({length:500},(_,i)=>({
     assetId:'selected-asset-'+i,sourceFiles:['assets/shared/factory.js','assets/shared/actor.glb'],path:'assets/shared/actor.glb'
@@ -4955,7 +4987,7 @@ test('full web bounded fallback keeps largest partial telemetry in the coding me
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/bestFullWebFallbackRaw/);
   assert.match(workerSource,/fullWebFallbackBestPartialBytes:Number\(generation\.fullWebFallbackBestPartialBytes\|\|0\)/);
-  assert.match(workerSource,/\['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]\.includes\(generationFailureClass\(error\)\)/);
+  assert.match(workerSource,/\['SPATIAL_BLUEPRINT','INTERFACE_BLUEPRINT','FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]\.includes\(generationFailureClass\(error\)\)/);
 });
 
 test('full web retry compacts oversized guidance and reuses the largest prior partial',()=>{

@@ -4,6 +4,17 @@ import assert from 'node:assert/strict';
 import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvolutionBrief, validateDesignAwareExperience } from '../tools/vibe2-design-intelligence.mjs';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
+test('evolution brief separates easy entry, systemic depth, small joys and reliable rewards from academic subject matter',()=>{
+  const brief=buildDesignEvolutionBrief();
+  assert.equal(brief.depthAndRewardEvolution.academicSubjectMatterRequired,false);
+  assert.ok(brief.depthAndRewardEvolution.systemicDepth.includes('MULTIPLE_VIABLE_SOLUTIONS'));
+  assert.ok(brief.depthAndRewardEvolution.layers.includes('SHORT_SESSION_SMALL_JOYS'));
+  assert.ok(brief.depthAndRewardEvolution.rewardContract.includes('EXACTLY_ONCE_REWARD_CLAIM'));
+  assert.equal(brief.convenienceEvolution.documentedFeatureIsRuntimeProof,false);
+  assert.equal(brief.convenienceEvolution.staticRouteLengthIsMeasuredPlayerEffort,false);
+  assert.equal(brief.authorityExpanded,false);
+});
+
 test('pipeline keeps stability defect ownership blueprint and validation in one design intelligence order',()=>{
   assert.deepEqual(DESIGN_INTELLIGENCE_STAGES,[
     'STABILITY_TRIAGE','DEFECT_OWNERSHIP','DESIGNER','DESIGN_BLUEPRINT','DESIGN_INTEGRITY','CONTENT_DIVERSITY',
@@ -417,3 +428,4 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
   assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
+
