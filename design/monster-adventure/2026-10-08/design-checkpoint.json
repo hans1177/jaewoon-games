@@ -3,30 +3,18 @@
   "gameId": "monster-adventure",
   "date": "2026-10-08",
   "seedId": "OWNER-ALL-DESIGN-RESET-MONSTER-ADVENTURE-20260917",
-  "fingerprint": "985ce03c3ab806104ae7a77aabe7bef43016a0133a1aea70e884bc36471a120a",
+  "fingerprint": "3053c03e17341d8a172b242a64aa04ee6adb8fa82731951573fa80303575864e",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
   "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 300077,
-      "lastMs": 300077,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T08:33:33.449Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T08:28:33.350Z",
-  "updatedAt": "2026-10-08T08:33:33.456Z",
+  "createdAt": "2026-10-08T10:47:37.298Z",
+  "updatedAt": "2026-10-08T10:47:37.314Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2107,12 +2095,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms"
+  }
 }
