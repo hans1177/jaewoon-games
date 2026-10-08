@@ -305,6 +305,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['DIMENSIONS_OR_BUDGET_INVALID']),...noMutation});
   }
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
+  const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
   const at=(x,z)=>z*w+x,within=(x,z)=>x>=0&&x<w&&z>=0&&z<h;
   // 좌표는 동일한 격자 X/Z에서 계산하고 2D 최종 배치 위치만 X/Y로 변환한다.
   const worldPosition=(x,z,elevationY=0)=>dimension==='2D'?{x:x*cellSize,y:z*cellSize}:{x:x*cellSize,y:elevationY,z:z*cellSize};
@@ -414,7 +415,11 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
       const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
       const levelY=Math.max(...footing),pivot=worldPosition(x,z,levelY),doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
-      const building={id:'LOT_'+buildings.length,zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      // 문 위치와 길 연결은 월드 배치의 검증된 제안이며 실제 네비/충돌 권한은 게임 런타임이 가진다.
+      const doorGrid=doorFacing==='WEST'?{x:x-.5,z:z+.5}:doorFacing==='EAST'?{x:x+1.5,z:z+.5}:doorFacing==='NORTH'?{x:x+.5,z:z-.5}:{x:x+.5,z:z+1.5};
+      const stableObjectId=objectNamespace+':LOT:'+x+':'+z;
+      const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),runtimeNavigationVerified:false};
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
       buildings.push(building);
       addInstance('FOUNDATION',x,z,0,levelY);
       addInstance('DOOR',x,z,0,levelY);
@@ -435,7 +440,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     if(roll>chance)continue;
     const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
     const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
-    const placement={id:'NATURE_'+vegetation.length,kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false};
+    const stableObjectId=objectNamespace+':NATURE:'+kind+':'+tile.x+':'+tile.z;
+    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false};
     vegetation.push(placement);
     const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
     group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
@@ -461,6 +467,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
+    // 안정 식별자는 오브젝트 이름/생성 순서에 의존하지 않는다. 보상·피해·저장은 기존 게임 규칙만 따른다.
+    worldObjectBinding:Object.freeze({namespace:objectNamespace,idScheme:'WORLD_SEED_KIND_GRID_CELL',status:'GAMEPLAY_BINDING_REQUIRED',runtimeInteractionVerified:false,existingSaveSchemaRequired:true,gameplayDamageAndLootContractRequired:true,serverAuthorityValidationRequired:true,duplicateRewardGuardRequired:true,mobileActionBindingRequired:true}),
     native2DWorldCoordinateMappingRequired:dimension==='2D',native2DPositionProjectionProvided:dimension==='2D',
     protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
     ...noMutation
