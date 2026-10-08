@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:21:59.749Z",
+  "checkedAt": "2026-10-08T03:07:45.829Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37329625818,
-    "sourceCommit": "bd0b85e715fa00e9823ee69e4705c8d0e9afc003",
-    "sourceTreeSha": "fce2537138b59470ea2cc63073fab99431df3c3b",
-    "apkSha256": "e6ddbf73dd4bf76e7050af6f1933eb48dbf39a0b69f100f0016d4bd280e455fd",
+    "upstreamBuildRunId": 37718096425,
+    "sourceCommit": "7abae1ff53bbd80b34e987110fb73089bc509b4d",
+    "sourceTreeSha": "4316728972ac0cd0978c9c4501b1943fde6b4159",
+    "apkSha256": "5982182e4d66e1185ada803321681421437d4a8d4ed0743e1f9fb1adbee315f0",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -125,7 +125,7 @@
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 63850589,
+      "maxAllocatedMemoryBytes": 63038822,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/horror-escape-room-android-cloud-37329625818-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37329625818/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37329625818/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/horror-escape-room-android-cloud-37718096425-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37718096425/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37718096425/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/horror-escape-room"
   }
 }
