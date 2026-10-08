@@ -496,25 +496,43 @@
       "name": "BORDER_PRESSURE_SYSTEM",
       "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals.",
       "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure."
+    },
+    "local_authoring_parts::803630fadb3aca58bde4d5c8f400ae562454792042fc0cfe584139955e2036cf:signatureSystems:1": {
+      "id": "signatureSystem_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "borderPressure",
+        "territoryObjective",
+        "movementPath",
+        "positionSelection"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "reward",
+        "nextChoice"
+      ],
+      "name": "TERRITORY_SELECTION_SYSTEM",
+      "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals.",
+      "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1607503,
-      "lastMs": 39889,
+      "totalMs": 1646962,
+      "lastMs": 39459,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:21:13.579Z"
+      "updatedAt": "2026-10-08T15:21:53.039Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T15:21:13.579Z",
+  "updatedAt": "2026-10-08T15:21:53.040Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2575,7 +2593,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:21:13.579Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:21:53.039Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
