@@ -417,25 +417,42 @@
       "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0",
       "purpose": "플레이어가 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다.",
       "playerChoice": "플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레"
+    },
+    "local_authoring_parts::1ffaaa0ee6f6d81307d06a91c90f35105453fd6a81d040b946bfbde3e536d965:signatureSystems:1": {
+      "id": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState",
+        "playerChoice",
+        "progressionCycle"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "rewardDistribution",
+        "growthLayer"
+      ],
+      "name": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "purpose": "플레이어가 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다.",
+      "playerChoice": "플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 482763,
-      "lastMs": 53273,
+      "totalMs": 535824,
+      "lastMs": 53061,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:19:19.291Z"
+      "updatedAt": "2026-10-08T10:20:12.354Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:19:19.291Z",
+  "updatedAt": "2026-10-08T10:20:12.354Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2703,7 +2720,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:19:19.291Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:20:12.354Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
