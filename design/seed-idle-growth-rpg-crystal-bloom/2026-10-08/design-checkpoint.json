@@ -34,25 +34,42 @@
         "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
         "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
       ]
+    },
+    "local_authoring_parts::fe74b14ad898d78bd501b02f93329849b99d7a781832a30d7c0ad2430c02eec6:signatureSystems:0": {
+      "id": "seed-idle-growth-rpg-crystal-bloom-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ACTIVE_SESSION",
+        "INACTIVE_SESSION",
+        "GROWTH_LAYER"
+      ],
+      "stateOutputs": [
+        "REWARD_CYCLE",
+        "LEVEL_UP",
+        "GROWTH_RESOURCE"
+      ],
+      "name": "IDLE_GROWTH_RPG",
+      "purpose": "Player-driven progression system with emergent gameplay",
+      "playerChoice": "Choose which hero or stat path receives the next investment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 221966,
-      "lastMs": 27677,
+      "totalMs": 257617,
+      "lastMs": 35651,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:14:58.474Z"
+      "updatedAt": "2026-10-08T10:15:34.127Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:14:58.474Z",
+  "updatedAt": "2026-10-08T10:15:34.127Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2301,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:14:58.474Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:15:34.127Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
