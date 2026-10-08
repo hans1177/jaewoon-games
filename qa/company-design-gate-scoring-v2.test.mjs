@@ -2,7 +2,7 @@
 // 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
+import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent,evaluateDesignProductionQuality,DESIGN_PRODUCTION_QUALITY_AXES} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
 assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
@@ -32,7 +32,7 @@ const content={
   steamExpansionDecision:'Platform expansion is evaluated after the Roblox core loop is validated.',
   multiplayerMode:'COOP',
   multiplayerExpansionDecision:'Two real players cooperate against regional threats with server-authoritative encounter state, roster replication and reconnect while preserving approved solo progression.',
-  technicalAssumptions:['Server-authoritative rewards are isolated from client presentation.','Core combat, progression, and retry state expose deterministic validation hooks.','Mobile input and viewport constraints are treated as first-class implementation requirements.'],
+  technicalAssumptions:['Server-authoritative rewards are isolated from client presentation.','Core combat, progression, and retry state expose deterministic validation hooks.','Mobile input and viewport constraints are treated as first-class implementation requirements.','The original save key and schema are preserved while the server retains authoritative multiplayer damage and rewards.'],
   validationQuestions:['Does a complete run connect route, threat, resource, reward, failure, and retry state?','Can the player recover from failure without invalidating progression?','Does mobile input preserve the same core decisions as desktop input?'],
   openQuestions:[],
   systemInterconnections:[
@@ -63,7 +63,7 @@ const content={
       performanceBudget:'Mobile Roblox budget caps enemies effects and replicated roster update frequency.',
       uiUx:'Roblox ScreenGui leaves visible safe touch areas for party and survival feedback.',
       saveAndNetwork:'RemoteEvent validates actions and DataStore preserves existing individual progress.',
-      platformContentAdaptation:'Avatar-sized 3D route and readable hazard telegraphs use existing Roblox world.',
+      platformContentAdaptation:'Roblox Studio Luau uses the current Studio channel and build version checked during exact execution QA. Avatar-sized 3D route and readable hazard telegraphs use the existing Roblox world.',
       internalReleaseTarget:'Private Roblox test place with restricted participant access for owner QA.',
       validationEvidence:'Exact Roblox version with two-client join action result reconnect and independent QA.'
     },
@@ -75,7 +75,7 @@ const content={
       performanceBudget:'Mobile WebGL GPU and memory budgets cap lights VFX and visible objects.',
       uiUx:'Unity canvas provides mobile safe areas while world input stays available.',
       saveAndNetwork:'Versioned persistent profile and verified server room actions are kept separate.',
-      platformContentAdaptation:'Original Unity scene owns gameplay on Android and WebGL with spatial depth.',
+      platformContentAdaptation:'ProjectSettings/ProjectVersion.txt records the real Unity Editor version. C# gameplay scenes in the original Unity project serve Android and WebGL with spatial depth.',
       internalReleaseTarget:'Private Unity Android closed build and QA-only WebGL browser validation.',
       validationEvidence:'Exact WebGL and Android builds with real two-client play and visual regression.',
       unityWebSpatialPresentation:{
@@ -87,13 +87,13 @@ const content={
       }
     }
   },
-  uxAccessibilityPlan:{hudPriorities:'Objective, health, risk, and available action state remain visible without covering the play field.',touchAndInput:'Primary touch targets remain separated and simultaneous movement plus action input is supported.',readability:'Threat, reward, and interactable states use shape, motion, and text rather than color alone.',accessibility:'Critical feedback has redundant visual and textual signals and avoids time-only information where practical.'},
+  uxAccessibilityPlan:{hudPriorities:'Objective, health, risk, and available action state remain visible without covering the play field.',touchAndInput:'Primary mobile touch controls fit the safe area, avoid thumb overlap, and support simultaneous movement plus action input.',readability:'Threat, reward, and interactable states use shape, motion, and text rather than color alone.',accessibility:'Critical feedback has redundant visual and textual signals and avoids time-only information where practical.',menuStructure:'Main menu START and COOP lobby entry open GAMEPLAY HUD. A back control returns to lobby. Settings and PAUSE resume or retry from a failure panel. Locked buttons stay disabled while matching/loading, and network errors have a retry and cancel route.',convenienceDecisions:'Prevent duplicate touch activation and preserve save/restore when reconnecting; QA tests menu return, loading failure and save recovery with a real mobile tap.'},
   artAudioDirection:{visualIdentity:'World landmarks and enemy silhouettes reinforce route and threat decisions.',audioIdentity:'Layered cues distinguish danger escalation, reward confirmation, failure, and recovery.',gameplayFeedbackSync:'Animation, VFX, UI, and sound fire from the same gameplay state transitions.'},
   implementationTraceability:[
-    {designElement:'Threat route choice',responsibleSystem:'route-and-threat state',validationEvidence:'Record route commit and resulting threat-state transition.'},
-    {designElement:'Reward and recovery tradeoff',responsibleSystem:'economy-and-progression state',validationEvidence:'Record earned resources, spend choice, and next-run capability change.'},
-    {designElement:'Failure and retry',responsibleSystem:'run lifecycle state',validationEvidence:'Record fail condition, retained progression, reset state, and next valid entry.'},
-    {designElement:'Mobile controls',responsibleSystem:'input adapter',validationEvidence:'Validate simultaneous movement and action with no viewport overlap.'}
+    {designElement:'Threat route choice',responsibleSystem:'ServerScriptService/ThreatRouteController.luau',validationEvidence:'Record route commit and resulting threat-state transition.'},
+    {designElement:'Reward and recovery tradeoff',responsibleSystem:'Assets/Scripts/GameCore.cs',validationEvidence:'Record earned resources, spend choice, and next-run capability change.'},
+    {designElement:'Failure and retry',responsibleSystem:'ServerScriptService/RunLifecycle.luau',validationEvidence:'Record fail condition, retained progression, reset state, and next valid entry.'},
+    {designElement:'Mobile controls and menu UI',responsibleSystem:'Assets/Scripts/RuntimeBootstrap.cs Unity Canvas UI Menu',validationEvidence:'Validate simultaneous movement and action with no viewport overlap.'}
   ]
 };
 const designRecord={version:5,sameModelAsDraft:true,unresolvedConflictCount:0,heldCount:0,content};
