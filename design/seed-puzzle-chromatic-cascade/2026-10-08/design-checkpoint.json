@@ -578,25 +578,38 @@
       "name": "Color Chain",
       "purpose": "Players navigate a series of interconnected puzzle levels, where each choice alters the board state and triggers new challenges.",
       "playerChoice": "Select a path through a puzzle level, facing obstacles and earning rewards that lead to new board configurations."
+    },
+    "local_authoring_parts::96f2efb9f27e7aac1fd7864d4512279244ebbb75f4343445161e43d24d17d7a4:signatureSystems:1": {
+      "id": "COLOR_CHAIN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or a "
+      ],
+      "stateOutputs": [
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new "
+      ],
+      "name": "Color Chain",
+      "purpose": "Players navigate a series of interconnected puzzle levels, where each choice alters the board state and triggers new challenges.",
+      "playerChoice": "Select a path through a puzzle level, facing obstacles and earning rewards that lead to new board configurations."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1519968,
-      "lastMs": 71708,
+      "totalMs": 1593664,
+      "lastMs": 73696,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:42:59.523Z"
+      "updatedAt": "2026-10-08T15:44:13.220Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:41.331Z",
-  "updatedAt": "2026-10-08T15:42:59.523Z",
+  "updatedAt": "2026-10-08T15:44:13.220Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2669,7 +2682,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:42:59.523Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:44:13.220Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
