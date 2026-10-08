@@ -655,25 +655,35 @@
       "toSystem": "Vibe 폴리시 시스템 (보완)",
       "trigger": "게임 진행 중",
       "stateChange": "기존 마력숲 생존기 세계관 및 게임 규칙 복사 후, Vibe 폴리시 기반 새로운 플레이 패턴 개발"
+    },
+    "local_authoring_parts::f6dbf1ba010fcef5574e60d78679bb1d1331ebbba32760472fd1ef655690ad05:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy",
+        "coreFun"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 (보완)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2124707,
-      "lastMs": 96597,
+      "totalMs": 2217346,
+      "lastMs": 92639,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T22:07:55.572Z"
+      "updatedAt": "2026-10-08T22:09:28.214Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-08T22:07:55.574Z",
+  "updatedAt": "2026-10-08T22:09:28.214Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2933,7 +2943,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:07:55.574Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:09:28.214Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
