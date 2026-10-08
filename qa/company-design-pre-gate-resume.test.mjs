@@ -862,7 +862,7 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
 
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
-  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904']){
+  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4']){
   const checkpointInputContext={gameId:'g',date:'d',seed:{seedId:'s'},evidence:{librarySha:'unchanged'},policyDigest:'p',engineDigest:'new-engine'};
   const fingerprint=createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:oldEngine})).digest('hex');
   const cp={contractVersion:4,gameId:'g',date:'d',seedId:'s',policyDigest:'p',engineDigest:oldEngine,fingerprint,phases:{},tasks:{identity:'authored'},modelHealth:{}};
