@@ -500,3 +500,28 @@ test('cloud scene rejects floating spawns even when overall map bounds and runti
  assert.equal(result.pass,false);
  assert.ok(result.blockers.includes('F9_SPAWN_NOT_GROUNDED'));
 });
+
+test('Roblox survival object gathering keeps legacy reward and save rules until verified per-node rules exist',()=>{
+  const source=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
+  const config=fs.readFileSync('roblox-games/survival/shared/GameConfig.luau','utf8');
+  assert.match(source,/WorldObjectId/);
+  assert.match(source,/validResourceRule\(nodeName\)/);
+  assert.match(source,/prompt.Enabled = rule ~= nil/);
+  assert.match(source,/prompt.Triggered:Connect\(function\(player\)/);
+  assert.match(source,/root.Position - part.Position\)\.Magnitude > 12/);
+  assert.match(source,/now - \(lastAction\[player\] or -1e6\) < Config.RateLimitSeconds/);
+  assert.match(source,/GetAsync\("player:"/);
+  assert.match(source,/UpdateAsync\("player:"/);
+  assert.match(source,/saved.WorldObjects/);
+  assert.match(source,/snapshot.WorldObjects = worldObjectStates\[player\]/);
+  assert.match(source,/rule.MaxHealth/);
+  assert.match(source,/rule.HitDamage/);
+  assert.match(source,/math.random\(rule.MinDrop, rule.MaxDrop\)/);
+  assert.match(source,/resourceEffectPool/);
+  assert.match(source,/piece.AssemblyLinearVelocity/);
+  assert.match(source,/prepareResourceEffects\(\)/);
+  assert.match(source,/gatherResource\(player\)/);
+  assert.match(source,/setNumber\(player, "ResourceWood"/);
+  assert.match(source,/setNumber\(player, "ResourceStone"/);
+  assert.doesNotMatch(config,/ResourceInteractionRules\s*=/,'existing save/economy must not get invented HP by default');
+});
