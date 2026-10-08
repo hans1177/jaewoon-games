@@ -972,25 +972,37 @@
       "toSystem": "GAMEPLAY_SKETCH v4",
       "trigger": "enemy_wave",
       "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::7ba24030e5b83074a510f85fcdc08eee87bd2592f3ea41eb7b3f41f266962144:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource",
+        "strategy",
+        "level"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2717522,
-      "lastMs": 44712,
+      "totalMs": 2766410,
+      "lastMs": 48888,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:06:07.331Z"
+      "updatedAt": "2026-10-08T10:06:56.224Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T10:06:07.332Z",
+  "updatedAt": "2026-10-08T10:06:56.224Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3341,7 +3353,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:06:07.332Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:06:56.224Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
