@@ -455,25 +455,48 @@
       "name": "coreLoop",
       "purpose": "왕국 확장 전략",
       "playerChoice": "협동 지원으로 강한 거점 공략"
+    },
+    "local_authoring_parts::f220c84d462ddd813e08a66b1bdbe193f81e155cb64a8ca74aea169e4f5d3a7f:signatureSystems:2": {
+      "id": "coreLoop",
+      "grammarRole": "B",
+      "stateInputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "stateOutputs": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "name": "coreLoop",
+      "purpose": "왕국 확장 전략",
+      "playerChoice": "협동 지원으로 강한 거점 공략"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 897115,
-      "lastMs": 109495,
+      "totalMs": 1003909,
+      "lastMs": 106794,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:28:02.841Z"
+      "updatedAt": "2026-10-08T10:29:49.636Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:13:05.670Z",
-  "updatedAt": "2026-10-08T10:28:02.841Z",
+  "updatedAt": "2026-10-08T10:29:49.636Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1067,7 +1090,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:28:02.841Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:29:49.636Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
