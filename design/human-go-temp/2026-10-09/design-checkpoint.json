@@ -34,25 +34,38 @@
         "SELECT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과가 다음 월드 상태를 바꾸며, 주체가 변경되면서, 선택은 기존의 점수나 관문을 승계하지 않고, 새로운 핵심 재미와 시스템 연결을 확정하는 방식으로 이루어진다.",
         "OUTPUT: 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 단순 반복보다는 경로·위험·결과를 다변화한 반복 가능한 학문적 루프를 구축한다."
       ]
+    },
+    "local_authoring_parts::8f1337def6cdcdeb6a66fc19038ab29866dd2759b62451fb6a6125cb1a291ebd:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT_RESULT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.",
+      "playerChoice": "FIGHT_RESULT -> WORLD_STATE_CHANGE의 결과가 다음 상태로 돌아간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 337080,
-      "lastMs": 60080,
+      "totalMs": 373027,
+      "lastMs": 35947,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:01:33.147Z"
+      "updatedAt": "2026-10-08T22:02:09.096Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:55:56.047Z",
-  "updatedAt": "2026-10-08T22:01:33.147Z",
+  "updatedAt": "2026-10-08T22:02:09.096Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:01:33.147Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:02:09.096Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
