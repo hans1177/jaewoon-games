@@ -574,25 +574,41 @@
     },
     "local_authoring_parts::b1f15945a5fb13ebb4259c31529fa5336e380e9c413c2641677a7f209073c8df:trigger": {
       "trigger": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices."
+    },
+    "local_authoring_parts::b1f15945a5fb13ebb4259c31529fa5336e380e9c413c2641677a7f209073c8df:stateChange": {
+      "stateChange": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices. Resulting in a world status change that reflects the updated defensive strategy and resource allocation."
+    },
+    "local_authoring_parts::6eea409b4776ffc7d55419afd46570895e8776fc5a70a5e7184b748b987aac05:systemInterconnections:0": {
+      "fromId": "ENEMY_WAVE_STATE",
+      "toId": "WORLD_STATUS_CHANGE",
+      "stateKeys": [
+        "ENEMY_WAVE_TYPE",
+        "TOWER_PLACEMENT_STATE",
+        "RESOURCE_ALLOCATION"
+      ],
+      "fromSystem": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+      "toSystem": "WORLD_STATUS_CHANGE",
+      "trigger": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices.",
+      "stateChange": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices. Resulting in a world status change that reflects the updated defensive strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2082867,
-      "lastMs": 95578,
+      "totalMs": 2180799,
+      "lastMs": 97932,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T18:21:29.490Z"
+      "updatedAt": "2026-10-08T18:23:07.423Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:46.549Z",
-  "updatedAt": "2026-10-08T18:21:29.490Z",
+  "updatedAt": "2026-10-08T18:23:07.425Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2984,7 +3000,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:21:29.490Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:23:07.425Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
