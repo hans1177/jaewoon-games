@@ -656,25 +656,48 @@
       "name": "OPENING_WORLD_ENTRY_C",
       "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션의 초기 상태를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다.",
       "playerChoice": "개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션의 초기 상태를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다."
+    },
+    "local_authoring_parts::f49e22e0ea741f25db6088592998f93b82bc3e3df62068c8bca56a594602f944:signatureSystems:4": {
+      "id": "ANT_SIMULATOR_CORE_RULE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "CURRENT_WORLD_STATE",
+        "PLAYER_CHOICE",
+        "TARGET_OBJECT",
+        "RESOURCE_TYPE",
+        "RISK_LEVEL",
+        "PROGRESSION_STATUS"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "NEW_PLAYER_CHOICE",
+        "UPDATED_TARGET_OBJECT",
+        "CHANGED_RESOURCE_TYPE",
+        "MODIFIED_RISK_LEVEL",
+        "ADVANCED_PROGRESSION_STATUS"
+      ],
+      "name": "OPENING_WORLD_ENTRY",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션의 초기 상태를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다.",
+      "playerChoice": "개미 종족 중 하나를 선택하여 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션의 초기 상태를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태를 변화시킨다. 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 이어간다. 반복 가능한 게임 루프로, 모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름을 구현한다. 개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프를 구축한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2896964,
-      "lastMs": 118012,
+      "totalMs": 2997242,
+      "lastMs": 100278,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:01:48.022Z"
+      "updatedAt": "2026-10-08T10:03:28.302Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:53.417Z",
-  "updatedAt": "2026-10-08T10:01:48.022Z",
+  "updatedAt": "2026-10-08T10:03:28.309Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2753,7 +2776,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2769,10 +2792,10 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:01:48.022Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:03:28.304Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
