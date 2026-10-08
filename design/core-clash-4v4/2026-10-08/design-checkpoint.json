@@ -400,25 +400,88 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::42df7aca7860b5a80ced5b54940449d68a739585980bbef8edc341533196e2b0:signatureSystems:0": {
+      "id": "core-loop-design",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Loop Design",
+      "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
+      "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::42df7aca7860b5a80ced5b54940449d68a739585980bbef8edc341533196e2b0:signatureSystems:1": {
+      "id": "core-loop-design",
+      "grammarRole": "A",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Loop Design",
+      "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
+      "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::42df7aca7860b5a80ced5b54940449d68a739585980bbef8edc341533196e2b0:signatureSystems:2": {
+      "id": "core-loop-design",
+      "grammarRole": "B",
+      "stateInputs": [
+        "currentBuild",
+        "runProgression",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextBuild",
+        "survivalResult",
+        "progressionChoice",
+        "runOutcome",
+        "playerStrategy"
+      ],
+      "name": "Core Loop Design",
+      "purpose": "Establishes the core gameplay loop with immediate feedback and adaptive progression, ensuring the game remains engaging and learnable across all platforms.",
+      "playerChoice": "Select from: 1) Collect run rewards/experience and choose upgrades, perks, weapons, or skills that change the current build. 2) Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 476325,
-      "lastMs": 29619,
+      "totalMs": 595063,
+      "lastMs": 39732,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:23:38.440Z"
+      "updatedAt": "2026-10-08T08:25:37.189Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T08:23:38.446Z",
+  "updatedAt": "2026-10-08T08:25:37.189Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2653,10 +2716,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:23:38.442Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:25:37.189Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
