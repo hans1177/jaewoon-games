@@ -94,25 +94,203 @@
       "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
       "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
       "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+    },
+    "local_authoring_parts::52119ddf5779d68a85af6c3ab0fc412d6b96cef684f639258f470c641903fd76:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENEMY_WAVE_STATE",
+        "TOWER_PLACEMENT_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE",
+        "RESOURCE_ALLOCATION"
+      ],
+      "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+      "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+      "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+    },
+    "local_authoring_parts::7f10ce6527312913dca785505bfadbd09f10991b260860cadf8b3ebce7a56726:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "TOWER_PLACEMENT_UPGRADE"
+          ],
+          "name": "ENEMY_WAVE_RESOURCE_MANAGEMENT_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave resource allocation and strategic placement to maximize defensive effectiveness and unlock advanced upgrades."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_STRATEGY_SELECTION_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave strategy selection and resource allocation to optimize defensive effectiveness and unlock advanced tactical options."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+        }
+      ]
+    },
+    "local_authoring_parts::71210aa91be184e715d0265a925c15e82ffdbcda862d9bba2735eea64a9ad349:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "TOWER_PLACEMENT_UPGRADE"
+          ],
+          "name": "ENEMY_WAVE_RESOURCE_MANAGEMENT_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave resource allocation and strategic placement to maximize defensive effectiveness and unlock advanced upgrades."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_STRATEGY_SELECTION_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave strategy selection and resource allocation to optimize defensive effectiveness and unlock advanced tactical options."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_STATE",
+            "TOWER_PLACEMENT_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "RESOURCE_ALLOCATION"
+          ],
+          "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+          "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+          "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 749793,
-      "lastMs": 107968,
+      "totalMs": 856964,
+      "lastMs": 107171,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:59:16.382Z"
+      "updatedAt": "2026-10-08T18:01:03.554Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:46.549Z",
-  "updatedAt": "2026-10-08T17:59:16.382Z",
+  "updatedAt": "2026-10-08T18:01:03.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2307,7 +2485,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:59:16.382Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:01:03.556Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
