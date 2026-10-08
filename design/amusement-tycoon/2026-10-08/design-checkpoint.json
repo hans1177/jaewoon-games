@@ -34,25 +34,42 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::cc72208cbeb09da2dea233c29c0a52a8824f6c297c1095f3e2512da824567f62:signatureSystems:0": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "name": "놀이공원 타이쿤의 핵심 재미와 시스템 연결",
+      "purpose": "플레이어가 즉시 시작하며 단순한 입력과 명확한 목표를 통해 세계 상태와 다음 선택을 바꾸는 반복 가능한 루프",
+      "playerChoice": "단순한 입력(1指 tap/swipe)과 명확한 목표(점수, 거리, 짧은 세션 목표)를 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 744873,
-      "lastMs": 95339,
+      "totalMs": 849992,
+      "lastMs": 105119,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:53:51.494Z"
+      "updatedAt": "2026-10-08T12:55:36.615Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:41:26.595Z",
-  "updatedAt": "2026-10-08T12:53:51.494Z",
+  "updatedAt": "2026-10-08T12:55:36.615Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1993,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:53:51.494Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:55:36.615Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
