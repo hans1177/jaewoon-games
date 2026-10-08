@@ -102,25 +102,225 @@
       "name": "Core Progression System",
       "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
       "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+    },
+    "local_authoring_parts::1c711359d7d8c5fecc1aa12e60ff28e374f9c2eafcc2a4efba506db7c61799ce:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "stateOutputs": [
+        "NewScore",
+        "NewDistance",
+        "NewProgressionBenefit"
+      ],
+      "name": "Core Progression System",
+      "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+      "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+    },
+    "local_authoring_parts::256454ed2ed8fb9f5b8f22fc7d898f22b662b4e39fc7e715ced1400a0d91cfee:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+        }
+      ]
+    },
+    "local_authoring_parts::52369c6cb2ab0386a6b25d74fd73d197702465033d485b596e81373f9e48cb5d:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Score",
+            "Distance",
+            "ProgressionBenefit"
+          ],
+          "stateOutputs": [
+            "NewScore",
+            "NewDistance",
+            "NewProgressionBenefit"
+          ],
+          "name": "Core Progression System",
+          "purpose": "Enables players to progress through the game by accumulating score, distance, or progression benefits, while maintaining a clear and immediate feedback loop. This system is designed to be intuitive and accessible, allowing players to achieve progression through simple actions such as setting goals and receiving rewards.",
+          "playerChoice": "Select a simple one-thumb tap or swipe input, and set a clear score, distance, or short-session goal to start the run. After completing the run, the system will automatically update the player's progress with new scores, distances, and progression benefits, ensuring a seamless and rewarding experience."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 959327,
-      "lastMs": 104222,
+      "totalMs": 1063105,
+      "lastMs": 103778,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:03:36.663Z"
+      "updatedAt": "2026-10-08T11:05:20.443Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:47:37.298Z",
-  "updatedAt": "2026-10-08T11:03:36.664Z",
+  "updatedAt": "2026-10-08T11:05:20.447Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2206,7 +2406,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:03:36.663Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:05:20.447Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
