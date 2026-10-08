@@ -633,25 +633,40 @@
     },
     "local_authoring_parts::3d9e180a331bb575cd92cd7ef3501c5408088161ad5f6b6cc275054001f2a8be:resourceFlow": {
       "resourceFlow": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
+    },
+    "local_authoring_parts::3d9e180a331bb575cd92cd7ef3501c5408088161ad5f6b6cc275054001f2a8be:balanceRules": {
+      "balanceRules": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
+    },
+    "local_authoring_parts::b1556055b9389d3fbe1cd8206d93d599cf53cac84150d45c2d367e55c6a0022f:progressionEconomyBalance": {
+      "progressionLoop": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}",
+      "resourceFlow": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}",
+      "balanceRules": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
+    },
+    "local_authoring_parts::5916b85dabc1ea5425bbbc1b791d172378a540d98a5ab7a4ca873690a8d831ed:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}",
+        "resourceFlow": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}",
+        "balanceRules": "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축\",\"playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.\"}"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 48,
+      "calls": 49,
+      "successes": 49,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3258235,
-      "lastMs": 55862,
+      "totalMs": 3315013,
+      "lastMs": 56778,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:57:49.405Z"
+      "updatedAt": "2026-10-08T23:58:46.184Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:57:49.405Z",
+  "updatedAt": "2026-10-08T23:58:46.188Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3091,7 +3106,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:57:49.405Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:58:46.188Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
