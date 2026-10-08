@@ -54,25 +54,43 @@
       "name": "Enemy Defense System",
       "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
       "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
+    },
+    "local_authoring_parts::2ba8799316aa2f3f8a139a5f13169dfcce614a23361376e4e0b624f5bf99d14a:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWave",
+        "towers",
+        "defenders",
+        "lanes",
+        "positions"
+      ],
+      "stateOutputs": [
+        "worldState",
+        "nextSelection"
+      ],
+      "name": "Enemy Defense System",
+      "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+      "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 638697,
-      "lastMs": 98927,
+      "totalMs": 738466,
+      "lastMs": 99769,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:49:02.091Z"
+      "updatedAt": "2026-10-08T08:50:41.862Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T08:49:02.091Z",
+  "updatedAt": "2026-10-08T08:50:41.862Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2267,7 +2285,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:49:02.091Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:50:41.862Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
