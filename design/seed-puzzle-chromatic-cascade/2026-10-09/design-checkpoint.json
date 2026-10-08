@@ -711,25 +711,28 @@
         "CORE-01 시스템의 START_BOARD 상태를 CORE-03 시스템의 START_MATCH 상태로 전환합니다.",
         "CORE-01 시스템의 START_BOARD 상태를 CORE-04 시스템의 START_MATCH 상태로 전환합니다."
       ]
+    },
+    "local_authoring_parts::f708626fd790a094e6a93685e9c0266486063e790395f3775f431ce1db968392:retryFlow": {
+      "retryFlow": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정에서는, CORE-01 시스템의 START_BOARD 상태를 다른 시스템으로 전환하기 위한 재도전 로직이 실행됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 56,
+      "calls": 57,
+      "successes": 57,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2093897,
-      "lastMs": 38153,
+      "totalMs": 2128828,
+      "lastMs": 34931,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:57:59.667Z"
+      "updatedAt": "2026-10-08T21:58:34.600Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:57:59.667Z",
+  "updatedAt": "2026-10-08T21:58:34.600Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3174,7 +3177,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:57:59.667Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:58:34.600Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
