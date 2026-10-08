@@ -278,9 +278,29 @@ for index,mat in enumerate(glb_document.get('materials',[])):
         'web':{'metalness':metal,'roughness':rough,'colorSpace':'SRGB_BASE_COLOR_LINEAR_DATA'},
         'unity':{'metallic':metal,'smoothness':1-rough,'texturePacking':'METALLIC_R_SMOOTHNESS_A'},
         'roblox':{'metalness':metal,'roughness':rough,'texturePacking':'SEPARATE_GRAYSCALE_METALNESS_AND_ROUGHNESS','requires':'MeshPart_SurfaceAppearance_supported_import'}})
+# 메인: Blender 실제 삼각형 표면과 GLB 내보내기 좌표(Y-up) 메타데이터를 동기화한다.
+# 표면 통계는 시각·제작 참고값이며 충돌체, 질량, 게임 피해 판정이 아니다.
+surface_area=0.0
+surface_moment=Vector((0.0,0.0,0.0))
+for obj in ASSET_OBJECTS:
+    if hasattr(obj.data,'calc_loop_triangles'):
+        obj.data.calc_loop_triangles()
+    for triangle in obj.data.loop_triangles:
+        p0,p1,p2=(obj.matrix_world @ obj.data.vertices[index].co for index in triangle.vertices)
+        area_value=(p1-p0).cross(p2-p0).length/2
+        if area_value>0 and math.isfinite(area_value):
+            surface_area+=area_value
+            surface_moment+=(p0+p1+p2)*(area_value/3)
+centroid=surface_moment/surface_area if surface_area>0 else None
+geometry_surface={
+    'areaSquareMeters':surface_area,
+    'centroidMeters':[centroid.x,centroid.z,-centroid.y] if centroid is not None else None,
+    'nonAuthoritative':True
+}
+
 application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
     'sourceUnits':'METERS','sourceUp':'Y','boundsSizeMeters':[BOUNDS_SIZE[0],BOUNDS_SIZE[2],BOUNDS_SIZE[1]],
-    'pivot':'GROUND_CENTER','style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,
+    'pivot':'GROUND_CENTER','style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,'geometrySurface':geometry_surface,
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -334,6 +354,7 @@ evidence={
     'styleExpression':STYLE,
     'genre':ARGS.genre,
     'boundsSizeMeters':application['boundsSizeMeters'],
+    'geometrySurface':geometry_surface,
     'triangleCount':sum(sum(len(face.vertices)-2 for face in obj.data.polygons) for obj in ASSET_OBJECTS),
     'uvLayersVerified':all(bool(obj.data.uv_layers) for obj in ASSET_OBJECTS),
     'materialApplicationFile':'application.json',

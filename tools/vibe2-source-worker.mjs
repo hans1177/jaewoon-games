@@ -559,6 +559,21 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             ||spatial.groundTranslation.some(value=>Math.abs(value)>tolerance)){
             throw new Error('NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH:'+clean(recipe?.id));
           }
+          // 메인: 새 Blender 제작 메타데이터가 표면적·중심을 선언하면 실제 GLB와 비교한다.
+          // 기존 메타데이터에는 새 필드를 강요하지 않으며 충돌·질량은 게임 엔진 소유다.
+          if(platformApplication.geometrySurface!==undefined){
+            const declared=platformApplication.geometrySurface,measured=spatial.geometrySurface;
+            const within=(value,actual,tol)=>typeof value==='number'&&Number.isFinite(value)&&Math.abs(value-actual)<=tol;
+            const areaTolerance=Math.max(1e-5,(measured?.areaSquareMeters||0)*1e-4);
+            const centroidTolerance=Math.max(1e-5,Math.max(...spatial.size)*1e-4);
+            if(declared?.nonAuthoritative!==true||!measured||measured.nonTrianglePrimitives!==0
+              ||!(measured.areaSquareMeters>0)||!within(declared.areaSquareMeters,measured.areaSquareMeters,areaTolerance)
+              ||!Array.isArray(declared.centroidMeters)||declared.centroidMeters.length!==3
+              ||!Array.isArray(measured.centroidMeters)
+              ||declared.centroidMeters.some((value,axis)=>!within(value,measured.centroidMeters[axis],centroidTolerance))){
+              throw new Error('NATIVE_GLB_APPLICATION_SURFACE_MISMATCH:'+clean(recipe?.id));
+            }
+          }
           // 색·거칠기·금속성도 실제 출력과 대조한다. 플랫폼 변환 값의
           // 불일치는 원본을 보존한 채 같은 제작 묶음을 복구한다.
           if(platformApplication.materials!==undefined){
