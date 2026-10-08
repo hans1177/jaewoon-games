@@ -575,25 +575,49 @@
       "toSystem": "A",
       "trigger": "Read the incoming insect wave and its threat pattern.",
       "stateChange": "World state change and next selection"
+    },
+    "local_authoring_parts::23bff20e6e4c129f17c14f9d3d715a443bb0e1b2aefa34b8883a0cc80a6cd0b4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::23bff20e6e4c129f17c14f9d3d715a443bb0e1b2aefa34b8883a0cc80a6cd0b4:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection"
+    },
+    "local_authoring_parts::740245746d5a1545ed6affffc3902f7b4886ca90c9980575a4564faef0034789:systemInterconnections:1": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "Read the incoming insect wave and its threat pattern.",
+      "stateChange": "World state change and next selection"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 17,
+      "calls": 22,
+      "successes": 19,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2501687,
-      "lastMs": 32858,
+      "totalMs": 2567641,
+      "lastMs": 32831,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:31:18.487Z"
+      "updatedAt": "2026-10-08T15:32:24.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T15:31:18.488Z",
+  "updatedAt": "2026-10-08T15:32:24.447Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2796,7 +2820,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T15:31:18.488Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:32:24.447Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
