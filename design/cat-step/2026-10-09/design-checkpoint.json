@@ -27,25 +27,32 @@
       "identity": "캣 스텝 - 게임 정체성 확정판 최초 빌딩기준 적용형 시스템 진화 계획서(2026-09-17, OWNER-ALL-GAMES-DESIGN-RESET-20260917-1)최종 버전 공개용 디자인 사례 기반 설계 결과물입니다. 본 프로젝트의 핵심 재미는 '시각적 인과 법칙에 따른 반복 가능한 선택 및 위험/보상 구조'이며, 이는 캐릭터 역할, 대사, 장면 등 모든 요소가 세계 인과법칙에 의해 연결되어 있습니다. 게임의 중심 행동은 'Board Level 시작'이고, 두 대축 A/B는 '선택 후 상태 변화'와 '목표 달성 후 새로운 패턴 도입', c 서브요소는 '보조 자원 또는 정보'로서 작동합니다. @ 파고들기는 '발견·숙련·재방문 깊이'를 의미하며, 이는 게임의 반복 규칙을 형성하는 핵심 요소입니다. 각 필드는 원본 수치와 규칙을 보존하고, 이미 작성된 설계와 모순되지 않도록 최대한 일관성을 유지하여, 시스템 상호작용, 상황별 예외, 조합의 새로운 용도 등을 포함한 깊이 있는 플레이 경험을 제공합니다. 게임의 진화 계획서는 기존의 단일 루프에서 복잡한 인과 관계로 확장되며, 이는 주어진 범위 내에서 실제 상태 변화를 구체화하고, 보상은 발견과 이해에 맞게 약속됩니다. 본 결과물은 공공영역 고전의 원형을 재해석하면서 현대 보호 작품의 추상적 기법만을 참고하며, 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증 및 저장 권한을 바꾸지 않습니다.",
       "playerFantasy": "플레이어는 'Board Level 시작'이라는 중심 행동을 통해 세계 상태를 즉시 변경할 수 있는 단순 반복 게임에서 새로운 선택과 위험/보상을 경험하게 된다. 이는 캐릭터 역할, 대사, 장면 등 모든 요소가 세계 인과법칙에 의해 연결되어 있으며, 플레이어는 자신의 선택이 다음 상태로 영향을 미칠 수 있다는 것을 직접 체험해 나간다.",
       "coreFun": "Board Level 시작은 플레이어가 즉시 세계 상태를 바꾸며 반복 가능한 핵심 루프를 형성하는 중심 행동입니다. 이는 캐릭터 역할, 대사, 장면 등 모든 요소가 세계 인과법칙에 의해 연결되어 있으며, 플레이어는 자신의 선택이 다음 상태로 영향을 미칠 수 있다는 것을 직접 체험해 나간다."
+    },
+    "local_authoring_parts::91bffa7e913812c5be6372466fd46fdf0a3446cf9bf778ef0946d632acd4b85e:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 322406,
-      "lastMs": 40978,
+      "totalMs": 369719,
+      "lastMs": 47313,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:05:49.895Z"
+      "updatedAt": "2026-10-08T19:06:37.211Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:00:27.464Z",
-  "updatedAt": "2026-10-08T19:05:49.896Z",
+  "updatedAt": "2026-10-08T19:06:37.211Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:05:49.896Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:06:37.211Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
