@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T13:07:45.296Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T13:11:43.021Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-roblox-survival-horror-es-doors/2026-10-08/design-seed.json",
     "contentDigest": "4bd8d39b1cbffb70c888136850bdde1757fe3451ab63cbea551cdeef28290287",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1082768,
-      "lastMs": 89208,
+      "totalMs": 1320485,
+      "lastMs": 237717,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:07:45.293Z"
+      "updatedAt": "2026-10-08T13:11:43.021Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T13:07:45.303Z"
+  "updatedAt": "2026-10-08T13:11:43.027Z"
 }
