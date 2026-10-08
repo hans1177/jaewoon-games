@@ -444,25 +444,40 @@
     },
     "local_authoring_parts::9366f0d2d1ff60f5d9579e613459186348325198f26c9c771c34231c811157b9:trigger": {
       "trigger": "RUN_REWARDS"
+    },
+    "local_authoring_parts::9366f0d2d1ff60f5d9579e613459186348325198f26c9c771c34231c811157b9:stateChange": {
+      "stateChange": "RUN_REWARDS가 받기 전에는 SURVIVAL_01_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값이 존재하며, 이 값은 다음 STATE INPUT로 사용된다. SURVIVAL_02_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값은 RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
+    },
+    "local_authoring_parts::9b2329190799441cf1506fb9943f423900fe505af2bba9aaac88cd6344b35077:systemInterconnections:0": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS",
+      "stateChange": "RUN_REWARDS가 받기 전에는 SURVIVAL_01_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값이 존재하며, 이 값은 다음 STATE INPUT로 사용된다. SURVIVAL_02_SIGNATURE_SYSTEM의 RUN_REWARDS 상태값은 RUN_REWARDS가 입력되어서 PROGRESSION_CHOICE가 생성되며, 이 선택은 MAIN/A/B의 상태 교환에 의해 다양한 방식으로 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1247302,
-      "lastMs": 87839,
+      "totalMs": 1342381,
+      "lastMs": 95079,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:03:54.849Z"
+      "updatedAt": "2026-10-08T22:05:29.929Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T22:03:54.849Z",
+  "updatedAt": "2026-10-08T22:05:29.930Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2841,7 +2856,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:03:54.849Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:05:29.930Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
