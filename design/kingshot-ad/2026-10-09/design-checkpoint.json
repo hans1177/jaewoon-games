@@ -246,25 +246,185 @@
           "playerChoice": "Expand the game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
         }
       ]
+    },
+    "local_authoring_parts::36e0842ffcd81453868cf29af338322691d5dcbd465b0841317327b6461b5747:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::361cd5ea71cbd013062f43ef8233ab42d30c3e89233d9fb555d936435180627c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+        "STATE CHANGE: Main state is transformed into a new defensive configuration based on player strategy and resource allocation.",
+        "RESULT: The game progresses by shifting the battlefield dynamics, increasing difficulty, and introducing new strategic options."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration"
+          ],
+          "name": "Single Defense Strategy System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Dynamic Resource Allocation System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Strategic Resource Management System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Expand the game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Expand the game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
+      "playerFantasy": "플레이어는 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 영향을 미친다. 이 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'과 연결되어 단일 방어 전략의 핵심 재미와 시스템 연결을 확정한다.",
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+        "STATE CHANGE: Main state is transformed into a new defensive configuration based on player strategy and resource allocation.",
+        "RESULT: The game progresses by shifting the battlefield dynamics, increasing difficulty, and introducing new strategic options."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration"
+          ],
+          "name": "Single Defense Strategy System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Dynamic Resource Allocation System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Strategic Resource Management System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Transform the main state into a new defensive configuration based on player strategy and resource allocation"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Expand the game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Main state"
+          ],
+          "stateOutputs": [
+            "New defensive configuration based on player strategy and resource allocation"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.' transforms into 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.' and 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'",
+          "playerChoice": "Expand the game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 594664,
-      "lastMs": 103031,
+      "totalMs": 682554,
+      "lastMs": 87890,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:57:15.677Z"
+      "updatedAt": "2026-10-08T17:58:43.571Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T17:57:15.680Z",
+  "updatedAt": "2026-10-08T17:58:43.582Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2455,12 +2615,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:57:15.680Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:58:43.574Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/kingshot-ad/2026-10-09/design-seed.json",
+    "contentDigest": "80dd687a4d44b767b9e475d41fa9b58b5cd97f868237bc4d83f978484576eb0d",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
