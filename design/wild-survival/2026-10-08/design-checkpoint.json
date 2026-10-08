@@ -602,25 +602,37 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::6fcea213943b772447dafe955b91162a929bcbeb51693a304694d7eb58a48e6a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-to-wild-survival-weather"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 797888,
-      "lastMs": 167126,
+      "totalMs": 910041,
+      "lastMs": 112153,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:29:38.891Z"
+      "updatedAt": "2026-10-08T08:31:31.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T08:29:38.895Z",
+  "updatedAt": "2026-10-08T08:31:31.050Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2835,10 +2847,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:29:38.891Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:31:31.050Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
