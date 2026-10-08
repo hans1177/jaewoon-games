@@ -1,3 +1,5 @@
+// 파일명: qa/company-machine-development-lifecycle.test.mjs
+// 임포트
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
@@ -241,13 +243,9 @@ assert.match(developmentQueueReconcileWorkflow,/cancel-in-progress: false/);
 assert.equal(roadmap.minimumNecessaryProcedurePolicy?.execution?.stateReconciliation?.cancelRunningReconcileOnNewTrigger,false);
 assert.match(developmentQueueReconcileWorkflow,/needs: game-primary-gate/);
 assert.doesNotMatch(developmentQueueReconcileWorkflow,/needs\.game-primary-gate\.outputs\.defer != 'true'/);
-assert.match(seedDesignRuntime,/game-primary-gate:/);
-assert.match(seedDesignRuntime,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
-assert.match(seedDesignRuntime,/RUN_PARALLEL_DESIGN_QUEUE_TELEMETRY_UNAVAILABLE/);
-assert.match(seedDesignRuntime,/RUN_PARALLEL_DESIGN_QUEUE_TELEMETRY_INVALID/);
+assert.doesNotMatch(seedDesignRuntime,/game-primary-gate:|needs\.game-primary-gate/);
 assert.doesNotMatch(seedDesignRuntime,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
-assert.match(seedDesignRuntime,/needs: game-primary-gate/);
-assert.match(seedDesignRuntime,/if: needs\.game-primary-gate\.outputs\.defer != 'true'/);
+assert.match(seedDesignRuntime,/\n  resolve-seed-targets:\n\s+runs-on: ubuntu-slim/);
 assert.match(directorSupervisor,/game-primary-gate:/);
 assert.match(directorSupervisor,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
 assert.match(directorSupervisor,/needs: \[runner-drain, game-primary-gate\]/);
