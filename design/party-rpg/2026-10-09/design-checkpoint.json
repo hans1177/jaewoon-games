@@ -452,25 +452,39 @@
     },
     "local_authoring_parts::b97618c25a9984c5c4aba0abdd88eeccaffe4c4a85716886e81f05242ab52b2e:trigger": {
       "trigger": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::b97618c25a9984c5c4aba0abdd88eeccaffe4c4a85716886e81f05242ab52b2e:stateChange": {
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_1에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::0518d1ff1cdcecd6f832a36cdd12d3e91a69cf97f9f0cabf57109406126b166d:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_1",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_1 → BOARD_STATE",
+      "toSystem": "MATCH_GAME",
+      "trigger": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.",
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_1에서 BOARD_STATE로 전환되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1834460,
-      "lastMs": 89531,
+      "totalMs": 1923681,
+      "lastMs": 89221,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:02:15.065Z"
+      "updatedAt": "2026-10-08T22:03:44.288Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T22:02:15.065Z",
+  "updatedAt": "2026-10-08T22:03:44.289Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2910,7 +2924,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T22:02:15.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:03:44.289Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
