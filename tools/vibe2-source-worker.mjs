@@ -548,6 +548,17 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         if(applicationOutput){
           platformApplication=JSON.parse(fs.readFileSync(path.resolve(cwd,applicationOutput.path),'utf8'));
           if(platformApplication.masterSha256!==nativeArtifact.sha256||platformApplication.nativeRuntimeVerified!==false||platformApplication.automaticPromotionAllowed!==false)throw new Error('NATIVE_GLB_APPLICATION_IDENTITY_INVALID:'+clean(recipe?.id));
+          // 적용 메타데이터도 실제 GLB 정점과 동기화한다. 해시 일치만으로는
+          // 잘못된 단위·축·중심·크기에 따른 부유와 충돌 배치 오류를 막지 못한다.
+          const spatial=glbInspection?.inventory?.spatial;
+          const declaredSize=platformApplication.boundsSizeMeters;
+          const tolerance=Math.max(1e-5,Math.max(...(spatial?.size||[0]))*1e-5);
+          if(!spatial||platformApplication.sourceUnits!=='METERS'||platformApplication.sourceUp!=='Y'||platformApplication.pivot!=='GROUND_CENTER'
+            ||!Array.isArray(declaredSize)||declaredSize.length!==3
+            ||declaredSize.some((value,axis)=>!Number.isFinite(value)||value<0||Math.abs(value-spatial.size[axis])>tolerance)
+            ||spatial.groundTranslation.some(value=>Math.abs(value)>tolerance)){
+            throw new Error('NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH:'+clean(recipe?.id));
+          }
         }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
