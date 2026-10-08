@@ -874,25 +874,53 @@
         "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
         "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
       }
+    },
+    "local_authoring_parts::d347ac694a092c7836728ac405c833d5f4c33fedc960d9c20addc925b1f44123:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_STATE -> RUN_STATE",
+          "newGameplay": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+          "systemImpact": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+        },
+        {
+          "milestone": "RUN_STATE -> RESULT_STATE",
+          "newGameplay": "사용자가 플레이 중간에 발견 가능한 단서를 통해 조합·숙련·탐험 실험을 수행하고, 위험·기회비용을 평가하여 대응법을 결정한다.",
+          "systemImpact": "보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되, 해당 장르와 기존 저장·밸런스를 보존한다."
+        },
+        {
+          "milestone": "RESULT_STATE -> NEXT_WORLD_STATE",
+          "newGameplay": "선택결과가 다음 월드 상태를 바꾸며, 플레이어는 새 행동/경로/조합/세계관계를 탐구할 수 있는 인과 관계를 설계한다.",
+          "systemImpact": "재화·능력치·아이템 개수 증가만으로 깊이를 주장하지 않는다. 보상은 발견과 이해와 숙련에 맞게 약속된다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어의 선택 결과가 실패하면 점수 또는 보상을 받고, 작은 진입 이벤트를 제공하며 재시도 가능하게 한다.",
+          "실패 시에도 명확한 피드백을 제공하고, 새로운 경로나 위험을 선택하여 게임의 유연성을 높인다."
+        ],
+        "retryFlow": "실패 후에는 단순한 입력과 명확한 목표를 유지하면서, 새로운 조건이나 보상을 통해 재시도를 촉진한다.",
+        "riskPressure": "위험 및 기회비용 평가 과정에서 플레이어에게 선택의 복잡성과 결과의 불확실성이 전달되며, 재방문 및 숙련의 필요성이 강조된다.",
+        "recoveryRules": "보상 중복 수령과 진행 유실은 검증되어야 하며, 소확행에 수치/재화 보상을 사용할 수 있으나 그것만으로 깊이를 대체하지 않는다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 23,
+      "calls": 27,
+      "successes": 24,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2308219,
-      "lastMs": 67095,
+      "totalMs": 2482938,
+      "lastMs": 174719,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:44:25.051Z"
+      "updatedAt": "2026-10-08T22:47:19.777Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-08T22:44:25.056Z",
+  "updatedAt": "2026-10-08T22:47:19.784Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2813,15 +2841,243 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "34e69301c1a80353a382babdcc2eacfcb87dd5ef74ecd31e358f5362eb0b8608"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:44:25.056Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "FROM_START_TO_RUN"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "FROM_START_TO_RUN"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "FROM_START_TO_RUN"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "FROM_RESULT_TO_RUN"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "FROM_START_TO_RUN"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+        "resourceFlow": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다.",
+        "balanceRules": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다. 이 과정에서 사용자는 단일 행동으로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_STATE -> RUN_STATE",
+          "newGameplay": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+          "systemImpact": "게임 내에서 MAIN/A/B/C의 선택 결과와 세계 인과법칙에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+        },
+        {
+          "milestone": "RUN_STATE -> RESULT_STATE",
+          "newGameplay": "사용자가 플레이 중간에 발견 가능한 단서를 통해 조합·숙련·탐험 실험을 수행하고, 위험·기회비용을 평가하여 대응법을 결정한다.",
+          "systemImpact": "보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되, 해당 장르와 기존 저장·밸런스를 보존한다."
+        },
+        {
+          "milestone": "RESULT_STATE -> NEXT_WORLD_STATE",
+          "newGameplay": "선택결과가 다음 월드 상태를 바꾸며, 플레이어는 새 행동/경로/조합/세계관계를 탐구할 수 있는 인과 관계를 설계한다.",
+          "systemImpact": "재화·능력치·아이템 개수 증가만으로 깊이를 주장하지 않는다. 보상은 발견과 이해와 숙련에 맞게 약속된다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어의 선택 결과가 실패하면 점수 또는 보상을 받고, 작은 진입 이벤트를 제공하며 재시도 가능하게 한다.",
+          "실패 시에도 명확한 피드백을 제공하고, 새로운 경로나 위험을 선택하여 게임의 유연성을 높인다."
+        ],
+        "retryFlow": "실패 후에는 단순한 입력과 명확한 목표를 유지하면서, 새로운 조건이나 보상을 통해 재시도를 촉진한다.",
+        "riskPressure": "위험 및 기회비용 평가 과정에서 플레이어에게 선택의 복잡성과 결과의 불확실성이 전달되며, 재방문 및 숙련의 필요성이 강조된다.",
+        "recoveryRules": "보상 중복 수령과 진행 유실은 검증되어야 하며, 소확행에 수치/재화 보상을 사용할 수 있으나 그것만으로 깊이를 대체하지 않는다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T22:47:19.780Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
