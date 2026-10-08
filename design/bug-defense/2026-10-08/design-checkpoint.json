@@ -27,25 +27,49 @@
       "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임의 공통 원본은 하나이며, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임의 설계는 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은추",
       "playerFantasy": "플레이어는 Read the incoming insect wave and its threat pattern.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
       "coreFun": "Read the incoming insect wave and its threat pattern.의 결과를 이용해 다음 세계 규칙을 설계한다. 중심 행동은 Read the incoming insect wave and its threat pattern.이며, 두 대축은 Place or adjust defenders and spend limited resources on the highest-value counter.와 Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. 보조 요소는 c이며, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 최우선으로 두고, 시그니처 세계 규칙은 플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다. 게임의 공통 원본은 하나이며, 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 게임의 설계는 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의"
+    },
+    "local_authoring_parts::3683124e0e346d9a6b60695a1f7e9d9e610c46882378d07cff4d9069bce06b77:coreLoop": {
+      "coreLoop": [
+        "Read the incoming insect wave and its threat pattern.",
+        "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      ]
+    },
+    "local_authoring_parts::9ae835924c9c5456c054577ff0e67ba3ba5a6be544049e3b6017db2f34e3cb7d:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "insectWaveThreatPattern",
+        "defenderPlacement",
+        "resourceAllocation"
+      ],
+      "stateOutputs": [
+        "defenderAdjustment",
+        "resourceSpent",
+        "nextDefenseDecision"
+      ],
+      "name": "InsectWaveThreatAnalysisSystem",
+      "purpose": "Analyzes the threat pattern of an incoming insect wave and determines the optimal defender placement and resource allocation.",
+      "playerChoice": "Choose the best defender placement and allocate resources to the highest-value counterplay strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 520734,
-      "lastMs": 152108,
+      "totalMs": 705547,
+      "lastMs": 99084,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:54:15.256Z"
+      "updatedAt": "2026-10-08T07:57:20.073Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:45:34.468Z",
-  "updatedAt": "2026-10-08T07:54:15.257Z",
+  "updatedAt": "2026-10-08T07:57:20.073Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:54:15.257Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:57:20.073Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
