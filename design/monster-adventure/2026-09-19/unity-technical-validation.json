@@ -1,46 +1,131 @@
 {
   "version": 2,
   "gameId": "monster-adventure",
-  "state": "FAIL",
-  "pass": false,
-  "validated": false,
+  "state": "PASS",
+  "pass": true,
+  "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-01T00:29:10.973Z",
+  "checkedAt": "2026-10-08T17:42:42.927Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 36777792645,
-    "sourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
-    "sourceTreeSha": "dce7400250044101458795fd82eabab132a26496",
-    "apkSha256": "dd5eb00fd41cfac2127da4486308deb34c995f85f641b3c31646addfaa6aacc7",
+    "upstreamBuildRunId": 37788607917,
+    "sourceCommit": "fad32e43e67475f8acf3a47d62fe270b3cb8b958",
+    "sourceTreeSha": "5455085f0fe17b5db2b047793db95d9609d509b5",
+    "apkSha256": "fb2eb27ca38eb4e7dcf4fbfac841f190b9422ba68518d013cbe638f7cc65f425",
     "sameBinding": true
+  },
+  "foundationAdapter": {
+    "version": 1,
+    "platform": "UNITY",
+    "mode": "F0_COMPILE_PLUS_ONE_EXACT_BLACK_BOX_RUNTIME_F1_F8_PLUS_F9_EVIDENCE_FAN_IN",
+    "f1ThroughF8SingleRuntimeSession": true,
+    "f9RuntimeReplayRequired": false,
+    "blackBoxContractPass": true,
+    "blackBoxFoundationPass": true,
+    "foundationFloors": {
+      "F0": {
+        "state": "PASS",
+        "authority": "UNITY_EDITOR_BUILD_COMPILE_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+      },
+      "F1": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "EXACT_ACTIVITY_LAUNCH",
+          "PROCESS_ALIVE",
+          "NO_FATAL_RUNTIME_ERROR"
+        ]
+      },
+      "F2": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "FOREGROUND_ACTIVITY",
+          "RENDERED_FRAME",
+          "PRE_INPUT_SCREEN_CAPTURE"
+        ]
+      },
+      "F3": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "PLAYABLE_SUBJECT_OR_INTERACTION_EQUIVALENT",
+          "INPUT_RESPONSE_OBSERVED"
+        ]
+      },
+      "F4": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "CONTROLLED_INPUT_DELIVERED",
+          "VISIBLE_RUNTIME_STATE_DELTA",
+          "PROCESS_ALIVE_AFTER_INPUT"
+        ]
+      },
+      "F5": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "TOUCH_INPUT_PATH",
+          "VISIBLE_INPUT_RESPONSE",
+          "POST_INPUT_SCREEN_CAPTURE"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F6": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "UPDATE_INSTALL",
+          "SAVE_SIGNAL_WHEN_REQUIRED",
+          "RUNTIME_ERROR_BOUNDARY"
+        ],
+        "independentQaCorroborated": true
+      },
+      "F7": {
+        "state": "DEFER_TO_MULTIPLAYER_APPLICABILITY",
+        "authority": "DESIGN_AND_MULTIPLAYER_QA_EVIDENCE"
+      },
+      "F8": {
+        "state": "PASS",
+        "authority": "EXACT_ANDROID_BLACK_BOX_SESSION",
+        "signals": [
+          "GAMEPLAY_INTERACTION_RESPONSE",
+          "CORE_ACTION_OR_VISIBLE_STATE_TRANSITION"
+        ],
+        "independentQaCorroborated": true
+      }
+    }
   },
   "realEvidence": {
     "runtimeSmoke": true,
     "independentQa": true,
     "evidenceMode": "ANDROID_PLATFORM_BLACK_BOX",
-    "metricSamples": 0,
-    "platformMetricsPass": false,
+    "metricSamples": 7,
+    "platformMetricsPass": true,
     "seedRuntimeRequired": false,
     "seedSignalsPass": true,
     "actionObserved": true,
     "saveObserved": true,
-    "pauseResumeObserved": true
+    "pauseResumeObserved": true,
+    "visualDeltaObserved": true,
+    "foregroundActivityObserved": true
   },
   "coverage": {
     "ANDROID_FPS_FRAME_STABILITY": {
-      "state": "FAIL",
-      "provider": null,
-      "sampleCount": 0,
-      "totalFramesRendered": 0,
+      "state": "PASS",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "sampleCount": 7,
+      "totalFramesRendered": 127,
       "jankyFrames": 0,
-      "jankyFrameRatePct": null,
-      "minFps": null,
-      "avgFps": null,
+      "jankyFrameRatePct": 0,
+      "minFps": 10.9,
+      "avgFps": 14.080000000000002,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
-      "state": "FAIL",
-      "provider": null,
-      "maxAllocatedMemoryBytes": null,
+      "state": "PASS_WITH_LIMITATION",
+      "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
+      "maxAllocatedMemoryBytes": 52685233,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -92,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/monster-adventure-android-cloud-36777792645-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36777792645/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36777792645/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/monster-adventure-android-cloud-37788607917-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37788607917/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37788607917/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/monster-adventure"
   }
 }
