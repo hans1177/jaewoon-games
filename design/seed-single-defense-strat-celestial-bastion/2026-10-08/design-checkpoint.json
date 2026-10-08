@@ -842,25 +842,52 @@
         "stage or boss"
       ],
       "fromSystem": "systemInterconnections[0]_fromSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
+    },
+    "local_authoring_parts::4e643327016d7cd964188fb4c2d1c0fc48d59e53d3f7d99d6a5d212aff8831cd:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "threatened route → new state",
+      "stateChange": "threatened route → new state"
+    },
+    "local_authoring_parts::acb3f6eb27473ef08f64f64b4cbf8192ffbc270e4a31d32efcfc54b7ba95109e:systemInterconnections:0": {
+      "fromId": "threatened route",
+      "toId": "new state",
+      "stateKeys": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions",
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes",
+        "enemy types",
+        "wave composition",
+        "objective",
+        "stage or boss"
+      ],
+      "fromSystem": "systemInterconnections[0]_fromSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "threatened route → new state",
+      "stateChange": "threatened route → new state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1376531,
-      "lastMs": 110693,
+      "totalMs": 1481291,
+      "lastMs": 104760,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:48:18.102Z"
+      "updatedAt": "2026-10-08T10:50:02.864Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:48:18.102Z",
+  "updatedAt": "2026-10-08T10:50:02.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3206,7 +3233,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:48:18.102Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:50:02.865Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
