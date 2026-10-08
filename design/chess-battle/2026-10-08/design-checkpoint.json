@@ -815,25 +815,44 @@
     },
     "local_authoring_parts::fba2e71716c28a9aaf42d44d0dacf395c320a8e034c9c39b5744214c8de5bc17:trigger": {
       "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::fba2e71716c28a9aaf42d44d0dacf395c320a8e034c9c39b5744214c8de5bc17:stateChange": {
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::f9fa77743e728fdc82678dbc337c79e7d8e2e991511ad8b2211b00fad5828175:systemInterconnections:1": {
+      "fromId": "identity-core",
+      "toId": "SIGNATURE_SYSTEMS_1",
+      "stateKeys": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice",
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "fromSystem": "BOARD_READING_CORE_LOOP",
+      "toSystem": "SIGNATURE_SYSTEMS_1",
+      "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED",
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 35,
+      "calls": 37,
+      "successes": 36,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3405532,
-      "lastMs": 58991,
+      "totalMs": 3466531,
+      "lastMs": 60999,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:21:37.399Z"
+      "updatedAt": "2026-10-08T15:22:38.400Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T15:21:37.399Z",
+  "updatedAt": "2026-10-08T15:22:38.402Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3278,7 +3297,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:21:37.399Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:22:38.402Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
