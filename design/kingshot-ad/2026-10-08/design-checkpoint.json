@@ -610,25 +610,45 @@
         "strategy_tree"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb - identity or coreFun 유지됨으로 인해 fromSystem은 동일하게 유지됨으로서 fromSystem은 'GAMEPLAY_SKETCH v4 emergent grammar: '로 표"
+    },
+    "local_authoring_parts::f3eeeed790e9537f779cf421b297d7396af5b4aeed1e43f03ab7fd4386e8b925:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb - identity or coreFun 유지됨으로 인해 toSystem은 동일하게 유지됨으로서 toSystem은 'GAMEPLAY_SKETCH v4 emergent grammar: '로 표",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::45237ae3fb64f68c6dbf315c1fa3e07eaa617f9966aab37cf37741d79ccd4192:systemInterconnections:0": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource_pool",
+        "tactical_choice",
+        "strategy_tree"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb - identity or coreFun 유지됨으로 인해 fromSystem은 동일하게 유지됨으로서 fromSystem은 'GAMEPLAY_SKETCH v4 emergent grammar: '로 표",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb - identity or coreFun 유지됨으로 인해 toSystem은 동일하게 유지됨으로서 toSystem은 'GAMEPLAY_SKETCH v4 emergent grammar: '로 표",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1449467,
-      "lastMs": 66526,
+      "totalMs": 1513781,
+      "lastMs": 64314,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:56:43.190Z"
+      "updatedAt": "2026-10-08T08:57:47.505Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T08:56:43.190Z",
+  "updatedAt": "2026-10-08T08:57:47.507Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2979,7 +2999,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:56:43.190Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:57:47.507Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
