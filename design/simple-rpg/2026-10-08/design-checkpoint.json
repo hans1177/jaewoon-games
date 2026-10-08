@@ -97,25 +97,46 @@
       "name": "Board Puzzle System",
       "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints.",
       "playerChoice": "Select moves, create combos, and manage obstacles to achieve the goal and unlock new levels or stages."
+    },
+    "local_authoring_parts::e7b89f1850722d16859a7f35f8dbe0cbbb50843d4c7a27e8b141c3818c115807:signatureSystems:3": {
+      "id": "c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "boardPattern",
+        "goal",
+        "moves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newGoal",
+        "newMoves",
+        "newObstacles",
+        "newPuzzleConstraint"
+      ],
+      "name": "Puzzle Progression System",
+      "purpose": "Player-controlled puzzle progression through a grid or board level with clear objective and constraints, with emergent gameplay and dynamic state transitions.",
+      "playerChoice": "Select and manage puzzle elements to achieve the goal, create combos, and adapt to new board patterns and constraints."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 893485,
-      "lastMs": 98414,
+      "totalMs": 992625,
+      "lastMs": 99140,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:42:11.484Z"
+      "updatedAt": "2026-10-08T08:43:50.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:27:17.966Z",
-  "updatedAt": "2026-10-08T08:42:11.484Z",
+  "updatedAt": "2026-10-08T08:43:50.626Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2152,7 +2173,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:42:11.484Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:43:50.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
