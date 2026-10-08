@@ -34,25 +34,46 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::01ddc06727c192dbf378d0208f8bb23e06794b6c0cfc599fd17b6f09243c18f0:signatureSystems:0": {
+      "id": "color-cascade-signature-system-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardPattern",
+        "goalState",
+        "moveCount",
+        "obstacleSet",
+        "comboScore"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "updatedGoalState",
+        "remainingMoveCount",
+        "newObstacleSet",
+        "comboMultiplier"
+      ],
+      "name": "Color Cascade Signature System",
+      "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+      "playerChoice": "Select a board pattern, set a goal, and manage move limits while navigating through obstacles to achieve a combo score."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 610127,
-      "lastMs": 66756,
+      "totalMs": 685777,
+      "lastMs": 75650,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:03:51.598Z"
+      "updatedAt": "2026-10-08T13:05:07.250Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:41.331Z",
-  "updatedAt": "2026-10-08T13:03:51.598Z",
+  "updatedAt": "2026-10-08T13:05:07.250Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2110,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:03:51.598Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:05:07.250Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
