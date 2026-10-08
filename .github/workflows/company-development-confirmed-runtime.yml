@@ -83,10 +83,11 @@ jobs:
             exit 15
           fi
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/development-coordinator-runs-{1,2,3}.json > /tmp/development-coordinator-runs.json
-          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" '
+          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" --arg control_sha "$GITHUB_SHA" '
             [
               .workflow_runs[]
               | select(.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested")
+              | select(.head_sha == $control_sha)
               | select(
                   .display_title == "Company DEVELOPMENT_CONFIRMED Runtime"
                   or (.display_title | startswith("DEVELOPMENT cycle | batch | "))
@@ -96,6 +97,8 @@ jobs:
             | min // $current
           ' /tmp/development-coordinator-runs.json)"
           echo "DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES"
+          echo "DEVELOPMENT_COORDINATOR_EXACT_CONTROL_REVISION=$GITHUB_SHA"
+          echo "DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES"
           echo "DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=$oldest_active_id"
           if [[ "$oldest_active_id" != "$GITHUB_RUN_ID" ]]; then
             echo 'proceed=false' >> "$GITHUB_OUTPUT"
@@ -315,6 +318,7 @@ jobs:
           console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
+
 
 
   dispatch-roblox:

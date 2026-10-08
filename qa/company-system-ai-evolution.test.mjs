@@ -1,3 +1,5 @@
+// 파일명: qa/company-system-ai-evolution.test.mjs
+// 임포트: 기존 System AI 검증 계약
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -474,4 +476,94 @@ test('system AI control-plane jobs stay off heavy game runners while model worke
   assert.match(workflow,/\n  reserve:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(workflow,/\n  worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.match(workflow,/\n  fan_in:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+});
+
+/* ── 게임별 F0~F9 원인 추적 및 독립 파동 회귀 ── */
+test('per-game F0 evidence is reused only for exact source and package; quality blocker cannot be bypassed',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision:source,artifactIdentity:artifact,artifactRunId:177},
+    robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
+  };
+  const snapshot=analyzeSystemAiBottlenecks({
+    developmentQueue:{items:[
+      {...base,gameId:'alpha',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source},
+      {...base,gameId:'beta',robloxFoundationF0Evidence:{...base.robloxFoundationF0Evidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},
+      {...base,gameId:'gamma'},
+      {...base,gameId:'delta',robloxBuildSourceRevision:'9'.repeat(40)}
+    ]},
+    maxBatch:2
+  });
+  assert.equal(snapshot.development.total,4);
+  assert.equal(snapshot.development.exactF0Count,2);
+  assert.equal(snapshot.development.f0RepairCount,2);
+  assert.equal(snapshot.development.qualityBlockedCount,1);
+  assert.equal(snapshot.development.pendingCandidateCount,1);
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='alpha').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='beta').classification,'F0_NOT_VERIFIED_FOR_EXACT_PACKAGE');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='beta').invalidEvidenceCause,'F0_ARTIFACT_IDENTITY_MISMATCH');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='delta').invalidEvidenceCause,'SOURCE_REVISION_MISMATCH');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='gamma').classification,'F0_PASSED_CANDIDATE_NOT_PUBLISHED');
+  assert.ok(snapshot.development.rows.every(x=>x.automaticPassClaim===false));
+  assert.ok(snapshot.actions.includes('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF'));
+  assert.ok(snapshot.actions.includes('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF'));
+});
+
+test('external Roblox runtime failure preserves same immutable candidate without claiming F9',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'f'.repeat(64);
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{sourceRevision:source,artifactIdentity:artifact,artifactRunId:193},
+    robloxRuntimeCandidateEvidence:{published:true,sourceRevision:source,artifactIdentity:artifact,versionNumber:5,placeId:'place-193'},
+    robloxFailureSignature:'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE',
+    robloxFailureStage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+    unityF9ReleaseRegressionPassed:true,
+    unityF0ThroughF9Evidence:{sourceRevision:source,artifactIdentity:artifact}
+  };
+  const snapshot=analyzeSystemAiBottlenecks({developmentQueue:{items:[
+    {...base,gameId:'alpha'},
+    {...base,gameId:'beta'},
+    {...base,gameId:'gamma',robloxRuntimeCandidateEvidence:{...base.robloxRuntimeCandidateEvidence,sourceRevision:'0'.repeat(40)}}
+  ]}});
+  assert.equal(snapshot.development.exactCandidateCount,2);
+  assert.equal(snapshot.development.unityF9ReportedCount,3);
+  assert.equal(snapshot.development.unityF9IdentityBoundCount,3);
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='alpha').classification,'EXTERNAL_RUNTIME_TRANSIENT');
+  assert.equal(snapshot.development.rows.find(x=>x.gameId==='gamma').classification,'F0_PASSED_CANDIDATE_NOT_PUBLISHED');
+  assert.equal(snapshot.development.commonFailureCohorts.length,1);
+  assert.deepEqual(snapshot.development.commonFailureCohorts[0].gameIds,['alpha','beta']);
+  assert.equal(snapshot.development.commonFailureCohorts[0].representativeGameId,'alpha');
+  assert.ok(snapshot.development.rows.every(x=>x.unityF9IndependentRuntimeReviewRequired&&x.automaticPassClaim===false));
+});
+
+test('canonical reusable parent keeps final fan-in while successful games hand off without sibling completion',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  for(const name of [
+    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml',
+    'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
+  ]){
+    assert.ok(workflow.includes('uses: ./.github/workflows/'+name),'missing canonical reusable workflow: '+name);
+    assert.ok(!workflow.includes('gh workflow run '+name),'duplicate API lane dispatch: '+name);
+  }
+  assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]'));
+  assert.ok(workflow.includes('--arg control_sha "$GITHUB_SHA"'));
+  assert.ok(workflow.includes('select(.head_sha == $control_sha)'));
+  assert.ok(workflow.includes('DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES'));
+  assert.ok(workflow.includes('fail-fast: false'));
+  const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  assert.ok(unity.includes('Immediately continue this successful Unity game'));
+  assert.ok(unity.includes('gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"'));
+  const f0=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.ok(f0.includes("Dispatch exact private Roblox validation directly after this game's F0 persist"));
+  assert.ok(f0.includes('const blocked=x.robloxQualityBuildUpRequired===true'));
+  assert.ok(f0.includes('gh workflow run company-development-roblox-release-promotion.yml'));
+  const ai=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.ok(ai.includes('--development-queue=/tmp/system-ai-development-queue.json'));
+  assert.ok(ai.includes('SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE'));
 });
