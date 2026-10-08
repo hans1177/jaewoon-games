@@ -428,25 +428,41 @@
       "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
       "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
       "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
+    },
+    "local_authoring_parts::ab72cc2406b2449515014a91730c2c4b4a8bf1659e07c0b95c8b9f85e6f94a26:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "PLAYER_FIGHT_AUTO",
+        "PROGRESSION_RESOURCES"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "REWARD_CLAIM",
+        "NEXT_INVESTMENT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_DEEPENED_FIGHT_SYSTEM",
+      "purpose": "플레이어가 자동으로 적군을 공격하며, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 변경할 수 있다.",
+      "playerChoice": "플레이어는 자동으로 적군을 공격하고, 이 과정에서 유용한 아이템을 수집하거나 프로gression 리소스를 생성하여 다음 월드 상태를 바꿀 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 550535,
-      "lastMs": 41156,
+      "totalMs": 590871,
+      "lastMs": 40336,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:54:19.490Z"
+      "updatedAt": "2026-10-08T18:54:59.827Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:45:08.916Z",
-  "updatedAt": "2026-10-08T18:54:19.490Z",
+  "updatedAt": "2026-10-08T18:54:59.828Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2748,7 +2764,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:54:19.490Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:54:59.827Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
