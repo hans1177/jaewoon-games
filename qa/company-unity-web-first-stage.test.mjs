@@ -92,11 +92,13 @@ test('Unity Web reviewed promotion binds candidate Unity source and verified Web
   const end=workflow.indexOf('\n\n  settle-vibe2-failure:',start);
   assert.ok(start>=0&&end>start);
   const section=workflow.slice(start,end);
-  assert.match(section,/git checkout "\$SOURCE_COMMIT" -- "unity-games\/\$GAME_ID"/);
+  assert.match(section,/candidate_paths=\("unity-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(section,/git checkout "\$SOURCE_COMMIT" -- "\$\{candidate_paths\[@\]\}"/);
   assert.match(section,/git add "unity-games\/\$GAME_ID" "web-games\/\$GAME_ID"/);
   assert.match(section,/UNITY_WEB_CLOUDFLARE_PREVIEW=/);
   assert.match(section,/gh pr merge "\$pr_url"/);
-  assert.match(section,/git diff --quiet "\$release_commit" origin\/main -- "unity-games\/\$GAME_ID" "web-games\/\$GAME_ID"/);
+  assert.match(section,/merged_paths=\("unity-games\/\$GAME_ID" "web-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(section,/git diff --quiet "\$release_commit" origin\/main -- "\$\{merged_paths\[@\]\}"/);
   assert.match(section,/UNITY_WEB_CLOUDFLARE_MAIN=/);
   const mainDeploy=section.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=');
   const queuePass=section.indexOf('vibe2-queue-control.mjs pass');
@@ -158,4 +160,11 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   assert.doesNotMatch(workflow,/gh workflow run vibe2-24h-runner\.yml/);
   assert.match(workflow,/exit 42/);
   assert.match(vibe,/workflow_call:/);
+  const repair=workflow.slice(workflow.indexOf('\n  repair-vibe2:'));
+  const calleePermissions=vibe.match(/^permissions:\n((?:  .+\n)+)/m)?.[1];
+  assert.ok(calleePermissions,'reusable runner declares its token permissions');
+  for(const line of calleePermissions.trim().split('\n')){
+    const permission=line.trim();
+    assert.ok(repair.includes(`      ${permission}\n`),`repair caller must grant callee permission: ${permission}`);
+  }
 });

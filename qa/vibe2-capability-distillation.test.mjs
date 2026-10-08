@@ -29,6 +29,15 @@ test('menu learning keeps source-checked reasoning and cannot promote an unrevie
   assert.ok(failure.avoidPatterns.some(row=>row.includes('INTERFACE_BLUEPRINT')));
 });
 
+test('coding engine revision is observable provenance and cannot itself grant verified capability',()=>{
+  const result={outcome:'PASS',codingMethod:{engineRevision:'VIBE2_CODING_2.1',sourceAnalysisVersion:2}};
+  const trace=buildObservableCodingTrace({task:{id:'native-code',target:'unity'},result});
+  assert.equal(trace.decision.engineRevision,'VIBE2_CODING_2.1');
+  assert.equal(trace.decision.sourceAnalysisVersion,2);
+  assert.equal(buildVerifiedCapabilityExperienceReview({task:{id:'native-code'},result}),null);
+  assert.equal(buildObservableCodingTrace({}).decision.engineRevision,null);
+});
+
 const task={
   id:'task-capability-1',
   gameId:'bug-defense',

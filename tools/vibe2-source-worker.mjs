@@ -16,6 +16,7 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
+import { CODING_ANALYSIS_VERSION, inspectSourceFunctions } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
@@ -242,24 +243,35 @@ function mergeSourceWindowRanges(ranges=[]){
   }
   return merged;
 }
-function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
+export function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
   const contract=exploration?.editContract||{};
   const confidence=clean(contract.responsibilityConfidence).toUpperCase();
   const symbolCandidates=unique([
     ...(contract.primaryTargets||[]),
     ...(contract.responsibilityGraph?.relevantNodes||[]).map(row=>row?.name),
-    ...(contract.allowedDependentSymbolsOrSystems||[])
-  ]).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
+    ...(contract.allowedDependentSymbolsOrSystems||[]),
+    ...(exploration.sourceDependencies||[]).map(row=>row.symbol)
+  ]).filter(name=>/^[A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*$/.test(name));
   if(!responsibleFiles.length||!symbolCandidates.length||!['HIGH','MEDIUM'].includes(confidence))return null;
   const files=[];
   let total=0,matchedSymbolCount=0;
-  for(const relative of responsibleFiles){
-    const full=path.join(root,relative);
+  const contextPaths=unique([...responsibleFiles,...(exploration.contextFiles||[])]).slice(0,MAX_CONTEXT_FILES);
+  for(const relative of contextPaths){
+    const full=path.resolve(root,relative);
+    if(!full.startsWith(path.resolve(root)+path.sep))continue;
     if(!fs.existsSync(full)||!fs.statSync(full).isFile())continue;
     const text=fs.readFileSync(full,'utf8');
     const ranges=[];
     const matched=new Set();
+    const functions=inspectSourceFunctions(text,{language:target});
     for(const symbol of symbolCandidates.slice(0,16)){
+      const declarations=functions.filter(fn=>fn.name===symbol);
+      if(declarations.length){
+        for(const fn of declarations)ranges.push({start:fn.start,end:fn.end,labels:[symbol]});
+        matched.add(symbol);continue;
+      }
+      // Native qualified symbols must be read from real declarations, not comments or string examples.
+      if(target==='roblox'||target==='unity')continue;
       const re=new RegExp('\\b'+regexEscape(symbol)+'\\b','g');
       let match,count=0;
       while((match=re.exec(text))&&count<3){
@@ -267,6 +279,13 @@ function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
         ranges.push({...range,labels:[symbol]});
         matched.add(symbol);
         count+=1;
+      }
+    }
+    if(matched.size){
+      ranges.push({start:0,end:Math.min(text.length,1200),labels:['IMPORTS_AND_DECLARATIONS']});
+      for(const state of unique([...(contract.ownedState||[]),...(contract.readState||[])]).slice(0,16)){
+        const escaped=regexEscape(state),declaration=new RegExp('\\b(?:let|const|var|local|int|float|bool|double|Vector[23]|[A-Z]\\w*(?:<[^>]+>)?)\\s+'+escaped+'\\b');
+        const at=text.search(declaration);if(at>=0)ranges.push({...sourceWindowRange(text,at,{before:160,after:500}),labels:['STATE:'+state]});
       }
     }
     const preserveKeys=unique(contract.semanticDiffBudget?.saveKeysMustRemainCompatible||[]);
@@ -284,13 +303,13 @@ function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
       if(remaining<=0)break;
       while(Buffer.byteLength(content,'utf8')>remaining&&content.length>240)content=content.slice(0,Math.floor(content.length*.82));
       if(!content.trim())continue;
-      files.push({path:relative,content,truncated:true,editable:true,exactSourceWindow:true,windowLabel:(row.labels||[]).join('+')||'responsibility'});
+      files.push({path:relative,content,truncated:row.start>0||row.end<text.length||content.length<row.end-row.start,editable:responsibleFiles.includes(relative),exactSourceWindow:true,windowLabel:(row.labels||[]).join('+')||'responsibility'});
       total+=Buffer.byteLength(content,'utf8');
       if(total>=FOCUSED_WEB_REPAIR_CONTEXT_BYTES)break;
     }
   }
   if(!files.length)return null;
-  return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',focusedSymbolCount:matchedSymbolCount,exactSourceWindows:true,fullFileFallback:false};
+  return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',codingAnalysisVersion:CODING_ANALYSIS_VERSION,focusedSymbolCount:matchedSymbolCount,exactSourceWindows:true,fullFileFallback:false};
 }
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
   if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||!responsibleFiles[0].toLowerCase().endsWith('.html'))return false;
@@ -3057,7 +3076,9 @@ export function buildGameContextCapsule({order={},exploration=null,responsibleFi
       primaryTargets:Object.freeze(unique(editContract?.primaryTargets||[]).slice(0,10)),
       primarySystems:Object.freeze(unique(editContract?.primarySystems||[]).slice(0,10)),
       dependentSystems:Object.freeze(unique(editContract?.dependentSystems||editContract?.allowedDependentSymbolsOrSystems||[]).slice(0,10)),
-      ownedState:Object.freeze(unique(editContract?.ownedState||[]).slice(0,12))
+      ownedState:Object.freeze(unique(editContract?.ownedState||[]).slice(0,12)),
+      calls:Object.freeze((editContract?.responsibilityGraph?.relevantEdges||[]).slice(0,8).map(row=>({from:row.from,to:row.to}))),
+      analysisVersion:CODING_ANALYSIS_VERSION
     }),
     protected:Object.freeze({
       saveKeys:Object.freeze(saveKeys),preserveGameplayMeaning:true,preserveSaveMeaning:true,
@@ -5607,7 +5628,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const preferBoundedContext=sourceRootExists&&focusedWebRepair&&preferredContextMode==='BOUNDED_FILE_EXCERPT_FALLBACK';
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
   const unityBootstrapFiles=bootstrap&&target==='unity'?unityWebBootstrapScaffold(sourceRootRelative):null;
-  const focusedContext=sourceRootExists&&focusedWebRepair&&!preferBoundedContext?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
+  const useDependencyContext=focusedWebRepair||(['roblox','unity','web'].includes(target)&&!allowFullRewrite&&!bootstrap&&responsibleFiles.some(file=>{const full=path.join(sourceRoot,file);return fs.existsSync(full)&&fs.statSync(full).size>24000;}));
+  const focusedContext=sourceRootExists&&useDependencyContext&&!preferBoundedContext?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
   const unityBootstrapContext=bootstrap&&target==='unity'
     ?{files:responsibleFiles.map(relative=>{
         const live=path.join(sourceRoot,relative);
@@ -5981,6 +6003,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
   }
   const codingMethod={
+    engineRevision:'VIBE2_CODING_2.1',
+    sourceAnalysisVersion:CODING_ANALYSIS_VERSION,
+    modelWeightsChanged:false,
     designBlueprintEvidence:{
       spatialStatus:semanticDiffEnforcement.spatialBlueprintValidation?.status||'NOT_REQUIRED',
       interfaceStatus:semanticDiffEnforcement.interfaceBlueprintValidation?.status||'NOT_REQUIRED',

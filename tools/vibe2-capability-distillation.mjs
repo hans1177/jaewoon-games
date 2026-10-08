@@ -118,6 +118,8 @@ export function buildObservableCodingTrace({task={},result={}}={}){
       goal:redactSensitive(task.goal||'',700)
     },
     decision:{
+      engineRevision:clean(coding.engineRevision)||null,
+      sourceAnalysisVersion:Number(coding.sourceAnalysisVersion||0)||null,
       blueprint:{
         interfaceStatus:clean(coding.designBlueprintEvidence?.interfaceStatus)||'NOT_REQUIRED',
         spatialStatus:clean(coding.designBlueprintEvidence?.spatialStatus)||'NOT_REQUIRED',

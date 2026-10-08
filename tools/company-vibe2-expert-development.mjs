@@ -23,7 +23,42 @@ function systemsFor(text=''){
 }
 function scriptsFromHtml(source=''){
   const raw=String(source||''),matches=[...raw.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)];
-  return matches.length?matches.map(m=>m[1]||'').join('\n'):raw;
+  if(!matches.length)return raw;
+  const chars=raw.split('').map(ch=>ch==='\n'?'\n':' ');
+  for(const match of matches){const start=match.index+match[0].indexOf('>')+1;for(let i=0;i<match[1].length;i++)chars[start+i]=match[1][i];}
+  return chars.join('');
+}
+export const CODING_ANALYSIS_VERSION=2;
+function sourceLanguage(source='',language=''){
+  if(/^(?:roblox|lua|luau)$/i.test(language))return'luau';
+  if(/^(?:unity|csharp|cs)$/i.test(language))return'csharp';
+  if(language)return'javascript';
+  if(/\b(?:local\s+function|game:GetService|function\s+[\w.]+:[\w]+\s*\()/.test(source))return'luau';
+  if(/\b(?:using\s+UnityEngine|MonoBehaviour|public\s+class)\b/.test(source))return'csharp';
+  return'javascript';
+}
+// Preserve offsets while excluding comments and literals from static call/state evidence.
+function executableText(source='',language='javascript'){
+  const raw=String(source),chars=raw.split('');
+  const hide=(start,end)=>{for(let i=start;i<end;i++)if(chars[i]!=='\n'&&chars[i]!=='\r')chars[i]=' ';};
+  for(let i=0;i<raw.length;){
+    const start=i;
+    if(language==='luau'&&(raw.startsWith('--',i)||raw[i]==='[')){
+      const comment=raw.startsWith('--',i),at=i+(comment?2:0),long=raw.slice(at).match(/^\[(=*)\[/);
+      if(long){const end=raw.indexOf(']'+long[1]+']',at+long[0].length);i=end<0?raw.length:end+long[1].length+2;hide(start,i);continue;}
+      if(comment){i=raw.indexOf('\n',i);if(i<0)i=raw.length;hide(start,i);continue;}
+    }
+    if(language!=='luau'&&raw.startsWith('//',i)){i=raw.indexOf('\n',i);if(i<0)i=raw.length;hide(start,i);continue;}
+    if(language!=='luau'&&raw.startsWith('/*',i)){const end=raw.indexOf('*/',i+2);i=end<0?raw.length:end+2;hide(start,i);continue;}
+    const verbatim=language==='csharp'&&raw.startsWith('@"',i),quote=verbatim?'"':raw[i];
+    if(quote==='"'||quote==="'"||quote==='`'){
+      i+=verbatim?2:1;
+      while(i<raw.length){if(verbatim&&raw[i]==='"'&&raw[i+1]==='"'){i+=2;continue;}if(!verbatim&&raw[i]==='\\'){i+=2;continue;}if(raw[i++]===quote)break;}
+      hide(start,Math.min(i,raw.length));continue;
+    }
+    i++;
+  }
+  return chars.join('');
 }
 function matchingBrace(text,start){
   let depth=0,quote='',escape=false;
@@ -36,34 +71,54 @@ function matchingBrace(text,start){
   }
   return -1;
 }
-function extractNamedFunctions(source=''){
-  const raw=scriptsFromHtml(source),rows=[],seen=new Set();
+export function inspectSourceFunctions(source='',{language=''}={}){
+  const raw=scriptsFromHtml(source),kind=sourceLanguage(raw,language),code=executableText(raw,kind),rows=[],seen=new Set();
   const patterns=[
     /(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/g,
     /(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*\{/g,
   ];
+  if(kind==='csharp')patterns.push(/\b(?:(?:public|private|protected|internal|static|virtual|override|async|sealed|new|partial)\s+)*(?:[A-Za-z_][\w.<>?,\[\]]*)\s+([A-Za-z_][\w]*)\s*\([^;{}]*\)\s*\{/g);
+  if(kind==='luau'){
+    for(const match of code.matchAll(/\b(?:local\s+)?function\s+([A-Za-z_][\w]*(?:[.:][A-Za-z_][\w]*)*)\s*\([^)]*\)/g)){
+      const bodyStart=match.index+match[0].length,stack=['function'];let pendingDo=0,end=-1,bodyEnd=-1;
+      for(const token of code.slice(bodyStart).matchAll(/\b(?:function|if|elseif|for|while|do|repeat|until|end)\b/g)){
+        const word=token[0];
+        if(word==='elseif')continue;
+        if(word==='for'||word==='while'){stack.push(word);pendingDo++;}
+        else if(word==='do'){if(pendingDo)pendingDo--;else stack.push(word);}
+        else if(word==='function'||word==='if'||word==='repeat')stack.push(word);
+        else if(word==='end'||word==='until'){
+          stack.pop();if(!stack.length){bodyEnd=bodyStart+token.index;end=bodyEnd+word.length;break;}
+        }
+      }
+      if(end>=0&&!seen.has(match[1])){seen.add(match[1]);rows.push({name:match[1],body:raw.slice(bodyStart,bodyEnd),code:code.slice(bodyStart,bodyEnd),start:match.index,end,language:kind});}
+    }
+    return rows.sort((a,b)=>a.start-b.start).slice(0,160);
+  }
   for(const pattern of patterns){
-    for(const match of raw.matchAll(pattern)){
+    for(const match of code.matchAll(pattern)){
       const name=match[1];if(seen.has(name))continue;
-      const open=(match.index||0)+match[0].lastIndexOf('{'),close=matchingBrace(raw,open);
+      const open=(match.index||0)+match[0].lastIndexOf('{'),close=matchingBrace(code,open);
       if(close<0)continue;
-      seen.add(name);rows.push({name,body:raw.slice(open+1,close),start:match.index||0,end:close+1});
+      seen.add(name);rows.push({name,body:raw.slice(open+1,close),code:code.slice(open+1,close),start:match.index||0,end:close+1,language:kind});
     }
   }
   return rows.sort((a,b)=>a.start-b.start).slice(0,160);
 }
-function declaredStateNames(source=''){
-  const raw=scriptsFromHtml(source),names=[];
+function declaredStateNames(source='',language='javascript'){
+  const raw=executableText(scriptsFromHtml(source),language),names=[];
   for(const match of raw.matchAll(/\b(?:let|var|const)\s+([A-Za-z_$][\w$]*)\s*(?:=|;)/g))names.push(match[1]);
+  if(language==='luau')for(const match of raw.matchAll(/\blocal\s+([A-Za-z_][\w]*)\s*(?::[^=\n]+)?=/g))names.push(match[1]);
+  if(language==='csharp')for(const match of raw.matchAll(/\b(?:(?:public|private|protected|internal|static|readonly|const)\s+)*(?:[A-Za-z_][\w.<>?,\[\]]*)\s+([A-Za-z_][\w]*)\s*(?:=(?!=)|;)/g))names.push(match[1]);
   return uniq(names).slice(0,240);
 }
 function stateAccess(body,stateNames){
   const writes=[],reads=[],source=String(body||'');
   for(const state of stateNames){
     const escaped=state.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const writeRe=new RegExp(`\\b${escaped}\\s*(?:\\+\\+|--|[+\\-*/%]?=)`);
-    const propWriteRe=new RegExp(`\\b${escaped}\\s*\\.[A-Za-z_$][\\w$]*\\s*(?:\\+\\+|--|[+\\-*/%]?=)`);
-    const mutatingMethodRe=new RegExp(`\\b${escaped}\\s*\\.(?:push|pop|shift|unshift|splice|sort|reverse|set|add|delete|clear)\\s*\\(`);
+    const writeRe=new RegExp(`\\b${escaped}\\s*(?:\\+\\+|--|[+\\-*/%]?=(?!=|>))`);
+    const propWriteRe=new RegExp(`\\b${escaped}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]\\n]+\\])+\\s*(?:\\+\\+|--|[+\\-*/%]?=(?!=|>))`);
+    const mutatingMethodRe=new RegExp(`\\b${escaped}\\s*[.:](?:push|pop|shift|unshift|splice|sort|reverse|set|add|delete|clear|Add|Remove|RemoveAt|Clear)\\s*\\(|\\btable\\.(?:insert|remove|sort|clear)\\s*\\(\\s*${escaped}\\b`);
     const readRe=new RegExp(`\\b${escaped}\\b`);
     if(writeRe.test(source)||propWriteRe.test(source)||mutatingMethodRe.test(source))writes.push(state);
     if(readRe.test(source))reads.push(state);
@@ -94,13 +149,16 @@ function exactEventRegistrations(source=''){
   return rows;
 }
 
-export function buildResponsibilityGraph({source='',sourceAnalysis={}}={}){
-  const raw=scriptsFromHtml(source),functions=extractNamedFunctions(raw),names=functions.map(row=>row.name),known=new Set(names),states=declaredStateNames(raw),nodes=[];
+export function buildResponsibilityGraph({source='',sourceAnalysis={},language=''}={}){
+  const raw=scriptsFromHtml(source),kind=sourceLanguage(raw,language),functions=inspectSourceFunctions(raw,{language:kind}),names=functions.map(row=>row.name),known=new Set(names),states=declaredStateNames(raw,kind),nodes=[];
   for(const fn of functions){
     const calls=[];
-    for(const m of fn.body.matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)){const name=m[1];if(name!==fn.name&&known.has(name))calls.push(name);}
-    const access=stateAccess(fn.body,states),storageKeys=storageUsage(fn.body),events=eventUsage(fn.body),systems=uniq([...systemsFor(fn.name),...systemsFor(fn.body),...(storageKeys.length?['SAVE']:[]),...(events.length?['INPUT']:[])]);
-    nodes.push({name:fn.name,systems,calls:uniq(calls),calledBy:[],stateReads:access.reads,stateWrites:access.writes,storageKeys,events,timers:timerSignals(fn.body),bodyBytes:Buffer.byteLength(fn.body,'utf8')});
+    for(const m of fn.code.matchAll(/\b([A-Za-z_$][\w$]*(?:[.:][A-Za-z_$][\w$]*)*)\s*\(/g)){
+      const exact=m[1],name=known.has(exact)?exact:/^(?:this|self)\./.test(exact)?exact.replace(/^(?:this|self)\./,''):exact;
+      if(name!==fn.name&&known.has(name))calls.push(name);
+    }
+    const access=stateAccess(fn.code,states),storageKeys=storageUsage(fn.body),events=eventUsage(fn.body),systems=uniq([...systemsFor(fn.name),...systemsFor(fn.code),...(storageKeys.length?['SAVE']:[]),...(events.length?['INPUT']:[])]);
+    nodes.push({name:fn.name,language:kind,start:fn.start,end:fn.end,systems,calls:uniq(calls),calledBy:[],stateReads:access.reads,stateWrites:access.writes,storageKeys,events,timers:timerSignals(fn.code),bodyBytes:Buffer.byteLength(fn.body,'utf8')});
   }
   const byName=new Map(nodes.map(node=>[node.name,node]));
   for(const node of nodes)for(const target of node.calls){const called=byName.get(target);if(called)called.calledBy.push(node.name);}
@@ -109,7 +167,7 @@ export function buildResponsibilityGraph({source='',sourceAnalysis={}}={}){
   const stateWriters=[];for(const state of states){const writers=nodes.filter(node=>node.stateWrites.includes(state)).map(node=>node.name);if(writers.length)stateWriters.push({state,writers});}
   const storageOwners=[];for(const key of uniq([...(sourceAnalysis.storageKeys||[]),...nodes.flatMap(node=>node.storageKeys)])){const owners=nodes.filter(node=>node.storageKeys.includes(key)).map(node=>node.name);storageOwners.push({key,owners});}
   const entrypoints=nodes.filter(node=>node.events.length||node.calledBy.length===0&&node.timers.animationFrame).map(node=>node.name);
-  return{version:1,nodeCount:nodes.length,nodes,edges,stateWriters,storageOwners,entrypoints:uniq(entrypoints),rule:'TRACE_FAILURE_TO_STATE_WRITER_THEN_CALLERS_AND_DEPENDENTS_BEFORE_PATCH'};
+  return{version:CODING_ANALYSIS_VERSION,language:kind,analysis:'BOUNDED_LEXICAL_SOURCE_EVIDENCE',runtimeVerified:false,nodeCount:nodes.length,nodes,edges,stateWriters,storageOwners,entrypoints:uniq(entrypoints),rule:'TRACE_FAILURE_TO_STATE_WRITER_THEN_CALLERS_AND_DEPENDENTS_BEFORE_PATCH'};
 }
 
 
@@ -233,7 +291,7 @@ export function buildBehaviorChainContracts({gameplaySketch={}}={}){
   return{version:1,mode:'END_TO_END_BEHAVIOR_RESULT_CONTRACTS',chains,completionRule:'NO_FEATURE_IS_COMPLETE_FROM_BUTTON_LABEL_OR_FUNCTION_EXISTENCE_ALONE'};
 }
 
-export function buildExpertDevelopmentAnalysis({source='',sourceAnalysis={},gameplaySketch={},failures=[]}={}){
-  const responsibilityGraph=buildResponsibilityGraph({source,sourceAnalysis}),causalDebug=buildCausalDebugPlan({failures,responsibilityGraph}),seniorCodeReview=reviewSeniorSourceQuality(source,{responsibilityGraph}),behaviorChains=buildBehaviorChainContracts({gameplaySketch});
-  return{version:1,responsibilityGraph,causalDebug,seniorCodeReview,behaviorChains,authority:'EXPERT_DEVELOPMENT_ANALYSIS_INSIDE_EXISTING_CANONICAL_PIPELINE'};
+export function buildExpertDevelopmentAnalysis({source='',sourceAnalysis={},gameplaySketch={},failures=[],language=''}={}){
+  const responsibilityGraph=buildResponsibilityGraph({source,sourceAnalysis,language}),causalDebug=buildCausalDebugPlan({failures,responsibilityGraph}),seniorCodeReview=reviewSeniorSourceQuality(source,{responsibilityGraph}),behaviorChains=buildBehaviorChainContracts({gameplaySketch});
+  return{version:CODING_ANALYSIS_VERSION,responsibilityGraph,causalDebug,seniorCodeReview,behaviorChains,authority:'EXPERT_DEVELOPMENT_ANALYSIS_INSIDE_EXISTING_CANONICAL_PIPELINE'};
 }
