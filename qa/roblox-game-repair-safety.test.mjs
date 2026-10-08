@@ -147,6 +147,8 @@ test('survival preserves saved resources and unknown world fields across DataSto
   assert.ok(save.includes('store:UpdateAsync'));
   runLuau(`
 local Config={InitialState={ResourceWood=0,ResourceStone=0,Coins=0}}
+local logs={}
+local function warn(msg)table.insert(logs,msg)end
 local callbacks={}
 local Players={}
 Players.PlayerAdded={Connect=function(_,fn)callbacks.add=fn end}
