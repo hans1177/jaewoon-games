@@ -273,3 +273,33 @@ test('common world-object prompts and interaction state cards synchronize actual
    assert.doesNotMatch(body,/FireServer|RemoteEvent|DataStoreService|UpdateAsync|SetAsync|RunService/);
  }
 });
+
+test('NPC object menus and world action wheel never fabricate available actions and sync game owners',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,second)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+second+'(options)'));
+ const npc=section('CreateNpcInteractionPrompt','CreateNpcInteractionMenu');
+ const menu=section('CreateNpcInteractionMenu','CreateNpcRelationshipCard');
+ const wheel=section('CreateWorldPropActionWheel','CreateInteractionProgress');
+ assert.match(npc,/local function sync\(state\)/);
+ assert.match(npc,/root:SetAttribute\("InteractionKind",tostring\(state\.kind/);
+ assert.match(npc,/root:SetAttribute\("InteractionAvailable",enabled\)/);
+ assert.match(npc,/return root,key,title,subtitle,sync/);
+ assert.match(menu,/local function sync\(state\)/);
+ assert.match(menu,/sync\(options\.interaction or \{actions=options\.actions or \{\}\}\)/);
+ assert.match(menu,/buttons\[index\]\.Visible=false/);
+ assert.match(menu,/selected\.available==false/);
+ assert.match(menu,/options\.onSelect\(selected\.id,selected\)/);
+ assert.match(menu,/root:SetAttribute\("BoundInteractionActionCount",#rows\)/);
+ assert.match(menu,/return root,inner,list,buttons,sync/);
+ assert.doesNotMatch(menu,/\{id="GIVE_ITEM",/);
+ assert.match(wheel,/actions=\{\}/);
+ assert.match(wheel,/local function sync\(state\)/);
+ assert.match(wheel,/row\.available~=false/);
+ assert.match(wheel,/options\.onSelect\(current\.id,current\)/);
+ assert.match(wheel,/root:SetAttribute\("BoundActionCount",#actions\)/);
+ for(const text of [npc,menu,wheel]){
+   assert.match(text,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(text,/RemoteEvent|FireServer|SetAsync|DataStoreService|RunService|RenderStepped/);
+ }
+});
