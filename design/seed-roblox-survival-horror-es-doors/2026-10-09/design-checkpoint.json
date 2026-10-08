@@ -527,25 +527,43 @@
     },
     "local_authoring_parts::4419660f31940bd405c25a874117a1776b825ba54917311514589c7072d6be4d:trigger": {
       "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::4419660f31940bd405c25a874117a1776b825ba54917311514589c7072d6be4d:stateChange": {
+      "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::6db3c37ce207f39aaad84a3f9f1c86cdad1ce8010f17330d14d3b8aca37d3ae2:systemInterconnections:3": {
+      "fromId": "systemInterconnections[3]",
+      "toId": "systemInterconnections[3].stateChange",
+      "stateKeys": [
+        "trigger",
+        "stateChange"
+      ],
+      "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM_04",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM_04",
+      "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+      "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::73ac1be1c509c50d05e265b5f49aa0ba3412261ac7fb6c4296869fd630860325:fromId": {
+      "fromId": "systemInterconnections[4].trigger"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1235204,
-      "lastMs": 33966,
+      "totalMs": 1302477,
+      "lastMs": 33227,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:10:14.970Z"
+      "updatedAt": "2026-10-08T21:11:22.247Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T21:10:14.970Z",
+  "updatedAt": "2026-10-08T21:11:22.247Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3040,7 +3058,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:10:14.970Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:11:22.247Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
