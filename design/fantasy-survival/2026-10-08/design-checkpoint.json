@@ -320,25 +320,28 @@
     },
     "local_authoring_parts::869d66c95a7fb2c02ca7cdf316414502bba494b99b9b06cf67e93bb4b65cef11:toSystem": {
       "toSystem": "newWorldState"
+    },
+    "local_authoring_parts::869d66c95a7fb2c02ca7cdf316414502bba494b99b9b06cf67e93bb4b65cef11:trigger": {
+      "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1689689,
-      "lastMs": 57439,
+      "totalMs": 1761460,
+      "lastMs": 71771,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:20:49.989Z"
+      "updatedAt": "2026-10-08T08:22:01.761Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:20:49.989Z",
+  "updatedAt": "2026-10-08T08:22:01.761Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2690,7 +2693,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:20:49.989Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:22:01.761Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
