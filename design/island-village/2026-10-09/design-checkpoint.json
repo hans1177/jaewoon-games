@@ -758,25 +758,34 @@
       "toSystem": "Village infrastructure",
       "trigger": "Player selects specific island resources to gather and uses them to build or improve one village function, resulting in resource accumulation and infrastructure upgrade.",
       "stateChange": "플레이어는 특정 섬 자원을 수집하여 이를 바탕으로 주변 시설을 개선하는 선택을 하며, 이 과정에서 자원 축적 및 시설 업그레이드가 발생한다."
+    },
+    "local_authoring_parts::c140b083943d5876749cb8971767a570713f87eb9123a004dc18b3cbff5c6a59:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "RESOURCE_ACCUMULATION",
+        "INFRASTRUCTURE_UPGRADE"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 56,
+      "calls": 57,
+      "successes": 57,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3242153,
-      "lastMs": 33828,
+      "totalMs": 3276040,
+      "lastMs": 33887,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:35:24.738Z"
+      "updatedAt": "2026-10-08T23:35:58.635Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T23:35:24.746Z",
+  "updatedAt": "2026-10-08T23:35:58.636Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3007,10 +3016,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:35:24.740Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:35:58.636Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
