@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T08:57:01.953Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T08:57:33.809Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-08/design-seed.json",
+    "contentDigest": "86cba905b0ec06feacd8a6845b7a6101f058322ed88866314c7763fd318703a7",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 394725,
-      "lastMs": 41140,
+      "totalMs": 426577,
+      "lastMs": 31852,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:57:01.951Z"
+      "updatedAt": "2026-10-08T08:57:33.806Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T08:57:01.954Z"
+  "updatedAt": "2026-10-08T08:57:33.814Z"
 }
