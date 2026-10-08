@@ -636,25 +636,40 @@
     },
     "local_authoring_parts::88a0e1565b3ae66ac36e67156c640dfabb149ac86cb72af192ab443f30424989:trigger": {
       "trigger": "주민의 목표·두려움·비밀을 바탕으로 선택한 월드 상태를 바꾸는 게임 선택이, '주민의 목표·두려움·비밀'을 반영한 월드 상태로 업데이트된다. 이 선택은 게임의 핵심 루프와 보상/위험/다음 선택을 반영하여 월드 상태를 변화시킨다."
+    },
+    "local_authoring_parts::88a0e1565b3ae66ac36e67156c640dfabb149ac86cb72af192ab443f30424989:stateChange": {
+      "stateChange": "주민의 목표·두려움·비밀을 바탕으로 선택한 월드 상태는, '주민의 목표·두려움·비밀'을 반영한 월드 상태로 업데이트된다. 이 선택은 게임의 핵심 루프와 보상/위험/다음 선택을 반영하여 월드 상태를 변화시킨다."
+    },
+    "local_authoring_parts::260ba965a284904b78a0dbf85911614ee1fef242f6dc89088498931a6c559eed:systemInterconnections:1": {
+      "fromId": "identity-core",
+      "toId": "A-core",
+      "stateKeys": [
+        "READ: 주민의 목표·두려움·비밀",
+        "WRITE: 주민의 목표·두려움·비밀을 반영한 월드 상태"
+      ],
+      "fromSystem": "주민의 목표·두려움·비밀",
+      "toSystem": "게임의 핵심 루프와 보상/위험/다음 선택",
+      "trigger": "주민의 목표·두려움·비밀을 바탕으로 선택한 월드 상태를 바꾸는 게임 선택이, '주민의 목표·두려움·비밀'을 반영한 월드 상태로 업데이트된다. 이 선택은 게임의 핵심 루프와 보상/위험/다음 선택을 반영하여 월드 상태를 변화시킨다.",
+      "stateChange": "주민의 목표·두려움·비밀을 바탕으로 선택한 월드 상태는, '주민의 목표·두려움·비밀'을 반영한 월드 상태로 업데이트된다. 이 선택은 게임의 핵심 루프와 보상/위험/다음 선택을 반영하여 월드 상태를 변화시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 30,
+      "successes": 30,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3073350,
-      "lastMs": 96654,
+      "totalMs": 3169382,
+      "lastMs": 96032,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:54:00.479Z"
+      "updatedAt": "2026-10-08T09:55:36.513Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:31:29.567Z",
-  "updatedAt": "2026-10-08T09:54:00.479Z",
+  "updatedAt": "2026-10-08T09:55:36.515Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2900,7 +2915,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:54:00.479Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:55:36.515Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
