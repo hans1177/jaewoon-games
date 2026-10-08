@@ -181,3 +181,35 @@ test('Roblox inventory menu stacks controls on narrow screens and does not clip 
  assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
  assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
 });
+
+test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const character=section('CreateCharacterDetailScreen','CreateMapFullScreen');
+ const equipment=section('CreateEquipmentFullScreen','CreateCharacterDetailScreen');
+ const inventory=section('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+ const shop=section('CreateShopFullScreen','CreateConfirmDialog');
+ for(const [kind,body] of [['character',character],['equipment',equipment],['inventory',inventory],['shop',shop]]){
+  assert.match(body,/local function sync\(/,kind);
+  assert.match(body,/Sync=sync/,kind);
+  assert.doesNotMatch(body,/DataStoreService|SetAsync|UpdateAsync|FireServer|OnServerEvent/);
+ }
+ assert.match(character,/state\.name/);
+ assert.match(character,/state\.className/);
+ assert.match(character,/state\.stats/);
+ assert.match(character,/state\.revision/);
+ assert.match(equipment,/row\.equipped==true/);
+ assert.match(equipment,/if row and row\.id and type\(options\.onEquip\)=="function"then options\.onEquip\(row\.id,row\)end/);
+ assert.match(inventory,/slot:SetAttribute\("BoundItemId",tostring\(row\.id or ""\)\)/);
+ assert.match(inventory,/if current and type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
+ assert.match(inventory,/for i=#rows\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(shop,/if current\.canSell==true and type\(options\.onSell\)=="function"then options\.onSell\(current\.id,current\)/);
+ assert.match(shop,/current\.canBuy==true and type\(options\.onBuy\)=="function"then options\.onBuy\(current\.id,current\)/);
+ assert.match(shop,/item\.price~=nil/);
+ assert.match(shop,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(shop,/list\.AbsoluteSize\.X<430/);
+ assert.match(shop,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("BoundShopItemCount",#shown\)/);
+});
