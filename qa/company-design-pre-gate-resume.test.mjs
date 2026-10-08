@@ -312,6 +312,16 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
   const before=calls.length;
   await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
   assert.equal(calls.length,before,'previously validated MAIN/A/B/c/@ rule checkpoints are reused');
+  // 검증 전 남아 있던 오래된 잘못된 역할 캐시를 발견하면 그 역할만 다시 요청한다.
+  const savedRoles=Object.values(checkpoint.tasks);
+  savedRoles.find(row=>row.grammarRole==='B').id='RULE_MAIN';
+  savedRoles.find(row=>row.grammarRole==='c').stateInputs=['INPUT: 채집 → STATE: 나무 증가'];
+  const previousCalls=calls.length;
+  const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['B','c']);
+  assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
+  assert.deepEqual(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs,['WoodCount']);
+  assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
 });
 
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
