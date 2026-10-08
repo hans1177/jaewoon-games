@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/survival/server/Game.server.luau
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
@@ -15,6 +16,11 @@ if not remote then
 end
 
 local lastAction = {}
+-- 서버가 소유하는 자원 상호작용 상태. 기존 플레이어 저장 키와 경제 규칙은 유지한다.
+local worldObjectStates = {}
+local resourceRules = type(Config.ResourceInteractionRules) == "table" and Config.ResourceInteractionRules or {}
+local invalidResourceRulesLogged = {}
+local resourceEffectPool = {}
 local function readNumber(player, name, fallback)
   local value = player:GetAttribute(name)
   if typeof(value) ~= "number" then return fallback end
@@ -164,18 +170,181 @@ local function currentEnemyFor(player)
   return nil
 end
 
-local function gatherResource(player)
+local function gatherResource(player, sourcePart, approvedDropAmount)
   local wood = survivalResources:FindFirstChild("WoodResourceNode")
   local stone = survivalResources:FindFirstChild("StoneResourceNode")
-  local chooseWood = readNumber(player, "ResourceWood", 0) <= readNumber(player, "ResourceStone", 0)
+  local chooseWood = sourcePart == wood or (sourcePart == nil and readNumber(player, "ResourceWood", 0) <= readNumber(player, "ResourceStone", 0))
+  local amount = approvedDropAmount or 1
   if chooseWood then
-    setNumber(player, "ResourceWood", readNumber(player, "ResourceWood", 0) + 1)
+    setNumber(player, "ResourceWood", readNumber(player, "ResourceWood", 0) + amount)
     if wood then wood:SetAttribute("LastGatheredBy", player.UserId) end
   else
-    setNumber(player, "ResourceStone", readNumber(player, "ResourceStone", 0) + 1)
+    setNumber(player, "ResourceStone", readNumber(player, "ResourceStone", 0) + amount)
     if stone then stone:SetAttribute("LastGatheredBy", player.UserId) end
   end
+  player:SetAttribute("LastGatheredWorldObject", sourcePart and sourcePart:GetAttribute("WorldObjectId") or "")
 end
+
+-- 기존 자원 채집을 직접 재사용한다. 명시적으로 승인된 내구도 규칙이 없으면 무한 자원 동작을 보존한다.
+local function validResourceRule(nodeName)
+  local definition = resourceRules[nodeName]
+  if type(definition) ~= "table" then return nil end
+  local health, damage = definition.MaxHealth, definition.HitDamage
+  local cooldown = definition.RespawnSeconds
+  local minDrop, maxDrop = definition.MinDrop, definition.MaxDrop
+  local minToolTier = definition.RequiredToolTier == nil and 0 or definition.RequiredToolTier
+  if type(minToolTier) ~= "number" or minToolTier ~= math.floor(minToolTier) or minToolTier < 0 or minToolTier > 100
+    or type(health) ~= "number" or health ~= math.floor(health) or health < 1 or health > 100000
+    or type(damage) ~= "number" or damage ~= math.floor(damage) or damage < 1 or damage > health
+    or type(cooldown) ~= "number" or cooldown ~= math.floor(cooldown) or cooldown < 0 or cooldown > 86400
+    or type(minDrop) ~= "number" or minDrop ~= math.floor(minDrop) or minDrop < 1 or minDrop > 100
+    or type(maxDrop) ~= "number" or maxDrop ~= math.floor(maxDrop) or maxDrop < minDrop or maxDrop > 100 then
+    if not invalidResourceRulesLogged[nodeName] then
+      invalidResourceRulesLogged[nodeName] = true
+      warn("WORLD_INTERACTION_RULE_REJECTED node=" .. tostring(nodeName))
+    end
+    return nil
+  end
+  return definition
+end
+
+-- 파편은 최초 생성 후 재사용하며, 충돌·진행도 판정에는 영향을 주지 않는다.
+local function prepareResourceEffects()
+  if not (validResourceRule("WoodResourceNode") or validResourceRule("StoneResourceNode")) then return end
+  local effects = survivalWorld:FindFirstChild("ResourceDebris")
+  if not effects then
+    effects = Instance.new("Folder")
+    effects.Name = "ResourceDebris"
+    effects.Parent = survivalWorld
+  end
+  for i = 1, 8 do
+    local piece = effects:FindFirstChild("Debris" .. i)
+    if not piece then
+      piece = Instance.new("Part")
+      piece.Name = "Debris" .. i
+      piece.Size = Vector3.new(0.22, 0.22, 0.22)
+      piece.CanCollide = false
+      piece.Anchored = true
+      piece.Transparency = 1
+      piece.Parent = effects
+    end
+    resourceEffectPool[i] = piece
+  end
+end
+
+local resourceEffectCursor = 0
+local function showResourceImpact(part, destroyed)
+  local emitter = part:FindFirstChild("ResourceHitParticles")
+  if emitter and emitter:IsA("ParticleEmitter") then emitter:Emit(destroyed and 12 or 3) end
+  if not destroyed or #resourceEffectPool == 0 then return end
+  for i = 1, 4 do
+    resourceEffectCursor = resourceEffectCursor % #resourceEffectPool + 1
+    local piece = resourceEffectPool[resourceEffectCursor]
+    local sequence = (piece:GetAttribute("EffectSequence") or 0) + 1
+    piece:SetAttribute("EffectSequence", sequence)
+    piece.Position = part.Position + Vector3.new(0, part.Size.Y * 0.4, 0)
+    piece.Color = part.Color
+    piece.Transparency = 0
+    piece.Anchored = false
+    piece.AssemblyLinearVelocity = Vector3.new((i - 2.5) * 3, 5, (i % 2 == 0 and 3 or -3))
+    task.delay(0.75, function()
+      if piece.Parent and piece:GetAttribute("EffectSequence") == sequence then
+        piece.Anchored = true
+        piece.CanCollide = false
+        piece.Transparency = 1
+        piece.AssemblyLinearVelocity = Vector3.zero
+      end
+    end)
+  end
+end
+
+local function interactWithResource(player, part, rule, alreadyRateLimited)
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  if not root or not humanoid or humanoid.Health <= 0 then return end
+  if (root.Position - part.Position).Magnitude > 12 then return end
+  if rule and readNumber(player, "EquippedToolTier", 0) < (rule.RequiredToolTier or 0) then
+    player:SetAttribute("WorldHarvestStatus", "TOOL_REQUIRED")
+    return
+  end
+  if not alreadyRateLimited then
+    local now = os.clock()
+    if now - (lastAction[player] or -1e6) < Config.RateLimitSeconds then return end
+    lastAction[player] = now
+  end
+
+  local amount = 1
+  if rule then
+    local id = part:GetAttribute("WorldObjectId")
+    local states = worldObjectStates[player]
+    if not states then states = {}; worldObjectStates[player] = states end
+    local state = states[id]
+    if not state then state = {health = rule.MaxHealth, depletedUntil = 0}; states[id] = state end
+    local epoch = os.time()
+    if state.health <= 0 then
+      if state.depletedUntil == 0 or state.depletedUntil > epoch then
+        player:SetAttribute("WorldHarvestStatus", "DEPLETED")
+        return
+      end
+      state.health = rule.MaxHealth
+      state.depletedUntil = 0
+    end
+    state.health = math.max(0, state.health - rule.HitDamage)
+    part:SetAttribute("LastHitBy", player.UserId)
+    part:SetAttribute("LastHitHealth", state.health)
+    showResourceImpact(part, state.health == 0)
+    if state.health > 0 then
+      player:SetAttribute("WorldHarvestStatus", "DAMAGED")
+      return
+    end
+    state.depletedUntil = rule.RespawnSeconds > 0 and (epoch + rule.RespawnSeconds) or 0
+    amount = math.random(rule.MinDrop, rule.MaxDrop)
+  else
+    showResourceImpact(part, false)
+  end
+  gatherResource(player, part, amount)
+  player:SetAttribute("WorldHarvestStatus", "GATHERED")
+end
+
+local function bindResourcePrompts()
+  prepareResourceEffects()
+  for _, nodeName in ipairs({"WoodResourceNode", "StoneResourceNode"}) do
+    local part = survivalResources:FindFirstChild(nodeName)
+    if part and part:IsA("BasePart") then
+      part:SetAttribute("WorldObjectId", "SURVIVAL:RESOURCE:" .. nodeName)
+      local emitter = part:FindFirstChild("ResourceHitParticles")
+      if not emitter then
+        emitter = Instance.new("ParticleEmitter")
+        emitter.Name = "ResourceHitParticles"
+        emitter.Enabled = false
+        emitter.Rate = 0
+        emitter.Lifetime = NumberRange.new(0.25, 0.4)
+        emitter.Speed = NumberRange.new(2, 5)
+        emitter.Parent = part
+      end
+      local prompt = part:FindFirstChild("ResourcePrompt")
+      if not prompt then
+        prompt = Instance.new("ProximityPrompt")
+        prompt.Name = "ResourcePrompt"
+        prompt.Parent = part
+      end
+      prompt.ActionText = "채집"
+      prompt.ObjectText = nodeName == "WoodResourceNode" and "나무" or "바위"
+      prompt.KeyboardKeyCode = Enum.KeyCode.E
+      prompt.MaxActivationDistance = 10
+      prompt.RequiresLineOfSight = true
+      prompt.HoldDuration = 0.1
+      local rule = validResourceRule(nodeName)
+      -- 기존 설계에 내구도·드롭 규칙이 없으면 새 보상 경로를 활성화하지 않는다.
+      prompt.Enabled = rule ~= nil
+      if rule then
+        prompt.Triggered:Connect(function(player) interactWithResource(player, part, rule) end)
+      end
+    end
+  end
+end
+bindResourcePrompts()
 
 local function craftAndEquipTool(player)
   local wood = readNumber(player, "ResourceWood", 0)
@@ -230,7 +399,16 @@ local function exploreGatherAndCraft(player)
   setNumber(player, "Position", (readNumber(player, "Position", 0) + 3) % 12)
   setNumber(player, "Score", readNumber(player, "Score", 0) + 5)
   setNumber(player, "Progress", readNumber(player, "Progress", 0) + 8)
-  gatherResource(player)
+  -- 내구도 규칙이 승인된 노드는 기존 액션 버튼도 서버 거리·도구·내구도 판정을 반드시 통과한다.
+  local chooseWood = readNumber(player, "ResourceWood", 0) <= readNumber(player, "ResourceStone", 0)
+  local targetName = chooseWood and "WoodResourceNode" or "StoneResourceNode"
+  local target = survivalResources:FindFirstChild(targetName)
+  local rule = validResourceRule(targetName)
+  if rule then
+    if target and target:IsA("BasePart") then interactWithResource(player, target, rule, true) end
+  else
+    gatherResource(player)
+  end
   craftAndEquipTool(player)
   markAction(player, "scope-coreloop-0-bfe946a409", "input-drag-touch")
 end
@@ -301,6 +479,22 @@ Players.PlayerAdded:Connect(function(player)
       local value = saved[key]
       if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end
     end
+    -- 이전 저장 구조도 그대로 복원하고, 승인된 노드의 내구도 상태만 선택적으로 추가 복원한다.
+    if type(saved.WorldObjects) == "table" then
+      local states = {}
+      for _, name in ipairs({"WoodResourceNode", "StoneResourceNode"}) do
+        local definition = validResourceRule(name)
+        local id = "SURVIVAL:RESOURCE:" .. name
+        local item = saved.WorldObjects[id]
+        if definition and type(item) == "table" and type(item.health) == "number" and type(item.depletedUntil) == "number" then
+          states[id] = {
+            health = math.clamp(math.floor(item.health), 0, definition.MaxHealth),
+            depletedUntil = math.clamp(math.floor(item.depletedUntil), 0, os.time() + 86400)
+          }
+        end
+      end
+      if next(states) then worldObjectStates[player] = states end
+    end
   else
     initializePlayer(player)
   end
@@ -321,10 +515,14 @@ end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end
+  if worldObjectStates[player] and next(worldObjectStates[player]) then
+    snapshot.WorldObjects = worldObjectStates[player]
+  end
   pcall(function()
     store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)
   end)
   lastAction[player] = nil
+  worldObjectStates[player] = nil
 end)
 
 

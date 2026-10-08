@@ -326,6 +326,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(manifest.buildMethod,'UnityWebFloorBuild.BuildWeb');
     assert.equal(layout.version,1);
     assert.equal(layout.mobile,true);
+    assert.equal(layout.maxSlopeDegrees,35);
     assert.equal(layout.heights.length,576);
     assert.equal(layout.types.length,576);
     assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
@@ -361,6 +362,14 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/data\.mobile&&\(data\.width>48/);
     assert.match(runtime,/WORLD_DOOR_ROAD_DISCONNECTED/);
     assert.match(runtime,/WORLD_OBJECT_ID_DUPLICATED/);
+    assert.match(runtime,/WORLD_OBJECT_ID_REQUIRED/);
+    assert.match(runtime,/WORLD_ROAD_CELL_DUPLICATED/);
+    assert.match(runtime,/WORLD_TERRAIN_INVALID/);
+    assert.match(runtime,/WORLD_DOOR_ROAD_STEEP/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+lot.id\)/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+plant.id\)/);
+    assert.doesNotMatch(runtime,/Input\.touchCount/);
+    assert.doesNotMatch(runtime,/AddComponent<MeshCollider>/);
     assert.match(runtime,/var worldIds=new HashSet<string>/);
     assert.doesNotMatch(runtime,/RegisterDestroyedObject/);
     assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
@@ -404,6 +413,79 @@ test('Unity Web world authoring stays opt-in and rejects unapproved or disconnec
     assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
   }finally{
     process.chdir(before);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Unity Web and Android share verified-only destructible world interactions with additive saves',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-approved-world-harvest-'));
+  const previous=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design.json');
+    const directive=path.join(root,'build-up.json');
+    const output='unity-games/test-harvest';
+    const design={content:{
+      identity:'Verified procedural resource gathering',multiplayerMode:'SINGLE_PLAYER',
+      verifiedRuntimeInteractionContract:true,platformProfiles:{UNITY:{platform:'UNITY'}},
+      spatialLayout:{dimension:'3D',proceduralWorld:{
+        approvedDesign:true,seed:'rpg-mountain-1',width:24,height:24,density:.8,biome:'MOUNTAIN',climate:'COLD_WET',buildingStyle:'GOTHIC',
+        runtimeInteractionsApproved:true,
+        interactionRules:{
+          GATHER:{maxHealth:80,hitDamage:20,rewardItemId:'wood_01',minDrop:2,maxDrop:3,respawnSeconds:60},
+          MINE:{maxHealth:120,hitDamage:30,rewardItemId:'stone_01',minDrop:1,maxDrop:2,respawnSeconds:120}
+        }
+      }}
+    }};
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    fs.writeFileSync(directive,JSON.stringify({
+      directiveId:'test-harvest-build-up-g1',gameId:'test-harvest',
+      designContextMode:'APPROVED_OR_MINIMUM_DESIGN'
+    }));
+    const playbooks=writeVerifiedPlaybooks(root);
+    const args=['--game-id=test-harvest','--game-name=Verified Harvest','--baseline='+baseline,
+      '--playbooks='+playbooks,'--build-up-directive='+directive,'--output='+output];
+    const rejectionReason=()=>{try{execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});return 'NOT_REJECTED';}catch(error){return String(error.stderr||error);}};
+    execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});
+    const data=JSON.parse(fs.readFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),'utf8'));
+    const runtime=fs.readFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    const build=fs.readFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
+    const manifest=JSON.parse(fs.readFileSync(path.join(output,'unity-web-floor-source.json'),'utf8'));
+    assert.ok(data.vegetation.some(node=>node.maxHealth===80&&node.rewardItemId==='wood_01'));
+    assert.ok(data.vegetation.some(node=>node.maxHealth===120&&node.rewardItemId==='stone_01'));
+    assert.ok(data.vegetation.every(node=>node.maxHealth===0||node.hitDamage>0));
+    assert.match(runtime,/public interface IInteractable/);
+    assert.match(runtime,/class VibeHarvestableObject : MonoBehaviour, IInteractable/);
+    assert.match(runtime,/void HitHarvest\(VibeHarvestableObject target\)/);
+    assert.match(runtime,/OnInteract\(Transform actor\)/);
+    assert.match(runtime,/PrepareWorldDebrisPool/);
+    assert.match(runtime,/AddExplosionForce/);
+    assert.match(runtime,/detectCollisions=false/);
+    assert.match(runtime,/GetString\(SavePrefix\+"world-objects-v1"/);
+    assert.match(runtime,/OnApplicationPause\(bool paused\)/);
+    assert.match(runtime,/OnApplicationQuit/);
+    assert.match(runtime,/DrawWorldInteractionControls/);
+    assert.match(runtime,/Input.GetKeyDown\(KeyCode.E\)/);
+    assert.match(build,/public static void BuildWeb\(\)/);
+    assert.match(build,/public static void Build\(\)/);
+    assert.equal(manifest.releaseOrDeploymentAuthority,false);
+    assert.equal(manifest.upperPlatformReady,false);
+    assert.match(runtime,/CORE_FUN[^\n]+status=REPAIR_REQUIRED/);
+    assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
+    design.content.verifiedRuntimeInteractionContract=false;
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_VERIFIED_GAME_DESIGN_REQUIRED/);
+    design.content.verifiedRuntimeInteractionContract=true;
+    design.content.multiplayerMode='COOP';
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_CLIENT_AUTHORITY_FORBIDDEN_FOR_MULTIPLAYER/);
+    design.content.multiplayerMode='SINGLE_PLAYER';
+    design.content.spatialLayout.proceduralWorld.interactionRules.GATHER.minDrop=-1;
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_RULE_INVALID:GATHER/);
+    assert.equal(fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')),true);
+  }finally{
+    process.chdir(previous);
     fs.rmSync(root,{recursive:true,force:true});
   }
 });

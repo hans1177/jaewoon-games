@@ -406,7 +406,11 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       for(let d=0;d<2;d++)for(let e=0;e<2;e++)footprint.push({x:x+d,z:z+e});
       if(footprint.some(c=>!within(c.x,c.z)||occupied.has(at(c.x,c.z))||waterway.has(at(c.x,c.z))||sightCells.has(at(c.x,c.z))||terrain[at(c.x,c.z)].biome==='WATER'||terrain[at(c.x,c.z)].slopeDegrees>maxSlopeDegrees))continue;
       const footing=footprint.map(c=>terrain[at(c.x,c.z)].elevation*8);
-      if(Math.max(...footing)-Math.min(...footing)>Math.tan(maxSlopeDegrees*Math.PI/180)*cellSize)continue;
+      const maxAccessibleRise=Math.tan(maxSlopeDegrees*Math.PI/180)*cellSize;
+      if(Math.max(...footing)-Math.min(...footing)>maxAccessibleRise)continue;
+      const roadSurfaceY=terrain[id].elevation*8;
+      const riseToFoundationY=Math.max(...footing)-roadSurfaceY;
+      if(Math.abs(riseToFoundationY)>maxAccessibleRise)continue;
       const roll=proceduralCellHash(hash,x,z)/4294967296;
       if(roll>density)continue;
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
@@ -418,7 +422,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       // 문 위치와 길 연결은 월드 배치의 검증된 제안이며 실제 네비/충돌 권한은 게임 런타임이 가진다.
       const doorGrid=doorFacing==='WEST'?{x:x-.5,z:z+.5}:doorFacing==='EAST'?{x:x+1.5,z:z+.5}:doorFacing==='NORTH'?{x:x+.5,z:z-.5}:{x:x+.5,z:z+1.5};
       const stableObjectId=objectNamespace+':LOT:'+x+':'+z;
-      const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),runtimeNavigationVerified:false};
+      const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),roadSlopeVerified:true,roadSurfaceY,riseToFoundationY:+riseToFoundationY.toFixed(4),runtimeNavigationVerified:false};
       const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
       buildings.push(building);
       addInstance('FOUNDATION',x,z,0,levelY);
