@@ -826,6 +826,22 @@ local rpgMenu=RPGMenu.install(C,gui,p,{
  end,
  trackQuest=function()objective.Visible=true end,
  changeRoom=function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end,
+ -- 표시 권한만 현장 거리·생존·전투 상태와 동기화한다. 구매는 기존 서버가 다시 검증한다.
+ merchantAccess=function()
+  local character=p.Character
+  local playerRoot=character and character:FindFirstChild("HumanoidRootPart")
+  local health=character and character:FindFirstChildOfClass("Humanoid")
+  local usable=playerRoot~=nil and health~=nil and health.Health>0
+   and p:GetAttribute("InCombat")~=true and (tonumber(p:GetAttribute("CurrentZone"))or 0)==0
+  local world=workspace:FindFirstChild("DaechungRPGWorld")
+  local village=world and world:FindFirstChild("Village")
+  local weapon=village and village:FindFirstChild("WeaponMerchant")
+  local armor=village and village:FindFirstChild("ArmorMerchant")
+  return {
+   weapon=(usable and weapon~=nil and (playerRoot.Position-weapon.Position).Magnitude<=16)==true,
+   armor=(usable and armor~=nil and (playerRoot.Position-armor.Position).Magnitude<=16)==true
+  }
+ end,
  buyWeapon=function()remote:FireServer(C.Actions.BUY_WEAPON)end,
  buyArmor=function()remote:FireServer(C.Actions.BUY_ARMOR)end,
  toggleTips=function()hint.Visible=not hint.Visible end,
