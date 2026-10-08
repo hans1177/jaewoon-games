@@ -27,25 +27,32 @@
       "identity": "10층 탑 RPG은 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
       "playerFantasy": "10층 탑 RPG에서는 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
       "coreFun": "플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+    },
+    "local_authoring_parts::bb2e20e72d662cbd74f0a336bcda1296407303855e4b485a2a722cfa6b26757e:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "SELECT: 진입 후 위험, 성공, 재방문에 대한 정서적 갈등을 느끼게 되며, 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다.",
+        "OUTPUT: 기존 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법의 결과가 월드 상태와 다음 선택으로 연결되어, 즉시 상태 변화를 만든다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 277731,
-      "lastMs": 41125,
+      "totalMs": 333622,
+      "lastMs": 55891,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:51:03.126Z"
+      "updatedAt": "2026-10-08T18:51:59.021Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:46:25.369Z",
-  "updatedAt": "2026-10-08T18:51:03.128Z",
+  "updatedAt": "2026-10-08T18:51:59.021Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:51:03.128Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:51:59.021Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
