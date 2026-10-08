@@ -1,5 +1,39 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-p6imtc",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/roblox/fantasy-survival/background/asset.glb",
+        "assets/generated/roblox/fantasy-survival/background/preview.png",
+        "assets/generated/roblox/fantasy-survival/background/evidence.json",
+        "assets/generated/roblox/fantasy-survival/item/asset.glb",
+        "assets/generated/roblox/fantasy-survival/item/preview.png",
+        "assets/generated/roblox/fantasy-survival/item/evidence.json",
+        "assets/generated/roblox/fantasy-survival/prop/asset.glb",
+        "assets/generated/roblox/fantasy-survival/prop/preview.png",
+        "assets/generated/roblox/fantasy-survival/prop/evidence.json"
+      ],
+      "baseSha": "78d0bb05de6a6dd292854f0ae0a83c6d49ab00bf",
+      "runId": "37737788160",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T06:48:19.776Z",
+      "expiresAt": "2026-10-08T07:33:19.776Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
