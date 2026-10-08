@@ -144,3 +144,29 @@ test('Unity Web mobile QA selects the Android Chrome mobile branch and rejects o
   const tap=source.indexOf('await page.touchscreen.tap(touchX,touchY)');
   assert.ok(browserStart>=0&&boot>browserStart&&realMobileBounds>boot&&tap>realMobileBounds);
 });
+
+test('Unity Web visual QA reads actual gameplay pixels and detects missing shaders and clipped mobile controls',()=>{
+  const gameplay=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
+  const capture=source.indexOf('const liveCapture=await page.screenshot');
+  const returnInput=source.indexOf("await page.keyboard.press('KeyR')");
+  assert.ok(gameplay>=0&&capture>gameplay&&returnInput>capture,'pixel sample belongs to active gameplay');
+  assert.match(source,/createImageBitmap\(new Blob\(/);
+  assert.match(source,/context\.getImageData\(0,0,sampleWidth,sampleHeight\)/);
+  assert.match(source,/visualPixels\.magentaRatio>=\.25/);
+  assert.match(source,/visualPixels\.dominantColorRatio>=\.997/);
+  assert.match(source,/mobileUiBounds\.clipped\.length>0/);
+  assert.match(source,/pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded/);
+  assert.match(source,/UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED/);
+  assert.match(source,/source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK'/);
+  assert.match(source,/realDeviceVerified:false/);
+});
+
+test('Unity Web renderer cost evidence is measured only from real Unity markers, never made-up counters',()=>{
+  assert.match(source,/RENDER_STATS/);
+  assert.match(source,/source=UNITY_NATIVE_RENDERER/);
+  assert.match(source,/drawCallsMax:500,trianglesMax:250000/);
+  assert.match(source,/measurementState:nativeRenderCountersMeasured\?'MEASURED_NATIVE_COUNTERS':'UNKNOWN_NOT_RECORDED'/);
+  assert.match(source,/pass:nativeRenderCountersMeasured\?!renderBudgetExceeded:null/);
+  assert.match(source,/automaticLodOrTextureMutationPerformed:false/);
+  assert.match(source,/UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED/);
+});
