@@ -406,25 +406,42 @@
       "name": "퇴마 사무소의 선택 결과",
       "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
       "playerChoice": "플레이어는 시작 입력을 통해 명확한 점수, 거리, 또는 짧은 세션 목표를 설정하고, 선택 결과를 통해 다음 월드 상태를 바꾸는 반복 가능한 루프를 형성한다."
+    },
+    "local_authoring_parts::d2e37968ffeaa26218e18fc2924a3ae458bf3cd5d0b4c6af731ad802f351ce24:signatureSystems:2": {
+      "id": "RULE_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Score",
+        "Distance",
+        "ProgressionBenefit"
+      ],
+      "stateOutputs": [
+        "WorldState",
+        "SelectionOutcome",
+        "ProgressionUnlock"
+      ],
+      "name": "퇴마 사무소의 반복 루프",
+      "purpose": "플레이어의 시작 입력과 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 실제 월드/시스템 상태 변화로 연결된다. 게임의 인과법칙은 기존 게임 문법을 비튼다. 게임의 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerChoice": "플레이어는 시작 입력을 통해 명확한 점수, 거리, 또는 짧은 세션 목표를 설정하고, 선택 결과를 통해 다음 월드 상태를 바꾸는 반복 가능한 루프를 형성한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1476349,
-      "lastMs": 117187,
+      "totalMs": 1596771,
+      "lastMs": 120422,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:20:54.044Z"
+      "updatedAt": "2026-10-08T12:22:54.467Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T12:20:54.044Z",
+  "updatedAt": "2026-10-08T12:22:54.467Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2384,7 +2401,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:20:54.044Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:22:54.467Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
