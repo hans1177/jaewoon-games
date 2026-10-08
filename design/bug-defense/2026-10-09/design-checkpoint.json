@@ -620,25 +620,28 @@
     },
     "local_authoring_parts::0899fcab1f90bd18d8b54140d7e07cc89c415e9ed6b6d4c806b0d9a2e4ef8a4b:toSystem": {
       "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B"
+    },
+    "local_authoring_parts::0899fcab1f90bd18d8b54140d7e07cc89c415e9ed6b6d4c806b0d9a2e4ef8a4b:trigger": {
+      "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2003293,
-      "lastMs": 88450,
+      "totalMs": 2090954,
+      "lastMs": 87661,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:18:36.296Z"
+      "updatedAt": "2026-10-08T21:20:03.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T21:18:36.296Z",
+  "updatedAt": "2026-10-08T21:20:03.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3016,7 +3019,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:18:36.296Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:20:03.959Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
