@@ -11,7 +11,7 @@ assert.equal(DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,75);
 
 const seed={
   seedId:'SEED-ROBLOX-TEST-001',generation:'MATERIAL_COMPOSED',SEED_MATERIAL_IDS:['MAT-001','MAT-002'],
-  GAME_CATEGORY:'ACTION_SURVIVAL_ROGUELITE',INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'SINGLE'
+  GAME_CATEGORY:'ACTION_SURVIVAL_ROGUELITE',INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'COOP'
 };
 const content={
   identity:'A distinct survival action game where every expedition changes the safe route, threat map, and equipment decision before the player commits to the next risk.',
@@ -19,17 +19,19 @@ const content={
   coreFun:'Moment-to-moment survival choices connect movement, combat pressure, resources, upgrades, and recovery into one loop.',
   coreLoop:['Enter a risky region and choose a route based on visible threats and resources.','Fight or evade threats while spending limited resources and changing world state.','Convert the result into upgrades and route options before committing to another run.','Reach a milestone encounter that changes available systems and future choices.'],
   signatureSystems:[
-    {name:'Threat Route',purpose:'Connect route selection to enemy pressure and resource access.',playerChoice:'Choose safety, speed, or reward before entering danger.'},
-    {name:'Recovery Loadout',purpose:'Connect earned resources to the next survival plan.',playerChoice:'Spend on immediate recovery or long-term build strength.'},
-    {name:'Escalation State',purpose:'Connect player success to stronger world responses.',playerChoice:'Push deeper or extract before risk overtakes reward.'}
+    {id:'ROUTE_MAIN',grammarRole:'MAIN',stateInputs:['RunState'],stateOutputs:['RunState'],name:'Threat Route',purpose:'Connect actual route selection to enemy pressure and resource access during the same expedition.',playerChoice:'Choose safety, speed, or reward before entering danger while sharing the server-owned encounter state.'},
+    {id:'LOADOUT_A',grammarRole:'A',stateInputs:['RunState'],stateOutputs:['RunState'],name:'Recovery Loadout',purpose:'Connect earned resources to the next survival plan with server-authoritative equipment choices.',playerChoice:'Spend on immediate recovery or long-term build strength while preserving the player save.'},
+    {id:'THREAT_B',grammarRole:'B',stateInputs:['RunState'],stateOutputs:['RunState'],name:'Escalation State',purpose:'Connect player success and party pressure to stronger world responses and retreat decisions.',playerChoice:'Push deeper or extract before risk overtakes reward and inform the cooperative party.'},
+    {id:'WEATHER_c',grammarRole:'c',stateInputs:['RunState'],stateOutputs:['RunState'],name:'Weather Threat Variation',purpose:'Existing weather and light exposure vary the readable route risk without changing baseline combat damage.',playerChoice:'Decide whether reduced visibility makes a previously safe route too risky to explore.'},
+    {id:'DISCOVERY_DELVE',grammarRole:'DELVE',stateInputs:['RunState'],stateOutputs:['RunState'],name:'Hidden Route Mastery',purpose:'Existing world landmarks and persistent exploration memories reveal alternative routes worth revisiting.',playerChoice:'Test a discovered route combination on the next run and compare the visible risk feedback.'}
   ],
   progressionDirection:'Runs produce resources, unlocks, and strategic options while keeping recovery costs and enemy escalation tied to player power.',
   visualDirection:'Readable silhouettes, danger zones, resource landmarks, and consistent combat feedback keep survival decisions legible on mobile.',
   mobileUx:'Touch input separates movement and actions, keeps critical threat information near the play field, and avoids overlapping controls.',
   marketTargetDirection:'Global action-survival players who prefer short readable decisions with persistent progression.',
   steamExpansionDecision:'Platform expansion is evaluated after the Roblox core loop is validated.',
-  multiplayerMode:'SINGLE',
-  multiplayerExpansionDecision:'Single-player is the current core; multiplayer is not attached without a new design decision.',
+  multiplayerMode:'COOP',
+  multiplayerExpansionDecision:'Two real players cooperate against regional threats with server-authoritative encounter state, roster replication and reconnect while preserving approved solo progression.',
   technicalAssumptions:['Server-authoritative rewards are isolated from client presentation.','Core combat, progression, and retry state expose deterministic validation hooks.','Mobile input and viewport constraints are treated as first-class implementation requirements.'],
   validationQuestions:['Does a complete run connect route, threat, resource, reward, failure, and retry state?','Can the player recover from failure without invalidating progression?','Does mobile input preserve the same core decisions as desktop input?'],
   openQuestions:[],
@@ -52,6 +54,39 @@ const content={
   ],
   failureRetryRisk:{failureStates:['Player health reaches zero during an encounter.','Player exhausts recovery resources before extraction.'],retryFlow:'Failure records the result, returns the player to preparation, and preserves only approved persistent progression.',riskPressure:'Deeper routes raise threat and recovery cost while offering better strategic rewards.',recoveryRules:'Recovery spends bounded resources and cannot directly skip the next gameplay cycle.'},
   platformFitPlan:{targetPlatform:'ROBLOX',inputModel:'Touch and keyboard map to the same movement and core actions without changing rules.',performanceBudget:'Entity and effect counts have explicit caps suitable for mobile Roblox clients.',sessionConstraints:'A complete playable cycle is prioritized first; thirty-minute depth is validated only at the final content-depth gate.'},
+  platformProfiles:{
+    ROBLOX:{
+      platform:'ROBLOX',
+      inputModel:'Roblox touchscreen and physical inputs share server validated movement and cooperative actions.',
+      sessionModel:'Roblox server-owned two-player join and reconnect with bounded mobile lobby waiting.',
+      multiplayerRuntime:'Two actual Roblox clients in one server use authoritative shared encounter state.',
+      performanceBudget:'Mobile Roblox budget caps enemies effects and replicated roster update frequency.',
+      uiUx:'Roblox ScreenGui leaves visible safe touch areas for party and survival feedback.',
+      saveAndNetwork:'RemoteEvent validates actions and DataStore preserves existing individual progress.',
+      platformContentAdaptation:'Avatar-sized 3D route and readable hazard telegraphs use existing Roblox world.',
+      internalReleaseTarget:'Private Roblox test place with restricted participant access for owner QA.',
+      validationEvidence:'Exact Roblox version with two-client join action result reconnect and independent QA.'
+    },
+    UNITY:{
+      platform:'UNITY',
+      inputModel:'Unity Input System supports mobile gesture and gamepad input on the same source scenes.',
+      sessionModel:'Unity WebGL browser and Android app resume with stable shared room participation.',
+      multiplayerRuntime:'Unity client uses server-authoritative two-client room events and reconnect state.',
+      performanceBudget:'Mobile WebGL GPU and memory budgets cap lights VFX and visible objects.',
+      uiUx:'Unity canvas provides mobile safe areas while world input stays available.',
+      saveAndNetwork:'Versioned persistent profile and verified server room actions are kept separate.',
+      platformContentAdaptation:'Original Unity scene owns gameplay on Android and WebGL with spatial depth.',
+      internalReleaseTarget:'Private Unity Android closed build and QA-only WebGL browser validation.',
+      validationEvidence:'Exact WebGL and Android builds with real two-client play and visual regression.',
+      unityWebSpatialPresentation:{
+        dimension:'2.5D',
+        worldDepth:'The actual Unity scene layers interactive foreground and background geometry in depth with height cues.',
+        cameraAndOcclusion:'An orthographic depth camera sorts world geometry and characters with actual foreground occlusion.',
+        lightingAndMaterials:'Grounded directional light and material roughness create shadows under world actors.',
+        mobileWebglEvidence:'Mobile browser Unity WebGL playtest checks actual world depth shadow occlusion input and before after frames.'
+      }
+    }
+  },
   uxAccessibilityPlan:{hudPriorities:'Objective, health, risk, and available action state remain visible without covering the play field.',touchAndInput:'Primary touch targets remain separated and simultaneous movement plus action input is supported.',readability:'Threat, reward, and interactable states use shape, motion, and text rather than color alone.',accessibility:'Critical feedback has redundant visual and textual signals and avoids time-only information where practical.'},
   artAudioDirection:{visualIdentity:'World landmarks and enemy silhouettes reinforce route and threat decisions.',audioIdentity:'Layered cues distinguish danger escalation, reward confirmation, failure, and recovery.',gameplayFeedbackSync:'Animation, VFX, UI, and sound fire from the same gameplay state transitions.'},
   implementationTraceability:[
@@ -63,7 +98,7 @@ const content={
 };
 const designRecord={version:5,sameModelAsDraft:true,unresolvedConflictCount:0,heldCount:0,content};
 const cycleStatus={status:'COMPLETE'};
-const profile={genre:'Survival',subgenre:'',playMode:'SINGLE'};
+const profile={genre:'Survival',subgenre:'',playMode:'COOP'};
 const strong=scoreDesignGateV2({seed,designRecord,cycleStatus,robloxGenreProfile:profile});
 assert.equal(strong.scoreSystem,'STAGE_GATE_SCORING_V2');
 assert.equal(Object.keys(strong.evidenceLevels).length,11);
