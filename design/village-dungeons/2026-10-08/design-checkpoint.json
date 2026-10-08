@@ -685,25 +685,41 @@
     },
     "local_authoring_parts::c805e97df328e0f9b9bb1d57c6ee9b0eda1cf9c7fe605df07c2ccc51118ddddc:trigger": {
       "trigger": "플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 시스템 규칙에 따라 게임 상태가 변환되며, 플레이어는 선택 결과에 따라 다음 월드 상태로 이동한다."
+    },
+    "local_authoring_parts::c805e97df328e0f9b9bb1d57c6ee9b0eda1cf9c7fe605df07c2ccc51118ddddc:stateChange": {
+      "stateChange": "플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 시스템 규칙에 따라 게임 상태가 변환되며, 플레이어는 선택 결과에 따라 다음 월드 상태로 이동한다."
+    },
+    "local_authoring_parts::f7f652a4f7818e160f7b5f0b724a8390b81898b129c780116ddc7b623ff1f1af:systemInterconnections:2": {
+      "fromId": "MAIN-DELVE-2",
+      "toId": "GAME_STATE",
+      "stateKeys": [
+        "GAME_STATE",
+        "PLAYER_CHOICE",
+        "SYSTEM_RULE"
+      ],
+      "fromSystem": "마을 던전 RPG의 주요 시스템",
+      "toSystem": "마을 던전 RPG의 주요 시스템",
+      "trigger": "플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 시스템 규칙에 따라 게임 상태가 변환되며, 플레이어는 선택 결과에 따라 다음 월드 상태로 이동한다.",
+      "stateChange": "플레이어는 시작 즉시 단순한 터치 또는 스위프 입력을 하며, 점수, 거리, 또는 짧은 세션 목표를 설정하고, 이 선택이 다음 월드 상태 변화와 연결되어야 한다. 시스템 규칙에 따라 게임 상태가 변환되며, 플레이어는 선택 결과에 따라 다음 월드 상태로 이동한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 36,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2384435,
-      "lastMs": 58676,
+      "totalMs": 2444596,
+      "lastMs": 60161,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:32:44.056Z"
+      "updatedAt": "2026-10-08T09:33:44.219Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:52:59.507Z",
-  "updatedAt": "2026-10-08T09:32:44.056Z",
+  "updatedAt": "2026-10-08T09:33:44.221Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3079,7 +3095,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:32:44.056Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:33:44.221Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
