@@ -583,25 +583,35 @@
           "playerChoice": "플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Heroes or characters의 행동을 직접 경험하며, 이는 단순한 반복이 아니라 진정한 성장과 변화를 유도한다. 이 게임은 플레이어의 선택이 세계 상태와 다음 선택에 직접적인 영향을 미치며, 이는 게임의 핵심 재미와 시스템 연결을 확정한다."
         }
       ]
+    },
+    "local_authoring_parts::41171e921684bb02fb43a2cf61c8531f255f5d35e0c2767418fa1862ca467f37:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0",
+      "toId": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "worldState",
+        "playerChoice",
+        "progressionCycle"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_0\",\"toSystem\":\"IDLE_GROWTH_RPG_SIGNATURE_SYSTEM_1\","
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 762837,
-      "lastMs": 84154,
+      "totalMs": 796954,
+      "lastMs": 34117,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:23:59.411Z"
+      "updatedAt": "2026-10-08T10:24:33.623Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:11:16.431Z",
-  "updatedAt": "2026-10-08T10:23:59.504Z",
+  "updatedAt": "2026-10-08T10:24:33.623Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2980,10 +2990,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:23:59.411Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:24:33.623Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
