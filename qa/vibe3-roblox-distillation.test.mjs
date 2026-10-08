@@ -191,16 +191,43 @@ test('all portable APK gameplay principles adapt across Roblox puzzle, economy, 
     'id=semantic-gameplay-input-plus-survival; scope=qa-evidence; lesson=process survival; apply=verify Android runtime'
   ]}];
   const playbooks={taskTypes:{roblox:{authority:'verified-task-playbook',reuse},coding:{authority:'verified-task-playbook',reuse}}};
-  const moods=new Set();
-  for(const gameId of ['seed-puzzle-chromatic-cascade','amusement-tycoon','survival']){
-    const result=createRobloxVibe3LearningContext({gameId,profile:existingRobloxGameLearningProfile(gameId),playbooks});
+  const variants=new Set(),ruleMappings=new Set(),explicitMoods=new Set(),explicitFingerprints=new Set();
+  const cases=[
+    {gameId:'seed-puzzle-chromatic-cascade',kind:'PUZZLE',style:'painted-board',concept:'garden-puzzle',mood:'calm-garden'},
+    {gameId:'amusement-tycoon',kind:'ECONOMY',style:'miniature-park',concept:'festival-park',mood:'cheerful-festival'},
+    {gameId:'survival',kind:'SURVIVAL',style:'textured-wilderness',concept:'night-forest',mood:'quiet-night'}
+  ];
+  for(const {gameId,kind,style,concept,mood} of cases){
+    const profile=existingRobloxGameLearningProfile(gameId);
+    const result=createRobloxVibe3LearningContext({gameId,profile,playbooks});
     assert.equal(result.applied,true,gameId);
     assert.equal(result.gameSpecificSemanticMappings.length,ids.length,gameId);
-    assert.ok(result.semanticMood?.id,gameId);
-    moods.add(result.semanticMood.id);
+    assert.equal(result.coreKind,kind,gameId);
+    assert.ok(result.gameSpecificSemanticMappings.every(row=>row.coreKind===kind),gameId);
+    variants.add(result.semanticVariant);
+    ruleMappings.add(JSON.stringify(result.gameSpecificSemanticMappings.map(row=>row.mapping)));
+    assert.deepEqual(result.semanticMood,{id:'PRESERVE_AUTHORED_PRESENTATION',saturation:0,contrast:0,brightness:0},gameId);
     assert.equal(result.verifiedExternalValidationOnlyPrincipleCount,1,gameId);
     assert.deepEqual(new Set(result.gameSpecificSemanticMappings.map(row=>row.principleId)),new Set(ids));
     assert.equal(result.allRetrievedPrinciplesHaveExplicitDisposition,true);
+
+    // 표현은 명시된 디자인축에서만 가져오며 장르의 플레이 규칙은 그대로다.
+    const locked=createRobloxVibe3LearningContext({gameId,playbooks,profile:{...profile,designAxes:{
+      genre:{id:profile.genre,subgenre:profile.subgenre,rules:[]},
+      style:{id:style,visual:[],motion:[]},concept:{id:concept,world:[],mood:[mood]}
+    },styleLock:{id:style,colorGrade:{saturation:0.08,contrast:0.04,brightness:0}}}});
+    assert.equal(locked.designAxes.genre.id,profile.genre);
+    assert.equal(locked.designAxes.style.id,style);
+    assert.equal(locked.designAxes.concept.id,concept);
+    assert.deepEqual(locked.semanticMood,{id:mood,saturation:0.08,contrast:0.04,brightness:0});
+    assert.equal(locked.semanticVariant,result.semanticVariant);
+    assert.deepEqual(locked.gameSpecificSemanticMappings,result.gameSpecificSemanticMappings);
+    assert.notEqual(locked.semanticMappingFingerprint,result.semanticMappingFingerprint);
+    explicitMoods.add(locked.semanticMood.id);
+    explicitFingerprints.add(locked.semanticMappingFingerprint);
   }
-  assert.equal(moods.size,3);
+  assert.equal(variants.size,3);
+  assert.equal(ruleMappings.size,3);
+  assert.equal(explicitMoods.size,3);
+  assert.equal(explicitFingerprints.size,3);
 });
