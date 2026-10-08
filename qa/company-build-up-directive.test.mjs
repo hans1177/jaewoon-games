@@ -959,6 +959,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.equal(grammar.majorAxes[0].name,'실제 설계 역할 A');
       assert.equal(grammar.majorAxes[1].name,'실제 설계 역할 B');
       assert.equal(directive.designToPlatformCodingTrace.activePlatform,platform);
+      assert.equal(directive.designToPlatformCodingTrace.designFingerprint,directive.designFingerprint);
       assert.match(directivePrompt(directive),/DESIGN_TO_PLATFORM_CODING_CHECK:/);
       assert.match(directivePrompt(directive),/CODING_IMPLEMENTATION_VERDICT:/);
       assert.equal(directive.designToPlatformCodingTrace.sourceImplementationPassed,false);
@@ -1060,6 +1061,7 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     for(const role of roles)assert.ok(variant.includes('designCodeRole='+role+';'),
       role+' source requirement must survive focused/oversized recovery');
     assert.match(variant,/designCodePlatform=ROBLOX/);
+    assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
   }
 });
