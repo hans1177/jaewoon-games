@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::aa684aab7be124fc8e5f10d55a873fe983225a0dc3484eded5e4a3d40bb0cf1f:identity": {
+      "identity": "50일은 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 지속적으로 반복되는 선택과 위험·보상의 연결을 통해 핵심 재미를 구축하며, 이는 모바일에서도 즉시 이해되는 입력과 피드백의 반복적인 구조로 설계된다. 게임의 정체성은 주요 행동과 선택의 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지는 방식으로 구체화된다. 이는 게임의 시스템과 규칙이 서로 상호작용하며, 주요 행동 MAIN은 coreFun과 coreLoop을 통해 구체화된다. 게임의 시스템은 MAIN/A/B/c/DELVE(@) 각각의 역할을 포함하며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 공유 규칙을 따르며, 시그니처 세계 규칙은 coreLoop/signatureSystems와 직접 연결되어야 한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, MAIN/A/B/c/@와 causalDNA의 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지된다. 게임의 설계는 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위로 깊이가 확보된다. 게임의 시스템은 주요 행동 MAIN, 독립된 상태를 교환하는 두 대축 A/B, 보조 요소 c, 파고들기 @로 구성되며, 각각의 상태 변화와 대응은 실제 상태 키를 기반으로 정의된다. 게임의 규칙은 기존 원본의 규칙과 수치를 보존하며, 시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담고, MAIN은 coreFun/coreLoop, A/B는 signatureSystems/systemIner"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 100229,
+      "lastMs": 100229,
+      "lastError": null,
+      "updatedAt": "2026-10-08T07:44:48.561Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:43:08.319Z",
-  "updatedAt": "2026-10-08T07:43:08.327Z",
+  "updatedAt": "2026-10-08T07:44:48.562Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T07:44:48.561Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
