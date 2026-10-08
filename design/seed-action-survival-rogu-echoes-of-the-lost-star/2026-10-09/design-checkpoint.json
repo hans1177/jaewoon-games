@@ -27,25 +27,32 @@
       "identity": "잃어버린 별의 메아리: 진입, 선택, 위험, 보상, 재방문의 반복 루프로 구성된 ACTION_SURVIVAL_ROGUELITE 게임 정체성입니다. 이 게임은 플레이어가 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만듭니다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, A/B/c/@와 시그니처 세계 규칙에 연결됩니다. 게임은 모바일에서도 즉시 이해되는 입력/피드백 구조를 유지하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다.",
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 단순한 생존 로그라이트에서 전략적 탐험과 성장의 핵심 루프를 만든 ACTION_SURVIVAL_ROGUELITE 게임입니다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, A/B/c/@와 시그니처 세계 규칙에 연결됩니다. 이 게임은 모바일에서도 즉시 이해되는 입력/피드백 구조를 유지하며, 주요 인물의 목표, 두려움, 비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만듭니다.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
+    },
+    "local_authoring_parts::176bbe9e681ebb0d4642bd9b7918c1b2ed43e001b75a6c6168c4772257f3ff06:coreLoop": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 302851,
-      "lastMs": 38376,
+      "totalMs": 346797,
+      "lastMs": 43946,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:17:48.300Z"
+      "updatedAt": "2026-10-08T19:18:32.248Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:12:45.424Z",
-  "updatedAt": "2026-10-08T19:17:48.301Z",
+  "updatedAt": "2026-10-08T19:18:32.248Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:17:48.301Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:18:32.248Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
