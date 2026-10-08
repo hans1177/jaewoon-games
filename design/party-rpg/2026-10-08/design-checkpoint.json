@@ -55,25 +55,46 @@
       "name": "BoardPatternSystem",
       "purpose": "Establishes the visual and procedural structure of each level, defining the initial configuration and the progression of challenges.",
       "playerChoice": "Select the initial board pattern, determine the move limit, configure the obstacle set, trigger a combo, and receive immediate feedback to solve the objective."
+    },
+    "local_authoring_parts::59acca2ec621797c7b5946fc8687cf6221cf58e11b25b7d101b9f8f316e146b5:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "levelGoal",
+        "moveLimit",
+        "obstacleSet",
+        "comboTrigger",
+        "feedbackType"
+      ],
+      "stateOutputs": [
+        "newLevelGoal",
+        "newMoveLimit",
+        "newObstacleSet",
+        "newComboTrigger",
+        "newFeedbackType"
+      ],
+      "name": "BoardPatternSystem",
+      "purpose": "Establishes the visual and procedural structure of each level, defining the initial configuration and the progression of challenges.",
+      "playerChoice": "Select the initial board pattern, determine the move limit, configure the obstacle set, trigger a combo, and receive immediate feedback to solve the objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 627434,
-      "lastMs": 103010,
+      "totalMs": 729450,
+      "lastMs": 102016,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:15:07.302Z"
+      "updatedAt": "2026-10-08T12:16:49.319Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:39.840Z",
-  "updatedAt": "2026-10-08T12:15:07.302Z",
+  "updatedAt": "2026-10-08T12:16:49.320Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2131,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:15:07.302Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:16:49.319Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
