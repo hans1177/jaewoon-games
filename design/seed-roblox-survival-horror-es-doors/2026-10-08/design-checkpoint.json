@@ -534,25 +534,44 @@
         "puzzleConstraint"
       ],
       "fromSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0"
+    },
+    "local_authoring_parts::4e4c8a6a02f4151c4c31f1fc2711add82a97f3394386ea9b5af7d4e637a4fd99:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
+      "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
+    },
+    "local_authoring_parts::3b22a1bf4a288554fa913f8f66c8637f3a3f765cba331ab06f37b2f3e359441b:systemInterconnections:0": {
+      "fromId": "GAME_SEED",
+      "toId": "GAME_SEED",
+      "stateKeys": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "toSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0",
+      "trigger": "Start a board or grid level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
+      "stateChange": "Establishes the visual and procedural structure of the level, defining the initial configuration and the rules governing the progression through the puzzle."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1430126,
-      "lastMs": 109641,
+      "totalMs": 1543237,
+      "lastMs": 113111,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:13:32.669Z"
+      "updatedAt": "2026-10-08T13:15:25.782Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T13:13:32.669Z",
+  "updatedAt": "2026-10-08T13:15:25.784Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2744,7 +2763,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:13:32.669Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:15:25.784Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
