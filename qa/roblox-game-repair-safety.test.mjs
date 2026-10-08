@@ -174,6 +174,14 @@ function p:GetAttribute(k)return self.attributes[k]end
 function p:SetAttribute(k,v)self.attributes[k]=v end
 local lastAction={}
 local worldObjectStates={}
+-- 실제 서버 통신과 같은 메시지/참가자 계약을 검증하는 독립 네트워크 스텁.
+local multiplayerSnapshots={}
+local remote={}
+function remote:FireAllClients(kind,snapshot)
+ assert(kind=="MULTIPLAYER_SYNC" and type(snapshot)=="table")
+ assert(snapshot.ParticipantCount==0 and type(snapshot.Participants)=="table")
+ table.insert(multiplayerSnapshots,snapshot)
+end
 local function validResourceRule()return nil end
 local recorded={ResourceWood=80,ResourceStone=30,Coins=10,FutureField='keep',
   WorldObjects={
@@ -228,5 +236,6 @@ writesFail=true
 p:SetAttribute('ResourceStone',50)
 callbacks.remove(p)
 assert(writes==3 and recorded.ResourceStone==30)
+assert(#multiplayerSnapshots>=10,"join/leave multiplayer sync must occur during save failure cases")
 `);
 });
