@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 70,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:41:21.475Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 73,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:43:21.035Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/chess-battle/2026-10-08/design-seed.json",
     "contentDigest": "759438671a5a7b061c40cc2ac3f0c2594839831b5d8549b569f3304a0d9c1c0e",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 55,
+      "calls": 58,
+      "successes": 57,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4589576,
-      "lastMs": 59231,
+      "totalMs": 4709129,
+      "lastMs": 60088,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:41:21.475Z"
+      "updatedAt": "2026-10-08T15:43:21.032Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:41:21.476Z"
+  "updatedAt": "2026-10-08T15:43:21.040Z"
 }

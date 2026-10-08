@@ -944,25 +944,47 @@
     },
     "local_authoring_parts::e9c5f9bc2c8369d40a98e5d3e76ebe46be283f7ad5a96d081976a0acd26008c4:toSystem": {
       "toSystem": "SIGNATURE_SYSTEMS_1"
+    },
+    "local_authoring_parts::e9c5f9bc2c8369d40a98e5d3e76ebe46be283f7ad5a96d081976a0acd26008c4:trigger": {
+      "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::e9c5f9bc2c8369d40a98e5d3e76ebe46be283f7ad5a96d081976a0acd26008c4:stateChange": {
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
+    },
+    "local_authoring_parts::f9fa77743e728fdc82678dbc337c79e7d8e2e991511ad8b2211b00fad5828175:systemInterconnections:4": {
+      "fromId": "identity-core",
+      "toId": "SIGNATURE_SYSTEMS_1",
+      "stateKeys": [
+        "boardState",
+        "enemyThreats",
+        "playerChoice",
+        "updatedBoardState",
+        "newMove",
+        "nextTurn"
+      ],
+      "fromSystem": "BOARD_READING_CORE_LOOP",
+      "toSystem": "SIGNATURE_SYSTEMS_1",
+      "trigger": "READ_BOARD_AND_THREAT_INFO_TRIGGERED",
+      "stateChange": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 55,
+      "calls": 58,
+      "successes": 57,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4589576,
-      "lastMs": 59231,
+      "totalMs": 4709129,
+      "lastMs": 60088,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:41:21.475Z"
+      "updatedAt": "2026-10-08T15:43:21.032Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:03.898Z",
-  "updatedAt": "2026-10-08T15:41:21.475Z",
+  "updatedAt": "2026-10-08T15:43:21.039Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3101,7 +3123,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[0].trigger",
-          "value": "BOARD_READING_AND_TACTICAL_DECISION_MAKING"
+          "value": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3118,7 +3140,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[0].stateChange",
-          "value": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+          "value": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3135,7 +3157,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[1].trigger",
-          "value": "BOARD_READING_AND_TACTICAL_DECISION_MAKING"
+          "value": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3152,7 +3174,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[1].stateChange",
-          "value": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+          "value": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3169,7 +3191,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[2].trigger",
-          "value": "BOARD_READING_AND_TACTICAL_DECISION_MAKING"
+          "value": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3186,7 +3208,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[2].stateChange",
-          "value": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+          "value": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3203,7 +3225,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[3].trigger",
-          "value": "BOARD_READING_AND_TACTICAL_DECISION_MAKING"
+          "value": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3220,7 +3242,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[3].stateChange",
-          "value": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+          "value": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3237,7 +3259,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[4].trigger",
-          "value": "BOARD_READING_AND_TACTICAL_DECISION_MAKING"
+          "value": "READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3254,7 +3276,7 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections[4].stateChange",
-          "value": "BOARD_STATE_UPDATED_AND_TACTICAL_MOVE_COMMITTED"
+          "value": "BOARD_STATE_UPDATED_BY_READ_BOARD_AND_THREAT_INFO_TRIGGERED"
         },
         "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
         "bypassAllowed": false,
@@ -3288,9 +3310,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3305,9 +3327,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3322,9 +3344,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3339,9 +3361,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: identity-core→signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: identity-core→SIGNATURE_SYSTEMS_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3368,7 +3390,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3407,10 +3429,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:41:21.475Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:43:21.035Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
