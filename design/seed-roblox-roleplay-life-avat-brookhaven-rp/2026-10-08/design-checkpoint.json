@@ -737,25 +737,44 @@
         "RUN_RESULT"
       ],
       "fromSystem": "Survival Progression System (signatureSystems[0])"
+    },
+    "local_authoring_parts::e3d48c53b90328c70322286f369af58b7759396256a06987342c7c37f1c9928d:toSystem,trigger,stateChange": {
+      "toSystem": "Survival Progression System (signatureSystems[0])",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
+    },
+    "local_authoring_parts::97a054976f6ad644e75d9489dca26c09f13c2253024945c166d72d6044eb3b72:systemInterconnections:0": {
+      "fromId": "ENEMY_PRESSURE",
+      "toId": "BUILD_COMBINATION",
+      "stateKeys": [
+        "ENEMY_PRESSURE",
+        "HORDE_SIZE",
+        "TIME_LIMIT",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "Survival Progression System (signatureSystems[0])",
+      "toSystem": "Survival Progression System (signatureSystems[0])",
+      "trigger": "ENEMY_PRESSURE",
+      "stateChange": "BUILD_COMBINATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 16,
+      "calls": 19,
+      "successes": 17,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2570656,
-      "lastMs": 100273,
+      "totalMs": 2631178,
+      "lastMs": 60522,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:51:01.919Z"
+      "updatedAt": "2026-10-08T15:07:47.347Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:08:11.184Z",
-  "updatedAt": "2026-10-08T15:06:46.822Z",
+  "updatedAt": "2026-10-08T15:07:47.349Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3103,7 +3122,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:51:01.919Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:07:47.349Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
