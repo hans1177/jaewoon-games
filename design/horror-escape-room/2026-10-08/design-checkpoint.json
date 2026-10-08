@@ -336,25 +336,135 @@
           "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
         }
       ]
+    },
+    "local_authoring_parts::9fd6410d1659de7a17a9b23e851bbff4e63806705f3e93dd2d11767b70b1c58a:multiplayerMode": {
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::d3288bf41dc5619740de4f300c20c578da28e87f88bc2a352ed3f09de7248fa9:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 역할 선호 선택 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐",
+        "SELECT: 역할 선호 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐",
+        "ACTION: 감염 공격/정화 → 상태 변화: 인물/몬스터 역할 변화",
+        "REWARD: 승패 결정 → 상태 변화: 게임 종료",
+        "NEXT: AI 충원 + 역할 선호 선택"
+      ],
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "InfectedHuman",
+            "InfectedAbility",
+            "InfectionStatus",
+            "InfectionCooldown"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "InfectedHuman",
+            "InfectedAbility",
+            "InfectionStatus",
+            "InfectionCooldown"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "InfectedHuman",
+            "InfectedAbility",
+            "InfectionStatus",
+            "InfectionCooldown"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+          "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "InfectedHuman",
+            "InfectedAbility",
+            "InfectionStatus",
+            "InfectionCooldown"
+          ],
+          "name": "감염 공격",
+          "purpose": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거한다. 감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다. 감염 전환은 인물의 고유 도구·대시·정화로 생존/반격을 가능하게 한다.",
+          "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount",
+            "Energy"
+          ],
+          "stateOutputs": [
+            "InfectedHuman",
+            "InfectedAbility",
+            "InfectionStatus",
+            "InfectionCooldown"
+          ],
+          "name": "감염 전환",
+          "purpose": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거한다. 감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다. 감염 전환은 인물의 고유 도구·대시·정화로 생존/반격을 가능하게 한다.",
+          "playerChoice": "감염 공격을 선택하여 몬스터로 전환하고, 직업별 고유 감염 스킬을 사용한다."
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 993513,
-      "lastMs": 108757,
+      "totalMs": 1081547,
+      "lastMs": 88034,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:03:21.178Z"
+      "updatedAt": "2026-10-08T07:04:49.215Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:46:47.632Z",
-  "updatedAt": "2026-10-08T07:03:21.180Z",
+  "updatedAt": "2026-10-08T07:04:49.224Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1067,12 +1177,52 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:03:21.180Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "인간 4명과 몬스터 4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임은 4대4 인원 구성에서 시작하여 감염 공격과 정화로 실시간으로 인원 구성이 바뀌며, 감염 스킬을 가진 몬스터로 추격하는 긴장감을 전달한다. 감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행한다. 인간 정화 공격은 몬스터를 라운드에서 제거하며, 한 진영이 0명이 되면 즉시 승패가 결정된다. 240초까지 양팀이 남으면 무승부가 발생한다. 게임은 로블·유니티·웹의 구현 차이를 고려하여 REALISTIC_HUMANS_ABERRANT_MONSTERS 세계관을 적용하며, 감염·정화 규칙을 원본에 맞게 재해석한다. 감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다. 감염된 인간은 직업별 고유 감염 스킬을 사용하며, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염 전환은 인물의 고유 도구·대시·정화로 생존/반격을 가능하게 한다. 게임은 8인 구성, 4대4 인원, 240초 시간, 100 에너지 자원, 30 감염 공격 비용, 1.2 감염 공격 지속 시간, 8 감염 범위, 8 정화 범위, 5 정화 지속 시간, 30 감염 비용, 5 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속시간",
+      "playerFantasy": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거한다. 감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다. 감염된 인간은 직업별 고유 감염 스킬을 사용하며, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염 전환은 인물의 고유 도구·대시·정화로 생존/반격을 가능하게 한다. 게임은 8인 구성, 4대4 인원, 240초 시간, 100 에너지 자원, 30 감염 공격 비용, 1.2 감염 공격 지속 시간, 8 감염 범위, 8 정화 범위, 5 정화 지속 시간, 30 감염 비용, 5 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간",
+      "coreFun": "감염된 인간은 몬스터로 전환하고, 기존 인간 직업에 대응하는 고유 감염 스킬로 옛 팀 추격을 진행하며, 인간 정화 공격은 몬스터를 라운드에서 제거한다. 감염 공격은 몬스터의 서버 권한으로, 정화는 인간의 역할로 이루어진다. 감염된 인간은 직업별 고유 감염 스킬을 사용하며, 몬스터는 명시적 감염 공격으로 인간을 전환한다. 감염 전환은 인물의 고유 도구·대시·정화로 생존/반격을 가능하게 한다. 게임은 8인 구성, 4대4 인원, 240초 시간, 100 에너지 자원, 30 감염 공격 비용, 1.2 감염 공격 지속 시간, 8 감염 범위, 8 정화 범위, 5 정화 지속 시간, 30 감염 비용, 5 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간, 30 감염 비용, 7 정화 비용, 7 감염 지속 시간, 7 정화 지속 시간",
+      "coreLoop": [
+        "INPUT: 역할 선호 선택 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐",
+        "SELECT: 역할 선호 + AI 충원 → 상태 변화: 인물/몬스터 역할 정해짐",
+        "ACTION: 감염 공격/정화 → 상태 변화: 인물/몬스터 역할 변화",
+        "REWARD: 승패 결정 → 상태 변화: 게임 종료",
+        "NEXT: AI 충원 + 역할 선호 선택"
+      ],
+      "multiplayerMode": "COMPETITIVE"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T07:04:49.217Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
