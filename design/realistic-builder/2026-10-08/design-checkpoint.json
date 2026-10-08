@@ -110,25 +110,247 @@
       "name": "REALISTIC-BUILDER-DELVE-3",
       "purpose": "ACTION_SURVIVAL_ROGUELITE",
       "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+    },
+    "local_authoring_parts::95276374758fa281687583338f9be8887f29042698f42d4d465c7b101cfb11bb:signatureSystems:4": {
+      "id": "realistic-builder-delve-4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER CHOICE",
+        "ENEMY PRESSURE",
+        "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+        "BUILD STRONGER BUILD"
+      ],
+      "stateOutputs": [
+        "FIGHT THROUGH HORDE",
+        "POSITIONING AROUND ENEMY PRESSURE",
+        "RUN RESULT",
+        "CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "name": "REALISTIC-BUILDER-DELVE-4",
+      "purpose": "ACTION_SURVIVAL_ROGUELITE",
+      "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+    },
+    "local_authoring_parts::cea79ed11b85d905fe3de1d9408e9d0aefb1afd757288560646cd2012ba3ed5d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-2",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-3",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-4",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        }
+      ]
+    },
+    "local_authoring_parts::1196fb761db7de443ca139df572692500f609772c4bbfdbc56c5c6824c8153f7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: FIGHT THROUGH HORDE -> REWARD: RUN REWARDS / UPGRADES / SKILLS -> NEXT CHOICE: BUILD STRONGER BUILD",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: POSITIONING AROUND ENEMY PRESSURE -> REWARD: RUN RESULT -> NEXT CHOICE: NEXT PROGRESSION CHOICE",
+        "INPUT: PLAYER CHOICE -> STATE CHANGE: COMBINE UPGRADES INTO STRONGER BUILD -> REWARD: RUN RESULT -> NEXT CHOICE: CONVERSION TO NEXT PROGRESSION CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-2",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-3",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        },
+        {
+          "id": "realistic-builder-delve-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER CHOICE",
+            "ENEMY PRESSURE",
+            "RUN REWARDS/UPGRADES/WEAPONS/PERKS/SKILLS",
+            "BUILD STRONGER BUILD"
+          ],
+          "stateOutputs": [
+            "FIGHT THROUGH HORDE",
+            "POSITIONING AROUND ENEMY PRESSURE",
+            "RUN RESULT",
+            "CONVERSION TO NEXT PROGRESSION CHOICE"
+          ],
+          "name": "REALISTIC-BUILDER-DELVE-4",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "FIGHT THROUGH HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 839327,
-      "lastMs": 74853,
+      "totalMs": 914174,
+      "lastMs": 74847,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:28:48.993Z"
+      "updatedAt": "2026-10-08T08:30:03.841Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T08:28:48.993Z",
+  "updatedAt": "2026-10-08T08:30:03.843Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2480,7 +2702,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:28:48.993Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:30:03.843Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
