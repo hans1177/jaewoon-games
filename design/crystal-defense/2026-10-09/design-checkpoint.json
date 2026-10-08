@@ -85,25 +85,42 @@
       "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_B",
       "purpose": "Balances placement, resonance, and upgrades to create strategic depth and growth potential.",
       "playerChoice": "Choose where crystal defenses create the most value based on current threat patterns and player strategy evolution."
+    },
+    "local_authoring_parts::d499759e80ab7ef446eec7593ec876cce63779ac2e2a220a465d0fc4555c7a32:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "STRATEGY",
+        "PATH",
+        "GROWTH"
+      ],
+      "name": "DEFENSE_STRATEGIC_BALANCE_REINTERPRETED_C",
+      "purpose": "Adapts the strategic balance of defense by reinterpreting placement, resonance, and upgrades in response to dynamic gameplay conditions.",
+      "playerChoice": "Reconfigures defense strategies based on current wave patterns, enemy behavior, and available resources."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 644735,
-      "lastMs": 96971,
+      "totalMs": 742797,
+      "lastMs": 98062,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:57:36.852Z"
+      "updatedAt": "2026-10-08T21:59:14.915Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-08T21:57:36.852Z",
+  "updatedAt": "2026-10-08T21:59:14.916Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2311,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:57:36.852Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:59:14.915Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
