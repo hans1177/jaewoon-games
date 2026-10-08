@@ -827,21 +827,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1080974,
-      "lastMs": 88312,
+      "totalMs": 1265838,
+      "lastMs": 184864,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:43:22.524Z"
+      "updatedAt": "2026-10-08T10:46:27.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:43:22.536Z",
+  "updatedAt": "2026-10-08T10:46:27.407Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3033,15 +3033,164 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "7503fb794627048d725bc6eab13c9cfe8dc0e46e7935733aeac4368294e2bd9a"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:43:22.530Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "threatened route→new state의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: threatened route→new state의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "resources→updated defense strategy의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: resources→updated defense strategy의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemy types→tactical adjustments의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemy types→tactical adjustments의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "objective→game progression의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: objective→game progression의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "enemy types→enemy adaptation의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: enemy types→enemy adaptation의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "enemy wave -> resource allocation -> tactical adjustments -> game progression",
+        "resourceFlow": "defeat -> redistribution -> optimization",
+        "balanceRules": "resources should be optimized before pressure increases, and game progression should unlock harder defense choices"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "enemy wave arrival",
+          "newGameplay": "real-time adaptation",
+          "systemImpact": "dynamic defense strategy"
+        },
+        {
+          "milestone": "enemy type change",
+          "newGameplay": "strategy optimization",
+          "systemImpact": "tactical adjustments"
+        },
+        {
+          "milestone": "stage or boss completion",
+          "newGameplay": "unlocking harder defense choices",
+          "systemImpact": "game progression"
+        },
+        {
+          "milestone": "resource allocation",
+          "newGameplay": "resource redistribution",
+          "systemImpact": "resource optimization"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "enemy wave arrival",
+          "enemy type change",
+          "stage or boss completion"
+        ],
+        "retryFlow": "real-time adaptation -> resource redistribution -> strategy optimization",
+        "riskPressure": "resources should be optimized before pressure increases, and game progression should unlock harder defense choices",
+        "recoveryRules": "reallocate resources, optimize strategy, and continue progression"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T10:46:27.401Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

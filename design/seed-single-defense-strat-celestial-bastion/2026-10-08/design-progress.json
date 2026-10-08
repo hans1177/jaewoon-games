@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T10:43:22.530Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:46:27.401Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-single-defense-strat-celestial-bastion/2026-10-08/design-seed.json",
     "contentDigest": "ee4b359cce5bf00e0270ce7bc71792916267b8757cc6cbd247cb69057b844d31",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1080974,
-      "lastMs": 88312,
+      "totalMs": 1265838,
+      "lastMs": 184864,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:43:22.524Z"
+      "updatedAt": "2026-10-08T10:46:27.401Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T10:43:22.537Z"
+  "updatedAt": "2026-10-08T10:46:27.408Z"
 }
