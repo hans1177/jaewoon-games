@@ -34,25 +34,44 @@
         "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
         "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
       ]
+    },
+    "local_authoring_parts::5c884b3ba2429ffb83f213a645a6a9988c301ff906bb26a6c44faa7f469cdf5b:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "stateOutputs": [
+        "LOCATION_CHANGE_STATE",
+        "ITEM_GAINED_STATE",
+        "SKILL_ACQUIRED_STATE",
+        "ENEMY_DEFeated_STATE"
+      ],
+      "name": "월드 상태 전환 시스템",
+      "purpose": "플레이어의 탐험, 위험, 성공, 실패, 성장 상태에서 즉각적인 결과를 얻으며, 지역, 인물, 적, 아이템 등 다양한 요소들을 만나며 세계의 역사, 생활, 경제, 지역 기능에 대한 이해를 쌓는 중심 행동을 통해 반복 가능한 핵심 루프를 형성하는 STORY_COMPLETE_RPG 게임이다.",
+      "playerChoice": "탐험 중에는 위험과 성공, 실패, 성장 등의 상태 변화가 발생하며, 이러한 변화들은 소리와 음악을 통해 감각적으로 느껴진다. 또한, 적, 아이템, NPC는 이름만 다르지만, 그들의 존재 이유와 플레이 규칙, 보상, 정보, 관계에 깊이 연결되어 있어, 플레이어에게 새로운 해석과 의미를 제공한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 336364,
-      "lastMs": 44816,
+      "totalMs": 393693,
+      "lastMs": 57329,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:56:22.944Z"
+      "updatedAt": "2026-10-08T20:57:20.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-08T20:56:22.944Z",
+  "updatedAt": "2026-10-08T20:57:20.275Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2303,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:56:22.944Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:57:20.275Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
