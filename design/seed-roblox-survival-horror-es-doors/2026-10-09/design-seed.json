@@ -11,16 +11,16 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "1a43159022dc0eff54cac67b94902ef9143cc9de6a430ac8161dd9a2407ac7ff",
-  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
-  "contentDigest": "727fa6558af3036ccaa20f042a5be519040422ff1ed8600e18e93cf1e7d46cf4",
+  "fingerprint": "9d977037fcddeaf3c1ac592dc10f968c9e4c14b5db795ba926797375f5a3e57f",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "4be9c13423bc4a4574edd281e23590d0cde69792110b136c0edf790c349dae73",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며, 선택의 결과가 월드 상태에 직접적인 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
-    "playerFantasy": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며, 선택의 결과가 월드 상태에 직접적인 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
-    "coreFun": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며, 선택의 결과가 월드 상태에 직접적인 영향을 미친다. 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "identity": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability.",
+    "playerFantasy": "Last Lantern은 모바일 플랫폼에서 즉시 이해 가능한 게임이며, 사용자가 직접 선택하여 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'라는 대표 선택 사이에 연결되어 있으며, 이 과정에서는 위험/보상/다음 선택의 순환 구조가 존재한다. 게임은 단순한 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 다양한 플레이 경험을 제공하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법의 가능성으로 이루어진다.",
+    "coreFun": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability.",
     "coreLoop": [
       "INPUT: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "SELECT: Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
@@ -28,72 +28,72 @@
     ],
     "signatureSystems": [
       {
-        "id": "SIGNATURE_SYSTEM_0",
+        "id": "SIGNATURE_SYSTEM_01",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "LEVEL_STATE"
+          "LEVEL_GOAL_STATE"
         ],
         "stateOutputs": [
-          "NEXT_LEVEL_PATTERN"
+          "NEXT_BOARD_PATTERN_STATE"
         ],
-        "name": "Level State Transition System",
-        "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
-        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        "name": "Board State Transition System",
+        "purpose": "Main system that governs the evolution of the game through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT: LEVEL_GOAL_STATE) → Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (SELECT: NEXT_BOARD_PATTERN_STATE)"
       },
       {
-        "id": "SIGNATURE_SYSTEM_1",
+        "id": "SIGNATURE_SYSTEM_02",
         "grammarRole": "A",
         "stateInputs": [
-          "LEVEL_STATE"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_LEVEL_PATTERN"
+          "NEXT_BOARD_PATTERN_STATE"
         ],
-        "name": "Level State Transition System",
-        "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
-        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        "name": "Board State Transition System",
+        "purpose": "Main system that governs the evolution of board states through player choices, risk/reward dynamics, and emergent gameplay patterns.",
+        "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
       },
       {
-        "id": "SIGNATURE_SYSTEM_2",
+        "id": "SIGNATURE_SYSTEM_03",
         "grammarRole": "B",
         "stateInputs": [
-          "LEVEL_STATE"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_LEVEL_PATTERN"
+          "NEXT_BOARD_PATTERN_STATE"
         ],
-        "name": "Level State Transition System B",
-        "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
-        "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        "name": "Board State Transition System (Secondary Axis)",
+        "purpose": "Establishes a secondary axis of board state transition, allowing for alternative pathways and risk/reward dynamics in gameplay.",
+        "playerChoice": "Make strategic decisions that alter the current board state to achieve specific goals or unlock new game mechanics while maintaining core gameplay principles."
       },
       {
-        "id": "SIGNATURE_SYSTEM_3",
+        "id": "SIGNATURE_SYSTEM_04",
         "grammarRole": "c",
         "stateInputs": [
-          "LEVEL_STATE"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_LEVEL_PATTERN"
+          "NEXT_BOARD_PATTERN_STATE"
         ],
-        "name": "Level State Expansion System",
-        "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
-        "playerChoice": "Expand the current level state with new patterns and obstacles to create unique gameplay experiences."
+        "name": "Board State Transition System (Content Expansion)",
+        "purpose": "Provides content expansion through emergent gameplay patterns and player agency, evolving the board state with each unique combination of choices, risks, and rewards.",
+        "playerChoice": "Generate a new board pattern or obstacle combination that reflects the current state and player intent, ensuring dynamic evolution of the game world through repeated play and discovery."
       },
       {
-        "id": "SIGNATURE_SYSTEM_4",
+        "id": "SIGNATURE_SYSTEM_05",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "LEVEL_STATE"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_LEVEL_PATTERN"
+          "NEXT_BOARD_PATTERN_STATE"
         ],
-        "name": "Level State Expansion System",
-        "purpose": "플레이어가 시작 단계에서 명확한 목표와 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 수행하며 선택의 결과가 월드 상태에 직접적인 영향을 미친다.",
-        "playerChoice": "Expand the current level state with new patterns and obstacles to create unique gameplay experiences."
+        "name": "Board State Transition System (Delve Expansion)",
+        "purpose": "Player choices, risk/reward dynamics, and emergent gameplay patterns are used to evolve the board state through a series of interconnected states.",
+        "playerChoice": "Make strategic decisions that influence the next board pattern or obstacle combination, leveraging immediate feedback to adapt to changing conditions and risks."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T18:35:41.020Z"
+  "updatedAt": "2026-10-08T20:53:22.541Z"
 }
