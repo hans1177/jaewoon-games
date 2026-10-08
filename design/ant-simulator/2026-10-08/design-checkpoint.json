@@ -119,25 +119,270 @@
       "name": "발견·숙련·재방문 시스템",
       "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
       "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+    },
+    "local_authoring_parts::713809e664e8d306d523a4cfa3db0ff0928d5904e7ac376461a7240136c71299:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentWorldState",
+        "playerTarget",
+        "availableResources",
+        "potentialHazards",
+        "progressionStatus"
+      ],
+      "stateOutputs": [
+        "updatedWorldState",
+        "newPlayerTarget",
+        "modifiedResources",
+        "reducedHazards",
+        "newProgressionStatus"
+      ],
+      "name": "발견·숙련·재방문 시스템",
+      "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+      "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+    },
+    "local_authoring_parts::3dc30e5919a7285479b3c061cfa9d74ec05722ab95cea7e8961d7f3230e28a99:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "개미 종족을 선택하고, 월드 상태를 변화시키며, 보상, 위험, 목표를 통해 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "자원과 위험 조절 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+          "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "자원 관리 및 위험 조절 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+          "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "발견·숙련·재방문 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "발견·숙련·재방문 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        }
+      ]
+    },
+    "local_authoring_parts::bfcbe7bd55cfcf0952802ddaa549d3e3479e4eb515dfeef40e87e5605f2a3c54:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 월드 상태 변화 -> 보상/위험/다음 선택의 연결",
+        "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택",
+        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변",
+        "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 자원, 위험, 진행 상태를 변화시키는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "개미 종족을 선택하고, 월드 상태를 변화시키며, 보상, 위험, 목표를 통해 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "자원과 위험 조절 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+          "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "자원 관리 및 위험 조절 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 자원과 위험을 조절하여 게임 루프를 구축",
+          "playerChoice": "자원을 효율적으로 관리하고, 위험을 줄이며, 목표를 설정하여 게임을 진행하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "발견·숙련·재방문 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentWorldState",
+            "playerTarget",
+            "availableResources",
+            "potentialHazards",
+            "progressionStatus"
+          ],
+          "stateOutputs": [
+            "updatedWorldState",
+            "newPlayerTarget",
+            "modifiedResources",
+            "reducedHazards",
+            "newProgressionStatus"
+          ],
+          "name": "발견·숙련·재방문 시스템",
+          "purpose": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 발굴된 정보를 활용하여 게임 루프를 구축하고, 숙련된 전략을 적용하며, 재방문을 통해 게임을 재구성하는 반복 가능한 게임 루프를 구축",
+          "playerChoice": "발굴된 정보를 활용하여 목표를 재설정하고, 숙련된 전략을 적용하여 게임 루프를 재구성하며, 재방문을 통해 게임을 재도전하는 반복 가능한 게임 루프를 경험하며, 모바일에서도 즉시 이해 가능한 입력·피드백·실패·재도전 흐름을 가진다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 222855,
-      "lastMs": 30179,
+      "totalMs": 256227,
+      "lastMs": 33372,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:32:45.246Z"
+      "updatedAt": "2026-10-08T12:33:18.619Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:29:02.212Z",
-  "updatedAt": "2026-10-08T12:32:45.246Z",
+  "updatedAt": "2026-10-08T12:33:18.621Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2195,7 +2440,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:32:45.246Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:33:18.621Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
