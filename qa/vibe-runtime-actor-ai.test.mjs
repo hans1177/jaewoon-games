@@ -313,7 +313,8 @@ test('Unity village life, story save, scout opt-in and boss reveal remain on ori
   assert.match(visual,/public void SkipBossReveal\(\)/);
   assert.match(visual,/public void SetNarrativeCompanion\(bool accompanying\)/);
   assert.doesNotMatch(runtime,/ParticipantCount\s*\+\s*1|Connected\s*=\s*true/);
-  assert.doesNotMatch(core,/TryRecordStoryEvent[\s\S]{0,2000}(?:baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=)/);
+  const storyOnly=core.slice(core.indexOf('public bool TryRecordStoryEvent('),core.indexOf('public bool HasStoryEvent('));
+  assert.doesNotMatch(storyOnly,/baseAttack\s*[+\-]=|gold\s*[+\-]=|experience\s*[+\-]=/);
 });
 test('common AI memory is bounded idempotent and relationships remain directional state',()=>{
   const ai=new JaewoonCommonAI({memoryLimit:4});
