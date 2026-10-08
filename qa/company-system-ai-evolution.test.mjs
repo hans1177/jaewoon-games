@@ -542,20 +542,26 @@ test('external Roblox runtime failure preserves same immutable candidate without
   assert.ok(snapshot.development.rows.every(x=>x.unityF9IndependentRuntimeReviewRequired&&x.automaticPassClaim===false));
 });
 
-test('portfolio refill dispatches existing independent game workflows rather than awaiting all F0-F9 runtimes',()=>{
+test('canonical reusable parent keeps final fan-in while successful games hand off without sibling completion',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.doesNotMatch(workflow,/uses:\s*\.\/\.github\/workflows\/(?:company-development-(?:roblox|unity)-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   for(const name of [
     'company-development-roblox-runtime.yml','company-development-unity-runtime.yml',
     'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
-  ])assert.ok(workflow.includes('gh workflow run '+name),'missing existing game handoff: '+name);
-  assert.match(workflow,/continue-cycle:\n\s+name: Refill after dispatching independent game workflows/);
-  assert.match(workflow,/--arg control_sha "\$GITHUB_SHA"/);
-  assert.match(workflow,/select\(\.head_sha == \$control_sha\)/);
+  ])assert.match(workflow,new RegExp('uses: \\.\\/\\.github\\/workflows\\/'+name.replace(/\\./g,'\\.') ));
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-(?:roblox|unity)-runtime|unity-web-(?:first-stage-build|floor-source-bootstrap))\\.yml/);
+  assert.match(workflow,/needs: \\[native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap\\]/);
+  assert.match(workflow,/--arg control_sha "\\$GITHUB_SHA"/);
+  assert.match(workflow,/select\\(\\.head_sha == \\$control_sha\\)/);
   assert.match(workflow,/DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES/);
-  assert.match(workflow,/DEVELOPMENT_PARENT_FAN_IN_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/fail-fast: false/);
-  const sensor=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
-  assert.match(sensor,/--development-queue=\/tmp\/system-ai-development-queue\.json/);
-  assert.match(sensor,/SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE/);
+  const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  assert.match(unity,/Immediately continue this successful Unity game/);
+  assert.match(unity,/gh workflow run company-development-confirmed-runtime\\.yml --repo "\\$GITHUB_REPOSITORY" --ref main -f game_id="\\$GAME_ID"/);
+  const f0=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(f0,/Dispatch exact private Roblox validation directly after this game's F0 persist/);
+  assert.match(f0,/const blocked=x\\.robloxQualityBuildUpRequired===true/);
+  assert.match(f0,/gh workflow run company-development-roblox-release-promotion\\.yml/);
+  const ai=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(ai,/--development-queue=\\/tmp\\/system-ai-development-queue\\.json/);
+  assert.match(ai,/SYSTEM_AI_DEVELOPMENT_QUEUE_SNAPSHOT=UNAVAILABLE/);
 });
