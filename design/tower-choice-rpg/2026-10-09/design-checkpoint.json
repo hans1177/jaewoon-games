@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::0ee4ed26593a77726ae38419ada02fce9a59626930eeac64607fd609aa3aa1a7:identity": {
+      "identity": "10층 탑 RPG은 플레이어가 즉각적인 생존 전략을 통해 점차 복잡해지는 적군을 이탈시키며, 주체적으로 선택하는 방식으로 세계 상태와 다음 선택을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 단순한 희생이나 반복적 승리보다는 진입 후의 위험, 성공, 그리고 재방문에 대한 정서적 갈등을 느끼게 된다. 이는 기존의 루프 구조에서 새로운 행동, 경로, 관계, 발견, 대응법을 열어 실제 플레이에 적용할 수 있는 핵심 재미를 제공한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 200801,
+      "lastMs": 200801,
+      "lastError": null,
+      "updatedAt": "2026-10-08T18:49:46.191Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:46:25.369Z",
-  "updatedAt": "2026-10-08T18:46:25.384Z",
+  "updatedAt": "2026-10-08T18:49:46.191Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T18:49:46.191Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
