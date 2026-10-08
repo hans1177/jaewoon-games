@@ -1761,11 +1761,35 @@ end
 function RobloxCommonUI.CreateFilterBar(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
-  local root=Instance.new("Frame");root.Name=options.name or "FilterBar";root.Size=options.size or UDim2.new(1,0,0,48);root.BackgroundTransparency=1;tag(root,"FILTER_BAR")
-  local layout=commonList(root,true,8);layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
+  -- 좁은 화면에서 필터를 잘라내지 않고 가로 스와이프로 모두 접근할 수 있게 한다.
+  local root=Instance.new("ScrollingFrame")
+  root.Name=options.name or "FilterBar"
+  root.Size=options.size or UDim2.new(1,0,0,52)
+  root.BackgroundTransparency=1
+  root.BorderSizePixel=0
+  root.ScrollingDirection=Enum.ScrollingDirection.X
+  root.ScrollBarThickness=3
+  root.CanvasSize=UDim2.fromOffset(0,0)
+  root.AutomaticCanvasSize=Enum.AutomaticSize.X
+  root.Active=true
+  tag(root,"FILTER_BAR")
+  local layout=commonList(root,true,8)
+  layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
   local filters=options.filters or {"전체","추천","새 항목","사용 가능","잠김"}
   local buttons={}
-  for i,label in ipairs(filters) do local b=RobloxCommonUI.CreateTabButton({text=tostring(label),selected=i==(options.selectedIndex or 1),size=UDim2.fromOffset(math.max(76,string.len(tostring(label))*10+34),44),theme=theme});b.LayoutOrder=i;b.Parent=root;b:SetAttribute("FilterIndex",i);buttons[i]=b end
+  for i,label in ipairs(filters) do
+    local glyphs=utf8.len(tostring(label)) or string.len(tostring(label))
+    local width=math.max(92,glyphs*12+30)
+    local button=RobloxCommonUI.CreateTabButton({
+      name="Filter"..i,text=tostring(label),selected=i==(options.selectedIndex or 1),
+      size=UDim2.fromOffset(width,48),theme=theme
+    })
+    button.LayoutOrder=i
+    button.Parent=root
+    button:SetAttribute("FilterIndex",i)
+    buttons[i]=button
+  end
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsFilterAuthority",false)
   return root,buttons
 end
@@ -1782,12 +1806,73 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme});search.Parent=body
-  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
-  local grid=RobloxCommonUI.CreateInventoryGrid({name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,size=UDim2.new(1,0,1,-116),theme=theme});grid.Position=UDim2.fromOffset(0,116);grid.Parent=body
+  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme})
+  search.Parent=body
+  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme})
+  sort.AnchorPoint=Vector2.new(1,0)
+  sort.Parent=body
+  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme})
+  filters.Parent=body
+
+  -- 실제 아이템 슬롯은 기존 공용 Grid 그대로 두고, 내용 높이에 따라 스크롤만 동기화한다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="InventoryScroll"
+  scroll.BackgroundTransparency=1
+  scroll.BorderSizePixel=0
+  scroll.ScrollBarThickness=4
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.Active=true
+  scroll.Parent=body
+
+  local grid,cellLayout=RobloxCommonUI.CreateInventoryGrid({
+    name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,
+    size=UDim2.new(1,-8,0,160),theme=theme
+  })
+  grid.Parent=scroll
+
+  local function resizeGrid()
+    local available=scroll.AbsoluteSize.X-8
+    if available<=0 then return end
+    local desired=math.max(2,math.floor((available-20+8)/76))
+    local columns=math.clamp(math.min(desired,tonumber(options.columns) or 6),2,6)
+    local cell=math.max(52,math.floor((available-20-(columns-1)*8)/columns))
+    cellLayout.CellSize=UDim2.fromOffset(cell,cell)
+    grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
+  end
+
+  local function placePanels()
+    local compact=body.AbsoluteSize.X<560
+    if compact then
+      search.Size=UDim2.new(1,0,0,48)
+      sort.AnchorPoint=Vector2.new(0,0)
+      sort.Position=UDim2.fromOffset(0,56)
+      sort.Size=UDim2.new(1,0,0,48)
+      filters.Position=UDim2.fromOffset(0,112)
+      scroll.Position=UDim2.fromOffset(0,172)
+      scroll.Size=UDim2.new(1,0,1,-172)
+    else
+      search.Size=UDim2.new(0.42,0,0,48)
+      sort.AnchorPoint=Vector2.new(1,0)
+      sort.Position=UDim2.new(1,0,0,0)
+      sort.Size=UDim2.fromOffset(170,48)
+      filters.Position=UDim2.fromOffset(0,58)
+      scroll.Position=UDim2.fromOffset(0,116)
+      scroll.Size=UDim2.new(1,0,1,-116)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+    resizeGrid()
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
+  scroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizeGrid)
+  cellLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
+  end)
+  placePanels()
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsInventoryAuthority",false)
-  return root,{search=search,sort=sort,filters=filters,grid=grid}
+  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
