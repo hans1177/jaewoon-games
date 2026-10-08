@@ -34,25 +34,71 @@
         "STATE: 플레이어는 능력, 맵, 자산, 대안을 조절하며, 시스템 내에서 상태를 변화시킨다.",
         "OUTPUT: 플레이어는 보상, 위험, 다음 선택을 받고, 게임의 핵심 루프를 반복하며 진행한다."
       ]
+    },
+    "local_authoring_parts::21bcfd6946c7b11fa4ab1b0d36a12193e1f5875dd9b8a862f3b167735455fbfd:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "stateOutputs": [
+        "ActionResult",
+        "Reward",
+        "Upgrade",
+        "Perk",
+        "Skill",
+        "BuildChange"
+      ],
+      "name": "MAIN",
+      "purpose": "Centered action: Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+      "playerChoice": "Choose a core gameplay action that drives the survival run and determines the next progression choice."
+    },
+    "local_authoring_parts::21bcfd6946c7b11fa4ab1b0d36a12193e1f5875dd9b8a862f3b167735455fbfd:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "BuildProgress",
+        "RunProgress",
+        "PlayerChoice"
+      ],
+      "stateOutputs": [
+        "ActionResult",
+        "Reward",
+        "Upgrade",
+        "Perk",
+        "Skill",
+        "BuildChange"
+      ],
+      "name": "A",
+      "purpose": "Centered action: Player chooses a core gameplay action that drives the survival run and determines the next progression choice.",
+      "playerChoice": "Choose a core gameplay action that drives the survival run and determines the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 496033,
-      "lastMs": 73920,
+      "totalMs": 695589,
+      "lastMs": 100536,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:06:43.744Z"
+      "updatedAt": "2026-10-08T12:10:03.303Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:27.660Z",
-  "updatedAt": "2026-10-08T12:06:43.744Z",
+  "updatedAt": "2026-10-08T12:10:03.304Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:06:43.744Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:10:03.304Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
