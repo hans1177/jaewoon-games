@@ -4343,7 +4343,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-08T11:19:58.000Z",
+      "updatedAt": "2026-10-08T11:30:03.083Z",
       "robloxSourceCommit": "08bc09b3bdf05a2f839141763b40db6fd57707df",
       "robloxSourceBootstrapPassedAt": "2026-10-08T11:09:23.566Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4976,7 +4976,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "bug-defense",
+        "sourceRevision": "08bc09b3bdf05a2f839141763b40db6fd57707df",
+        "artifactIdentity": "sha256:dcdaa731404b7ae97d346c2e9473dc4b45fa9069c5c221e5adc2cd47016dc721",
+        "artifactRunId": 37767806725,
+        "universeId": "10768992563",
+        "placeId": "84597971213389",
+        "candidateVersionNumber": 6,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 527,
+        "retryNotBefore": "2026-10-08T11:38:49.472Z",
+        "observedAt": "2026-10-08T11:30:03.083Z",
+        "workflowRunId": 37769340900,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -5006,9 +5025,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -46250,7 +46269,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-08T11:29:39.979Z",
+  "updatedAt": "2026-10-08T11:30:03.083Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
