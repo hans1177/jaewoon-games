@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::16d881c7f2a245113a2fcfeb46a8eab2f406903eaef30260682eab7838fec26a:identity": {
+      "identity": "코어 전장 4대4 - 진입 시스템 및 선택 결과 재설계 최종 버전 20260917-1: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과가 다음 월드 상태로 연결되는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 정체성과 플레이어 역할, 시그니처 세계 규칙, 대표 행동, 대표 선택, 시그니처 시스템, MAIN/A/B/c/@와 상태 교환, 위험/보상, 대응, 다음 선택을 포함하는 설계 원본입니다. 이는 기존 게임 원본과 오너 의도를 최우선으로 보존하며, 현재 필드에 따라 실제 상태 변화로 구현됩니다. 각 필드는 공통 규칙과 설계 깊이를 유지하고, 이미 작성된 설계와 모순되지 않으며, 원본 수치와 규칙을 보존합니다. 주요 내용은 다음과 같습니다:"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 243752,
+      "lastMs": 243752,
+      "lastError": null,
+      "updatedAt": "2026-10-08T18:44:12.748Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:08.976Z",
-  "updatedAt": "2026-10-08T18:40:08.990Z",
+  "updatedAt": "2026-10-08T18:44:12.748Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T18:44:12.748Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
