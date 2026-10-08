@@ -79,13 +79,13 @@ export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseF
 
 // Only bounded candidate diagnostics are exposed to public-example repair. Never copy
 // baseline/reference output or hidden failures into the next model request.
-function candidateDiagnostics(error,language){
+export function candidateDiagnostics(error,language){
   const output=[error?.stdout,error?.stderr].map(v=>String(v||'')).join('\n');
   const lines=output.replace(/\x1b\[[0-9;]*m/g,'').split(/\r?\n/);
   const selected=lines.filter(line=>language==='csharp'
-    ? /Candidate\.cs\(\d+,\d+\): error CS\d+|PRACTICE_CASE_\d+_CHECK_\d+|Unhandled exception\. System\.\w+Exception/.test(line)
+    ? /(?:Candidate|Program)\.cs\(\d+,\d+\): error CS\d+|PRACTICE_CASE_\d+_CHECK_\d+|Unhandled exception\. System\.\w+Exception/.test(line)
     : /(?:candidate|check)\.luau:\d+:/.test(line));
-  return selected.slice(0,4).map(line=>line.replace(/(?:[A-Za-z]:)?[\w.\/\\-]*[\/\\](Candidate\.cs|candidate\.luau|check\.luau)/g,'$1').replace(/\s*\[.*?\.csproj\]/g,'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,300));
+  return selected.slice(0,4).map(line=>line.replace(/(?:[A-Za-z]:)?[\w.\/\\-]*[\/\\](Candidate\.cs|Program\.cs|candidate\.luau|check\.luau)/g,'$1').replace(/\bProgram\.cs/g,'Harness.cs').replace(/\s*\[.*?\.csproj\]/g,'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,300));
 }
 
 export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.env.VIBE2_LUAU_BINARY||'luau'}={}){

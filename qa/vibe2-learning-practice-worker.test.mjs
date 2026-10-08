@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildPracticePrompt,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession} from '../tools/vibe2-learning-practice-worker.mjs';
+import {buildPracticePrompt,candidateDiagnostics,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession} from '../tools/vibe2-learning-practice-worker.mjs';
 
 test('practice accepts analysis or isolated Web artifact routes but rejects production source route',()=>{
   assert.throws(()=>buildPracticePrompt({executionRoute:'text-source-worker',goal:'[VIBE_LEARNING_PRACTICE] x'}),/analysis-only or learning-web-artifact/);
@@ -240,6 +240,14 @@ test('actual Luau failures identify candidate location and failing public exampl
   assert(result.codeVerification.failedTests.length>0);
   assert(result.codeVerification.diagnostics.some(line=>/(candidate|check)\.luau:\d+:/.test(line)));
   assert(!JSON.stringify(result.codeVerification.diagnostics).includes('/tmp/'));
+});
+
+test('candidate diagnostics retain compiler errors attributed to harness declarations without path or source dumps',()=>{
+  const diagnostic=candidateDiagnostics({stdout:"Build header\n/tmp/Program.cs(1,14): error CS0101: The namespace already contains a definition for 'BatchState' [/tmp/Practice.csproj]\nFULL SOURCE MUST NOT BE COPIED"},'csharp');
+  assert.equal(diagnostic.length,1);
+  assert.match(diagnostic[0],/^Harness\.cs\(1,14\): error CS0101:/);
+  assert(!diagnostic[0].includes('/tmp/'));
+  assert(!diagnostic[0].includes('FULL SOURCE'));
 });
 
 test('C# compiler diagnostics expose duplicate harness type to public repair',{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
