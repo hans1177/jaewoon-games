@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::a19de10857eb79f19b1bb77f0f616e082d1c94208ef7d956f308e2e104193bc8:identity": {
+      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과로 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 주체가 되어 세계 상태와 다음 선택을 바꾼다. 핵심 재미는 반복적 전략, 위험-보상 연결, 모바일 즉시 이해 가능한 입력/피드백이다. 시그니처 세계 규칙은 MAIN × A × B × c의 관계에 의해 실제 월드 상태 변화로 연결된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 경로로 만든다. 기존 장르 태그 하나만으로는 충분하지 않으며, READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS THAT COVER THE THREATENED ROUTE.의 결과로 다음 월드 규칙을 설계한다. 보호된 인물·대사·장면은 복제하지 않는다. 구현 버그와 설계 모순의 원인·수정 책임은 분리하고 안정성을 먼저 다룬다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 시그니처 세계 규칙은 MAIN × A × B × c의 관계에 의해 실제 월드 상태 변화로 연결된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 경로로 만든다. 기존 장르 태그 하나만으로는 충분하지 않으며, READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes OR POSITIONS TH"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 228678,
+      "lastMs": 228678,
+      "lastError": null,
+      "updatedAt": "2026-10-08T17:58:06.168Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:54:17.473Z",
-  "updatedAt": "2026-10-08T17:54:17.485Z",
+  "updatedAt": "2026-10-08T17:58:06.168Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2204,5 +2220,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T17:58:06.168Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
