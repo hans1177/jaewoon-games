@@ -51,25 +51,42 @@
       "name": "INSECT_THREAT_ANALYSIS_SYSTEM",
       "purpose": "Player's action of reading the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities.",
       "playerChoice": "Read the incoming insect wave and its threat pattern, then implement a new strategy based on resource allocation and defensive positioning."
+    },
+    "local_authoring_parts::700c47434d237990cf562cee70abe47c91b680c5734707c9a5ab90e8330bf99d:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION",
+        "EXPANDED_GAMEPLAY_POSSIBILITIES"
+      ],
+      "name": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+      "purpose": "Adaptively adjusts the game state based on incoming insect waves, defender positions, and resource allocations to create new strategies and gameplay possibilities.",
+      "playerChoice": "Adaptively adjust defender positions and allocate resources in response to changing threat patterns and environmental conditions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 323838,
-      "lastMs": 36293,
+      "totalMs": 359949,
+      "lastMs": 36111,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:50:36.798Z"
+      "updatedAt": "2026-10-08T20:51:12.911Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T20:50:36.798Z",
+  "updatedAt": "2026-10-08T20:51:12.911Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2268,7 +2285,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:50:36.798Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:51:12.911Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
