@@ -966,25 +966,45 @@
         "진행 상태"
       ],
       "fromSystem": "wild-survival-core-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minimum-2"
+    },
+    "local_authoring_parts::9440a0120646eb90d3cdf5e812b5bc0e14854b7ea7f0e7b5062a348683b65d1f:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival-weather-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minimum-24chars-2",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
+    },
+    "local_authoring_parts::afc1714798ee0067c8d531bf23ce71158026f597be098dcef2d3adc3819b87ad:systemInterconnections:1": {
+      "fromId": "wild-survival-core",
+      "toId": "wild-survival-weather",
+      "stateKeys": [
+        "월드 상태",
+        "대상",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "fromSystem": "wild-survival-core-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minimum-2",
+      "toSystem": "wild-survival-weather-systems-16chars-minimum-16chars-maximum-24chars-minimum-24chars-maximum-24chars-minimum-24chars-24chars-maximum-24chars-minimum-24chars-2",
+      "trigger": "weatherStorm",
+      "stateChange": "weather affects player decisions and resource availability"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 35,
+      "successes": 35,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1229024,
-      "lastMs": 16532,
+      "totalMs": 1240351,
+      "lastMs": 11327,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:48:49.340Z"
+      "updatedAt": "2026-10-08T09:49:00.669Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:16:20.952Z",
-  "updatedAt": "2026-10-08T09:48:49.340Z",
+  "updatedAt": "2026-10-08T09:49:00.670Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3199,7 +3219,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:48:49.340Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:49:00.670Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
