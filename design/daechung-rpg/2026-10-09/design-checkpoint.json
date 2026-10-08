@@ -39,25 +39,42 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::291c967943e13a93f6367dbfd3e2043a9a40a2d7c0b6ca57312b64e825eb1189:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "SkillSet",
+        "PartyComposition",
+        "LevelUpProgression"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "보스 동료가 처음 격파되면 해당 보스의 실루엣 및 핵심 이펙트로 이루어진 런 시작 시, 초원 런 보스가 전투에 참여하게 된다.",
+      "playerChoice": "1번 초원 랜덤 런에서 브레이크 없이 시작하여 보스 봉인이 해제된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 393948,
-      "lastMs": 63598,
+      "totalMs": 432639,
+      "lastMs": 38691,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:05:46.646Z"
+      "updatedAt": "2026-10-08T18:06:25.339Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:12.673Z",
-  "updatedAt": "2026-10-08T18:05:46.646Z",
+  "updatedAt": "2026-10-08T18:06:25.340Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1476,7 +1493,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:05:46.646Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:06:25.339Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
