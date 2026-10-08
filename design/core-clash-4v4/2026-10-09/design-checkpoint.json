@@ -340,25 +340,38 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::2d63d7d74c393ace669a6d0d8425d6a3035b627d4bb5f2c9c0b60a7f08c2f1e2:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_EMOTIONAL_STATE: Hope and Fear"
+      ],
+      "stateOutputs": [
+        "RISK_REWARD_BALANCE: Dynamic Risk vs Reward System"
+      ],
+      "name": "Material Causal Grammar",
+      "purpose": "Establishes the core emotional and causal dynamics of survival gameplay, where player emotion drives risk-taking and reward-seeking in a real-time environment.",
+      "playerChoice": "Player chooses to either pursue immediate rewards or invest in long-term upgrades that alter their current build strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1018291,
-      "lastMs": 97434,
+      "totalMs": 1130914,
+      "lastMs": 112623,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:57:07.306Z"
+      "updatedAt": "2026-10-08T18:58:59.941Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:08.976Z",
-  "updatedAt": "2026-10-08T18:57:07.316Z",
+  "updatedAt": "2026-10-08T18:58:59.942Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2787,10 +2800,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:57:07.309Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_STATE_KEY_IS_INSTRUCTION,DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:58:59.942Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
