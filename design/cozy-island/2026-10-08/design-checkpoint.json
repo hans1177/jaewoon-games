@@ -103,25 +103,224 @@
       "name": "발견·숙련·재방문",
       "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
       "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+    },
+    "local_authoring_parts::600ba3bdb7593a0ae4e71e3f400797d0b2b6c0394bba2e7e27d5be87c59c8b54:signatureSystems:4": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "자원 거점",
+        "협동 지원",
+        "점령 보상"
+      ],
+      "stateOutputs": [
+        "나무·식량",
+        "주민",
+        "병사"
+      ],
+      "name": "발견·숙련·재방문",
+      "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
+      "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+    },
+    "local_authoring_parts::ac7f7c562b968a89e05a23115d3afdb0f5bdb99236c42d1fe47972f8b711c02f:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량",
+            "주민"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량",
+            "주민"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "name": "발견·숙련·재방문",
+          "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
+          "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "name": "발견·숙련·재방문",
+          "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
+          "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+        }
+      ]
+    },
+    "local_authoring_parts::0078237a7655a97d744c42d1579d962e39103ce26986cdd6216259c99b27a5cd:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "나무·식량 직접 채집",
+        "주민 고용과 벌목/농업 자동화",
+        "병영 강화와 병사 모집",
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원으로 강한 거점 공략"
+      ],
+      "signatureSystems": [
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "A",
+          "stateInputs": [
+            "나무·식량",
+            "주민"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "B",
+          "stateInputs": [
+            "나무·식량",
+            "주민"
+          ],
+          "stateOutputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "name": "직접 채집",
+          "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+          "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "c",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "name": "발견·숙련·재방문",
+          "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
+          "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+        },
+        {
+          "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "자원 거점",
+            "협동 지원",
+            "점령 보상"
+          ],
+          "stateOutputs": [
+            "나무·식량",
+            "주민",
+            "병사"
+          ],
+          "name": "발견·숙련·재방문",
+          "purpose": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다.",
+          "playerChoice": "자원 거점과 협동 지원을 통해 점령 보상을 획득하고, 숙련을 통해 재방문을 이어가는 플레이어의 전략적 결정 과정을 반영한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 615508,
-      "lastMs": 43905,
+      "totalMs": 665568,
+      "lastMs": 50060,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:23:39.384Z"
+      "updatedAt": "2026-10-08T13:24:29.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:13:23.847Z",
-  "updatedAt": "2026-10-08T13:23:39.384Z",
+  "updatedAt": "2026-10-08T13:24:29.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -676,7 +875,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:23:39.384Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:24:29.446Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
