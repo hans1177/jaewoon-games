@@ -99,25 +99,215 @@
       "name": "TERRITORY PRESSURE AND OBJECTIVE",
       "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
       "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+    },
+    "local_authoring_parts::6294af16e4dbaef83114d87e8d671e271922454f138ec5ba19968c0fecb8cf7e:signatureSystems:4": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentBorderPressure",
+        "territoryObjective"
+      ],
+      "stateOutputs": [
+        "attacked",
+        "reinforced",
+        "expandedEconomy"
+      ],
+      "name": "TERRITORY PRESSURE AND OBJECTIVE",
+      "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+      "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+    },
+    "local_authoring_parts::6110789565c64c8dded7046858f34c68e8bd693b2da0930a583150bb8fded5bb:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        }
+      ]
+    },
+    "local_authoring_parts::8aae57fc3b19709c19a7e1879b042e2c6aff17148584156e853a11131fd90a69:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATUS CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+        "ATTACK, REINFORCE, EXPAND ECONOMY",
+        "RESOLVE TERRITORY CHANGE AND ADAPT NEXT PLAN TO NEW FRONT LINE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentBorderPressure",
+            "territoryObjective"
+          ],
+          "stateOutputs": [
+            "attacked",
+            "reinforced",
+            "expandedEconomy"
+          ],
+          "name": "TERRITORY PRESSURE AND OBJECTIVE",
+          "purpose": "READ THE CURRENT BORDER PRESSURE AND CHOOSING ONE TERRITORY OBJECTIVE",
+          "playerChoice": "ATTACK, REINFORCE, EXPAND ECONOMY"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 883978,
-      "lastMs": 96184,
+      "totalMs": 979818,
+      "lastMs": 95840,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:31:06.922Z"
+      "updatedAt": "2026-10-08T12:32:42.763Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T12:31:06.922Z",
+  "updatedAt": "2026-10-08T12:32:42.766Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2141,7 +2331,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:31:06.922Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:32:42.766Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
