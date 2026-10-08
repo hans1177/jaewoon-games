@@ -869,25 +869,37 @@
       "toSystem": "ENEMY_WAVE_SYSTEMS_16_CHAR_MINIMUM_16_CHAR_MAXIMUM_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_1",
       "trigger": "enemyWave→worldState",
       "stateChange": "enemyWave, towers, defenders, lanes, positions → worldState, nextSelection"
+    },
+    "local_authoring_parts::581016472807c908844dd65964ef89ca6c3eee5dece486d9e23941c00cd0fdc4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "enemyWave",
+      "toId": "worldState",
+      "stateKeys": [
+        "enemyWave",
+        "towers",
+        "defenders",
+        "lanes",
+        "positions"
+      ],
+      "fromSystem": "ENEMY_WAVE_SYSTEMS_16_CHAR_MINIMUM_16_CHAR_MAXIMUM_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_16_CHAR_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 27,
+      "calls": 29,
+      "successes": 28,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3031860,
-      "lastMs": 63356,
+      "totalMs": 3095149,
+      "lastMs": 63289,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:11:43.416Z"
+      "updatedAt": "2026-10-08T10:12:46.708Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:38:23.364Z",
-  "updatedAt": "2026-10-08T10:11:43.418Z",
+  "updatedAt": "2026-10-08T10:12:46.708Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3239,7 +3251,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:11:43.418Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:12:46.708Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
