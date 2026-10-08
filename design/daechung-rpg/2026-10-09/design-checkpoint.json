@@ -27,25 +27,58 @@
       "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 R15 시각 언어를 사용하며, AI 동료는 격파한 보스의 실루엣·색·핵심 장식을 그대로 계승한다. 게임은 로블로X 플랫폼에 맞게 최소 2.5D 이상 구현되며, 레벨 성장, 무기/방어구 단순 성장, 15킬 파티사냥 등 기능이 포함된다.",
       "playerFantasy": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣·색·핵심 장식을 그대로 계승한다. 이 게임은 로블로X에 맞게 최소 2.5D 이상 구현되며, 레벨 성장, 무기/방어구 단순 성장, 15킬 파티사냥 등 기능이 포함된다.",
       "coreFun": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣·색·핵심 장식을 그대로 계승한다."
+    },
+    "local_authoring_parts::a862969d69947b02d9f69042cbe2e9cc1d53edfd7af5ec53a39d554049443cde:coreLoop": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ]
+    },
+    "local_authoring_parts::fe20911dfb3ec62656bcfb7054bf2ad9c54359eba4a598514d31c5c955408958:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마을",
+        "포탈",
+        "몬스터",
+        "보스",
+        "AI 동료"
+      ],
+      "stateOutputs": [
+        "플레이어",
+        "보스 동료 해금",
+        "파티 편성",
+        "레벨업",
+        "보스 공략"
+      ],
+      "name": "3D 액션 RPG - AI 파티 사냥",
+      "purpose": "서로 다른 5개 대형 지역을 직접 전투로 돌파하며, 10명의 AI 유저 중 원하는 역할을 골라 파티 사냥을 하며 기여도로 더 큰 보상을 얻는 성장 재미",
+      "playerChoice": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣·색·핵심 장식을 그대로 계승한다. 이 게임은 로블로X에 맞게 최소 2.5D 이상 구현되며, 레벨 성장, 무기/방어구 단순 성장, 15킬 파티사냥 등 기능이 포함된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 227339,
-      "lastMs": 34292,
+      "totalMs": 372440,
+      "lastMs": 94552,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:20:09.664Z"
+      "updatedAt": "2026-10-08T21:22:34.769Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:16:21.952Z",
-  "updatedAt": "2026-10-08T21:20:09.665Z",
+  "updatedAt": "2026-10-08T21:22:34.769Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1464,7 +1497,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:20:09.665Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:22:34.769Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
