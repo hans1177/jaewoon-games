@@ -182,6 +182,29 @@ test('Roblox inventory menu stacks controls on narrow screens and does not clip 
  assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
 });
 
+test('equipment slots stay scrollable and authority-safe on narrow mobile screens',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const body=source.slice(begin,end);
+ assert.match(body,/Instance\.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroll\.Name="EquipmentScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/sheet\.Visible=not compact/);
+ assert.match(body,/grid:GetPropertyChangedSignal\("AbsoluteContentSize"\)/);
+ assert.match(body,/slots\.Size=UDim2\.new\(1,-8,0,grid\.AbsoluteContentSize\.Y\+10\)/);
+ assert.match(body,/row\.locked~=true and type\(options\.onEquip\)=="function"/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsEquipAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/scroll=scroll,Sync=sync/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|SetAsync|UpdateAsync|RenderStepped/);
+});
+
 test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
  const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
  const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
