@@ -90,25 +90,192 @@
       "name": "CROSS_PATH_CONVERGENCE",
       "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주며, 새로운 플레이 경로와 상태 변화를 생성하는 보조 요소.",
       "playerChoice": "선택된 업그레이드, 퍼시픽, 무기 또는 스킬을 기반으로 다음 선택을 결정합니다. 이 선택은 MAIN의 결과와 A/B의 상태 교환에 따라 다양한 방식으로 적용됩니다."
+    },
+    "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:4": {
+      "id": "SURVIVAL_05_SIGNATURE_SYSTEM",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "PATH_TO_ELEVATED_CONVERGENCE",
+      "purpose": "게임 내에서 채집/제작 선택의 결과가 다음 상태로 전환하는 복합적 경로를 생성하여 플레이어에게 새로운 가능성을 제공합니다.",
+      "playerChoice": "Run rewards or upgrades that lead to new progression choices, creating a dynamic and evolving gameplay path for the player to explore and master over time."
+    },
+    "local_authoring_parts::cb3ddcdcd320315545e2fa74a37d9adc78ad2ce9fe4174650478867d8f96d9de:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SURVIVAL_01_SIGNATURE_SYSTEM",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE",
+          "purpose": "Player's core action: fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "SURVIVAL_02_SIGNATURE_SYSTEM",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE",
+          "purpose": "Player's core action and progression choice in a real-time survival run, influencing the next state through resource management and skill upgrades.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build to influence the next progression choice."
+        },
+        {
+          "id": "SURVIVAL_03_SIGNATURE_SYSTEM",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE_B",
+          "purpose": "A/B 대축에서 선택 결과가 다음 상태와 비용, 위험, 경로에 연결되는 시스템입니다.",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SURVIVAL_04_SIGNATURE_SYSTEM",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "CROSS_PATH_CONVERGENCE",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주며, 새로운 플레이 경로와 상태 변화를 생성하는 보조 요소.",
+          "playerChoice": "선택된 업그레이드, 퍼시픽, 무기 또는 스킬을 기반으로 다음 선택을 결정합니다. 이 선택은 MAIN의 결과와 A/B의 상태 교환에 따라 다양한 방식으로 적용됩니다."
+        },
+        {
+          "id": "SURVIVAL_05_SIGNATURE_SYSTEM",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "PATH_TO_ELEVATED_CONVERGENCE",
+          "purpose": "게임 내에서 채집/제작 선택의 결과가 다음 상태로 전환하는 복합적 경로를 생성하여 플레이어에게 새로운 가능성을 제공합니다.",
+          "playerChoice": "Run rewards or upgrades that lead to new progression choices, creating a dynamic and evolving gameplay path for the player to explore and master over time."
+        }
+      ]
+    },
+    "local_authoring_parts::48a3585ffb0166308b15f20767beedc31ba175ddd2c155e1fbbb8c4e5ac3d7bc:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: Status changes based on selected upgrades, perks, weapons, or skills, leading to new progression choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SURVIVAL_01_SIGNATURE_SYSTEM",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE",
+          "purpose": "Player's core action: fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "SURVIVAL_02_SIGNATURE_SYSTEM",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE",
+          "purpose": "Player's core action and progression choice in a real-time survival run, influencing the next state through resource management and skill upgrades.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build to influence the next progression choice."
+        },
+        {
+          "id": "SURVIVAL_03_SIGNATURE_SYSTEM",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_THROUGH_ELEVATED_HORDE_B",
+          "purpose": "A/B 대축에서 선택 결과가 다음 상태와 비용, 위험, 경로에 연결되는 시스템입니다.",
+          "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "SURVIVAL_04_SIGNATURE_SYSTEM",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "CROSS_PATH_CONVERGENCE",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주며, 새로운 플레이 경로와 상태 변화를 생성하는 보조 요소.",
+          "playerChoice": "선택된 업그레이드, 퍼시픽, 무기 또는 스킬을 기반으로 다음 선택을 결정합니다. 이 선택은 MAIN의 결과와 A/B의 상태 교환에 따라 다양한 방식으로 적용됩니다."
+        },
+        {
+          "id": "SURVIVAL_05_SIGNATURE_SYSTEM",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_REWARDS",
+            "UPGRADES"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "PATH_TO_ELEVATED_CONVERGENCE",
+          "purpose": "게임 내에서 채집/제작 선택의 결과가 다음 상태로 전환하는 복합적 경로를 생성하여 플레이어에게 새로운 가능성을 제공합니다.",
+          "playerChoice": "Run rewards or upgrades that lead to new progression choices, creating a dynamic and evolving gameplay path for the player to explore and master over time."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 431081,
-      "lastMs": 37150,
+      "totalMs": 463371,
+      "lastMs": 32290,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:50:18.593Z"
+      "updatedAt": "2026-10-08T21:50:50.886Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-08T21:50:18.595Z",
+  "updatedAt": "2026-10-08T21:50:50.889Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2304,26 +2471,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:4": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "SURVIVAL_01_SIGNATURE_SYSTEM",
-          "SURVIVAL_02_SIGNATURE_SYSTEM",
-          "SURVIVAL_03_SIGNATURE_SYSTEM",
-          "SURVIVAL_04_SIGNATURE_SYSTEM"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:50:18.593Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-08T21:50:50.889Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
