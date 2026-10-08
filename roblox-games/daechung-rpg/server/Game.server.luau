@@ -1643,12 +1643,22 @@ RunService.Heartbeat:Connect(function(dt)
     -- 보스의 실제 첫 조우 사건만 대사/컷신 후보로 전달한다. 공격·보상·페이즈는 기존 전투 시스템 담당.
     if e.boss==true and e.def and e.def.Id then
      local id=tostring(e.def.Id)
-     bossSceneSeen[target]=bossSceneSeen[target]or{}
-     local rr=root(target)
-     if not bossSceneSeen[target][id]and bossDialogue[id]~=nil and rr and(rr.Position-e.part.Position).Magnitude<46 then
-      bossSceneSeen[target][id]=true
-      target:SetAttribute("BossIntroLine",e.def.Name.." : "..bossDialogue[id])
-      target:SetAttribute("BossIntroId",id)
+     if bossDialogue[id]~=nil then
+      -- 보스의 실제 목격자별로 첫 조우 연출을 전송한다. 공격 대상 및 전투 수치는 기존 서버가 결정한다.
+      for _,observer in ipairs(Players:GetPlayers())do
+       if n(observer,"CurrentZone",0)==e.zone then
+        local observedRoot=root(observer);local observedHumanoid=hum(observer)
+        if observedRoot and observedHumanoid and observedHumanoid.Health>0
+         and(observedRoot.Position-e.part.Position).Magnitude<46 then
+         bossSceneSeen[observer]=bossSceneSeen[observer]or{}
+         if not bossSceneSeen[observer][id]then
+          bossSceneSeen[observer][id]=true
+          observer:SetAttribute("BossIntroLine",e.def.Name.." : "..bossDialogue[id])
+          observer:SetAttribute("BossIntroId",id)
+         end
+        end
+       end
+      end
      end
     end
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
