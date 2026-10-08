@@ -1067,7 +1067,7 @@ local function meadowRoom(parent,pos,kind,index,rng)
  if kind=="EVENT"then
   local altar=ppart(parent,"MemoryAltar",Vector3.new(5,2,5),pos+Vector3.new(0,2,0),Color3.fromRGB(111,170,122),Enum.Material.Slate);label(altar,"기억 제단",Color3.fromRGB(199,255,204),28)
   local altarKey="MeadowAltar_"..tostring(meadowRunState.seed)
-  local altarPrompt=prompt(altar,"기억 제단","조사","EVENT_ALTAR","MeadowAltar"..index)
+  local altarPrompt=prompt(altar,"기억 제단","조사","EVENT_ALTAR","MeadowAltar"..tostring(meadowRunState.seed).."_"..index)
   altarPrompt:SetAttribute("ClaimAttribute",altarKey)
   altarPrompt.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 then return end
@@ -1077,7 +1077,7 @@ local function meadowRoom(parent,pos,kind,index,rng)
  elseif kind=="TREASURE"then
   local chest=ppart(parent,"HiddenChest",Vector3.new(5,3,4),pos+Vector3.new(0,2.2,0),Color3.fromRGB(143,101,55),Enum.Material.WoodPlanks);label(chest,"낡은 보물상자",Color3.fromRGB(255,224,143),24)
   local chestKey="MeadowChest_"..tostring(meadowRunState.seed)
-  local chestPrompt=prompt(chest,"보물상자","열기","TREASURE_CHEST","MeadowChest"..index)
+  local chestPrompt=prompt(chest,"보물상자","열기","TREASURE_CHEST","MeadowChest"..tostring(meadowRunState.seed).."_"..index)
   chestPrompt:SetAttribute("ClaimAttribute",chestKey)
   chestPrompt.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 then return end
@@ -1154,7 +1154,7 @@ generateMeadowRun=function(seed)
   local bossDef=hiddenBoss and z.HiddenBosses[rng:NextInteger(1,#z.HiddenBosses)]or nil
   meadowRunState.hiddenBossId=bossDef and bossDef.Id or""
   workspace:SetAttribute("MeadowHiddenBossId",bossDef and bossDef.Id or"")
-  local pr=prompt(stone,"수상한 룬석","조사","SECRET_RUNE","SecretRuneStone")
+  local pr=prompt(stone,"수상한 룬석","조사","SECRET_RUNE","SecretRuneStone"..tostring(meadowRunState.seed))
   pr.Triggered:Connect(function(p)
    if n(p,"CurrentZone",0)~=1 or stone:GetAttribute("Revealed")==true then return end
    stone:SetAttribute("Revealed",true);pr.Enabled=false
