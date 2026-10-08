@@ -751,25 +751,52 @@
     },
     "local_authoring_parts::6935c0b5101815201ccbdf61c72885923bdaa786bd0c07e3681a9a0424ce84e6:newGameplay": {
       "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+    },
+    "local_authoring_parts::6935c0b5101815201ccbdf61c72885923bdaa786bd0c07e3681a9a0424ce84e6:systemImpact": {
+      "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+    },
+    "local_authoring_parts::e1a3c3efe916dc7bf50d4f739c5adb9c138500770ae981b621aecbba932b97b1:contentExpansionPlan:2": {
+      "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status",
+      "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments.",
+      "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+    },
+    "local_authoring_parts::75027ca7612b3929a0eed281e9c6dc50d76eece109be7c94e90e7391cd1c2192:contentExpansionPlan": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        },
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        },
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 54,
+      "calls": 55,
+      "successes": 55,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3772486,
-      "lastMs": 92707,
+      "totalMs": 3864082,
+      "lastMs": 91596,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:37:14.080Z"
+      "updatedAt": "2026-10-08T23:38:45.679Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T23:37:14.080Z",
+  "updatedAt": "2026-10-08T23:38:45.691Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2967,88 +2994,20 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "BATTLE_STATUS_UPDATE"
+          "path": "systemInterconnections",
+          "detail": "ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections: ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "RESOURCE_POOL_INCREASE"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "DEFENSE_STRATEGY_UNLOCKED"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].milestone",
-          "value": "CROSS_REGION_DEFENSIVE_ADAPTATION"
-        },
-        "requiredAction": "contentExpansionPlan[3].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].milestone",
-          "value": "DELVE_SYSTEM_EXPANSION"
-        },
-        "requiredAction": "contentExpansionPlan[4].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
+          "systemInterconnections"
         ]
       },
       {
@@ -3076,9 +3035,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "ENEMY_WAVE→RESOURCE_POOL의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: ENEMY_WAVE→RESOURCE_POOL의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3093,9 +3052,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "ENEMY_WAVE→DEFENSE_STRATEGY의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: ENEMY_WAVE→DEFENSE_STRATEGY의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_WAVE→BATTLE_STATUS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3110,26 +3069,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "ENEMY_WAVE→CROSS_REGION_DEFENSIVE_ADAPTATION의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "ENEMY_WAVE→CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: ENEMY_WAVE→CROSS_REGION_DEFENSIVE_ADAPTATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ENEMY_WAVE→DELVE의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ENEMY_WAVE→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: ENEMY_WAVE→CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3156,7 +3098,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3166,6 +3108,23 @@
         "resourceFlow": "Enemy wave defeated -> Resource pool increases -> New defense strategies unlocked",
         "balanceRules": "Resource pool grows with new upgrade opportunities; defense strategies become more adaptive over time"
       },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        },
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        },
+        {
+          "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status",
+          "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments.",
+          "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+        }
+      ],
       "failureRetryRisk": {
         "failureStates": [
           "Enemy wave not properly placed leading to ineffective defense",
@@ -3178,10 +3137,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:37:14.080Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T23:38:45.685Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
