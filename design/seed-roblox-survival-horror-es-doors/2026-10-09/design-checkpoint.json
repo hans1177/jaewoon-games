@@ -19,25 +19,40 @@
     "local_authoring_parts::6c2c3b71bc63310d88534d47cd69696461f1e0af717a03158a1ed41cccd28cb0:identity,playerFantasy": {
       "identity": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability.",
       "playerFantasy": "Last Lantern은 모바일 플랫폼에서 즉시 이해 가능한 게임이며, 사용자가 직접 선택하여 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'라는 대표 선택 사이에 연결되어 있으며, 이 과정에서는 위험/보상/다음 선택의 순환 구조가 존재한다. 게임은 단순한 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 다양한 플레이 경험을 제공하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법의 가능성으로 이루어진다."
+    },
+    "local_authoring_parts::6c2c3b71bc63310d88534d47cd69696461f1e0af717a03158a1ed41cccd28cb0:coreFun": {
+      "coreFun": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability."
+    },
+    "local_authoring_parts::2609c56d042fb9b5e3615a6e881df32bf6f03d280f0be6f0f692f4d9bdd5e10e:identity,playerFantasy,coreFun": {
+      "identity": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability.",
+      "playerFantasy": "Last Lantern은 모바일 플랫폼에서 즉시 이해 가능한 게임이며, 사용자가 직접 선택하여 월드 상태를 바꾸는 PUZZLE 게임이다. 게임의 핵심 재미는 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동과 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'라는 대표 선택 사이에 연결되어 있으며, 이 과정에서는 위험/보상/다음 선택의 순환 구조가 존재한다. 게임은 단순한 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 다양한 플레이 경험을 제공하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견·대응법의 가능성으로 이루어진다.",
+      "coreFun": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability."
+    },
+    "local_authoring_parts::0c8ad5cb2af45a0d53ad131eedeab0c36da0d2c07dbd1a8441428e0f0b370e78:coreLoop": {
+      "coreLoop": [
+        "INPUT: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "SELECT: Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "OUTPUT: Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 98732,
-      "lastMs": 20661,
+      "totalMs": 131370,
+      "lastMs": 16724,
       "lastError": null,
-      "updatedAt": "2026-10-08T20:51:18.421Z"
+      "updatedAt": "2026-10-08T20:51:51.064Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:51:18.423Z",
+  "updatedAt": "2026-10-08T20:51:51.064Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2074,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T20:51:18.423Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T20:51:51.064Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
