@@ -661,25 +661,41 @@
     },
     "local_authoring_parts::40df8d41e5da5372073e99ffcc56ffabe28fea35d424e42ce0007e7552b2b372:trigger": {
       "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities"
+    },
+    "local_authoring_parts::40df8d41e5da5372073e99ffcc56ffabe28fea35d424e42ce0007e7552b2b372:stateChange": {
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::cc48d41f8d0aa25d94c04892c03b3ebf1e840132ef4848f68c6f1a7b5a4f8b80:systemInterconnections:1": {
+      "fromId": "INCOMING_INSECT_WAVE",
+      "toId": "DEFENDER_POSITIONS",
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION"
+      ],
+      "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+      "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM_B",
+      "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities",
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2604339,
-      "lastMs": 30994,
+      "totalMs": 2639147,
+      "lastMs": 34808,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:58:04.492Z"
+      "updatedAt": "2026-10-08T23:58:39.301Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-08T23:58:04.492Z",
+  "updatedAt": "2026-10-08T23:58:39.303Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3057,7 +3073,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:58:04.492Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:58:39.303Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
