@@ -917,25 +917,41 @@
         "DefensiveStrategy"
       ],
       "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\""
+    },
+    "local_authoring_parts::ddb13ac802cbff468b151aad521f6054e2720473d3b5ead8796beb53457c355e:toSystem,trigger,stateChange": {
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
+    },
+    "local_authoring_parts::3ee4c82f03ad767d3f2da06b326e0ef5ef7dfa67ce5e16ad01f1271df1b7bce1:systemInterconnections:4": {
+      "fromId": "enemyWaveType",
+      "toId": "defensiveStrategy",
+      "stateKeys": [
+        "DefensiveStrategy"
+      ],
+      "fromSystem": "EnemyDefenseSynergy\",\"toSystem\":\"EnemyDefenseSynergy\",\"description\":\"enemyWaveType→defensiveStrategy의 출력과 입력 상태가 연결되지 않는다\",\"requiredAction\":\"systemInterconnections: enemyWaveType→\"",
+      "toSystem": "EnemyDefenseSynergy",
+      "trigger": "enemyWaveType",
+      "stateChange": "defensiveStrategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 40,
+      "calls": 41,
+      "successes": 41,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2673029,
-      "lastMs": 93940,
+      "totalMs": 2763741,
+      "lastMs": 90712,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:38:40.430Z"
+      "updatedAt": "2026-10-08T16:40:11.144Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:10:25.792Z",
-  "updatedAt": "2026-10-08T16:38:40.430Z",
+  "updatedAt": "2026-10-08T16:40:11.151Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3237,7 +3253,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3288,10 +3304,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:38:40.430Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:40:11.147Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
