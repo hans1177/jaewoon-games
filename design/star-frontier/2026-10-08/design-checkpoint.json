@@ -122,25 +122,280 @@
       "name": "BOARD_GAME_SYSTEM",
       "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
       "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+    },
+    "local_authoring_parts::dd8712b530a61abf451c6d0079f29eec88b9e312a1630a984422b7c3100c2170:signatureSystems:4": {
+      "id": "STAR-FRONTIER-DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "MOVE_LIMIT",
+        "OBSTACLE_SET",
+        "REWARD_POOL",
+        "NEXT_STAGE_PATTERN",
+        "CURRENT_STAGE_PATTERN"
+      ],
+      "stateOutputs": [
+        "GAME_STATE",
+        "PLAYER_ACTION",
+        "SYSTEM_RESPONSE",
+        "NEXT_STAGE_PATTERN",
+        "REWARD_ACQUIRED"
+      ],
+      "name": "BOARD_GAME_SYSTEM",
+      "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+      "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+    },
+    "local_authoring_parts::1777b7ecc4beda7a6c5602c83e207a86c26036c20923d245f19842ac2e53d4be:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "STAR-FRONTIER-MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-DELVE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        }
+      ]
+    },
+    "local_authoring_parts::a0a1e18a9ad8bd57eed619e77da9dab0b132f420516dfee63d7fdecc9578af99:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "STAR-FRONTIER-MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-MAIN",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-DELVE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        },
+        {
+          "id": "STAR-FRONTIER-DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "MOVE_LIMIT",
+            "OBSTACLE_SET",
+            "REWARD_POOL",
+            "NEXT_STAGE_PATTERN",
+            "CURRENT_STAGE_PATTERN"
+          ],
+          "stateOutputs": [
+            "GAME_STATE",
+            "PLAYER_ACTION",
+            "SYSTEM_RESPONSE",
+            "NEXT_STAGE_PATTERN",
+            "REWARD_ACQUIRED"
+          ],
+          "name": "BOARD_GAME_SYSTEM",
+          "purpose": "Implement a dynamic board game system where players interact with a mutable board state, face move limitations, and navigate through obstacle sets to achieve rewards and unlock new stages.",
+          "playerChoice": "Select a move from the available move limit, navigate through obstacle sets, and acquire rewards to progress through the game stage."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 665949,
-      "lastMs": 72526,
+      "totalMs": 738659,
+      "lastMs": 72710,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:04:23.657Z"
+      "updatedAt": "2026-10-08T13:05:36.368Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:04:23.657Z",
+  "updatedAt": "2026-10-08T13:05:36.398Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2177,7 +2432,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:04:23.657Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:05:36.398Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
