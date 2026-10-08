@@ -619,25 +619,82 @@
       "name": "활동 공간 탐험 시스템",
       "purpose": "플레이어가 휴먼 GO에서 단순한 활동 공간을 탐험하고, 인물, 작업, 수집 가능한 기회를 발견하는 과정을 담당하는 시스템.",
       "playerChoice": "활동 공간을 탐험하고, 인물, 작업, 또는 수집 가능한 기회를 발견하는 선택."
+    },
+    "local_authoring_parts::765f10c0eddafa21af13036bb7098a2700a72a15abcfd6639a6f8489ea6cc9f7:signatureSystems:1": {
+      "id": "signature-core",
+      "grammarRole": "A",
+      "stateInputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "stateOutputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "name": "활동 공간 탐험 시스템",
+      "purpose": "플레이어가 휴먼 GO에서 단순한 활동 공간을 탐험하고, 인물, 작업, 수집 가능한 기회를 발견하는 과정을 담당하는 시스템.",
+      "playerChoice": "활동 공간을 탐험하고, 인물, 작업, 또는 수집 가능한 기회를 발견하는 선택."
+    },
+    "local_authoring_parts::765f10c0eddafa21af13036bb7098a2700a72a15abcfd6639a6f8489ea6cc9f7:signatureSystems:2": {
+      "id": "signature-B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "stateOutputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "name": "활동 공간 탐험 시스템",
+      "purpose": "플레이어가 휴먼 GO에서 단순한 활동 공간을 탐험하고, 인물, 작업, 수집 가능한 기회를 발견하는 과정을 담당하는 시스템.",
+      "playerChoice": "활동 공간을 탐험하고, 인물, 작업, 또는 수집 가능한 기회를 발견하는 선택."
+    },
+    "local_authoring_parts::765f10c0eddafa21af13036bb7098a2700a72a15abcfd6639a6f8489ea6cc9f7:signatureSystems:3": {
+      "id": "signature-c",
+      "grammarRole": "c",
+      "stateInputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "stateOutputs": [
+        "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다.",
+        "signatureSystems: 각 시스템의 id는 고정 규칙 ID다.",
+        "signatureSystems: purpose는 최소 20자 이상의 구체적 내용을 담는다.",
+        "signatureSystems: playerChoice는 최소 20자 이상의 구체적 내용을 담는다."
+      ],
+      "name": "활동 공간 탐험 시스템",
+      "purpose": "플레이어가 휴먼 GO에서 단순한 활동 공간을 탐험하고, 인물, 작업, 수집 가능한 기회를 발견하는 과정을 담당하는 시스템.",
+      "playerChoice": "활동 공간을 탐험하고, 인물, 작업, 또는 수집 가능한 기회를 발견하는 선택."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2203719,
-      "lastMs": 39273,
+      "totalMs": 2548718,
+      "lastMs": 112924,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:26:47.583Z"
+      "updatedAt": "2026-10-08T15:32:32.587Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:17:47.490Z",
-  "updatedAt": "2026-10-08T15:26:47.583Z",
+  "updatedAt": "2026-10-08T15:32:32.587Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2601,7 +2658,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:26:47.583Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:32:32.587Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
