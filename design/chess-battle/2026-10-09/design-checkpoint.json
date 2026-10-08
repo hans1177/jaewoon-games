@@ -565,25 +565,42 @@
         "threatInfo"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB"
+    },
+    "local_authoring_parts::3cd5c1811684a3b51b6497f357e20cde7ab4936275355272195edc4c0e7d6c1a:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB",
+      "trigger": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않음",
+      "stateChange": "boardState와 threatInfo의 상태 변화로 인해 strategyPath 및 growthPotential이 생성됨"
+    },
+    "local_authoring_parts::a849443f116fbc8afca70a971a2f4c3901fd8eb61ce3065209d4b1f0352b99c8:systemInterconnections:4": {
+      "fromId": "worldStateMapper",
+      "toId": "dynamicWorldMapper",
+      "stateKeys": [
+        "boardState",
+        "threatInfo"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB",
+      "toSystem": "CORE_LOOP_DESIGN_SYSTEM_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789AB",
+      "trigger": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않음",
+      "stateChange": "boardState와 threatInfo의 상태 변화로 인해 strategyPath 및 growthPotential이 생성됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2308628,
-      "lastMs": 112909,
+      "totalMs": 2419139,
+      "lastMs": 110511,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:37:04.526Z"
+      "updatedAt": "2026-10-08T18:38:55.039Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:58:35.822Z",
-  "updatedAt": "2026-10-08T18:37:04.526Z",
+  "updatedAt": "2026-10-08T18:38:55.046Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2739,9 +2756,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "dynamicWorldMapper→dynamicStrategicMapper의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: dynamicWorldMapper→dynamicStrategicMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2756,9 +2773,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "dynamicStrategicMapper→evolvingStrategicMapper의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: dynamicStrategicMapper→evolvingStrategicMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2773,9 +2790,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "evolvingStrategicMapper→worldStateMapper의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: evolvingStrategicMapper→worldStateMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2790,9 +2807,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "worldStateMapper→dynamicStrategicMapper의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: worldStateMapper→dynamicStrategicMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: worldStateMapper→dynamicWorldMapper의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2819,7 +2836,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2863,10 +2880,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:37:04.526Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:38:55.042Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
