@@ -482,25 +482,49 @@
         "worldState"
       ],
       "fromSystem": "SIGNATURESYSTEMS[3]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16"
+    },
+    "local_authoring_parts::18f1364b7aee9bc83a548fc29dcb8cf51333681407f9197a0ebf8a34800daa23:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
+    },
+    "local_authoring_parts::96f5ad161c2d97707dd954e8ba73664a60a860092d63abfe69207dc09e0cb273:systemInterconnections:3": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "worldState"
+      ],
+      "fromSystem": "SIGNATURESYSTEMS[3]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16",
+      "toSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_TO_SYSTEM_FROM_SYSTEM",
+      "trigger": "worldState",
+      "stateChange": "newWorldState"
+    },
+    "local_authoring_parts::3c5025dc25364a11e339bca513f5a42c47a472ca8a9e0d7b705a181681e273ef:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState"
+      ],
+      "fromSystem": "SIGNATURESYSTEMS[0]_WORLDSTATE_SYSTEM_NAME_16_CHAR_MINIMUM_LENGTH_24_CHAR_MAXIMUM_LENGTH_TRIGGER_STATE_CHANGE_24_CHAR_MINIMUM_LENGTH_16_CHAR_MAXIMUM_LENGTH_FROM_SYSTEM_TO_SYSTEM_16"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2020714,
-      "lastMs": 100611,
+      "totalMs": 2222388,
+      "lastMs": 101934,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:34:07.598Z"
+      "updatedAt": "2026-10-08T18:37:29.276Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:00:26.817Z",
-  "updatedAt": "2026-10-08T18:34:07.598Z",
+  "updatedAt": "2026-10-08T18:37:29.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2507,7 +2531,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:34:07.598Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:37:29.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
