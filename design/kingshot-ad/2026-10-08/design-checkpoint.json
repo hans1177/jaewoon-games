@@ -889,25 +889,44 @@
         "strategy_tree"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE"
+    },
+    "local_authoring_parts::41a2a1142b8265a5d91a9795f41a80b2dd77f83230240f11a1da42218a17a079:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
+    },
+    "local_authoring_parts::7ab0773b722d9c2f43dc1941621b25905da0679248f1320246a922aa6f5756d4:systemInterconnections:4": {
+      "fromId": "enemy_wave",
+      "toId": "defensive_structure",
+      "stateKeys": [
+        "enemy_wave",
+        "defensive_structure",
+        "resource_pool",
+        "strategy_tree"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb/identity/coreFun/coreLoop/CAUSALDNA_ID/REFERENCE_HOMAGE_PLAN/narrativeDialoguePlan/progressionDirection/SLICE",
+      "trigger": "enemy_wave",
+      "stateChange": "defensive_structure_reconfigured"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2502158,
-      "lastMs": 56835,
+      "totalMs": 2555654,
+      "lastMs": 53496,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:02:31.950Z"
+      "updatedAt": "2026-10-08T10:03:25.448Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:32:33.592Z",
-  "updatedAt": "2026-10-08T10:02:31.950Z",
+  "updatedAt": "2026-10-08T10:03:25.454Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3209,7 +3228,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3258,10 +3277,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:02:31.950Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:03:25.451Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
