@@ -388,25 +388,42 @@
       "name": "DELVE",
       "purpose": "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
       "playerChoice": "Choose to gather or fight, then convert the result into survival tools or a safer route."
+    },
+    "local_authoring_parts::ba9be3c2084a693cf32e6c3a939ab3d7b412c77dae9f9f6ea1a24af091e5b98e:signatureSystems:1": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_B",
+      "grammarRole": "A",
+      "stateInputs": [
+        "SELECTED_ACTION",
+        "RESOURCE_ACQUISITION",
+        "ECOSYSTEM_LEARNING"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_TOOL_UPGRADE",
+        "ROUTE_PLAN_RECONFIGURATION",
+        "SYSTEMIC_INSIGHT_ENHANCEMENT"
+      ],
+      "name": "B",
+      "purpose": "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+      "playerChoice": "Choose to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 425413,
-      "lastMs": 38958,
+      "totalMs": 463466,
+      "lastMs": 38053,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:52:44.284Z"
+      "updatedAt": "2026-10-08T17:53:22.338Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:45:38.832Z",
-  "updatedAt": "2026-10-08T17:52:44.284Z",
+  "updatedAt": "2026-10-08T17:53:22.338Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2785,7 +2802,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T17:52:44.284Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:53:22.338Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
