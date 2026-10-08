@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T21:03:06.109Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:04:39.283Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/island-village/2026-10-09/design-seed.json",
+    "contentDigest": "f40135f775117b97032a5054c78cf293dde84770bd036df2f762ad9c90db2e76",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 908185,
-      "lastMs": 102424,
+      "totalMs": 1001355,
+      "lastMs": 93170,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:03:06.106Z"
+      "updatedAt": "2026-10-08T21:04:39.280Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T21:03:06.110Z"
+  "updatedAt": "2026-10-08T21:04:39.291Z"
 }
