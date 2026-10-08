@@ -459,25 +459,44 @@
       "name": "골목 군단 대전 시스템",
       "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
       "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
+    },
+    "local_authoring_parts::02ac01cbbf15d132ac7d4074478e8e3734433c961cde66f7f3a80f44c6545b87:signatureSystems:1": {
+      "id": "signatureSystems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWaveType",
+        "resourcePool",
+        "defenseStrategy",
+        "currentStage"
+      ],
+      "stateOutputs": [
+        "towersPlaced",
+        "defendersDeployed",
+        "resourceSpent",
+        "defenseAdaptation"
+      ],
+      "name": "골목 군단 대전 시스템",
+      "purpose": "플레이어가 매 차례마다 새로운 전략을 수립하고, 이전 선택의 결과를 기반으로 다음 상태를 변화시키는 반복 가능한 핵심 루프를 구축하는 게임 시스템",
+      "playerChoice": "플레이어는 월드 상태와 상호작용하며, 성장과 변화를 통해 새로운 행동과 선택을 탐색하는 시스템을 사용한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1261426,
-      "lastMs": 107342,
+      "totalMs": 1368034,
+      "lastMs": 106608,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:49:06.384Z"
+      "updatedAt": "2026-10-08T10:50:52.994Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:28:04.579Z",
-  "updatedAt": "2026-10-08T10:49:06.384Z",
+  "updatedAt": "2026-10-08T10:50:52.994Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2708,7 +2727,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:49:06.384Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:50:52.994Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
