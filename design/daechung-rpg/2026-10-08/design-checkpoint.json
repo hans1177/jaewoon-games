@@ -3,30 +3,18 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "725de40dea3350e204fef6e9da0316dce143770662b438b99f360a072527215d",
+  "fingerprint": "20db52c21f5af0bd604a55182fafd5157820e03852e6b7e139ad73d5dc55e6c8",
   "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
-  "engineDigest": "8c8ca966a8888e75b243fb5bc484ff1748c693b0bdfc1b940335641ea6aebba6",
+  "engineDigest": "d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 308257,
-      "lastMs": 60820,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:48:29.999Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T05:43:21.723Z",
-  "updatedAt": "2026-10-08T05:48:30.005Z",
+  "createdAt": "2026-10-08T06:47:50.251Z",
+  "updatedAt": "2026-10-08T06:47:50.266Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1440,16 +1428,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "a81290c1ba10703a2252982e41398417751a86fb7d2e05d220ff13cf707921db": true,
-    "a20e53a703a3e8b642c3e04ca923bf5872eda18f4339782a003b6c8a4594a1ee": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }
