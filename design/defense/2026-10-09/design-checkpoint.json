@@ -34,25 +34,40 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::52119ddf5779d68a85af6c3ab0fc412d6b96cef684f639258f470c641903fd76:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_WAVE_STATE",
+        "TOWER_PLACEMENT_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE",
+        "RESOURCE_ALLOCATION"
+      ],
+      "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+      "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+      "playerChoice": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 439258,
-      "lastMs": 60745,
+      "totalMs": 490152,
+      "lastMs": 50894,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:54:05.841Z"
+      "updatedAt": "2026-10-08T17:54:56.736Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:46.549Z",
-  "updatedAt": "2026-10-08T17:54:05.841Z",
+  "updatedAt": "2026-10-08T17:54:56.736Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2262,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:54:05.841Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:54:56.736Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
