@@ -657,6 +657,8 @@ local rpgMenu=RPGMenu.install(C,gui,p,{
  end,
  trackQuest=function()objective.Visible=true end,
  changeRoom=function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end,
+ buyWeapon=function()remote:FireServer(C.Actions.BUY_WEAPON)end,
+ buyArmor=function()remote:FireServer(C.Actions.BUY_ARMOR)end,
  toggleTips=function()hint.Visible=not hint.Visible end,
 })
 
