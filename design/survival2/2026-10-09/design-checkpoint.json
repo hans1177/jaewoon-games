@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::197b4b3554267b10552dff26f05c5b757591cfc735b0c5c032604ec2769653ae:identity": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 202166,
+      "lastMs": 202166,
+      "lastError": null,
+      "updatedAt": "2026-10-08T21:06:53.186Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:03:31.014Z",
+  "updatedAt": "2026-10-08T21:06:53.186Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2237,5 +2253,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T21:06:53.186Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
