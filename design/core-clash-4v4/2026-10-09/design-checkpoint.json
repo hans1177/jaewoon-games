@@ -63,25 +63,39 @@
       "name": "Run and upgrade to progress",
       "purpose": "Player runs through a short survival run, upgrades their build, and progresses to the next stage.",
       "playerChoice": "Run through a short real-time survival run while upgrading your current build to increase your chances of progressing to the next stage in the game flow."
+    },
+    "local_authoring_parts::520973cb2d3d82754e8dc7c93c530f786b345b424fceb4b607117f52f3c9e1f1:signatureSystems:2": {
+      "id": "CORE-4V4-SIGNATURE-3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN",
+        "UPGRADE"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION"
+      ],
+      "name": "Run and upgrade to progress",
+      "purpose": "Player progresses through the game by running and upgrading their build.",
+      "playerChoice": "Run and upgrade your current build to unlock new progression options in the next stage of the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 465295,
-      "lastMs": 48116,
+      "totalMs": 511051,
+      "lastMs": 45756,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:36:34.509Z"
+      "updatedAt": "2026-10-08T21:37:20.267Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-08T21:36:34.509Z",
+  "updatedAt": "2026-10-08T21:37:20.267Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,7 +2294,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:36:34.509Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:37:20.267Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
