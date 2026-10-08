@@ -257,25 +257,108 @@
           "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
         }
       ]
+    },
+    "local_authoring_parts::bd8744e3369e8b17e41c089cf0c89aa5902d9e067a48b85ed28c7e37597c7e55:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::547155a485a5ab21f37c8b8283f2e8f4211cfdf67a2d983017aeab4b4471c3b8:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "EARN_RESOURCES"
+          ],
+          "stateOutputs": [
+            "ADAPT_DEFENSE"
+          ],
+          "name": "Enemy Defense Synergy",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+          "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "EARN_RESOURCES"
+          ],
+          "stateOutputs": [
+            "ADAPT_DEFENSE"
+          ],
+          "name": "Enemy Defense Synergy II",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+          "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "EARN_RESOURCES"
+          ],
+          "stateOutputs": [
+            "ADAPT_DEFENSE"
+          ],
+          "name": "Enemy Defense Synergy II",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+          "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "EARN_RESOURCES"
+          ],
+          "stateOutputs": [
+            "ADAPT_DEFENSE"
+          ],
+          "name": "Enemy Defense Synergy III",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+          "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "EARN_RESOURCES"
+          ],
+          "stateOutputs": [
+            "ADAPT_DEFENSE"
+          ],
+          "name": "Enemy Defense Synergy IV",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다.",
+          "playerChoice": "READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 897694,
-      "lastMs": 123131,
+      "totalMs": 987202,
+      "lastMs": 89508,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:06:59.654Z"
+      "updatedAt": "2026-10-08T13:08:29.166Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:52:01.924Z",
-  "updatedAt": "2026-10-08T13:06:59.657Z",
+  "updatedAt": "2026-10-08T13:08:29.174Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2466,12 +2549,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:06:59.657Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "Pocket Foundry은 플레이어가 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 반복 가능한 선택과 그 결과가 위험·보상·자원을 연결하는 반복 루프이며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 정체성은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.과 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.이며, 선택은 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.와 Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.로 구성된다. 게임의 시스템은 MAIN×A×B×c의 관계를 통해 상호작용을",
+      "playerFantasy": "Pocket Foundry은 플레이어가 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 반복 가능한 선택과 그 결과가 위험·보상·자원을 연결하는 반복 루프이며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다. 게임의 정체성은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.과 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.이며, 선택은 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.와 Adapt the defense to enemy types and wave composition, protect the objective, и清",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.과 Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 반복하여, 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이의 핵심 루프를 구축한다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY의 핵심 재미를 확보한다. 게임의 정체성은 READ_NEXT_ENEMY_WAVE와 EARN_RESOURCES의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용으로 구성된다. 게임의 핵심 행동은 READ_NEXT_ENEMY_WAVE이며, 선택은 EARN_RESOURCES와 ADAPT_DEFENSE로 구성된다. 이 루프는 반복, 위험, 보상, 자원의 연결을 통해 플레이어의 선택과 상태 변화를 유도하며, 게임의 재미와 구조를 강화한다.",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:08:29.169Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
