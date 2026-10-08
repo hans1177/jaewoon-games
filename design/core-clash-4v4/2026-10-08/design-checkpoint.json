@@ -311,25 +311,126 @@
           "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
         }
       ]
+    },
+    "local_authoring_parts::3ed3e60f6f649639992efe56adcb18bd1e2a8a262acc3667bd51e0ab11fe2a12:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::b6774fcc2ffb8b235162bb7138ca4dc7624d94fc5177ceb03bafcfe571a0fa6c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행합니다. 이는 게임의 초기 단계에서 발생하는 기본적인 선택과 상태 변화를 의미합니다.",
+        "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다. 이 단계에서는 게임의 진전과 플레이어의 선택이 상호작용하며, 게임의 핵심 재미를 구축합니다.",
+        "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다. 이 단계에서는 게임의 결말과 플레이어의 성취감을 제공하며, 게임의 전체적인 구조를 정립합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-CLASH-4V4-REF-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerFantasy",
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "stateOutputs": [
+            "identity",
+            "playerFantasy",
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "name": "CORE-CLASH-4V4-REF-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "CORE-CLASH-4V4-REF-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerFantasy",
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "stateOutputs": [
+            "identity",
+            "playerFantasy",
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "name": "CORE-CLASH-4V4-REF-1",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "CORE-CLASH-4V4-REF-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "stateOutputs": [
+            "identity",
+            "playerFantasy"
+          ],
+          "name": "CORE-CLASH-4V4-REF-2",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "CORE-CLASH-4V4-REF-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "stateOutputs": [
+            "identity",
+            "playerFantasy"
+          ],
+          "name": "CORE-CLASH-4V4-REF-3",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "CORE-CLASH-4V4-REF-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "coreFun",
+            "coreLoop",
+            "signatureSystems"
+          ],
+          "stateOutputs": [
+            "identity",
+            "playerFantasy"
+          ],
+          "name": "CORE-CLASH-4V4-REF-4",
+          "purpose": "ACTION_SURVIVAL_ROGUELITE",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 460731,
-      "lastMs": 39039,
+      "totalMs": 493896,
+      "lastMs": 33165,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:50:06.024Z"
+      "updatedAt": "2026-10-08T12:50:39.193Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T12:50:06.027Z",
+  "updatedAt": "2026-10-08T12:50:39.200Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2524,12 +2625,135 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:50:06.027Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[0].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[0].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[1].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[1].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[2].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[2].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[3].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[3].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[4].purpose",
+          "value": "ACTION_SURVIVAL_ROGUELITE"
+        },
+        "requiredAction": "signatureSystems[4].purpose의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "코어 전장 4대4은 플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
+      "playerFantasy": "코어 전장 4대4는 플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
+      "coreFun": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 이는 시그니처 세계 규칙과 핵심 루프를 통해 플레이어의 선택과 세계 상태의 변화를 연결하는 게임 구조이다. 게임의 핵심 재미는 반복적인 선택과 상태 변화, 위험·보상의 상호작용, 그리고 다양한 선택의 조합과 발전을 통해 구현된다. 게임의 플랫폼별 구현은 기존 원본의 성능, 연출, 배포, 검증 기준에 맞게 적용된다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 상태 변화, 인과법칙, 보상, 위험, 그리고 플레이어의 선택을 포함하며, 이는 게임의 구조와 규칙을 정의한다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 단순한 반복과 다른 경로·위험·결과를 만드는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고, RPG식 시스템을 강제하지 않는다. 게임의 설계는 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안, 저장, 네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안",
+      "coreLoop": [
+        "OPENING: 플레이어가 게임을 시작하여 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 수행합니다. 이는 게임의 초기 단계에서 발생하는 기본적인 선택과 상태 변화를 의미합니다.",
+        "DEVELOPMENT: 플레이어는 선택 결과에 따라 보상·위험·다음 선택을 경험합니다. 이 단계에서는 게임의 진전과 플레이어의 선택이 상호작용하며, 게임의 핵심 재미를 구축합니다.",
+        "RESOLUTION: 게임은 반복적인 선택과 상태 변화를 통해 플레이어의 목표를 달성합니다. 이 단계에서는 게임의 결말과 플레이어의 성취감을 제공하며, 게임의 전체적인 구조를 정립합니다."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T12:50:39.196Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
