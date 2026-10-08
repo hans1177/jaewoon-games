@@ -445,25 +445,40 @@
       "name": "Start Immediately with Simple One-Thumb Tap or Swipe Input",
       "purpose": "Establishes the core gameplay loop by defining the player's immediate action and the resulting progression in the game world.",
       "playerChoice": "Player chooses to start the game with a simple input and a clear goal, which then determines the next world state and their subsequent choice."
+    },
+    "local_authoring_parts::c1fd29211d5fdc5e49532e4146095525178e5be28547dc3ff7c07ff73f85b322:signatureSystems:3": {
+      "id": "START_IMMEDIATELY_WITH_SIMPLE_INPUT",
+      "grammarRole": "c",
+      "stateInputs": [
+        "simple one-thumb tap or swipe input",
+        "clear score, distance, or short-session goal"
+      ],
+      "stateOutputs": [
+        "next world state",
+        "player choice"
+      ],
+      "name": "Start Immediately with Simple One-Thumb Tap or Swipe Input",
+      "purpose": "Establishes the core gameplay loop by defining the player's immediate action and the resulting progression in the game world.",
+      "playerChoice": "Player chooses to start the game with a simple input and a clear goal, which then determines the next world state and their subsequent choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1677323,
-      "lastMs": 102391,
+      "totalMs": 1779659,
+      "lastMs": 102336,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:09:23.971Z"
+      "updatedAt": "2026-10-08T13:11:06.308Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:41:26.595Z",
-  "updatedAt": "2026-10-08T13:09:23.971Z",
+  "updatedAt": "2026-10-08T13:11:06.308Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2423,7 +2438,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:09:23.971Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:11:06.308Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
