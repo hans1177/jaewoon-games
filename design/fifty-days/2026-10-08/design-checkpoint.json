@@ -462,25 +462,137 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_03",
       "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
       "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::248742c25a4841efbe9b94dc3ee8d062937a9a4e809db2e133f10baa17bf8778:signatureSystems:4": {
+      "id": "MAIN_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어의 선택",
+        "세계 상태",
+        "보상",
+        "위험"
+      ],
+      "stateOutputs": [
+        "세계 상태 변화",
+        "보상",
+        "위험"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_04",
+      "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+      "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::40fe2184d1a1a98173d32cf891048de3cef6f3677b1c80e0aaa0c6bc2c1e2b56:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어의 선택",
+            "세계 상태",
+            "보상",
+            "위험"
+          ],
+          "stateOutputs": [
+            "세계 상태 변화",
+            "보상",
+            "위험"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+          "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "A",
+          "stateInputs": [
+            "플레이어의 선택",
+            "세계 상태",
+            "보상",
+            "위험"
+          ],
+          "stateOutputs": [
+            "세계 상태 변화",
+            "보상",
+            "위험"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+          "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE",
+          "grammarRole": "B",
+          "stateInputs": [
+            "플레이어의 선택",
+            "세계 상태",
+            "보상",
+            "위험"
+          ],
+          "stateOutputs": [
+            "세계 상태 변화",
+            "보상",
+            "위험"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+          "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_03",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어의 선택",
+            "세계 상태",
+            "보상",
+            "위험"
+          ],
+          "stateOutputs": [
+            "세계 상태 변화",
+            "보상",
+            "위험"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_03",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+          "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "MAIN_04",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어의 선택",
+            "세계 상태",
+            "보상",
+            "위험"
+          ],
+          "stateOutputs": [
+            "세계 상태 변화",
+            "보상",
+            "위험"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_04",
+          "purpose": "플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다.",
+          "playerChoice": "플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2006019,
-      "lastMs": 101387,
+      "totalMs": 2107106,
+      "lastMs": 101087,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:36:04.003Z"
+      "updatedAt": "2026-10-08T15:37:45.092Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:23:37.455Z",
-  "updatedAt": "2026-10-08T15:36:04.003Z",
+  "updatedAt": "2026-10-08T15:37:45.099Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2681,40 +2793,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::identity-core": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "coreLoop[0]",
-          "value": "INPUT_AND_MENU_TRANSITIONS"
-        },
-        "requiredAction": "coreLoop[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "coreLoop"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "coreLoop[3]",
-          "value": "STATE_AND_COST_REGRESSION"
-        },
-        "requiredAction": "coreLoop[3]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "coreLoop"
-        ]
-      },
-      {
         "code": "DESIGN_RULE_STATE_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2734,20 +2812,25 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
       "identity": "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을 구현한다. 게임의 세계 상태는 플레이어의 선택과 진행에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의섍",
       "playerFantasy": "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을 구현한다. 게임의 세계 상태는 플레이어의 선택과 진행에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태變化",
       "coreFun": "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을 구현한다. 게임의 세계 상태는 플레이어의 선택과 진행에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태 변화에 따라 결정된다. 게임의 세계 규칙은 플레이어의 선택과 상태 변화에 따라 변화하며, 보상과 위험은 플레이어의 선택과 상태變化",
+      "coreLoop": [
+        "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을",
+        "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을",
+        "50일은 플레이어가 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프를 구현한다. 게임의 세계 상태와 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표와 직접 연결되어야 한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 세계 규칙과 MAIN/A/B/c/@의 관계가 서로 영향을 주는 시그니처 상호작용을"
+      ],
       "multiplayerMode": "HYBRID"
     }
   },
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:36:04.003Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:37:45.095Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
