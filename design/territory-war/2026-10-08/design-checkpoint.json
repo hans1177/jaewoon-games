@@ -27,25 +27,33 @@
       "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 영토전쟁의 실제 플레이 공간은 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다. 영토전쟁의 실제 플레이 공간은 READ_THE_",
       "playerFantasy": "영토전쟁에서 플레이어는 영토전쟁의 실제 플레이 공간은 READ_THE_CURRENT_BORDER_PRESSURE_AND_CHOOSING_ONE_TERRITORY_OBJECTIVE의 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 이 월드 상태는 영토의 전선 변화와 지역 특성의 조합을 중심으로 압축형 전략 게임의 구조를 형성한다. 플레이어는 이 월드 상태에서 영토의 경계 압박을 읽고, 영토 확장의 목표를 선택하여, 이 선택이 다음 월드 상태와 상호작용을 통해 영토 전쟁의 실제 플레이를 이어간다. 이 게임은 단순한 반복을 넘어, 영토 전선의 변화와 지역 특성의 조합을 통해 새로운 전략과 경로를 탐색하고, 성장의 가능성을 확장하는 게임으로 설계된다.",
       "coreFun": "영토전쟁에서 플레이어는 영토의 전선 변화와 지역 특성의 조합을 중심으로 압축형 전략 게임의 구조를 형성하며, 이 선택이 다음 월드 상태와 상호작용을 통해 영토 전쟁의 실제 플레이를 이어간다. 이 게임은 단순한 반복을 넘어, 영토 전선의 변화와 지역 특성의 조합을 통해 새로운 전략과 경로를 탐색하고, 성장의 가능성을 확장하는 게임으로 설계된다."
+    },
+    "local_authoring_parts::3affc7ec63b32b40f29277a5ed5313c2e86572a7d0c474486cc2fe10147fc392:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the current border pressure and choose one territory objective.",
+        "STATE CHANGE: Main state is updated based on player choice.",
+        "REWARD: New territory is secured, resources are reallocated, and new strategic options are introduced.",
+        "NEXT STEP: Player must adapt the next plan to the new front line."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 383226,
-      "lastMs": 55424,
+      "totalMs": 440863,
+      "lastMs": 57637,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:53:02.067Z"
+      "updatedAt": "2026-10-08T07:53:59.709Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:46:38.814Z",
-  "updatedAt": "2026-10-08T07:53:02.069Z",
+  "updatedAt": "2026-10-08T07:53:59.709Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2069,7 +2077,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:53:02.069Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:53:59.709Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
