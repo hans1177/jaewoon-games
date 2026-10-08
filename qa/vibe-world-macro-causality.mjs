@@ -281,10 +281,15 @@ const seedWorld={seed:'rpg-mountain-1',width:24,height:24,cellSize:3,density:.8,
 const generated=createVibeProceduralWorldLayout(seedWorld);
 assert.equal(generated.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(generated.issues));
 assert.equal(generated.terrain.length,24*24);
+assert.equal(generated.drainage,'FOUR_NEIGHBOR_DOWNHILL');
+assert.equal(generated.regionalBiome,'TEMPERATE');
 assert.ok(generated.river.length>0);
 assert.ok(generated.roadCells.length>5);
 assert.ok(generated.buildings.length>0);
 assert.ok(generated.buildings.length<=22);
+assert.ok(generated.vegetation.length>0);
+assert.ok(generated.vegetation.length<=64);
+assert.equal(generated.mobileBudget.vegetationLimit,64);
 assert.ok(generated.routeGraph.pass);
 assert.equal(generated.sourceMutationPerformed,false);
 assert.equal(generated.nativeAssetInstancingPerformed,false);
@@ -302,6 +307,7 @@ for(const building of generated.buildings){
   assert.equal(building.modules.every(item=>item.startsWith(building.style+':')),true);
   assert.equal(building.modules.some(item=>item.endsWith(':DOOR')),true);
   assert.equal(building.foundation.levelY>=building.foundation.terrainMaxY,true);
+  assert.equal(building.construction.verifiedStructuralEngineering,false);
   assert.equal(building.position.x%seedWorld.cellSize,0);
   assert.equal(building.position.z%seedWorld.cellSize,0);
   for(const cell of building.footprint){
@@ -312,8 +318,26 @@ for(const building of generated.buildings){
     occupiedKeys.add(key);
   }
 }
-assert.equal(generated.instancingPlan.reduce((sum,item)=>sum+item.count,0),generated.buildings.length*7);
+for(const item of generated.vegetation){
+  const key=item.x+','+item.z;
+  assert.equal(roadKeys.has(key),false);
+  assert.equal(riverKeys.has(key),false);
+  assert.equal(occupiedKeys.has(key),false);
+  assert.equal(item.physicsColliderGenerated,false);
+}
+assert.equal(generated.instancingPlan.reduce((sum,item)=>sum+item.count,0),generated.buildings.length*7+generated.vegetation.length);
 assert.equal(generated.mobileBudget.actualDrawCallsMeasured,false);
+assert.equal(generated.sightline.exactCameraAndOcclusionRuntimeVerified,false);
+const reversedView=createVibeProceduralWorldLayout({...seedWorld,cameraForward:{x:-1,z:0}});
+assert.equal(reversedView.sightline.withinFov,false);
+assert.equal(reversedView.status,'LAYOUT_REVIEW_REQUIRED');
+assert.equal(createVibeProceduralWorldLayout({...seedWorld,cameraForward:{x:0,z:0}}).status,'INVALID_GENERATION_INPUT');
+const climateAdapted=createVibeProceduralWorldLayout({...seedWorld,climate:'COLD_WET',buildingStyle:'GOTHIC',biome:'MOUNTAIN'});
+assert.ok(climateAdapted.buildings.every(item=>item.modules.some(part=>part.endsWith('PITCHED_ROOF'))));
+assert.ok(climateAdapted.buildings.every(item=>item.construction.primaryMaterial==='STONE'));
+
+const mapDriven=planVibeMapAutopilot({maps:[{name:'procedural-rpg',proceduralWorld:seedWorld}],regions:[]});
+assert.ok(mapDriven.plans[0].adaptiveWorld.proceduralLayout?.roadCells?.length>0);
 const optIn=createVibeAdaptiveWorldGenerationPlan({map:{name:'seeded-rpg',proceduralWorld:seedWorld}});
 assert.deepEqual(optIn.proceduralLayout,generated);
 assert.equal(createVibeAdaptiveWorldGenerationPlan({map:{name:'existing-live-world'}}).proceduralLayout,null);
