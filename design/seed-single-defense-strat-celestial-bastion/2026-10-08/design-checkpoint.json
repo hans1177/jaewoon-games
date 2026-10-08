@@ -27,25 +27,32 @@
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복적인 전략 선택과 즉각적인 상태 변화의 조합이다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 시스템은 MAIN/A/B/c/@와 같은 시그니처 세계 규칙을 포함하며, 각각의 상태 변화는 게임의 구조와 규칙을 형성한다. 게임의 플랫폼별 구현은 같은 원본의 플랫폼별 제약을 따르며, 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미와 시스템 연결을 유지한다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한반",
       "playerFantasy": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 세계 상태와 다음 선택을 바꾼다. 게임의 핵심 재미는 반복적인 전략 선택과 즉각적인 상태 변화의 조합이다. 게임의 핵심 루프는 입력/선택 -> 상태 변화 -> 보상/위험/다음 선택의 연결이다. 게임의 시스템은 MAIN/A/B/c/@와 같은 시그니처 세계 규칙을 포함하며, 각각의 상태 변화는 게임의 구조와 규칙을 형성한다. 게임의 플랫폼별 구현은 같은 원본의 플랫폼별 제약을 따르며, 기존의 SINGLE_DEFENSE_STRATEGY의 핵심 재미와 시스템 연결을 유지한다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함한다. 게임의 설계는 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하며, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 핵심 재미와 시스템 연결을 확정하며, 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하여, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다. 게임의 설계는 원본의 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 단순한 반복을 벗어나, 다양한 선택, 위험, 보상, 그리고 상태 변화의 조합을 포함하며, 플레이어의 역할, 선택, 결과에 대한 구체적인 판타지를 포함하여, 게임의 구조와 규칙은 플레이어의 경험과 이해에 맞게 설계된다."
+    },
+    "local_authoring_parts::f4c35ea88e02df40396f3433ded46c7cf4fc3fb3899e2350391c57ba3c17e041:coreLoop": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 399763,
-      "lastMs": 69331,
+      "totalMs": 460281,
+      "lastMs": 60518,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:32:01.299Z"
+      "updatedAt": "2026-10-08T10:33:01.820Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:32:01.300Z",
+  "updatedAt": "2026-10-08T10:33:01.820Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:32:01.300Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:33:01.820Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
