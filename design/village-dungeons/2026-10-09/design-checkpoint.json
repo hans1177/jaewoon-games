@@ -523,25 +523,95 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ade056a572a4ab93c12844206745df1133493496e7ac2fbf3bb8bd7b981ca15a:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_INPUT",
+          "toId": "FINISH_OR_FAILE",
+          "stateKeys": [
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "fromSystem": "INPUT_SYSTEM",
+          "toSystem": "RESULT_SYSTEM",
+          "trigger": "START_INPUT",
+          "stateChange": "FINISH_OR_FAILE"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "RECEIVE_SCORE_REWARD",
+          "stateKeys": [
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "fromSystem": "INPUT_SYSTEM",
+          "toSystem": "REWARD_SYSTEM",
+          "trigger": "START_INPUT",
+          "stateChange": "RECEIVE_SCORE_REWARD"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "UNLOCK_PROGRESSION_BENEFIT",
+          "stateKeys": [
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "fromSystem": "INPUT_SYSTEM",
+          "toSystem": "PROGRESSION_SYSTEM",
+          "trigger": "START_INPUT",
+          "stateChange": "UNLOCK_PROGRESSION_BENEFIT"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "RETRY_WITH_MINIMAL_FRIC",
+          "stateKeys": [
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "fromSystem": "INPUT_SYSTEM",
+          "toSystem": "FRIC_SYSTEM",
+          "trigger": "START_INPUT",
+          "stateChange": "RETRY_WITH_MINIMAL_FRIC"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "FINISH_OR_FAILE",
+          "stateKeys": [
+            "SCORE_DISTANCE",
+            "SHORT_SESSION"
+          ],
+          "fromSystem": "INPUT_SYSTEM",
+          "toSystem": "RESULT_SYSTEM",
+          "trigger": "START_INPUT",
+          "stateChange": "FINISH_OR_FAILE"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "SIMPLE",
+        "resourceFlow": "INWARD",
+        "balanceRules": "BALANCED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1113724,
-      "lastMs": 300079,
+      "totalMs": 1239699,
+      "lastMs": 125975,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:30:21.362Z"
+      "updatedAt": "2026-10-08T19:32:27.340Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:11:47.590Z",
-  "updatedAt": "2026-10-08T19:30:21.362Z",
+  "updatedAt": "2026-10-08T19:32:27.340Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2620,7 +2690,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:25:21.275Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:32:27.340Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
