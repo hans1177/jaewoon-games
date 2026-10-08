@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:identity": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.\n\n플레이어는 Read the current border pressure and choose one territory objective.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n영토전쟁에서 플레이어는 Read the current border pressure and choose one territory objective.을 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\nRead the current border pressure and choose one territory objective.는 영토전쟁의 핵심 행동이며, 이는 단일 대축인 MAIN으로부터 두 대축 A/B 및 보조 요소 c와 파고들기 @에 연결되어 상호작용하며, 각각의 상태 변화와 위험/보상이 서로 영향을 줄 수 있다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 218558,
+      "lastMs": 218558,
+      "lastError": null,
+      "updatedAt": "2026-10-08T20:51:55.125Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T20:48:16.562Z",
+  "updatedAt": "2026-10-08T20:51:55.125Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2033,5 +2049,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T20:51:55.125Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
