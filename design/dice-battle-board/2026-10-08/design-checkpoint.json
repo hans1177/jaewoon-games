@@ -110,25 +110,247 @@
       "name": "Dice Battle Board",
       "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
       "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+    },
+    "local_authoring_parts::7cde5e7acfccbf18338a4be8c6d4a112e179142877cf6f898329f5fd5bbd13d8:signatureSystems:4": {
+      "id": "DELVE-01",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "DiceResult",
+        "BoardPattern",
+        "ObstacleConfiguration",
+        "PlayerChoice"
+      ],
+      "stateOutputs": [
+        "BoardState",
+        "GameProgress",
+        "RewardSystem",
+        "NextLevelPattern"
+      ],
+      "name": "Dice Battle Board",
+      "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+      "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+    },
+    "local_authoring_parts::af083e9e80b2327a5cd785c745844af769820a00bd688a93dac53d61981a52a4:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "c-01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "DELVE-01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        }
+      ]
+    },
+    "local_authoring_parts::78844fb4afb21b8b51a0b5a68a7dc5ec9c266958e1c8a8d4e7d50752be737f36:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-01",
+          "grammarRole": "A",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges."
+        },
+        {
+          "id": "MAIN-02",
+          "grammarRole": "B",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "c-01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        },
+        {
+          "id": "DELVE-01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "DiceResult",
+            "BoardPattern",
+            "ObstacleConfiguration",
+            "PlayerChoice"
+          ],
+          "stateOutputs": [
+            "BoardState",
+            "GameProgress",
+            "RewardSystem",
+            "NextLevelPattern"
+          ],
+          "name": "Dice Battle Board",
+          "purpose": "A puzzle game where players navigate a board with goals, constraints, and feedback to achieve progression. The game emphasizes strategic planning, obstacle management, and the dynamic evolution of the board pattern to create new challenges and opportunities.",
+          "playerChoice": "Select a board pattern, manage obstacles, and strategically plan moves to clear levels and unlock new challenges. The choice of board pattern and obstacle configuration directly influences the game's progression and the emergence of new puzzle elements."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 975342,
-      "lastMs": 74773,
+      "totalMs": 1051112,
+      "lastMs": 75770,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:13:04.879Z"
+      "updatedAt": "2026-10-08T13:14:20.651Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:49.507Z",
-  "updatedAt": "2026-10-08T13:13:04.879Z",
+  "updatedAt": "2026-10-08T13:14:20.653Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2060,7 +2282,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:13:04.879Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:14:20.653Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
