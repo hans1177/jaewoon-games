@@ -548,25 +548,28 @@
     },
     "local_authoring_parts::12aed46ca3650741bc1c8397594b2b7ddebf4ad34c9ca3d3797ca2e1b51e770f:toSystem": {
       "toSystem": "PLAYER_CHOICE"
+    },
+    "local_authoring_parts::12aed46ca3650741bc1c8397594b2b7ddebf4ad34c9ca3d3797ca2e1b51e770f:trigger": {
+      "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2005095,
-      "lastMs": 56341,
+      "totalMs": 2068488,
+      "lastMs": 63393,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:20:52.847Z"
+      "updatedAt": "2026-10-08T18:21:56.241Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T18:20:52.847Z",
+  "updatedAt": "2026-10-08T18:21:56.241Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2858,7 +2861,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:20:52.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:21:56.241Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
