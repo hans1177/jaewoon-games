@@ -34,25 +34,42 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::be9f3500f83693dd63425daa08ab169bf06cc6e46fc9fcddb7ed460ff7148b49:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardPattern",
+        "obstacleCombination",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newObstacleCombination",
+        "playerState"
+      ],
+      "name": "Board Evolution",
+      "purpose": "Player-controlled board pattern and obstacle combination evolution",
+      "playerChoice": "Select a board pattern, obstacle combination, or puzzle constraint to initiate the next phase of the game"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 268108,
-      "lastMs": 36252,
+      "totalMs": 304287,
+      "lastMs": 36179,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:05:54.117Z"
+      "updatedAt": "2026-10-08T08:06:30.297Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T08:05:54.117Z",
+  "updatedAt": "2026-10-08T08:06:30.297Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2106,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:05:54.117Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:06:30.297Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
