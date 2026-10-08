@@ -27,25 +27,32 @@
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매 단계에서 전략적 결정을 내며, 이 결정은 세계 상태에 직접 영향을 미친다. 주체는 천상의 보루에서 플레이어이며, 그 역할은 적군의 방어 전략을 제안하는 데 있다. 대표 행동은 'Enemy Wave Reading'이고, 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다.",
       "playerFantasy": "천상의 보루에서 플레이어는 매 단계에서 전략적 결정을 내며, 이 결정은 세계 상태에 직접 영향을 미친다. 주체는 천상의 보루에서 플레이어이며, 그 역할은 적군의 방어 전략을 제안하는 데 있다. 대표 행동은 'Enemy Wave Reading'이고, 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다.",
       "coreFun": "천상의 보루에서는 매 단계에서 플레이어는 적군의 방어 전략을 제안하는 데 주체 역할을 수행하며, 이 결정은 세계 상태에 직접 영향을 미친다. 대표 행동은 'Enemy Wave Reading', 대표 선택은 'Tower Placement Strategy'로 정의된다. 시그니처 세계 규칙은 '전략적 결정의 결과가 세계 상태와 연결되는 것'이다."
+    },
+    "local_authoring_parts::6810711455df85223d3426116b5f9a409eeee0b47eb52186b13ee3b6dd8c536a:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "STATE CHANGE: The world state shifts to reflect new defensive strategies, increasing pressure and resource availability.",
+        "OUTPUT: Player earns resources and spends them on upgrades, placements, or tactical changes before pressure increases."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 287006,
-      "lastMs": 37372,
+      "totalMs": 327623,
+      "lastMs": 40617,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:57:26.392Z"
+      "updatedAt": "2026-10-08T18:58:07.012Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T18:57:26.393Z",
+  "updatedAt": "2026-10-08T18:58:07.012Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:57:26.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:58:07.012Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
