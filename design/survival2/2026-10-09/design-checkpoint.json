@@ -595,25 +595,43 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0"
+    },
+    "local_authoring_parts::bb4e8adceffe1e7d0a8e57bd8dae13c5ec95cfe53f89e6ceeb32dc6ba1abd801:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
+    },
+    "local_authoring_parts::9caae7329f7431210c76093cacbea23b7396c02daf9e3669438491553bd076e7:systemInterconnections:4": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnection-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-0",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act are established through adaptive resource allocation and strategic decision-making."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2111787,
-      "lastMs": 109926,
+      "totalMs": 2217368,
+      "lastMs": 105581,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:38:42.866Z"
+      "updatedAt": "2026-10-08T21:40:28.449Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-08T21:38:42.866Z",
+  "updatedAt": "2026-10-08T21:40:28.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2868,9 +2886,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-B-01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-B-01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2885,9 +2903,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-C-01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-C-01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2902,9 +2920,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL2-MAIN-02→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-02→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2919,26 +2937,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL2-MAIN-02→SURVIVAL2-B-01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-02→SURVIVAL2-B-01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "SURVIVAL2-MAIN-02→SURVIVAL2-C-01의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-02→SURVIVAL2-C-01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL2-MAIN-01→SURVIVAL2-MAIN-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2966,7 +2967,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:0": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3005,10 +3006,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:38:42.866Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:40:28.452Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
