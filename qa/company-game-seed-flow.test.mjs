@@ -198,8 +198,8 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.mayRunDuringGamePrimary,true);
   assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.maxConcurrent,1);
   assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.consumesGamePrimaryWorkerSlot,false);
-  assert.match(seedDesignWorkflow,/preservation_only/);
-  assert.match(seedDesignWorkflow,/RUN_PARALLEL_STRICT_DESIGN/);
+  assert.match(seedDesignWorkflow,/const preservationSeed=seed=>/);
+  assert.doesNotMatch(seedDesignWorkflow,/needs\.game-primary-gate/);
   assert.doesNotMatch(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
   assert.match(seedDesignWorkflow,/strictDesignReviewContinuesInParallel/);
   assert.match(seedDesignWorkflow,/designReviewEligible/);
@@ -270,7 +270,7 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedDesignWorkflow,/DESIGN_PROGRESS_RUNTIME_PERSIST=YES/);
   assert.match(seedDesignWorkflow,/sleep 15/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
-  assert.equal((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
+  assert.equal((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,3);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=\$\{unboundedByPolicy\?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'\}/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_SCHEDULING_MODE=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_ROBLOX_FIRST=/);

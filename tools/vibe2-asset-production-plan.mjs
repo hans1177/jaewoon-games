@@ -293,8 +293,6 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(geometryRows.some(row=>row.invalidUvCount))issues.push('GLB_UV_DATA_INVALID');
   if(geometryRows.some(row=>row.invalidIndexCount))issues.push('GLB_INDEX_DATA_INVALID');
   if(geometryRows.some(row=>!row.boundsMatch))issues.push('GLB_POSITION_BOUNDS_MISMATCH');
-  const geometryByMesh=new Map();
-  for(const row of geometryRows){if(!geometryByMesh.has(row.meshIndex))geometryByMesh.set(row.meshIndex,[]);geometryByMesh.get(row.meshIndex).push(row);}
   if(accessors.some(row=>row.sparse))issues.push('GLB_SPARSE_MATERIALIZATION_REQUIRED');
   const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
   const parents=new Map();
@@ -340,30 +338,73 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(!Array.isArray(roots))issues.push('GLB_SCENE_INVALID');
   while(pending.length){const index=pending.pop();if(!Number.isInteger(index)||!nodes[index]){issues.push('GLB_SCENE_INVALID');continue;}if(activeNodes.has(index))continue;activeNodes.add(index);pending.push(...(Array.isArray(nodes[index].children)?nodes[index].children:[]));}
   const sceneBounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let boundedPrimitiveCount=0,visibleTriangleCount=0;
+  // 메인: 보이는 노드 수가 많아도 모든 메시를 반복 스캔하지 않는다.
+  const geometryByMesh=new Map();
+  for(const row of geometryRows){
+    if(!row.bounds||row.invalidIndexCount)continue;
+    if(!geometryByMesh.has(row.meshIndex))geometryByMesh.set(row.meshIndex,[]);
+    geometryByMesh.get(row.meshIndex).push(row);
+  }
+  // 메인: 실제 표시 삼각형의 면적 통계. 질량·충돌·게임 물리 권위는 유지한다.
+  const surface={area:0,centroidSum:[0,0,0],squareSum:[0,0,0],measuredTriangles:0,nonTrianglePrimitives:0};
   for(const index of activeNodes){
     const matrix=worldMatrices.get(index);if(!matrix)continue;
-    for(const row of (geometryByMesh.get(nodes[index].mesh)||[]).filter(row=>row.bounds&&!row.invalidIndexCount)){
+    for(const row of geometryByMesh.get(nodes[index].mesh)||[]){
       const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex];
       const position=accessorInfo(primitive.attributes.POSITION);
       const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
       boundedPrimitiveCount++;
       visibleTriangleCount+=row.triangleCount;
-      // A rotated local AABB contains empty corners. Using those corners can
-      // invent a lower contact point and leave the imported object floating.
-      // Measure only vertices referenced by this visible primitive instance.
+      // 회전한 경계 상자 대신 보이는 메시 정점·삼각형으로만 측정한다.
+      const mode=primitive.mode??4,window=[];
+      if(![4,5,6].includes(mode))surface.nonTrianglePrimitives++;
       for(let vertex=0;vertex<(indices?indices.count:position.count);vertex++){
         const vertexIndex=indices?readAccessorComponent(indices,vertex,0):vertex;
         const p=[0,1,2].map(c=>readAccessorComponent(position,vertexIndex,c));
-        for(let c=0;c<3;c++){const n=matrix[c]*p[0]+matrix[c+4]*p[1]+matrix[c+8]*p[2]+matrix[c+12];sceneBounds.min[c]=Math.min(sceneBounds.min[c],n);sceneBounds.max[c]=Math.max(sceneBounds.max[c],n);}
+        const world=[0,1,2].map(c=>matrix[c]*p[0]+matrix[c+4]*p[1]+matrix[c+8]*p[2]+matrix[c+12]);
+        for(let c=0;c<3;c++){sceneBounds.min[c]=Math.min(sceneBounds.min[c],world[c]);sceneBounds.max[c]=Math.max(sceneBounds.max[c],world[c]);}
+        let triangle=null;
+        if(mode===4){window.push(world);if(window.length===3){triangle=window.slice();window.length=0;}}
+        else if(mode===5){window.push(world);if(window.length>3)window.shift();if(window.length===3)triangle=window;}
+        else if(mode===6){if(window.length<2)window.push(world);else{triangle=[window[0],window[1],world];window[1]=world;}}
+        if(!triangle)continue;
+        const [a,b,c]=triangle,u=b.map((n,i)=>n-a[i]),v=c.map((n,i)=>n-a[i]);
+        const area=Math.hypot(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])/2;
+        if(!(area>0&&Number.isFinite(area)))continue;
+        surface.area+=area;surface.measuredTriangles++;
+        for(let axis=0;axis<3;axis++){
+          const sum=a[axis]+b[axis]+c[axis];
+          surface.centroidSum[axis]+=area*sum/3;
+          // 균일 삼각형 표면의 2차 모멘트: (Σvertex² + (Σvertex)²)/12.
+          surface.squareSum[axis]+=area*(a[axis]**2+b[axis]**2+c[axis]**2+sum**2)/12;
+        }
       }
     }
   }
   if(!boundedPrimitiveCount)issues.push('GLB_VISIBLE_GEOMETRY_REQUIRED');
+  // 메인: 면적이 없는 삼각형 또는 연산 오버플로는 유효한 렌더 표면이 아니다.
+  // 기존 비삼각형 프리미티브는 검사 기록만 남기고 충돌·질량 권위로 해석하지 않는다.
+  if(visibleTriangleCount>0&&surface.measuredTriangles===0)issues.push('GLB_TRIANGLE_SURFACE_DEGENERATE');
+  if(!Number.isFinite(surface.area)||surface.centroidSum.some(value=>!Number.isFinite(value))
+    ||surface.squareSum.some(value=>!Number.isFinite(value))
+    ||sceneBounds.max.some((value,axis)=>!Number.isFinite(value-sceneBounds.min[axis])))issues.push('GLB_SURFACE_STATS_NONFINITE');
+  // GLB 노드의 숫자가 유한해도 최종 월드 정점이 GPU float32 범위를 넘을 수 있다.
+  if([...sceneBounds.min,...sceneBounds.max].some(value=>!Number.isFinite(value)||Math.abs(value)>3.4028234663852886e38))
+    issues.push('GLB_WORLD_TRANSFORM_FLOAT32_OVERFLOW');
   const spatial=boundedPrimitiveCount&&[...sceneBounds.min,...sceneBounds.max].every(Number.isFinite)?{
     coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',scope:'STATIC_NODE_TRANSFORM_BOUNDS_NOT_ANIMATION_OR_SKIN_DEFORMATION',
     bounds:sceneBounds,size:sceneBounds.max.map((v,i)=>v-sceneBounds.min[i]),
     groundTranslation:[-(sceneBounds.min[0]+sceneBounds.max[0])/2,-sceneBounds.min[1],-(sceneBounds.min[2]+sceneBounds.max[2])/2],
-    triangleCount:visibleTriangleCount
+    triangleCount:visibleTriangleCount,
+    geometrySurface:{
+      measurement:'VISIBLE_TRIANGLES_AREA_WEIGHTED_GLTF_METERS',
+      areaSquareMeters:surface.area,triangleCount:surface.measuredTriangles,
+      nonTrianglePrimitives:surface.nonTrianglePrimitives,
+      centroidMeters:surface.area>0?surface.centroidSum.map(n=>n/surface.area):null,
+      varianceSquareMeters:surface.area>0?surface.squareSum.map((n,axis)=>Math.max(0,n/surface.area-(surface.centroidSum[axis]/surface.area)**2)):null,
+      broadphaseAabbVolumeCubicMeters:sceneBounds.max.reduce((product,n,axis)=>product*(n-sceneBounds.min[axis]),1),
+      nonAuthoritative:true,collisionAuthority:false,massDensityMeasured:false,skinAnimationPoseMeasured:false,runtimeVerified:false
+    }
   }:null;
   if(spatial&&spatial.size.every(v=>v<=1e-9))issues.push('GLB_COLLAPSED_GEOMETRY');
   // 같은 활성 인스턴스·축·피벗으로 적분한다. 전체 삼각형 배열을 복제하지 않는다.

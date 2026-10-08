@@ -75,7 +75,8 @@ export function createVibeMotionContract({
   const knownStateIds = freezeList(normalizedStates.map((state) => state.id));
   const transitionMap = {};
   for (const stateId of knownStateIds) {
-    transitionMap[stateId] = freezeList(transitions?.[stateId] || DEFAULT_TRANSITIONS[stateId] || []);
+    // 메인: 기본 전환은 실제 존재하는 상태끼리만 연결한다. 명시된 잘못된 연결은 검증에 남긴다.
+    transitionMap[stateId] = freezeList(transitions?.[stateId] || (DEFAULT_TRANSITIONS[stateId] || []).filter(target => knownStateIds.includes(target)));
   }
   return freeze({
     version: 1,
@@ -147,6 +148,7 @@ export function createVibeCombatMotionSync({
     recoveryEnd: Math.max(0, number(recoveryEnd, 0))
   });
   const issues = [];
+  if (timing.activeStart < timing.windup) issues.push('active-before-windup-end');
   if (timing.activeEnd < timing.activeStart) issues.push('active-window-reversed');
   if (timing.recoveryEnd < timing.activeEnd) issues.push('recovery-before-active-end');
   if (type === 'ranged' && !clean(releaseMarker || projectileMarker)) issues.push('ranged-release-marker-required');

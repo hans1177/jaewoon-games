@@ -1,3 +1,5 @@
+// 파일명: qa/design-promotion-workflow-contract.test.mjs
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -125,10 +127,15 @@ test('promotion invariant accepts progressed native states and rejects Web-first
 });
 
 test('design control jobs use slim runners while per-game design cycles retain full runners',()=>{
-  assert.match(designRuntime,/\n  game-primary-gate:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(designRuntime,/\n  game-primary-gate:|needs\.game-primary-gate/);
   assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(designRuntime,/\n  design-cycle:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.doesNotMatch(designRuntime,/mark-design-engine-canary:/);
   assert.match(designRuntime,/\n  sync-strict-design-scores:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
-  assert.match(designRuntime,/\n  continue-seed-supply:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(designRuntime,/\n  continue-seed-supply:/);
+  const finish=designRuntime.slice(designRuntime.indexOf('\n  sync-strict-design-scores:'));
+  assert.match(finish,/needs: \[resolve-seed-targets, design-cycle\]/);
+  assert.match(finish,/if: always\(\) && !cancelled\(\) && needs\.resolve-seed-targets\.outputs\.run == 'true'/);
+  assert.match(finish,/- name: Continue seed supply and immediately repeat failed design gates\n\s+if: always\(\) && !cancelled\(\)/);
+  assert.match(finish,/gh workflow run company-seed-design-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
 });

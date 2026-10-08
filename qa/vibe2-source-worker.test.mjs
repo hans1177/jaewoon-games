@@ -1364,7 +1364,8 @@ test('declared Blender application rejects desynchronized size axes and pivot an
     const directory='assets/test/native/model',outputs=[directory+'/model.glb',directory+'/application.json'];
     const glb=dccFixtureGlb({grounded:true});
     const material={sourceMaterialIndex:0,name:'material-0',baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:.8,web:{metalness:0,roughness:.8},roblox:{metalness:0,roughness:.8},unity:{metallic:0,smoothness:.2}};
-    const application={version:1,masterSha256:crypto.createHash('sha256').update(glb).digest('hex'),sourceUnits:'METERS',sourceUp:'Y',pivot:'GROUND_CENTER',boundsSizeMeters:[4,2,0],materials:[material],nativeRuntimeVerified:false,automaticPromotionAllowed:false};
+    const geometrySurface={areaSquareMeters:4,centroidMeters:[-2+4/3,2/3,0],nonAuthoritative:true};
+    const application={version:1,masterSha256:crypto.createHash('sha256').update(glb).digest('hex'),sourceUnits:'METERS',sourceUp:'Y',pivot:'GROUND_CENTER',boundsSizeMeters:[4,2,0],materials:[material],geometrySurface,nativeRuntimeVerified:false,automaticPromotionAllowed:false};
     write(path.join(root,'assets/test/build.py'),'# fixture only\n');
     write(path.join(root,outputs[0]),'original-model');
     write(path.join(root,outputs[1]),'original-application');
@@ -1404,6 +1405,17 @@ test('declared Blender application rejects desynchronized size axes and pivot an
       assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
       assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
     }
+    for(const invalidSurface of [
+      {...geometrySurface,areaSquareMeters:5},
+      {...geometrySurface,centroidMeters:[0,0,0]},
+      {...geometrySurface,nonAuthoritative:false},
+      {...geometrySurface,areaSquareMeters:Infinity}
+    ]){
+      setApplication({...application,geometrySurface:invalidSurface});
+      assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SURFACE_MISMATCH/);
+      assert.equal(fs.readFileSync(path.join(root,outputs[0]),'utf8'),'original-model');
+      assert.equal(fs.readFileSync(path.join(root,outputs[1]),'utf8'),'original-application');
+    }
     const floating=dccFixtureGlb();
     for(const change of [{surfaceAreaM2:999},{centroidMeters:[999,0,0]},{physicalDensityKgM3:1000},{dynamicStabilityVerified:true}]){
       setApplication({...application,surfaceDistribution:{...distribution,...change}});
@@ -1417,6 +1429,12 @@ test('declared Blender application rejects desynchronized size axes and pivot an
     assert.equal(result.candidateUsable,true);
     assert.equal(result.recipes[0].runtimeVerified,false);
     assert.deepEqual(result.recipes[0].platformApplication.boundsSizeMeters,[4,2,0]);
+    assert.equal(result.recipes[0].glbSpatial.geometrySurface.areaSquareMeters,4);
+    assert.equal(result.recipes[0].glbSpatial.geometrySurface.collisionAuthority,false);
+    // 기존 sidecar 형식은 새 선택 필드가 없어도 계속 유효하다.
+    setApplication({...application,geometrySurface:undefined});
+    const legacy=executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true});
+    assert.equal(legacy.candidateUsable,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
