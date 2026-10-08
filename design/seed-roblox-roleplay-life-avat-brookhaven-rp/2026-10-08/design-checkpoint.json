@@ -34,25 +34,43 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::6b15d78b384341a682209a39831de825921bcadb8d1d6ebac009a5d6d774c86f:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runRewards",
+        "upgradeChoices"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "modifiedBuild",
+        "updatedRunResult"
+      ],
+      "name": "Build Evolution System",
+      "purpose": "Facilitates dynamic build progression through iterative upgrades, survival challenges, and strategic decision-making",
+      "playerChoice": "Select upgrades, perks, weapons, or skills that alter the current build and influence the next progression choice"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 698907,
-      "lastMs": 87241,
+      "totalMs": 795671,
+      "lastMs": 96764,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:45:34.454Z"
+      "updatedAt": "2026-10-08T08:47:11.220Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:33:55.519Z",
-  "updatedAt": "2026-10-08T08:45:34.454Z",
+  "updatedAt": "2026-10-08T08:47:11.220Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:45:34.454Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:47:11.220Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
