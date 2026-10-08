@@ -515,25 +515,46 @@
       "name": "Forest Role",
       "purpose": "Players assume a dynamic survival role based on seasonal ecology, resource needs, and danger levels, influencing path choices, goals, and actions.",
       "playerChoice": "Choose a role that aligns with current ecology, resource availability, and danger, and decide on path, goal, and action."
+    },
+    "local_authoring_parts::56a2e30e5b7023843e8e3a33bf9fdebc35153c8df094154f7f5f1c965e871315:signatureSystems:0": {
+      "id": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "seasonal changes",
+        "ecological state",
+        "resource availability",
+        "group readiness",
+        "current supplies"
+      ],
+      "stateOutputs": [
+        "role change",
+        "movement decision",
+        "resource acquisition",
+        "shelter improvement",
+        "threat progression"
+      ],
+      "name": "생존자 역할 변화 시스템",
+      "purpose": "플레이어가 숲의 생존자들에서 탐험·제작·협력의 협력 확장형 생존 게임에서 자원을 수집하고, 환경 위험을 읽고 이동·경로를 결정하며, 생존을 확장하는 데 필요한 조건을 만족시켜야 한다.",
+      "playerChoice": "Return or push deeper based on current supplies and group readiness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1366562,
-      "lastMs": 84818,
+      "totalMs": 1446178,
+      "lastMs": 79616,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:20:09.702Z"
+      "updatedAt": "2026-10-08T16:01:34.008Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:57:22.913Z",
-  "updatedAt": "2026-10-08T16:00:14.387Z",
+  "updatedAt": "2026-10-08T16:01:34.008Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2797,10 +2818,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:20:09.704Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:01:34.008Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
