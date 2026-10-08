@@ -938,25 +938,54 @@
     },
     "local_authoring_parts::11e234b1c63135f59d8243269c0b8be346437f37d5e33bfca70877fc0313bbc1:riskPressure": {
       "riskPressure": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+    },
+    "local_authoring_parts::11e234b1c63135f59d8243269c0b8be346437f37d5e33bfca70877fc0313bbc1:recoveryRules": {
+      "recoveryRules": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+    },
+    "local_authoring_parts::a01f1d15f0fc54063fc55b380c0abf5424f78f3b0675fdc9079420911329841a:failureRetryRisk": {
+      "failureStates": [
+        "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[3]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "failureRetryRisk.failureStates[4]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+      ],
+      "retryFlow": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+      "riskPressure": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+      "recoveryRules": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+    },
+    "local_authoring_parts::7dee465b9ad18df065bd49eb260fd4a13735352d84e6e25194cd01145c191c58:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[3]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[4]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+        ],
+        "retryFlow": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "riskPressure": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+        "recoveryRules": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 58,
+      "calls": 59,
+      "successes": 59,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4439180,
-      "lastMs": 74493,
+      "totalMs": 4513895,
+      "lastMs": 74715,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:49:27.122Z"
+      "updatedAt": "2026-10-08T10:50:41.838Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T10:49:27.122Z",
+  "updatedAt": "2026-10-08T10:50:41.847Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2996,244 +3025,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].newGameplay",
-          "value": "CHANGED_BOARD_STATE"
-        },
-        "requiredAction": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].systemImpact",
-          "value": "BOARD_RULE_0"
-        },
-        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].systemImpact",
-          "value": "BOARD_RULE_1"
-        },
-        "requiredAction": "contentExpansionPlan[1].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].systemImpact",
-          "value": "BOARD_RULE_2"
-        },
-        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].systemImpact",
-          "value": "BOARD_RULE_3"
-        },
-        "requiredAction": "contentExpansionPlan[3].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].systemImpact",
-          "value": "BOARD_RULE_4"
-        },
-        "requiredAction": "contentExpansionPlan[4].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "BOARD_STATE_CHANGED"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.retryFlow",
-          "value": "BOARD_RULE_0"
-        },
-        "requiredAction": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3241,9 +3032,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3258,9 +3049,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_1→SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_1→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_1→SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_1→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3275,9 +3066,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_2→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_2→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_2→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_2→BOARD_RULE_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3292,9 +3083,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_3→BOARD_RULE_4의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_3→BOARD_RULE_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3309,9 +3100,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_4→SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_4→BOARD_RULE_4의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_4→SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_4→BOARD_RULE_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3338,7 +3129,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3347,13 +3138,42 @@
         "progressionLoop": "REPEATABLE",
         "resourceFlow": "CONTINUOUS",
         "balanceRules": "BALANCED"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다.",
+          "newGameplay": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+          "systemImpact": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+        },
+        {
+          "milestone": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식을",
+          "newGameplay": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+          "systemImpact": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+        },
+        {
+          "milestone": "기본적인 보드 레벨 구조와 목표 설정을 수행하여, 플레이어가 시작하는 보드/그리드 레벨에서 명확한 목표, 제한된 이동, 장애물, 또는 명확한 퀴즈를 통해 반복 가능한 핵심 루프를 구축하는 데 필요한 초기 조건을 설정한다. 이 과정에서는 보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식을",
+          "newGameplay": "보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+          "systemImpact": "보드 상태, 플레이어의 선택 결과, 목표, 보상 시스템, 장애물 패턴이 초기 상태로 설정되고, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[3]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+          "failureRetryRisk.failureStates[4]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+        ],
+        "retryFlow": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "riskPressure": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다.",
+        "recoveryRules": "원본 규칙에 따르면, 재도전 기능이 작동하는 데 필요한 조건은 플레이어가 특정 목표를 달성하지 못했을 때, 시스템이 자동으로 재도전을 수행하도록 설정되어야 한다. 이 과정에서는 플레이어의 선택 결과, 목표 달성 실패 여부, 현재 월드 상태, 그리고 재도전의 조건이 명확하게 정의되어야 하며, 이에 따라 다음 월드 상태와 접근 가능성에 영향을 미치는 방식으로 구체적으로 구현된다."
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:49:27.122Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T10:50:41.843Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
