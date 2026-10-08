@@ -51,6 +51,16 @@ function developmentFloorSnapshot(developmentQueue={}) {
     const f0Exact=buildExact&&item.robloxFoundationF0Passed===true
       &&clean(f0.sourceRevision)===revision&&clean(f0.artifactIdentity)===artifact
       &&Number(f0.artifactRunId||0)>0;
+    const invalidEvidenceCause=
+      revision===''?'SOURCE_REVISION_MISSING'
+      :item.robloxBuildOrPackagePassed!==true?'PACKAGE_BUILD_NOT_VERIFIED'
+      :item.robloxBuildPreflightPassed!==true?'PACKAGE_PREFLIGHT_NOT_VERIFIED'
+      :clean(item.robloxBuildSourceRevision)!==revision?'SOURCE_REVISION_MISMATCH'
+      :!artifact.startsWith('sha256:')?'PACKAGE_ARTIFACT_IDENTITY_MISSING'
+      :item.robloxFoundationF0Passed!==true?'F0_NOT_PASSED'
+      :clean(f0.sourceRevision)!==revision?'F0_SOURCE_REVISION_MISMATCH'
+      :clean(f0.artifactIdentity)!==artifact?'F0_ARTIFACT_IDENTITY_MISMATCH'
+      :Number(f0.artifactRunId||0)<=0?'F0_RUN_EVIDENCE_MISSING':null;
     const candidateExact=f0Exact&&candidate.published===true
       &&clean(candidate.sourceRevision)===revision&&clean(candidate.artifactIdentity)===artifact
       &&Number(candidate.versionNumber||0)>0&&clean(candidate.placeId)!=='';
@@ -91,7 +101,7 @@ function developmentFloorSnapshot(developmentQueue={}) {
     rows.push({
       gameId,platform:'ROBLOX',stage,failureSignature:signature||null,classification,repair,
       exactBuildCheckpoint:buildExact,exactF0Checkpoint:f0Exact,exactCandidateCheckpoint:candidateExact,
-      qualitySourceRepairRequired:qualityBlocked,
+      invalidEvidenceCause,qualitySourceRepairRequired:qualityBlocked,
       unityF9Reported,unityF9EvidenceIdentityBound:unityF9Bound,
       unityF9IndependentRuntimeReviewRequired:true,
       automaticPassClaim:false
