@@ -324,6 +324,27 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
   assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
 });
 
+// 검증: 이름만 바꾼 MAIN/A/B/c/@ 복제는 설계 품질 통과가 아니다.
+test('MAIN A B c DELVE authoring gate rejects copied rule meaning with distinct IDs',()=>{
+  const roles=['MAIN','A','B','c','DELVE'];
+  const systems=roles.map(role=>({
+    id:'RULE_'+role,grammarRole:role,
+    name:role+' 시스템',
+    purpose:role+' 단계에서 원본의 서로 다른 상태 판정과 결과를 다음 선택으로 전달한다.',
+    playerChoice:role+'의 대응에 사용할 자원과 다음 행동의 우선순위를 선택한다.',
+    stateInputs:['WoodCount'],stateOutputs:['WoodCount']
+  }));
+  const baseline=validateDesignAuthoringContent({design:{signatureSystems:systems},fields:['signatureSystems']});
+  assert.equal(baseline.some(reason=>reason.code==='DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'),false);
+  const copied=structuredClone(systems);
+  copied[1].name=copied[0].name;
+  copied[1].purpose=copied[0].purpose;
+  const before=JSON.stringify(copied);
+  const invalid=validateDesignAuthoringContent({design:{signatureSystems:copied},fields:['signatureSystems']});
+  assert.ok(invalid.some(reason=>reason.code==='DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'));
+  assert.equal(JSON.stringify(copied),before,'invalid design content must not be silently rewritten or accepted');
+});
+
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
