@@ -68,25 +68,42 @@
       "name": "배치 조합 시스템",
       "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 배치 위치를 선택하는 데 사용되는 시스템",
       "playerChoice": "다음 웨이브 패턴에 따라 배치 위치를 선택하는 선택지로 사용됨"
+    },
+    "local_authoring_parts::826f582db5a933a34e6b9e3a90ac9fffd139140a521277ec2ed9380b10362c6a:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "wavePattern",
+        "resourceAllocation",
+        "defensePlacement"
+      ],
+      "stateOutputs": [
+        "defenseStrategy",
+        "nextThreat",
+        "playerChoice"
+      ],
+      "name": "재방문 시스템",
+      "purpose": "플레이어가 다음 웨이브 패턴에 따라 최적의 방어 전략을 선택하는 데 사용되는 시스템",
+      "playerChoice": "다음 웨이브 패턴에 따라 방어 전략을 선택하는 선택지로 사용됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 647968,
-      "lastMs": 72726,
+      "totalMs": 720585,
+      "lastMs": 72617,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:59:56.426Z"
+      "updatedAt": "2026-10-08T08:01:09.045Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:49:08.385Z",
-  "updatedAt": "2026-10-08T07:59:56.426Z",
+  "updatedAt": "2026-10-08T08:01:09.045Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2294,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T07:59:56.426Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:01:09.045Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
