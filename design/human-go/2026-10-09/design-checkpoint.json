@@ -86,25 +86,181 @@
       "name": "CONTENT EXPANSION",
       "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
       "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+    },
+    "local_authoring_parts::28e8993aa6738e0f5824a288c7d787a1db2dd785a3557899c21b8153282a93ff:signatureSystems:4": {
+      "id": "DELVE_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "DISCOVERY_EXPANSION",
+      "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+      "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+    },
+    "local_authoring_parts::cc0eb3c3c708663c0d07952bee83f9d378453d484784cc0d3e2c3a836399d838:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "ACTION RESULT DELAY TO SUBSEQUENT STATES",
+          "playerChoice": "USE ACTION RESULT TO ALTER MAIN AND A/B/C STATES"
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "NEW AUTHORITY STRUCTURE",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "CONTENT EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        },
+        {
+          "id": "DELVE_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "DISCOVERY_EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        }
+      ]
+    },
+    "local_authoring_parts::d61f5e9884af8ecedf463e1b0e2fe0ef69c5c5704680758b8edc0e85ec953430:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE",
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/ NEXT CHOICE"
+      ],
+      "signatureSystems": [
+        {
+          "id": "KARMA_RETURN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "KARMA RETURN",
+          "purpose": "ACTION RESULT DELAY TO SUBSEQUENT STATES",
+          "playerChoice": "USE ACTION RESULT TO ALTER MAIN AND A/B/C STATES"
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "MANDATE LEGITIMACY",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "NEW AUTHORITY STRUCTURE",
+          "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+          "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+        },
+        {
+          "id": "C",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "CONTENT EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        },
+        {
+          "id": "DELVE_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+          ],
+          "name": "DISCOVERY_EXPANSION",
+          "purpose": "EXPAND CONTENT BASED ON DISCOVERY AND MASTERY TO ENHANCE PLAYABILITY",
+          "playerChoice": "USE DISCOVERY AND MASTERY TO EXPAND CONTENT AND REFRESH GAMEPLAY"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 348325,
-      "lastMs": 39452,
+      "totalMs": 391760,
+      "lastMs": 43435,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:09.824Z"
+      "updatedAt": "2026-10-08T17:50:53.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:50:09.824Z",
+  "updatedAt": "2026-10-08T17:50:53.264Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2032,7 +2188,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:09.824Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:53.264Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
