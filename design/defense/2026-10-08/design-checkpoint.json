@@ -1047,25 +1047,33 @@
     },
     "local_authoring_parts::e35bd884e7366503c9c76f463de358352d3a3d70e31a5769679ad8c44a899054:newGameplay": {
       "newGameplay": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동을 수행한 결과"
+    },
+    "local_authoring_parts::e35bd884e7366503c9c76f463de358352d3a3d70e31a5769679ad8c44a899054:systemImpact": {
+      "systemImpact": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동을 수행한 결과"
+    },
+    "local_authoring_parts::95221113416711bc55112f58b9aa6890a520e4e7c0eb4f00978fc7db79dc704c:contentExpansionPlan:0": {
+      "milestone": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동을 수행한 결과",
+      "newGameplay": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동을 수행한 결과",
+      "systemImpact": "게임 내에서 다음 전투 wave의 타입을 파악하고, 적의 공격 경로에 적절한 타워 또는 방어 기관을 빠르게 배치하여, 공격의 위험을 줄이고, 전략적 전략을 조정하는 행동을 수행한 결과"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 55,
-      "successes": 54,
+      "calls": 56,
+      "successes": 55,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4500824,
-      "lastMs": 93293,
+      "totalMs": 4594288,
+      "lastMs": 93464,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T15:56:24.162Z"
+      "updatedAt": "2026-10-08T15:57:57.628Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:08:55.008Z",
-  "updatedAt": "2026-10-08T15:56:24.162Z",
+  "updatedAt": "2026-10-08T15:57:57.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3424,7 +3432,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:56:24.162Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:57:57.629Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
