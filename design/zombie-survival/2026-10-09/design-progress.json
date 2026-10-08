@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 21,
-  "lastSuccessfulModelCallAt": "2026-10-08T18:22:23.858Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 22,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:23:38.073Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/zombie-survival/2026-10-09/design-seed.json",
     "contentDigest": "4d7f4933fa25430abf11d27719bb30ac79ae1c63ea67fda7a84b88240fbaca26",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1725805,
-      "lastMs": 286558,
+      "totalMs": 1800013,
+      "lastMs": 74208,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:22:23.858Z"
+      "updatedAt": "2026-10-08T18:23:38.073Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T18:22:23.864Z"
+  "updatedAt": "2026-10-08T18:23:38.075Z"
 }
