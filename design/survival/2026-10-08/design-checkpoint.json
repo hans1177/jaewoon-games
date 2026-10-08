@@ -557,25 +557,34 @@
         "riskPressure": "The risk of resource depletion or progression stagnation increases as the player faces more difficult horde encounters and requires more strategic choices to survive.",
         "recoveryRules": "Players can recover by re-discovering hidden resources, optimizing their strategies, or exploring new territories to reset and regain progress."
       }
+    },
+    "local_authoring_parts::f0354fe6b1e87276c9812106c6b1b3454b90ebfafe90e525b45901364eda8f51:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalHordeSystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1509059,
-      "lastMs": 122293,
+      "totalMs": 1572209,
+      "lastMs": 63150,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T13:23:16.254Z"
+      "updatedAt": "2026-10-08T13:24:19.412Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T13:23:16.260Z",
+  "updatedAt": "2026-10-08T13:24:19.412Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2930,10 +2939,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:23:16.256Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:24:19.412Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
