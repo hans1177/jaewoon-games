@@ -591,25 +591,42 @@
     },
     "local_authoring_parts::aef270a0d2c005f656a42addf3ce734dea9aa2114a53f50443c917b80dd08287:trigger": {
       "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
+    },
+    "local_authoring_parts::aef270a0d2c005f656a42addf3ce734dea9aa2114a53f50443c917b80dd08287:stateChange": {
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
+    },
+    "local_authoring_parts::d414e88fdf3c26c36ad8afc5474e1b7d38f05fd7f8939708ade264f55d674b0d:systemInterconnections:3": {
+      "fromId": "BOARD_STATE -> NEXT_PLAYER_CHOICE",
+      "toId": "NEXT_PLAYER_CHOICE",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "NEW_BOARD_STATE",
+        "NEXT_PLAYER_CHOICE"
+      ],
+      "fromSystem": "MAIN -> NEXT_PLAYER_CHOICE",
+      "toSystem": "PLAYER_CHOICE",
+      "trigger": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다.",
+      "stateChange": "플레이어가 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행하면서, 입력(BOARD_STATE) → 판정(PLAYER_ACTION) → 상태 변화(NEW_BOARD_STATE) → 보상(NEXT_PLAYER_CHOICE)의 순환적 루프를 형성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 39,
+      "successes": 39,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2482665,
-      "lastMs": 64269,
+      "totalMs": 2546308,
+      "lastMs": 63643,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:28:50.429Z"
+      "updatedAt": "2026-10-08T18:29:54.074Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:27.560Z",
-  "updatedAt": "2026-10-08T18:28:50.429Z",
+  "updatedAt": "2026-10-08T18:29:54.076Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2901,7 +2918,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:28:50.429Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:29:54.076Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
