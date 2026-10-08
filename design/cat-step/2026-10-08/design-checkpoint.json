@@ -973,25 +973,36 @@
       "toSystem": "cat-step-signature-systems-1",
       "trigger": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. The selected level's goal is recorded as the current objective. The game's state is updated to reflect the new objective, and the player is prompted to make strategic moves, create combos, and use imm",
       "stateChange": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. The selected level's goal is recorded as the current objective. The game's state is updated to reflect the new objective, and the player is prompted to make strategic moves, create combos, and use immediate feedback to solve the current objective."
+    },
+    "local_authoring_parts::331bc22afee6dc2f1e44ed1d9576baa6c7cee288fd9af5d2868b7b9fd016076b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "fromSystem": "Puzzle System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 56,
+      "calls": 57,
+      "successes": 57,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3012925,
-      "lastMs": 65731,
+      "totalMs": 3086865,
+      "lastMs": 73940,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:15:37.904Z"
+      "updatedAt": "2026-10-08T16:16:51.853Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T16:15:37.911Z",
+  "updatedAt": "2026-10-08T16:16:51.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3174,10 +3185,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:15:37.907Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:16:51.853Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
