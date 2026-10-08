@@ -117,3 +117,65 @@ input.focused=nil;input.InputBegan:Fire({KeyCode='Escape'},false);assert(not api
 input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 find('CloseMenu').Activated:Fire();assert(not api.isOpen() and combat)
 `));
+
+test('character and merchant pages use actual replicated state and server requests without changing item prices',()=>{
+ const config=fs.readFileSync('roblox-games/daechung-rpg/shared/GameConfig.luau','utf8');
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const shared=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
+ assert.match(model,/function Model\.character\(attributes,config\)/);
+ assert.match(model,/function Model\.shop\(attributes,config\)/);
+ assert.match(model,/source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"/);
+ assert.match(model,/sellSupported=false/);
+ assert.match(model,/local prices=isWeapon and C\.WeaponPrices or C\.ArmorPrices/);
+ assert.equal(shared,model,'shared model must match the exact internal asset');
+ for(const name of ['캐릭터','상점']){
+   assert.match(menu,new RegExp('"' + name + '"'));
+ }
+ assert.match(menu,/character=Model\.character\(a,config\)/);
+ assert.match(menu,/offers=Model\.shop\(a,config\)/);
+ assert.match(menu,/buyWeapon\.Activated:Connect/);
+ assert.match(menu,/buyArmor\.Activated:Connect/);
+ assert.match(menu,/type\(options\.buyWeapon\)/);
+ assert.match(menu,/type\(options\.buyArmor\)/);
+ assert.match(menu,/CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true/);
+ assert.match(menu,/humanoid\.HealthChanged:Connect\(scheduleRefresh\)/);
+ assert.match(config,/BUY_WEAPON="BUY_WEAPON",BUY_ARMOR="BUY_ARMOR"/);
+ assert.match(client,/buyWeapon=function\(\)remote:FireServer\(C\.Actions\.BUY_WEAPON\)end/);
+ assert.match(client,/buyArmor=function\(\)remote:FireServer\(C\.Actions\.BUY_ARMOR\)end/);
+ const buy=server.slice(server.indexOf('local function purchaseMerchantEquipment('),server.indexOf('local function makeVillage()'));
+ assert.match(buy,/merchant=village and village:FindFirstChild\(merchantName\)/);
+ assert.match(buy,/health\.Health<=0/);
+ assert.match(buy,/n\(p,"CurrentZone",0\)~=0/);
+ assert.match(buy,/p:GetAttribute\("InCombat"\)==true/);
+ assert.match(buy,/\(characterRoot\.Position-merchant\.Position\)\.Magnitude>16/);
+ assert.match(buy,/p:SetAttribute\("Gold",n\(p,"Gold",0\)-cost\)/);
+ assert.match(buy,/p:SetAttribute\(tierKey,tier\+1\)/);
+ assert.match(buy,/setStats\(p,not isWeapon\)/);
+ assert.doesNotMatch(buy,/GetDataStore|SetAsync|UpdateAsync|RemoteEvent:FireServer/);
+ assert.match(server,/if a==C\.Actions\.BUY_WEAPON then accepted=purchaseMerchantEquipment\(p,"WEAPON"\)/);
+ assert.match(server,/elseif a==C\.Actions\.BUY_ARMOR then accepted=purchaseMerchantEquipment\(p,"ARMOR"\)/);
+ assert.equal((server.match(/purchaseMerchantEquipment\(p,"WEAPON"\)/g)||[]).length,2,'NPC prompt and menu must share one purchase owner');
+ assert.equal((server.match(/purchaseMerchantEquipment\(p,"ARMOR"\)/g)||[]).length,2);
+});
+test('live character and shop view model reads tiers and availability without mutating player',{skip:!luau},()=>run(`
+local Model=(function()${model}\nend)()
+local config={Classes={RUNE={Name='룬술사'}},WeaponPrices={50,120,240},ArmorPrices={45,110,220},
+ WeaponBonus={0,8,18},ArmorBonus={0,10,22}}
+local a={ClassId='RUNE',Level=6,XP=18,Gold=130,MaxHP=250,AttackPower=35,WeaponTier=1,ArmorTier=2,CurrentZone=0}
+local c=Model.character(a,config)
+assert(c.className=='룬술사' and c.level==6 and c.gold==130 and c.maxHp==250)
+assert(c.weaponTier==1 and c.armorTier==2 and c.attack==35)
+local shop=Model.shop(a,config)
+assert(shop.weapon.price==120 and shop.weapon.canBuy and shop.weapon.nextTier==2)
+assert(shop.armor.price==220 and not shop.armor.canBuy)
+assert(not shop.sellSupported)
+a.Gold=0
+assert(not Model.shop(a,config).weapon.canBuy)
+a.CurrentZone=1
+a.Gold=999
+assert(not Model.shop(a,config).weapon.canBuy)
+a.CurrentZone=0
+a.WeaponTier=3
+assert(Model.shop(a,config).weapon.price==nil)
+`));
