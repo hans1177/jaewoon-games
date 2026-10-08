@@ -169,25 +169,51 @@
         "InfectionProgress",
         "InfectionProgress2"
       ]
+    },
+    "local_authoring_parts::df7710bee3f2b697fe48f5f6704807570cca52be2d2d82cb95f3ed760cacfb32:name,purpose,playerChoice": {
+      "name": "DELVE",
+      "purpose": "Role Assignment and Infection Status Tracking",
+      "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
+    },
+    "local_authoring_parts::0cb36d55842761d48afc18d41412de09a09cd1fa732a3db04982b6ac758f329d:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount",
+        "Energy"
+      ],
+      "stateOutputs": [
+        "RoleAssignment",
+        "InfectionStatus",
+        "SurvivalProgress",
+        "CombatOutcome",
+        "InfectionProgress",
+        "InfectionProgress2"
+      ],
+      "name": "DELVE",
+      "purpose": "Role Assignment and Infection Status Tracking",
+      "playerChoice": "Player-Driven Role Assignment and Infection Status Update"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 11,
+      "calls": 16,
+      "successes": 12,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 765048,
-      "lastMs": 40000,
+      "totalMs": 804221,
+      "lastMs": 39173,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T03:40:23.374Z"
+      "updatedAt": "2026-10-08T03:41:02.548Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T03:27:38.135Z",
-  "updatedAt": "2026-10-08T03:40:23.374Z",
+  "updatedAt": "2026-10-08T03:41:02.549Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -943,7 +969,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 1
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T03:40:23.374Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T03:41:02.549Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "failedPhase": null,
