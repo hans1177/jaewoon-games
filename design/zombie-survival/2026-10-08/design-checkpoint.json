@@ -610,25 +610,32 @@
     },
     "local_authoring_parts::1d109ae1902ce57944004eb5efcff81cbe7d5c6c4fdbe108af27765bd41d0ab0:toId": {
       "toId": "CORE-LOOP-2"
+    },
+    "local_authoring_parts::1d109ae1902ce57944004eb5efcff81cbe7d5c6c4fdbe108af27765bd41d0ab0:stateKeys": {
+      "stateKeys": [
+        "플레이어의 '진행' - 선택",
+        "판정: '위험' - 선택",
+        "OUTPUT: '보상' - 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2364156,
-      "lastMs": 89576,
+      "totalMs": 2456395,
+      "lastMs": 92239,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:28:24.248Z"
+      "updatedAt": "2026-10-08T15:29:56.489Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:28:24.248Z",
+  "updatedAt": "2026-10-08T15:29:56.489Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3093,7 +3100,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:28:24.248Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:29:56.489Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
