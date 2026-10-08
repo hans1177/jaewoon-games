@@ -1033,25 +1033,36 @@
       "toSystem": "Puzzle System",
       "trigger": "Player selects a level with a clear goal, limited moves, obstacles, or a visible puzzle constraint.",
       "stateChange": "From initial level setup to progression to new board pattern or obstacle combination."
+    },
+    "local_authoring_parts::2a3050763f255518628618c7d1783f10bcc6a848f602fe8e004a5a9dba3d939f:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "cat-step-signature-systems-0",
+      "toId": "cat-step-signature-systems-1",
+      "stateKeys": [
+        "LEVEL_GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "VISIBLE_PUZZLE_CONSTRAINT"
+      ],
+      "fromSystem": "Puzzle System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 60,
-      "successes": 60,
+      "calls": 61,
+      "successes": 61,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3315490,
-      "lastMs": 73936,
+      "totalMs": 3382543,
+      "lastMs": 67053,
       "lastError": null,
-      "updatedAt": "2026-10-08T16:20:40.486Z"
+      "updatedAt": "2026-10-08T16:21:47.543Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:58:12.306Z",
-  "updatedAt": "2026-10-08T16:20:40.488Z",
+  "updatedAt": "2026-10-08T16:21:47.543Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3234,7 +3245,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:20:40.488Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:21:47.543Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
