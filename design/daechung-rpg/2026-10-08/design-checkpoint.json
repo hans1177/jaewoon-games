@@ -623,25 +623,29 @@
         }
       ],
       "progressionDirection": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련"
+    },
+    "local_authoring_parts::334bcfd25f1a1d56b0fca9304b1355b32ed1203b808924f4707b962875282ebe:progressionLoop,resourceFlow": {
+      "progressionLoop": "마을 준비 → 포탈 전투 → Lv.15 1차 전직 → 보스 격파/동료 해금 → 동료 3명 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련",
+      "resourceFlow": "마을 퀘스트와 장비 준비 → 포탈 사냥터 이동 → 몬스터 전투 → 보스 처치 → 파티 구성 → 보상 분배 → 귀환/회복/강화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 16,
+      "calls": 19,
+      "successes": 17,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2017710,
-      "lastMs": 115169,
+      "totalMs": 2071114,
+      "lastMs": 53404,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:48:44.980Z"
+      "updatedAt": "2026-10-08T10:49:38.386Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:15:07.214Z",
-  "updatedAt": "2026-10-08T10:48:44.980Z",
+  "updatedAt": "2026-10-08T10:49:38.386Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2064,7 +2068,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:48:44.980Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:49:38.386Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
