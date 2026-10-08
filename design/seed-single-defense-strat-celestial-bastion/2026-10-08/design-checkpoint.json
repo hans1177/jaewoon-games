@@ -915,25 +915,44 @@
       "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
       "trigger": "threatened route → new state",
       "stateChange": "threatened route → new state"
+    },
+    "local_authoring_parts::3a33e0c3642ec540ed68a03d29dfa16c69842054a8462120db1ccf171c8e611e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "threatened route",
+      "toId": "new state",
+      "stateKeys": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions",
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes",
+        "enemy types",
+        "wave composition",
+        "objective",
+        "stage or boss"
+      ],
+      "fromSystem": "systemInterconnections[0]_fromSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1697192,
-      "lastMs": 106695,
+      "totalMs": 1810268,
+      "lastMs": 113076,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:53:38.769Z"
+      "updatedAt": "2026-10-08T10:55:31.849Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:53:38.771Z",
+  "updatedAt": "2026-10-08T10:55:31.849Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3279,7 +3298,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:53:38.771Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:55:31.849Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
