@@ -716,25 +716,35 @@
       "toSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
       "trigger": "FIGHT THROUGH HORDE",
       "stateChange": "POSITIONING AROUND ENEMY PRESSURE"
+    },
+    "local_authoring_parts::f626c358692b4e72b29aa51581cf79099b8a260c0744e1064adde99d9747a8bd:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01",
+      "toId": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_02",
+      "stateKeys": [
+        "FIGHT THROUGH HORDE",
+        "RUN REWARDS / UPGRADES / SKILLS",
+        "NEXT CHOICE: BUILD STRONGER BUILD"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3544691,
-      "lastMs": 90951,
+      "totalMs": 3639856,
+      "lastMs": 95165,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T11:23:46.546Z"
+      "updatedAt": "2026-10-08T11:25:21.715Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:14:49.595Z",
-  "updatedAt": "2026-10-08T11:23:46.548Z",
+  "updatedAt": "2026-10-08T11:25:21.715Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3090,7 +3100,7 @@
     "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:23:46.548Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:25:21.715Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
