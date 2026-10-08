@@ -557,25 +557,35 @@
       "toSystem": "TERRITORY_OBJECTIVE",
       "trigger": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
       "stateChange": "{\"type\": \"ACTION\", \"name\": \"Read the current border pressure and choose one territory objective\",\n\"description\": \"Player reads the current border pressure and combines it with regional characteristics to select a new strategy that aligns with the front line and resource allocation goals.\",\n\"stateChanges\": [\"new_strategy\",\"updated_front_line\",\"expanded_resouc"
+    },
+    "local_authoring_parts::9b825cb038880dc4bca4b7e3b9615171c72ec62ba0b446ca284f599e7ef05ba4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "border_pressure",
+      "toId": "territory_objective",
+      "stateKeys": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "fromSystem": "BORDER_PRESSURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 16,
+      "calls": 20,
+      "successes": 17,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2343580,
-      "lastMs": 98365,
+      "totalMs": 2435833,
+      "lastMs": 92253,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T21:27:20.198Z"
+      "updatedAt": "2026-10-08T21:28:52.454Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T21:27:20.199Z",
+  "updatedAt": "2026-10-08T21:28:52.454Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2601,7 +2611,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:27:20.199Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:28:52.454Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
