@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 103330,
-      "lastMs": 103330,
+      "totalMs": 155640,
+      "lastMs": 52310,
       "lastError": null,
-      "updatedAt": "2026-10-08T01:39:34.435Z"
+      "updatedAt": "2026-10-08T01:40:26.748Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T01:37:51.001Z",
-  "updatedAt": "2026-10-08T01:39:34.438Z",
+  "updatedAt": "2026-10-08T01:40:26.750Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -600,12 +600,12 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T01:39:34.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T01:40:26.748Z",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft_slices",
+  "failedPhase": "designer_draft",
   "failedTask": "identity-core",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT"
 }
