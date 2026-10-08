@@ -246,3 +246,30 @@ test('system-menu drawer is a functional touch-safe synchronized menu, not a sta
  }
  assert.doesNotMatch(body,/DataStoreService|SetAsync|FireServer|RemoteEvent|RenderStepped|RunService/);
 });
+
+test('common world-object prompts and interaction state cards synchronize actual object identity and lock state',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const start=source.indexOf('function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateWorldPropActionWheel(options)',start);
+ const prompt=source.slice(start,end);
+ assert.match(prompt,/local function sync\(state\)/);
+ assert.match(prompt,/action\.Text=tostring\(state\.actionText or options\.actionText/);
+ assert.match(prompt,/target\.Text=tostring\(state\.targetText or options\.targetText/);
+ assert.match(prompt,/status\.Text=tostring\(state\.statusText or state\.reason or ""\)/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionId",tostring\(state\.id/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionKind",tostring\(state\.kind/);
+ assert.match(prompt,/root:SetAttribute\("InteractionAvailable",available\)/);
+ assert.match(prompt,/return root,\{action=action,target=target,status=status,Sync=sync\}/);
+ const stateStart=source.indexOf('function RobloxCommonUI.CreateInteractionStateCard(options)');
+ const stateEnd=source.indexOf('function RobloxCommonUI.CreateSeatInteractionPrompt(options)',stateStart);
+ const card=source.slice(stateStart,stateEnd);
+ assert.match(card,/local function sync\(state\)/);
+ assert.match(card,/state\.requirements or ""/);
+ assert.match(card,/state\.result or ""/);
+ assert.match(card,/root:SetAttribute\("SourceAuthority",tostring\(state\.source/);
+ assert.match(card,/Sync=sync/);
+ for(const body of [prompt,card]){
+   assert.match(body,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(body,/FireServer|RemoteEvent|DataStoreService|UpdateAsync|SetAsync|RunService/);
+ }
+});
