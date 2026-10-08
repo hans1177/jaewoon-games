@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 36,
-  "lastSuccessfulModelCallAt": "2026-10-08T16:32:32.177Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 38,
+  "lastSuccessfulModelCallAt": "2026-10-08T16:34:00.974Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/simple-rpg/2026-10-08/design-seed.json",
     "contentDigest": "6a947f5e70311072cabb7e38528103a7b13ad01b6c6ef3f5650f6047d51ba383",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 23,
+      "calls": 26,
+      "successes": 24,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2565291,
-      "lastMs": 88785,
+      "totalMs": 2654083,
+      "lastMs": 88792,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:32:32.177Z"
+      "updatedAt": "2026-10-08T16:34:00.971Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T16:32:32.179Z"
+  "updatedAt": "2026-10-08T16:34:00.981Z"
 }
