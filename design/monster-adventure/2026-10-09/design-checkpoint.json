@@ -89,25 +89,43 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::d529093ed08610fad2fcebd062cdf030983f7b79bec345bc42383ea2dc014481:signatureSystems:3": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_STATE",
+        "DISTANCE_STATE",
+        "SHORT_SESSION_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE_1",
+        "WORLD_STATUS_CHANGE_2",
+        "WORLD_STATUS_CHANGE_3"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 556663,
-      "lastMs": 184858,
+      "totalMs": 631563,
+      "lastMs": 74900,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:09:04.522Z"
+      "updatedAt": "2026-10-08T18:10:19.424Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:47.811Z",
-  "updatedAt": "2026-10-08T18:09:04.522Z",
+  "updatedAt": "2026-10-08T18:10:19.424Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2193,7 +2211,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:09:04.522Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:10:19.424Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
