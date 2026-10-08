@@ -415,25 +415,38 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::247fb670c6e39be4a55eca74b86d468914bdf7f7adbf203c4d1c7b4dc7171f51:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "signatureSystems"
+      ],
+      "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "purpose": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다.",
+      "playerChoice": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 4직업/전직 실루엣을 유지하며, AI 동료는 격파한 보스의 고유 실루엣과 핵심 이펙트를 축소·정리해 그대로 동료 정체성으로 사용한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 762268,
-      "lastMs": 51223,
+      "totalMs": 874693,
+      "lastMs": 112425,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:27:49.515Z"
+      "updatedAt": "2026-10-08T10:29:41.949Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:15:07.214Z",
-  "updatedAt": "2026-10-08T10:27:49.523Z",
+  "updatedAt": "2026-10-08T10:29:41.949Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1893,10 +1906,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:27:49.518Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:29:41.949Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
