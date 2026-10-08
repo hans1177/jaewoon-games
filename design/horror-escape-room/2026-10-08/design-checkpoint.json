@@ -752,25 +752,42 @@
         "AI 충원"
       ],
       "fromSystem": "MAIN_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_"
+    },
+    "local_authoring_parts::6bf8e2c07086c0870ad6eba6c6ebe2a5c741c7786eda70508d9e793ad369eb55:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "감염 공격 및 정화",
+      "stateChange": "감염 전환"
+    },
+    "local_authoring_parts::b54ed0b6f728af2c93b1c4fe1903218d50f3b1d250a7a441c8c90d842ffb66ee:systemInterconnections:2": {
+      "fromId": "MAIN_01",
+      "toId": "MAIN_02",
+      "stateKeys": [
+        "역할 변화",
+        "AI 충원"
+      ],
+      "fromSystem": "MAIN_01_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "toSystem": "MAIN_02_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_",
+      "trigger": "감염 공격 및 정화",
+      "stateChange": "감염 전환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1936928,
-      "lastMs": 104672,
+      "totalMs": 2040560,
+      "lastMs": 103632,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:18:03.431Z"
+      "updatedAt": "2026-10-08T11:19:47.064Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:45:46.438Z",
-  "updatedAt": "2026-10-08T11:18:03.431Z",
+  "updatedAt": "2026-10-08T11:19:47.066Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1634,7 +1651,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T11:18:03.431Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T11:19:47.066Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
