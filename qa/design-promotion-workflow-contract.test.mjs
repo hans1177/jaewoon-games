@@ -128,7 +128,7 @@ test('design control jobs use slim runners while per-game design cycles retain f
   assert.match(designRuntime,/\n  game-primary-gate:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(designRuntime,/\n  design-cycle:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
-  assert.match(designRuntime,/\n  mark-design-engine-canary:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(designRuntime,/mark-design-engine-canary:/);
   assert.match(designRuntime,/\n  sync-strict-design-scores:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(designRuntime,/\n  continue-seed-supply:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
 });

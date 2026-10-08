@@ -240,7 +240,7 @@ test('quality gate applies material count only to material-composed seeds and le
   assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
 });
 
-test('autonomous runtime pins verified design engines, canaries three games, then expands to central WIP without weakening gates',()=>{
+test('autonomous runtime pins the engine and designs independent games within central WIP without weakening final gates',()=>{
   for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
     assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
     assert.doesNotMatch(text,/gh pr create/);
@@ -257,21 +257,20 @@ test('autonomous runtime pins verified design engines, canaries three games, the
   assert.match(seedDesignWorkflow,/group: company-seed-design-runtime/);
   assert.match(seedDesignWorkflow,/cancel-in-progress: false/);
   assert.match(seedDesignWorkflow,/tools\/company-design-seed-normalize\.mjs/);
-  assert.match(seedDesignWorkflow,/design-engine-canary\.json/);
-  assert.match(seedDesignWorkflow,/canary_mode=/);
+  assert.doesNotMatch(seedDesignWorkflow,/design-engine-canary\.json|canary_mode=/);
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
-  assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:3\)/);
-  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:3\)/);
+  assert.match(seedDesignWorkflow,/const selected=pending/);
+  assert.doesNotMatch(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:3\)/);
   assert.match(seedDesignWorkflow,/Math\.min\(designWipMax,targets\.length\|\|1\)/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
-  assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
-  assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
+  assert.doesNotMatch(seedDesignWorkflow,/mark-design-engine-canary:/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_PORTFOLIO_CANARY_GATE=DISABLED/);
   assert.match(seedDesignWorkflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(seedDesignWorkflow,/DESIGN_PROGRESS_RUNTIME_PERSIST=YES/);
   assert.match(seedDesignWorkflow,/sleep 15/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
-  assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
+  assert.equal((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=\$\{unboundedByPolicy\?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'\}/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_SCHEDULING_MODE=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_ROBLOX_FIRST=/);

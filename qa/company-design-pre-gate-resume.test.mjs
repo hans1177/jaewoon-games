@@ -20,6 +20,33 @@ import {normalizeWebCanonicalAndExpansionPolicy} from '../tools/company-design-p
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+// 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
+test('design target selection never waits for three other games to validate the engine',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const section=workflow.slice(workflow.indexOf('- name: Resolve central-policy active incomplete GAME_SEED targets'));
+  const source=section.slice(section.indexOf('import fs'),section.indexOf('\n          NODE')).replace(/^\s*import .*;\s*$/gm,'');
+  for(const limit of [null,4]){
+    const output=[];
+    const files={
+      'company-learning/platform-release-roadmap.json':{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:limit,externalMatrixBatchMax:256,internalArtificialConcurrencyCapsForbidden:true}},
+      'company-directive.json':{},
+      'game-seed-state.json':{seeds:Array.from({length:6},(_,index)=>({gameId:`game-${index}`,seedId:`seed-${index}`,status:'ACTIVE',createdAt:'2026-10-08'}))},
+      'owner-design-reset-queue.json':{requests:[]}
+    };
+    runInNewContext(source,{
+      fs:{readFileSync:file=>{if(file.startsWith('tools/'))return 'current engine';if(file in files)return JSON.stringify(files[file]);throw new Error('missing '+file);},existsSync:()=>false},
+      path,createHash,process:{env:{}},console:{log:line=>output.push(line),error:()=>{}}
+    });
+    const targets=JSON.parse(output.find(line=>line.startsWith('targets=')).slice('targets='.length));
+    assert.equal(targets.length,limit||6,'missing engine canary must not hide independent pending games');
+    assert.equal(Number(output.find(line=>line.startsWith('parallel_max=')).split('=')[1]),limit||6);
+  }
+  assert.match(workflow,/fail-fast: false/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/mark-design-engine-canary:|CANARY_SELECTED_GAMES_BEFORE_CENTRAL_POLICY_BATCH/);
+  assert.match(workflow,/Apply strict 30-minute design review/);
+});
+
 test('final review consumes the current designer seed without demanding a second prepared seed',()=>{
   const baseline=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
   const section=baseline.slice(baseline.indexOf('  const revisedRecord='),baseline.indexOf('  designMultiplayerMode=clean(revised?.multiplayerMode)'));
@@ -129,28 +156,24 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   assert.throws(()=>save(invalid,'designer_draft'),/DESIGNER_SEED_REPAIR_REQUIRED/);
 });
 
-// 대표 검증과 일반 배치 모두 실제 대상 수·중앙 정책 범위 안에서 병렬 실행한다.
-test('design canary games run concurrently without bypassing the verified-engine gate',()=>{
+// 게임별 최종 검수와 중앙 병렬 한도를 지키며 독립 대상은 모두 작성한다.
+test('independent design games run concurrently without a portfolio success gate',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const selection=workflow.split('\n').find(line=>line.trim().startsWith('const selected='));
   const concurrency=workflow.split('\n').find(line=>line.trim().startsWith('const parallelMax='));
-  for(const [verified,preservation,count,wip,expected] of [
-    [false,false,14,256,3],[true,false,14,256,14],
-    [false,false,1,256,1],[false,false,0,256,1],
-    [false,false,2,1,1],[false,true,14,256,1]
+  for(const [count,wip,expected] of [
+    [14,256,14],[1,256,1],[0,256,1],[2,1,1]
   ]){
     const result=runInNewContext(selection+'\nconst targets=selected;\n'+concurrency+'\n({selected:selected.length,parallelMax})',{
-      pending:Array.from({length:count},(_,id)=>({id})),canaryVerified:verified,preservationOnly:preservation,designWipMax:wip
+      pending:Array.from({length:count},(_,id)=>({id})),designWipMax:wip
     });
     assert.equal(result.parallelMax,expected);
-    if(!verified)assert.ok(result.selected<=3,'representative canary must remain required');
+    assert.equal(result.selected,count,'another game failure must not remove a pending target');
   }
   assert.match(workflow,/fail-fast: false/);
   assert.match(workflow,/max-parallel: \$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
-  assert.match(workflow,/canary_mode == 'true' && needs\.design-cycle\.result == 'success'/);
   assert.match(workflow,/target_count: \$\{\{ steps\.targets\.outputs\.target_count \}\}/);
-  assert.match(workflow,/VERIFIED_GAME_COUNT: \$\{\{ needs\.resolve-seed-targets\.outputs\.target_count \}\}/);
-  assert.match(workflow,/"verifiedGameCount": \$VERIFIED_GAME_COUNT/);
+  assert.doesNotMatch(workflow,/canary_mode|VERIFIED_GAME_COUNT/);
 });
 
 // 내부 모델 시간 제한·준비·재개 회귀 검증
