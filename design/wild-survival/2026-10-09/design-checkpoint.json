@@ -34,25 +34,38 @@
         "선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계된다.",
         "보상 또는 실패는 다음 목표·지역·상호작용·전략 선택의 결정 요소로 작용하여 게임 루프를 반복적으로 진행시킨다."
       ]
+    },
+    "local_authoring_parts::530a09eded469cd201f4db6cbf8b7822026e027ce7c17d4006b0918c2d54dfea:signatureSystems:0": {
+      "id": "wild-survival_signature_systems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 상태: 플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택"
+      ],
+      "stateOutputs": [
+        "월드 상태 변환: 선택 결과로 월드 상태가 변하게 되며, 그 변화에 따라 보상/위험/다음 선택의 연결이 이루어지도록 설계됨"
+      ],
+      "name": "야생 생존 시그니처 시스템",
+      "purpose": "플레이어가 현재 월드 상태와 목표를 읽고, 실질적 입력을 통해 장르 핵심 행동을 선택하며, 이 선택은 월드 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "실제 입력과 상호작용 결과로 인해 월드·대상·자원·위험·진행 상태가 변하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 231245,
-      "lastMs": 41462,
+      "totalMs": 271751,
+      "lastMs": 40506,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:55:13.649Z"
+      "updatedAt": "2026-10-08T17:55:54.156Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:51:22.381Z",
-  "updatedAt": "2026-10-08T17:55:13.649Z",
+  "updatedAt": "2026-10-08T17:55:54.156Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2123,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:55:13.649Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:55:54.156Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
