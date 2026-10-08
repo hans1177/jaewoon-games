@@ -416,25 +416,70 @@
       "name": "Signature Systems",
       "purpose": "Define the core loop design and state management for the game's signature systems.",
       "playerChoice": "SIGNATURE_SYSTEMS"
+    },
+    "local_authoring_parts::367d8f5ef585e1f5b4dc5e819bd06d86025fcb2f5fb027ef18356a6e284a7dc8:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "name": "Signature Systems",
+      "purpose": "Define the core loop design and state management for the game's signature systems.",
+      "playerChoice": "SIGNATURE_SYSTEMS_1"
+    },
+    "local_authoring_parts::367d8f5ef585e1f5b4dc5e819bd06d86025fcb2f5fb027ef18356a6e284a7dc8:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "name": "Signature Systems",
+      "purpose": "Define the core loop design and state management for the game's signature systems.",
+      "playerChoice": "SIGNATURE_SYSTEMS_2"
+    },
+    "local_authoring_parts::367d8f5ef585e1f5b4dc5e819bd06d86025fcb2f5fb027ef18356a6e284a7dc8:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "stateOutputs": [
+        "CORE_LOOP_DESIGN",
+        "signatureSystems"
+      ],
+      "name": "Signature Systems",
+      "purpose": "Define the core loop design and state management for the game's signature systems.",
+      "playerChoice": "SIGNATURE_SYSTEMS_3"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 792200,
-      "lastMs": 95015,
+      "totalMs": 1086818,
+      "lastMs": 97552,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:26:36.087Z"
+      "updatedAt": "2026-10-08T13:31:30.708Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:13:23.847Z",
-  "updatedAt": "2026-10-08T13:26:36.088Z",
+  "updatedAt": "2026-10-08T13:31:30.708Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1028,7 +1073,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:26:36.087Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:31:30.708Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
