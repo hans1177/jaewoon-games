@@ -739,25 +739,34 @@
       "toSystem": "SurvivalResourceSystem",
       "trigger": "SurvivalHordeSystem → SurvivalResourceSystem",
       "stateChange": "worldState updated to reflect resource optimization, playerAction adjusted to prioritize resource consolidation and strategic upgrades"
+    },
+    "local_authoring_parts::aa952c079dbd5b8a95c178250a47e611f55812d68caba678529845d17d6579a2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[2]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "worldState",
+        "playerAction"
+      ],
+      "fromSystem": "SurvivalDepthSystem"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 26,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2454081,
-      "lastMs": 82185,
+      "totalMs": 2533764,
+      "lastMs": 79683,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:36:55.439Z"
+      "updatedAt": "2026-10-08T16:38:15.125Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:58:07.049Z",
-  "updatedAt": "2026-10-08T16:36:55.440Z",
+  "updatedAt": "2026-10-08T16:38:15.125Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3112,7 +3121,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:36:55.440Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:38:15.125Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
