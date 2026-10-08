@@ -34,25 +34,40 @@
         "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk.\nOUTPUT: New status reflects improved capabilities, altered environment, or preparedness for higher threats.\nACTION: Main loop adapт",
         "INPUT: Discover hidden patterns in the forest, understand ecological shifts, and make decisions based on knowledge gained.\nSELECT: Make choices that alter the world state through discovery, mastery, or re-exploration.\nOUTPUT: New status includes learned patterns, changed environment, or redefined goals.\nACTION: Main loop continues with re"
       ]
+    },
+    "local_authoring_parts::67250332aad7a4baa4991ef43e59eab37cfcb053f87fbbd5bf2bec1a29c31c6c:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resources",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "new status with altered environment",
+        "changed group dynamics"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "To reflect the impact of past decisions on current state and future choices.",
+      "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 342951,
-      "lastMs": 58758,
+      "totalMs": 378182,
+      "lastMs": 35231,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:29:25.036Z"
+      "updatedAt": "2026-10-08T18:30:00.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:29:25.036Z",
+  "updatedAt": "2026-10-08T18:30:00.269Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,7 +2295,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:29:25.036Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:30:00.269Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
