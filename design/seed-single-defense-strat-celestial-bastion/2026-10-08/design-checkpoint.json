@@ -154,25 +154,368 @@
       "name": "Enemy Adaptation System",
       "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
       "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+    },
+    "local_authoring_parts::ed4dcb187c6dd79ac57600710a1368c002c730deac96f2ab6c5119def4e21f1a:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "threatened route",
+        "enemy wave",
+        "towers or defenders",
+        "lanes or positions",
+        "resources",
+        "upgrades",
+        "new placements",
+        "tactical changes",
+        "enemy types",
+        "wave composition",
+        "objective",
+        "stage or boss"
+      ],
+      "stateOutputs": [
+        "new state",
+        "updated defense strategy",
+        "resource allocation",
+        "tactical adjustments",
+        "enemy adaptation",
+        "game progression",
+        "unlocking harder defense choices"
+      ],
+      "name": "Enemy Adaptation System",
+      "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+      "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+    },
+    "local_authoring_parts::f4c35ea88e02df40396f3433ded46c7cf4fc3fb3899e2350391c57ba3c17e041:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        }
+      ]
+    },
+    "local_authoring_parts::1299c226dbcc9b95eecd5a4465d34109fa3b96a80a2fae5bf616fa7e0bb9a154:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "threatened route",
+            "enemy wave",
+            "towers or defenders",
+            "lanes or positions",
+            "resources",
+            "upgrades",
+            "new placements",
+            "tactical changes",
+            "enemy types",
+            "wave composition",
+            "objective",
+            "stage or boss"
+          ],
+          "stateOutputs": [
+            "new state",
+            "updated defense strategy",
+            "resource allocation",
+            "tactical adjustments",
+            "enemy adaptation",
+            "game progression",
+            "unlocking harder defense choices"
+          ],
+          "name": "Enemy Adaptation System",
+          "purpose": "Facilitates dynamic defense strategy adjustments based on enemy type and wave composition.",
+          "playerChoice": "Adapt defense strategy in real-time to counter evolving threats and optimize resource allocation before pressure increases."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 885676,
-      "lastMs": 105961,
+      "totalMs": 992662,
+      "lastMs": 106986,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:40:07.220Z"
+      "updatedAt": "2026-10-08T10:41:54.208Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:25:21.512Z",
-  "updatedAt": "2026-10-08T10:40:07.220Z",
+  "updatedAt": "2026-10-08T10:41:54.211Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2367,7 +2710,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T10:40:07.220Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:41:54.211Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
