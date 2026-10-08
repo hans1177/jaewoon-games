@@ -9,12 +9,35 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::a4724fb3f73840ece87311a96728c9c2450ccc925a3e24b5725e9f6bbfcfd362:identity": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다."
+    },
+    "local_authoring_parts::a4724fb3f73840ece87311a96728c9c2450ccc925a3e24b5725e9f6bbfcfd362:playerFantasy": {
+      "playerFantasy": "플레이어는 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다."
+    },
+    "local_authoring_parts::e46cb3781c923bbe9eb6114aca3179a8f44457e62de221df487e5dac390ee7b1:identity,playerFantasy": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다.",
+      "playerFantasy": "플레이어는 매번 새로운 전략을 선택하며, 이 선택이 다음 월드 상태로 영향을 미친다. 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 선택 결과는 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'과 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'와 연결된다. 시그니처 세계 규칙은 단일 방어 전략의 핵심 재미와 시스템 연결이다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 230371,
+      "lastMs": 33780,
+      "lastError": null,
+      "updatedAt": "2026-10-08T17:51:11.371Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T17:47:20.992Z",
+  "updatedAt": "2026-10-08T17:51:11.372Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2204,5 +2227,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T17:51:11.372Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
