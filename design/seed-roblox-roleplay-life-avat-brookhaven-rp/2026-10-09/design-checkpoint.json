@@ -379,25 +379,42 @@
       "name": "CAUSAL GRAMMAR FOR HARBOARDAY SURVIVAL RUN",
       "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
       "playerChoice": "선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'"
+    },
+    "local_authoring_parts::0030553e56fc9c9efeccbe6412ed2c23da7882e2b25904106d8a9af0e9a0d58d:signatureSystems:3": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR_C",
+      "grammarRole": "c",
+      "stateInputs": [
+        "HARBOARDAY_SPAWN_HORDE",
+        "RUN_REWARDS_COLLECTED",
+        "UPGRADES_SELECTED"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "BUILD_UPGRADE_COMBINED",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "CAUSAL GRAMMAR FOR HARBOARDAY SURVIVAL RUN",
+      "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+      "playerChoice": "선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1216335,
-      "lastMs": 118357,
+      "totalMs": 1333467,
+      "lastMs": 117132,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:59:45.121Z"
+      "updatedAt": "2026-10-08T19:01:42.255Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:39:28.729Z",
-  "updatedAt": "2026-10-08T18:59:45.121Z",
+  "updatedAt": "2026-10-08T19:01:42.255Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2826,7 +2843,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:59:45.121Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:01:42.255Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
