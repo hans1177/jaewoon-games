@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-08T18:01:03.556Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-08T18:02:37.714Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/defense/2026-10-09/design-seed.json",
+    "contentDigest": "a3afa8983433e8894b36bd78f749309ceb13e9336a885232f8241d2f76fb2426",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 11,
+      "successes": 10,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 856964,
-      "lastMs": 107171,
-      "lastError": null,
-      "updatedAt": "2026-10-08T18:01:03.554Z"
+      "totalMs": 1251157,
+      "lastMs": 300040,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T18:07:37.763Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T18:01:03.557Z"
+  "updatedAt": "2026-10-08T18:07:37.764Z"
 }

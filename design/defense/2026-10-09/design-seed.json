@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "gameId": "defense",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ALL-DESIGN-RESET-DEFENSE-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "bd2aa93a46203622182966d366da53f53cd85013b3161dca57fb2c469a3a3489",
+  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
+  "contentDigest": "a3afa8983433e8894b36bd78f749309ceb13e9336a885232f8241d2f76fb2426",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "숲길 디펜스의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 포함하는 복합장르의 정체성입니다. 게임의 중심 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 이 행동은 주로 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만듭니다. 게임의 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'이며, 이 선택은 기존 시스템과 상호작용하며 새로운 경로와 결과를 열고 있습니다. 게임의 시그니처 세계 규칙은 이러한 중심 행동과 대표 선택이 실제로 월드/시스템 상태 변화로 연결되어 있으며, 이는 MAIN×A×B×c의 관계를 통해 구현됩니다. 게임의 측면적 성장은 수치 증가뿐만 아니라 새 행동 조합, 경로, 관계, 발견, 대응법으로 이루어지며, 이는 플레이어의 숙련과 재방문 과정에서 확대되고 있습니다. 게임의 핵심 루프는 입력→선택→상태 변화→보상·위험→다음 선택을 포함하고 있고, 이는 모바일에서도 즉시 이해되는 방식으로 설계되었습니다. 게임의 인과 법칙은 주요 인물의 목표, 두려움, 비밀이 실제 선택과 관계 변화를 만들어내며, 이는 게임의 보편적인 규칙으로 자리 잡았습니다.",
+    "playerFantasy": "숲길 디펜스에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 행동은 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만듭니다. 게임의 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'이며, 이 선택은 기존 시스템과 상호작용하며 새로운 경로와 결과를 열고 있습니다. 게임의 시그니처 세계 규칙은 이러한 중심 행동과 대표 선택이 실제로 월드/시스템 상태 변화로 연결되어 있으며, 이는 MAIN×A×B×c의 관계를 통해 구현됩니다.",
+    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임에서 사용되는 중심 행동이며, 이 행동은 주로 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만듭니다. 게임의 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'이며, 이 선택은 기존 시스템과 상호작용하며 새로운 경로와 결과를 열고 있습니다.",
+    "coreLoop": [
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SIGNATURE_SYSTEM_0",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "ENEMY_WAVE_STATE",
+          "TOWER_PLACEMENT_STATE"
+        ],
+        "stateOutputs": [
+          "WORLD_STATUS_CHANGE",
+          "RESOURCE_ALLOCATION"
+        ],
+        "name": "ENEMY_WAVE_ADAPTATION_SYSTEM",
+        "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+        "playerChoice": "Enemy wave type and composition adaptation, objective protection, and stage/boss clearing to unlock harder defense choices."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "ENEMY_WAVE_STATE",
+          "RESOURCE_ALLOCATION"
+        ],
+        "stateOutputs": [
+          "WORLD_STATUS_CHANGE",
+          "TOWER_PLACEMENT_UPGRADE"
+        ],
+        "name": "ENEMY_WAVE_RESOURCE_MANAGEMENT_SYSTEM",
+        "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+        "playerChoice": "Enemy wave resource allocation and strategic placement to maximize defensive effectiveness and unlock advanced upgrades."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "ENEMY_WAVE_STATE",
+          "TOWER_PLACEMENT_STATE"
+        ],
+        "stateOutputs": [
+          "WORLD_STATUS_CHANGE",
+          "RESOURCE_ALLOCATION"
+        ],
+        "name": "ENEMY_WAVE_STRATEGY_SELECTION_SYSTEM",
+        "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+        "playerChoice": "Enemy wave strategy selection and resource allocation to optimize defensive effectiveness and unlock advanced tactical options."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "ENEMY_WAVE_STATE",
+          "TOWER_PLACEMENT_STATE"
+        ],
+        "stateOutputs": [
+          "WORLD_STATUS_CHANGE",
+          "RESOURCE_ALLOCATION"
+        ],
+        "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+        "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+        "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "ENEMY_WAVE_STATE",
+          "TOWER_PLACEMENT_STATE"
+        ],
+        "stateOutputs": [
+          "WORLD_STATUS_CHANGE",
+          "RESOURCE_ALLOCATION"
+        ],
+        "name": "ENEMY_WAVE_DETECTION_AND_ANALYSIS_SYSTEM",
+        "purpose": "플레이어가 단순 반복에서 벗어나 다양한 위험, 보상, 자원 관계에 기반하여 상태 변화를 일관되게 만드는 중심 행동.",
+        "playerChoice": "Enemy wave detection and analysis to identify patterns, assess risks, and optimize resource allocation before pressure increases."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-08T18:02:37.720Z"
+}
