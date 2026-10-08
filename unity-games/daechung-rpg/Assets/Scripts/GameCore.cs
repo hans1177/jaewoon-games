@@ -253,6 +253,62 @@ namespace JaewoonGames.DaechungRpg
             return true;
         }
 
+        // 장비: 이미 보유한 원본 장비만 교체한다. 새 저장 키·별도 인벤토리·스탯 공식 없음.
+        public bool TryEquipWeapon(string weaponId)
+        {
+            if (weaponId != "bare-hands" &&
+                (string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.ContainsKey(weaponId) ||
+                 !Player.ownedWeapons.Contains(weaponId)))
+                return false;
+            if (Player.equippedWeaponId == weaponId) return true;
+            Player.equippedWeaponId = weaponId;
+            Save();
+            return true;
+        }
+
+        public bool TryEquipArmor(string armorId)
+        {
+            if (armorId != "none" &&
+                (string.IsNullOrEmpty(armorId) || !GameCatalog.Armors.ContainsKey(armorId) ||
+                 !Player.ownedArmors.Contains(armorId)))
+                return false;
+            if (Player.equippedArmorId == armorId) return true;
+            Player.equippedArmorId = armorId;
+            Player.currentHp = Mathf.Min(Player.currentHp, GetMaxHp());
+            Save();
+            return true;
+        }
+
+        // 매매: 기존 GameCatalog.price를 매입·반품 기준가로 사용한다.
+        // 숨겨진 보상 장비는 판매하지 않으며, 플레이어 소유 검증 후 같은 v1 저장 구조에 기록한다.
+        // UI에서 제시한 골드나 아이템 수치는 절대 받지 않는다.
+        public bool TrySellWeapon(string weaponId)
+        {
+            if (Player.currentRegionId != "town" || string.IsNullOrEmpty(weaponId) ||
+                !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden ||
+                !Player.ownedWeapons.Contains(weaponId) || Player.gold > int.MaxValue - weapon.price)
+                return false;
+            Player.ownedWeapons.Remove(weaponId);
+            if (Player.equippedWeaponId == weaponId) Player.equippedWeaponId = "bare-hands";
+            Player.gold += weapon.price;
+            Save();
+            return true;
+        }
+
+        public bool TrySellArmor(string armorId)
+        {
+            if (Player.currentRegionId != "town" || string.IsNullOrEmpty(armorId) ||
+                !GameCatalog.Armors.TryGetValue(armorId, out var armor) ||
+                !Player.ownedArmors.Contains(armorId) || Player.gold > int.MaxValue - armor.price)
+                return false;
+            Player.ownedArmors.Remove(armorId);
+            if (Player.equippedArmorId == armorId) Player.equippedArmorId = "none";
+            Player.currentHp = Mathf.Min(Player.currentHp, GetMaxHp());
+            Player.gold += armor.price;
+            Save();
+            return true;
+        }
+
         public bool TryChangeJob(JobType job)
         {
             if (Player.level < 5 || Player.job != JobType.None || job == JobType.None || !Enum.IsDefined(typeof(JobType), job))
