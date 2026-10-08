@@ -105,25 +105,228 @@
       "name": "그림자 이동",
       "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
       "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+    },
+    "local_authoring_parts::eca5d11f21d4b1d23cebf0034828da31c6efb2ccc8b321462b52d683ef36c263:signatureSystems:4": {
+      "id": "SHADOW_STEP",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "그림자 이동",
+      "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+      "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+    },
+    "local_authoring_parts::1daa91decab4044e7b8710694435dd07fa541d354b8f72c952d1d7d6220c71a7:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "SHADOW_STEP",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "그림자 이동",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "SHADOW_STEP",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "그림자 이동",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::39890e4a512fa0754473a34b039b3f7c5f7d649bfc84c13bc33441c9897f42cb:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 인간4/몬스터4 배정, 빈자리 AI 충원",
+        "SELECT: 인간 정화 또는 몬스터 감염 공격",
+        "OUTPUT: 상태변화 (인간/몬스터 전환)",
+        "STATE: 인물 정화 공격 → 몬스터 제거",
+        "ACTION: 한 진영 0명 → 승패 결정",
+        "NEXT SELECT: 양팀 남으면 무승부"
+      ],
+      "signatureSystems": [
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "INFECT_ATTACK",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "감염 공격",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "SHADOW_STEP",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "그림자 이동",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        },
+        {
+          "id": "SHADOW_STEP",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "InfectAttackCost",
+            "InfectAttackCooldown",
+            "InfectRange"
+          ],
+          "name": "그림자 이동",
+          "purpose": "몬스터가 인간을 감염하는 명확한 규칙에 따라 진행되는 전환 행동",
+          "playerChoice": "인간 정화 또는 몬스터 감염 공격 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 470757,
-      "lastMs": 40785,
+      "totalMs": 514712,
+      "lastMs": 43955,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:52:24.747Z"
+      "updatedAt": "2026-10-08T17:53:08.704Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:33.961Z",
-  "updatedAt": "2026-10-08T17:52:24.747Z",
+  "updatedAt": "2026-10-08T17:53:08.705Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -840,7 +1043,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:52:24.747Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:53:08.705Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
