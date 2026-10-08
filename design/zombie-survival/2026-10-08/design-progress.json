@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 24,
-  "lastSuccessfulModelCallAt": "2026-10-08T15:18:44.077Z",
+  "cachedTaskCount": 26,
+  "lastSuccessfulModelCallAt": "2026-10-08T15:20:27.144Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/zombie-survival/2026-10-08/design-seed.json",
+    "contentDigest": "dfe1f10e2fb84185a3eade7d5d0d005be1e1072f0b3d29537ee7167b495abf5b",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1784005,
-      "lastMs": 102144,
+      "totalMs": 1887069,
+      "lastMs": 103064,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:18:44.077Z"
+      "updatedAt": "2026-10-08T15:20:27.142Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T15:18:44.078Z"
+  "updatedAt": "2026-10-08T15:20:27.152Z"
 }

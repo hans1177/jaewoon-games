@@ -499,25 +499,130 @@
       "name": "SIGNATURE-2",
       "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
       "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+    },
+    "local_authoring_parts::6b64b9751e9c5f2cfcb9ae25aa3225156f572ed407e85b4ea2379305316ef7f7:signatureSystems:4": {
+      "id": "DELVE-1",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어의 '진행' - 선택",
+        "판정: '위험' - 선택"
+      ],
+      "stateOutputs": [
+        "상태 변화",
+        "보상/다음 선택"
+      ],
+      "name": "DELVE-1",
+      "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+      "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "좀비 생존기의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 설계되며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다. 게임의 시스템은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 'Collect run awards",
+      "playerFantasy": "좀비 생존기에서 플레이어는 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 반복 가능한 핵심 루프를 중심으로, 플레이어가 '진행·위험·보상'을 서로 연결하는 게임입니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과이며, 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는",
+      "coreLoop": [
+        "INPUT: 플레이어의 '진행' - 선택 -> 상태 변화",
+        "판정: '위험' - 선택 -> 보상/다음 선택",
+        "OUTPUT: '보상' - 선택 -> 다음 선택"
+      ],
+      "multiplayerMode": "COOP",
+      "signatureSystems": [
+        {
+          "id": "CORE-LOOP-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어의 '진행' - 선택",
+            "판정: '위험' - 선택",
+            "OUTPUT: '보상' - 선택"
+          ],
+          "stateOutputs": [
+            "상태 변화",
+            "보상/다음 선택",
+            "다음 선택"
+          ],
+          "name": "CORE-LOOP-1",
+          "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+          "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+        },
+        {
+          "id": "CORE-LOOP-2",
+          "grammarRole": "A",
+          "stateInputs": [
+            "플레이어의 '진행' - 선택",
+            "판정: '위험' - 선택"
+          ],
+          "stateOutputs": [
+            "상태 변화",
+            "보상/다음 선택"
+          ],
+          "name": "CORE-LOOP-2",
+          "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+          "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+        },
+        {
+          "id": "SIGNATURE-1",
+          "grammarRole": "B",
+          "stateInputs": [
+            "플레이어의 '진행' - 선택",
+            "판정: '위험' - 선택"
+          ],
+          "stateOutputs": [
+            "상태 변화",
+            "보상/다음 선택"
+          ],
+          "name": "SIGNATURE-1",
+          "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+          "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+        },
+        {
+          "id": "SIGNATURE-2",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어의 '진행' - 선택",
+            "판정: '위험' - 선택"
+          ],
+          "stateOutputs": [
+            "상태 변화",
+            "보상/다음 선택"
+          ],
+          "name": "SIGNATURE-2",
+          "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+          "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+        },
+        {
+          "id": "DELVE-1",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어의 '진행' - 선택",
+            "판정: '위험' - 선택"
+          ],
+          "stateOutputs": [
+            "상태 변화",
+            "보상/다음 선택"
+          ],
+          "name": "DELVE-1",
+          "purpose": "플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 구체화한 시그니처 시스템",
+          "playerChoice": "진행·위험·보상의 순차적 연결을 통해 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1784005,
-      "lastMs": 102144,
+      "totalMs": 1887069,
+      "lastMs": 103064,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:18:44.077Z"
+      "updatedAt": "2026-10-08T15:20:27.142Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:18:44.077Z",
+  "updatedAt": "2026-10-08T15:20:27.151Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2715,47 +2820,21 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
-        },
-        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 2
   },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "좀비 생존기의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 설계되며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다. 게임의 시스템은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 'Collect run awards",
-      "playerFantasy": "좀비 생존기에서 플레이어는 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과입니다. 게임의 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.'로 정의되었습니다.",
-      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 반복 가능한 핵심 루프를 중심으로, 플레이어가 '진행·위험·보상'을 서로 연결하는 게임입니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'로 구성됩니다. 이는 게임의 핵심 재미와 시스템 연결을 구체화한 결과이며, 세계 규칙은 '행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.'와 '통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.'와 같은 인과법칙을 기반으로 설계되었습니다. 게임의 플레이어 역할은 '좀비 생존기에서 플레이어는",
-      "coreLoop": [
-        "INPUT: 플레이어의 '진행' - 선택 -> 상태 변화",
-        "판정: '위험' - 선택 -> 보상/다음 선택",
-        "OUTPUT: '보상' - 선택 -> 다음 선택"
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:18:44.077Z",
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T15:20:27.144Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/zombie-survival/2026-10-08/design-seed.json",
+    "contentDigest": "dfe1f10e2fb84185a3eade7d5d0d005be1e1072f0b3d29537ee7167b495abf5b",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
