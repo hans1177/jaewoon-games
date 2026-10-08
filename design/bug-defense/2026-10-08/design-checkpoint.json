@@ -417,25 +417,38 @@
       "name": "Read the incoming insect wave and its threat pattern.",
       "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
       "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
+    },
+    "local_authoring_parts::639dfd8871b01dbb58e7f81436739dfc609c2a62169e70d0bb6a780031f3eeac:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "stateOutputs": [
+        "World state change and next selection"
+      ],
+      "name": "Read the incoming insect wave and its threat pattern.",
+      "purpose": "Plays a central role in the game by requiring players to interpret and respond to incoming insect waves, thereby shaping the game's progression and strategy.",
+      "playerChoice": "Players must interpret the incoming insect wave and its threat pattern, then place or adjust defenders and spend limited resources on the highest-value counter to survive and advance the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1113617,
-      "lastMs": 103773,
+      "totalMs": 1219235,
+      "lastMs": 105618,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:05:53.229Z"
+      "updatedAt": "2026-10-08T13:07:38.849Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:47:19.560Z",
-  "updatedAt": "2026-10-08T13:05:53.229Z",
+  "updatedAt": "2026-10-08T13:07:38.849Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2670,7 +2683,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:05:53.229Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:07:38.849Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
