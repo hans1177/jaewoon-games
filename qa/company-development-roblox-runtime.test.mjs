@@ -7,6 +7,7 @@ import {runInNewContext} from 'node:vm';
 import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
+import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
 
 const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
   id:'external-black-box-runtime-test',
@@ -24,6 +25,50 @@ const verifiedRobloxPlaybooks=()=>({
     roblox:{authority:'verified-task-playbook',checklist:['server authority','mobile input'],reuse:[VERIFIED_ROBLOX_LEARNING_REUSE]},
     coding:{authority:'verified-task-playbook',checklist:['bounded source change'],reuse:[]}
   }
+});
+
+test('learning skips unrelated recipes and internal records without blocking verified gameplay context',()=>{
+  const learning=createRobloxVibe3LearningContext({
+    gameId:'puzzle-target',profile:{genre:'Puzzle',subgenre:'Match puzzle',playMode:'COOP'},playbooks:verifiedRobloxPlaybooks(),
+    recombination:{recipes:[{id:'unrelated',sourceProjects:['one','two'],featureBlend:['aerospace-navigation']}]},
+    distillation:{records:[{id:'unrelated-internal',gameId:'other',engine:'roblox',sourceKind:'internal-roblox-source-runtime',authority:'VERIFIED_INTERNAL_ROBLOX_DISTILLATION',verified:true,retrievalEligible:true,rawCodeStored:false,rawAssetStored:false,rawBinaryStored:false,patterns:['aerospace-navigation'],principles:[]}]}
+  });
+  assert.equal(learning.applied,true);
+  assert.equal(learning.recipeId,null);
+  assert.deepEqual(learning.distilledSourceIds,[]);
+  assert.equal(learning.profile.playMode,'COOP');
+  assert.deepEqual(learning.semanticMood,{id:'PRESERVE_AUTHORED_PRESENTATION',saturation:0,contrast:0,brightness:0});
+});
+
+test('learning separates approved rules from visual style and concept instead of artbook keyword overlap',()=>{
+  const designAxes=recombinationDesignAxes({profile:{genre:'Puzzle',subgenre:'Match puzzle'},design:{sourceRevision:'approved-sha',content:{coreLoop:['match board cells'],styleLock:{id:'hand-painted',visualLanguage:['soft edges']},conceptLock:{id:'forest',world:['forest'],mood:['calm']}}}});
+  const source=(genre,style,concept)=>recombinationDesignAxes({profile:{genre},design:{content:{styleLock:{id:style},conceptLock:{id:concept}}}});
+  const recipes=[
+    {id:'wrong-rules',sourceProjects:['a','b'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Shooter','hand-painted','forest')]},
+    {id:'wrong-style',sourceProjects:['a','c'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Puzzle','neon','forest')]},
+    {id:'wrong-concept',sourceProjects:['a','d'],featureBlend:['touch-input','board-grid'],sourceDesignAxes:[source('Puzzle','hand-painted','space')]},
+    {id:'matched',sourceProjects:['e','f'],featureBlend:['touch-input','unrelated-economic-system','hand-painted-motion'],sourceDesignAxes:[source('Puzzle','hand-painted','forest')],transformationOperator:'change-core-goal'}
+  ];
+  const learning=createRobloxVibe3LearningContext({gameId:'forest-puzzle',profile:{genre:'Puzzle',playMode:'COOP',designAxes},artbook:{content:{identity:'Shooter neon space reference words are not game rules'}},playbooks:verifiedRobloxPlaybooks(),recombination:{recipes}});
+  assert.equal(learning.recipeId,'matched');
+  assert.deepEqual(learning.featureBlend,['touch-input','hand-painted-motion']);
+  assert.equal(learning.transformationOperator,'adapt-within-approved-design');
+  assert.equal(learning.designAxes.genre.id,'Puzzle');
+  assert.equal(learning.designAxes.style.id,'hand-painted');
+  assert.equal(learning.designAxes.concept.id,'forest');
+  assert.deepEqual(learning.semanticMood,{id:'calm',saturation:0,contrast:0,brightness:0});
+});
+
+test('recombination preserves source classification and rejects conflicting game rules before blending',()=>{
+  const sample=(project,genre,style='painted')=>({sampleId:project,project,taskType:'roblox',sourceRevision:'sha-'+project,qa:{runtime:'PASS',independentQa:'PASS',browserQa:'NOT_APPLICABLE'},tags:['touch-input','menu-feedback'],designAxes:{genre:{id:genre,rules:[]},style:{id:style,visual:[],motion:[]},concept:{id:'forest',world:[],mood:[]}}});
+  const memory=buildTransformativeRecombination({trainingSamples:[sample('puzzle-a','Puzzle'),sample('puzzle-b','Puzzle'),sample('shooter','Shooter')]});
+  assert.equal(memory.recipes.length,1);
+  assert.deepEqual(memory.recipes[0].sourceProjects,['puzzle-a','puzzle-b']);
+  assert.equal(memory.recipes[0].sourceDesignAxes[0].genre.id,'Puzzle');
+  assert.equal(memory.recipes[0].sourceDesignAxes[0].sourceRevision,'sha-puzzle-a');
+  assert.equal(memory.recipes[0].applicationConstraints.preserveBalance,true);
+  assert.equal(memory.recipes[0].countsAsTrainingSample,false);
+  assert.equal(transformativeRecipeCompatibility({featureBlend:['unrelated'],sourceDesignAxes:memory.recipes[0].sourceDesignAxes},{designAxes:memory.materials[0].designAxes}).eligible,false);
 });
 
 const platformProfile=()=>({
@@ -148,6 +193,20 @@ test('Roblox build profile is mandatory and normalized before source generation'
   assert.equal(robloxBuildProfileFromBaseline(baseline).genre,'Simulation');
   assert.equal(robloxBuildProfileFromBaseline(baseline).playMode,'SINGLE');
   assert.throws(()=>robloxBuildProfileFromBaseline({content:{identity:'missing profile'}}),/ROBLOX_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+});
+
+test('Roblox source generation carries approved style and concept through the build profile',()=>{
+  const locked={...baseline,sourceRevision:'locked-source',content:{...baseline.content,styleLock:{id:'painted',colorGrade:{saturation:-0.1,contrast:0.02,brightness:0}},conceptLock:{id:'quiet-workshop',mood:['quiet']}}};
+  const compiled=compileRobloxSource({gameId:'locked-design',baseline:locked,playbooks:verifiedRobloxPlaybooks()});
+  assert.equal(compiled.profile.designAxes.sourceRevision,'locked-source');
+  assert.equal(compiled.learning.designAxes.style.id,'painted');
+  assert.equal(compiled.learning.designAxes.concept.id,'quiet-workshop');
+  assert.equal(compiled.learning.semanticMood.id,'quiet');
+  assert.equal(compiled.learning.semanticMood.saturation,-0.1);
+  assert.match(compiled.result.clientCode,/verifiedLearningColorGrade\.Saturation = -0\.1/);
+  assert.equal(compiled.profile.playMode,baseline.content.robloxBuildProfile.playMode);
+  const changed=compileRobloxSource({gameId:'locked-design',baseline:{...locked,content:{...locked.content,styleLock:{id:'painted',colorGrade:{saturation:0.1}}}},playbooks:verifiedRobloxPlaybooks()});
+  assert.notEqual(compiled.learning.semanticMappingFingerprint,changed.learning.semanticMappingFingerprint);
 });
 
 test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{

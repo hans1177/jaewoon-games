@@ -8,6 +8,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
+import {recombinationDesignAxes} from './vibe3-transformative-recombination.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -271,6 +272,8 @@ export function robloxBuildProfileFromBaseline(baseline={}){
     multiplayerRequired,coopImplementationRequired:coopRequired,competitiveImplementationRequired:competitiveRequired,
     networkingRequired:multiplayerRequired,multiplayerQaRequired:multiplayerRequired,minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
     displayLabelKo:clean(profile.displayLabelKo)||[genre,subgenre,playMode].filter(Boolean).join(' · '),
+    designAxes:recombinationDesignAxes({profile,design:baseline}),
+    styleLock:content.styleLock||content.styleBible||profile.styleLock||null,
   });
 }
 function genreCoreKind(profile){

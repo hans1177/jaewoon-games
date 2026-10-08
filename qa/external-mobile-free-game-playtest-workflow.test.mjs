@@ -1,3 +1,5 @@
+// 파일명: qa/external-mobile-free-game-playtest-workflow.test.mjs
+// 검수: 관찰 워커 독립 실행과 기존 실습 학습 경로의 근거 보존.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -72,7 +74,7 @@ try{
   const game=catalog.games[0];
   const summary={authority:'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE',practiceOnly:true,runtimePromotionAllowed:false,
     games:[{gameId:game.id,packageId:game.packageId,installPass:true,launchPass:true,foregroundPass:true,processAliveAfter:true,noCrash:true,
-      visualChange:false,inputTrace:trace,observationScope:'APP_LAUNCH_AND_BOUNDED_INPUT_TRACE'},
+      visualChange:false,inputTrace:trace,observationScope:'APP_LAUNCH_AND_BOUNDED_INPUT_TRACE',beforeScreenshotSha256:'a'.repeat(64),afterScreenshotSha256:'b'.repeat(64)},
       {gameId:catalog.games[1].id,installPass:true,launchPass:false,foregroundPass:true,processAliveAfter:true,noCrash:true}]};
   const results=path.join(root,'summary.json'),out=path.join(root,'samples');
   fs.writeFileSync(results,JSON.stringify(summary));
@@ -89,5 +91,38 @@ try{
   assert(sample.unmeasured.includes('PHYSICS_PARAMETERS'));
   assert(sample.unmeasured.includes('ANIMATION_CURVES'));
   assert.match(sample.output,/독립 설계 제안/);
+  assert.deepEqual(sample.implementationTargets,['web','roblox']);
+  assert.equal(sample.designAxes.genre.id,game.category);
+  assert.deepEqual(sample.designAxes.style,{id:'',visual:[],motion:[]});
+  assert.deepEqual(sample.designAxes.concept,{id:'',world:[],mood:[]});
+  assert.equal(sample.implementationPractice.state,'READY_FOR_INDEPENDENT_PRACTICE');
+  assert.equal(sample.implementationPractice.comparison.sourceGameplayEquivalenceVerified,false);
+  assert.deepEqual(sample.implementationPractice.exercises.map(row=>row.platform),['web','roblox']);
+  const {buildExternalGameplayPractice}=await import('../tools/vibe2-external-gameplay-distill.mjs');
+  for(const row of [{}, {...summary.games[0],inputTrace:trace.map(event=>({...event,inputDelivered:false}))}, {...summary.games[0],beforeScreenshotSha256:''}]){
+    const pending=buildExternalGameplayPractice(game,row,'revision');
+    assert.equal(pending.state,'REOBSERVE_REQUIRED');
+    assert.deepEqual(pending.exercises,[]);
+  }
+  const {buildIdlePracticeQueue,injectIdlePracticeTask}=await import('../tools/vibe2-learning-motor.mjs');
+  const practice=buildIdlePracticeQueue({}, {}, [sample]);
+  assert.equal(practice.externalGameplayPracticeDrills,2);
+  const external=practice.drills.filter(row=>row.externalGameplayPractice);
+  for(const drill of external){
+    const first=injectIdlePracticeTask({tasks:[]},{drills:[drill]});
+    assert.equal(first.task.department,'learning');
+    assert.equal(first.task.externalGameplayPractice.sourceRevision,sample.sourceRevision);
+    assert.equal(first.task.target,drill.platformProfile);
+    const retry=injectIdlePracticeTask({tasks:[{...first.task,status:'failed'}]},{drills:[drill]});
+    assert.equal(retry.practiceGeneration,2);
+    assert.equal(retry.task.externalGameplayPractice.comparison.sourceGameplayEquivalenceVerified,false);
+  }
+  assert.equal(buildIdlePracticeQueue({}, {}, [{...sample,runtimePromotionAllowed:true}]).externalGameplayPracticeDrills,0);
+  assert.equal(buildIdlePracticeQueue({}, {}, [{...sample,sourceRevision:'different'}]).externalGameplayPracticeDrills,0);
+  const planner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(planner,/origin\/vibe2-learning-runtime:\$external_sample/);
+  assert.match(planner,/--external-samples=\/tmp\/vibe2-external-practice-samples/);
+  assert.doesNotMatch(text,/runPracticeRepairSession|ollama pull|vibe2-learning-practice-worker\.mjs/);
+
 }finally{fs.rmSync(root,{recursive:true,force:true});}
 console.log('PASS distillation binds observed inputs and does not promote inferred motion or physics');

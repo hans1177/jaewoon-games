@@ -390,6 +390,18 @@ jobs:
               echo 'VIBE2_RECOMBINATION_MEMORY=EMPTY'
             fi
 
+            # 관찰 워커는 모델 실습을 기다리지 않는다. 기존 학습 슬롯이 최신 관찰을 소비한다.
+            external_samples=/tmp/vibe2-external-practice-samples
+            rm -rf "$external_samples"
+            mkdir -p "$external_samples"
+            if git cat-file -e origin/vibe2-learning-runtime:company-learning/training-samples 2>/dev/null; then
+              while IFS= read -r external_sample; do
+                [[ "$external_sample" =~ ^company-learning/training-samples/commercial-runtime-[a-z0-9._-]+\.json$ ]] || continue
+                git show "origin/vibe2-learning-runtime:$external_sample" > "$external_samples/${external_sample##*/}"
+              done < <(git ls-tree -r --name-only origin/vibe2-learning-runtime -- company-learning/training-samples)
+            fi
+            echo 'VIBE2_EXTERNAL_PRACTICE_ROUTE=CANONICAL_LEARNING_LANE'
+
             if git show origin/vibe2-learning-runtime:company-learning/vibe3-roblox-distillation-ledger.json > /tmp/vibe3-roblox-distillation-ledger.json 2>/dev/null; then
               echo 'VIBE3_ROBLOX_DISTILLATION_MEMORY=LOADED'
             else
@@ -472,6 +484,7 @@ jobs:
 
             node --check /tmp/vibe2-main/tools/vibe2-learning-motor.mjs
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+              --external-samples=/tmp/vibe2-external-practice-samples \
               --experience=.vibe2/experience.json \
               --code-patterns=.vibe2/code-pattern-library.json \
               --queue=.vibe2/queue.json \
@@ -574,6 +587,7 @@ jobs:
 
             if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log 2>/dev/null; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+                --external-samples=/tmp/vibe2-external-practice-samples \
                 --experience=.vibe2/experience.json \
                 --code-patterns=.vibe2/code-pattern-library.json \
                 --queue=.vibe2/queue.json \

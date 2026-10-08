@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { inflateSync } from 'node:zlib';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
@@ -462,6 +463,44 @@ function gitStatusPaths(cwd){
   try{raw=execFileSync('git',['status','--porcelain=v1','-z','--untracked-files=all'],{cwd,encoding:'utf8',timeout:15000,maxBuffer:16*1024*1024});}catch(error){throw new Error('NATIVE_DCC_GIT_STATUS_FAILED:'+clean(error?.message||error).slice(0,160));}
   return raw.split('\0').map(row=>row.slice(3).trim()).filter(Boolean).map(posix).sort();
 }
+// 유틸: 제작기가 저장한 두 PNG의 실제 픽셀을 비교한다. 자기보고 오차값만 믿지 않는다.
+export function compareVibeAssetPreviewPng(before,after){
+  const decode=bytes=>{
+    if(bytes.length>32*1024*1024||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))throw new Error('ASSET_PREVIEW_PNG_INVALID');
+    let width=0,height=0,channels=0,offset=8,ended=false;const chunks=[];
+    while(offset+12<=bytes.length){
+      const length=bytes.readUInt32BE(offset),kind=bytes.toString('ascii',offset+4,offset+8),start=offset+8;offset+=12+length;
+      if(offset>bytes.length)throw new Error('ASSET_PREVIEW_PNG_TRUNCATED');
+      if(kind==='IHDR'){
+        if(width||length!==13)throw new Error('ASSET_PREVIEW_PNG_HEADER_INVALID');
+        width=bytes.readUInt32BE(start);height=bytes.readUInt32BE(start+4);channels=bytes[start+9]===6?4:bytes[start+9]===2?3:0;
+        if(!width||!height||width>2048||height>2048||!channels||bytes[start+8]!==8||bytes[start+10]||bytes[start+11]||bytes[start+12])throw new Error('ASSET_PREVIEW_PNG_FORMAT_UNSUPPORTED');
+      }else if(kind==='IDAT'){if(!width)throw new Error('ASSET_PREVIEW_PNG_HEADER_REQUIRED');chunks.push(bytes.subarray(start,start+length));}
+      else if(kind==='IEND'){ended=true;break;}
+    }
+    if(!ended||!chunks.length)throw new Error('ASSET_PREVIEW_PNG_DATA_REQUIRED');
+    const stride=width*channels,raw=inflateSync(Buffer.concat(chunks),{maxOutputLength:(stride+1)*height});
+    if(raw.length!==(stride+1)*height)throw new Error('ASSET_PREVIEW_PNG_SIZE_INVALID');
+    const result=Buffer.alloc(width*height*4),row=Buffer.alloc(stride),previous=Buffer.alloc(stride);
+    for(let y=0;y<height;y++){
+      const filter=raw[y*(stride+1)];if(filter>4)throw new Error('ASSET_PREVIEW_PNG_FILTER_INVALID');
+      for(let x=0;x<stride;x++){
+        const left=x>=channels?row[x-channels]:0,up=previous[x],corner=x>=channels?previous[x-channels]:0;
+        const p=left+up-corner,pa=Math.abs(p-left),pb=Math.abs(p-up),pc=Math.abs(p-corner);
+        const predictor=filter===0?0:filter===1?left:filter===2?up:filter===3?Math.floor((left+up)/2):pa<=pb&&pa<=pc?left:pb<=pc?up:corner;
+        row[x]=(raw[y*(stride+1)+1+x]+predictor)&255;
+      }
+      for(let x=0;x<width;x++){const out=(y*width+x)*4;for(let c=0;c<3;c++)result[out+c]=row[x*channels+c];result[out+3]=channels===4?row[x*channels+3]:255;}
+      row.copy(previous);
+    }
+    return{width,height,pixels:result};
+  };
+  const a=decode(before),b=decode(after);
+  if(a.width!==b.width||a.height!==b.height)throw new Error('ASSET_PREVIEW_DIMENSION_MISMATCH');
+  let maxPixelError=0;for(let i=0;i<a.pixels.length;i++)maxPixelError=Math.max(maxPixelError,Math.abs(a.pixels[i]-b.pixels[i])/255);
+  return{method:'REIMPORTED_GLB_SAME_CAMERA_RGBA',sampleCount:a.pixels.length,maxPixelError};
+}
+
 export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd(),order={},blenderExecutable=clean(process.env.VIBE2_BLENDER_BINARY)||'blender',persistCandidateOutputs=false}={}){
   const dcc=order?.assetProduction?.nativeAuthoringExecution?.dcc;
   const recipes=Array.isArray(dcc?.executionRecipes)?dcc.executionRecipes:[];
@@ -494,7 +533,8 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       if(!fs.existsSync(scriptAbs)||!fs.statSync(scriptAbs).isFile())throw new Error('NATIVE_DCC_SCRIPT_MISSING:'+script);
       const outputs=(recipe?.outputs||[]).map(dccRepoPath);
       if(!outputs.length)throw new Error('NATIVE_DCC_OUTPUTS_REQUIRED:'+clean(recipe?.id));
-      const parents=unique(outputs.map(value=>posix(path.dirname(value))));
+      const recipeFiles=unique([...outputs,recipe?.evidenceJson,recipe?.preview].filter(Boolean).map(dccRepoPath));
+      const parents=unique(recipeFiles.map(value=>posix(path.dirname(value))));
       for(const parent of parents){
         const parts=parent.split('/').filter(Boolean);
         if(!parent.startsWith('assets/')||parts.length<4)throw new Error('NATIVE_DCC_OUTPUT_PARENT_TOO_BROAD:'+parent);
@@ -502,11 +542,15 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       const backupRoot=path.join(tempRoot,String(index));
       fs.mkdirSync(backupRoot,{recursive:true});
       const snapshots=[];
-      for(const parent of parents){
-        const absolute=path.resolve(cwd,parent),backup=path.join(backupRoot,parent.replaceAll('/','__'));
-        const existed=fs.existsSync(absolute);
-        if(existed)fs.cpSync(absolute,backup,{recursive:true,force:true});
-        snapshots.push({parent,absolute,backup,existed});
+      // 잠금과 복원 범위는 같은 선언 파일 집합이다. 같은 폴더의 다른
+      // 작업자 파일을 복사하거나 폴더째 삭제하지 않는다.
+      for(const [fileIndex,relative] of recipeFiles.entries()){
+        const absolute=path.resolve(cwd,relative),backup=path.join(backupRoot,String(fileIndex));
+        let stat=null;try{stat=fs.lstatSync(absolute);}catch(error){if(error.code!=='ENOENT')throw error;}
+        if(stat&&!stat.isFile())throw new Error('NATIVE_DCC_OUTPUT_NOT_REGULAR_FILE:'+relative);
+        const existed=Boolean(stat),mode=stat?.mode;
+        if(existed)fs.copyFileSync(absolute,backup);
+        snapshots.push({relative,absolute,backup,existed,mode});
       }
       if(persist)batchSnapshots.push(...snapshots);
       const preOutput=new Map(outputs.map(relative=>{const file=path.resolve(cwd,relative);return[relative,fs.existsSync(file)&&fs.statSync(file).isFile()?{sha256:sha256File(file),size:fs.statSync(file).size}:null];}));
@@ -577,6 +621,44 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             });
             if(!valid)throw new Error('NATIVE_GLB_APPLICATION_MATERIAL_MISMATCH:'+clean(recipe?.id));
           }
+          // 분석·제작·GLB 적용은 같은 실제 표면 모멘트를 사용한다.
+          // 통계적 형상 지표를 밀도/마찰 측정이나 라이브 물리 검증으로 승격하지 않는다.
+          const distribution=platformApplication.surfaceDistribution,actualDistribution=glbInspection.inventory.surfaceDistribution;
+          if(distribution!==undefined){
+            const close=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<=1e-5*Math.max(1,Math.abs(b));
+            const vectors=['centroidMeters','covarianceM2','inertiaPerUnitMassM2','normalAxisSecondMoment'];
+            if(!distribution||distribution.method!==actualDistribution?.method||distribution.massModel!=='UNIFORM_SURFACE_SHELL_ONLY'
+              ||distribution.coordinateSystem!==actualDistribution.coordinateSystem||distribution.dynamicStabilityVerified!==false
+              ||distribution.physicalDensityKgM3!==null||distribution.friction!==null||distribution.restitution!==null
+              ||!close(distribution.surfaceAreaM2,actualDistribution.surfaceAreaM2)
+              ||vectors.some(key=>!Array.isArray(distribution[key])||distribution[key].length!==actualDistribution[key]?.length||distribution[key].some((n,i)=>!close(n,actualDistribution[key][i])))){
+              throw new Error('NATIVE_GLB_SURFACE_DISTRIBUTION_MISMATCH:'+clean(recipe?.id));
+            }
+          }
+          if(platformApplication.optimization!==undefined){
+            const optimization=platformApplication.optimization;
+            const originalPath=dccRepoPath(posix(path.join(path.dirname(applicationOutput.path),clean(optimization?.originalFile))));
+            const original=generated.find(row=>row.path===originalPath);
+            if(!original||optimization.method!=='EXACT_MESH_DATA_REUSE'||optimization.originalSha256!==original.sha256
+              ||optimization.originalBytes!==original.size||optimization.deploymentBytes!==nativeArtifact.size||nativeArtifact.size>original.size
+              ||optimization.runtimeVerified!==false||optimization.runtimeMemoryBytes!==null||optimization.loadingTimeMs!==null||optimization.drawCalls!==null){
+              throw new Error('NATIVE_GLB_OPTIMIZATION_IDENTITY_INVALID:'+clean(recipe?.id));
+            }
+            const originalInspection=inspectVibeSourceGlb({repoRoot:cwd,source:{path:originalPath,sourceHash:original.sha256}});
+            if([originalInspection,glbInspection].some(result=>result.inventory?.skins.length||result.inventory?.animations.length||result.inventory?.primitives.some(row=>row.morphTargetCount>0)))throw new Error('NATIVE_GLB_LOSSLESS_STATIC_SCOPE_ONLY:'+clean(recipe?.id));
+            if(originalInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT'||originalInspection.inventory.visibleGeometrySha256!==glbInspection.inventory.visibleGeometrySha256){
+              throw new Error('NATIVE_GLB_LOSSLESS_GEOMETRY_MISMATCH:'+clean(recipe?.id));
+            }
+            const comparison=optimization.previewComparison;
+            if(!comparison||!Number.isFinite(comparison.maxPixelError)||comparison.maxPixelError<0||comparison.maxPixelError>1e-5||!(comparison.sampleCount>0)
+              ||!['before','after'].every(key=>generated.some(row=>row.path===posix(path.join(path.dirname(applicationOutput.path),clean(comparison[key])))&&/\.png$/i.test(row.path)))){
+              throw new Error('NATIVE_GLB_OPTIMIZATION_RENDER_COMPARISON_REQUIRED:'+clean(recipe?.id));
+            }
+            const pixels=compareVibeAssetPreviewPng(...['before','after'].map(key=>fs.readFileSync(path.resolve(cwd,path.dirname(applicationOutput.path),comparison[key]))));
+            if(comparison.method!==pixels.method||comparison.sampleCount!==pixels.sampleCount||Math.abs(comparison.maxPixelError-pixels.maxPixelError)>1e-5||pixels.maxPixelError>1e-5){
+              throw new Error('NATIVE_GLB_OPTIMIZATION_RENDER_MISMATCH:'+clean(recipe?.id));
+            }
+          }
         }
         const priorNative=preOutput.get(nativeArtifact.path);
         const reproducesExistingNativeArtifact=Boolean(priorNative&&priorNative.sha256===nativeArtifact.sha256);
@@ -610,8 +692,8 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       }finally{
         if(!persist||!recipeSucceeded){
           for(const snap of snapshots){
-            fs.rmSync(snap.absolute,{recursive:true,force:true});
-            if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
+            fs.rmSync(snap.absolute,{force:true});
+            if(snap.existed){fs.mkdirSync(path.dirname(snap.absolute),{recursive:true});fs.copyFileSync(snap.backup,snap.absolute);fs.chmodSync(snap.absolute,snap.mode);}
           }
         }
       }
@@ -634,14 +716,14 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       runtimeVerified:false,companyPromotionEligible:false
     });
   }catch(error){
-    // 하나의 후보 묶음이므로 뒤쪽 제작 또는 최종 범위 검사가 실패하면
-    // 앞서 성공한 출력도 역순으로 복원한다. 같은 출력 폴더의 연속 제작도 보존한다.
+    // 선언 출력만 같은 후보 묶음으로 역순 복원한다. 미선언 변경은 다른
+    // 작업자의 파일일 수 있으므로 삭제하지 않는다. 전체 저장소 격리는 아니다.
     const rollbackErrors=[];
     for(const snap of [...batchSnapshots].reverse()){
       try{
-        fs.rmSync(snap.absolute,{recursive:true,force:true});
-        if(snap.existed)fs.cpSync(snap.backup,snap.absolute,{recursive:true,force:true});
-      }catch(rollbackError){rollbackErrors.push(snap.parent+':'+clean(rollbackError?.message));}
+        fs.rmSync(snap.absolute,{force:true});
+        if(snap.existed){fs.mkdirSync(path.dirname(snap.absolute),{recursive:true});fs.copyFileSync(snap.backup,snap.absolute);fs.chmodSync(snap.absolute,snap.mode);}
+      }catch(rollbackError){rollbackErrors.push(snap.relative+':'+clean(rollbackError?.message));}
     }
     if(rollbackErrors.length)throw new Error('NATIVE_DCC_BATCH_ROLLBACK_FAILED:'+rollbackErrors.join('|'),{cause:error});
     throw error;

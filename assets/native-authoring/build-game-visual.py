@@ -1,4 +1,5 @@
-# build-game-visual.py — deterministic project-original Blender authoring for Vibe GRAPHICS_PRODUCTION.
+# 파일명: assets/native-authoring/build-game-visual.py
+# 기존 GRAPHICS_PRODUCTION의 원본 보존 제작·분석·최적화 책임.
 # This is an asset recipe inside the existing pipeline, not a separate graphics pipeline.
 import argparse
 import colorsys
@@ -254,15 +255,66 @@ for obj in ASSET_OBJECTS:
 if ASSET_OBJECTS:
     bpy.context.view_layer.objects.active=ASSET_OBJECTS[0]
 
+# 원본 GLB를 먼저 보존한 뒤 동일한 메시 데이터만 공유한다.
+# 스케일·피벗·재질·UV·스무딩·노드 이름은 바꾸지 않는다.
+master=ARGS.output/'master.glb'
+bpy.ops.export_scene.gltf(filepath=str(master),export_format='GLB',use_selection=True,
+    export_materials='EXPORT',export_extras=True,export_yup=True)
+original_meshes=[obj.data for obj in ASSET_OBJECTS]
+mesh_cache={}
+for obj in ASSET_OBJECTS:
+    mesh=obj.data
+    signature=json.dumps({
+        'vertices':[list(v.co) for v in mesh.vertices],
+        'edges':[(list(e.vertices),e.use_edge_sharp) for e in mesh.edges],
+        'polygons':[(list(f.vertices),f.material_index,f.use_smooth) for f in mesh.polygons],
+        'uv':[[list(v.uv) for v in layer.data] for layer in mesh.uv_layers],
+        'materials':[m.name if m else None for m in mesh.materials]
+    },sort_keys=True,separators=(',',':'))
+    key=hashlib.sha256(signature.encode()).hexdigest()
+    if key in mesh_cache: obj.data=mesh_cache[key]
+    else: mesh_cache[key]=mesh
+optimized_meshes=[obj.data for obj in ASSET_OBJECTS]
+reused_meshes=len(original_meshes)-len(mesh_cache)
 glb=ARGS.output/'asset.glb'
-bpy.ops.export_scene.gltf(
-    filepath=str(glb),
-    export_format='GLB',
-    use_selection=True,
-    export_materials='EXPORT',
-    export_extras=True,
-    export_yup=True
-)
+bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,
+    export_materials='EXPORT',export_extras=True,export_yup=True)
+# 압축이 이익이 없으면 원본 바이트를 유지한다. 품질을 낮춰 크기를 맞추지 않는다.
+if glb.stat().st_size>master.stat().st_size:
+    glb.write_bytes(master.read_bytes())
+    for obj,mesh in zip(ASSET_OBJECTS,original_meshes): obj.data=mesh
+    optimized_meshes=original_meshes[:]
+    reused_meshes=0
+
+# 통계물리 입력: 균일 표면 껍질의 면적 분포·관성. 정점 개수 가중치 금지.
+# 실제 재료 밀도/마찰/복원계수 및 동적 안정성은 별도 관찰·실행 검증 대상이다.
+def surface_distribution():
+    area=0.;first=[0.,0.,0.];second=[0.]*9;orientation=[0.]*3;count=0;degenerate=0
+    origin=[-BOUNDS_SIZE[0]/2,0.,-BOUNDS_SIZE[1]/2]
+    for obj in ASSET_OBJECTS:
+        obj.data.calc_loop_triangles()
+        for triangle in obj.data.loop_triangles:
+            points=[obj.matrix_world@obj.data.vertices[i].co for i in triangle.vertices]
+            points=[[p.x,p.z,-p.y] for p in points]
+            p=[[v[i]-origin[i] for i in range(3)] for v in points]
+            a=[p[1][i]-p[0][i] for i in range(3)];b=[p[2][i]-p[0][i] for i in range(3)]
+            cross=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+            length=math.sqrt(sum(x*x for x in cross));weight=length/2
+            if not weight>0: degenerate+=1;continue
+            area+=weight;count+=1;total=[sum(v[i] for v in p) for i in range(3)]
+            for i in range(3):
+                first[i]+=weight*total[i]/3;orientation[i]+=weight*(cross[i]/length)**2
+                for j in range(3): second[i*3+j]+=weight*(total[i]*total[j]+sum(v[i]*v[j] for v in p))/12
+    center=[v/area for v in first]
+    covariance=[v/area-center[i//3]*center[i%3] for i,v in enumerate(second)]
+    trace=covariance[0]+covariance[4]+covariance[8]
+    return {'version':1,'status':'MEASURED_GEOMETRY','method':'EXACT_TRIANGLE_AREA_MOMENTS',
+        'coordinateSystem':'GLTF_RIGHT_HANDED_Y_UP_METERS','massModel':'UNIFORM_SURFACE_SHELL_ONLY',
+        'surfaceAreaM2':area,'centroidMeters':[v+origin[i] for i,v in enumerate(center)],
+        'covarianceM2':covariance,'inertiaPerUnitMassM2':[(trace if i//3==i%3 else 0)-v for i,v in enumerate(covariance)],
+        'normalAxisSecondMoment':[v/area for v in orientation],'triangleCount':count,'degenerateCount':degenerate,
+        'physicalDensityKgM3':None,'friction':None,'restitution':None,'dynamicStabilityVerified':False}
+physical_analysis=surface_distribution()
 
 
 # 플랫폼 재질은 내보낸 GLB 값과 동기화한다. 텍스처 입력에 가려진
@@ -280,7 +332,8 @@ for index,mat in enumerate(glb_document.get('materials',[])):
         'roblox':{'metalness':metal,'roughness':rough,'texturePacking':'SEPARATE_GRAYSCALE_METALNESS_AND_ROUGHNESS','requires':'MeshPart_SurfaceAppearance_supported_import'}})
 application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
     'sourceUnits':'METERS','sourceUp':'Y','boundsSizeMeters':[BOUNDS_SIZE[0],BOUNDS_SIZE[2],BOUNDS_SIZE[1]],
-    'pivot':'GROUND_CENTER','style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,
+    'pivot':'GROUND_CENTER','surfaceDistribution':physical_analysis,'style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,
+    'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -317,10 +370,33 @@ cam.rotation_euler=(target-Vector(cam.location)).to_track_quat('-Z','Y').to_eule
 cam_data.lens=52
 SCENE.camera=cam
 
+# GLB를 각각 다시 수입해 실제 내보내기 결과를 같은 카메라로 비교한다.
+# Blender 내부 원본 씬만 비교하면 익스포터의 재질/좌표 손실을 놓칠 수 있다.
+for obj in ASSET_OBJECTS: obj.hide_render=True
+SCENE.render.image_settings.color_mode='RGBA'
+SCENE.render.image_settings.color_depth='8'
+preview_master=ARGS.output/'preview-master.png'
 preview=ARGS.output/'preview.png'
-SCENE.render.filepath=str(preview)
-SCENE.render.resolution_x=512; SCENE.render.resolution_y=512
-bpy.ops.render.render(write_still=True)
+rendered_pixels=[]
+for source,destination in [(master,preview_master),(glb,preview)]:
+    existing=set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(source))
+    imported=[obj for obj in bpy.data.objects if obj not in existing]
+    try:
+        bpy.context.view_layer.update()
+        SCENE.render.filepath=str(destination)
+        bpy.ops.render.render(write_still=True)
+        image=bpy.data.images.load(str(destination),check_existing=False)
+        rendered_pixels.append(list(image.pixels))
+        bpy.data.images.remove(image)
+    finally:
+        for obj in imported: bpy.data.objects.remove(obj,do_unlink=True)
+before_pixels,after_pixels=rendered_pixels
+if not before_pixels or len(before_pixels)!=len(after_pixels): raise RuntimeError('OPTIMIZATION_RENDER_COMPARISON_MISSING')
+max_pixel_error=max(abs(a-b) for a,b in zip(before_pixels,after_pixels))
+application['optimization']['previewComparison']={'method':'REIMPORTED_GLB_SAME_CAMERA_RGBA','before':'preview-master.png','after':'preview.png','maxPixelError':max_pixel_error,'sampleCount':len(after_pixels)}
+if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDER')
+(ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 artifact_hash=hashlib.sha256(glb.read_bytes()).hexdigest()
@@ -348,7 +424,9 @@ evidence={
     'productionVerified':False,
     'companyPromotionEligible':False,
     'meshObjectCount':len(ASSET_OBJECTS),
-    'outputs':['asset.glb','preview.png','application.json','evidence.json']
+    'surfaceDistribution':physical_analysis,
+    'optimization':application['optimization'],
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json']
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)
