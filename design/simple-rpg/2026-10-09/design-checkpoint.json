@@ -92,21 +92,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 838492,
-      "lastMs": 95984,
+      "totalMs": 936463,
+      "lastMs": 97971,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:32:11.624Z"
+      "updatedAt": "2026-10-08T21:33:49.596Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:32:11.624Z",
+  "updatedAt": "2026-10-08T21:33:49.598Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2140,11 +2140,26 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "SIGNATURE_SYSTEM_0",
+          "SIGNATURE_SYSTEM_1",
+          "SIGNATURE_SYSTEM_2",
+          "SIGNATURE_SYSTEM_3"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::7e7fdc65dd3b4cb8e2cb2b18f3b64c94df2ab0299b25bb3cf10a5de7bcec2f25:signatureSystems:4": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:32:11.624Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-08T21:33:49.596Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
