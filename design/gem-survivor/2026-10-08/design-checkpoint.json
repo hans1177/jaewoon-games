@@ -34,25 +34,46 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::aa99d7705fa14c25f5fc4cdbd51109f4f9b0fc94657cf408097330e9ff45f4f3:signatureSystems:0": {
+      "id": "DELVE(@)",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBuild",
+        "enemyPressure",
+        "runResult",
+        "upgradeSet",
+        "waveDifficulty"
+      ],
+      "stateOutputs": [
+        "nextProgressionChoice",
+        "newBuild",
+        "updatedUpgrades",
+        "modifiedPerks",
+        "rewardsCollected"
+      ],
+      "name": "DELVE(@)",
+      "purpose": "Player choice that transforms current build into new progression choice through upgrade, perk, or skill selection.",
+      "playerChoice": "Select upgrades, perks, weapons, or skills that reconfigure the current build to survive harder waves or a boss, and convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 519185,
-      "lastMs": 95002,
+      "totalMs": 621755,
+      "lastMs": 102570,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:13:18.176Z"
+      "updatedAt": "2026-10-08T12:15:00.747Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:04:38.961Z",
-  "updatedAt": "2026-10-08T12:13:18.176Z",
+  "updatedAt": "2026-10-08T12:15:00.747Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2272,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:13:18.176Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:15:00.747Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
