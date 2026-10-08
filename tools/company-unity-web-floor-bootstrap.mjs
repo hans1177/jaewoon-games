@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(raw=>{
   const i=raw.indexOf('=');
@@ -102,6 +103,38 @@ const verifiedLearningApplication=Object.freeze({
   runtimeQaAndLearningReturnRequired:true
 });
 
+// 월드 설계가 승인한 신규 3D 공간만 기존 유니티 소스로 생성한다. 기존 게임은 기본 렌더링을 그대로 유지한다.
+const approvedWorldRequest=design?.spatialLayout?.proceduralWorld;
+const hasApprovedWorld=approvedWorldRequest?.approvedDesign===true;
+if(hasApprovedWorld&&String(design.spatialLayout?.dimension||approvedWorldRequest.dimension).toUpperCase()!=='3D')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_DIMENSION_REQUIRES_NATIVE_3D_RENDERER');
+const worldProposal=hasApprovedWorld
+  ?createVibeProceduralWorldLayout({...approvedWorldRequest,dimension:'3D',approvedDesign:true,mobile:approvedWorldRequest.mobile!==false})
+  :null;
+if(worldProposal&&worldProposal.status!=='STATIC_LAYOUT_PROPOSED')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_PLACEMENT_REPAIR_REQUIRED:'+worldProposal.issues.join('|'));
+const worldData=worldProposal?{
+  version:1,seed:worldProposal.seed,width:worldProposal.size.width,height:worldProposal.size.height,
+  cellSize:worldProposal.size.cellSize,layoutStatus:worldProposal.status,
+  heights:worldProposal.terrain.map(tile=>+(tile.elevation*8).toFixed(4)),
+  types:worldProposal.terrain.map(tile=>({WATER:0,RIDGE:1,FOREST:2,DRY:3,PLAIN:4})[tile.biome]??4),
+  roads:worldProposal.roadCells.map(tile=>tile.z*worldProposal.size.width+tile.x),
+  buildings:worldProposal.buildings.map(item=>({
+    x:item.footprint[0].x,z:item.footprint[0].z,elevation:+item.foundation.levelY.toFixed(4),
+    roof:item.modules.some(module=>module.endsWith('PITCHED_ROOF'))?1:0,
+    material:({STONE:1,METAL_GLASS:2,CLAY:3,TIMBER:0})[item.construction.primaryMaterial]??0,
+    size:2
+  })),
+  vegetation:worldProposal.vegetation.map(item=>({
+    x:item.x,z:item.z,elevation:+item.elevationY.toFixed(4),scale:item.scale,
+    kind:({ROCK:0,SCRUB:1,PINE:2,BROADLEAF:3,BUSH:4})[item.kind]??4
+  })),
+  landmark:worldProposal.landmark?.cell||null,
+  gameplayCollisionAuthority:false,saveMutation:false,engineRuntimeVerified:false
+}:null;
+const worldDataText=worldData?JSON.stringify(worldData)+'\n':null;
+const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).digest('hex'):null;
+
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
   'Assets/Scripts','Assets/Editor','Assets/Art','Assets/Prefabs','Assets/Materials','Assets/Animations',
@@ -110,6 +143,10 @@ for(const dir of [
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
 fs.writeFileSync(path.join(output,'Assets/link.xml'),'<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>\n');
+if(worldDataText){
+  fs.mkdirSync(path.join(output,'Assets/Resources'),{recursive:true});
+  fs.writeFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),worldDataText);
+}
 fs.writeFileSync(path.join(output,'Assets/verified-external-learning.json'),JSON.stringify({
   version:1,
   gameId,
@@ -550,6 +587,12 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
   generatorFingerprint:fingerprint,
+  proceduralEnvironment:worldData?{
+    approval:'APPROVED_DESIGN_3D_ONLY',seed:worldData.seed,
+    status:'DATA_AUTHORED_RUNTIME_UNVERIFIED',layoutHash:worldDataSha256,
+    terrainCells:worldData.heights.length,buildingCount:worldData.buildings.length,vegetationCount:worldData.vegetation.length,
+    sameUnityProject:true,renderedInRuntime:false,collisionAuthorityChanged:false,saveMeaningChanged:false
+  }:null,
   buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,
   buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
   buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,
@@ -588,3 +631,4 @@ console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedLearningApplic
 console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION=${verifiedLearningApplication.sourceRevision||'UNKNOWN'}`);
 console.log(`UNITY_WEB_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
 console.log('UNITY_WEB_BUILD_UP_COMPLETION_CLAIM=NO');
+console.log('UNITY_WEB_PROCEDURAL_ENVIRONMENT='+ (worldData?'DESIGN_APPROVED_DATA_ONLY_NATIVE_RUNTIME_UNVERIFIED':'NOT_REQUESTED'));
