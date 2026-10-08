@@ -399,25 +399,38 @@
       "name": "Signature Systems",
       "purpose": "This system defines the core rules and progression mechanics that govern the game's behavior, ensuring consistency, clarity, and player progression through structured interactions and state transitions. It maintains the original rule set while introducing new elements of progression, expansion, and multi-layered meaning.",
       "playerChoice": "Choose a simple one-thumb tap or swipe input to set a score, distance, or short-session goal. This action directly influences the next world state and accessibility, linking player intentions to system state changes. Progression is achieved through numerical increases, new behaviors, combinations, relationships, discoveries, or responses, allowing the same content to be used in different ways. The game is designed with mobile-friendly, "
+    },
+    "local_authoring_parts::00094cc98f02a0cc5508dc79d31949e055c9304bf44ed10e484ece850557c37c:signatureSystems:1": {
+      "id": "signatureSystems",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,"
+      ],
+      "stateOutputs": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score,距离,"
+      ],
+      "name": "Signature Systems",
+      "purpose": "This system defines the core rules and progression mechanics that govern the game's behavior, ensuring consistency, clarity, and player progression through structured interactions and state transitions. It maintains the original rule set while introducing new elements of progression, expansion, and multi-layered meaning.",
+      "playerChoice": "Choose a simple one-thumb tap or swipe input to set a score, distance, or short-session goal. This action directly influences the next world state and accessibility, linking player intentions to system state changes. Progression is achieved through numerical increases, new behaviors, combinations, relationships, discoveries, or responses, allowing the same content to be used in different ways. The game is designed with mobile-friendly, "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1380948,
-      "lastMs": 106853,
+      "totalMs": 1465352,
+      "lastMs": 84404,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:49:15.152Z"
+      "updatedAt": "2026-10-08T12:50:39.558Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:26:14.109Z",
-  "updatedAt": "2026-10-08T12:49:15.152Z",
+  "updatedAt": "2026-10-08T12:50:39.558Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2377,7 +2390,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:49:15.152Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:50:39.558Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
