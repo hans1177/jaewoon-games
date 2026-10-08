@@ -1,3 +1,5 @@
+// 파일명: tools/company-baseline-gate.mjs
+// 임포트
 import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
@@ -10,7 +12,7 @@ import crypto from 'node:crypto';
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').trim();
-const MULTIPLAYER_MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
+const MULTIPLAYER_MODES=new Set(['COOP','COMPETITIVE','HYBRID']);
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 function explicitPass(data,gameId){if(!data||typeof data!=='object'||Array.isArray(data))return false;if(clean(data.gameId)&&clean(data.gameId)!==gameId)return false;const state=clean(data.status||data.result||data.decision).toUpperCase();return data.pass===true||data.validated===true||['PASS','PASSED','VALIDATED','READY'].includes(state);}
 function latestDesignValidation(gameId,fileName){const root=path.join('design',gameId);if(!fs.existsSync(root))return{path:null,data:null,pass:false};const dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();for(const date of dates){const file=path.join(root,date,fileName);if(!fs.existsSync(file))continue;const data=readJson(file,null);return{path:file.replaceAll('\\','/'),data,pass:explicitPass(data,gameId)};}return{path:null,data:null,pass:false};}
@@ -125,7 +127,7 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(!clean(revised?.marketTargetDirection))blockers.push('market-target-direction-required');
   if(!clean(revised?.mobileUx))blockers.push('mobile-ux-direction-required');
   if(!clean(revised?.steamExpansionDecision))blockers.push('steam-expansion-decision-required');
-  if(!designMultiplayerModeValid)blockers.push('multiplayer-design-mode-required:SINGLE|COOP|COMPETITIVE|HYBRID');
+  if(!designMultiplayerModeValid)blockers.push('multiplayer-design-mode-required:COOP|COMPETITIVE|HYBRID');
   if(!clean(revised?.multiplayerExpansionDecision))blockers.push('multiplayer-expansion-decision-required');
   const ownerPreservationSeed=seedActive?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
     &&clean(seedActive?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
@@ -141,7 +143,9 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
       &&Number(preservation?.targetSessionMinutes)===Number(seedActive?.TARGET_SESSION_MINUTES||30)
       &&requiredLocked.every(value=>locked.has(value))
       &&requiredPasses.length===passes.size&&requiredPasses.every(value=>passes.has(value))
-      &&designMultiplayerMode===clean(seedActive?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+      &&(clean(seedActive?.MULTIPLAYER_DESIGN_MODE).toUpperCase()==='SINGLE'
+        ?designMultiplayerModeValid
+        :designMultiplayerMode===clean(seedActive?.MULTIPLAYER_DESIGN_MODE).toUpperCase());
     if(!preservationReady)blockers.push('owner-preservation-design-contract-required');
   }
   if(deterministicDesignGateEnabled){

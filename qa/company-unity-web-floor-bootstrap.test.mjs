@@ -1,9 +1,12 @@
+// 파일명: qa/company-unity-web-floor-bootstrap.test.mjs
+// 역할: 유니티 웹 기존 부트스트랩·학습·승인 환경 생성의 소스 및 비권한 계약 회귀 검사.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 
 const tool=new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.url);
 
@@ -277,5 +280,233 @@ test('Unity Web/native shared source no longer treats primitive root motion as c
     assert.match(runtime,/BindNativeMotionActors\(\)/);
     assert.match(runtime,/reason=ANIMATOR_REQUIRED/);
     assert.doesNotMatch(runtime,/JAEWOON_UNITY_WEB_QA MOTION game=" \+ GameId \+ " status=PASS"/);
+  }
+});
+
+test('approved Unity Web design generates playable-scene visual data in canonical Unity project only',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-approved-layout-'));
+  const before=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    const input={
+      content:{
+        identity:'Mountain village for Unity Web',coreLoop:['EXPLORE','ENTER_SETTLEMENT'],
+        platformProfiles:{UNITY:{platform:'UNITY'}},
+        spatialLayout:{dimension:'3D',proceduralWorld:{
+          approvedDesign:true,seed:'unity-web-layout-1',dimension:'3D',
+          width:24,height:24,cellSize:2,mobile:true,density:.75,
+          biome:'MOUNTAIN',climate:'COLD_WET',buildingStyle:'GOTHIC'
+        }}
+      }
+    };
+    fs.writeFileSync(baseline,JSON.stringify(input));
+    const playbooks=writeVerifiedPlaybooks(root);
+    execFileSync(process.execPath,[tool.pathname,
+      '--game-id=approved-world','--game-name=Approved World',
+      '--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/approved-world'
+    ],{stdio:'pipe'});
+    const project='unity-games/approved-world';
+    const manifest=JSON.parse(fs.readFileSync(path.join(project,'unity-web-floor-source.json'),'utf8'));
+    const dataFile=path.join(project,'Assets/Resources/vibe-world-layout.json');
+    const rawLayout=fs.readFileSync(dataFile,'utf8');
+    const layout=JSON.parse(rawLayout);
+    assert.equal(manifest.proceduralEnvironment.layoutHash,createHash('sha256').update(rawLayout).digest('hex'));
+    assert.equal(manifest.proceduralEnvironment.seed,'unity-web-layout-1');
+    const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.equal(manifest.proceduralEnvironment.approval,'APPROVED_DESIGN_3D_ONLY');
+    assert.equal(manifest.proceduralEnvironment.status,'DATA_AUTHORED_RUNTIME_UNVERIFIED');
+    assert.equal(manifest.proceduralEnvironment.renderedInRuntime,false);
+    assert.equal(manifest.proceduralEnvironment.visualMeshAuthoringSource,true);
+    assert.equal(manifest.proceduralEnvironment.terrainCells,24*24);
+    assert.equal(manifest.proceduralEnvironment.buildingCount,layout.buildings.length);
+    assert.equal(manifest.proceduralEnvironment.vegetationCount,layout.vegetation.length);
+    assert.equal(manifest.upperPlatformReady,false);
+    assert.equal(manifest.releaseOrDeploymentAuthority,false);
+    assert.equal(manifest.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.equal(layout.version,1);
+    assert.equal(layout.mobile,true);
+    assert.equal(layout.maxSlopeDegrees,35);
+    assert.equal(layout.heights.length,576);
+    assert.equal(layout.types.length,576);
+    assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
+    assert.ok(layout.roads.length>0);
+    assert.ok(layout.buildings.length>0);
+    assert.ok(layout.buildings.length<=22);
+    assert.ok(layout.vegetation.length<=64);
+    assert.ok(layout.buildings.every(lot=>lot.roof===1&&lot.size===2));
+    const ids=[...layout.buildings,...layout.vegetation].map(item=>item.id);
+    assert.ok(ids.every(id=>/^WORLD_[A-Z0-9]+:(LOT|NATURE):/.test(id)));
+    assert.equal(new Set(ids).size,ids.length);
+    assert.ok(layout.buildings.every(lot=>layout.roads.includes(lot.roadZ*layout.width+lot.roadX)));
+    assert.ok(layout.buildings.every(lot=>Number.isFinite(lot.x)&&Number.isFinite(lot.z)&&Number.isFinite(lot.door)));
+    assert.equal(layout.gameplayCollisionAuthority,false);
+    assert.equal(layout.saveMutation,false);
+    assert.equal(layout.engineRuntimeVerified,false);
+    assert.match(runtime,/private bool BuildApprovedWorldVisuals\(\)/);
+    assert.match(runtime,/approvedEnvironmentReady = BuildApprovedWorldVisuals\(\);/);
+    assert.match(runtime,/return true;/);
+    assert.match(runtime,/return false;/);
+    assert.match(runtime,/APPROVED_ENVIRONMENT_AUTHORING_FAILED/);
+    assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
+    assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
+    assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
+    assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
+    assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
+    assert.match(runtime,/Mathf.Clamp\(lot.material,0,3\)/);
+    assert.doesNotMatch(runtime,/new List<CombineInstance>\[6\]/);
+    assert.match(runtime,/approvedEnvironmentReady \? "PASS" : "REPAIR_REQUIRED/);
+    assert.match(runtime,/primitive.GetComponent<Collider>\(\).enabled=false/);
+    assert.match(runtime,/primitive.SetActive\(false\);Destroy\(primitive\);/);
+    assert.match(runtime,/collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED/);
+    assert.match(runtime,/data\.mobile&&\(data\.width>48/);
+    assert.match(runtime,/WORLD_DOOR_ROAD_DISCONNECTED/);
+    assert.match(runtime,/WORLD_OBJECT_ID_DUPLICATED/);
+    assert.match(runtime,/WORLD_OBJECT_ID_REQUIRED/);
+    assert.match(runtime,/WORLD_ROAD_CELL_DUPLICATED/);
+    assert.match(runtime,/WORLD_TERRAIN_INVALID/);
+    assert.match(runtime,/WORLD_DOOR_ROAD_STEEP/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+lot.id\)/);
+    assert.match(runtime,/new GameObject\("WorldObject_"\+plant.id\)/);
+    assert.doesNotMatch(runtime,/Input\.touchCount/);
+    assert.doesNotMatch(runtime,/AddComponent<MeshCollider>/);
+    assert.match(runtime,/var worldIds=new HashSet<string>/);
+    assert.doesNotMatch(runtime,/RegisterDestroyedObject/);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals\(\);[\s\S]*UNITY_WEB_WORLD=PASS/);
+    assert.match(runtime,/PlayerPrefs\.Save\(\)/);
+    assert.match(runtime,/status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+  }finally{
+    process.chdir(before);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Unity Web world authoring stays opt-in and rejects unapproved or disconnected world layouts',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-procedural-guards-'));
+  const before=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    const playbooks=writeVerifiedPlaybooks(root);
+    const original={content:{identity:'Existing unchanged world',platformProfiles:{UNITY:{platform:'UNITY'}},
+      spatialLayout:{dimension:'3D',proceduralWorld:{approvedDesign:false,dimension:'3D',width:24,height:24,seed:'not-approved'}}}};
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    const args=['--game-id=unchanged-world','--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/unchanged-world'];
+    execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});
+    const unchanged='unity-games/unchanged-world';
+    const src=JSON.parse(fs.readFileSync(path.join(unchanged,'unity-web-floor-source.json'),'utf8'));
+    const runtime=fs.readFileSync(path.join(unchanged,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.equal(src.proceduralEnvironment,null);
+    assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals/);
+    original.content.spatialLayout.dimension='2D';
+    original.content.spatialLayout.proceduralWorld={approvedDesign:true,dimension:'2D',seed:'2d-not-3d'};
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    original.content.spatialLayout.dimension='3D';
+    original.content.spatialLayout.proceduralWorld={
+      approvedDesign:true,dimension:'3D',width:24,height:24,seed:'blocked',
+      reservedCells:Array.from({length:24},(_,z)=>({x:12,z}))
+    };
+    fs.writeFileSync(baseline,JSON.stringify(original));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'}));
+    assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
+  }finally{
+    process.chdir(before);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Unity Web and Android share verified-only destructible world interactions with additive saves',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-approved-world-harvest-'));
+  const previous=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design.json');
+    const directive=path.join(root,'build-up.json');
+    const output='unity-games/test-harvest';
+    const design={content:{
+      identity:'Verified procedural resource gathering',multiplayerMode:'SINGLE_PLAYER',
+      verifiedRuntimeInteractionContract:true,platformProfiles:{UNITY:{platform:'UNITY'}},
+      spatialLayout:{dimension:'3D',proceduralWorld:{
+        approvedDesign:true,seed:'rpg-mountain-1',width:24,height:24,density:.8,biome:'MOUNTAIN',climate:'COLD_WET',buildingStyle:'GOTHIC',
+        runtimeInteractionsApproved:true,
+        interactionRules:{
+          GATHER:{maxHealth:80,hitDamage:20,rewardItemId:'wood_01',minDrop:2,maxDrop:3,respawnSeconds:60},
+          MINE:{maxHealth:120,hitDamage:30,rewardItemId:'stone_01',minDrop:1,maxDrop:2,respawnSeconds:120}
+        }
+      }}
+    }};
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    fs.writeFileSync(directive,JSON.stringify({
+      directiveId:'test-harvest-build-up-g1',gameId:'test-harvest',
+      designContextMode:'APPROVED_OR_MINIMUM_DESIGN'
+    }));
+    const playbooks=writeVerifiedPlaybooks(root);
+    const args=['--game-id=test-harvest','--game-name=Verified Harvest','--baseline='+baseline,
+      '--playbooks='+playbooks,'--build-up-directive='+directive,'--output='+output];
+    const rejectionReason=()=>{try{execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});return 'NOT_REJECTED';}catch(error){return String(error.stderr||error);}};
+    execFileSync(process.execPath,[tool.pathname,...args],{stdio:'pipe'});
+    const data=JSON.parse(fs.readFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),'utf8'));
+    const runtime=fs.readFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    const build=fs.readFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
+    const manifest=JSON.parse(fs.readFileSync(path.join(output,'unity-web-floor-source.json'),'utf8'));
+    assert.ok(data.vegetation.some(node=>node.maxHealth===80&&node.rewardItemId==='wood_01'));
+    assert.ok(data.vegetation.some(node=>node.maxHealth===120&&node.rewardItemId==='stone_01'));
+    assert.ok(data.vegetation.every(node=>node.maxHealth===0||node.hitDamage>0));
+    assert.match(runtime,/public interface IInteractable/);
+    assert.match(runtime,/class VibeHarvestableObject : MonoBehaviour, IInteractable/);
+    assert.match(runtime,/void HitHarvest\(VibeHarvestableObject target\)/);
+    assert.match(runtime,/OnInteract\(Transform actor\)/);
+    assert.match(runtime,/PrepareWorldDebrisPool/);
+    assert.match(runtime,/AddExplosionForce/);
+    assert.match(runtime,/detectCollisions=false/);
+    assert.match(runtime,/GetString\(SavePrefix\+"world-objects-v1"/);
+    assert.match(runtime,/OnApplicationPause\(bool paused\)/);
+    assert.match(runtime,/OnApplicationQuit/);
+    assert.match(runtime,/DrawWorldInteractionControls/);
+    assert.match(runtime,/Input.GetKeyDown\(KeyCode.E\)/);
+    assert.match(build,/public static void BuildWeb\(\)/);
+    assert.match(build,/public static void Build\(\)/);
+    assert.equal(manifest.releaseOrDeploymentAuthority,false);
+    assert.equal(manifest.upperPlatformReady,false);
+    assert.match(runtime,/CORE_FUN[^\n]+status=REPAIR_REQUIRED/);
+    assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
+    design.content.verifiedRuntimeInteractionContract=false;
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_VERIFIED_GAME_DESIGN_REQUIRED/);
+    design.content.verifiedRuntimeInteractionContract=true;
+    design.content.multiplayerMode='COOP';
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_CLIENT_AUTHORITY_FORBIDDEN_FOR_MULTIPLAYER/);
+    design.content.multiplayerMode='SINGLE_PLAYER';
+    design.content.spatialLayout.proceduralWorld.interactionRules.GATHER.minDrop=-1;
+    fs.writeFileSync(baseline,JSON.stringify(design));
+    assert.match(rejectionReason(),/UNITY_WEB_INTERACTION_RULE_INVALID:GATHER/);
+    assert.equal(fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')),true);
+  }finally{
+    process.chdir(previous);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('approved procedural Unity bootstrap never overwrites an existing gameplay source',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-world-preserve-'));
+  const original=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'approved-design.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{identity:'preserve existing Unity source',platformProfiles:{UNITY:{platform:'UNITY'}},spatialLayout:{dimension:'3D',proceduralWorld:{approvedDesign:true,dimension:'3D',seed:'preserve',width:24,height:24}}}}));
+    const verified=writeVerifiedPlaybooks(root);
+    const script='unity-games/preserved-world/Assets/Scripts/UnityWebFloorGame.cs';
+    fs.mkdirSync(path.dirname(script),{recursive:true});
+    const existing='// existing authored gameplay state; never delete';
+    fs.writeFileSync(script,existing);
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,'--game-id=preserved-world','--baseline='+baseline,'--playbooks='+verified,'--output=unity-games/preserved-world'],{stdio:'pipe'}),/Command failed/);
+    assert.equal(fs.readFileSync(script,'utf8'),existing);
+    assert.equal(fs.existsSync('unity-games/preserved-world/Assets/Resources/vibe-world-layout.json'),false);
+  }finally{
+    process.chdir(original);
+    fs.rmSync(root,{recursive:true,force:true});
   }
 });

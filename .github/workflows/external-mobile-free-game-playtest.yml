@@ -21,6 +21,12 @@ on:
         required: false
         default: 'auto'
 
+# One dedicated reference worker, independent of production queues. A watchdog
+# may replace an unstarted refill; it must never cancel an active observation.
+concurrency:
+  group: external-mobile-fixed-worker
+  cancel-in-progress: false
+
 permissions:
   contents: read
   actions: write
@@ -31,97 +37,7 @@ env:
   CODE_EXTRACTION_ALLOWED: 'NO'
 
 jobs:
-  gate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      should_run: ${{ steps.guard.outputs.should_run }}
-    steps:
-      - name: Keep exactly one active Google Play study run
-        id: guard
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CURRENT_RUN_ID: ${{ github.run_id }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          api="https://api.github.com/repos/${REPOSITORY}/actions/workflows/external-mobile-free-game-playtest.yml/runs?per_page=50"
-          runs_json="$(curl --fail --silent --show-error \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${api}")"
-          stale_revision_ids="$(jq -r --arg current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '.workflow_runs[] | select((.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current) and (.head_sha!=$head)) | .id' <<<"${runs_json}")"
-          if [ -n "${stale_revision_ids}" ]; then
-            while IFS= read -r stale_id; do
-              [ -n "${stale_id}" ] || continue
-              echo "EXTERNAL_MOBILE_CANCEL_STALE_REVISION=${stale_id}"
-              curl --fail --silent --show-error \
-                -X POST \
-                -H "Authorization: Bearer ${GH_TOKEN}" \
-                -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
-                "https://api.github.com/repos/${REPOSITORY}/actions/runs/${stale_id}/cancel" || true
-            done <<<"${stale_revision_ids}"
-          fi
-
-          queue_api="https://api.github.com/repos/${REPOSITORY}/contents/.vibe2/queue.json?ref=vibe2-unreal-core"
-          if ! queue_response="$(curl --fail --silent --show-error \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${queue_api}")"; then
-            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=DEFER_GAME_PRIMARY_QUEUE_UNAVAILABLE'
-            exit 0
-          fi
-          queue_b64="$(jq -r '.content // empty' <<<"${queue_response}" | tr -d '\n')"
-          queue_json="$(printf '%s' "${queue_b64}" | base64 -d 2>/dev/null || true)"
-          if [ -z "${queue_json}" ] || ! jq -e . >/dev/null 2>&1 <<<"${queue_json}"; then
-            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=DEFER_GAME_PRIMARY_QUEUE_INVALID'
-            exit 0
-          fi
-          active_game_work="$(jq '[.tasks[]? | select(
-            (((.status // "") | ascii_downcase) == "queued" or ((.status // "") | ascii_downcase) == "running")
-            and (((.department // "") | ascii_downcase) == "development")
-            and (((.type // "") | ascii_downcase) == "implementation")
-          )] | length' <<<"${queue_json}")"
-          echo "EXTERNAL_MOBILE_ACTIVE_GAME_WORK=${active_game_work}"
-          if [ "${active_game_work}" -gt 0 ]; then
-            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_GAME_PRIMARY'
-            exit 0
-          fi
-          running_other="$(jq --arg current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
-          newer_pending="$(jq --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id > $current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
-          older_pending_ids="$(jq -r --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id < $current) and (.head_sha==$head)) | .id' <<<"${runs_json}")"
-          echo "EXTERNAL_MOBILE_RUNNING_SAME_REVISION=${running_other}"
-          echo "EXTERNAL_MOBILE_NEWER_PENDING_SAME_REVISION=${newer_pending}"
-          if [ "${running_other}" -gt 0 ] || [ "${newer_pending}" -gt 0 ]; then
-            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_SAME_REVISION_ACTIVE_RUN'
-            exit 0
-          fi
-          if [ -n "${older_pending_ids}" ]; then
-            while IFS= read -r stale_id; do
-              [ -n "${stale_id}" ] || continue
-              echo "EXTERNAL_MOBILE_CANCEL_OLDER_SAME_REVISION=${stale_id}"
-              curl --fail --silent --show-error \
-                -X POST \
-                -H "Authorization: Bearer ${GH_TOKEN}" \
-                -H "Accept: application/vnd.github+json" \
-                -H "X-GitHub-Api-Version: 2022-11-28" \
-                "https://api.github.com/repos/${REPOSITORY}/actions/runs/${stale_id}/cancel" || true
-            done <<<"${older_pending_ids}"
-          fi
-          echo 'should_run=YES' >> "$GITHUB_OUTPUT"
-          echo 'EXTERNAL_MOBILE_GATE=RUN'
-
   playtest:
-    needs: gate
-    if: needs.gate.outputs.should_run == 'YES'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
@@ -268,6 +184,14 @@ jobs:
           echo "COMMERCIAL_RUNTIME_REFERENCE_SAMPLES=$count"
           echo 'COMMERCIAL_RUNTIME_REFERENCE_VERIFIED_PRODUCTION_POSITIVE=NO'
 
+      - name: Remove delivered APK bytes from evidence on every outcome
+        if: always()
+        shell: bash
+        run: |
+          if [[ -d "${EXTERNAL_PLAYTEST_OUT:-}" ]]; then
+            find "$EXTERNAL_PLAYTEST_OUT" -type f \( -name '*.apk' -o -name '*.aab' -o -name '*.zip' \) -delete
+          fi
+
       - name: Upload ephemeral runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -314,8 +238,8 @@ jobs:
 
   refill:
     name: continuous refill
-    needs: [gate, playtest]
-    if: always() && needs.gate.outputs.should_run == 'YES'
+    needs: [playtest]
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -332,7 +256,8 @@ jobs:
           curl --fail --silent --show-error             -X POST             -H "Authorization: Bearer ${GH_TOKEN}"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "https://api.github.com/repos/${REPOSITORY}/actions/workflows/vibe2-distillation-ingest.yml/dispatches"             -d "${body}"
           echo "COMMERCIAL_RUNTIME_CANONICAL_INGEST_DISPATCHED=${CURRENT_RUN_ID}"
 
-      - name: Dispatch next Google Play study batch when idle
+      - name: Continue the independent fixed Google Play worker
+        if: always() && !cancelled()
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -340,18 +265,8 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          api="https://api.github.com/repos/${REPOSITORY}/actions/workflows/external-mobile-free-game-playtest.yml/runs?per_page=30"
-          active_other="$(curl --fail --silent --show-error \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${api}" | jq --arg current "${CURRENT_RUN_ID}" \
-            '[.workflow_runs[] | select((.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending") and ((.id|tostring)!=$current))] | length')"
-          echo "EXTERNAL_MOBILE_ACTIVE_OTHER=${active_other}"
-          if [ "${active_other}" -gt 0 ]; then
-            echo 'EXTERNAL_MOBILE_CONTINUOUS_REFILL=ALREADY_ACTIVE'
-            exit 0
-          fi
+          # The fixed concurrency group bounds this chain to one active worker.
+          # Unrelated queued jobs or stale revisions cannot starve its next iteration.
           body='{"ref":"main","inputs":{"max_games":"3","start_index":"auto"}}'
           curl --fail --silent --show-error \
             -X POST \
@@ -362,3 +277,4 @@ jobs:
             -d "${body}"
           echo 'EXTERNAL_MOBILE_CONTINUOUS_REFILL=DISPATCHED'
           echo 'EXTERNAL_MOBILE_24H_CHAIN=ON'
+          echo 'EXTERNAL_MOBILE_PRODUCTION_QUEUE_DEPENDENCY=NONE'

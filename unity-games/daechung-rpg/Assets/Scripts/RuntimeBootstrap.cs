@@ -14,8 +14,10 @@ namespace JaewoonGames.DaechungRpg
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
         private PrototypeAnimatedVisuals _visuals;
+        private MultiplayerSession _multiplayer;
         private float _qaHeartbeatAt;
         private float _qaMobileTargetAt;
+        private int _coopActionSeen;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -51,8 +53,11 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _visuals = PrototypeAnimatedVisuals.EnsureCreated();
+            _multiplayer = GetComponent<MultiplayerSession>();
+            if (_multiplayer == null) _multiplayer = gameObject.AddComponent<MultiplayerSession>();
 
             if (_core == null) return;
+            _visuals.SetRegionVisual(_core.Player.currentRegionId);
 
             if (_core.Player.currentRegionId != "town")
             {
@@ -76,7 +81,19 @@ namespace JaewoonGames.DaechungRpg
             }
 #endif
 
-            if (_core == null || Time.unscaledTime < _qaHeartbeatAt) return;
+            if (_core == null) return;
+            _multiplayer?.ObserveLocalState(_core.Player.currentRegionId, _enemy != null ? _enemy.id : "",
+                _enemyHp, _core.Player.currentHp);
+            if (_multiplayer != null)
+            {
+                _visuals?.SetCoopParty(_multiplayer.Connected && _multiplayer.ParticipantCount >= 2);
+                if (_coopActionSeen != _multiplayer.RemoteActionVersion)
+                {
+                    _coopActionSeen = _multiplayer.RemoteActionVersion;
+                    _visuals?.PlayCoopAction();
+                }
+            }
+            if (Time.unscaledTime < _qaHeartbeatAt) return;
             _qaHeartbeatAt = Time.unscaledTime + 2f;
             var player = _core.Player;
             Debug.Log($"JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region={player.currentRegionId} level={player.level} hp={player.currentHp} maxHp={_core.GetMaxHp()} exp={player.experience} gold={player.gold} enemy={(_enemy != null ? _enemy.id : "none")} enemyHp={_enemyHp}");
@@ -117,6 +134,8 @@ namespace JaewoonGames.DaechungRpg
             DrawCombatControls();
             GUILayout.Space(6f * scale);
             DrawTownControls();
+            GUILayout.Space(6f * scale);
+            _multiplayer?.DrawControls(scale);
             GUILayout.Space(6f * scale);
 
             GUILayout.Label("LOG");
@@ -192,7 +211,10 @@ namespace JaewoonGames.DaechungRpg
 
         private void DrawPrimaryCombatActionButton()
         {
-            if (_enemy == null) return;
+            // 마을에서도 동일한 실제 터치 버튼으로 사냥을 시작한다.
+            // 첫 WebGL 화면에 버튼이 없어 모바일 QA 타깃이 사라지던 문제를 수정한다.
+            var canEnterHunt = _enemy == null && _core != null && _core.Player.currentRegionId == "town";
+            if (_enemy == null && !canEnterHunt) return;
 
             var margin = Mathf.Max(12f, Screen.width * 0.04f);
             var buttonWidth = Mathf.Clamp(Screen.width * 0.34f, 120f, 180f);
@@ -216,7 +238,7 @@ namespace JaewoonGames.DaechungRpg
             }
 #endif
 
-            if (GUI.Button(actionRect, "ATTACK"))
+            if (GUI.Button(actionRect, canEnterHunt ? "HUNT" : "ATTACK"))
             {
 #if UNITY_WEBGL && !UNITY_EDITOR
                 if (qaMode)
@@ -224,7 +246,8 @@ namespace JaewoonGames.DaechungRpg
                     Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=daechung-rpg role=action status=PASS");
                 }
 #endif
-                AttackEnemy();
+                if (canEnterHunt) MoveTo("field-1");
+                else AttackEnemy();
             }
         }
 
@@ -286,6 +309,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _core.SetRegion(regionId);
+            _visuals?.SetRegionVisual(regionId);
             Debug.Log($"JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region={regionId}");
             _enemy = null;
             _enemyHp = 0;
@@ -325,6 +349,7 @@ namespace JaewoonGames.DaechungRpg
 
             _enemy = region.enemies[enemyIndex];
             _enemyHp = _enemy.maxHp;
+            _visuals?.SetEnemyIdentity(_enemy.id);
             if (announceEncounter)
             {
                 _message = $"Encountered {_enemy.displayName}.";
@@ -338,12 +363,14 @@ namespace JaewoonGames.DaechungRpg
 
             var damage = _core.GetAttackPower();
             _enemyHp = Mathf.Max(0, _enemyHp - damage);
+            _multiplayer?.ObserveAttack(_core.Player.currentRegionId, _enemy.id, damage, _enemyHp);
             Debug.Log($"JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage={damage} enemy={_enemy.id} enemyHp={_enemyHp}");
 
             if (_enemyHp <= 0)
             {
                 _visuals?.PlayCombatExchange(true, false);
                 var defeated = _enemy;
+                _multiplayer?.ObserveDefeat(_core.Player.currentRegionId, defeated.id);
                 RewardEnemyDefeat(defeated);
                 SpawnFirstEnemyInCurrentRegion(false, false);
                 return;
@@ -357,6 +384,7 @@ namespace JaewoonGames.DaechungRpg
             {
                 _core.Player.currentHp = _core.GetMaxHp();
                 _core.SetRegion("town");
+                _visuals?.SetRegionVisual("town");
                 _enemy = null;
                 _enemyHp = 0;
                 _core.Save();

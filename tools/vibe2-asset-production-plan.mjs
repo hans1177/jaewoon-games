@@ -142,6 +142,34 @@ export function discoverRuntimeVisualEvidence({task={},target='',evidenceRoot=pr
 }
 
 // 사용자 기본 GLB의 실제 JSON 청크를 검사한다. 파일 존재나 이름만으로 커마·리깅 가능을 가정하지 않는다.
+// 표면 분포의 정확한 삼각형 적분. 정점 수/분할 밀도를 물리 질량으로 오인하지 않는다.
+// 균일한 얇은 껍질 가정이며 실제 밀도·마찰·충돌·열역학을 측정했다는 뜻은 아니다.
+export function analyzeVibeSurfaceDistribution(triangles,{origin=[0,0,0]}={}){
+  let area=0,triangleCount=0,degenerateCount=0;
+  const first=[0,0,0],second=Array(9).fill(0),orientation=Array(3).fill(0);
+  for(const triangle of triangles){
+    if(!Array.isArray(triangle)||triangle.length!==3||triangle.some(p=>!Array.isArray(p)||p.length!==3||p.some(x=>!Number.isFinite(x))))throw new Error('SURFACE_TRIANGLE_INVALID');
+    const p=triangle.map(v=>v.map((x,i)=>x-origin[i])),a=p[1].map((x,i)=>x-p[0][i]),b=p[2].map((x,i)=>x-p[0][i]);
+    const cross=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],length=Math.hypot(...cross),weight=length/2;
+    if(!(weight>0)){degenerateCount++;continue;}
+    area+=weight;triangleCount++;
+    const sum=[0,1,2].map(i=>p[0][i]+p[1][i]+p[2][i]);
+    for(let i=0;i<3;i++){
+      first[i]+=weight*sum[i]/3;
+      orientation[i]+=weight*(cross[i]/length)**2;
+      for(let j=0;j<3;j++)second[i*3+j]+=weight*(sum[i]*sum[j]+p.reduce((n,v)=>n+v[i]*v[j],0))/12;
+    }
+  }
+  if(!(area>0))return {version:1,status:'NO_NONDEGENERATE_SURFACE',triangleCount,degenerateCount};
+  const localCentroid=first.map(n=>n/area),centroid=localCentroid.map((n,i)=>n+origin[i]);
+  const covariance=second.map((n,i)=>n/area-localCentroid[Math.floor(i/3)]*localCentroid[i%3]);
+  const trace=covariance[0]+covariance[4]+covariance[8];
+  return {version:1,status:'MEASURED_GEOMETRY',method:'EXACT_TRIANGLE_AREA_MOMENTS',coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',
+    massModel:'UNIFORM_SURFACE_SHELL_ONLY',surfaceAreaM2:area,centroidMeters:centroid,covarianceM2:covariance,
+    inertiaPerUnitMassM2:covariance.map((n,i)=>(Math.floor(i/3)===i%3?trace:0)-n),normalAxisSecondMoment:orientation.map(n=>n/area),
+    triangleCount,degenerateCount,physicalDensityKgM3:null,friction:null,restitution:null,dynamicStabilityVerified:false};
+}
+
 export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const relative=clean(source.path),issues=[];
   if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..')||/^[a-z]+:/i.test(relative))return freeze({status:'SOURCE_GLB_REQUIRED',issues:['REPOSITORY_LOCAL_GLB_PATH_REQUIRED'],sourceMutationPerformed:false});
@@ -166,9 +194,9 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       offset+=length;
     }
     if(jsonCount!==1||document?.asset?.version!=='2.0')throw new Error('GLB_JSON_INVALID');
-    for(const key of ['meshes','materials','skins','animations','nodes','accessors','bufferViews','buffers','images','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
+    for(const key of ['meshes','materials','skins','animations','nodes','accessors','bufferViews','buffers','images','textures','scenes','extensionsRequired'])if(document[key]!==undefined&&!Array.isArray(document[key]))throw new Error('GLB_COLLECTION_INVALID:'+key);
     if((document.meshes||[]).some(mesh=>!mesh||!Array.isArray(mesh.primitives)||mesh.primitives.some(primitive=>!primitive||typeof primitive.attributes!=='object'||primitive.attributes===null)))throw new Error('GLB_PRIMITIVE_INVALID');
-    for(const key of ['materials','skins','animations','nodes','accessors','bufferViews','buffers','images'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
+    for(const key of ['materials','skins','animations','nodes','accessors','bufferViews','buffers','images','textures','scenes'])if((document[key]||[]).some(row=>!row||typeof row!=='object'))throw new Error('GLB_ENTRY_INVALID:'+key);
     if(source.sourceHash&&source.sourceHash!==sourceHash)throw new Error('GLB_SOURCE_HASH_MISMATCH');
   }catch(error){return freeze({status:'SOURCE_GLB_REQUIRED',path:relative,issues:[error.code==='ENOENT'?'GLB_MATERIALIZATION_REQUIRED':error.message],sourceMutationPerformed:false});}
   const materials=document.materials||[];
@@ -190,7 +218,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     const bufferIndex=Number(view.buffer),payload=bufferPayload(bufferIndex),elementBytes=componentByteSize*componentCount,stride=Number(view.byteStride||elementBytes);
     const viewByteOffset=Number(view.byteOffset||0),viewByteLength=Number(view.byteLength||0),accessorByteOffset=Number(accessor.byteOffset||0);
     const byteOffset=viewByteOffset+accessorByteOffset,end=byteOffset+(count-1)*stride+elementBytes,viewEnd=viewByteOffset+viewByteLength;
-    const bufferViewRangeValid=Number.isInteger(viewByteLength)&&viewByteLength>0&&viewByteOffset>=0&&accessorByteOffset>=0&&viewEnd<=Number(payload?.length||0)&&end<=viewEnd;
+    const bufferViewRangeValid=Number.isSafeInteger(bufferIndex)&&bufferIndex>=0&&Number.isSafeInteger(viewByteLength)&&viewByteLength>0&&Number.isSafeInteger(viewByteOffset)&&viewByteOffset>=0&&Number.isSafeInteger(accessorByteOffset)&&accessorByteOffset>=0&&Number.isSafeInteger(stride)&&stride%componentByteSize===0&&byteOffset%componentByteSize===0&&viewEnd<=Number(payload?.length||0)&&viewEnd<=Number(buffers[bufferIndex]?.byteLength||0)&&end<=viewEnd&&!accessor.sparse;
     return{valid:Boolean(payload)&&stride>=elementBytes&&bufferViewRangeValid,index,count,type:accessor.type,componentType:accessor.componentType,normalized:accessor.normalized===true,componentByteSize,componentCount,elementBytes,stride,byteOffset,end,viewByteOffset,viewByteLength,viewEnd,bufferViewRangeValid,payload};
   };
   const validAccessor=index=>accessorInfo(index).valid;
@@ -223,10 +251,58 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     }
     return true;
   };
+  // Inspect the payload, not just the accessor declaration. Bounds drive import scale
+  // and contact placement for every mesh family, including a single static rock.
+  const finiteVector=(value,length)=>Array.isArray(value)&&value.length===length&&value.every(Number.isFinite);
+  const geometryRows=(document.meshes||[]).flatMap((mesh,meshIndex)=>mesh.primitives.map((primitive,primitiveIndex)=>{
+    // 명시된 재질은 실제 슬롯이어야 한다. 재질 생략은 glTF 기본 재질을 보존한다.
+    if(primitive.material!==undefined&&(!Number.isInteger(primitive.material)||primitive.material<0||primitive.material>=materials.length))issues.push('GLB_MATERIAL_BINDING_INVALID');
+    const position=accessorInfo(primitive.attributes.POSITION),normal=accessorInfo(primitive.attributes.NORMAL);
+    const bounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};
+    let invalidPositionCount=0,invalidNormalCount=0,invalidUvCount=0,invalidIndexCount=0;
+    if(position.valid&&position.type==='VEC3'&&position.componentType===5126){
+      for(let v=0;v<position.count;v++)for(let c=0;c<3;c++){
+        const n=readAccessorComponent(position,v,c);
+        if(!Number.isFinite(n))invalidPositionCount++;else{bounds.min[c]=Math.min(bounds.min[c],n);bounds.max[c]=Math.max(bounds.max[c],n);}
+      }
+    }else invalidPositionCount++;
+    if(normal.valid&&normal.type==='VEC3'&&normal.componentType===5126){
+      for(let v=0;v<normal.count;v++){
+        const length=Math.hypot(...[0,1,2].map(c=>readAccessorComponent(normal,v,c)));
+        if(!Number.isFinite(length)||Math.abs(length-1)>.02)invalidNormalCount++;
+      }
+    }else invalidNormalCount++;
+    for(const [semantic,index] of Object.entries(primitive.attributes))if(/^TEXCOORD_\d+$/.test(semantic)){
+      const uv=accessorInfo(index);
+      if(!uv.valid||uv.count!==position.count||uv.type!=='VEC2'||!(uv.componentType===5126||[5121,5123].includes(uv.componentType)&&uv.normalized)){invalidUvCount++;continue;}
+      for(let v=0;v<uv.count;v++)for(let c=0;c<2;c++)if(!Number.isFinite(readAccessorComponent(uv,v,c)))invalidUvCount++;
+    }
+    const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
+    const indexValid=!indices||indices.valid&&indices.type==='SCALAR'&&[5121,5123,5125].includes(indices.componentType)&&!indices.normalized;
+    const indexCount=indices?indices.count||0:position.count||0;
+    if(!indexValid)invalidIndexCount++;
+    else if(indices)for(let i=0;i<indexCount;i++)if(readAccessorComponent(indices,i,0)>=position.count)invalidIndexCount++;
+    const mode=primitive.mode??4;
+    if(!Number.isInteger(mode)||mode<0||mode>6||(mode===4&&indexCount%3!==0)||(mode===1&&indexCount%2!==0)||indexCount<(mode>=4?3:mode>=1?2:1))invalidIndexCount++;
+    const declared=accessors[primitive.attributes.POSITION]||{};
+    const boundsMatch=!invalidPositionCount&&finiteVector(declared.min,3)&&finiteVector(declared.max,3)&&[0,1,2].every(c=>Math.abs(declared.min[c]-bounds.min[c])<=1e-5*Math.max(1,Math.abs(bounds.min[c]))&&Math.abs(declared.max[c]-bounds.max[c])<=1e-5*Math.max(1,Math.abs(bounds.max[c])));
+    return {meshIndex,primitiveIndex,invalidPositionCount,invalidNormalCount,invalidUvCount,invalidIndexCount,boundsMatch,bounds:invalidPositionCount?null:bounds,triangleCount:mode===4?Math.floor(indexCount/3):mode>=5?Math.max(0,indexCount-2):0};
+  }));
+  if(geometryRows.some(row=>row.invalidPositionCount))issues.push('GLB_POSITION_DATA_INVALID');
+  if(geometryRows.some(row=>row.invalidNormalCount))issues.push('GLB_NORMAL_DATA_INVALID');
+  if(geometryRows.some(row=>row.invalidUvCount))issues.push('GLB_UV_DATA_INVALID');
+  if(geometryRows.some(row=>row.invalidIndexCount))issues.push('GLB_INDEX_DATA_INVALID');
+  if(geometryRows.some(row=>!row.boundsMatch))issues.push('GLB_POSITION_BOUNDS_MISMATCH');
+  if(accessors.some(row=>row.sparse))issues.push('GLB_SPARSE_MATERIALIZATION_REQUIRED');
   const jointNodeIndices=new Set(skins.flatMap(skin=>(skin.joints||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<nodes.length)));
   const parents=new Map();
   nodes.forEach((node,parentIndex)=>{
-    for(const child of Array.isArray(node?.children)?node.children:[])if(Number.isInteger(child)&&child>=0&&child<nodes.length&&!parents.has(child))parents.set(child,parentIndex);
+    if(node.children!==undefined&&!Array.isArray(node.children))issues.push('GLB_NODE_HIERARCHY_INVALID');
+    for(const child of Array.isArray(node?.children)?node.children:[]){
+      if(!Number.isInteger(child)||child<0||child>=nodes.length||parents.has(child)||child===parentIndex)issues.push('GLB_NODE_HIERARCHY_INVALID');
+      else parents.set(child,parentIndex);
+    }
+    if(node.mesh!==undefined&&(!Number.isInteger(node.mesh)||!document.meshes?.[node.mesh]))issues.push('GLB_NODE_MESH_INVALID');
   });
   const nodeAttachedToJoint=nodeIndex=>{
     let current=nodeIndex,guard=0;
@@ -236,6 +312,157 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     }
     return false;
   };
+  const identity=()=>[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+  const multiply=(a,b)=>Array.from({length:16},(_,i)=>[0,1,2,3].reduce((n,k)=>n+a[(i%4)+k*4]*b[k+Math.floor(i/4)*4],0));
+  const localMatrices=nodes.map(node=>{
+    if(node.matrix!==undefined){
+      if(!finiteVector(node.matrix,16)||['translation','rotation','scale'].some(key=>node[key]!==undefined)||node.matrix[3]!==0||node.matrix[7]!==0||node.matrix[11]!==0||node.matrix[15]!==1){issues.push('GLB_NODE_TRANSFORM_INVALID');return identity();}
+      return node.matrix;
+    }
+    const t=node.translation??[0,0,0],q=node.rotation??[0,0,0,1],sc=node.scale??[1,1,1];
+    if(!finiteVector(t,3)||!finiteVector(q,4)||!finiteVector(sc,3)||Math.abs(Math.hypot(...q)-1)>1e-4){issues.push('GLB_NODE_TRANSFORM_INVALID');return identity();}
+    const [x,y,z,w]=q,[a,b,c]=sc;
+    return [(1-2*(y*y+z*z))*a,2*(x*y+z*w)*a,2*(x*z-y*w)*a,0,2*(x*y-z*w)*b,(1-2*(x*x+z*z))*b,2*(y*z+x*w)*b,0,2*(x*z+y*w)*c,2*(y*z-x*w)*c,(1-2*(x*x+y*y))*c,0,...t,1];
+  });
+  const worldMatrices=new Map();
+  for(let index=0;index<nodes.length;index++){
+    const chain=[],seen=new Set();let current=index;
+    while(current!==undefined&&!worldMatrices.has(current)&&!seen.has(current)){seen.add(current);chain.push(current);current=parents.get(current);}
+    if(current!==undefined&&seen.has(current)){issues.push('GLB_NODE_HIERARCHY_INVALID');continue;}
+    let matrix=current===undefined?identity():worldMatrices.get(current);
+    for(const child of chain.reverse()){matrix=multiply(matrix,localMatrices[child]);worldMatrices.set(child,matrix);}
+  }
+  const selectedScene=document.scene??0;
+  const roots=document.scenes?.length?document.scenes[selectedScene]?.nodes:nodes.map((_,i)=>i).filter(i=>!parents.has(i));
+  const activeNodes=new Set(),pending=Array.isArray(roots)?[...roots]:[];
+  if(!Array.isArray(roots))issues.push('GLB_SCENE_INVALID');
+  while(pending.length){const index=pending.pop();if(!Number.isInteger(index)||!nodes[index]){issues.push('GLB_SCENE_INVALID');continue;}if(activeNodes.has(index))continue;activeNodes.add(index);pending.push(...(Array.isArray(nodes[index].children)?nodes[index].children:[]));}
+  const sceneBounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]};let boundedPrimitiveCount=0,visibleTriangleCount=0;
+  // 메인: 보이는 노드 수가 많아도 모든 메시를 반복 스캔하지 않는다.
+  const geometryByMesh=new Map();
+  for(const row of geometryRows){
+    if(!row.bounds||row.invalidIndexCount)continue;
+    if(!geometryByMesh.has(row.meshIndex))geometryByMesh.set(row.meshIndex,[]);
+    geometryByMesh.get(row.meshIndex).push(row);
+  }
+  // 메인: 실제 표시 삼각형의 면적 통계. 질량·충돌·게임 물리 권위는 유지한다.
+  const surface={area:0,centroidSum:[0,0,0],squareSum:[0,0,0],measuredTriangles:0,nonTrianglePrimitives:0};
+  for(const index of activeNodes){
+    const matrix=worldMatrices.get(index);if(!matrix)continue;
+    for(const row of geometryByMesh.get(nodes[index].mesh)||[]){
+      const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex];
+      const position=accessorInfo(primitive.attributes.POSITION);
+      const indices=primitive.indices===undefined?null:accessorInfo(primitive.indices);
+      boundedPrimitiveCount++;
+      visibleTriangleCount+=row.triangleCount;
+      // 회전한 경계 상자 대신 보이는 메시 정점·삼각형으로만 측정한다.
+      const mode=primitive.mode??4,window=[];
+      if(![4,5,6].includes(mode))surface.nonTrianglePrimitives++;
+      for(let vertex=0;vertex<(indices?indices.count:position.count);vertex++){
+        const vertexIndex=indices?readAccessorComponent(indices,vertex,0):vertex;
+        const p=[0,1,2].map(c=>readAccessorComponent(position,vertexIndex,c));
+        const world=[0,1,2].map(c=>matrix[c]*p[0]+matrix[c+4]*p[1]+matrix[c+8]*p[2]+matrix[c+12]);
+        for(let c=0;c<3;c++){sceneBounds.min[c]=Math.min(sceneBounds.min[c],world[c]);sceneBounds.max[c]=Math.max(sceneBounds.max[c],world[c]);}
+        let triangle=null;
+        if(mode===4){window.push(world);if(window.length===3){triangle=window.slice();window.length=0;}}
+        else if(mode===5){window.push(world);if(window.length>3)window.shift();if(window.length===3)triangle=window;}
+        else if(mode===6){if(window.length<2)window.push(world);else{triangle=[window[0],window[1],world];window[1]=world;}}
+        if(!triangle)continue;
+        const [a,b,c]=triangle,u=b.map((n,i)=>n-a[i]),v=c.map((n,i)=>n-a[i]);
+        const area=Math.hypot(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])/2;
+        if(!(area>0&&Number.isFinite(area)))continue;
+        surface.area+=area;surface.measuredTriangles++;
+        for(let axis=0;axis<3;axis++){
+          const sum=a[axis]+b[axis]+c[axis];
+          surface.centroidSum[axis]+=area*sum/3;
+          // 균일 삼각형 표면의 2차 모멘트: (Σvertex² + (Σvertex)²)/12.
+          surface.squareSum[axis]+=area*(a[axis]**2+b[axis]**2+c[axis]**2+sum**2)/12;
+        }
+      }
+    }
+  }
+  if(!boundedPrimitiveCount)issues.push('GLB_VISIBLE_GEOMETRY_REQUIRED');
+  // 메인: 면적이 없는 삼각형 또는 연산 오버플로는 유효한 렌더 표면이 아니다.
+  // 기존 비삼각형 프리미티브는 검사 기록만 남기고 충돌·질량 권위로 해석하지 않는다.
+  if(visibleTriangleCount>0&&surface.measuredTriangles===0)issues.push('GLB_TRIANGLE_SURFACE_DEGENERATE');
+  if(!Number.isFinite(surface.area)||surface.centroidSum.some(value=>!Number.isFinite(value))
+    ||surface.squareSum.some(value=>!Number.isFinite(value))
+    ||sceneBounds.max.some((value,axis)=>!Number.isFinite(value-sceneBounds.min[axis])))issues.push('GLB_SURFACE_STATS_NONFINITE');
+  // GLB 노드의 숫자가 유한해도 최종 월드 정점이 GPU float32 범위를 넘을 수 있다.
+  if([...sceneBounds.min,...sceneBounds.max].some(value=>!Number.isFinite(value)||Math.abs(value)>3.4028234663852886e38))
+    issues.push('GLB_WORLD_TRANSFORM_FLOAT32_OVERFLOW');
+  const spatial=boundedPrimitiveCount&&[...sceneBounds.min,...sceneBounds.max].every(Number.isFinite)?{
+    coordinateSystem:'GLTF_RIGHT_HANDED_Y_UP_METERS',scope:'STATIC_NODE_TRANSFORM_BOUNDS_NOT_ANIMATION_OR_SKIN_DEFORMATION',
+    bounds:sceneBounds,size:sceneBounds.max.map((v,i)=>v-sceneBounds.min[i]),
+    groundTranslation:[-(sceneBounds.min[0]+sceneBounds.max[0])/2,-sceneBounds.min[1],-(sceneBounds.min[2]+sceneBounds.max[2])/2],
+    triangleCount:visibleTriangleCount,
+    geometrySurface:{
+      measurement:'VISIBLE_TRIANGLES_AREA_WEIGHTED_GLTF_METERS',
+      areaSquareMeters:surface.area,triangleCount:surface.measuredTriangles,
+      nonTrianglePrimitives:surface.nonTrianglePrimitives,
+      centroidMeters:surface.area>0?surface.centroidSum.map(n=>n/surface.area):null,
+      varianceSquareMeters:surface.area>0?surface.squareSum.map((n,axis)=>Math.max(0,n/surface.area-(surface.centroidSum[axis]/surface.area)**2)):null,
+      broadphaseAabbVolumeCubicMeters:sceneBounds.max.reduce((product,n,axis)=>product*(n-sceneBounds.min[axis]),1),
+      nonAuthoritative:true,collisionAuthority:false,massDensityMeasured:false,skinAnimationPoseMeasured:false,runtimeVerified:false
+    }
+  }:null;
+  if(spatial&&spatial.size.every(v=>v<=1e-9))issues.push('GLB_COLLAPSED_GEOMETRY');
+  // 같은 활성 인스턴스·축·피벗으로 적분한다. 전체 삼각형 배열을 복제하지 않는다.
+  function* visibleTriangles(){
+    for(const index of activeNodes){
+      const matrix=worldMatrices.get(index);if(!matrix)continue;
+      for(const row of (geometryByMesh.get(nodes[index].mesh)||[]).filter(row=>row.bounds&&!row.invalidIndexCount)){
+        const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex],mode=primitive.mode??4;
+        if(mode<4)continue;
+        const position=accessorInfo(primitive.attributes.POSITION),indices=primitive.indices===undefined?null:accessorInfo(primitive.indices),count=indices?indices.count:position.count;
+        const point=v=>{const k=indices?readAccessorComponent(indices,v,0):v,p=[0,1,2].map(c=>readAccessorComponent(position,k,c));return[0,1,2].map(c=>matrix[c]*p[0]+matrix[c+4]*p[1]+matrix[c+8]*p[2]+matrix[c+12]);};
+        for(let t=0;t<row.triangleCount;t++)yield(mode===4?[t*3,t*3+1,t*3+2]:mode===5?(t%2?[t+1,t,t+2]:[t,t+1,t+2]):[0,t+1,t+2]).map(point);
+      }
+    }
+  }
+  const surfaceDistribution=spatial?analyzeVibeSurfaceDistribution(visibleTriangles(),{origin:spatial.bounds.min}):null;
+  const visibleGeometryHashes=[];
+  for(const index of activeNodes){
+    for(const row of (geometryByMesh.get(nodes[index].mesh)||[]).filter(row=>row.bounds&&!row.invalidIndexCount)){
+      const primitive=document.meshes[row.meshIndex].primitives[row.primitiveIndex],hash=crypto.createHash('sha256');
+      hash.update(JSON.stringify({matrix:worldMatrices.get(index),mode:primitive.mode??4,material:document.materials?.[primitive.material]||null}));
+      const material=document.materials?.[primitive.material]||{};
+      for(const slot of [material.pbrMetallicRoughness?.baseColorTexture,material.pbrMetallicRoughness?.metallicRoughnessTexture,material.normalTexture,material.occlusionTexture,material.emissiveTexture].filter(Boolean)){
+        const texture=document.textures?.[slot.index],image=document.images?.[texture?.source],view=bufferViews[image?.bufferView];
+        hash.update(JSON.stringify({slot,sampler:document.samplers?.[texture?.sampler]||null,mimeType:image?.mimeType||null}));
+        if(view){const payload=bufferPayload(view.buffer);if(payload)hash.update(payload.subarray(view.byteOffset||0,(view.byteOffset||0)+view.byteLength));}
+        else hash.update(clean(image?.uri));
+      }
+      for(const [semantic,accessor] of [...Object.entries(primitive.attributes),...(primitive.indices===undefined?[]:[['INDICES',primitive.indices]])].sort(([a],[b])=>a.localeCompare(b))){
+        const info=accessorInfo(accessor);if(!info.valid)continue;
+        hash.update(JSON.stringify([semantic,info.type,info.componentType,info.normalized,info.count]));
+        for(let i=0;i<info.count;i++)hash.update(info.payload.subarray(info.byteOffset+i*info.stride,info.byteOffset+i*info.stride+info.elementBytes));
+      }
+      visibleGeometryHashes.push(hash.digest('hex'));
+    }
+  }
+  const visibleGeometrySha256=crypto.createHash('sha256').update(JSON.stringify(visibleGeometryHashes.sort())).digest('hex');
+  const textureSlots=material=>[
+    ['baseColor',material.pbrMetallicRoughness?.baseColorTexture,'SRGB','RGBA'],
+    ['metallicRoughness',material.pbrMetallicRoughness?.metallicRoughnessTexture,'LINEAR','G_ROUGHNESS_B_METALLIC'],
+    ['normal',material.normalTexture,'LINEAR','TANGENT_XYZ'],['occlusion',material.occlusionTexture,'LINEAR','R'],['emissive',material.emissiveTexture,'SRGB','RGB']
+  ];
+  const materialRows=materials.map((material,index)=>{
+    const pbr=material.pbrMetallicRoughness||{},metallic=pbr.metallicFactor??1,roughness=pbr.roughnessFactor??1,baseColor=pbr.baseColorFactor??[1,1,1,1];
+    const unit=value=>Number.isFinite(value)&&value>=0&&value<=1;
+    if(!unit(metallic)||!unit(roughness)||!finiteVector(baseColor,4)||!baseColor.every(unit)||!['OPAQUE','MASK','BLEND'].includes(material.alphaMode??'OPAQUE'))issues.push('GLB_MATERIAL_FACTOR_INVALID');
+    const slots=textureSlots(material).filter(([,info])=>info!==undefined).map(([slot,info,colorSpace,channels])=>{
+      const texture=document.textures?.[info?.index],image=document.images?.[texture?.source];
+      const view=bufferViews[image?.bufferView],payload=view?bufferPayload(view.buffer):null;
+      const embedded=Boolean(image&&(typeof image.uri==='string'&&/^data:image\//.test(image.uri)||Number.isInteger(image.bufferView)&&view&&payload&&Number.isInteger(view.byteOffset??0)&&Number.isInteger(view.byteLength)&&view.byteLength>0&&(view.byteOffset??0)>=0&&(view.byteOffset??0)+view.byteLength<=payload.length));
+      const texCoord=info?.extensions?.KHR_texture_transform?.texCoord??info?.texCoord??0;
+      const users=(document.meshes||[]).flatMap(mesh=>mesh.primitives).filter(primitive=>primitive.material===index);
+      const uvValid=Number.isInteger(texCoord)&&texCoord>=0&&users.every(primitive=>accessorInfo(primitive.attributes['TEXCOORD_'+texCoord]).valid);
+      if(!Number.isInteger(info?.index)||!texture||!Number.isInteger(texture.source)||!embedded||!uvValid)issues.push('GLB_MATERIAL_TEXTURE_BINDING_INVALID');
+      return {slot,index:info?.index??null,image:texture?.source??null,texCoord,colorSpace,channels,embedded,uvValid};
+    });
+    return {index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(pbr.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture),metallicFactor:metallic,roughnessFactor:roughness,baseColorFactor:baseColor,alphaMode:material.alphaMode??'OPAQUE',doubleSided:material.doubleSided===true,textureSlots:slots};
+  });
   const meshNodeBindings=nodes.map((node,nodeIndex)=>({
     nodeIndex,
     meshIndex:Number.isInteger(node?.mesh)&&node.mesh>=0&&node.mesh<(document.meshes||[]).length?node.mesh:null,
@@ -304,7 +531,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(skinRows.some(row=>row.jointCount<=0||row.invalidJointCount>0||row.inverseBindMatricesValid!==true))issues.push('GLB_SKIN_BINDING_INVALID');
   if(skins.length&&!meshSkinBindings.length)issues.push('GLB_MESH_SKIN_NODE_BINDING_REQUIRED');
   if(primitives.some(row=>row.skinBound&&row.jointWeightDataValid!==true))issues.push('GLB_SKIN_WEIGHT_DATA_INVALID');
-  if(primitives.some(row=>row.actorBindingValid!==true))issues.push('GLB_ACTOR_MESH_BINDING_INVALID');
+  if(skins.length&&primitives.some(row=>row.actorBindingValid!==true))issues.push('GLB_ACTOR_MESH_BINDING_INVALID');
   const animations=(document.animations||[]).map((animation,index)=>{
     const channels=Array.isArray(animation.channels)?animation.channels:[];
     const samplers=Array.isArray(animation.samplers)?animation.samplers:[];
@@ -346,7 +573,10 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   const inventory={
     meshCount:(document.meshes||[]).length,nodeCount:nodes.length,jointNodeCount:jointNodeIndices.size,meshNodeBindingCount:meshNodeBindings.length,meshSkinBindingCount:meshSkinBindings.length,rigidJointAttachedMeshNodeCount:meshNodeBindings.filter(row=>row.skinIndex===null&&row.rigidJointAttached===true).length,binaryChunkBytes:Number(binaryChunk?.length||0),primitives,
     nodes:nodes.map((node,index)=>({index,name:clean(node?.name)||`node-${index}`,joint:jointNodeIndices.has(index)})),
-    materials:materials.map((material,index)=>({index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(material.pbrMetallicRoughness?.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture)})),
+    materials:materialRows,geometry:geometryRows,spatial,surfaceDistribution,visibleGeometrySha256,
+    resourceMetrics:{deploymentBytes:bytes.length,encodedBufferBytes:buffers.reduce((n,row)=>n+Number(row.byteLength||0),0),
+      meshResources:(document.meshes||[]).length,textureResources:(document.images||[]).length,visiblePrimitiveInstances:boundedPrimitiveCount,
+      runtimeMemoryBytes:null,loadingTimeMs:null,drawCalls:null,measurementScope:'STATIC_FILE_INVENTORY_RUNTIME_MEASUREMENTS_PENDING'},
     skins:skinRows,
     animations,
     invalidAnimationCount:animations.filter(row=>row.valid!==true).length,
@@ -360,7 +590,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
   if(!primitives.some(row=>row.morphTargetCount))requiredAuthoring.push('AUTHOR_MORPHS_WHEN_SHAPE_CUSTOMIZATION_NEEDED');
   if(!inventory.skins.length)requiredAuthoring.push('RIG_WHEN_ARTICULATION_NEEDED');
   if(!inventory.animations.length||inventory.jointAnimationChannelCount<=0)requiredAuthoring.push('AUTHOR_JOINT_ACTIONS_WHEN_MOTION_NEEDED');
-  return freeze({status:issues.length?'AUTHORING_REQUIRED':'INSPECTED_RECONSTRUCTION_INPUT',path:relative,sourceHash,bytes:bytes.length,issues,inventory,requiredAuthoring,
+  return freeze({status:issues.length?'AUTHORING_REQUIRED':'INSPECTED_RECONSTRUCTION_INPUT',path:relative,sourceHash,bytes:bytes.length,issues:unique(issues),inventory,requiredAuthoring,
     workflow:['PRESERVE_HASHED_ORIGINAL','INSPECT_SILHOUETTE_TOPOLOGY_AND_MATERIAL_BOUNDARIES','REUSE_BASE_AND_REBUILD_WEAK_FORMS','SCULPT_SECONDARY_ANATOMY_OR_CONSTRUCTION','CONFORM_PARTS_CLOTHING_AND_JOINTS','UV_BAKE_MATERIAL_SEPARATION_AND_CAUSAL_WEAR','RIG_MORPHS_EXPRESSIONS_AND_ACTION_POLISH','LOD_PLATFORM_VARIANTS_AND_REFERENCE_COMPARISON'],
     topologyAndDeformationStillNeedRenderedInspection:true,customizationBindingsMustUseActualNames:true,sourceMutationPerformed:false,generatedAsset:false,runtimeVerified:false});
 }
@@ -1759,7 +1989,7 @@ const inferUniverseFamily=row=>{
 };
 
 function inferRequestedConcept(task={},request=''){
-  const explicit=Array.isArray(task?.concept?.styles)?task.concept.styles:Array.isArray(task?.conceptStyles)?task.conceptStyles:[];
+  const explicit=Array.isArray(task?.concept?.styles)?task.concept.styles:Array.isArray(task?.conceptStyles)?task.conceptStyles:clean(task.styleFamily||task.style)?[clean(task.styleFamily||task.style)]:[];
   const rows=explicit.map((row,index)=>typeof row==='string'?{family:clean(row),weight:1}:{family:clean(row?.family||row?.styleFamily||row?.id),weight:Number(row?.weight??row?.ratio??1)||1}).filter(row=>row.family);
   if(rows.length)return{
     styles:rows,
@@ -1940,11 +2170,17 @@ const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','we
 function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
-  if(!['roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  if(!['web','roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
   const gameSlug=(clean(task?.gameId)||'game').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'game';
   const typeSlug=typeName.replace(/[^a-z0-9._-]+/g,'-')||'asset';
   const outputRoot=`assets/generated/${targetName}/${gameSlug}/${typeSlug}`;
   const family=nativeDccFamilyForTypes([typeName]);
+  const concept=inferRequestedConcept(task,clean(task.goal||task.request));
+  const expression=resolveInternalAssetStyleExpressionProfile({styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}});
+  const requestedSubject=clean(task.assetSubject||task.assetAuthoring?.subject).toLowerCase();
+  const subject=['rock','crate'].includes(requestedSubject)?requestedSubject
+    :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
+  const genre=clean(task.genre||task.genreFamily||task.concept?.genre).slice(0,80);
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
@@ -1955,8 +2191,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     editableSource:'assets/native-authoring/build-game-visual.py',
     types:[typeName],
     targetPlatforms:[targetName],
-    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName],
-    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/preview.png`,`${outputRoot}/evidence.json`],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`],
     evidenceJson:`${outputRoot}/evidence.json`,
     preview:`${outputRoot}/preview.png`,
     runMode:'VERIFY_ONLY'
@@ -2544,7 +2780,7 @@ function buildComposableBaseMaterialLoadout({companyRegistry={},studioUniversePl
   });
 }
 function web3dActorRequested(task={},type=''){
-  if(!isCrossPlatform3dActorType(type))return false;
+  if(!isCrossPlatform3dActorType(type)&&!GENERIC_NATIVE_DCC_TYPES.includes(clean(type).toLowerCase()))return false;
   if(task?.masterGlbRequired===true||task?.final3dActor===true||task?.web3dActor===true||task?.assetAuthoring?.masterGlbRequired===true)return true;
   const dimension=clean(
     task?.minimumFinalGameplayDimension
@@ -2557,7 +2793,7 @@ function web3dActorRequested(task={},type=''){
     clean(task?.goal),clean(task?.request),
     ...(Array.isArray(task?.acceptanceCriteria)?task.acceptanceCriteria.map(clean):[])
   ].filter(Boolean).join(' ');
-  const actor='(?:character|player|hero|npc|companion|ally|villager|merchant|quest[ _-]?giver|guard|worker|enemy|monster|creature|elite|boss|캐릭터|플레이어|주인공|npc|동료|주민|상인|퀘스트|경비|적|몬스터|크리처|엘리트|보스)';
+  const actor='(?:character|player|hero|npc|companion|ally|villager|merchant|quest[ _-]?giver|guard|worker|enemy|monster|creature|elite|boss|prop|environment|background|weapon|item|rock|소품|배경|환경|무기|바위|캐릭터|플레이어|주인공|npc|동료|주민|상인|퀘스트|경비|적|몬스터|크리처|엘리트|보스)';
   const threeD='(?:\\b3d\\b|3차원|glb|gltf|skinned|rigged|armature|webgl|three\\.?js)';
   return new RegExp(threeD+'[\\s\\S]{0,120}'+actor+'|'+actor+'[\\s\\S]{0,120}'+threeD,'i').test(raw);
 }
@@ -2568,7 +2804,7 @@ function directAuthoringFor(target='',type='',task={}){
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
   if(resolvedTarget==='web'){
     if(audio) return freezeList(['web-audio-sfx']);
-    if(isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type)){
+    if(dcc&&web3dActorRequested(task,type)){
       return freezeList([...NATIVE_DCC_AUTHORING,'procedural-javascript-visuals','motion-engine-animation']);
     }
     if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
@@ -4638,4 +4874,3 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
   console.log(JSON.stringify({registrySync:result.registrySync,plan:result},null,2));
 }
-

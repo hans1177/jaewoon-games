@@ -1,5 +1,9 @@
+// 파일명: tools/vibe2-external-gameplay-distill.mjs
+// 역할: APK 관찰의 범위를 보존하고 기존 웹·Roblox 실습 학습 슬롯에 실행 과제를 공급한다.
+// 임포트
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function parseArgs(argv) {
   const out = {};
@@ -115,6 +119,38 @@ const lessons = {
   }
 };
 
+// 실습 계획: 외부 텍스트·코드를 실행하지 않고 기존 내부 교재 ID만 연결한다.
+export function buildExternalGameplayPractice(game={},row={},sourceRevision='') {
+  const trace=(Array.isArray(row.inputTrace)?row.inputTrace:[]).slice(0,8).filter(event=>event.inputDelivered===true&&event.foreground===true&&/^[a-f0-9]{64}$/i.test(event.screenshotSha256||''));
+  const observed=Boolean(row.installPass&&row.launchPass&&row.foregroundPass&&row.processAliveAfter&&row.noCrash&&trace.length&&/^[a-f0-9]{64}$/i.test(row.beforeScreenshotSha256||'')&&/^[a-f0-9]{64}$/i.test(row.afterScreenshotSha256||''));
+  const designAxes={
+    genre:{id:String(game.category||''),subgenre:'',rules:[]},
+    style:{id:'',visual:[],motion:[]},
+    concept:{id:'',world:[],mood:[]},sourceRevision
+  };
+  return {
+    version:1,authority:'PRACTICE_ONLY',practiceOnly:true,runtimePromotionAllowed:false,
+    state:observed?'READY_FOR_INDEPENDENT_PRACTICE':'REOBSERVE_REQUIRED',
+    sourceRevision,gameId:String(game.id||''),designAxes,
+    classificationAuthority:'CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED',
+    observation:{scope:row.observationScope||'APP_LAUNCH_AND_BOUNDED_INPUT_TRACE',
+      beforeScreenshotSha256:row.beforeScreenshotSha256||null,afterScreenshotSha256:row.afterScreenshotSha256||null,
+      measuredInputCount:trace.length,visualChange:row.visualChange===true,
+      inputSequences:trace.map(event=>event.sequence)},
+    comparison:{scope:'INPUT_RESPONSE_CONTRACT_ONLY',sourceGameplayEquivalenceVerified:false,
+      physicalParametersVerified:false,motionCurvesVerified:false,menuSemanticsVerified:false,
+      reobserveUntilMeasured:['GAMEPLAY_RULES','VISUAL_STYLE','WORLD_CONCEPT','PHYSICS_PARAMETERS','ANIMATION_CURVES','MENU_SEMANTICS']},
+    // 저장·권한 규칙은 엔진의 독립 설계 과제다. APK에서 관찰됐다고 승격하지 않는다.
+    exercises:observed?[
+      {platform:'web',drillId:'web-input-save',domains:['MOBILE_INPUT','SAVE','WEB_RUNTIME'],basis:'INDEPENDENT_ENGINEERING_PROPOSAL'},
+      {platform:'roblox',drillId:'authority',domains:['STATE_MACHINE','PROGRESSION'],basis:'INDEPENDENT_ENGINEERING_PROPOSAL'}
+    ]:[],
+    retryPolicy:'NEXT_CANONICAL_PRACTICE_GENERATION',
+    knowledgePath:'EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION',
+    modelWeightsChanged:false
+  };
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.manifest || !args.results || !args.out) throw new Error('usage: --manifest <file> --results <summary.json> --out <dir>');
@@ -132,9 +168,14 @@ function main() {
     const lesson = lessons[game.category];
     if (!lesson) continue;
     const runId = String(process.env.GITHUB_RUN_ID || 'local');
+    const sourceRevision=`external-playtest-${runId}-${game.id}`;
+    const implementationPractice=buildExternalGameplayPractice(game,row,sourceRevision);
     const sample = {
-      version: 1,
+      version: 2,
       taskType: 'unity',
+      implementationTargets:['web','roblox'],
+      designAxes:implementationPractice.designAxes,
+      implementationPractice,
       practiceOnly: true,
       runtimePromotionAllowed: false,
       authority: 'PRACTICE_ONLY',
@@ -142,10 +183,14 @@ function main() {
       synthetic: false,
       project: `external-commercial-${game.id}`,
       difficulty: 'production-reference',
-      instruction: `실제 상용 모바일 게임 ${game.title}의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.`,
-      input: `category=${game.category}; inputProfile=${game.inputProfile}; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=${row.visualChange ? 'OBSERVED' : 'NOT_CONFIRMED'}`,
-      output: lesson.output,
-      sourceRevision: `external-playtest-${runId}-${game.id}`,
+      instruction: `실제 상용 모바일 게임 ${game.title}의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.`,
+      input: `category=${game.category}; inputProfile=${game.inputProfile}; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=${row.visualChange ? 'OBSERVED' : 'NOT_CONFIRMED'}; deliveredInputs=${(row.inputTrace||[]).filter(event=>event.inputDelivered===true).length}/${(row.inputTrace||[]).length}; implementationVerified=NO`,
+      output: ['관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.',lesson.output.replace('관찰된 ', '이 장르의 ')].join('\n'),
+      observationScope:row.observationScope||'APP_LAUNCH_AND_SCREENSHOT_PAIR',
+      measuredInputCount:(row.inputTrace||[]).filter(event=>event.inputDelivered===true).length,
+      unmeasured:row.unmeasured||['PHYSICS_PARAMETERS','ANIMATION_CURVES','ACTION_HIT_TIMING','MENU_SEMANTICS','INTERNAL_IMPLEMENTATION'],
+      implementationInferenceVerified:false,
+      sourceRevision,
       provenance: {
         sourceKind: 'commercial-runtime-reference',
         observationKind: 'BLACK_BOX_RUNTIME_ONLY',
@@ -156,6 +201,7 @@ function main() {
         playtestRunId: runId,
         beforeScreenshotSha256: row.beforeScreenshotSha256 || '',
         afterScreenshotSha256: row.afterScreenshotSha256 || '',
+        inputTrace:(row.inputTrace||[]).slice(0,8).map(event=>({sequence:event.sequence,input:event.input,inputDelivered:event.inputDelivered===true,screenshotSha256:event.screenshotSha256,foreground:event.foreground===true})),
         codeExtracted: false,
         binaryRedistributed: false,
         evidenceRetention: row.evidenceRetention || 'EPHEMERAL_ARTIFACT_ONLY'
@@ -181,4 +227,6 @@ function main() {
   console.log('COMMERCIAL_RUNTIME_REFERENCE_RUNTIME_PROMOTION=NO');
 }
 
-try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+}

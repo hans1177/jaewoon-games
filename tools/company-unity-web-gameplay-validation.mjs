@@ -20,6 +20,16 @@ if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
 if(!fs.existsSync(path.join(source,'index.html')))throw new Error('UNITY_WEB_INDEX_MISSING');
+const manifestPath=path.join(source,'unity-web-deploy-manifest.json');
+const deployManifest=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):{};
+const approvedEnvironment=deployManifest.approvedEnvironment||{required:false};
+if(approvedEnvironment.required===true&&(
+  deployManifest.gameId!==gameId||
+  !/^[a-f0-9]{64}$/.test(String(approvedEnvironment.layoutSha256||''))||
+  !Number.isInteger(approvedEnvironment.terrainCells)||approvedEnvironment.terrainCells<=0||
+  !Number.isInteger(approvedEnvironment.buildingCount)||approvedEnvironment.buildingCount<0||
+  !Number.isInteger(approvedEnvironment.vegetationCount)||approvedEnvironment.vegetationCount<0
+))throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_DEPLOY_BINDING_INVALID');
 
 const requiredFiles={
   wasm:false,data:false,framework:false,loader:false,
@@ -76,12 +86,16 @@ const pageErrors=[];
 const failedRequests=[];
 
 try{
-  const {chromium}=await import('playwright');
+  // 실제 Android Chrome 사용자 에이전트를 사용해 Unity WebGL의 모바일 템플릿 경로를 실행한다.
+  const {chromium,devices}=await import('playwright');
+  const androidChrome=devices['Pixel 5'];
+  if(!androidChrome?.userAgent?.includes('Android'))throw new Error('UNITY_WEB_QA_ANDROID_PROFILE_MISSING');
+  const mobileViewport={width:390,height:844};
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const page=await browser.newPage({...androidChrome,viewport:mobileViewport});
   page.on('console',msg=>{
     const text=String(msg.text()||'');
-    if(text.includes('JAEWOON_UNITY_WEB_QA '))markers.push(text);
+    if(text.includes('JAEWOON_UNITY_WEB_QA ')||text.includes('UNITY_WEB_WORLD='))markers.push(text);
     if(msg.type()==='error')consoleErrors.push(text);
   });
   page.on('pageerror',error=>pageErrors.push(String(error?.message||error)));
@@ -99,8 +113,35 @@ try{
   await page.waitForTimeout(4000);
   const bootMilliseconds=Date.now()-bootStartedAt;
 
+  // 바탕화면용 960px 템플릿이 모바일 화면에 축소되어도 터치 로그만으로 통과시키지 않는다.
+  const mobileLayout=await page.evaluate(()=>({
+    userAgent:navigator.userAgent,
+    innerWidth:window.innerWidth,
+    documentWidth:document.documentElement.scrollWidth,
+    visualWidth:window.visualViewport?.width??window.innerWidth,
+    viewportMeta:document.querySelector('meta[name="viewport"]')?.getAttribute('content')||'',
+    unityContainerClass:document.querySelector('#unity-container')?.className||'',
+  }));
+  if(!mobileLayout.userAgent.includes('Android')||
+     Math.abs(mobileLayout.innerWidth-mobileViewport.width)>2||
+     mobileLayout.documentWidth>mobileViewport.width+2||
+     mobileLayout.visualWidth>mobileViewport.width+2){
+    throw new Error('UNITY_WEB_QA_ANDROID_VIEWPORT_MISMATCH:'+JSON.stringify({mobileViewport,mobileLayout}));
+  }
+
   const boot=()=>markers.some(x=>x.includes(' BOOT ')&&x.includes(`game=${gameId}`)&&x.includes('status=PASS'));
   if(!boot())throw new Error('UNITY_WEB_QA_BOOT_MARKER_MISSING');
+  const worldMeshMarker=markers.find(x=>x.includes('UNITY_WEB_WORLD=VISUAL_MESH_AUTHORED')&&x.includes(`game=${gameId}`))||null;
+  if(approvedEnvironment.required===true){
+    if(markers.some(x=>x.includes('UNITY_WEB_WORLD=REPAIR_REQUIRED')))throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_NATIVE_AUTHORING_FAILED');
+    if(!worldMeshMarker)throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_MESH_NOT_OBSERVED');
+    for(const [field,tag] of [['terrainCells','terrain'],['buildingCount','buildings'],['vegetationCount','vegetation']]){
+      if(!worldMeshMarker.includes(`${tag}=${approvedEnvironment[field]}`))
+        throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_GEOMETRY_COUNT_MISMATCH:'+tag);
+    }
+    if(!markers.some(x=>x.includes(`game=${gameId}`)&&x.includes('domain=environment status=PASS')))
+      throw new Error('UNITY_WEB_APPROVED_ENVIRONMENT_VISUAL_RUNTIME_NOT_READY');
+  }
   const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
   const initialState=parseState(initialStateLine);
 
@@ -116,6 +157,9 @@ try{
   }
   const touchX=canvasBox.x+(canvasBox.width*mobileTargetX);
   const touchY=canvasBox.y+(canvasBox.height*mobileTargetY);
+  if(touchX<0||touchX>=mobileViewport.width||touchY<0||touchY>=mobileViewport.height){
+    throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN:'+JSON.stringify({touchX,touchY,mobileViewport,canvasBox}));
+  }
 
   let gameplayStartInput='KEYBOARD_DIGIT1';
   await canvas.focus();
@@ -149,6 +193,40 @@ try{
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
   if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
 
+  // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
+  const framePacing=await page.evaluate(()=>new Promise(resolve=>{
+    const intervals=[];
+    let first=null,previous=null,finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;
+      const sorted=intervals.slice().sort((a,b)=>a-b);
+      const percentile=p=>sorted.length?sorted[Math.min(sorted.length-1,Math.ceil(sorted.length*p)-1)]:null;
+      const medianFrameMs=percentile(0.5),p95FrameMs=percentile(0.95);
+      resolve({
+        frameCount:sorted.length,
+        medianFrameMs,
+        p95FrameMs,
+        approximateMedianFps:medianFrameMs?Math.round(10000/medianFrameMs)/10:null
+      });
+    };
+    const timer=setTimeout(finish,3500);
+    const onFrame=now=>{
+      if(finished)return;
+      if(first===null)first=now;
+      if(previous!==null&&now>previous)intervals.push(now-previous);
+      previous=now;
+      if(now-first>=2400){clearTimeout(timer);finish();}
+      else requestAnimationFrame(onFrame);
+    };
+    requestAnimationFrame(onFrame);
+  }));
+  // 모바일 소프트웨어 브라우저의 프레임 성능 실패는 끝까지 관찰하고
+  // 실제 이동·공격·보상·저장 증거를 보존한다. 상위 QA PASS와 별개인 테스트 공개 근거다.
+  const framePacingFailed=framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
+    framePacing.medianFrameMs>38||framePacing.p95FrameMs>100;
+  const performanceBlocked=framePacingFailed||bootMilliseconds>90000;
+
   await canvas.focus();
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(2200);
@@ -179,7 +257,7 @@ try{
 
   if(screenshot){
     fs.mkdirSync(path.dirname(screenshot),{recursive:true});
-    await page.screenshot({path:screenshot,fullPage:true});
+    await page.screenshot({path:screenshot,fullPage:false});
   }
 
   const evidence={
@@ -187,7 +265,15 @@ try{
     engine:'UNITY_WEB',
     gameId,
     sourcePath:source,
-    pass:true,
+    approvedEnvironment:{
+      required:approvedEnvironment.required===true,
+      layoutSha256:approvedEnvironment.required===true?approvedEnvironment.layoutSha256:null,
+      runtimeObserved:approvedEnvironment.required===true?Boolean(worldMeshMarker):false,
+      geometryMarker:approvedEnvironment.required===true?worldMeshMarker:null,
+      collisionPhysicsVerified:false,
+    },
+    pass:!performanceBlocked,
+    playableBrowserTest:true,
     boot:{pass:true},
     input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved,canvasFocusedBeforeKeyboard:true,gameplayStartInput},
     gameplay:{
@@ -207,13 +293,18 @@ try{
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
     mobile:{
       pass:mobileInputObserved,
-      viewport:{width:390,height:844},
+      viewport:mobileViewport,
+      layout:mobileLayout,
       touch:true,
       target:{role:'action',x:mobileTargetX,y:mobileTargetY,canvasBox,touchPoint:{x:touchX,y:touchY}},
       actualBrowserTouchDispatched:true,
       realGameTouchHandlerObserved:mobileInputObserved,
     },
-    performance:{pass:bootMilliseconds<=90000&&fatal.length===0,bootMilliseconds,fatalRuntimeErrorCount:fatal.length},
+    performance:{pass:bootMilliseconds<=90000&&fatal.length===0&&framePacing.medianFrameMs<=38&&framePacing.p95FrameMs<=100&&framePacing.frameCount>=25,
+      reason:framePacingFailed?'UNITY_WEB_QA_FRAME_PACING_FAILED':
+        bootMilliseconds>90000?'UNITY_WEB_QA_BOOT_SLOW_FAILED':null,
+      bootMilliseconds,fatalRuntimeErrorCount:fatal.length,framePacing,
+      measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION',realDeviceVerified:false},
     noCriticalRuntimeError:fatal.length===0,
     markers,
     generatedAt:new Date().toISOString(),
@@ -222,8 +313,13 @@ try{
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(evidence,null,2)+'\n');
   }
-  console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
   await browser.close();
+  if(performanceBlocked){
+    console.error('UNITY_WEB_GAMEPLAY_QA=REPAIR_REQUIRED:PERFORMANCE');
+    if(framePacingFailed)throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:'+JSON.stringify(framePacing));
+    throw new Error('UNITY_WEB_QA_BOOT_SLOW_FAILED:'+bootMilliseconds);
+  }
+  console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
 } finally {
   await new Promise(resolve=>server.close(resolve));
 }

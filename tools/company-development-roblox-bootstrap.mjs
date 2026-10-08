@@ -8,6 +8,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
+import {recombinationDesignAxes} from './vibe3-transformative-recombination.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -271,6 +272,8 @@ export function robloxBuildProfileFromBaseline(baseline={}){
     multiplayerRequired,coopImplementationRequired:coopRequired,competitiveImplementationRequired:competitiveRequired,
     networkingRequired:multiplayerRequired,multiplayerQaRequired:multiplayerRequired,minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
     displayLabelKo:clean(profile.displayLabelKo)||[genre,subgenre,playMode].filter(Boolean).join(' · '),
+    designAxes:recombinationDesignAxes({profile,design:baseline}),
+    styleLock:content.styleLock||content.styleBible||profile.styleLock||null,
   });
 }
 function genreCoreKind(profile){
@@ -1025,76 +1028,92 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
   return output;
 }
 
-function foundationCharacterSource(name,spawn){
-  return `-- native-foundation-spawn-grounding-v2
+export function foundationCharacterSource(name,spawn){
+  return `-- native-foundation-spawn-grounding-v3
 ${spawn}.Anchored = true
-${spawn}.CanCollide = true
-local nativeFoundationGroundingParams = RaycastParams.new()
-nativeFoundationGroundingParams.FilterType = Enum.RaycastFilterType.Exclude
-nativeFoundationGroundingParams.FilterDescendantsInstances = {${spawn}}
-nativeFoundationGroundingParams.RespectCanCollide = true
-nativeFoundationGroundingParams.IgnoreWater = true
-local nativeFoundationGroundingHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), nativeFoundationGroundingParams)
-if nativeFoundationGroundingHit and nativeFoundationGroundingHit.Normal.Y >= 0.55 then
-  ${spawn}.Position = Vector3.new(${spawn}.Position.X, nativeFoundationGroundingHit.Position.Y + ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
-  ${spawn}:SetAttribute("FoundationSpawnGrounded", true)
-else
-  ${spawn}:SetAttribute("FoundationSpawnGrounded", false)
-end
+-- This managed SpawnLocation is a marker, never its own physical support proof.
+${spawn}.CanCollide = false
 
 local function ${name}(character)
+  local player = Players:GetPlayerFromCharacter(character)
+  local generation = (character:GetAttribute("FoundationPlacementGeneration") or 0) + 1
+  character:SetAttribute("FoundationPlacementGeneration", generation)
+  local function current()
+    return character.Parent ~= nil and player ~= nil and player.Character == character
+      and character:GetAttribute("FoundationPlacementGeneration") == generation
+  end
   local humanoid = character:WaitForChild("Humanoid", 10)
   local rootPart = character:WaitForChild("HumanoidRootPart", 10)
+  if not current() then return end
   if not humanoid or not rootPart then character:SetAttribute("FoundationFailure", "CHARACTER_FOUNDATION_FAILURE"); return end
   character:SetAttribute("GROUND_CONTACT", false)
   character:SetAttribute("MOVEMENT_CONFIRMED", false)
-  rootPart.Anchored = false
-  humanoid.PlatformStand = false
-  for _, bodyPart in ipairs(character:GetDescendants()) do
-    if bodyPart:IsA("BasePart") and not bodyPart:FindFirstAncestorOfClass("Tool") then bodyPart.Anchored = false end
+  local leg = humanoid.RigType == Enum.HumanoidRigType.R6 and character:FindFirstChild("Left Leg") or nil
+  local clearance = humanoid.HipHeight + rootPart.Size.Y * 0.5 + (leg and leg.Size.Y or 0)
+  if clearance ~= clearance or clearance <= 0 or clearance == math.huge or (humanoid.RigType == Enum.HumanoidRigType.R6 and not leg) then
+    character:SetAttribute("FoundationFailure", "CHARACTER_CLEARANCE_INVALID"); return
   end
   local params = RaycastParams.new()
-  params.ExcludeInstances = {character, ${spawn}}
+  local excluded = {character, ${spawn}}
+  local walkable = {}
+  for _, object in ipairs(workspace:GetDescendants()) do
+    if object:IsA("SpawnLocation") or object:GetAttribute("SpawnMarkerOnly") == true then table.insert(excluded, object)
+    elseif object:IsA("BasePart") and object.Anchored and object.CanCollide and object:GetAttribute("WalkableGround") == true then table.insert(walkable, object) end
+  end
+  for _, other in ipairs(Players:GetPlayers()) do if other.Character then table.insert(excluded, other.Character) end end
+  params.ExcludeInstances = excluded
+  if #walkable > 0 then params.IncludeInstances = walkable end
   params.RespectCanCollide = true
   params.IgnoreWater = true
   params.CollisionGroup = rootPart.CollisionGroup
-  local leg = humanoid.RigType == Enum.HumanoidRigType.R6 and character:FindFirstChild("Left Leg") or nil
-  local clearance = humanoid.HipHeight + rootPart.Size.Y * 0.5 + (leg and leg.Size.Y or 0)
-  local groundHit = workspace:Raycast(rootPart.Position + Vector3.new(0, 4, 0), Vector3.new(0, -512, 0), params)
-  if not groundHit or groundHit.Normal.Y < 0.55 then
-    groundHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
+  local origin = ${spawn}.Position - Vector3.new(0, ${spawn}.Size.Y * 0.5, 0) + Vector3.new(0, 2, 0)
+  local groundHit = workspace:Raycast(origin, Vector3.new(0, -66, 0), params)
+  if not groundHit or groundHit.Normal.Y < 0.55 or not groundHit.Instance:IsA("BasePart") or not groundHit.Instance.Anchored or not groundHit.Instance.CanCollide then
+    ${spawn}:SetAttribute("FoundationSpawnGrounded", false)
+    character:SetAttribute("FoundationFailure", "SPAWN_GROUND_MISSING"); return
   end
-  if not groundHit or groundHit.Normal.Y < 0.55 then
-    character:SetAttribute("FoundationFailure", "SPAWN_GROUND_MISSING")
-    return
+  if not current() then return end
+  local target = groundHit.Position + Vector3.new(0, clearance + 0.05, 0)
+  local overlap = OverlapParams.new()
+  overlap.ExcludeInstances = excluded
+  overlap.RespectCanCollide = true
+  overlap.CollisionGroup = rootPart.CollisionGroup
+  local blockers = workspace:GetPartBoundsInBox(CFrame.new(target), Vector3.new(math.max(rootPart.Size.X, 1.5), math.max(clearance * 2 - 0.4, rootPart.Size.Y), math.max(rootPart.Size.Z, 1.5)), overlap)
+  for _, part in ipairs(blockers) do
+    if part ~= groundHit.Instance and part.CanCollide then character:SetAttribute("FoundationFailure", "SPAWN_CLEARANCE_BLOCKED"); return end
   end
-  -- The existing spawn rests on verified world geometry; it cannot be its own ground proof.
-  local spawnHit = workspace:Raycast(${spawn}.Position + Vector3.new(0, 64, 0), Vector3.new(0, -576, 0), params)
-  if spawnHit and spawnHit.Normal.Y >= 0.55 then
-    ${spawn}.Position = Vector3.new(${spawn}.Position.X, spawnHit.Position.Y + ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
-  end
-  local target = groundHit.Position + Vector3.new(0, clearance + 0.1, 0)
+  ${spawn}.Position = Vector3.new(${spawn}.Position.X, groundHit.Position.Y + ${spawn}.Size.Y * 0.5 + 0.05, ${spawn}.Position.Z)
+  ${spawn}:SetAttribute("FoundationSpawnGrounded", true)
+  rootPart.Anchored = false
+  humanoid.PlatformStand = false
   character:PivotTo(character:GetPivot() + (target - rootPart.Position))
   rootPart.AssemblyLinearVelocity = Vector3.zero
   rootPart.AssemblyAngularVelocity = Vector3.zero
   local movementOrigin = rootPart.Position
-  humanoid.Running:Connect(function(speed)
-    if not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
+  local moving = humanoid.Running:Connect(function(speed)
+    if not current() or not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
     local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
     if speed > 0.1 and displacement.Magnitude > 0.5 then character:SetAttribute("MOVEMENT_CONFIRMED", true) end
   end)
   local deadline = os.clock() + 5
+  local contacts = 0
   repeat
-    if not character.Parent or not rootPart.Parent then return end
+    if not current() or not rootPart.Parent or humanoid.Health <= 0 then moving:Disconnect(); return end
     local contact = workspace:Raycast(rootPart.Position, Vector3.new(0, -(clearance + 0.75), 0), params)
-    if contact and contact.Normal.Y >= 0.55 and humanoid.FloorMaterial ~= Enum.Material.Air and math.abs(rootPart.AssemblyLinearVelocity.Y) < 3 then
+    local errorY = contact and math.abs((rootPart.Position.Y - contact.Position.Y) - clearance) or math.huge
+    if contact and contact.Normal.Y >= 0.55 and contact.Instance.Anchored and errorY <= 0.35 and not rootPart.Anchored
+      and not humanoid.PlatformStand and humanoid.FloorMaterial ~= Enum.Material.Air and math.abs(rootPart.AssemblyLinearVelocity.Y) < 2 then
+      contacts += 1
+    else contacts = 0 end
+    if contacts >= 3 then
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
-      character:SetAttribute("NativeFoundationGroundingVersion", 2)
+      character:SetAttribute("NativeFoundationGroundingVersion", 3)
       return
     end
     task.wait(0.1)
   until os.clock() >= deadline
+  moving:Disconnect()
   character:SetAttribute("FoundationFailure", "GROUND_CONTACT_FAILURE")
 end`;
 }
@@ -1195,7 +1214,7 @@ game:BindToClose(function() end)
     }
 
     // Upgrade the managed native-foundation owner in place while preserving custom gameplay outside it.
-    afterServer=afterServer.replace(/-- native-foundation-spawn-grounding-v2\n[\s\S]*?(?=local function bind(?:Native)?FoundationCharacter)/g,'');
+    afterServer=afterServer.replace(/-- native-foundation-spawn-grounding-v[23]\n[\s\S]*?(?=local function bind(?:Native)?FoundationCharacter)/g,'');
     afterServer=afterServer.replace(/local function (bind(?:Native)?FoundationCharacter)\(character\)\n[\s\S]*?\nend(?=\s*local function bind(?:Native)?FoundationPlayer)/g,(body,name)=>{
       const legacy=`local function ${name}(character)
   local humanoid = character:WaitForChild("Humanoid")
@@ -1209,7 +1228,7 @@ end`;
       const normalized=body.replace(/\s+/g,' ').trim();
       const legacyManaged=normalized===legacy.replace(/\s+/g,' ').trim();
       const currentManaged=/NativeFoundationGroundingVersion/.test(body)
-        &&/local spawnHit = workspace:Raycast/.test(body)
+        &&(/local spawnHit = workspace:Raycast/.test(body)||/FoundationPlacementGeneration/.test(body))
         &&/SPAWN_GROUND_MISSING/.test(body);
       if(!legacyManaged&&!currentManaged)return body;
       return foundationCharacterSource(name,name==='bindNativeFoundationCharacter'?'nativeFoundationSpawn':'foundationSpawn');
@@ -1674,4 +1693,3 @@ async function main(){
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});
 }
-

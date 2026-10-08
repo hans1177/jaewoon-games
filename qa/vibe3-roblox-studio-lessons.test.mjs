@@ -59,6 +59,14 @@ test('official Luau compiles every teaching module and executes pure boundary/re
   }
   const definitions=ROBLOX_STUDIO_LESSONS.map(row=>`L["${row.id}"]=(function()\n${row.exampleCode}\nend)()`).join('\n');
   const harness=`local L = {}\n${definitions}\n`+String.raw`
+local pivot=L.IMPORTED_MESH_GROUND_PIVOT(-2,2,10,.5,2,"R6",2)
+assert(pivot.visualRootY==14 and pivot.characterRootY==13.5)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,1,0,2,2,"R15").clearance==3)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,1,0,0,2,"R6",nil)==nil)
+assert(L.IMPORTED_MESH_GROUND_PIVOT(0,0,0,0,2,"R15")==nil)
+local material=L.GLTF_PBR_CHANNEL_TRANSFER(.8,.2,.5,1)
+assert(math.abs(material.unity.smoothness-.6)<.00001 and material.roblox.metalness==.2)
+assert(L.GLTF_PBR_CHANNEL_TRANSFER(0/0,0,1,1)==nil)
 local decode = L.REMOTE_PAYLOAD_SCHEMA
 assert(decode({action="Attack",sequence=1}).sequence == 1)
 for _, value in ipairs({math.huge,-math.huge,0/0,-1,1.5,"1"}) do
@@ -134,6 +142,11 @@ assert(pos == splitPos and velocity == splitVelocity and pos == 16)
 local menus=L.UI_NAVIGATION_STACK("Home",{Home=true,Stats=true,Details=true},2)
 assert(menus.back()=="Home" and menus.open("Stats") and not menus.open("Details"))
 assert(menus.current()=="Stats" and menus.back()=="Home" and not menus.open("Missing"))
+assert(menus.rememberFocus("start"));assert(menus.open("Stats"));menus.setModal(true)
+assert(not menus.open("Home") and menus.back()=="Stats")
+assert(menus.back()=="Home")
+assert(menus.restoreFocus(function(id) return id=="start" end,"fallback")=="start")
+assert(menus.restoreFocus(function(id) return id=="fallback" end,"fallback")=="fallback")
 assert(L.RESPONSIVE_UI_GRID(100,10,8,120,4).mode=="Compact")
 local grid=L.RESPONSIVE_UI_GRID(500,10,10,120,4)
 assert(grid.columns==3 and grid.cardWidth>=120 and grid.cardWidth*3+20<=480.00001)

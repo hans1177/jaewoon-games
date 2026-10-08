@@ -18,6 +18,9 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
+      - 'roblox-games/survival/**'
+      - 'tools/company-unity-web-floor-bootstrap.mjs'
+      - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
@@ -39,6 +42,9 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
+      - 'roblox-games/survival/**'
+      - 'tools/company-unity-web-floor-bootstrap.mjs'
+      - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
       - 'qa/company-minimum-design-contract.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
@@ -155,6 +161,22 @@ jobs:
           done
           echo "COZY_ISLAND_LUAU_COMPILE_PASS=${#files[@]}"
 
+      - name: Compile Survival Luau source with official compiler
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find roblox-games/survival -type f -name '*.luau' -print0 | sort -z)
+          [ "${#files[@]}" -gt 0 ]
+          for file in "${files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
+
+      - name: Verify Survival DataStore failure recovery in Luau runtime
+        run: |
+          set -euo pipefail
+          test -x /tmp/luau-bin/luau
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival' qa/roblox-game-repair-safety.test.mjs
+
       - name: Check Vibe3 syntax
         run: |
           node --input-type=module --check < assets/vibe-v3-engine.js
@@ -195,6 +217,11 @@ jobs:
 
       - name: Run direct native router tests
         run: node --test qa/company-selected-platform-router.test.mjs
+
+      - name: Validate Unity Web and Android shared interactive world contract
+        run: |
+          node --check tools/company-unity-web-floor-bootstrap.mjs
+          node --test qa/company-unity-web-floor-bootstrap.test.mjs
 
       - name: Check trainer syntax
         run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py

@@ -1,6 +1,9 @@
+// 파일명: tools/company-unity-web-floor-bootstrap.mjs
+// 역할: 기존 Unity 프로젝트 생성·검증된 학습 바인딩·승인 환경 3D 정적 시각화의 표준 제작 진입점.
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(raw=>{
   const i=raw.indexOf('=');
@@ -102,6 +105,75 @@ const verifiedLearningApplication=Object.freeze({
   runtimeQaAndLearningReturnRequired:true
 });
 
+// 월드 설계가 승인한 신규 3D 공간만 기존 유니티 소스로 생성한다. 기존 게임은 기본 렌더링을 그대로 유지한다.
+const approvedWorldRequest=design?.spatialLayout?.proceduralWorld;
+const hasApprovedWorld=approvedWorldRequest?.approvedDesign===true;
+if(hasApprovedWorld&&String(design.spatialLayout?.dimension||approvedWorldRequest.dimension).toUpperCase()!=='3D')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_DIMENSION_REQUIRES_NATIVE_3D_RENDERER');
+const worldProposal=hasApprovedWorld
+  ?createVibeProceduralWorldLayout({...approvedWorldRequest,dimension:'3D',approvedDesign:true,mobile:approvedWorldRequest.mobile!==false})
+  :null;
+if(worldProposal&&worldProposal.status!=='STATIC_LAYOUT_PROPOSED')
+  throw new Error('UNITY_WEB_PROCEDURAL_WORLD_PLACEMENT_REPAIR_REQUIRED:'+worldProposal.issues.join('|'));
+// 개별 게임의 확인된 설계·기존 빌드업 지시가 모두 없는 한 런타임 채집/드롭을 만들지 않는다.
+const worldInteractionRules=(()=>{
+  if(!hasApprovedWorld||approvedWorldRequest?.runtimeInteractionsApproved!==true)return null;
+  if(!buildUpDirectiveConsumed||buildUpDirective?.designContextMode!=='APPROVED_OR_MINIMUM_DESIGN'||
+     design?.verifiedRuntimeInteractionContract!==true)
+    throw new Error('UNITY_WEB_INTERACTION_VERIFIED_GAME_DESIGN_REQUIRED');
+  if(!/^SINGLE(?:_|$)/i.test(multiplayerMode))
+    throw new Error('UNITY_WEB_INTERACTION_CLIENT_AUTHORITY_FORBIDDEN_FOR_MULTIPLAYER');
+  const rules=approvedWorldRequest.interactionRules;
+  if(!rules||typeof rules!=='object'||Array.isArray(rules)||!Object.keys(rules).length)
+    throw new Error('UNITY_WEB_INTERACTION_EXPLICIT_RULES_REQUIRED');
+  const result={};
+  for(const [kind,rule]of Object.entries(rules)){
+    if(!['GATHER','MINE'].includes(kind)||!rule||typeof rule!=='object')
+      throw new Error('UNITY_WEB_INTERACTION_TYPE_UNSUPPORTED');
+    const ints=['maxHealth','hitDamage','minDrop','maxDrop','respawnSeconds'].every(key=>Number.isSafeInteger(rule[key]));
+    if(!ints||rule.maxHealth<1||rule.maxHealth>100000||rule.hitDamage<1||rule.hitDamage>rule.maxHealth||
+       rule.minDrop<1||rule.maxDrop<rule.minDrop||rule.maxDrop>100||rule.respawnSeconds<0||rule.respawnSeconds>86400||
+       !/^[a-zA-Z0-9_-]{1,60}$/.test(String(rule.rewardItemId||'')))
+      throw new Error('UNITY_WEB_INTERACTION_RULE_INVALID:'+kind);
+    result[kind]=rule;
+  }
+  return result;
+})();
+const worldData=worldProposal?{
+  mobile:approvedWorldRequest.mobile!==false,
+  version:1,seed:worldProposal.seed,width:worldProposal.size.width,height:worldProposal.size.height,
+  cellSize:worldProposal.size.cellSize,maxSlopeDegrees:approvedWorldRequest.maxSlopeDegrees??35,layoutStatus:worldProposal.status,
+  heights:worldProposal.terrain.map(tile=>+(tile.elevation*8).toFixed(4)),
+  types:worldProposal.terrain.map(tile=>({WATER:0,RIDGE:1,FOREST:2,DRY:3,PLAIN:4})[tile.biome]??4),
+  roads:worldProposal.roadCells.map(tile=>tile.z*worldProposal.size.width+tile.x),
+  buildings:worldProposal.buildings.map(item=>({
+    id:item.stableObjectId,roadX:item.roadAccess.x,roadZ:item.roadAccess.z,
+    x:item.footprint[0].x,z:item.footprint[0].z,elevation:+item.foundation.levelY.toFixed(4),
+    door:({NORTH:0,SOUTH:1,EAST:2,WEST:3})[item.doorFacing]??0,
+    roof:item.modules.some(module=>module.endsWith('PITCHED_ROOF'))?1:0,
+    material:({STONE:1,METAL_GLASS:2,CLAY:3,TIMBER:0})[item.construction.primaryMaterial]??0,
+    size:2
+  })),
+  vegetation:worldProposal.vegetation.map(item=>({
+    id:item.stableObjectId,
+    x:item.x,z:item.z,elevation:+item.elevationY.toFixed(4),scale:item.scale,
+    kind:({ROCK:0,SCRUB:1,PINE:2,BROADLEAF:3,BUSH:4})[item.kind]??4,
+    maxHealth:worldInteractionRules?.[item.interactionBinding.kind]?.maxHealth||0,
+    hitDamage:worldInteractionRules?.[item.interactionBinding.kind]?.hitDamage||0,
+    rewardItemId:worldInteractionRules?.[item.interactionBinding.kind]?.rewardItemId||'',
+    minDrop:worldInteractionRules?.[item.interactionBinding.kind]?.minDrop||0,
+    maxDrop:worldInteractionRules?.[item.interactionBinding.kind]?.maxDrop||0,
+    respawnSeconds:worldInteractionRules?.[item.interactionBinding.kind]?.respawnSeconds||0
+  })),
+  landmark:worldProposal.landmark?.cell||null,
+  gameplayCollisionAuthority:false,saveMutation:false,engineRuntimeVerified:false
+}:null;
+const worldDataText=worldData?JSON.stringify(worldData)+'\n':null;
+const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).digest('hex'):null;
+// 새로운 월드 생성은 빈 프로젝트에서만 진행한다. 운영 중인 Unity 소스를 재생성기로 지우지 않는다.
+if(hasApprovedWorld&&fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')))
+  throw new Error('UNITY_WEB_APPROVED_WORLD_EXISTING_SOURCE_MUST_BE_EDITED_NOT_REBOOTSTRAPPED');
+
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
   'Assets/Scripts','Assets/Editor','Assets/Art','Assets/Prefabs','Assets/Materials','Assets/Animations',
@@ -110,6 +182,10 @@ for(const dir of [
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
 fs.writeFileSync(path.join(output,'Assets/link.xml'),'<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>\n');
+if(worldDataText){
+  fs.mkdirSync(path.join(output,'Assets/Resources'),{recursive:true});
+  fs.writeFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),worldDataText);
+}
 fs.writeFileSync(path.join(output,'Assets/verified-external-learning.json'),JSON.stringify({
   version:1,
   gameId,
@@ -134,7 +210,10 @@ for(const [dir,value] of Object.entries({
   fs.writeFileSync(path.join(output,'Assets',dir,'unity-web-floor-domain.json'),JSON.stringify({gameId,...value},null,2)+'\n');
 }
 
-const runtime=`using UnityEngine;
+const nativeWorldRuntime=worldData?"\n    // 승인된 게임별 월드 데이터로 Unity WebGL 안에 지형·도로·건축·수목을 렌더한다.\n    // 표면 표현만 생성하며 기존 콜라이더·전투·저장·보상에는 접근하지 않는다.\n    [System.Serializable] private sealed class Lot\n    {\n        public string id;\n        public int x,z,size,roof,material,door,roadX,roadZ;\n        public float elevation;\n    }\n    [System.Serializable] private sealed class Plant\n    {\n        public string id;\n        public int x,z,kind;\n        public int maxHealth,hitDamage,minDrop,maxDrop,respawnSeconds;\n        public string rewardItemId;\n        public float elevation,scale;\n    }\n    [System.Serializable] private sealed class Layout\n    {\n        public int version,width,height;\n        public bool mobile;\n        public float cellSize,maxSlopeDegrees;\n        public float[] heights;\n        public int[] types,roads;\n        public Lot[] buildings;\n        public Plant[] vegetation;\n        public bool gameplayCollisionAuthority,saveMutation,engineRuntimeVerified;\n    }\n    // 월드 오브젝트 상태는 게임 기존 SavePrefix 키를 변경하지 않고 별도 버전 데이터로 저장한다.\n    [System.Serializable] private sealed class SavedNode\n    {\n        public string id;\n        public int health;\n        public long respawnAtUtc;\n    }\n    [System.Serializable] private sealed class SavedReward\n    {\n        public string id;\n        public int quantity;\n    }\n    [System.Serializable] private sealed class SavedWorld\n    {\n        public int version = 1;\n        public List<SavedNode> nodes = new List<SavedNode>();\n        public List<SavedReward> rewards = new List<SavedReward>();\n    }\n    private readonly Dictionary<string,VibeHarvestableObject> worldHarvestNodes =\n        new Dictionary<string,VibeHarvestableObject>(System.StringComparer.Ordinal);\n    private readonly Dictionary<string,int> worldRewardInventory =\n        new Dictionary<string,int>(System.StringComparer.Ordinal);\n    private readonly List<Rigidbody> worldDebrisPool = new List<Rigidbody>();\n    private readonly List<float> worldDebrisExpiry = new List<float>();\n    private int worldDebrisCursor;\n    private float lastWorldHarvestAt = -2f;\n    private float worldTouchHorizontal;\n    private float worldTouchVertical;\n    private string worldInteractionFeedback = \"\";\n    private static long WorldUtcNow => System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();\n\n    private void PrepareWorldDebrisPool(Transform parent)\n    {\n        // 고정 크기 풀. 채집 도중 Instantiate 하지 않고, 파편은 게임 충돌 판정에 관여하지 않는다.\n        for(int i=0;i<8;i++)\n        {\n            var fragment=GameObject.CreatePrimitive(PrimitiveType.Cube);\n            fragment.name=\"WorldDebris_\"+i;\n            fragment.transform.SetParent(parent,false);\n            fragment.transform.localScale=Vector3.one*0.19f;\n            fragment.layer=2;\n            var collider=fragment.GetComponent<Collider>();\n            if(collider!=null)collider.enabled=false;\n            var renderer=fragment.GetComponent<MeshRenderer>();\n            if(renderer!=null)renderer.sharedMaterial=WorldMaterial(new Color(.56f,.43f,.27f));\n            var body=fragment.AddComponent<Rigidbody>();\n            body.mass=.08f;body.useGravity=true;body.detectCollisions=false;\n            fragment.SetActive(false);\n            worldDebrisPool.Add(body);\n            worldDebrisExpiry.Add(0f);\n        }\n    }\n\n    private void ShowWorldImpact(Vector3 source,bool destroyed)\n    {\n        int count=destroyed?6:2;\n        for(int n=0;n<count && worldDebrisPool.Count>0;n++)\n        {\n            worldDebrisCursor=(worldDebrisCursor+1)%worldDebrisPool.Count;\n            int slot=worldDebrisCursor;\n            var body=worldDebrisPool[slot];\n            body.gameObject.SetActive(true);\n            body.isKinematic=true;\n            body.position=source+Vector3.up*.65f;\n            body.rotation=Quaternion.identity;\n            body.isKinematic=false;\n            body.linearVelocity=Vector3.zero;\n            body.angularVelocity=Vector3.zero;\n            body.AddExplosionForce(2.5f,source+Vector3.down*.6f,3f,.5f,ForceMode.Impulse);\n            worldDebrisExpiry[slot]=Time.unscaledTime+.75f;\n        }\n    }\n\n    public bool CanHarvest(VibeHarvestableObject target,Transform actor)\n    {\n        if(!started||target==null||actor==null||player==null||actor!=player.transform||\n           target.Health<=0||!target.gameObject.activeInHierarchy)return false;\n        Vector3 offset=actor.position-target.transform.position;\n        if(offset.sqrMagnitude>16f)return false;\n        return Time.unscaledTime-lastWorldHarvestAt>=.14f;\n    }\n\n    public void HitHarvest(VibeHarvestableObject target)\n    {\n        if(!CanHarvest(target,player==null?null:player.transform))return;\n        lastWorldHarvestAt=Time.unscaledTime;\n        target.Health=Mathf.Max(0,target.Health-target.HitDamage);\n        bool destroyed=target.Health==0;\n        ShowWorldImpact(target.transform.position,destroyed);\n        if(destroyed)\n        {\n            int quantity=UnityEngine.Random.Range(target.MinDrop,target.MaxDrop+1);\n            worldRewardInventory.TryGetValue(target.RewardItemId,out int previous);\n            worldRewardInventory[target.RewardItemId]=Mathf.Min(1000000,previous+quantity);\n            target.RespawnAtUtc=target.RespawnSeconds>0?WorldUtcNow+target.RespawnSeconds:0;\n            target.gameObject.SetActive(false);\n            worldInteractionFeedback=target.RewardItemId+\" +\"+quantity;\n        }\n        else worldInteractionFeedback=target.InteractionPrompt+\" (\"+target.Health+\"/\"+target.MaxHealth+\")\";\n        SaveWorldObjects();\n        Debug.Log(\"UNITY_WEB_WORLD_INTERACTION game=\"+GameId+\" id=\"+target.StableId+\n                  \" state=\"+(destroyed?\"DESTROYED\":\"HIT\")+\" item=\"+target.RewardItemId+\n                  \" input=VALIDATED_RANGE save=SEPARATE_VERSIONED native_qa=REQUIRED\");\n    }\n\n    private VibeHarvestableObject NearestHarvestable()\n    {\n        if(player==null||!started)return null;\n        VibeHarvestableObject nearest=null;\n        float best=16f;\n        foreach(var node in worldHarvestNodes.Values)\n        {\n            if(node==null||node.Health<=0||!node.gameObject.activeInHierarchy)continue;\n            float distance=(player.transform.position-node.transform.position).sqrMagnitude;\n            if(distance<best){best=distance;nearest=node;}\n        }\n        return nearest;\n    }\n\n    private void UpdateWorldInteractions()\n    {\n        if(worldHarvestNodes.Count==0)return;\n        bool recovered=false;\n        long now=WorldUtcNow;\n        foreach(var node in worldHarvestNodes.Values)\n        {\n            if(node!=null&&node.Health==0&&node.RespawnAtUtc>0&&now>=node.RespawnAtUtc)\n            {\n                node.Health=node.MaxHealth;\n                node.RespawnAtUtc=0;\n                node.gameObject.SetActive(true);\n                recovered=true;\n            }\n        }\n        if(recovered)SaveWorldObjects();\n        for(int i=0;i<worldDebrisPool.Count;i++)\n        {\n            if(worldDebrisPool[i].gameObject.activeSelf&&Time.unscaledTime>=worldDebrisExpiry[i])\n            {\n                worldDebrisPool[i].isKinematic=true;\n                worldDebrisPool[i].gameObject.SetActive(false);\n            }\n        }\n        if(!started||player==null)return;\n        float dx=worldTouchHorizontal,dz=worldTouchVertical;\n        if(Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow))dx-=1f;\n        if(Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow))dx+=1f;\n        if(Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))dz+=1f;\n        if(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow))dz-=1f;\n        var direction=Vector3.ClampMagnitude(new Vector3(dx,0,dz),1f);\n        player.transform.position+=direction*(3.5f*Time.deltaTime);\n        Camera camera=Camera.main;\n        if(camera!=null)camera.transform.position=player.transform.position+new Vector3(2f,6f,-9f);\n        if(Input.GetKeyDown(KeyCode.E))\n        {\n            var nearest=NearestHarvestable();\n            if(nearest!=null)nearest.OnInteract(player.transform);\n        }\n    }\n\n    private void DrawWorldInteractionControls(float w,float h)\n    {\n        if(worldHarvestNodes.Count==0)return;\n        worldTouchHorizontal=0;worldTouchVertical=0;\n        if(GUI.RepeatButton(new Rect(w*.04f,h*.83f,w*.07f,h*.1f),\"←\"))worldTouchHorizontal-=1f;\n        if(GUI.RepeatButton(new Rect(w*.11f,h*.83f,w*.07f,h*.1f),\"→\"))worldTouchHorizontal+=1f;\n        if(GUI.RepeatButton(new Rect(w*.18f,h*.83f,w*.07f,h*.1f),\"↑\"))worldTouchVertical+=1f;\n        if(GUI.RepeatButton(new Rect(w*.25f,h*.83f,w*.07f,h*.1f),\"↓\"))worldTouchVertical-=1f;\n        var nearest=NearestHarvestable();\n        if(nearest!=null&&GUI.Button(new Rect(w*.60f,h*.83f,w*.36f,h*.1f),nearest.InteractionPrompt))\n            nearest.OnInteract(player.transform);\n        if(!string.IsNullOrEmpty(worldInteractionFeedback))\n            GUI.Label(new Rect(w*.35f,h*.92f,w*.60f,h*.06f),worldInteractionFeedback);\n    }\n\n    private void SaveWorldObjects()\n    {\n        if(worldHarvestNodes.Count==0)return;\n        var snapshot=new SavedWorld();\n        foreach(var node in worldHarvestNodes.Values)\n            snapshot.nodes.Add(new SavedNode{id=node.StableId,health=node.Health,respawnAtUtc=node.RespawnAtUtc});\n        foreach(var item in worldRewardInventory)\n            snapshot.rewards.Add(new SavedReward{id=item.Key,quantity=item.Value});\n        PlayerPrefs.SetString(SavePrefix+\"world-objects-v1\",JsonUtility.ToJson(snapshot));\n        PlayerPrefs.Save();\n    }\n\n    private void RestoreWorldObjects()\n    {\n        if(worldHarvestNodes.Count==0)return;\n        string raw=PlayerPrefs.GetString(SavePrefix+\"world-objects-v1\",\"\");\n        if(string.IsNullOrEmpty(raw))return;\n        try\n        {\n            var snapshot=JsonUtility.FromJson<SavedWorld>(raw);\n            if(snapshot==null||snapshot.version!=1)throw new System.InvalidOperationException(\"WORLD_SAVE_VERSION_INVALID\");\n            if(snapshot.nodes!=null)\n            {\n                foreach(var row in snapshot.nodes)\n                {\n                    if(row==null||string.IsNullOrEmpty(row.id)||!worldHarvestNodes.TryGetValue(row.id,out var node))continue;\n                    node.Health=Mathf.Clamp(row.health,0,node.MaxHealth);\n                    node.RespawnAtUtc=Mathf.Max(0f,(float)row.respawnAtUtc)>0?System.Math.Max(0L,row.respawnAtUtc):0;\n                    if(node.Health==0&&node.RespawnAtUtc>0&&node.RespawnAtUtc<=WorldUtcNow)\n                    {\n                        node.Health=node.MaxHealth;node.RespawnAtUtc=0;\n                    }\n                    if(node.Health==0)node.gameObject.SetActive(false);\n                }\n            }\n            if(snapshot.rewards!=null)\n            {\n                foreach(var row in snapshot.rewards)\n                {\n                    if(row==null||string.IsNullOrEmpty(row.id)||row.quantity<0)continue;\n                    bool approved=false;\n                    foreach(var node in worldHarvestNodes.Values)\n                        if(node.RewardItemId==row.id){approved=true;break;}\n                    if(approved)worldRewardInventory[row.id]=Mathf.Min(1000000,row.quantity);\n                }\n            }\n        }\n        catch(System.Exception e)\n        {\n            Debug.LogWarning(\"UNITY_WEB_WORLD_INTERACTION=REPAIR_REQUIRED reason=SAVE_PARSE type=\"+e.GetType().Name);\n        }\n    }\n\n    private static Material WorldMaterial(Color color)\n    {\n        Shader shader=Shader.Find(\"Unlit/Color\");\n        if(shader==null)shader=Shader.Find(\"Standard\");\n        if(shader==null)throw new System.InvalidOperationException(\"WORLD_SHADER_UNAVAILABLE\");\n        var material=new Material(shader);material.color=color;material.enableInstancing=true;\n        return material;\n    }\n    private static void WorldMesh(Transform parent,string name,Mesh mesh,Material[] materials)\n    {\n        var child=new GameObject(name);child.transform.SetParent(parent,false);\n        child.AddComponent<MeshFilter>().sharedMesh=mesh;\n        child.AddComponent<MeshRenderer>().sharedMaterials=materials;\n    }\n    private static void WorldBox(List<CombineInstance> group,Mesh cube,Vector3 position,Vector3 scale)\n    {\n        group.Add(new CombineInstance{mesh=cube,transform=Matrix4x4.TRS(position,Quaternion.identity,scale)});\n    }\n    private bool BuildApprovedWorldVisuals()\n    {\n        TextAsset asset=Resources.Load<TextAsset>(\"vibe-world-layout\");\n        if(asset==null){Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=RESOURCE_MISSING\");return false;}\n        Layout data;\n        try{data=JsonUtility.FromJson<Layout>(asset.text);}\n        catch(System.Exception e){Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=INVALID_JSON type=\"+e.GetType().Name);return false;}\n        if(data==null||data.version!=1||data.width<12||data.height<12||data.width>72||data.height>72||\n           data.cellSize<=0f||data.maxSlopeDegrees<=0f||data.maxSlopeDegrees>=90f||data.heights==null||data.heights.Length!=data.width*data.height||\n           data.types==null||data.types.Length!=data.heights.Length||data.roads==null||\n           data.roads.Length>data.heights.Length||data.buildings==null||data.buildings.Length>56||\n           data.vegetation==null||data.vegetation.Length>160||\n           data.gameplayCollisionAuthority||data.saveMutation||data.engineRuntimeVerified||\n           (data.mobile&&(data.width>48||data.height>48||data.buildings.Length>22||data.vegetation.Length>64)))\n        {Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=LAYOUT_LIMIT_OR_AUTHORITY\");return false;}\n        GameObject root=null;\n        try\n        {\n            int width=data.width,height=data.height;\n            float cell=data.cellSize,x0=(width-1)*cell*.5f,z0=(height-1)*cell*.5f;\n            float center=data.heights[(height/2)*width+width/2];\n            root=new GameObject(\"ApprovedEnvironmentVisuals\");root.transform.SetParent(transform,false);\n            var vertices=new Vector3[data.heights.Length];\n            var groups=new List<int>[5];\n            for(int k=0;k<5;k++)groups[k]=new List<int>();\n            for(int z=0;z<height;z++)for(int x=0;x<width;x++)\n            {\n                int i=z*width+x;\n                vertices[i]=new Vector3(x*cell-x0,(data.heights[i]-center)*.18f-.08f,z*cell-z0);\n            }\n            for(int z=0;z<height-1;z++)for(int x=0;x<width-1;x++)\n            {\n                int i=z*width+x,type=Mathf.Clamp(data.types[i],0,4);\n                groups[type].Add(i);groups[type].Add(i+width);groups[type].Add(i+1);\n                groups[type].Add(i+1);groups[type].Add(i+width);groups[type].Add(i+width+1);\n            }\n            var surface=new Mesh();surface.vertices=vertices;surface.subMeshCount=5;\n            for(int k=0;k<5;k++)surface.SetTriangles(groups[k],k);\n            surface.RecalculateNormals();\n            WorldMesh(root.transform,\"Terrain\",surface,new[]{\n                WorldMaterial(new Color(.15f,.32f,.58f)),WorldMaterial(new Color(.49f,.48f,.45f)),\n                WorldMaterial(new Color(.14f,.42f,.20f)),WorldMaterial(new Color(.68f,.55f,.33f)),\n                WorldMaterial(new Color(.34f,.48f,.26f))\n            });\n            var roadV=new List<Vector3>();var roadT=new List<int>();\n            foreach(int i in data.roads)\n            {\n                if(i<0||i>=vertices.Length)throw new System.InvalidOperationException(\"WORLD_ROAD_OUT_OF_BOUNDS\");\n                Vector3 p=vertices[i];p.y+=.055f;float d=cell*.46f;int n=roadV.Count;\n                roadV.Add(p+new Vector3(-d,0,-d));roadV.Add(p+new Vector3(-d,0,d));\n                roadV.Add(p+new Vector3(d,0,-d));roadV.Add(p+new Vector3(d,0,d));\n                roadT.Add(n);roadT.Add(n+1);roadT.Add(n+2);\n                roadT.Add(n+2);roadT.Add(n+1);roadT.Add(n+3);\n            }\n            if(roadV.Count>0)\n            {\n                var roads=new Mesh();roads.vertices=roadV.ToArray();roads.triangles=roadT.ToArray();\n                WorldMesh(root.transform,\"Roads\",roads,new[]{WorldMaterial(new Color(.35f,.33f,.29f))});\n            }\n            var primitive=GameObject.CreatePrimitive(PrimitiveType.Cube);\n            Mesh cube=primitive.GetComponent<MeshFilter>().sharedMesh;\n            primitive.GetComponent<Collider>().enabled=false;\n            primitive.SetActive(false);Destroy(primitive);\n            var models=new List<CombineInstance>[9];\n            for(int k=0;k<9;k++)models[k]=new List<CombineInstance>();\n            var worldIds=new HashSet<string>(System.StringComparer.Ordinal);\n            Material harvestWood=null,harvestRock=null;\n            var roadIds=new HashSet<int>(data.roads);\n            if(roadIds.Count!=data.roads.Length)throw new System.InvalidOperationException(\"WORLD_ROAD_CELL_DUPLICATED\");\n            for(int i=0;i<data.heights.Length;i++)\n                if(float.IsNaN(data.heights[i])||float.IsInfinity(data.heights[i])||data.types[i]<0||data.types[i]>4)\n                    throw new System.InvalidOperationException(\"WORLD_TERRAIN_INVALID\");\n            foreach(Lot lot in data.buildings)\n            {\n                if(lot.x<0||lot.z<0||lot.x>=width-1||lot.z>=height-1||lot.size!=2)\n                    throw new System.InvalidOperationException(\"WORLD_BUILDING_OUT_OF_BOUNDS\");\n                if(string.IsNullOrWhiteSpace(lot.id))throw new System.InvalidOperationException(\"WORLD_OBJECT_ID_REQUIRED\");\n                if(!worldIds.Add(lot.id))throw new System.InvalidOperationException(\"WORLD_OBJECT_ID_DUPLICATED\");\n                if(lot.door<0||lot.door>3||lot.roof<0||lot.roof>1||lot.material<0||lot.material>3||\n                   float.IsNaN(lot.elevation)||float.IsInfinity(lot.elevation))\n                    throw new System.InvalidOperationException(\"WORLD_BUILDING_DATA_INVALID\");\n                if(lot.roadX<0||lot.roadX>=width||lot.roadZ<0||lot.roadZ>=height)\n                    throw new System.InvalidOperationException(\"WORLD_DOOR_ROAD_DISCONNECTED\");\n                bool connected=lot.door==0?lot.roadZ==lot.z-1&&lot.roadX>=lot.x&&lot.roadX<lot.x+lot.size:\n                    lot.door==1?lot.roadZ==lot.z+lot.size&&lot.roadX>=lot.x&&lot.roadX<lot.x+lot.size:\n                    lot.door==2?lot.roadX==lot.x+lot.size&&lot.roadZ>=lot.z&&lot.roadZ<lot.z+lot.size:\n                    lot.roadX==lot.x-1&&lot.roadZ>=lot.z&&lot.roadZ<lot.z+lot.size;\n                int roadIndex=lot.roadZ*width+lot.roadX;\n                if(!connected||!roadIds.Contains(roadIndex))\n                    throw new System.InvalidOperationException(\"WORLD_DOOR_ROAD_DISCONNECTED\");\n                float maxRise=Mathf.Tan(data.maxSlopeDegrees*Mathf.Deg2Rad)*cell;\n                if(Mathf.Abs(lot.elevation-data.heights[roadIndex])>maxRise+0.0001f)\n                    throw new System.InvalidOperationException(\"WORLD_DOOR_ROAD_STEEP\");\n                float span=cell*lot.size*.85f;\n                float px=(lot.x+lot.size*.5f)*cell-x0,pz=(lot.z+lot.size*.5f)*cell-z0;\n                float y=(lot.elevation-center)*.18f-.08f;\n                var anchor=new GameObject(\"WorldObject_\"+lot.id);\n                anchor.transform.SetParent(root.transform,false);\n                anchor.transform.localPosition=new Vector3(px,y,pz);\n                WorldBox(models[Mathf.Clamp(lot.material,0,3)],cube,new Vector3(px,y+.8f,pz),new Vector3(span,1.6f,span));\n                WorldBox(models[4],cube,new Vector3(px,y+1.76f,pz),new Vector3(span+.4f,lot.roof == 1 ? 0.64f : 0.33f,span+.4f));\n                if(lot.roof==1)\n                    WorldBox(models[4],cube,new Vector3(px,y+2.19f,pz),new Vector3(span*.65f,.25f,span+.32f));\n                Vector3 door=new Vector3(px,y+.5f,pz);\n                if(lot.door==0)door.z-=span*.5f;\n                else if(lot.door==1)door.z+=span*.5f;\n                else if(lot.door==2)door.x+=span*.5f;\n                else door.x-=span*.5f;\n                WorldBox(models[5],cube,door,lot.door>=2?new Vector3(.12f,1f,.7f):new Vector3(.7f,1f,.12f));\n            }\n            foreach(Plant plant in data.vegetation)\n            {\n                if(plant.x<0||plant.z<0||plant.x>=width||plant.z>=height||\n                   plant.scale<=0||plant.scale>3)throw new System.InvalidOperationException(\"WORLD_PLANT_OUT_OF_BOUNDS\");\n                if(string.IsNullOrWhiteSpace(plant.id))throw new System.InvalidOperationException(\"WORLD_OBJECT_ID_REQUIRED\");\n                if(!worldIds.Add(plant.id))throw new System.InvalidOperationException(\"WORLD_OBJECT_ID_DUPLICATED\");\n                if(plant.kind<0||plant.kind>4||float.IsNaN(plant.elevation)||float.IsInfinity(plant.elevation)||\n                   float.IsNaN(plant.scale)||float.IsInfinity(plant.scale))\n                    throw new System.InvalidOperationException(\"WORLD_PLANT_DATA_INVALID\");\n                float x=plant.x*cell-x0,z=plant.z*cell-z0,y=(plant.elevation-center)*.18f-.08f;\n                var anchor=new GameObject(\"WorldObject_\"+plant.id);\n                anchor.transform.SetParent(root.transform,false);\n                anchor.transform.localPosition=new Vector3(x,y,z);\n                if(plant.maxHealth>0)\n                {\n                    if(plant.hitDamage<=0||plant.hitDamage>plant.maxHealth||plant.minDrop<1||\n                       plant.maxDrop<plant.minDrop||plant.maxDrop>100||plant.respawnSeconds<0||\n                       plant.respawnSeconds>86400||string.IsNullOrWhiteSpace(plant.rewardItemId))\n                        throw new System.InvalidOperationException(\"WORLD_HARVEST_RULE_INVALID\");\n                    var localParts=new List<CombineInstance>();\n                    if(plant.kind==0)\n                        WorldBox(localParts,cube,new Vector3(0,.35f*plant.scale,0),new Vector3(1.05f,.7f,.9f)*plant.scale);\n                    else\n                    {\n                        WorldBox(localParts,cube,new Vector3(0,.5f*plant.scale,0),new Vector3(.27f,1f,.27f)*plant.scale);\n                        WorldBox(localParts,cube,new Vector3(0,1.4f*plant.scale,0),\n                            new Vector3(plant.kind==2?1.1f:1.7f,plant.kind==2?2.05f:1.36f,1.3f)*plant.scale);\n                    }\n                    var individual=new Mesh();individual.CombineMeshes(localParts.ToArray(),true,true);\n                    if(plant.kind==0&&harvestRock==null)harvestRock=WorldMaterial(new Color(.43f,.43f,.43f));\n                    if(plant.kind!=0&&harvestWood==null)harvestWood=WorldMaterial(new Color(.26f,.39f,.19f));\n                    WorldMesh(anchor.transform,\"HarvestVisual\",individual,new[]{plant.kind==0?harvestRock:harvestWood});\n                    var harvest=anchor.AddComponent<VibeHarvestableObject>();\n                    harvest.Owner=this;harvest.StableId=plant.id;harvest.RewardItemId=plant.rewardItemId;\n                    harvest.MaxHealth=plant.maxHealth;harvest.Health=plant.maxHealth;harvest.HitDamage=plant.hitDamage;\n                    harvest.MinDrop=plant.minDrop;harvest.MaxDrop=plant.maxDrop;harvest.RespawnSeconds=plant.respawnSeconds;\n                    worldHarvestNodes.Add(plant.id,harvest);\n                }\n                else if(plant.kind==0)\n                    WorldBox(models[8],cube,new Vector3(x,y+.35f*plant.scale,z),new Vector3(1.05f,.7f,.9f)*plant.scale);\n                else\n                {\n                    WorldBox(models[6],cube,new Vector3(x,y+.5f*plant.scale,z),new Vector3(.27f,1f,.27f)*plant.scale);\n                    WorldBox(models[7],cube,new Vector3(x,y+1.4f*plant.scale,z),\n                        new Vector3(plant.kind==2?1.1f:1.7f,plant.kind==2?2.05f:1.36f,1.3f)*plant.scale);\n                }\n            }\n            Color[] shades={\n                new Color(.57f,.37f,.24f), // 목재 벽\n                new Color(.58f,.59f,.61f), // 석조 벽\n                new Color(.65f,.76f,.80f), // 금속·유리 스타일\n                new Color(.70f,.53f,.34f), // 진흙·점토 벽\n                new Color(.30f,.24f,.28f), // 지붕\n                new Color(.42f,.27f,.16f), // 문\n                new Color(.28f,.19f,.12f), // 나무 기둥\n                new Color(.13f,.36f,.18f), // 잎\n                new Color(.43f,.43f,.43f)  // 암석\n            };\n            for(int k=0;k<9;k++)if(models[k].Count>0)\n            {\n                var baked=new Mesh();baked.indexFormat=UnityEngine.Rendering.IndexFormat.UInt32;\n                baked.CombineMeshes(models[k].ToArray(),true,true);\n                WorldMesh(root.transform,\"ModularVisuals_\"+k,baked,new[]{WorldMaterial(shades[k])});\n            }\n            if(worldHarvestNodes.Count>0)PrepareWorldDebrisPool(root.transform);\n            var plane=GameObject.Find(\"Environment_\"+Mode);\n            if(plane!=null)\n            {\n                var visible=plane.GetComponent<MeshRenderer>();\n                if(visible!=null)visible.enabled=false;\n                // 기존 Plane Collider를 보존해 높이 메시가 게임 판정을 바꾸지 않게 한다.\n            }\n            Debug.Log(\"UNITY_WEB_WORLD=VISUAL_MESH_AUTHORED game=\"+GameId+\n                \" terrain=\"+data.heights.Length+\" buildings=\"+data.buildings.Length+\n                \" vegetation=\"+data.vegetation.Length+\" collider=UNCHANGED save=UNCHANGED native_qa=REQUIRED\");\n            return true;\n        }\n        catch(System.Exception error)\n        {\n            if(root!=null)Destroy(root);\n            Debug.LogError(\"UNITY_WEB_WORLD=REPAIR_REQUIRED reason=AUTHORING_FAILED type=\"+error.GetType().Name);\n            return false;\n        }\n    }\n":'';
+const runtime=`// 파일명: unity-games/${gameId}/Assets/Scripts/UnityWebFloorGame.cs
+using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class JaewoonNativeMotionActor : MonoBehaviour
 {
@@ -289,6 +368,25 @@ public sealed class JaewoonNativeMotionActor : MonoBehaviour
     }
 }
 
+${worldData?`// Unity WebGL과 Android가 동일한 Unity 소스의 로컬 싱글플레이 권한을 사용한다.
+public interface IInteractable
+{
+    string InteractionPrompt { get; }
+    bool CanInteract(Transform actor);
+    void OnInteract(Transform actor);
+}
+public sealed class VibeHarvestableObject : MonoBehaviour, IInteractable
+{
+    public UnityWebFloorGame Owner;
+    public string StableId, RewardItemId;
+    public int MaxHealth, Health, HitDamage, MinDrop, MaxDrop, RespawnSeconds;
+    public long RespawnAtUtc;
+    public string InteractionPrompt => "채집: " + RewardItemId;
+    public bool CanInteract(Transform actor) => Owner != null && Owner.CanHarvest(this, actor);
+    public void OnInteract(Transform actor) { if (CanInteract(actor)) Owner.HitHarvest(this); }
+}
+`:""}
+
 public sealed class UnityWebFloorGame : MonoBehaviour
 {
     private const string GameId = "${csharp(gameId)}";
@@ -307,17 +405,20 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private GameObject enemy;
     private GameObject equipment;
     private float motionClock;
-
+    private bool approvedEnvironmentReady = ${worldData?'false':'true'};
+${nativeWorldRuntime}
     private void Awake()
     {
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         LoadState();
         BuildWorld();
+        ${worldData?'RestoreWorldObjects();':''}
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=" +
+                   (approvedEnvironmentReady ? "PASS" : "REPAIR_REQUIRED reason=APPROVED_ENVIRONMENT_AUTHORING_FAILED"));
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
         int nativeMotionActors = BindNativeMotionActors();
         Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
@@ -385,6 +486,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         landmark.name = "Identity_" + Mode;
         landmark.transform.position = new Vector3(0f,1.5f,3f);
         landmark.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+        ${worldData?'approvedEnvironmentReady = BuildApprovedWorldVisuals();':''}
     }
 
     private void Update()
@@ -398,7 +500,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
             enemy.transform.position=p;
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
-        if (player != null && started)
+        if (player != null && started && ${worldData?'worldHarvestNodes.Count==0':'true'})
         {
             var p=player.transform.position;
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
@@ -408,7 +510,8 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1)) StartGameplay();
         if (Input.GetKeyDown(KeyCode.Space)) PerformAction(false);
         if (Input.GetKeyDown(KeyCode.R)) SafeReturn();
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) PerformAction(true);
+        // 터치는 OnGUI 버튼 하나로만 처리해 같은 탭의 중복 보상을 차단한다.
+        ${worldData?'UpdateWorldInteractions();':''}
     }
 
     private void StartGameplay()
@@ -458,7 +561,10 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         Debug.Log("JAEWOON_UNITY_WEB_QA STATE game=" + GameId + " progress=" + progress + " level=" + level + " resource=" + resource + " actions=" + actions);
     }
 
-    private void OnGUI()
+    ${worldData?`private void OnApplicationPause(bool paused) { if(paused)SaveWorldObjects(); }
+    private void OnApplicationFocus(bool focused) { if(!focused)SaveWorldObjects(); }
+    private void OnApplicationQuit() { SaveWorldObjects(); }
+    `:""}private void OnGUI()
     {
         float w=Screen.width;
         float h=Screen.height;
@@ -467,6 +573,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         GUI.Label(new Rect(w*0.08f,h*0.13f,w*0.84f,h*0.08f),Identity);
         GUI.Label(new Rect(w*0.08f,h*0.21f,w*0.84f,h*0.08f),"Core: "+CoreLoop);
         if(GUI.Button(new Rect(w*0.18f,h*0.64f,w*0.64f,h*0.16f),"ACTION / TOUCH")) PerformAction(true);
+        ${worldData?'DrawWorldInteractionControls(w,h);':''}
     }
 }
 `;
@@ -550,6 +657,12 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
   generatorFingerprint:fingerprint,
+  proceduralEnvironment:worldData?{
+    approval:'APPROVED_DESIGN_3D_ONLY',seed:worldData.seed,
+    status:'DATA_AUTHORED_RUNTIME_UNVERIFIED',layoutHash:worldDataSha256,
+    terrainCells:worldData.heights.length,buildingCount:worldData.buildings.length,vegetationCount:worldData.vegetation.length,
+    sameUnityProject:true,renderedInRuntime:false,visualMeshAuthoringSource:true,collisionAuthorityChanged:false,saveMeaningChanged:false
+  }:null,
   buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,
   buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
   buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,
@@ -588,3 +701,4 @@ console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedLearningApplic
 console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION=${verifiedLearningApplication.sourceRevision||'UNKNOWN'}`);
 console.log(`UNITY_WEB_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
 console.log('UNITY_WEB_BUILD_UP_COMPLETION_CLAIM=NO');
+console.log('UNITY_WEB_PROCEDURAL_ENVIRONMENT='+ (worldData?'DESIGN_APPROVED_DATA_ONLY_NATIVE_RUNTIME_UNVERIFIED':'NOT_REQUESTED'));

@@ -280,7 +280,207 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
     unseenArchitectureIsCreativeProposal:true,assetCountIsNotDetailQuality:true,sourceMutationPerformed:false,runtimeVerified:false
   });
 }
-export function createVibeAdaptiveWorldGenerationPlan({map={},region={},concept={},reference={},referenceImage=null,mobile=true,nodes=[],edges=[],genre='ADAPTIVE',learningEvents=[]}={}){const imageRequest=referenceImage?createVibeReferenceImageStudyRequest(referenceImage):null,bound=imageRequest&&referenceImage?.observation?bindVibeReferenceImageObservation({request:imageRequest,observation:referenceImage.observation,verifiedAgainstSource:referenceImage.verifiedAgainstSource===true}):null,referenceInput=bound?.valid?{sourceId:bound.sourceId,sourceType:bound.sourceType,features:bound.features,verifiedAgainstSource:bound.verifiedAgainstSource}:reference,abstraction=createVibeReferenceMapAbstraction(referenceInput),dna=createVibeMapDNA({map,region,concept,reference:abstraction}),routes=createVibeRouteGraph({mapDna:dna,nodes,edges}),streaming=createVibeWorldStreamingPlan({mobile}),genreGrammar=createVibeGenreWorldGrammar({genre}),learning=summarizeVibeVerifiedWorldLearning({events:learningEvents}),patternDistillation=distillVibeVerifiedWorldPatterns({events:learningEvents});return Object.freeze({version:4,referenceImageStudy:imageRequest?Object.freeze({request:imageRequest,observation:bound}):null,reference:abstraction,mapDna:dna,routes,streaming,genreGrammar,learning,patternDistillation,generationOrder:Object.freeze(['concept-world-lock','reference-image-study-request','reference-abstraction','map-dna','macro-terrain-region-landmark','route-graph-shortcuts','zone-placement','mid-scale-paths','biome-props-nav-clearance','initial-zone-prewarm','nearby-chunk-streaming-lod','reachability-mobile-cohesion-qa']),policy:Object.freeze({deterministicSeedSupported:true,directReferenceLayoutCopyForbidden:true,rawReferencePersistentLearningForbidden:true,gameplayRuleMutation:false,saveMeaningMutation:false,multiplayerAuthorityMutation:false,mobileFirst:Boolean(mobile)})})}
+
+// 절차적 배경: 게임 소스와 독립된 결정론적 설계 제안만 생성한다. 게임 규칙·기존 좌표는 변경하지 않는다.
+function proceduralCellHash(seed,x,z){
+  let v=(seed^Math.imul(x,374761393)^Math.imul(z,668265263))>>>0;
+  v=Math.imul(v^(v>>>13),1274126177);
+  return(v^(v>>>16))>>>0;
+}
+function proceduralGradientNoise(seed,x,z){
+  const ix=Math.floor(x),iz=Math.floor(z),fx=x-ix,fz=z-iz;
+  const fade=t=>t*t*t*(t*(t*6-15)+10);
+  const dot=(a,b,dx,dz)=>{
+    const i=proceduralCellHash(seed,a,b)&7;
+    return([1,1,-1,-1,1,-1,0,0][i]*dx+[1,-1,1,-1,0,0,1,-1][i]*dz)*.70710678;
+  };
+  const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
+  return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
+}
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0}}={}){
+  const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
+  if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
+  const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<12||height<12||width>maximum||height>maximum||!validNumber(cellSize)||cellSize<=0||!['2D','3D'].includes(dimension)||!validNumber(density)||density<0||density>1||!validNumber(maxSlopeDegrees)||maxSlopeDegrees<=0||maxSlopeDegrees>=90||!validNumber(fovDegrees)||fovDegrees<=0||fovDegrees>180||!validNumber(cameraForward?.x)||!validNumber(cameraForward?.z)||Math.hypot(cameraForward.x,cameraForward.z)<1e-6){
+    return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['DIMENSIONS_OR_BUDGET_INVALID']),...noMutation});
+  }
+  const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
+  const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
+  const at=(x,z)=>z*w+x,within=(x,z)=>x>=0&&x<w&&z>=0&&z<h;
+  // 좌표는 동일한 격자 X/Z에서 계산하고 2D 최종 배치 위치만 X/Y로 변환한다.
+  const worldPosition=(x,z,elevationY=0)=>dimension==='2D'?{x:x*cellSize,y:z*cellSize}:{x:x*cellSize,y:elevationY,z:z*cellSize};
+  const blocked=new Set(),issues=[];
+  if(!Array.isArray(reservedCells))return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['RESERVED_CELLS_INVALID']),...noMutation});
+  for(const cell of reservedCells){
+    if(!Number.isInteger(cell?.x)||!Number.isInteger(cell?.z)||!within(cell.x,cell.z))return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['RESERVED_CELLS_INVALID']),...noMutation});
+    blocked.add(at(cell.x,cell.z));
+  }
+  const octave=(x,z,salt)=>{let sum=0,amp=1,weight=0,freq=1;for(let i=0;i<4;i++){sum+=proceduralGradientNoise(hash^salt,x*freq,z*freq)*amp;weight+=amp;freq*=2;amp*=.5;}return sum/weight;};
+  const terrain=[];
+  for(let z=0;z<h;z++)for(let x=0;x<w;x++){
+    const nx=x/w,nz=z/h,ridge=Math.abs(octave(nx*3,nz*3,0x102a));
+    const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
+    const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
+    const type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
+  }
+  for(const tile of terrain){
+    const {x,z}=tile,diffs=[[x-1,z],[x+1,z],[x,z-1],[x,z+1]].filter(([a,b])=>within(a,b));
+    const rise=Math.max(0,...diffs.map(([a,b])=>Math.abs(tile.elevation-terrain[at(a,b)].elevation)*8));
+    tile.slopeDegrees=+(Math.atan2(rise,cellSize)*180/Math.PI).toFixed(2);
+    const lower=diffs.map(([a,b])=>terrain[at(a,b)]).filter(t=>t.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0];
+    tile.drainageTo=lower?{x:lower.x,z:lower.z}:null;
+  }
+  // 침식으로 고도를 바꾸지 않고, 경사가 낮아지는 기존 셀만 잇는 하천 후보를 만든다.
+  const river=[],sources=terrain.filter(t=>t.elevation>.57&&t.biome!=='WATER').sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x);
+  const riverStart=sources[Math.floor((proceduralCellHash(hash,4,7)/4294967296)*Math.min(18,sources.length))];
+  const riverVisited=new Set();let downstream=riverStart;
+  while(downstream&&river.length<Math.max(w,h)&&!riverVisited.has(at(downstream.x,downstream.z))){
+    river.push({x:downstream.x,z:downstream.z});riverVisited.add(at(downstream.x,downstream.z));
+    const next=downstream.drainageTo;downstream=next?terrain[at(next.x,next.z)]:null;
+  }
+  const riverType=/ARID|DRY|DESERT/.test(String(climate).toUpperCase()+' '+String(biome).toUpperCase())?'SEASONAL_DRY_CHANNEL':'PERENNIAL_FLOW_CANDIDATE';
+  const waterway=new Set(riverType==='SEASONAL_DRY_CHANNEL'?[]:river.map(c=>at(c.x,c.z)));
+  const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&!waterway.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
+  const nearest=(x,z)=>{
+    for(let radius=0;radius<Math.max(w,h);radius++)for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
+      if(Math.abs(dx)+Math.abs(dz)!==radius)continue;
+      if(passable(x+dx,z+dz))return{x:x+dx,z:z+dz};
+    }
+    return null;
+  };
+  const entry=nearest(1,Math.floor(h/2)),hub=nearest(Math.floor(w/2),Math.floor(h/2)),landmark=nearest(w-2,Math.floor(h/2)),branch=nearest(Math.floor(w/2),2);
+  const routeNodes=[['ENTRY',entry,'spawn'],['HUB',hub,'settlement'],['LANDMARK',landmark,'landmark'],['BRANCH',branch,'optional']].filter(row=>row[1]);
+  const routeEdges=[['ENTRY','HUB'],['HUB','LANDMARK'],['HUB','BRANCH']];
+  const points=Object.fromEntries(routeNodes.map(([id,pos])=>[id,pos]));
+  const routes=[],roadSet=new Set();
+  function route(a,b){
+    if(!a||!b)return null;
+    const start=at(a.x,a.z),goal=at(b.x,b.z),cost=new Float64Array(w*h).fill(Infinity),from=new Int32Array(w*h).fill(-1),closed=new Set(),open=[{id:start,score:0}];
+    cost[start]=0;
+    while(open.length){
+      open.sort((p,q)=>p.score-q.score||p.id-q.id);
+      const current=open.shift().id;
+      if(closed.has(current))continue;
+      if(current===goal){const path=[];let cursor=goal;while(cursor!==-1){path.push({x:cursor%w,z:Math.floor(cursor/w)});cursor=from[cursor];}return path.reverse();}
+      closed.add(current);
+      const x=current%w,z=Math.floor(current/w),neighbors=[[x+1,z],[x,z+1],[x-1,z],[x,z-1]];
+      for(const [xx,zz] of neighbors){
+        if(!passable(xx,zz))continue;
+        const next=at(xx,zz),rise=Math.abs(terrain[current].elevation-terrain[next].elevation)*8;
+        if(Math.atan2(rise,cellSize)*180/Math.PI>maxSlopeDegrees)continue;
+        const nextCost=cost[current]+1+rise*4+(terrain[next].biome==='RIDGE'?1:0);
+        if(nextCost>=cost[next])continue;
+        cost[next]=nextCost;from[next]=current;
+        open.push({id:next,score:nextCost+Math.abs(xx-b.x)+Math.abs(zz-b.z)});
+      }
+    }
+    return null;
+  }
+  for(const [from,to] of routeEdges){
+    if(!points[from]||!points[to]){issues.push('REQUIRED_ROUTE_ANCHOR_MISSING:'+from+'-'+to);continue;}
+    const cells=route(points[from],points[to]);
+    if(!cells){issues.push('REQUIRED_ROUTE_BLOCKED:'+from+'-'+to);continue;}
+    for(const cell of cells)roadSet.add(at(cell.x,cell.z));
+    routes.push({id:from+'-'+to,from,to,cells,worldPath:cells.map(cell=>worldPosition(cell.x,cell.z,terrain[at(cell.x,cell.z)].elevation*8))});
+  }
+  const routeGraph=createVibeRouteGraph({nodes:routeNodes.map(([id,,role])=>({id,role,required:id!=='BRANCH'})),edges:routes.map(r=>({from:r.from,to:r.to,kind:'main'}))});
+  if(!routeGraph.pass)issues.push('REQUIRED_OBJECTIVE_UNREACHABLE');
+  const sightCells=new Set();
+  if(hub&&landmark){
+    const steps=Math.max(Math.abs(hub.x-landmark.x),Math.abs(hub.z-landmark.z))*2;
+    for(let i=0;i<=steps;i++){const t=steps?i/steps:0;sightCells.add(at(Math.round(hub.x+(landmark.x-hub.x)*t),Math.round(hub.z+(landmark.z-hub.z)*t)));}
+  }
+  const buildings=[],occupied=new Set([...roadSet,...blocked]),instanceGroups=new Map();
+  const maxBuildings=mobile?22:56,style=String(buildingStyle||'LOCAL').toUpperCase();
+  const addInstance=(name,x,z,rotation=0,levelY=terrain[at(x,z)].elevation*8)=>{
+    const key=style+':'+name,group=instanceGroups.get(key)||{module:key,count:0,transforms:[]};
+    group.transforms.push({...worldPosition(x,z,levelY),rotation});group.count++;instanceGroups.set(key,group);
+  };
+  for(const id of [...roadSet].sort((a,b)=>a-b)){
+    if(buildings.length>=maxBuildings)break;
+    const rx=id%w,rz=Math.floor(id/w);
+    for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const x=rx+dx-(dx<0?1:0),z=rz+dz-(dz<0?1:0),footprint=[];
+      for(let d=0;d<2;d++)for(let e=0;e<2;e++)footprint.push({x:x+d,z:z+e});
+      if(footprint.some(c=>!within(c.x,c.z)||occupied.has(at(c.x,c.z))||waterway.has(at(c.x,c.z))||sightCells.has(at(c.x,c.z))||terrain[at(c.x,c.z)].biome==='WATER'||terrain[at(c.x,c.z)].slopeDegrees>maxSlopeDegrees))continue;
+      const footing=footprint.map(c=>terrain[at(c.x,c.z)].elevation*8);
+      const maxAccessibleRise=Math.tan(maxSlopeDegrees*Math.PI/180)*cellSize;
+      if(Math.max(...footing)-Math.min(...footing)>maxAccessibleRise)continue;
+      const roadSurfaceY=terrain[id].elevation*8;
+      const riseToFoundationY=Math.max(...footing)-roadSurfaceY;
+      if(Math.abs(riseToFoundationY)>maxAccessibleRise)continue;
+      const roll=proceduralCellHash(hash,x,z)/4294967296;
+      if(roll>density)continue;
+      footprint.forEach(c=>occupied.add(at(c.x,c.z)));
+      const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
+      const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
+      const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
+      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
+      const levelY=Math.max(...footing),pivot=worldPosition(x,z,levelY),doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
+      // 문 위치와 길 연결은 월드 배치의 검증된 제안이며 실제 네비/충돌 권한은 게임 런타임이 가진다.
+      const doorGrid=doorFacing==='WEST'?{x:x-.5,z:z+.5}:doorFacing==='EAST'?{x:x+1.5,z:z+.5}:doorFacing==='NORTH'?{x:x+.5,z:z-.5}:{x:x+.5,z:z+1.5};
+      const stableObjectId=objectNamespace+':LOT:'+x+':'+z;
+      const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),roadSlopeVerified:true,roadSurfaceY,riseToFoundationY:+riseToFoundationY.toFixed(4),runtimeNavigationVerified:false};
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      buildings.push(building);
+      addInstance('FOUNDATION',x,z,0,levelY);
+      addInstance('DOOR',x,z,0,levelY);
+      addInstance(roof,x,z,0,levelY);
+      for(const [ox,oz,rot] of [[0,0,0],[1,0,90],[1,1,180],[0,1,270]])addInstance('WALL',x+ox,z+oz,rot,levelY);
+      break;
+    }
+  }
+  // 자연물은 기후·지형과 지표에 연결한다. 기존 동선·건물·시야·예약 셀은 건드리지 않는다.
+  const vegetation=[],natureGroups=new Map(),maxVegetation=mobile?64:160;
+  const climateHint=String(climate).toUpperCase(),biomeHint=String(biome).toUpperCase();
+  for(const tile of terrain){
+    if(vegetation.length>=maxVegetation)break;
+    const key=at(tile.x,tile.z);
+    if(occupied.has(key)||waterway.has(key)||sightCells.has(key)||tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees)continue;
+    const chance=tile.biome==='FOREST'?.44:tile.biome==='PLAIN'?.1:tile.biome==='RIDGE'?.05:tile.biome==='DRY'?.04:0;
+    const roll=proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296;
+    if(roll>chance)continue;
+    const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
+    const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
+    const stableObjectId=objectNamespace+':NATURE:'+kind+':'+tile.x+':'+tile.z;
+    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false};
+    vegetation.push(placement);
+    const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
+    group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
+  }
+  let sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov:false,visible:false,terrainObstructed:false,buildingObstructed:false};
+  if(hub&&landmark){
+    const ax=landmark.x-hub.x,az=landmark.z-hub.z,length=Math.hypot(ax,az);
+    const norm=Math.hypot(cameraForward.x,cameraForward.z),dot=(ax*cameraForward.x+az*cameraForward.z)/(Math.max(length,1e-9)*norm);
+    const withinFov=length===0||dot>=Math.cos(fovDegrees*Math.PI/360);
+    const seen=[...sightCells].some(id=>!roadSet.has(id)&&buildings.some(b=>b.footprint.some(cell=>at(cell.x,cell.z)===id)));
+    const startY=terrain[at(hub.x,hub.z)].elevation*8+1.7,endY=terrain[at(landmark.x,landmark.z)].elevation*8+12;
+    let terrainObstructed=false;
+    for(const id of sightCells){const x=id%w,z=Math.floor(id/w),t=length?Math.hypot(x-hub.x,z-hub.z)/length:0;
+      if(t>.03&&t<.95&&terrain[id].elevation*8>startY+(endY-startY)*t)terrainObstructed=true;
+    }
+    sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen,exactCameraAndOcclusionRuntimeVerified:false};
+    if(!sightline.visible)issues.push('LANDMARK_VISIBILITY_REQUIRES_CAMERA_REVIEW');
+  }
+  const result={
+    version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
+    seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
+    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
+    sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
+    mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
+    // 안정 식별자는 오브젝트 이름/생성 순서에 의존하지 않는다. 보상·피해·저장은 기존 게임 규칙만 따른다.
+    worldObjectBinding:Object.freeze({namespace:objectNamespace,idScheme:'WORLD_SEED_KIND_GRID_CELL',status:'GAMEPLAY_BINDING_REQUIRED',runtimeInteractionVerified:false,existingSaveSchemaRequired:true,gameplayDamageAndLootContractRequired:true,serverAuthorityValidationRequired:true,duplicateRewardGuardRequired:true,mobileActionBindingRequired:true}),
+    native2DWorldCoordinateMappingRequired:dimension==='2D',native2DPositionProjectionProvided:dimension==='2D',
+    protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
+    ...noMutation
+  };
+  return Object.freeze(result);
+}
+
+export function createVibeAdaptiveWorldGenerationPlan({map={},region={},concept={},reference={},referenceImage=null,mobile=true,nodes=[],edges=[],genre='ADAPTIVE',learningEvents=[],procedural=null}={}){const imageRequest=referenceImage?createVibeReferenceImageStudyRequest(referenceImage):null,bound=imageRequest&&referenceImage?.observation?bindVibeReferenceImageObservation({request:imageRequest,observation:referenceImage.observation,verifiedAgainstSource:referenceImage.verifiedAgainstSource===true}):null,referenceInput=bound?.valid?{sourceId:bound.sourceId,sourceType:bound.sourceType,features:bound.features,verifiedAgainstSource:bound.verifiedAgainstSource}:reference,abstraction=createVibeReferenceMapAbstraction(referenceInput),dna=createVibeMapDNA({map,region,concept,reference:abstraction}),routes=createVibeRouteGraph({mapDna:dna,nodes,edges}),streaming=createVibeWorldStreamingPlan({mobile}),genreGrammar=createVibeGenreWorldGrammar({genre}),learning=summarizeVibeVerifiedWorldLearning({events:learningEvents}),patternDistillation=distillVibeVerifiedWorldPatterns({events:learningEvents}),proceduralLayout=(procedural||map.proceduralWorld)?createVibeProceduralWorldLayout({...map.proceduralWorld,...procedural,mobile}):null;return Object.freeze({version:4,proceduralLayout,referenceImageStudy:imageRequest?Object.freeze({request:imageRequest,observation:bound}):null,reference:abstraction,mapDna:dna,routes,streaming,genreGrammar,learning,patternDistillation,generationOrder:Object.freeze(['concept-world-lock','reference-image-study-request','reference-abstraction','map-dna','macro-terrain-region-landmark','route-graph-shortcuts','zone-placement','mid-scale-paths','biome-props-nav-clearance','initial-zone-prewarm','nearby-chunk-streaming-lod','reachability-mobile-cohesion-qa']),policy:Object.freeze({deterministicSeedSupported:true,directReferenceLayoutCopyForbidden:true,rawReferencePersistentLearningForbidden:true,gameplayRuleMutation:false,saveMeaningMutation:false,multiplayerAuthorityMutation:false,mobileFirst:Boolean(mobile)})})}
 
 export function createVibeMapComposition({map={},region={},mobile=true}={}){return Object.freeze({name:map.name||'map',region:region.name||'',type:map.type||map.gameplay||'exploration',layoutRules:Object.freeze(['gameplay-route-before-decoration','landmark-visible-from-decision-point','resources-have-world-source','danger-has-visual-warning','dense-detail-away-from-critical-action']),mobileBudget:Object.freeze({maxSimultaneousLandmarks:mobile?2:4,foregroundDensity:mobile?'low':'medium'})})}
 export function createVibeMapPlacementGrammar(){return Object.freeze({avoid:Object.freeze(['uniform-grid-decoration','random-props-without-cause','foreground-over-hit-area','resource-without-source','hazard-without-warning']),protected:Object.freeze(['collision','navigation','spawn-points','wave-path','objective-position','interaction-range'])})}
@@ -317,4 +517,4 @@ export function planVibeWorldAutopilot({world={},regions=[],factions=[],species=
 export function planVibeEnvironmentAutopilot({files=[],theme='adaptive',mood='adaptive',mobile=true,request=''}={}){return Object.freeze({version:6,request:String(request),audit:auditVibeEnvironment(files),depth:createVibeDepthStack({genre:theme,mobile}),grammar:createVibeEnvironmentGrammar({theme}),atmosphere:createVibeAtmosphereProfile({mood,mobile}),policy:Object.freeze({developmentAI:false,serverAI:'game-runtime-only',mobileFirst:mobile,noGameplayMutation:true,physicalCausalityRequired:true})})}
 export function scoreVibeBackgroundReadability({playerContrast=1,enemyContrast=1,projectileContrast=1,foregroundOcclusion=0,visualNoise=0}={}){let score=100;score-=Math.max(0,.65-playerContrast)*60;score-=Math.max(0,.65-enemyContrast)*60;score-=Math.max(0,.7-projectileContrast)*70;score-=foregroundOcclusion*45;score-=visualNoise*30;score=clamp(score);return Object.freeze({score,safe:score>=70})}
 export function createVibeEnvironmentVariation({seed=1,count=12,mobile=true}={}){const density=Math.min(count,mobile?16:32),items=[];for(let i=0;i<density;i++){const n=Math.abs((Math.sin((seed+i)*12.9898)*43758.5453)%1);items.push(Object.freeze({index:i,scale:+(.82+n*.34).toFixed(2),flip:n>.5,depth:i%3,rotation:+((n-.5)*8).toFixed(1)}))}return Object.freeze({seed,count:density,items:Object.freeze(items)})}
-if(typeof window!=='undefined'){Object.assign(window,{auditJaewoonVibeEnvironment:auditVibeEnvironment,createJaewoonVibeWorldDNA:createVibeWorldDNA,createJaewoonVibeMapComposition:createVibeMapComposition,planJaewoonVibeMapAutopilot:planVibeMapAutopilot,createJaewoonVibeGenreWorldGrammar:createVibeGenreWorldGrammar,summarizeJaewoonVibeVerifiedWorldLearning:summarizeVibeVerifiedWorldLearning,distillJaewoonVibeVerifiedWorldPatterns:distillVibeVerifiedWorldPatterns,createJaewoonVibeReferenceImageStudyRequest:createVibeReferenceImageStudyRequest,bindJaewoonVibeReferenceImageObservation:bindVibeReferenceImageObservation,createJaewoonVibeReferenceMapAbstraction:createVibeReferenceMapAbstraction,createJaewoonVibeMapDNA:createVibeMapDNA,createJaewoonVibeRouteGraph:createVibeRouteGraph,createJaewoonVibeWorldStreamingPlan:createVibeWorldStreamingPlan,createJaewoonVibeAdaptiveWorldGenerationPlan:createVibeAdaptiveWorldGenerationPlan,createJaewoonVibeSceneContext:createVibeSceneContext,createJaewoonVibePropRecreationBlueprint:createVibePropRecreationBlueprint,createJaewoonVibeSceneRecreationPlan:createVibeSceneRecreationPlan,planJaewoonVibeAssetRecreationAutopilot:planVibeAssetRecreationAutopilot,createJaewoonVibeMaterialBehavior:createVibeMaterialBehavior,createJaewoonVibeForceResponse:createVibeForceResponse,createJaewoonVibeFluidInteraction:createVibeFluidInteraction,createJaewoonVibeThermalInteraction:createVibeThermalInteraction,createJaewoonVibeChemistryInteraction:createVibeChemistryInteraction,createJaewoonVibeReactionTableContract:createVibeReactionTableContract,createJaewoonVibeStructuralPhysics:createVibeStructuralPhysics,createJaewoonVibeEnvironmentalCoupling:createVibeEnvironmentalCoupling,createJaewoonVibeWeatherInteractionProfile:createVibeWeatherInteractionProfile,createJaewoonVibePhysicalInteractionContract:createVibePhysicalInteractionContract,scoreJaewoonVibeEnvironmentalRealism:scoreVibeEnvironmentalRealism,planJaewoonVibeEnvironmentalInteractionAutopilot:planVibeEnvironmentalInteractionAutopilot,planJaewoonVibeWorldAutopilot:planVibeWorldAutopilot,planJaewoonVibeEnvironmentAutopilot:planVibeEnvironmentAutopilot})}
+if(typeof window!=='undefined'){Object.assign(window,{auditJaewoonVibeEnvironment:auditVibeEnvironment,createJaewoonVibeWorldDNA:createVibeWorldDNA,createJaewoonVibeMapComposition:createVibeMapComposition,planJaewoonVibeMapAutopilot:planVibeMapAutopilot,createJaewoonVibeGenreWorldGrammar:createVibeGenreWorldGrammar,summarizeJaewoonVibeVerifiedWorldLearning:summarizeVibeVerifiedWorldLearning,distillJaewoonVibeVerifiedWorldPatterns:distillVibeVerifiedWorldPatterns,createJaewoonVibeReferenceImageStudyRequest:createVibeReferenceImageStudyRequest,bindJaewoonVibeReferenceImageObservation:bindVibeReferenceImageObservation,createJaewoonVibeReferenceMapAbstraction:createVibeReferenceMapAbstraction,createJaewoonVibeMapDNA:createVibeMapDNA,createJaewoonVibeProceduralWorldLayout:createVibeProceduralWorldLayout,createJaewoonVibeRouteGraph:createVibeRouteGraph,createJaewoonVibeWorldStreamingPlan:createVibeWorldStreamingPlan,createJaewoonVibeAdaptiveWorldGenerationPlan:createVibeAdaptiveWorldGenerationPlan,createJaewoonVibeSceneContext:createVibeSceneContext,createJaewoonVibePropRecreationBlueprint:createVibePropRecreationBlueprint,createJaewoonVibeSceneRecreationPlan:createVibeSceneRecreationPlan,planJaewoonVibeAssetRecreationAutopilot:planVibeAssetRecreationAutopilot,createJaewoonVibeMaterialBehavior:createVibeMaterialBehavior,createJaewoonVibeForceResponse:createVibeForceResponse,createJaewoonVibeFluidInteraction:createVibeFluidInteraction,createJaewoonVibeThermalInteraction:createVibeThermalInteraction,createJaewoonVibeChemistryInteraction:createVibeChemistryInteraction,createJaewoonVibeReactionTableContract:createVibeReactionTableContract,createJaewoonVibeStructuralPhysics:createVibeStructuralPhysics,createJaewoonVibeEnvironmentalCoupling:createVibeEnvironmentalCoupling,createJaewoonVibeWeatherInteractionProfile:createVibeWeatherInteractionProfile,createJaewoonVibePhysicalInteractionContract:createVibePhysicalInteractionContract,scoreJaewoonVibeEnvironmentalRealism:scoreVibeEnvironmentalRealism,planJaewoonVibeEnvironmentalInteractionAutopilot:planVibeEnvironmentalInteractionAutopilot,planJaewoonVibeWorldAutopilot:planVibeWorldAutopilot,planJaewoonVibeEnvironmentAutopilot:planVibeEnvironmentAutopilot})}

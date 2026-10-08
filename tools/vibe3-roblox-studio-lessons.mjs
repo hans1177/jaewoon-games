@@ -582,13 +582,30 @@ end`),
 return function(rootId, allowed, maxDepth)
     assert(allowed[rootId] and maxDepth >= 1)
     local stack = {rootId}
+    local selection = {}
+    local modal = false
     return {
         current = function() return stack[#stack] end,
+        rememberFocus = function(id)
+            if type(id) ~= "string" or #id > 128 then return false end
+            selection[stack[#stack]] = id; return true
+        end,
+        restoreFocus = function(isAvailable, fallback)
+            local id = selection[stack[#stack]]
+            if id and isAvailable(id) then return id end
+            return fallback and isAvailable(fallback) and fallback or nil
+        end,
+        setModal = function(value) modal = value == true end,
         open = function(id)
-            if not allowed[id] or #stack >= maxDepth or stack[#stack] == id then return false end
+            if modal or not allowed[id] or stack[#stack] == id then return false end
+            for index, prior in ipairs(stack) do
+                if prior == id then for i=#stack,index+1,-1 do table.remove(stack,i) end; return true end
+            end
+            if #stack >= maxDepth then return false end
             table.insert(stack, id); return true
         end,
         back = function()
+            if modal then modal=false; return stack[#stack] end
             if #stack > 1 then table.remove(stack) end
             return stack[#stack]
         end,
@@ -744,6 +761,35 @@ return function(distance, density, minimumVisibility)
     assert(distance >= 0 and density >= 0 and minimumVisibility >= 0 and minimumVisibility <= 1)
     return math.max(minimumVisibility, math.exp(-density * distance))
 end`),
+  lesson('IMPORTED_MESH_GROUND_PIVOT','가져온 메시의 지면 피벗','ASSET_LIBRARY','glb pivot spawn grounding float hipheight 스폰 시작위치 공중 지면 피벗',
+    'Evaluate transformed mesh bounds and actual rig clearance before placement; a marker cannot be its own support.',
+    'Use the existing spawn owner with destination-ground queries, character generation checks and independent contact samples. This function supplies offsets only; it never grants runtime pass.',
+    'Using half-height alone ignores off-center pivots; R6 needs leg height plus HipHeight. A delayed operation can place a replaced character.',
+    'Test off-center meshes, scale changes, R6/R15, rapid respawns, roof occlusion, blocked clearance and three stable ground samples.',`
+return function(minY, scale, groundY, hipHeight, rootHeight, rig, legHeight)
+    local function finite(v) return type(v) == "number" and v == v and math.abs(v) < math.huge end
+    for _, value in ipairs({minY, scale, groundY, hipHeight, rootHeight}) do if not finite(value) then return nil end end
+    if not finite(minY) or not finite(scale) or not finite(groundY) or not finite(hipHeight) or not finite(rootHeight) then return nil end
+    if scale <= 0 or rootHeight <= 0 or hipHeight < 0 then return nil end
+    if rig ~= "R15" and rig ~= "R6" then return nil end
+    if rig == "R6" and (not finite(legHeight) or legHeight <= 0) then return nil end
+    local clearance = hipHeight + rootHeight * .5 + (rig == "R6" and legHeight or 0)
+    local visualY = groundY - minY * scale
+    if not finite(visualY) or not finite(clearance) then return nil end
+    return {visualRootY=visualY, characterRootY=groundY+clearance, clearance=clearance}
+end`, 'query'),
+  lesson('GLTF_PBR_CHANNEL_TRANSFER','플랫폼별 PBR 채널 변환','ASSET_LIBRARY','glb gltf pbr roughness metallic smoothness material 플랫폼 재질 러프니스 메탈니스',
+    'Keep base color in sRGB and material data linear. glTF roughness is G, metalness is B; Unity Lit uses smoothness, while Roblox requires separate supported maps.',
+    'Apply these decoded values in the existing material/import owner, bind the actual material slot and source hash, and inspect native neutral lighting. Never write a BasePart Roughness property.',
+    'Swapping G and B makes stone metallic; copying roughness into smoothness reverses highlight behavior. Gamma correction must not alter data channels.',
+    'Use known texels, factor extremes and invalid inputs, then compare the same asset/camera/light on web, Roblox and Unity.',`
+return function(green, blue, roughnessFactor, metallicFactor)
+    local function unit(v) return type(v)=="number" and v==v and v>=0 and v<=1 end
+    if not unit(green) or not unit(blue) or not unit(roughnessFactor) or not unit(metallicFactor) then return nil end
+    local roughness=green*roughnessFactor
+    local metallic=blue*metallicFactor
+    return {web={roughness=roughness,metalness=metallic},roblox={roughness=roughness,metalness=metallic},unity={smoothness=1-roughness,metallic=metallic}}
+end`, 'material'),
   lesson('REGRESSION_ACCEPTANCE_MATRIX','소스·실행·회귀 증거 연결','QA','regression evidence artifact revision acceptance 회귀 검증 증거',
     'A release decision needs matching source/artifact identities and independently executed behavior checks.',
     'Use only evidence from the existing trusted QA producers. This pure comparison is an illustrative consumer, not an evidence producer or a substitute release gate.',

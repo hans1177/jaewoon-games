@@ -207,7 +207,7 @@ jobs:
           $useCuda = $cudaValue -eq 'true'
           $method = 'lora'
           $device = 'cpu'
-          $epochs = '0.25'
+          $epochs = '1.0'
           $maxLength = '256'
           $batchSize = '1'
           $gradAccum = '1'

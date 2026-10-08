@@ -34,6 +34,8 @@ function normalize(record, sourceFile) {
     instruction,
     input,
     output,
+    sampleKind: record.sampleKind === 'CODE_IMPLEMENTATION' ? 'CODE_IMPLEMENTATION' : 'JUDGMENT',
+    familyId: String(record.familyId ?? record.provenance?.familyId ?? record.provenance?.drillId ?? record.sourceRevision ?? path.basename(sourceFile)),
     taskType: 'unity',
     difficulty: String(record?.difficulty ?? 'regression'),
     lifecycle: 'active',
@@ -48,6 +50,7 @@ function normalize(record, sourceFile) {
       sourceKind,
       sourceRevision: String(record?.sourceRevision ?? record?.provenance?.sourceRevision ?? ''),
       teacherId: String(record?.teacherId ?? record?.provenance?.teacherId ?? 'GPT-5.6-Sol-practice'),
+      familyId: String(record.familyId ?? record.provenance?.familyId ?? record.provenance?.drillId ?? record.sourceRevision ?? path.basename(sourceFile)),
       ...(sourceKind === 'licensed-reference' ? {
         repository: String(record.provenance.repository),
         commit: String(record.provenance.commit),
@@ -70,8 +73,13 @@ function deterministicScore(row) {
   return Number.parseInt(sha256(`${SEED}:${row.provenance.sourceRevision}:${row.instruction}`).slice(0, 12), 16) / 0xffffffffffff;
 }
 
+function stable(value) {
+  if(value===null||typeof value!=='object')return JSON.stringify(value);
+  if(Array.isArray(value))return '['+value.map(stable).join(',')+']';
+  return '{'+Object.keys(value).sort().map(key=>JSON.stringify(key)+':'+stable(value[key])).join(',')+'}';
+}
 function datasetHash(rows) {
-  return sha256(rows.map((row) => JSON.stringify(row, Object.keys(row).sort())).join('\n'));
+  return sha256(rows.map(stable).join('\n'));
 }
 
 export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
@@ -80,8 +88,16 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
   if (deduped.length < minSamples) throw new Error(`practice samples ${deduped.length}/${minSamples}`);
   deduped.sort((a, b) => deterministicScore(a) - deterministicScore(b));
   const evalCount = Math.max(2, Math.min(Math.floor(deduped.length * 0.2), deduped.length - 1));
-  const evalRows = deduped.slice(0, evalCount);
-  const trainRows = deduped.slice(evalCount);
+  // A family stays in one split: revisions of one exercise cannot inflate eval.
+  const evalFamilies=new Set();
+  const codeFamilies=[...new Set(deduped.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').map(row=>row.familyId))];
+  // A loss measured only on prose cannot evaluate implementation learning.
+  if(codeFamilies.length>=2)evalFamilies.add(codeFamilies[0]);
+  for(const row of deduped){if(deduped.filter(item=>evalFamilies.has(item.familyId)).length>=evalCount)break;evalFamilies.add(row.familyId);}
+  if(codeFamilies.length>=2&&codeFamilies.every(id=>evalFamilies.has(id)))evalFamilies.delete(codeFamilies.at(-1));
+  const evalRows = deduped.filter(row=>evalFamilies.has(row.familyId));
+  const trainRows = deduped.filter(row=>!evalFamilies.has(row.familyId));
+  if(!trainRows.length)throw new Error('practice split requires independent exercise families');
   const sourceKinds = [...new Set(deduped.map((row) => row.sourceKind))].sort();
   const licensedReferenceCount = deduped.filter((row) => row.sourceKind === 'licensed-reference').length;
   const syntheticCount = deduped.filter((row) => row.synthetic === true).length;
@@ -89,7 +105,7 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
   fs.writeFileSync(path.join(outDir, 'train.jsonl'), `${trainRows.map((row) => JSON.stringify(row)).join('\n')}\n`);
   fs.writeFileSync(path.join(outDir, 'eval.jsonl'), `${evalRows.map((row) => JSON.stringify(row)).join('\n')}\n`);
   const manifest = {
-    version: 4,
+    version: 5,
     seed: SEED,
     targetTaskType: 'unity',
     authority: 'PRACTICE_ONLY',
@@ -99,7 +115,7 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
     sourceKinds,
     runtimePromotionAllowed: false,
     readyForTraining: true,
-    contamination: { pass: true, contaminationRate: 0 },
+    contamination: { pass: true, contaminationRate: 0, method:'EXACT_DEDUP_AND_DISJOINT_EXERCISE_FAMILIES',generalizationVerified:false },
     diversity: { pass: true, distinctProjects: new Set(deduped.map((row) => row.project)).size },
     batching: { pass: true },
     policy: {
@@ -116,6 +132,8 @@ export function buildPracticeDataset({ inputDir, outDir, minSamples = 12 }) {
       licensedReferenceTrain: trainRows.filter((row) => row.sourceKind === 'licensed-reference').length,
       licensedReferenceEval: evalRows.filter((row) => row.sourceKind === 'licensed-reference').length,
       deprecatedUsed: false,
+      codeImplementationTrain: trainRows.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').length,
+      codeImplementationEval: evalRows.filter(row=>row.sampleKind==='CODE_IMPLEMENTATION').length,
     },
     trainSha256: datasetHash(trainRows),
     evalSha256: datasetHash(evalRows),

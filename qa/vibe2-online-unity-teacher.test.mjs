@@ -98,6 +98,23 @@ test('GPT practice drill은 실제 verified positive와 분리되어 생성된�
   assert.equal(first.verification.productionEvidence, false);
 });
 
+test('implementation targets carry harness types but never acceptance fixtures',()=>{
+  const outDir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-implementation-'));
+  try{
+    const result=buildPracticeTeacherSamples({drillsFile:'company-learning/unity-teacher-materials/gpt-practice-drills.json',outDir,maxPractice:96});
+    const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+    assert.equal(result.implementationWritten,curriculum.platformDrills.filter(row=>row.platform==='unity').length);
+    for(const id of ['unity-menu-modal-focus','unity-hitstop-frame-budget','unity-menu-batch-transaction']){
+      const sample=JSON.parse(fs.readFileSync(path.join(outDir,'gpt-u-code-'+id+'.json'),'utf8'));
+      const drill=curriculum.platformDrills.find(row=>row.id===id);
+      assert.equal(sample.output,drill.reference);
+      if(drill.supportCode)assert(sample.input.includes(drill.supportCode));
+      assert.equal(sample.practiceOnly,true);assert.equal(sample.runtimePromotionAllowed,false);
+      for(const fixture of [...drill.tests,...drill.feedbackTests])assert(!JSON.stringify(sample).includes(fixture));
+    }
+  }finally{fs.rmSync(outDir,{recursive:true,force:true});}
+});
+
 test('ingest는 Unity teacher 전용 artifact를 넘기고 durable runtime branch에 검증 상태를 영속화한다', () => {
   const ingest = fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml', 'utf8');
   assert.match(ingest, /name: vibe2-verified-training-samples/);

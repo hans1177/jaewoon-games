@@ -55,10 +55,10 @@
         ],
         "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-        "updatedAt": "2026-10-04",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -177,10 +177,10 @@
             ],
             "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-            "updatedAt": "2026-10-04",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -222,6 +222,594 @@
       }
     },
     {
+      "id": "wild-survival",
+      "name": "야생 생존",
+      "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
+      "genre": [
+        "생존",
+        "오픈월드",
+        "채집",
+        "현실"
+      ],
+      "image": "assets/title-survival.svg",
+      "webPath": "/web-games/wild-survival/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "catalogOrder": 2,
+      "updatedAt": "2026-10-04T14:38:00+09:00",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생존",
+          "오픈월드",
+          "채집",
+          "현실"
+        ],
+        "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 2,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "wild-survival",
+          "name": "야생 생존",
+          "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
+          "genres": [
+            "생존",
+            "오픈월드",
+            "채집",
+            "현실"
+          ],
+          "image": "assets/title-survival.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/title-survival.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": {
+            "gameId": "wild-survival",
+            "titleEn": "WILD SURVIVAL",
+            "titleKo": "야생 생존",
+            "cover": {
+              "src": "assets/homepage-covers/wild-survival.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 56522,
+              "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
+            },
+            "small": {
+              "src": "assets/homepage-covers/wild-survival-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 23366,
+              "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "rugged expedition woodcut slab serif with restrained worn edges"
+          }
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/wild-survival/",
+            "archive": true,
+            "playable": true,
+            "state": "CURRENT_OWNER_BASELINE",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생존",
+              "오픈월드",
+              "채집",
+              "현실"
+            ],
+            "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "7e303ced0b26a4bcaacbf45399238dd56bb92eef13f737a6b885debaed80522f",
+      "ownerWebEntryFile": "web-games/wild-survival/index.html",
+      "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "wild-survival",
+        "titleEn": "WILD SURVIVAL",
+        "titleKo": "야생 생존",
+        "cover": {
+          "src": "assets/homepage-covers/wild-survival.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 56522,
+          "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
+        },
+        "small": {
+          "src": "assets/homepage-covers/wild-survival-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 23366,
+          "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "rugged expedition woodcut slab serif with restrained worn edges"
+      }
+    },
+    {
+      "id": "amusement-tycoon",
+      "name": "놀이공원 타이쿤",
+      "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+      "genre": [
+        "타이쿤",
+        "3D",
+        "경영",
+        "건설"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": "/web-games/amusement-tycoon/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "타이쿤",
+          "3D",
+          "경영",
+          "건설"
+        ],
+        "genreLabel": "타이쿤 · 3D · 경영 · 건설",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 3,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "amusement-tycoon",
+          "name": "놀이공원 타이쿤",
+          "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+          "genres": [
+            "타이쿤",
+            "3D",
+            "경영",
+            "건설"
+          ],
+          "image": "assets/page-bg-v4.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v4.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": {
+            "gameId": "amusement-tycoon",
+            "titleEn": "PARK TYCOON",
+            "titleKo": "놀이공원 타이쿤",
+            "cover": {
+              "src": "assets/homepage-covers/amusement-tycoon.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 61706,
+              "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
+            },
+            "small": {
+              "src": "assets/homepage-covers/amusement-tycoon-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 27642,
+              "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
+          }
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/amusement-tycoon/",
+            "archive": true,
+            "playable": true,
+            "state": "CURRENT_OWNER_BASELINE",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "타이쿤",
+              "3D",
+              "경영",
+              "건설"
+            ],
+            "genreLabel": "타이쿤 · 3D · 경영 · 건설",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 3,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/amusement-tycoon",
+        "UNITY": "unity-games/amusement-tycoon"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "53e3c70244654f60c485098674a4a60856c53f0cd14c1adaea49f9e7f760390e",
+      "ownerWebEntryFile": "web-games/amusement-tycoon/index.html",
+      "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "amusement-tycoon",
+        "titleEn": "PARK TYCOON",
+        "titleKo": "놀이공원 타이쿤",
+        "cover": {
+          "src": "assets/homepage-covers/amusement-tycoon.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 61706,
+          "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
+        },
+        "small": {
+          "src": "assets/homepage-covers/amusement-tycoon-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 27642,
+          "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
+      }
+    },
+    {
+      "id": "bug-defense",
+      "name": "곤충 디펜스",
+      "description": "30웨이브 곤충 디펜스",
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
+      "image": "assets/insect-war-v2.webp",
+      "webPath": "/web-games/bug-defense/",
+      "hasWebArchive": false,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "웨이브",
+          "전략",
+          "곤충"
+        ],
+        "genreLabel": "웨이브 · 전략 · 곤충",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 4,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "bug-defense",
+          "name": "곤충 디펜스",
+          "description": "30웨이브 곤충 디펜스",
+          "genres": [
+            "웨이브",
+            "전략",
+            "곤충"
+          ],
+          "image": "assets/insect-war-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/insect-war-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/bug-defense/",
+            "archive": false,
+            "playable": false,
+            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "웨이브",
+              "전략",
+              "곤충"
+            ],
+            "genreLabel": "웨이브 · 전략 · 곤충",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 4,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
+    },
+    {
       "id": "daechung-rpg",
       "name": "5포탈 RPG: 던전 파티",
       "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
@@ -255,8 +843,8 @@
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
@@ -269,16 +857,16 @@
         ],
         "genreLabel": "RPG · 탐험 · 전투",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "COOP",
+        "playModeLabel": "협동",
         "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 2,
+        "catalogOrder": 5,
         "authority": "company-runtime",
         "identity": {
           "gameId": "daechung-rpg",
@@ -376,7 +964,7 @@
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
+          "selectedPlatform": "UNITY",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
@@ -423,8 +1011,8 @@
           "recentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
           "runtime": {
             "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
@@ -437,16 +1025,16 @@
             ],
             "genreLabel": "RPG · 탐험 · 전투",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "COOP",
+            "playModeLabel": "협동",
             "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 2,
+      "catalogOrder": 5,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -577,7 +1165,7 @@
       "multiplayerSupported": true,
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
-      "catalogOrder": 3,
+      "catalogOrder": 6,
       "updatedAt": "2026-09-22T19:15:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
@@ -592,8 +1180,8 @@
       "robloxProjectPath": "roblox-games/horror-escape-room",
       "homepageInfo": {
         "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
@@ -606,16 +1194,16 @@
         ],
         "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "COMPETITIVE",
+        "playModeLabel": "경쟁",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 3,
+        "catalogOrder": 6,
         "authority": "company-runtime",
         "identity": {
           "gameId": "horror-escape-room",
@@ -691,7 +1279,7 @@
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "ROBLOX_UNITY",
           "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-          "selectedPlatform": "ROBLOX",
+          "selectedPlatform": "UNITY",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
@@ -738,8 +1326,8 @@
           "recentWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
           "runtime": {
             "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
@@ -752,11 +1340,11 @@
             ],
             "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "COMPETITIVE",
+            "playModeLabel": "경쟁",
             "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -821,594 +1409,6 @@
       }
     },
     {
-      "id": "wild-survival",
-      "name": "야생 생존",
-      "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
-      "genre": [
-        "생존",
-        "오픈월드",
-        "채집",
-        "현실"
-      ],
-      "image": "assets/title-survival.svg",
-      "webPath": "/web-games/wild-survival/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "catalogOrder": 4,
-      "updatedAt": "2026-10-04T14:38:00+09:00",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "생존",
-          "오픈월드",
-          "채집",
-          "현실"
-        ],
-        "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
-        "updatedAt": "2026-10-04",
-        "status": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 4,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "wild-survival",
-          "name": "야생 생존",
-          "description": "판타지 요소 없이 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임",
-          "genres": [
-            "생존",
-            "오픈월드",
-            "채집",
-            "현실"
-          ],
-          "image": "assets/title-survival.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/title-survival.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": {
-            "gameId": "wild-survival",
-            "titleEn": "WILD SURVIVAL",
-            "titleKo": "야생 생존",
-            "cover": {
-              "src": "assets/homepage-covers/wild-survival.webp",
-              "width": 960,
-              "height": 540,
-              "bytes": 56522,
-              "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
-            },
-            "small": {
-              "src": "assets/homepage-covers/wild-survival-480.webp",
-              "width": 480,
-              "height": 270,
-              "bytes": 23366,
-              "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
-            },
-            "kind": "MARKETING_ARTWORK",
-            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-            "typography": "rugged expedition woodcut slab serif with restrained worn edges"
-          }
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_GAME_BUILD",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/wild-survival/",
-            "archive": true,
-            "playable": true,
-            "state": "CURRENT_OWNER_BASELINE",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "생존",
-              "오픈월드",
-              "채집",
-              "현실"
-            ],
-            "genreLabel": "생존 · 오픈월드 · 채집 · 현실",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "현실 야생 생존 1차 플레이어블 · 허기/갈증/기력/체온/젖음/질병 · 비/폭우/낮밤 · 사슴/토끼 도주 AI · 멧돼지 위협 반응 · 채집/제작/모닥불/쉼터/저장",
-            "updatedAt": "2026-10-04",
-            "status": "ACTIVE",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "7e303ced0b26a4bcaacbf45399238dd56bb92eef13f737a6b885debaed80522f",
-      "ownerWebEntryFile": "web-games/wild-survival/index.html",
-      "webDevelopmentResetRequired": true,
-      "homepageMedia": {
-        "gameId": "wild-survival",
-        "titleEn": "WILD SURVIVAL",
-        "titleKo": "야생 생존",
-        "cover": {
-          "src": "assets/homepage-covers/wild-survival.webp",
-          "width": 960,
-          "height": 540,
-          "bytes": 56522,
-          "sha256": "514e9a5401df0d572558009859cd2cbda452a8edc2000ceb4a38d08cb487ece1"
-        },
-        "small": {
-          "src": "assets/homepage-covers/wild-survival-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 23366,
-          "sha256": "0c823e3713f4221668725fb769666db7011da76ef6136ed5225b32a7e20154e8"
-        },
-        "kind": "MARKETING_ARTWORK",
-        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-        "typography": "rugged expedition woodcut slab serif with restrained worn edges"
-      }
-    },
-    {
-      "id": "amusement-tycoon",
-      "name": "놀이공원 타이쿤",
-      "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
-      "genre": [
-        "타이쿤",
-        "3D",
-        "경영",
-        "건설"
-      ],
-      "image": "assets/page-bg-v4.webp",
-      "webPath": "/web-games/amusement-tycoon/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "타이쿤",
-          "3D",
-          "경영",
-          "건설"
-        ],
-        "genreLabel": "타이쿤 · 3D · 경영 · 건설",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 5,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "amusement-tycoon",
-          "name": "놀이공원 타이쿤",
-          "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
-          "genres": [
-            "타이쿤",
-            "3D",
-            "경영",
-            "건설"
-          ],
-          "image": "assets/page-bg-v4.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/page-bg-v4.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": {
-            "gameId": "amusement-tycoon",
-            "titleEn": "PARK TYCOON",
-            "titleKo": "놀이공원 타이쿤",
-            "cover": {
-              "src": "assets/homepage-covers/amusement-tycoon.webp",
-              "width": 960,
-              "height": 540,
-              "bytes": 61706,
-              "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
-            },
-            "small": {
-              "src": "assets/homepage-covers/amusement-tycoon-480.webp",
-              "width": 480,
-              "height": 270,
-              "bytes": 27642,
-              "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
-            },
-            "kind": "MARKETING_ARTWORK",
-            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-            "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
-          }
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/amusement-tycoon/",
-            "archive": true,
-            "playable": true,
-            "state": "CURRENT_OWNER_BASELINE",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "타이쿤",
-              "3D",
-              "경영",
-              "건설"
-            ],
-            "genreLabel": "타이쿤 · 3D · 경영 · 건설",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 5,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/amusement-tycoon",
-        "UNITY": "unity-games/amusement-tycoon"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "53e3c70244654f60c485098674a4a60856c53f0cd14c1adaea49f9e7f760390e",
-      "ownerWebEntryFile": "web-games/amusement-tycoon/index.html",
-      "webDevelopmentResetRequired": true,
-      "homepageMedia": {
-        "gameId": "amusement-tycoon",
-        "titleEn": "PARK TYCOON",
-        "titleKo": "놀이공원 타이쿤",
-        "cover": {
-          "src": "assets/homepage-covers/amusement-tycoon.webp",
-          "width": 960,
-          "height": 540,
-          "bytes": 61706,
-          "sha256": "bc7de45c0f767cba862a49f1112ae0489735f431595aa71a4f357f2165505a84"
-        },
-        "small": {
-          "src": "assets/homepage-covers/amusement-tycoon-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 27642,
-          "sha256": "98f99f04da035b38efb7f767b63ba361cc59f612d71788074b12221199e3254f"
-        },
-        "kind": "MARKETING_ARTWORK",
-        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-        "typography": "playful amusement park balloon slab lettering, curved wide terminals, flat coral cream"
-      }
-    },
-    {
-      "id": "bug-defense",
-      "name": "곤충 디펜스",
-      "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
-        "전략",
-        "곤충"
-      ],
-      "image": "assets/insect-war-v2.webp",
-      "webPath": "/web-games/bug-defense/",
-      "hasWebArchive": false,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "웨이브",
-          "전략",
-          "곤충"
-        ],
-        "genreLabel": "웨이브 · 전략 · 곤충",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 6,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "bug-defense",
-          "name": "곤충 디펜스",
-          "description": "30웨이브 곤충 디펜스",
-          "genres": [
-            "웨이브",
-            "전략",
-            "곤충"
-          ],
-          "image": "assets/insect-war-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/insect-war-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/bug-defense/",
-            "archive": false,
-            "playable": false,
-            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "웨이브",
-              "전략",
-              "곤충"
-            ],
-            "genreLabel": "웨이브 · 전략 · 곤충",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 6,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/bug-defense",
-        "UNITY": "unity-games/bug-defense"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
-    },
-    {
       "id": "line-defense",
       "name": "골목 군단 대전",
       "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
@@ -1449,11 +1449,11 @@
         ],
         "genreLabel": "라인 디펜스 · 전략 · 자동전투",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1569,11 +1569,11 @@
             ],
             "genreLabel": "라인 디펜스 · 전략 · 자동전투",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1661,10 +1661,10 @@
         ],
         "genreLabel": "RPG · 3D · 전투 · 퀘스트",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
+        "updatedAt": "2026-10-08T13:19:48.073Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -1783,10 +1783,10 @@
             ],
             "genreLabel": "RPG · 3D · 전투 · 퀘스트",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
+            "updatedAt": "2026-10-08T13:19:48.073Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -1861,8 +1861,8 @@
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
@@ -1875,11 +1875,11 @@
         ],
         "genreLabel": "힐링 · 생활 · 낚시",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "COOP",
+        "playModeLabel": "협동",
         "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2136,7 +2136,7 @@
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "ROBLOX_UNITY",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
+          "selectedPlatform": "UNITY",
           "stage": "개발확정 · Roblox + Unity 앱 동시개발"
         },
         "sources": {
@@ -2183,8 +2183,8 @@
           "recentWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
           "runtime": {
             "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
@@ -2197,11 +2197,11 @@
             ],
             "genreLabel": "힐링 · 생활 · 낚시",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "COOP",
+            "playModeLabel": "협동",
             "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2490,11 +2490,11 @@
         ],
         "genreLabel": "RPG · 생존 · 액션 · 보드",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "HYBRID",
+        "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
@@ -2613,11 +2613,11 @@
             ],
             "genreLabel": "RPG · 생존 · 액션 · 보드",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "HYBRID",
+            "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2700,11 +2700,11 @@
         ],
         "genreLabel": "몬스터 · 턴제 · 모험",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -2820,11 +2820,11 @@
             ],
             "genreLabel": "몬스터 · 턴제 · 모험",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2912,11 +2912,11 @@
         ],
         "genreLabel": "액션 · 생존 로그라이트",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3030,11 +3030,11 @@
             ],
             "genreLabel": "액션 · 생존 로그라이트",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3120,11 +3120,11 @@
         ],
         "genreLabel": "캐주얼 · 모바일",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3217,11 +3217,11 @@
             ],
             "genreLabel": "캐주얼 · 모바일",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3281,11 +3281,11 @@
         ],
         "genreLabel": "방치형 · RPG",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3378,11 +3378,11 @@
             ],
             "genreLabel": "방치형 · RPG",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3442,11 +3442,11 @@
         ],
         "genreLabel": "퍼즐 · 모바일",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3539,11 +3539,11 @@
             ],
             "genreLabel": "퍼즐 · 모바일",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3603,11 +3603,11 @@
         ],
         "genreLabel": "디펜스 · 전략",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3721,11 +3721,11 @@
             ],
             "genreLabel": "디펜스 · 전략",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3811,11 +3811,11 @@
         ],
         "genreLabel": "스토리 · RPG",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -3908,11 +3908,11 @@
             ],
             "genreLabel": "스토리 · RPG",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -3971,11 +3971,11 @@
         ],
         "genreLabel": "생존 · 채집",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-08T06:37:07.027Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "updatedAt": "2026-10-08T12:50:41.556Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -4068,11 +4068,11 @@
             ],
             "genreLabel": "생존 · 채집",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-08T06:37:07.027Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "updatedAt": "2026-10-08T12:50:41.556Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -4105,7 +4105,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -4133,7 +4133,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4164,7 +4164,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -4230,7 +4230,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4266,7 +4266,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -4295,7 +4295,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4348,7 +4348,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
@@ -4415,7 +4415,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4466,7 +4466,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -4494,7 +4494,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4546,7 +4546,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -4612,7 +4612,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4705,7 +4705,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4828,7 +4828,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -4873,7 +4873,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -4901,7 +4901,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -4932,7 +4932,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -4998,7 +4998,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5033,7 +5033,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -5061,7 +5061,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -5092,7 +5092,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -5158,7 +5158,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5215,7 +5215,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -5338,7 +5338,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5384,7 +5384,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -5413,7 +5413,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -5445,7 +5445,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -5512,7 +5512,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5579,7 +5579,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -5702,7 +5702,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5780,7 +5780,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -5882,7 +5882,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -5938,7 +5938,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6040,7 +6040,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6096,7 +6096,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6198,7 +6198,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6254,7 +6254,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6356,7 +6356,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6379,7 +6379,7 @@
       "homepageWebPlayable": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -6407,7 +6407,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6438,7 +6438,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -6504,7 +6504,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6538,7 +6538,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -6566,7 +6566,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:52:07.358Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6618,7 +6618,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -6684,7 +6684,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:52:07.358Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6777,7 +6777,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -6900,7 +6900,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -6978,7 +6978,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -7101,7 +7101,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -7179,7 +7179,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -7302,7 +7302,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -7380,7 +7380,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -7503,7 +7503,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -7579,7 +7579,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -7700,7 +7700,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -7778,7 +7778,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -7901,7 +7901,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -7979,7 +7979,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -8102,7 +8102,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -8180,7 +8180,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -8303,7 +8303,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -8381,7 +8381,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -8504,7 +8504,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -8580,7 +8580,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -8701,7 +8701,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -8779,7 +8779,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "개발 작업 정보 없음",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -8902,7 +8902,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "개발 작업 정보 없음",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
@@ -8978,7 +8978,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-        "updatedAt": "2026-10-08T06:39:18.528Z",
+        "updatedAt": "2026-10-08T11:09:46.087Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
@@ -9100,7 +9100,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-            "updatedAt": "2026-10-08T06:39:18.528Z",
+            "updatedAt": "2026-10-08T11:09:46.087Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }

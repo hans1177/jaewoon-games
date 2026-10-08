@@ -21,6 +21,7 @@ on:
       - 'assets/vibe-change-set.js'
       - 'assets/vibe-quality-intelligence.js'
       - 'assets/vibe-art-pipeline.js'
+      - 'assets/native-authoring/build-game-visual.py'
       - 'assets/vibe-visual-quality-gate.js'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
@@ -75,6 +76,12 @@ on:
       - 'tools/vibe2-fast-distillation-stage.mjs'
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-train.py'
+      - 'tools/vibe2-practice-train.py'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-online-unity-teacher.mjs'
+      - 'qa/vibe2-train-encoding.test.py'
+      - 'qa/vibe2-practice-weight-learning.test.mjs'
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
@@ -82,6 +89,7 @@ on:
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'qa/company-build-up-experience-quality.test.mjs'
       - 'qa/vibe-roblox-co-development.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
@@ -145,6 +153,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/company-build-up-directive.mjs'
+      - 'qa/company-build-up-directive.test.mjs'
       - 'tools/company-roblox-production-plan.mjs'
       - 'qa/company-roblox-production-plan.test.mjs'
       - 'qa/company-roblox-production-handoff.test.mjs'
@@ -193,6 +202,12 @@ on:
       - 'tools/vibe2-fast-distillation-stage.mjs'
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-train.py'
+      - 'tools/vibe2-practice-train.py'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-online-unity-teacher.mjs'
+      - 'qa/vibe2-train-encoding.test.py'
+      - 'qa/vibe2-practice-weight-learning.test.mjs'
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
@@ -222,6 +237,7 @@ jobs:
     timeout-minutes: 2
     outputs:
       parallelism_only: ${{ steps.scope.outputs.parallelism_only }}
+      coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -250,6 +266,11 @@ jobs:
           fi
           git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
           git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
+          coding_benchmark=NO
+          if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
+            coding_benchmark=YES
+          fi
+          echo "coding_benchmark=$coding_benchmark" >> "$GITHUB_OUTPUT"
           if [ -s /tmp/vibe2-core-qa-files.txt ] && ! grep -Ev '^(\.github/workflows/vibe2-(continuous-core|24h-runner|parallelism-contract-qa)\.yml|qa/vibe2-parallelism-(main|20)-contract\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt | grep -q .; then
             parallelism_only=YES
           fi
@@ -271,6 +292,8 @@ jobs:
       - name: Syntax check
         run: |
           set -euo pipefail
+          node qa/external-mobile-free-game-playtest-workflow.test.mjs
+          node --test qa/jaewoon-motion-engine.test.cjs
           node --check assets/vibe-engine-adapter.js
           node --check assets/vibe-workbench.js
           node --check assets/vibe-core-runtime.js
@@ -280,6 +303,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/company-build-up-directive.mjs
+          node --check qa/company-build-up-directive.test.mjs
           node --check tools/company-roblox-production-plan.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-asset-production-plan.mjs
@@ -379,6 +403,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/company-build-up-directive.test.mjs
           node --test qa/company-build-up-experience-quality.test.mjs
           node --test qa/company-roblox-production-plan.test.mjs qa/company-roblox-production-handoff.test.mjs
           node --test qa/vibe-roblox-co-development.test.mjs
@@ -420,6 +445,7 @@ jobs:
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs
+          node --test qa/vibe2-practice-weight-learning.test.mjs
           node --test qa/vibe2-external-ai-distillation.test.mjs
           node --test qa/vibe2-fast-distillation-stage.test.mjs qa/vibe2-distillation-status.test.mjs qa/vibe2-weight-learning.test.mjs
           node --test qa/vibe2-web-experience-ingest.test.mjs
@@ -465,13 +491,14 @@ jobs:
     if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     name: Practice fault cards runtime
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Prepare isolated practice executors
+        id: executors
         run: |
           set -euo pipefail
           practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
@@ -494,5 +521,42 @@ jobs:
           VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler" qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-studio-lessons.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
-
-
+          node --test --test-name-pattern="managed spawn executes" qa/company-development-roblox-runtime-foundation.test.mjs
+      - name: Execute native GLB authoring and platform material checks
+        if: always() && !cancelled() && steps.executors.outcome == 'success'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          blender --background --factory-startup --python-exit-code 1 --python-expr "import numpy; import bpy; print('VIBE_GLB_EXPORT_DEPENDENCIES=PASS')"
+          VIBE2_BLENDER_BINARY=blender node --test --test-name-pattern="actual Blender authoring|GLB production inspection|native asset recipe preserves" qa/vibe2-native-asset-production.test.mjs
+      - name: Preserve authored GLB and preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-glb-authoring-evidence
+          path: ${{ runner.temp }}/vibe2-glb-authoring-evidence
+          if-no-files-found: error
+          retention-days: 14
+      - name: Prepare the existing local Vibe model for coding measurement
+        id: local-model
+        if: always() && !cancelled() && steps.executors.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: qwen3:1.7b
+          cache-model: 'true'
+          pull-model: 'true'
+          preload-model: 'true'
+      - name: Measure actual generated implementations and repairs
+        if: always() && !cancelled() && steps.local-model.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES'
+        env:
+          VIBE2_LIVE_CODING_BENCHMARK: '1'
+          VIBE2_LOCAL_MODEL: qwen3:1.7b
+        run: node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
+      - name: Preserve coding performance evidence
+        if: always() && needs.scope.outputs.coding_benchmark == 'YES'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-coding-repair-benchmark
+          path: ${{ runner.temp }}/vibe2-coding-repair-benchmark.json
+          if-no-files-found: error
+          retention-days: 14

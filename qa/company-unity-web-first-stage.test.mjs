@@ -75,7 +75,7 @@ test('Unity Web readiness publication uses PR instead of direct main write',()=>
   assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
   assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
   assert.match(workflow,/unity-web-deploy-manifest\.json/);
-  assert.match(workflow,/git add -f "web-games\/\$GAME_ID\/Build"/);
+  assert.match(workflow,/git add -f "\$runtime_dir\/Build"/);
   assert.match(workflow,/25\*1024\*1024/);
   const ignore=fs.readFileSync(path.join(repo,'.gitignore'),'utf8');
   assert.match(ignore,/!web-games\/\*\/Build\/\*\*/);
@@ -94,10 +94,10 @@ test('Unity Web reviewed promotion binds candidate Unity source and verified Web
   const section=workflow.slice(start,end);
   assert.match(section,/candidate_paths=\("unity-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
   assert.match(section,/git checkout "\$SOURCE_COMMIT" -- "\$\{candidate_paths\[@\]\}"/);
-  assert.match(section,/git add "unity-games\/\$GAME_ID" "web-games\/\$GAME_ID"/);
+  assert.match(section,/git add "unity-games\/\$GAME_ID" "\$runtime_dir"/);
   assert.match(section,/UNITY_WEB_CLOUDFLARE_PREVIEW=/);
   assert.match(section,/gh pr merge "\$pr_url"/);
-  assert.match(section,/merged_paths=\("unity-games\/\$GAME_ID" "web-games\/\$GAME_ID" "\$\{generated_asset_files\[@\]\}"\)/);
+  assert.match(section,/merged_paths=\("unity-games\/\$GAME_ID" "\$runtime_dir" "\$\{generated_asset_files\[@\]\}"\)/);
   assert.match(section,/git diff --quiet "\$release_commit" origin\/main -- "\$\{merged_paths\[@\]\}"/);
   assert.match(section,/UNITY_WEB_CLOUDFLARE_MAIN=/);
   const mainDeploy=section.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=');
@@ -167,4 +167,29 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
     const permission=line.trim();
     assert.ok(repair.includes(`      ${permission}\n`),`repair caller must grant callee permission: ${permission}`);
   }
+});
+
+test('owner-directed Daechung public WebGL test does not mislabel graphics or multiplayer as ready',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
+  const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
+  const publish=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const repair=workflow.indexOf('      - name: Mark Unity Web floor repair requirement');
+  const section=workflow.slice(publish,repair);
+  assert.ok(publish>=0&&repair>publish,'publish browser test before marking upper-platform repair');
+  assert.ok(section.includes("steps.readiness.outputs.pass == 'false'"));
+  assert.ok(section.includes("steps.request.outputs.game_id == 'daechung-rpg'"));
+  assert.ok(section.includes('runtime_dir="web-games/$GAME_ID/unity"'));
+  assert.ok(section.includes('test -s "web-games/$GAME_ID/index.html"'));
+  assert.ok(section.includes('test -s "$runtime_dir/unity-web-gameplay-validation.json"'));
+  assert.ok(section.includes('test -s "$runtime_dir/unity-web-independent-qa.json"'));
+  assert.ok(section.includes('test -s "$runtime_dir/unity-web-regression.json"'));
+  assert.ok(section.includes('UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS'));
+  assert.ok(section.includes('if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = \'true\' ]; then'));
+  assert.ok(workflow.includes("if: steps.readiness.outputs.pass != 'true'"));
+  assert.match(homepage,/for\(const href of \[/);
+  assert.ok(homepage.includes('/unity/'));
+  assert.match(homepage,/complete=probes\.every\(response=>response\?\.ok===true\)/);
+  assert.match(headers,/\/web-games\/\*\/unity\/Build\/\*\.wasm\.gz/);
+  assert.match(headers,/Content-Encoding: gzip/);
 });

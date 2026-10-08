@@ -120,6 +120,27 @@ test('motion quality hard failure overrides perfect average', () => {
   assert.equal(result.decision, 'REVISE');
 });
 
+test('default motion transitions only connect available states and explicit mistakes stay visible', () => {
+  const states = ['idle', 'move', 'attack', 'hit', 'death'].map(id => ({ id, clips: [id] }));
+  const contract = createVibeMotionContract({ states });
+  assert.equal(validateVibeMotionContract(contract).valid, true);
+  assert.equal(validateVibeMotionTransition(contract, { from: 'idle', to: 'attack' }).valid, true);
+  assert.equal(validateVibeMotionTransition(contract, { from: 'death', to: 'idle' }).valid, false);
+  const explicit = createVibeMotionContract({ states, transitions: { idle: ['missing'] } });
+  assert.ok(validateVibeMotionContract(explicit).issues.includes('transition-target-unknown:idle->missing'));
+  const plan = planVibeCoreTask({ request: '기존 캐릭터 모션 수정', target: 'web', gameId: 'existing', motion: { states } });
+  assert.equal(plan.executionGate.mayExecute, true);
+});
+
+test('combat contact cannot precede the authored windup', () => {
+  const input = { actionType: 'melee', windup: .3, activeStart: .2, activeEnd: .4, recoveryEnd: .8, hitMarker: 'HitWindow' };
+  const invalid = createVibeCombatMotionSync(input);
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.issues.includes('active-before-windup-end'));
+  assert.equal(invalid.timing.activeStart, .2);
+  assert.equal(createVibeCombatMotionSync({ ...input, windup: .2 }).valid, true);
+});
+
 test('only verified evidence becomes reusable learning', () => {
   const bad = createVibeMotionLearningRecord({ problem:'foot sliding', solution:'turn state', verified:true });
   const good = createVibeMotionLearningRecord({ problem:'foot sliding', solution:'turn state', evidence:'qa-run-1', verified:true });

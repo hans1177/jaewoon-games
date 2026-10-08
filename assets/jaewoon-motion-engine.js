@@ -97,6 +97,10 @@
         alpha: new MotionSpring(finite(options.alpha, 1), { stiffness: 220, damping: 30, ...spring }),
       };
       this.time = 0;
+      this.movePhase = 0;
+      this.tiltPhase = 0;
+      this.presentationTime = 0;
+      this.afterimageDuration = clamp(finite(options.afterimageDuration, .12), .02, .5);
       this.motionScale = clamp(finite(options.motionScale, 1), 0, 2);
       this.reducedMotion = Boolean(options.reducedMotion);
       this.lowPower = Boolean(options.lowPower);
@@ -115,7 +119,7 @@
       this.land = { time: 0, duration: 0.2, strength: 1 };
       this.flash = 0;
       this.history = [];
-      this.maxHistory = Math.max(2, Math.floor(finite(options.afterimageSamples, 8)));
+      this.maxHistory = clamp(Math.floor(finite(options.afterimageSamples, 8)), 2, 64);
       this.lastSample = this.sample();
     }
 
@@ -127,14 +131,24 @@
     setLod({ tier = 'NEAR' } = {}) {
       const value = String(tier || 'NEAR').toUpperCase();
       this.lodTier = ['NEAR', 'MID', 'FAR', 'OFFSCREEN'].includes(value) ? value : 'NEAR';
+      // 화면 밖 전환에서 지난 좌표의 잔상을 즉시 폐기한다.
+      if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') this.history = [];
       return this;
     }
 
     setBasePose(pose = {}, { snap = false } = {}) {
+      let rebased = false;
       for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha']) {
         if (pose[key] == null) continue;
-        if (snap) this.channels[key].snap(pose[key]);
-        else this.channels[key].setTarget(pose[key]);
+        if (snap) {
+          // 스폰·순간이동은 물리 좌표를 그대로 적용하고, 과거 위치의 잔상을 남기지 않는다.
+          if (this.channels[key].value !== finite(pose[key], this.channels[key].value)) rebased = true;
+          this.channels[key].snap(pose[key]);
+        } else this.channels[key].setTarget(pose[key]);
+      }
+      if (snap) {
+        if (rebased) this.history = [];
+        this.lastSample = this.sample();
       }
       return this;
     }
@@ -200,21 +214,35 @@
 
     update(dt) {
       const delta = clamp(finite(dt), 0, 0.1);
-      const wasPaused = this.visualPause > 0;
+      if (delta === 0) return this.lastSample;
+      const pausedDelta = Math.min(delta, this.visualPause);
       this.visualPause = Math.max(0, this.visualPause - delta);
-      const motionDelta = wasPaused ? 0 : delta;
+      const motionDelta = delta - pausedDelta;
+      this.presentationTime += delta;
       this.time += motionDelta;
       for (const spring of Object.values(this.channels)) spring.update(delta);
-      const follow = 1 - Math.exp(-delta * 12 * this.profile.inertialization);
+      const previousSpeed = this.smoothedSpeed;
+      const follow = 1 - Math.exp(-motionDelta * 12 * this.profile.inertialization);
       this.smoothedSpeed = lerp(this.smoothedSpeed, this.targetSpeed, clamp(follow, 0, 1));
+      // 메인: 물리 좌표는 계속 추종하고, 보행 위상만 실제 모션 시간으로 적분한다.
+      // 절대 실행 시간에 현재 속도를 곱하면 장시간 실행 후 속도 변경이 큰 포즈 점프가 된다.
+      if (this.moving && motionDelta > 0) {
+        const intensity = clamp((previousSpeed + this.smoothedSpeed) / 440, 0.25, 1.2);
+        this.movePhase = (this.movePhase + motionDelta * TAU * (2.8 + intensity) * this.profile.moveFrequency) % TAU;
+        this.tiltPhase = (this.tiltPhase + motionDelta * TAU * (1.4 + intensity * 0.6) * this.profile.moveFrequency) % TAU;
+      }
       this.attack.time = Math.max(0, this.attack.time - motionDelta);
       this.hit.time = Math.max(0, this.hit.time - motionDelta);
       this.land.time = Math.max(0, this.land.time - motionDelta);
       this.flash = Math.max(0, this.flash - delta * 8);
       this.contactPulse = Math.max(0, this.contactPulse - delta * 6);
       this.lastSample = this.sample();
-      this.history.unshift({ ...this.lastSample, age: 0 });
-      this.history = this.history.slice(0, this.maxHistory).map((entry, index) => ({ ...entry, age: index / Math.max(1, this.maxHistory - 1) }));
+      if (this.lodTier === 'FAR' || this.lodTier === 'OFFSCREEN') this.history = [];
+      else {
+        this.history.unshift({ ...this.lastSample, sampledAt: this.presentationTime, age: 0 });
+        this.history = this.history.filter(entry => this.presentationTime - entry.sampledAt < this.afterimageDuration)
+          .slice(0, this.maxHistory).map(entry => ({ ...entry, age: (this.presentationTime - entry.sampledAt) / this.afterimageDuration }));
+      }
       return this.lastSample;
     }
 
@@ -231,15 +259,15 @@
       const moveIntensity = this.moving ? clamp(this.smoothedSpeed / 220, 0.25, 1.2) : 0;
       const locomotionBlend = clamp(this.smoothedSpeed / 220, 0, 1);
       const idleBreath = Math.sin(this.time * TAU * 0.72 * pfx.idleBreathFrequency) * 0.018 * k * pfx.idleBreathAmplitude;
-      const moveBob = Math.sin(this.time * TAU * (2.8 + moveIntensity) * pfx.moveFrequency) * 3.2 * moveIntensity * k * pfx.moveBobAmplitude;
-      const moveTilt = Math.sin(this.time * TAU * (1.4 + moveIntensity * 0.6) * pfx.moveFrequency) * 0.035 * moveIntensity * k * pfx.moveTiltAmplitude;
+      const moveBob = Math.sin(this.movePhase) * 3.2 * moveIntensity * k * pfx.moveBobAmplitude;
+      const moveTilt = Math.sin(this.tiltPhase) * 0.035 * moveIntensity * k * pfx.moveTiltAmplitude;
 
       let attackX = 0, attackRot = 0, attackScaleX = 0, attackScaleY = 0;
       if (this.attack.time > 0) {
         const p = 1 - this.attack.time / this.attack.duration;
         const weight = this.attack.weightClass === 'HEAVY' ? 1.28 : this.attack.weightClass === 'LIGHT' ? 0.82 : 1;
         const contactAt = this.attack.contactAt;
-        const anticipationEnd = clamp(contactAt - 0.22, 0.22, 0.42);
+        const anticipationEnd = Math.min(contactAt - 0.08, clamp(contactAt - 0.22, 0.22, 0.42));
         const s = this.attack.strength * k * weight;
         if (p < anticipationEnd) {
           const q = smoothstep(p / anticipationEnd);
@@ -307,7 +335,7 @@
       const intensity = this.profile.afterimageIntensity;
       return this.history.slice(1, n + 1).map((sample, index) => ({
         ...sample,
-        alpha: clamp(alpha * intensity * (1 - index / Math.max(1, n)), 0, 1),
+        alpha: clamp(finite(alpha, .22) * intensity * (1 - sample.age), 0, 1),
       }));
     }
   }

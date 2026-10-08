@@ -1483,7 +1483,7 @@ jobs:
             node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
             export VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs"
           fi
-          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.codingPracticeDrill==='unity-lifecycle'?0:1)"; then
+          if PRACTICE_CURRICULUM="$contract_root/company-learning/roblox-practice.json" node -e "const fs=require('fs');const o=require('/tmp/vibe2-work-order.json');const id=o.selectedTask?.codingPracticeDrill||o.codingPracticeDrill;const c=JSON.parse(fs.readFileSync(process.env.PRACTICE_CURRICULUM,'utf8'));process.exit(c.platformDrills?.some(d=>d.id===id&&d.platform==='unity')?0:1)"; then
             docker pull mcr.microsoft.com/dotnet/sdk:8.0
           fi
           artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
@@ -2576,7 +2576,8 @@ jobs:
             authorityExpanded:false
           }:null;
           const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
-          const result={version:17,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const practiceRepair=['analysis-only','learning-web-artifact'].includes(route)&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')?JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8')).repairEvidence||null:null;
+          const result={version:17,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,practiceRepair,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');

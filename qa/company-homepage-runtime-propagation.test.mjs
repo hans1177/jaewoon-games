@@ -5,6 +5,63 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
+test('개발 Unity WebGL의 /unity/ 경로가 없으면 기존 출력 루트의 실제 4종 빌드 파일을 검사한다',async()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const fetched=[];
+  const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
+    document:{readyState:'loading',addEventListener(){}},
+    AbortController,setTimeout,clearTimeout,
+    fetch:async(url,options={})=>{
+      const location=String(url);
+      fetched.push(location);
+      if(location.includes('/unity/index.html'))return{ok:false};
+      if(location.includes('/index.html'))return{ok:true,text:async()=>
+        '<div id="unity-container"></div><script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas, {dataUrl:"Build/demo.data", frameworkUrl:"Build/demo.framework.js", codeUrl:"Build/demo.wasm"});</script>'};
+      if(location.includes('unity-web-deploy-manifest.json'))return{ok:false};
+      if(options.method==='HEAD')return{ok:true};
+      return{ok:false};
+    }
+  });
+  engine.setExposure({unityWebEnabled:true,games:[]});
+  const result=await engine.bindAvailableUnityWebSurfaces({games:[
+    {id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}
+  ]});
+  assert.equal(result.games[0].unityWebAvailable,true);
+  assert.equal(result.games[0].unityWebTestUrl,'/web-games/demo/');
+  assert.ok(fetched.some(url=>url.includes('/unity/index.html')));
+  assert.ok(fetched.some(url=>url.includes('/web-games/demo/index.html')));
+  assert.equal(fetched.filter(url=>url.includes('/Build/demo.')).length,4);
+});
+
+test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}}
+  });
+  api.setExposure({unityWebEnabled:true,games:[]});
+  const base=(id,cls)=>({id,canonical:{
+    identity:{gameId:id,name:id},
+    lifecycle:{state:'ACTIVE'},
+    production:{class:cls},
+    sources:{web:{playable:false,archive:false},unity:{projectPath:'unity-games/'+id}}
+  }});
+  const dev=base('dev-without-release','DEVELOPMENT_CONFIRMED');
+  const design=base('design-without-release','DESIGN_ONLY');
+  const released=base('released-without-build','RELEASE_CONFIRMED');
+  const list=api.developmentRows({games:[dev,design,released]},{});
+  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release']);
+  assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
+  assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
+  const card=api.buildCard(dev);
+  assert.match(card,/Roblox · 개발 중/);
+  assert.match(card,/Unity 앱 · 개발 중/);
+  assert.match(card,/Unity Web · 빌드없음/);
+  assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
+  assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityAction"/);
+  assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityWebAction"/);
+  assert.match(card,/data-direct-play=""/);
+});
+
 test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
@@ -211,7 +268,7 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/function playableWebHref\(row\)/);
   assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
+  assert.match(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
   assert.match(renderer,/웹 플레이/);
   assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);

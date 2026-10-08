@@ -1276,7 +1276,19 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const domains=inferDomains(clean(task.goal),engine);
   const practiceDistilled=(practiceDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&clean(row.authority)==='VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE'&&knowledgeStateFor(mastery,'PRACTICE_DISTILLED',row?.id)!=='RETIRED'&&domains.includes(upper(row.domain)))
-    .map(row=>({id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:(row.verificationEvidence||[]).map(clean).filter(Boolean).slice(0,6),authority:clean(row.authority),relevance:Math.min(12,4+Math.max(1,Number(row.confirmations)||1))}))
+    .map(row=>{
+      const evidence=new Set((row.verificationEvidence||[]).map(clean));
+      // Resolve instructions from current verified sources, never from raw practice text.
+      // Revoked or revised evidence must stop supplying its previous implementation advice.
+      const patterns=(codePatternsInput.patterns||[]).filter(item=>item.verified===true&&item.rawCodeStored!==true&&item.retrievalEligible!==false&&upper(item.independentQa)==='PASS'&&knowledgeStateFor(mastery,'CODE_PATTERN',item.id)!=='RETIRED'
+        &&evidence.has('code-pattern:'+clean(item.id)+':'+(clean(item.sourceRevision)||clean(item.id))));
+      const experiences=(normalizedExperience.records||[]).filter(item=>item.verified===true&&item.reusable===true&&item.retrievalEligible!==false&&lower(item.taskType)!=='game-study'&&knowledgeStateFor(mastery,'EXPERIENCE',item.id)!=='RETIRED'
+        &&evidence.has('experience:'+clean(item.id||item.fingerprint)+':'+(clean(item.gameId)||clean(item.id))));
+      return{id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:[...evidence].slice(0,6),
+        reusablePatterns:uniq([...patterns.map(item=>item.pattern),...experiences.flatMap(item=>item.reusablePatterns||[])]).slice(0,4),
+        avoidPatterns:uniq(experiences.flatMap(item=>item.avoidPatterns||[])).slice(0,4),
+        authority:clean(row.authority),relevance:Math.min(12,4+Math.max(1,Number(row.confirmations)||1))};
+    })
     .sort((a,b)=>b.relevance-a.relevance||a.domain.localeCompare(b.domain)).slice(0,6);
   const externalAiDistilled=(externalAiDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.distilled===true&&row?.advisoryOnly===true&&row?.reusable===true&&row?.rawOutputStored===false&&row?.directSourceWrite!==true&&row?.directProductionPass!==true&&knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)!=='RETIRED')
@@ -1340,7 +1352,7 @@ export function learningGuidance(context={}){
     lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}${externalTrace}`);
   }
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
-  for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
+  for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
   for(const row of context.playbookReuse||[]){
     lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourcePlaybooks=${(row.sourcePlaybooks||[]).join('|')||'unknown'}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);
@@ -1573,7 +1585,15 @@ function companyGraphicsLibraryDrills(){
   })));
 }
 
-export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
+// APK 관찰 샘플은 기존 학습 상태에서 읽고 기존 교재만 실행한다. 외부 코드는 받지 않는다.
+export function readExternalGameplayPracticeSamples(directory=''){
+  if(!directory||!fs.existsSync(directory))return [];
+  return fs.readdirSync(directory).filter(name=>/^commercial-runtime-[a-z0-9._-]+\.json$/i.test(name)).sort().flatMap(name=>{
+    try{return [JSON.parse(fs.readFileSync(path.join(directory,name),'utf8'))];}catch{return [];}
+  });
+}
+
+export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externalRuntimeSamples=[]){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
@@ -1624,7 +1644,40 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const robloxCurriculum=JSON.parse(fs.readFileSync(new URL('../company-learning/roblox-practice.json',import.meta.url),'utf8'));
   const robloxDrills=robloxCurriculum.drills.map(row=>({id:'roblox-'+row.id,kind:'ROBLOX_CODE_REPAIR',robloxCodePractice:true,robloxPracticeDrill:row.id,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
   const platformDrills=(robloxCurriculum.platformDrills||[]).map(row=>({id:row.id,kind:'PLATFORM_CODE_REPAIR',codingPracticeDrill:row.id,platformProfile:row.platform,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
+  const curriculumById=new Map([...robloxCurriculum.drills.map(row=>({...row,platform:'roblox'})),...(robloxCurriculum.platformDrills||[])].map(row=>[row.id,row]));
+  const externalDrills=[];
+  const seenExternal=new Set();
+  for(const sample of externalRuntimeSamples||[]){
+    const plan=sample?.implementationPractice,provenance=sample?.provenance||{};
+    if(sample?.sourceKind!=='commercial-runtime-reference'||sample?.authority!=='PRACTICE_ONLY'||sample?.practiceOnly!==true||sample?.runtimePromotionAllowed!==false
+      ||sample?.qa?.runtime!=='PASS'||provenance.observationKind!=='BLACK_BOX_RUNTIME_ONLY'||provenance.codeExtracted!==false||provenance.binaryRedistributed!==false
+      ||plan?.authority!=='PRACTICE_ONLY'||plan?.practiceOnly!==true||plan?.runtimePromotionAllowed!==false||plan?.state!=='READY_FOR_INDEPENDENT_PRACTICE'
+      ||!clean(sample.sourceRevision)||plan.sourceRevision!==sample.sourceRevision||!/^[a-z0-9._-]+$/i.test(plan.gameId||'')
+      ||sample.project!=='external-commercial-'+plan.gameId
+      ||plan?.comparison?.sourceGameplayEquivalenceVerified!==false||!(plan?.observation?.measuredInputCount>0)
+      ||!['beforeScreenshotSha256','afterScreenshotSha256'].every(key=>/^[a-f0-9]{64}$/i.test(plan.observation[key]||'')&&plan.observation[key]===provenance[key])
+      ||!(Array.isArray(provenance.inputTrace)&&provenance.inputTrace.some(event=>event?.inputDelivered===true&&event?.foreground===true&&/^[a-f0-9]{64}$/i.test(event.screenshotSha256||''))))continue;
+    for(const exercise of (Array.isArray(plan.exercises)?plan.exercises:[]).slice(0,2)){
+      if(!exercise||typeof exercise!=='object')continue;
+      const card=curriculumById.get(exercise.drillId),platform=lower(exercise.platform);
+      if(!card||card.platform!==platform||!['web','roblox'].includes(platform)||exercise.basis!=='INDEPENDENT_ENGINEERING_PROPOSAL')continue;
+      const id='external-'+plan.gameId+'-'+platform;
+      if(seenExternal.has(id))continue;
+      seenExternal.add(id);
+      externalDrills.push({id,kind:'EXTERNAL_OBSERVATION_CODE_PRACTICE',priority:'high',productionPreemptible:true,countsAsProductionPass:false,
+        domains:card.domains,platformProfile:platform,
+        ...(platform==='roblox'?{robloxCodePractice:true,robloxPracticeDrill:card.id}:{codingPracticeDrill:card.id}),
+        externalGameplayPractice:{sourceRevision:sample.sourceRevision,gameId:plan.gameId,
+          designAxes:{genre:{id:clean(plan.designAxes?.genre?.id).slice(0,120),subgenre:'',rules:[]},style:{id:'',visual:[],motion:[]},concept:{id:'',world:[],mood:[]},sourceRevision:sample.sourceRevision},
+          observation:{scope:'APP_LAUNCH_AND_BOUNDED_INPUT_TRACE',beforeScreenshotSha256:plan.observation.beforeScreenshotSha256,afterScreenshotSha256:plan.observation.afterScreenshotSha256,
+            measuredInputCount:Math.min(8,Math.max(0,Math.floor(Number(plan.observation.measuredInputCount)||0))),visualChange:plan.observation.visualChange===true},
+          comparison:{scope:'INPUT_RESPONSE_CONTRACT_ONLY',sourceGameplayEquivalenceVerified:false,physicalParametersVerified:false,motionCurvesVerified:false,menuSemanticsVerified:false},
+          basis:exercise.basis,practiceOnly:true,runtimePromotionAllowed:false}
+      });
+    }
+  }
   const drills=[
+    ...externalDrills,
     ...repeatedFailureDrills,
     ...relearningDrills,
     ...phase4Drills,
@@ -1641,6 +1694,7 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
+    externalGameplayPracticeDrills:externalDrills.length,
     phase4GeneralizationDrills:phase4Drills.length,drills
   };
 }
@@ -1746,6 +1800,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     robloxCodePractice?'robloxPracticeDrill='+clean(drill.robloxPracticeDrill):'',
     codingPractice?'codingPracticeDrill='+clean(drill.codingPracticeDrill):'',
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
+    drill.externalGameplayPractice?'APK 입력 관찰을 참고한 독립 엔진 실습이다. 동일 게임 행동·물리·모션·메뉴의 재현 성공은 별도 관찰 비교 전까지 미확인이다.':'',
     phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
     phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
     phase4?`phase4PairId=${clean(drill.phase4PairId)}`:'',
@@ -1771,6 +1826,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   ]:[];
   const task={
     id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:unityCodePractice?'unity':robloxCodePractice?'roblox':phase4?(lower(drill.targetEngine)||'web'):'web',robloxPracticeDrill:robloxCodePractice?clean(drill.robloxPracticeDrill):null,codingPracticeDrill:codingPractice?clean(drill.codingPracticeDrill):null,department:'learning',type:'research',goal,
+    ...(drill.externalGameplayPractice?{externalGameplayPractice:drill.externalGameplayPractice}:{}),
     responsibleFiles:[],dependencies:[],priority:robloxCodePractice||codingPractice?'high':'low',releaseState:'other',status:'queued',
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
@@ -2603,7 +2659,7 @@ function learningStateSemanticSnapshot(input={}){
   return JSON.stringify(value);
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={},externalRuntimeSamples=[]}={}){
   const priorStateSemantic=learningStateSemanticSnapshot(stateInput);
   const specializedExperience=mergeVerifiedSpecializedQueueExperienceMemory(experienceInput,queueInput);
   const cloudExperience=mergeVerifiedRobloxCloudRuntimeExperienceMemory(specializedExperience.memory,companyQueueInput);
@@ -2626,7 +2682,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
   const benchmark=buildBenchmarkLadder(graphicsApplied.state,cloudExperience.memory,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark);
+  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark,externalRuntimeSamples);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
@@ -2689,7 +2745,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=clean(a.queue);
   const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname)});
   if(result.stateChanged) writeJson(stateFile,result.state);
   else console.log('VIBE2_LEARNING_STATE_WRITE=SKIPPED_NO_SUBSTANTIVE_CHANGE');
   if(result.experienceChanged) writeJson(experienceFile,result.experience);
@@ -2726,6 +2782,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
+  console.log(`VIBE2_EXTERNAL_GAMEPLAY_PRACTICE_DRILLS=${result.idlePractice.externalGameplayPracticeDrills||0}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_PRACTICE_DRILLS=${result.idlePractice.phase4GeneralizationDrills||0}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);

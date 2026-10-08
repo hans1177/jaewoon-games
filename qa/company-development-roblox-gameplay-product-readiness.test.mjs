@@ -1,3 +1,4 @@
+// 파일명: qa/company-development-roblox-gameplay-product-readiness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -499,4 +500,45 @@ test('cloud scene rejects floating spawns even when overall map bounds and runti
  });
  assert.equal(result.pass,false);
  assert.ok(result.blockers.includes('F9_SPAWN_NOT_GROUNDED'));
+});
+
+test('Roblox survival object gathering keeps legacy reward and save rules until verified per-node rules exist',()=>{
+  const source=fs.readFileSync('roblox-games/survival/server/Game.server.luau','utf8');
+  const config=fs.readFileSync('roblox-games/survival/shared/GameConfig.luau','utf8');
+  assert.match(source,/WorldObjectId/);
+  assert.match(source,/validResourceRule\(nodeName\)/);
+  assert.match(source,/prompt.Enabled = rule ~= nil/);
+  assert.match(source,/prompt.Triggered:Connect\(function\(player\)/);
+  assert.match(source,/root.Position - part.Position\)\.Magnitude > 12/);
+  assert.match(source,/now - \(lastAction\[player\] or -1e6\) < Config.RateLimitSeconds/);
+  assert.match(source,/GetAsync\("player:"/);
+  assert.match(source,/UpdateAsync\("player:"/);
+  assert.match(source,/saved.WorldObjects/);
+  assert.match(source,/snapshot.WorldObjects = worldObjectStates\[player\]/);
+  assert.match(source,/rule.MaxHealth/);
+  assert.match(source,/rule.HitDamage/);
+  assert.match(source,/math.random\(rule.MinDrop, rule.MaxDrop\)/);
+  assert.match(source,/resourceEffectPool/);
+  assert.match(source,/interactWithResource\(player, target, rule, true\)/);
+  assert.match(source,/if not alreadyRateLimited then/);
+  assert.match(source,/if rule then[\s\S]*?interactWithResource\(player, target, rule, true\)[\s\S]*?else\s+gatherResource\(player\)/);
+  assert.match(source,/piece.AssemblyLinearVelocity/);
+  assert.match(source,/prepareResourceEffects\(\)/);
+  assert.match(source,/gatherResource\(player\)/);
+  assert.match(source,/setNumber\(player, "ResourceWood"/);
+  assert.match(source,/setNumber\(player, "ResourceStone"/);
+  assert.doesNotMatch(config,/ResourceInteractionRules\s*=/,'existing save/economy must not get invented HP by default');
+  assert.match(source,/local verifiedSaveRead = \{\}/);
+  assert.match(source,/if playerLoadStarted\[player\] then return end/);
+  assert.match(source,/ok and \(saved == nil or typeof\(saved\) == "table"\)/);
+  assert.match(source,/verifiedSaveRead\[player\] = false[\s\S]*?SURVIVAL_SAVE_READ_REPAIR_REQUIRED/);
+  assert.match(source,/if verifiedSaveRead\[player\] == true then/);
+  assert.match(source,/SURVIVAL_SAVE_WRITE_SKIPPED_UNVERIFIED_READ/);
+  assert.match(source,/current ~= nil and typeof\(current\) ~= "table"/);
+  assert.match(source,/local merged = typeof\(current\) == "table" and table\.clone\(current\) or \{\}/);
+  assert.match(source,/local objects = typeof\(merged\.WorldObjects\) == "table" and table\.clone\(merged\.WorldObjects\) or \{\}/);
+  assert.match(source,/for objectId, objectState in pairs\(value\)/);
+  assert.match(source,/for field, fieldValue in pairs\(objectState\) do updated\[field\] = fieldValue end/);
+  assert.match(source,/store:UpdateAsync\("player:"/);
+  assert.match(source,/if not saved or blockedRecord then warn\("SURVIVAL_SAVE_WRITE_REPAIR_REQUIRED"\) end/);
 });
