@@ -102,25 +102,225 @@
       "name": "BoardPatternSystemC",
       "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
       "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+    },
+    "local_authoring_parts::d149c3d5b3c809b99e86c138927f36e41d708fd786bc0ce29ed2629861149949:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "boardPattern",
+        "obstacleCombination",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "nextBoardPattern",
+        "newObstacleCombination",
+        "rewardSystem"
+      ],
+      "name": "BoardPatternSystemD",
+      "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+      "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+    },
+    "local_authoring_parts::adb47752efd0958d3b619c48b407b2aa40b6e35e6d9da72fbea130cf1b0bfa89:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystem",
+          "purpose": "Establish a clear initial board configuration with defined goals, constraints, and visual cues to guide player progression.",
+          "playerChoice": "Select a starting board pattern, define the objective, and set up the initial constraints for the game level."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystem",
+          "purpose": "Establish a clear initial board configuration with defined goals, constraints, and visual cues to guide player progression.",
+          "playerChoice": "Select a starting board pattern, define the objective, and set up the initial constraints for the game level."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemB",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemC",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemD",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+        }
+      ]
+    },
+    "local_authoring_parts::8c2daa9c440e5329205df0c2b53116e9477ddd835d07d3a18c1895ec6912db5f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystem",
+          "purpose": "Establish a clear initial board configuration with defined goals, constraints, and visual cues to guide player progression.",
+          "playerChoice": "Select a starting board pattern, define the objective, and set up the initial constraints for the game level."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystem",
+          "purpose": "Establish a clear initial board configuration with defined goals, constraints, and visual cues to guide player progression.",
+          "playerChoice": "Select a starting board pattern, define the objective, and set up the initial constraints for the game level."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemB",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemC",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "obstacleCombination",
+            "playerChoice"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "newObstacleCombination",
+            "rewardSystem"
+          ],
+          "name": "BoardPatternSystemD",
+          "purpose": "Establish a dynamic and evolving board configuration that responds to player choices, introduces new constraints, and provides feedback to guide progression through the game.",
+          "playerChoice": "Select a board pattern, define an obstacle combination, and choose a starting configuration that evolves with each playthrough, while adapting to immediate feedback and player decisions."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 401982,
-      "lastMs": 38914,
+      "totalMs": 440226,
+      "lastMs": 38244,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:03:37.206Z"
+      "updatedAt": "2026-10-08T13:04:15.451Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:56:55.190Z",
-  "updatedAt": "2026-10-08T13:03:37.206Z",
+  "updatedAt": "2026-10-08T13:04:15.453Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,7 +2357,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:03:37.206Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:04:15.453Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
