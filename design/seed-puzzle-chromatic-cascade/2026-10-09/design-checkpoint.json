@@ -557,25 +557,31 @@
     },
     "local_authoring_parts::9b86a4599b0192dbc669ad19a02ca693886b54298e03d75ef430724b16507193:fromSystem": {
       "fromSystem": "CORE-01"
+    },
+    "local_authoring_parts::9b86a4599b0192dbc669ad19a02ca693886b54298e03d75ef430724b16507193:toSystem": {
+      "toSystem": "CORE-02"
+    },
+    "local_authoring_parts::9b86a4599b0192dbc669ad19a02ca693886b54298e03d75ef430724b16507193:trigger": {
+      "trigger": "플레이어가 시작 상태에서 게임 레벨을 선택하여 다음 상태로 전환하는 과정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 43,
-      "successes": 43,
+      "calls": 45,
+      "successes": 45,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1648098,
-      "lastMs": 32810,
+      "totalMs": 1713304,
+      "lastMs": 33402,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:50:33.840Z"
+      "updatedAt": "2026-10-08T21:51:39.049Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-08T21:50:33.840Z",
+  "updatedAt": "2026-10-08T21:51:39.049Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3020,7 +3026,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T21:50:33.840Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:51:39.049Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
