@@ -60,25 +60,38 @@
       "name": "MANDATE LEGITIMACY",
       "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
       "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
+    },
+    "local_authoring_parts::28e8993aa6738e0f5824a288c7d787a1db2dd785a3557899c21b8153282a93ff:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE"
+      ],
+      "name": "NEW AUTHORITY STRUCTURE",
+      "purpose": "POWER OF AUTHORITY BASED ON CONSENT, ORDER, AND POPULARITY",
+      "playerChoice": "USE POWER TO ALTER ESTATE, RELATIONSHIP, OR GOAL STATUS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 273771,
-      "lastMs": 35536,
+      "totalMs": 308873,
+      "lastMs": 35102,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:48:55.268Z"
+      "updatedAt": "2026-10-08T17:49:30.371Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:44:21.449Z",
-  "updatedAt": "2026-10-08T17:48:55.268Z",
+  "updatedAt": "2026-10-08T17:49:30.371Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2006,7 +2019,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:48:55.268Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:49:30.371Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
