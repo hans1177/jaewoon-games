@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::058c5b6bb7b8f8b719232304ea8637ebd60a5795026989006623a5cbad847f7e:identity": {
+      "identity": "작은 모험 RPG은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해, 진입 단계에서 명확한 목표를 설정하고, 제한된 이동 수, 장애물, 또는 볼 수 있는 퀘스트 형태로 게임 공간을 구성하는 데 초점을 맞춘 PUZZLE 게임이다. 이 과정에서 선택의 결과가 월드 상태에 직접적인 영향을 미치며, 성장은 즉각적 결과와 새로운 행동/경로/조합/관계/발견/대응법의 열림으로 이루어진다. 게임의 핵심 재미는 반복 가능한 루프와 즉시 피드백이 동반되는 입력/선택/상태 변화/보상/다음 선택 구조이며, 모바일에서도 즉시 이해할 수 있는 설계 방식으로 실현된다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 209933,
+      "lastMs": 209933,
+      "lastError": null,
+      "updatedAt": "2026-10-08T21:21:43.050Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:18:13.104Z",
-  "updatedAt": "2026-10-08T21:18:13.111Z",
+  "updatedAt": "2026-10-08T21:21:43.050Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2046,5 +2062,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T21:21:43.050Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
