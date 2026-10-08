@@ -127,7 +127,7 @@ test('character and merchant pages use actual replicated state and server reques
  assert.match(model,/function Model\.shop\(attributes,config\)/);
  assert.match(model,/source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"/);
  assert.match(model,/sellSupported=false/);
- assert.match(model,/local prices=isWeapon and C\.WeaponPrices or C\.ArmorPrices/);
+ assert.match(server,/local prices=isWeapon and C\.WeaponPrices or C\.ArmorPrices/);
  assert.equal(shared,model,'shared model must match the exact internal asset');
  for(const name of ['캐릭터','상점']){
    assert.match(menu,new RegExp('"' + name + '"'));
@@ -136,8 +136,8 @@ test('character and merchant pages use actual replicated state and server reques
  assert.match(menu,/offers=Model\.shop\(a,config\)/);
  assert.match(menu,/buyWeapon\.Activated:Connect/);
  assert.match(menu,/buyArmor\.Activated:Connect/);
- assert.match(menu,/type\(options\.buyWeapon\)/);
- assert.match(menu,/type\(options\.buyArmor\)/);
+ assert.match(menu,/if options\.buyWeapon then options\.buyWeapon\(\)end/);
+ assert.match(menu,/if options\.buyArmor then options\.buyArmor\(\)end/);
  assert.match(menu,/CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true/);
  assert.match(menu,/humanoid\.HealthChanged:Connect\(scheduleRefresh\)/);
  assert.match(config,/BUY_WEAPON="BUY_WEAPON",BUY_ARMOR="BUY_ARMOR"/);
