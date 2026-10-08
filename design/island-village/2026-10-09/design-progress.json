@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-08T21:04:39.283Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T21:07:33.953Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/island-village/2026-10-09/design-seed.json",
     "contentDigest": "f40135f775117b97032a5054c78cf293dde84770bd036df2f762ad9c90db2e76",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1001355,
-      "lastMs": 93170,
+      "totalMs": 1176017,
+      "lastMs": 174662,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:04:39.280Z"
+      "updatedAt": "2026-10-08T21:07:33.953Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-08T21:04:39.291Z"
+  "updatedAt": "2026-10-08T21:07:33.959Z"
 }
