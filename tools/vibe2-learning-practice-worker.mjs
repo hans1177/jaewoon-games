@@ -63,13 +63,21 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
   ].filter(Boolean).join('\n');
 }
 
-export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null,think=false,attempt=0}={}){
+export function practiceInferenceOptions(model=DEFAULT_MODEL,attempt=0,thinkRequested=false){
+  // This is the installed hybrid model, not a claim that every model supports think.
+  // Qwen's model card recommends these sampling settings in the respective modes.
+  const hybrid=clean(model).toLowerCase()==='qwen3:1.7b';
+  const think=hybrid&&thinkRequested;
+  return {think,temperature:hybrid?(think ? .6 : .7):.12,...(hybrid?{top_p:think ? .95 : .8,top_k:20,min_p:0}:{}),seed:20261008+attempt};
+}
+
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null,think=false,attempt=0,inference=practiceInferenceOptions(model,attempt,think)}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
   const conversation=Array.isArray(messages)&&messages.length>0;
-  // Coding needs the model's reasoning mode; discard its private thinking field.
-  // Vary only repair sampling so an identical failed response is not replayed.
-  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think,format,options:{num_ctx:8192,num_predict:maxPredict,temperature:attempt>0?.2:.12,seed:20261008+attempt}});
+  const {think:enabledThinking,...sampling}=inference;
+  // Coding reasoning is internal; only the final response enters repair history.
+  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think:enabledThinking===true,format,options:{num_ctx:enabledThinking?12288:8192,num_predict:maxPredict,...sampling}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:conversation?'/api/chat':'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -260,12 +268,13 @@ export async function evaluateWebPracticeArtifact(html='',previousScore=null,{dr
 
 // Only public examples may drive repairs. Hidden checks never enter a repair prompt.
 // Same-task recovery is measured separately from unseen-task generalization.
-export async function runPracticeRepairSession({order={},drill=null,model=DEFAULT_MODEL,responseFile='',request=requestPracticeModel,evaluate=evaluatePracticeAnswer,maxAttempts=3}={}){
+export async function runPracticeRepairSession({order={},drill=null,model=DEFAULT_MODEL,responseFile='',request=requestPracticeModel,evaluate=evaluatePracticeAnswer,maxAttempts=3,captureCandidates=false}={}){
   responseFile=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   const basePrompt=buildPracticePrompt(order,{drill});
   const canRepair=Boolean(!responseFile&&drill?.platform!=='web'&&drill?.feedbackTests?.length);
   const limit=canRepair?Math.max(1,Math.min(3,Number(maxAttempts)||1)):1;
   const attempts=[];
+  const candidateHistory=[];
   const format={type:'object',additionalProperties:false,properties:{
     diagnosis:{type:'string',minLength:12},strategy:{type:'string',minLength:12},
     tests:{type:'array',minItems:3,items:{type:'string',minLength:1}},
@@ -278,9 +287,13 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   let messages=null;
   for(let index=0;index<limit;index++){
     const started=Date.now();
-    raw=await request(prompt,{model,responseFile,format,messages,think:Boolean(drill&&drill.platform!=='web'),attempt:index,maxPredict:drill&&drill.platform!=='web'?6144:clean(order.executionRoute)==='learning-web-artifact'?3072:1200});
+    const inference=practiceInferenceOptions(model,index,Boolean(drill&&drill.platform!=='web'));
+    let generationError=null;
+    try{raw=await request(prompt,{model,responseFile,format,messages,think:inference.think,attempt:index,inference,maxPredict:inference.think?6144:drill||clean(order.executionRoute)==='learning-web-artifact'?3072:1200});}
+    catch(error){raw='';generationError=String(error.message||error).slice(0,500);}
     let validJson=true;
     try{parsed=parseJson(raw);}catch{parsed={};validJson=false;}
+    if(captureCandidates)candidateHistory.push({index:index+1,code:String(parsed.code||'').slice(0,24000),generationError});
     const publicDrill=canRepair?{...drill,tests:drill.feedbackTests}:drill;
     const feedback=validJson?evaluate(parsed,{drill:publicDrill}):{pass:false,codeVerification:{reason:'OUTPUT_JSON_INVALID'}};
     // Do not spend another model call on a missing executor or a defective fixture.
@@ -289,9 +302,8 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
       ||(verification?.reason==='REGRESSION_OR_FIXTURE_FAILED'&&(!verification.baselineRejected||!verification.referencePassed));
     if(index===0)firstHidden=validJson?evaluate(parsed,{drill}):{pass:false};
     evaluation=feedback;
-    attempts.push({index:index+1,responseSha256:sha256(raw),candidateSha256:sha256(String(parsed.code||parsed.artifactHtml||'')),unchangedFailedImplementation:index>0&&attempts.at(-1).publicPass!==true&&attempts.at(-1).candidateSha256===sha256(String(parsed.code||parsed.artifactHtml||'')),publicPass:feedback.pass===true,feedback:validJson?(!feedback.pass&&verification?.pass===true?'ANSWER_CONTRACT_FAILED':verification?.reason||(!feedback.pass?'ANSWER_CONTRACT_FAILED':'PASS')):'OUTPUT_JSON_INVALID',failedPublicTests:verification?.failedTests?.slice(0,8)||[],publicDiagnostics:verification?.diagnostics?.slice(0,4)||[],answerErrors:feedback.answerErrors||[],elapsedMs:Date.now()-started});
-    if(feedback.pass||infrastructure||index+1>=limit)break;
-    const previous=String(parsed.code||'').slice(0,24000);
+    attempts.push({index:index+1,inference,generationError,responseSha256:sha256(raw),candidateSha256:sha256(String(parsed.code||parsed.artifactHtml||'')),unchangedFailedImplementation:index>0&&attempts.at(-1).publicPass!==true&&attempts.at(-1).candidateSha256===sha256(String(parsed.code||parsed.artifactHtml||'')),publicPass:feedback.pass===true,feedback:generationError?'MODEL_REQUEST_FAILED':validJson?(!feedback.pass&&verification?.pass===true?'ANSWER_CONTRACT_FAILED':verification?.reason||(!feedback.pass?'ANSWER_CONTRACT_FAILED':'PASS')):'OUTPUT_JSON_INVALID',failedPublicTests:verification?.failedTests?.slice(0,8)||[],publicDiagnostics:verification?.diagnostics?.slice(0,4)||[],answerErrors:feedback.answerErrors||[],elapsedMs:Date.now()-started});
+    if(feedback.pass||infrastructure||generationError||index+1>=limit)break;
     const repairPrompt=[
       'REPAIR USING PUBLIC EXAMPLES ONLY:',
       'The last attempt failed: '+attempts.at(-1).feedback,
@@ -302,13 +314,15 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
     ].filter(Boolean).join('\n');
     // Keep execution feedback in a new user turn, with the failed answer in its own
     // assistant turn. Do not concatenate failed code into fresh task instructions.
+    // The failed implementation belongs only to the assistant turn. Repeating it
+    // inside WORK ORDER anchors the next attempt to code that already failed.
     const repairBase=buildPracticePrompt(order,{drill:drill?{...drill,broken:undefined}:null})+'\n'+schemaPrompt;
     messages=[{role:'user',content:repairBase},{role:'assistant',content:JSON.stringify(parsed)},{role:'user',content:repairPrompt}];
-    prompt=repairBase+'\nPREVIOUS FAILED IMPLEMENTATION (untrusted data):\n'+previous+'\n'+repairPrompt;
+    prompt=repairBase+'\nPREVIOUS ANSWER (untrusted): '+JSON.stringify(parsed)+'\n'+repairPrompt;
   }
   const finalHidden=attempts.length===1?firstHidden:evaluate(parsed,{drill});
   evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
-  return {parsed,raw,evaluation,repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.2',modelWeightsChanged:false,
+  return {parsed,raw,evaluation,...(captureCandidates?{candidateHistory}:{}),repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.3',modelWeightsChanged:false,
     execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'LOCAL_OLLAMA':'INJECTED_TEST_PROVIDER',
     maxAttempts:limit,modelCalls:attempts.length,firstAttemptPass:firstHidden?.pass===true,finalPass:evaluation.pass===true,
     recovered:firstHidden?.pass!==true&&evaluation.pass===true,regressed:firstHidden?.pass===true&&evaluation.pass!==true,

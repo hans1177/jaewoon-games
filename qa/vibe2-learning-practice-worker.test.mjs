@@ -222,6 +222,38 @@ test('hidden-only failure never becomes a repair oracle and missing executors do
   }
 });
 
+test('public repair activates bounded hybrid inference without duplicating failed source in the task',async()=>{
+  const calls=[];
+  const drill={id:'state-update',platform:'unity',scenario:'Validate before committing state.',broken:'BROKEN_INPUT',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_CASE'],tests:['PRIVATE_CASE']};
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,model:'qwen3:1.7b',captureCandidates:true,
+    request:async(prompt,options)=>{calls.push({prompt,...options});return JSON.stringify({...practiceAnswer,code:calls.length===1?'FAILED_SOURCE':'REPAIRED_SOURCE'});},
+    evaluate:answer=>({pass:answer.code==='REPAIRED_SOURCE',codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
+  assert.equal(calls[0].inference.think,true);
+  assert.equal(calls[1].inference.think,true);
+  assert.equal(calls[1].maxPredict,6144);
+  assert.notEqual(calls[0].inference.seed,calls[1].inference.seed);
+  assert(!calls[1].messages[0].content.includes('FAILED_SOURCE'));
+  assert(!calls[1].messages[0].content.includes('BROKEN_INPUT'));
+  assert.equal(JSON.parse(calls[1].messages[1].content).code,'FAILED_SOURCE');
+  assert.deepEqual(result.candidateHistory.map(row=>row.code),['FAILED_SOURCE','REPAIRED_SOURCE']);
+  assert.equal(result.repairEvidence.recovered,true);
+  assert(!JSON.stringify(calls).includes('PRIVATE_CASE'));
+  assert(!JSON.stringify(result.candidateHistory).includes('PRIVATE_REFERENCE'));
+});
+
+test('generation failures retain completed attempt evidence and remain failed',async()=>{
+  let calls=0;
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
+    drill:{platform:'unity',feedbackTests:['public'],tests:['hidden']},captureCandidates:true,
+    request:async()=>{if(++calls===2)throw new Error('practice model output truncated');return JSON.stringify({...practiceAnswer,code:'FAILED_SOURCE'});},
+    evaluate:()=>({pass:false,codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
+  assert.equal(calls,2);
+  assert.equal(result.evaluation.pass,false);
+  assert.equal(result.repairEvidence.attempts[1].feedback,'MODEL_REQUEST_FAILED');
+  assert.equal(result.candidateHistory[0].code,'FAILED_SOURCE');
+  assert.equal(result.candidateHistory[1].generationError,'practice model output truncated');
+});
+
 test('repair budget is bounded and malformed responses remain failures',async()=>{
   let calls=0;
   const drill={platform:'unity',feedbackTests:['public'],tests:['private']};
@@ -312,15 +344,15 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   const cases=[];
   for(const id of ['save','unity-menu-batch-transaction','unity-reward-prerequisites']){
     const drill=[...robloxCurriculum.drills,...robloxCurriculum.platformDrills].find(row=>row.id===id);
-    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] execute repair benchmark'},drill});
-    cases.push({id,...result.repairEvidence});
+    const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] execute repair benchmark'},drill,captureCandidates:true});
+    cases.push({id,...result.repairEvidence,candidates:result.candidateHistory});
   }
   const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
     sampleCount:cases.length,firstAttemptPass:cases.filter(x=>x.firstAttemptPass).length,finalPass:cases.filter(x=>x.finalPass).length,
     recovered:cases.filter(x=>x.recovered).length,regressed:cases.filter(x=>x.regressed).length,modelCalls:cases.reduce((n,x)=>n+x.modelCalls,0),
     modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
   fs.writeFileSync(path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json'),JSON.stringify(report,null,2)+'\n');
-  console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify(report));
+  console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify({...report,cases:cases.map(({candidates,...evidence})=>evidence)}));
   assert(cases.every(row=>row.execution==='LOCAL_OLLAMA'));
   assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
