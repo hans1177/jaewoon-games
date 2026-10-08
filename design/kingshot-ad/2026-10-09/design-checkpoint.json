@@ -406,25 +406,90 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e9ebae00a0df0d6904a0824c4b26016e6024d2b36fd864c4823e0c73ad1eb3b2:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "Main state"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "DESIGN_ASSET_REVIEW",
+          "trigger": "Player's choice of 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'",
+          "stateChange": "Transforms main state into new defensive configuration based on player strategy and resource allocation."
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "New defensive configuration"
+          ],
+          "fromSystem": "DESIGN_ASSET_REVIEW",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "Player's decision to adapt defense to enemy types and wave composition.",
+          "stateChange": "Adapts defense to enemy types and wave composition, protects objective, and clears stage/boss to unlock harder defense choices."
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "Harder defense choices"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "DESIGN_ASSET_REVIEW",
+          "trigger": "Player's action to clear stage/boss.",
+          "stateChange": "Clears stage/boss, unlocks new strategic options, and shifts battlefield dynamics for future encounters."
+        },
+        {
+          "fromId": "C",
+          "toId": "DELVE",
+          "stateKeys": [
+            "New strategic options"
+          ],
+          "fromSystem": "DESIGN_ASSET_REVIEW",
+          "toSystem": "GAMEPLAY_SKETCH v4",
+          "trigger": "Player's choice to expand content.",
+          "stateChange": "Expands game content by introducing new strategic options, battlefield dynamics, and progression directions based on player decisions."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "Expanded content"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4",
+          "toSystem": "DESIGN_ASSET_REVIEW",
+          "trigger": "Player's decision to revisit past states.",
+          "stateChange": "Revisits past states, revises strategies, and reconfigures defenses based on newly acquired knowledge and experience."
+        }
+      ],
+      "progressionDirection": "Linear",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Main -> A -> B -> C -> DELVE",
+        "resourceFlow": "Resources are accumulated through gameplay, used in defense upgrades, and then redistributed or saved for future use.",
+        "balanceRules": "Players manage resources strategically, balancing between immediate gains and long-term strategy. Resources can be lost during battles but are preserved for later use."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 12,
+      "successes": 11,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 682554,
-      "lastMs": 87890,
-      "lastError": null,
-      "updatedAt": "2026-10-08T17:58:43.571Z"
+      "totalMs": 1273065,
+      "lastMs": 290487,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-08T18:08:34.097Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:47:20.978Z",
-  "updatedAt": "2026-10-08T17:58:43.582Z",
+  "updatedAt": "2026-10-08T18:08:34.097Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2621,7 +2686,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:58:43.574Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:08:34.097Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -2632,5 +2697,8 @@
     "contentDigest": "80dd687a4d44b767b9e475d41fa9b58b5cd97f868237bc4d83f978484576eb0d",
     "authorModel": "ollama:qwen3:1.7b",
     "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "e9ebae00a0df0d6904a0824c4b26016e6024d2b36fd864c4823e0c73ad1eb3b2": true
   }
 }
