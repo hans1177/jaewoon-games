@@ -49,25 +49,40 @@
       "name": "KARMA RETURN",
       "purpose": "To reflect the impact of past decisions on current state and future choices.",
       "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
+    },
+    "local_authoring_parts::67250332aad7a4baa4991ef43e59eab37cfcb053f87fbbd5bf2bec1a29c31c6c:signatureSystems:1": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "A",
+      "stateInputs": [
+        "resources",
+        "group readiness"
+      ],
+      "stateOutputs": [
+        "new status with altered environment",
+        "changed group dynamics"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "To reflect the impact of past decisions on current state and future choices.",
+      "playerChoice": "Make choices that alter the world state through discovery, mastery, or re-exploration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 378182,
-      "lastMs": 35231,
+      "totalMs": 474869,
+      "lastMs": 96687,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:30:00.269Z"
+      "updatedAt": "2026-10-08T18:31:36.957Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:30:00.269Z",
+  "updatedAt": "2026-10-08T18:31:36.958Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2295,7 +2310,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:30:00.269Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:31:36.957Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
