@@ -35,25 +35,53 @@
         "OUTPUT: 선택 결과로 인해 세계 상태가 변환되고, 이전 상태와 비교하여 새로운 가능성이 열린다.",
         "STATE CHANGE: 채집/제작 선택이 주체의 심리적·실용적인 상태를 변화시켜, 위험/보상 기반의 재방문 과정을 시작한다."
       ]
+    },
+    "local_authoring_parts::c0b9e8991375873ee4ac6a87c18912783c1ed58ac203ecd8a75b54761428db3e:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "CORE_FUN",
+        "SIGNATURE_SYSTEMS"
+      ],
+      "stateOutputs": [
+        "GAME_CATEGORY"
+      ],
+      "name": "생존의 인과 문법",
+      "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
+      "playerChoice": "채집/제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
+    },
+    "local_authoring_parts::c0b9e8991375873ee4ac6a87c18912783c1ed58ac203ecd8a75b54761428db3e:signatureSystems:1": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "A",
+      "stateInputs": [
+        "CORE_FUN",
+        "SIGNATURE_SYSTEMS"
+      ],
+      "stateOutputs": [
+        "GAME_CATEGORY"
+      ],
+      "name": "생존의 인과 문법",
+      "purpose": "플레이어가 '생존'이라는 중심 행동을 수행하며, 채집/제작 선택에 따라 다음 하루의 가능성들을 바꾼다.",
+      "playerChoice": "채집/제작 선택 중 하나를 선택하여 주체인 '나'의 생존 방향성과 가치를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 270993,
-      "lastMs": 42122,
+      "totalMs": 339863,
+      "lastMs": 33221,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:01:08.803Z"
+      "updatedAt": "2026-10-08T19:02:17.676Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:56:37.782Z",
-  "updatedAt": "2026-10-08T19:01:08.803Z",
+  "updatedAt": "2026-10-08T19:02:17.677Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2252,7 +2280,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:01:08.803Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:02:17.676Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
