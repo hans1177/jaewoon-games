@@ -293,25 +293,215 @@
           "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
         }
       ]
+    },
+    "local_authoring_parts::d874b74bc41472dba97a0fce8ddf389c1d50728309d7a6444c60e53d07021ce8:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e590f0f58259e67f4fe7e8dc9a4223ccb4ffecfe199d3c8626fd575cba31af50:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+        "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+        "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택인 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the跑"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "MAIN",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "A",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "B",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "c",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "DELVE",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "좀비 생존기의 핵심 재미와 시스템 연결을 확정한 고유한 정체성입니다. 게임은 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로, 선택의 결과가 다음 상태와 접근 가능성을 바꾼다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 설계는 기존 원본의 점수나 관문을 승계하지 않고, 재료 인과문법과 MAIN×A×B×c의 관계를 바탕으로 설계된다. 게임의 설계는 기존 검증과 보안을 유지하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다",
+      "playerFantasy": "플레이어는 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로, 선택의 결과가 다음 상태와 접근 가능성을 바꾼다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성된다. 게임은 기존 원본의 점수나 관문을 승계하지 않고, 재료 인과문법과 MAIN×A×B×c의 관계를 바탕으로 설계된다. 게임의 설계는 기존 검증과 보안을 유지하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다.",
+      "coreFun": "플레이어는 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로, 선택의 결과가 다음 상태와 접근 가능성을 바꾼다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 시스템은 MAIN/A/B/c/DELVE(@)의 역할을 각각 포함한다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성된다. 게임은 기존 원본의 점수나 관문을 승계하지 않고, 재료 인과문법과 MAIN×A×B×c의 관계를 바탕으로 설계된다. 게임의 설계는 기존 검증과 보안을 유지하며, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 게임의 설계는 기존 규칙과 수치를 보존하며, 설계 수정은 기존 검증과 보안을 유지한다.",
+      "coreLoop": [
+        "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+        "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+        "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'과 선택인 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the跑"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "MAIN",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "A",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "B",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "c",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "c",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다"
+          ],
+          "stateOutputs": [
+            "INPUT: 플레이어의 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프",
+            "STATE: 선택의 결과가 다음 상태와 접근 가능성을 바꾼다",
+            "OUTPUT: 게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run"
+          ],
+          "name": "DELVE",
+          "purpose": "게임의 중심 행동을 정의하는 시스템",
+          "playerChoice": "게임의 중심 행동인 'Fight through an escalating horde in a short real-time生存 run'을 선택하는 플레이어의 행동을 정의한다"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 997467,
-      "lastMs": 108674,
+      "totalMs": 1085832,
+      "lastMs": 88365,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:29:40.774Z"
+      "updatedAt": "2026-10-08T08:31:09.144Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:13:03.272Z",
-  "updatedAt": "2026-10-08T08:29:40.778Z",
+  "updatedAt": "2026-10-08T08:31:09.155Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2506,12 +2696,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:29:40.778Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:31:09.147Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/zombie-survival/2026-10-08/design-seed.json",
+    "contentDigest": "7e47c72aa67f35ef8f149583cfa45f16745a4b94c4d5ceb06fb860f94757585f",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
