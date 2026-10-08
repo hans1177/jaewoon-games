@@ -3,30 +3,18 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "b0bbbe050235c61b1c478dd190478c37519fc94c9de7ab7205ea041f6d8be24e",
-  "policyDigest": "eba99114200a163e25cb5e254e56fd4e7d493b65219e8b179fe6ebac869985d5",
-  "engineDigest": "0804320df70a301050240b897d8a23674580b6ddd3c447416c9dc03cd439bfad",
+  "fingerprint": "982155d9152073c1c9d997be7b9582350fcbee63c4409be988a9bd774b36f853",
+  "policyDigest": "524921abde9db321009b633c6deac710193bc08f349f75e5f35d842ede53a716",
+  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 338669,
-      "lastMs": 155349,
-      "lastError": null,
-      "updatedAt": "2026-10-08T04:38:12.921Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T04:32:34.240Z",
-  "updatedAt": "2026-10-08T04:38:12.924Z",
+  "createdAt": "2026-10-08T05:17:53.664Z",
+  "updatedAt": "2026-10-08T05:17:53.700Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1440,37 +1428,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_MULTIPLAYER_CONTRADICTION",
-        "kind": "HARD_GATE",
-        "axis": "CATEGORY_IDENTITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "expected": "COOP",
-          "actual": "COMPETITIVE"
-        },
-        "requiredAction": "오너 입력의 플레이 모드를 보존한다. 인공지능 충원으로 혼자 플레이할 수 있어도 멀티 의도를 SINGLE로 바꾸지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "multiplayerMode",
-          "multiplayerExpansionDecision"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T04:38:12.921Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MULTIPLAYER_CONTRADICTION"
+  }
 }
