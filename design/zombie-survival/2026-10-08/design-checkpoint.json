@@ -680,25 +680,28 @@
       "toSystem": "CORE-LOOP-2 → CORE-LOOP-1",
       "trigger": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다.",
       "stateChange": "플레이어의 '진행' 선택이 '판정: 위험' 선택과 'OUTPUT: 보상' 선택을 연결하는 과정에서, '진행' 상태 변화가 '위험' 판정을 반영하고, '보상' 결과가 다음 선택을 유도하는 방식으로 이루어진다. 이 과정에서 '진행'은 상태 변화를 일으키는 원인, '위험'은 상태 변화를 유도하는 조건, '보상'은 다음 선택을 결정하는 결과로, '진행·위험·보상'의 순차적 연결이 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미를 구현한다."
+    },
+    "local_authoring_parts::8972a816e775480cb3b37b19bfb8310891afae35c1b34a7905e4532b74503300:fromId": {
+      "fromId": "CORE-LOOP-2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3494195,
-      "lastMs": 106302,
+      "totalMs": 3585592,
+      "lastMs": 91397,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:47:14.311Z"
+      "updatedAt": "2026-10-08T15:48:45.712Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:21:47.979Z",
-  "updatedAt": "2026-10-08T15:47:14.313Z",
+  "updatedAt": "2026-10-08T15:48:45.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3163,7 +3166,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:47:14.313Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:48:45.712Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
