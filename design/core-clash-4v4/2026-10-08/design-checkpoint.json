@@ -845,25 +845,40 @@
     },
     "local_authoring_parts::f46db77c8d81f206c5633d457d76f666504e98f68fe589e1d457305cf5d5e288:trigger": {
       "trigger": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_R에 연결되는 조건과 선택을 나타냅니다."
+    },
+    "local_authoring_parts::f46db77c8d81f206c5633d457d76f666504e98f68fe589e1d457305cf5d5e288:stateChange": {
+      "stateChange": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_R에 연결되는 조건과 선택을 나타냅니다."
+    },
+    "local_authoring_parts::5a1a261f1e130beeece508d669a48a72a1d39d7117ba82d5ab9499f085c52aea:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_01",
+      "toId": "ACTION_SURVIVAL_R",
+      "stateKeys": [
+        "READABLE_STATE_01",
+        "CHANGABLE_STATE_01"
+      ],
+      "fromSystem": "시그니처 세계 규칙",
+      "toSystem": "ACTION_SURVIVAL_R",
+      "trigger": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_R에 연결되는 조건과 선택을 나타냅니다.",
+      "stateChange": "플레이어가 반복적으로 수행하는 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 기반으로, 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_R에 연결되는 조건과 선택을 나타냅니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 33,
+      "calls": 35,
+      "successes": 34,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2519997,
-      "lastMs": 61862,
+      "totalMs": 2582228,
+      "lastMs": 62231,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:46:46.940Z"
+      "updatedAt": "2026-10-08T16:47:49.173Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:42:25.217Z",
-  "updatedAt": "2026-10-08T16:46:46.940Z",
+  "updatedAt": "2026-10-08T16:47:49.174Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3464,7 +3479,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:46:46.940Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:47:49.174Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
