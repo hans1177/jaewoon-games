@@ -69,25 +69,59 @@
       "name": "시그니처 시스템 2",
       "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
       "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+    },
+    "local_authoring_parts::ffb13924815b3c33370993ad427e261fe20597e9cb0dfafd74fe279bcd0474ff:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START",
+        "RUN",
+        "PROGRESSION BENEFIT"
+      ],
+      "stateOutputs": [
+        "SCORE/REWARD",
+        "RISK/ROUTE CHOICE",
+        "PROGRESSION BENEFIT"
+      ],
+      "name": "시그니처 시스템 2",
+      "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
+    },
+    "local_authoring_parts::ffb13924815b3c33370993ad427e261fe20597e9cb0dfafd74fe279bcd0474ff:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START",
+        "RUN",
+        "PROGRESSION BENEFIT"
+      ],
+      "stateOutputs": [
+        "SCORE/REWARD",
+        "RISK/ROUTE CHOICE",
+        "PROGRESSION BENEFIT"
+      ],
+      "name": "시그니처 시스템 3",
+      "purpose": "플레이어가 시작 즉시 단순 한 손 tap 또는 swipe 입력 및 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "START → RUN → PROGRESSION BENEFIT 순환 구조 포함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 404299,
-      "lastMs": 39731,
+      "totalMs": 551149,
+      "lastMs": 102564,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:14:27.649Z"
+      "updatedAt": "2026-10-08T18:16:54.502Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:07:43.322Z",
-  "updatedAt": "2026-10-08T18:14:27.649Z",
+  "updatedAt": "2026-10-08T18:16:54.502Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2011,7 +2045,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:14:27.649Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:16:54.502Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
