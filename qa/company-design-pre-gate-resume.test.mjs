@@ -313,10 +313,10 @@ test('current blocked checkpoint engine remains compatible with targeted resume 
 });
 
 
-test('design runtime replaces stale push work while preserving manual and scheduled continuation',()=>{
+test('design runtime finishes active work across engine pushes and continuations',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/group: company-seed-design-runtime/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/cancel-in-progress: true/);
   assert.match(workflow,/push:[\s\S]*tools\/company-design-cycle\.mjs/);
   assert.match(workflow,/workflow_dispatch:/);
@@ -453,6 +453,10 @@ test('design library facts preserve compatibility and separate audit scores from
   assert.deepEqual(payload,JSON.parse(JSON.stringify(context)),'library evidence must not be clipped by shared context');
   assert.match(sent,/점수는 내부 평가이며 런타임 품질 통과가 아니다/);
   assert.match(sent,/게임당 설계 원본은 하나/);
+  await author('system','original game rules',{}, {includeAssetContext:false});
+  assert.doesNotMatch(sent,/DESIGN_ASSET_LIBRARY=/);
+  assert.match(sent,/DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR/);
+  assert.match(sent,/original game rules/);
 });
 
 // 생성 실패 복구와 동일 입력 체크포인트 재사용만 검증한다.
@@ -532,6 +536,7 @@ test('slice input keeps the owner original in a stable prefix and omits compatib
   assert.ok(calls.every(x=>x.user.startsWith('SHARED_CONTEXT='+original)));
   assert.ok(calls.every(x=>!x.user.includes('GAME_SEED_DESIGN_DEPTH=')));
   assert.equal(calls[1].options.recoverOversized,true);
+  assert.ok(calls.every(x=>x.options.includeAssetContext===false),'play-flow calls do not repeat the asset catalog');
   assert.ok(calls[1].user.includes('"identity":"authored"'),'later work keeps prior authored continuity');
 });
 
@@ -812,6 +817,31 @@ test('bound rule and ability identifiers are valid while identifier-only prose i
 
 
 
+
+test('repair keeps valid sibling fields and asks the designer only for the contradictory mode',async()=>{
+  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const checkpoint={tasks:{}},calls=[];
+  const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
+    ownerPreservationDesign:false,allGamesMultiplayerRequired:true,MULTIPLAYER_MODES:['COMPETITIVE'],designAssetLibrary:null,designAssetFamilies:[],
+    playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:'',
+    seed:{MULTIPLAYER_DESIGN_MODE:'COMPETITIVE'},seedDesignDepthContext:{},createHash,validateDesignAuthoringContent,
+    clip:(value,n)=>JSON.stringify(value).slice(0,n),clean:String,
+    DESIGN_AUTHORING_SLICES:[{id:'partial',fields:['identity','multiplayerMode'],predict:1200}],
+    designSliceSchema:fields=>({type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string'}])),additionalProperties:false}),
+    repairStructureContract:()=>[],designCheckpoint:checkpoint,persistDesignCheckpoint(){},
+    runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[`${phase}::${id}`]??(checkpoint.tasks[`${phase}::${id}`]=await work()),
+    callDesignerModel:async(system,user,schema)=>{
+      calls.push(Object.keys(schema.properties));
+      return calls.length===1?{identity:'사용자가 정한 원본의 대표 행동과 상태 변화를 유지하는 게임',multiplayerMode:'SINGLE'}:{multiplayerMode:'COMPETITIVE'};
+    },
+    repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:value=>value,assertSchemaValue:assertDesignSchema,DESIGN:{},console:{log(){}}
+  });
+  const result=await author({phase:'designer_draft',system:'s',sharedContext:'original'});
+  assert.deepEqual(calls.map(fields=>Array.from(fields)),[['identity','multiplayerMode'],['multiplayerMode']]);
+  assert.equal(result.identity,'사용자가 정한 원본의 대표 행동과 상태 변화를 유지하는 게임');
+  assert.equal(result.multiplayerMode,'COMPETITIVE');
+  assert.equal(Object.keys(checkpoint.slicePartialResults).length,0);
+});
 
 test('mandatory multiplayer upgrades legacy single input but preserves existing cooperative and competitive rules',()=>{
   const check=(original,actual)=>validateDesignAuthoringContent({seed:{MULTIPLAYER_DESIGN_MODE:original},design:{multiplayerMode:actual},fields:['multiplayerMode'],multiplayerRequired:true});

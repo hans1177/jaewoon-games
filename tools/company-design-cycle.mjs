@@ -605,18 +605,35 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     designCheckpoint.sliceDependencies||={};
     designCheckpoint.sliceRepairFeedback||={};
     designCheckpoint.sliceRepairAttempts||={};
-    if(designCheckpoint.sliceDependencies[taskKey]&&designCheckpoint.sliceDependencies[taskKey]!==dependencyHash)delete designCheckpoint.tasks[taskKey];
+    designCheckpoint.slicePartialResults||={};
+    if(designCheckpoint.sliceDependencies[taskKey]&&designCheckpoint.sliceDependencies[taskKey]!==dependencyHash){
+      delete designCheckpoint.tasks[taskKey];delete designCheckpoint.slicePartialResults[taskKey];
+    }
     let result,feedback=designCheckpoint.sliceRepairFeedback[taskKey]||[];
     for(let attempt=0;attempt<2;attempt++){
+      const partial=designCheckpoint.slicePartialResults[taskKey]||{};
+      const pendingFields=slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(partial,field));
+      const requestedFields=pendingFields.length?pendingFields:slice.fields;
+      const callSchema=designSliceSchema(requestedFields);
       result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
       system,
-      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(slice.fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(slice.fields))}\nCURRENT_SLICE=${clip(existing,3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify(anchors)}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
-      schema,
-      {predict:slice.predict,temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>['DESIGN_PLACEHOLDER_CONTENT','DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_RULE_ROLE_MISSING','DESIGN_RULE_STATE_MISSING','DESIGN_SLICE_SCHEMA_INVALID'].includes(row.code))}
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
+      callSchema,
+      {predict:slice.predict,includeAssetContext:['platform-profiles','web-canonical','ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
       ));
+      result={...partial,...result};
       feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
       try{assertSchemaValue(result,schema);}catch(error){feedback.push({code:'DESIGN_SLICE_SCHEMA_INVALID',fields:slice.fields,requiredAction:clean(error.message)});}
-      if(!feedback.length)break;
+      if(!feedback.length){designCheckpoint.tasks[taskKey]=result;break;}
+      const affected=new Set(feedback.flatMap(row=>row.fields||[]));
+      const retained={};
+      for(const field of slice.fields){
+        if(affected.has(field)||result[field]===undefined)continue;
+        try{assertSchemaValue({[field]:result[field]},designSliceSchema([field]));retained[field]=result[field];}catch{}
+      }
+      designCheckpoint.slicePartialResults[taskKey]=retained;
+      designCheckpoint.sliceDependencies[taskKey]=dependencyHash;
+      console.log(`DESIGN_SLICE_REPAIR_SCOPE=${slice.id}|retained=${Object.keys(retained).join(',')}|rewrite=${slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(retained,field)).join(',')}`);
       delete designCheckpoint.tasks[taskKey];
       designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
       // 같은 오류가 반복돼도 실패한 하위 조각 캐시를 다시 쓰지 않는다.
@@ -628,6 +645,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     }
     if(feedback.length)throw new Error(designCheckpoint.lastError);
     delete designCheckpoint.sliceRepairFeedback[taskKey];
+    delete designCheckpoint.slicePartialResults[taskKey];
     designCheckpoint.sliceDependencies[taskKey]=dependencyHash;
     Object.assign(merged,result);
     if(slice.id==='identity-core')persistDesignerSeed(merged,phase);
@@ -1095,13 +1113,14 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
     req.end(body);
   });
 }
-async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false}={}){
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false,includeAssetContext=true}={}){
   if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
-  const prompt=`${system}\n\nDESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
+  const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
+  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
-  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:designAssetLibraryContext.sha256||null,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
+  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
   const fields=schema?.type==='object'?Object.keys(schema.properties||{}):[];
   const field=fields.length===1?fields[0]:null;
   const child=field?schema.properties[field]:null;
@@ -1111,7 +1130,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   let directCall=true;
   try{
     let raw;
-    let splitRequired=canSplit&&(isolateFields||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||fields.length>6||objectChild||arrayChild);
+    let splitRequired=canSplit&&(isolateFields||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!schema.properties?.grammarRole?.enum?.length)||objectChild||arrayChild||fields.includes('signatureSystems'));
     if(!splitRequired){
       try{
         raw=await requestLocalDesignerRaw(prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': ''),{predict,temperature,numCtx,timeoutMs,schema});
@@ -1130,7 +1149,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
       let merged={};
       if(objectChild){
         merged[field]=await runCheckpointTask('local_authoring_parts',`${identity}:${field}`,()=>callLocalDesignerModel(
-          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields}
+          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields,includeAssetContext}
         ));
       }else if(arrayChild){
         const rows=[];
@@ -1146,7 +1165,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${field}:${index}`,()=>callLocalDesignerModel(
-            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\n이 항목은 ${grammarRole} 역할만 설계한다. 앞 항목의 id·name·purpose·playerChoice를 복사하지 않는다. 서로 다른 실제 규칙 ID와 대표 선택을 직접 작성하고 읽는 상태와 바꾸는 상태를 명시한다. 이 역할은 하위 필드를 따로 작성할 때도 유지한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict,temperature,numCtx,isolateFields}
+            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\n이 항목은 ${grammarRole} 역할만 설계한다. 앞 항목의 id·name·purpose·playerChoice를 복사하지 않는다. 서로 다른 실제 규칙 ID와 대표 선택을 직접 작성하고 읽는 상태와 바꾸는 상태를 명시한다. 이 역할은 하위 필드를 따로 작성할 때도 유지한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(900,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
           ));
           rows.push(value);
         }
@@ -1157,7 +1176,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
             system,`${user}\nCURRENT_OBJECT_FIELDS=${JSON.stringify(merged)}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이전 지시의 출력 범위 대신 LOCAL_REQUIRED_FIELDS만 출력한다. 먼저 작성된 필드와 일관성을 지키고 필수 구조와 설계 깊이는 유지한다.`,
-            partSchema,{predict:Math.max(512,Math.ceil(predict*part.length/fields.length)),temperature,numCtx,isolateFields}
+            partSchema,{predict:Math.max(512,Math.ceil(predict*part.length/fields.length)),temperature,numCtx,isolateFields,includeAssetContext}
           ));
           Object.assign(merged,value);
         }

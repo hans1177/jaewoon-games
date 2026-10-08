@@ -29,9 +29,9 @@ permissions:
   actions: write
 
 concurrency:
-  # One canonical design runtime: engine pushes replace stale design work; normal continuation preserves active work.
+  # One canonical runtime: finish the active checkpointed batch; engine changes enter the next batch.
   group: company-seed-design-runtime
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
