@@ -744,25 +744,39 @@
     },
     "local_authoring_parts::f3dddba5a0d9118ca9402e32cc9cb82a19c18494acf9f70ed0468beda6ccedea:trigger": {
       "trigger": "WorldState is transformed into NextAction through a causal chain, with a small reward or benefit, but no progression. This transformation is initiated by the action of pressing a simple one-thumb tap or swipe input, which triggers the core loop of the game. The state change reflects the immediate反馈从"
+    },
+    "local_authoring_parts::f3dddba5a0d9118ca9402e32cc9cb82a19c18494acf9f70ed0468beda6ccedea:stateChange": {
+      "stateChange": "WorldState is transformed into NextAction through a causal chain, with a small reward or benefit, but no progression. This transformation is initiated by the action of pressing a simple one-thumb tap or swipe input, which triggers the core loop of the game. The state change reflects the immediate feedback from the player's action, and it is designed to be a貫"
+    },
+    "local_authoring_parts::0cf64ae7cd3af08f19d94234804c720ebcbb460a59fb91d35a050dff04419821:systemInterconnections:2": {
+      "fromId": "MAIN_01",
+      "toId": "A_01",
+      "stateKeys": [
+        "WorldState"
+      ],
+      "fromSystem": "몬스터 어드벤처의 중심 행동",
+      "toSystem": "몬스터 어드벤처의 단순한 입력",
+      "trigger": "WorldState is transformed into NextAction through a causal chain, with a small reward or benefit, but no progression. This transformation is initiated by the action of pressing a simple one-thumb tap or swipe input, which triggers the core loop of the game. The state change reflects the immediate反馈从",
+      "stateChange": "WorldState is transformed into NextAction through a causal chain, with a small reward or benefit, but no progression. This transformation is initiated by the action of pressing a simple one-thumb tap or swipe input, which triggers the core loop of the game. The state change reflects the immediate feedback from the player's action, and it is designed to be a貫"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 37,
+      "calls": 39,
+      "successes": 38,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4054869,
-      "lastMs": 92117,
+      "totalMs": 4148522,
+      "lastMs": 93653,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:44:26.873Z"
+      "updatedAt": "2026-10-08T16:46:00.529Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:59:07.154Z",
-  "updatedAt": "2026-10-08T16:44:26.873Z",
+  "updatedAt": "2026-10-08T16:46:00.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3028,7 +3042,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T16:44:26.873Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:46:00.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
