@@ -34,25 +34,38 @@
         "SELECT: 선택 결과는 다음 월드 상태에 영향을 미칩니다. 이 선택은 주로 두 가지 방식 중 하나로 이루어집니다 - 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'",
         "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
       ]
+    },
+    "local_authoring_parts::98ea61d175fbc57fef688c1e975209cac52efc6efd7ee3e912604ab448270b59:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 플레이어가 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 위험 및 보상을 기반으로 한 다음 선택의 가능성과 새로운 상태 변화를 생성합니다."
+      ],
+      "name": "MATERIAL_CAUSAL_GRAMMAR",
+      "purpose": "플레이어가 주체로 '진입'하는 단일 게임에서 중심 행동인 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 수행하며 즉시 상태 변화를 유발합니다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. 또는 Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 346981,
-      "lastMs": 59672,
+      "totalMs": 407136,
+      "lastMs": 60155,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:45:15.743Z"
+      "updatedAt": "2026-10-08T18:46:15.900Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:39:28.729Z",
-  "updatedAt": "2026-10-08T18:45:15.743Z",
+  "updatedAt": "2026-10-08T18:46:15.900Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:45:15.743Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:46:15.900Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
