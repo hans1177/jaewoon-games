@@ -478,25 +478,43 @@
       "name": "Border Pressure and Territory Objective",
       "purpose": "Monitor and respond to border pressure, select and pursue territory objectives, and manage movement and progression within the game world.",
       "playerChoice": "Read the current border pressure, choose a territory objective, select a movement path, and pursue target progression. Adjust strategies based on evolving border conditions and territorial goals."
+    },
+    "local_authoring_parts::803630fadb3aca58bde4d5c8f400ae562454792042fc0cfe584139955e2036cf:signatureSystems:0": {
+      "id": "signatureSystem_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "borderPressure",
+        "territoryObjective",
+        "movementPath",
+        "positionSelection"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "reward",
+        "nextChoice"
+      ],
+      "name": "BORDER_PRESSURE_SYSTEM",
+      "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals.",
+      "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1567614,
-      "lastMs": 99932,
+      "totalMs": 1607503,
+      "lastMs": 39889,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:42:30.579Z"
+      "updatedAt": "2026-10-08T15:21:13.579Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T15:20:33.607Z",
+  "updatedAt": "2026-10-08T15:21:13.579Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2557,10 +2575,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T12:42:30.581Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:21:13.579Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
