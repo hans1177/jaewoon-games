@@ -1123,8 +1123,9 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const started=Date.now();
   const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
   const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
-  console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
   const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
+  predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
+  console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
   const fields=schema?.type==='object'?Object.keys(schema.properties||{}):[];
   const field=fields.length===1?fields[0]:null;
   const child=field?schema.properties[field]:null;
@@ -1133,19 +1134,35 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const canSplit=fields.length>1||objectChild||arrayChild;
   // 한 규칙의 역할·조건·선택·상태는 같은 모델 응답에서 함께 수정한다.
   const grammarObject=Boolean(schema.properties?.grammarRole?.enum?.length);
+  const oversizedTextGroup=!grammarObject&&fields.length>1&&fields.every(key=>schema.properties[key].type==='string')
+    &&fields.reduce((sum,key)=>sum+Number(schema.properties[key].maxLength||0),0)>predict;
   let directCall=true;
+  let requestStarted=started;
   try{
     let raw;
-    let splitRequired=canSplit&&((isolateFields&&!grammarObject)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject)||objectChild||arrayChild||fields.includes('signatureSystems'));
+    let splitRequired=canSplit&&((isolateFields&&!grammarObject)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject)||oversizedTextGroup||objectChild||arrayChild||fields.includes('signatureSystems'));
     if(!splitRequired){
+      const requestPrompt=prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': '');
       try{
-        raw=await requestLocalDesignerRaw(prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': ''),{predict,temperature,numCtx,timeoutMs,schema});
+        raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
       }catch(error){
-        if(!/^OLLAMA_DESIGN_(?:OUTPUT_TRUNCATED|TIMEOUT(?: |$))/.test(error?.message||'')||!canSplit)throw error;
-        recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
-        designCheckpoint.localAuthoringSplits={...designCheckpoint.localAuthoringSplits,[identity]:true};
-        persistDesignCheckpoint();
-        splitRequired=true;
+        if(/^OLLAMA_DESIGN_OUTPUT_TRUNCATED/.test(error?.message||'')&&!canSplit&&predict<8192){
+          // 더 쪼갤 수 없는 필드는 내용을 버리거나 같은 작은 예산을 반복하지 않는다.
+          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
+          const previous=predict;
+          predict=Math.min(8192,predict*2);
+          designCheckpoint.localAuthoringBudgets={...designCheckpoint.localAuthoringBudgets,[identity]:predict};
+          persistDesignCheckpoint();
+          console.log(`DESIGN_LOCAL_OUTPUT_BUDGET_REPAIR=${previous}->${predict}|fields=${fields.join(',')}`);
+          requestStarted=Date.now();
+          raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
+        }else{
+          if(!/^OLLAMA_DESIGN_(?:OUTPUT_TRUNCATED|TIMEOUT(?: |$))/.test(error?.message||'')||!canSplit)throw error;
+          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
+          designCheckpoint.localAuthoringSplits={...designCheckpoint.localAuthoringSplits,[identity]:true};
+          persistDesignCheckpoint();
+          splitRequired=true;
+        }
       }
     }
     if(splitRequired){
@@ -1182,7 +1199,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
             system,`${user}\nCURRENT_OBJECT_FIELDS=${JSON.stringify(merged)}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이전 지시의 출력 범위 대신 LOCAL_REQUIRED_FIELDS만 출력한다. 먼저 작성된 필드와 일관성을 지키고 필수 구조와 설계 깊이는 유지한다.`,
-            partSchema,{predict:Math.max(512,Math.ceil(predict*part.length/fields.length)),temperature,numCtx,isolateFields,includeAssetContext}
+            partSchema,{predict,temperature,numCtx,isolateFields,includeAssetContext}
           ));
           Object.assign(merged,value);
         }
@@ -1201,14 +1218,15 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
     assertSchemaValue(normalized,schema);
     const elapsedMs=Date.now()-started;
     if(directCall){
-      recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs});
-      modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs,predict,mode:'ollama-json-schema',timeoutMs,schemaRepairs:repairs.length});
+      const requestElapsedMs=Date.now()-requestStarted;
+      recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs:requestElapsedMs});
+      modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs:requestElapsedMs,predict,mode:'ollama-json-schema',timeoutMs,schemaRepairs:repairs.length});
     }
     designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
     console.log(`DESIGN_AUTHORING_PROVIDER=VIBE_LOCAL_OLLAMA|${localDesignerModel}|ms=${elapsedMs}`);
     return normalized;
   }catch(error){
-    if(directCall)recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
+    if(directCall)recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
     persistDesignCheckpoint();
     throw error;
   }
