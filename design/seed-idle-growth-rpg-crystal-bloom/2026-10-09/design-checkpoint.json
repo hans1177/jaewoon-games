@@ -76,25 +76,39 @@
       "name": "CORE_DNA_DESIGN",
       "purpose": "게임의 중심 행동 및 상태 교환을 직접 관리하는 시스템",
       "playerChoice": "플레이어가 선택하여 세계 상태와 다음 선택을 바꾸며 진입·위험·보상을 연결하는 핵심 루프의 구조적 기반을 제공함에 있어 중요한 역할을 함니다."
+    },
+    "local_authoring_parts::9f944ca55a7dfa28fa21db656c62bae6d09bbf295f56857d09f7ff2be8bf12b2:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "WORLD_STATE",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEW_WORLD_STATE"
+      ],
+      "name": "CORE_DNA_DESIGN",
+      "purpose": "기존 작품의 메커니즘과 밸런스, 저장, 보상, 진행을 임의 변경하지 않으며, 플레이어의 대안을 기반으로 한 시그니처 시스템을 구성함.",
+      "playerChoice": "플레이어가 선택하는 다음 월드 상태와 자원 생성 방식에 따라 세계 규칙 및 상태 변화에 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 827060,
-      "lastMs": 99036,
+      "totalMs": 930482,
+      "lastMs": 103422,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:35:42.750Z"
+      "updatedAt": "2026-10-08T21:37:26.173Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:21:55.662Z",
-  "updatedAt": "2026-10-08T21:35:42.750Z",
+  "updatedAt": "2026-10-08T21:37:26.173Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2326,7 +2340,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:35:42.750Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:37:26.173Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
