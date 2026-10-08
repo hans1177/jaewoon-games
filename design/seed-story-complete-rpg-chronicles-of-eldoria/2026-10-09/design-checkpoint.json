@@ -49,25 +49,40 @@
       "name": "월드 상태 변환 시스템",
       "purpose": "플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다.",
       "playerChoice": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+    },
+    "local_authoring_parts::acf0356544fd64a09945f719c8e44857872305b2e648f97157be3a3efca586d9:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "WORLD_STATE_CHANGE_03",
+        "WORLD_STATE_CHANGE_04"
+      ],
+      "stateOutputs": [
+        "ACTION_03",
+        "ACTION_04"
+      ],
+      "name": "지역 전환 시스템",
+      "purpose": "플레이어가 탐험하는 지역마다 새로운 역사·생활·경제·지역 기능을 경험하며, 캐릭터와 NPC들로부터 전달되는 정보는 게임 내에서의 진보·위험·성공·실패·성장 상태에 영향을 미친다.",
+      "playerChoice": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 437858,
-      "lastMs": 60449,
+      "totalMs": 509686,
+      "lastMs": 71828,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:11:17.980Z"
+      "updatedAt": "2026-10-08T19:12:29.809Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:04:00.090Z",
-  "updatedAt": "2026-10-08T19:11:17.980Z",
+  "updatedAt": "2026-10-08T19:12:29.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2299,7 +2314,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:11:17.980Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:12:29.809Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
