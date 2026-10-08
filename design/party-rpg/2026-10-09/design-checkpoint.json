@@ -73,25 +73,38 @@
       "name": "MATCH_GAME",
       "purpose": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in the current state of the game, leading to a new board pattern or obstacle combination that can be cleared for rewards or unlocking the next stage of the game."
+    },
+    "local_authoring_parts::5edd8b9674b19d17bf517d3597ecfddcf586fe2bd036172ec2153afa2b9883bf:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "@CLEAR_GOAL",
+      "purpose": "게임의 중심 행동인 START 이후, 선택 결과가 다음 상태로 전환하는 보조 요소로서 발견·숙련·재방문을 수행합니다.",
+      "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 385409,
-      "lastMs": 34760,
+      "totalMs": 417719,
+      "lastMs": 32310,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:38:05.971Z"
+      "updatedAt": "2026-10-08T21:38:38.283Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T21:38:05.971Z",
+  "updatedAt": "2026-10-08T21:38:38.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2128,7 +2141,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:38:05.971Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:38:38.283Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
