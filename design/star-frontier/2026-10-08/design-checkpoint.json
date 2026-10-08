@@ -824,25 +824,44 @@
         "시그니처_규칙_2"
       ],
       "fromSystem": "별길 개척자 - 게임_시그니처_1"
+    },
+    "local_authoring_parts::17f470ac8cb5c03978f81d780d79af230edaadbcd133c46e3ee08f06d2631b0c:toSystem,trigger,stateChange": {
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정",
+      "stateChange": "게임_시작_목표_2 → 게임_시작_목표_3"
+    },
+    "local_authoring_parts::08728960889529f81589d3cd80a700f3adc6d192ba4e10d90e359dcededa70ca:systemInterconnections:0": {
+      "fromId": "별길 개척자-게임_시그니처_1",
+      "toId": "별길 개척자-게임_시그니처_2",
+      "stateKeys": [
+        "게임_결과_상태",
+        "선택_바뀐_상태",
+        "게임_진행_상태",
+        "시그니처_규칙_2"
+      ],
+      "fromSystem": "별길 개척자 - 게임_시그니처_1",
+      "toSystem": "별길 개척자 - 게임_시그니처_2",
+      "trigger": "게임_시작_목표_2 설정",
+      "stateChange": "게임_시작_목표_2 → 게임_시작_목표_3"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1864766,
-      "lastMs": 64106,
+      "totalMs": 1926100,
+      "lastMs": 61334,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T13:24:22.608Z"
+      "updatedAt": "2026-10-08T13:25:24.046Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:17.663Z",
-  "updatedAt": "2026-10-08T13:24:22.608Z",
+  "updatedAt": "2026-10-08T13:25:24.047Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3027,7 +3046,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:24:22.608Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:25:24.047Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
