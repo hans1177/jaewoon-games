@@ -78,25 +78,67 @@
       "name": "현실 건축가",
       "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
       "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+    },
+    "local_authoring_parts::b55e21a4a5494e6cb47bbed6b64e261451663a49f6093278bb7982e0aee12bde:signatureSystems:2": {
+      "id": "realistic-builder",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Build selection",
+        "Upgrade choices",
+        "Perk/weapon/skill selection",
+        "Enemy pressure",
+        "Resource loss"
+      ],
+      "stateOutputs": [
+        "Build upgrade",
+        "Survival progression",
+        "Experience gain",
+        "Resource replenishment",
+        "Progression choice"
+      ],
+      "name": "현실 건축가",
+      "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+      "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
+    },
+    "local_authoring_parts::b55e21a4a5494e6cb47bbed6b64e261451663a49f6093278bb7982e0aee12bde:signatureSystems:3": {
+      "id": "realistic-builder",
+      "grammarRole": "c",
+      "stateInputs": [
+        "Build selection",
+        "Upgrade choices",
+        "Perk/weapon/skill selection",
+        "Enemy pressure",
+        "Resource loss"
+      ],
+      "stateOutputs": [
+        "Build upgrade",
+        "Survival progression",
+        "Experience gain",
+        "Resource replenishment",
+        "Progression choice"
+      ],
+      "name": "현실 건축가",
+      "purpose": "Action-survival benchmark for real-time survival, build progression, and progression choice in a mobile-friendly environment",
+      "playerChoice": "Select a build and strategy, upgrade, choose perks, weapons, or skills that change the current build, and position around enemy pressure"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 751941,
-      "lastMs": 99688,
+      "totalMs": 954572,
+      "lastMs": 102459,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:04:12.058Z"
+      "updatedAt": "2026-10-08T13:07:34.693Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:51:40.085Z",
-  "updatedAt": "2026-10-08T13:04:12.058Z",
+  "updatedAt": "2026-10-08T13:07:34.693Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2448,7 +2490,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:04:12.058Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:07:34.693Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
