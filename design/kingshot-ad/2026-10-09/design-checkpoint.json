@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::a4724fb3f73840ece87311a96728c9c2450ccc925a3e24b5725e9f6bbfcfd362:identity": {
       "identity": "킹샷 광고풍은 플레이어가 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다."
+    },
+    "local_authoring_parts::a4724fb3f73840ece87311a96728c9c2450ccc925a3e24b5725e9f6bbfcfd362:playerFantasy": {
+      "playerFantasy": "플레이어는 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다."
+    },
+    "local_authoring_parts::e46cb3781c923bbe9eb6114aca3179a8f44457e62de221df487e5dac390ee7b1:identity,playerFantasy": {
+      "identity": "킹샷 광고풍은 플레이어가 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
+      "playerFantasy": "플레이어는 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 75156,
-      "lastMs": 75156,
+      "totalMs": 94142,
+      "lastMs": 18986,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:48:37.932Z"
+      "updatedAt": "2026-10-08T21:48:56.919Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-08T21:48:37.932Z",
+  "updatedAt": "2026-10-08T21:48:56.920Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2225,7 +2232,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:48:37.932Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:48:56.920Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
