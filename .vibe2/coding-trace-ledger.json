@@ -14,101 +14,6 @@
   "traces": [
     {
       "version": 1,
-      "traceId": "ctrace_0237eddd4bf60224384c71e7",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "line-defense-unity-web-base-implementation-v1",
-        "workKey": null,
-        "gameId": "line-defense",
-        "target": "unity",
-        "roadmapVersion": null,
-        "baseMainSha": "4a334f68be02edea67fdf2f8885f35fafc71eedd",
-        "variant": "primary",
-        "goal": "[UNITY_WEB_BASE_IMPLEMENTATION] UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: 골목 군단 대전\n1차 Web 게임 원본을 unity-games/line-defense/ Unity 프로젝트로 제작한다. HTML/Canvas/PlayCanvas 신규 게임을 만들지 않는다.\n승인 설계의 핵심 게임 규칙·수치·맵·전투·퀘스트·아이템·멀티 규칙·저장 의미를 보존하고 실제 Unity C# 게임으로 구현한다.\nGameCore.cs에는 게임 상태/데이터/규칙 책임을 두고 RuntimeBootstrap.cs에는 실제 실행/입력/UI/씬 연결 책임을 둔다. 한 파일에 모든 책임을 몰아넣지 않는다.\nUnity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit1=실제 첫 플레이 진입, Space=실제 핵심 행동, KeyR=실제 안전 복귀/리셋을 기존 게임 함수에 연결한다. QA 전용 가짜 보상/승리/상태 덮어쓰기는 금지한다.\n실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로 MOB"
-      },
-      "decision": {
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "LOW",
-        "primaryTargets": [],
-        "primarySystems": [],
-        "dependentSystems": [],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "unity|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 2,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "TIMEOUT",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 352390,
-        "candidateMs": 242503,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:37460049946",
-        "reservation-id:37460049946:1",
-        "source-generation-failure:TIMEOUT"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "FAILURE_RECOVERY",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
       "traceId": "ctrace_baefa561944b3db695191810",
       "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
       "source": "VIBE2_WORKER_RESULT",
@@ -472119,13 +472024,113 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_349ee31e17add6296285dea8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
+        "workKey": null,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "target": "unity",
+        "roadmapVersion": null,
+        "baseMainSha": null,
+        "variant": "primary",
+        "goal": "[WORLD_LOBBY_FIRST]\n게임=seed-story-complete-rpg-chronicles-of-eldoria 엘도리아 연대기  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다."
+      },
+      "decision": {
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "BLOCKED",
+        "blocker": "work-order-not-runnable",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "FAIL",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_REQUIRED",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 15063,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:37715130725",
+        "reservation-id:37715130725:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 43,
+    "added": 1,
     "refreshed": 0,
     "total": 5000,
     "verified": 2,
-    "failures": 2556
+    "failures": 2555
   }
 }
