@@ -4384,7 +4384,7 @@ export function buildVibeAssetProductionPlan({
   // 'player', 'shop', 'world' 같은 일반 단어만으로는 게임 시스템이 존재한다고 판단하지 않는다.
   // 서버/게임 상태 책임 소스의 실제 메서드나 저장 필드가 있어야 바인딩을 허용한다.
   const nativeMenuGameplaySources=nativeMenuSources.filter(row=>resolvedTarget==='roblox'
-    ?row.file.includes('/server/')||row.file.includes('/shared/')
+    ?row.file.includes('/server/')
     :!/\/(?:RuntimeBootstrap|[^/]*(?:View|Menu|Screen|UI))\.cs$/i.test(row.file));
   const menuRoleOwnerProof=freeze({
     CHARACTER:/SetAttribute\s*\(\s*["'](?:MaxHP|Level|ClassId)["']|\b(?:class|struct)\s+PlayerState\b|\bGetMaxHp\s*\(/,
@@ -4419,7 +4419,12 @@ export function buildVibeAssetProductionPlan({
     const systemProof=menuRoleOwnerProof[role];
     const gameSystemSource=(role==='NAV'||role==='MOBILE_NAV')
       ?nativeMenuSources.filter(row=>menuRoleSourceHints[role].test(row.content))
-      :nativeMenuGameplaySources.filter(row=>systemProof&&systemProof.test(row.content));
+      :nativeMenuGameplaySources.filter(row=>systemProof&&systemProof.test(row.content)
+        &&(role!=='TRADE'||(
+          /SetAttribute\s*\(\s*["']Gold["']/.test(row.content)
+            &&/Gold[^\n]*-\s*(?:cost|price|amount)|Gold[^\n]*-\s*n\(|\.gold\s*-=/.test(row.content)
+          ||/\.gold\s*-=/i.test(row.content)
+        )));
     const existingNativeUiSource=gameSystemSource.length
       ?nativeMenuSources.filter(row=>methodHints.some(method=>row.content.includes(method))):[];
     const status=existingNativeUiSource.length?'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED'
