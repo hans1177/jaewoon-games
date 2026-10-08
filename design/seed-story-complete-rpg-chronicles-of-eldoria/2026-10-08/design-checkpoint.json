@@ -754,25 +754,118 @@
         "Narrative Progress Status"
       ],
       "fromSystem": "ELDORIAN_CORE_01"
+    },
+    "local_authoring_parts::087e4a712b126f7d5296942e2837a89ce12f4fe2dc9efebfd7dd0c1fc5d1d0ac:toSystem,trigger,stateChange": {
+      "toSystem": "ELDORIAN_CORE_02",
+      "trigger": "Quest Completion Status",
+      "stateChange": "Quest Progression Status"
+    },
+    "local_authoring_parts::5d5eb8a968f14333d332e05d6e6872541077d425d497562b69ae475951b98324:systemInterconnections:4": {
+      "fromId": "ELDORIAN_CORE_01",
+      "toId": "ELDORIAN_CORE_02",
+      "stateKeys": [
+        "Exploration Status",
+        "Character Interaction Status",
+        "Quest Completion Status",
+        "Narrative Progress Status"
+      ],
+      "fromSystem": "ELDORIAN_CORE_01",
+      "toSystem": "ELDORIAN_CORE_02",
+      "trigger": "Quest Completion Status",
+      "stateChange": "Quest Progression Status"
+    },
+    "local_authoring_parts::a6e5365d5e2a67afeefea77fc439e29b08b769aba8e0b1cca6f007458cc9baf2:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "ELDORIAN_CORE_01",
+          "toId": "ELDORIAN_CORE_02",
+          "stateKeys": [
+            "Exploration Status",
+            "Character Interaction Status",
+            "Quest Completion Status",
+            "Narrative Progress Status"
+          ],
+          "fromSystem": "ELDORIAN_CORE_01",
+          "toSystem": "ELDORIAN_CORE_02",
+          "trigger": "Exploration Status",
+          "stateChange": "Area Expansion Status"
+        },
+        {
+          "fromId": "ELDORIAN_CORE_01",
+          "toId": "ELDORIAN_CORE_02",
+          "stateKeys": [
+            "Exploration Status",
+            "Character Interaction Status",
+            "Quest Completion Status",
+            "Narrative Progress Status"
+          ],
+          "fromSystem": "ELDORIAN_CORE_01",
+          "toSystem": "ELDORIAN_CORE_02",
+          "trigger": "Character Interaction Status",
+          "stateChange": "Character Development Status"
+        },
+        {
+          "fromId": "ELDORIAN_CORE_01",
+          "toId": "ELDORIAN_CORE_02",
+          "stateKeys": [
+            "Exploration Status",
+            "Character Interaction Status",
+            "Quest Completion Status",
+            "Narrative Progress Status"
+          ],
+          "fromSystem": "ELDORIAN_CORE_01",
+          "toSystem": "ELDORIAN_CORE_02",
+          "trigger": "Quest Completion Status",
+          "stateChange": "Quest Progression Status"
+        },
+        {
+          "fromId": "ELDORIAN_CORE_01",
+          "toId": "ELDORIAN_CORE_02",
+          "stateKeys": [
+            "Exploration Status",
+            "Character Interaction Status",
+            "Quest Completion Status",
+            "Narrative Progress Status"
+          ],
+          "fromSystem": "ELDORIAN_CORE_01",
+          "toSystem": "ELDORIAN_CORE_02",
+          "trigger": "Quest Completion Status",
+          "stateChange": "Quest Progression Status"
+        },
+        {
+          "fromId": "ELDORIAN_CORE_01",
+          "toId": "ELDORIAN_CORE_02",
+          "stateKeys": [
+            "Exploration Status",
+            "Character Interaction Status",
+            "Quest Completion Status",
+            "Narrative Progress Status"
+          ],
+          "fromSystem": "ELDORIAN_CORE_01",
+          "toSystem": "ELDORIAN_CORE_02",
+          "trigger": "Quest Completion Status",
+          "stateChange": "Quest Progression Status"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
+      "calls": 28,
+      "successes": 25,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2685064,
-      "lastMs": 36066,
+      "totalMs": 2718648,
+      "lastMs": 33584,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T16:11:52.862Z"
+      "updatedAt": "2026-10-08T16:12:26.447Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T13:23:19.708Z",
-  "updatedAt": "2026-10-08T16:11:52.862Z",
+  "updatedAt": "2026-10-08T16:12:26.450Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3008,7 +3101,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T16:11:52.862Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T16:12:26.450Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
