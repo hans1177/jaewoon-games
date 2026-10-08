@@ -34,25 +34,41 @@
         "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "OUTPUT: Status change in the battlefield, increased resource pool, and new defensive strategy options."
       ]
+    },
+    "local_authoring_parts::b1611210a8f3b57566c79020bb666fc89eba3aba701b076a51c6fb25b8cc5c8c:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "stateOutputs": [
+        "BATTLE_STATUS",
+        "RESOURCE_POOL",
+        "DEFENSE_STRATEGY"
+      ],
+      "name": "SINGLE_DEFENSE_STRATEGY",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이",
+      "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265481,
-      "lastMs": 38582,
+      "totalMs": 302657,
+      "lastMs": 37176,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:03:56.742Z"
+      "updatedAt": "2026-10-08T21:04:33.920Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T21:03:56.742Z",
+  "updatedAt": "2026-10-08T21:04:33.920Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2263,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:03:56.742Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:04:33.920Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
