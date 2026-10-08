@@ -943,25 +943,35 @@
       "toSystem": "systemInterconnections[0]_toSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
       "trigger": "wavePattern→defenseStrategy의 출력과 입력 상태가 연결되지 않는다",
       "stateChange": "wavePattern→defenseStrategy의 출력과 입력 상태가 연결되지 않는다"
+    },
+    "local_authoring_parts::abbb70016d993c643e0a451264d1c51a77b215583be69454111710a0587257c8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wavePattern",
+      "toId": "defenseStrategy",
+      "stateKeys": [
+        "defenseStrategy",
+        "nextThreat",
+        "playerChoice"
+      ],
+      "fromSystem": "systemInterconnections[0]_fromSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 38,
+      "successes": 37,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3412622,
-      "lastMs": 99731,
+      "totalMs": 3514457,
+      "lastMs": 101835,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:43:15.571Z"
+      "updatedAt": "2026-10-08T10:44:57.409Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:49:08.385Z",
-  "updatedAt": "2026-10-08T10:43:15.573Z",
+  "updatedAt": "2026-10-08T10:44:57.409Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3303,7 +3313,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:43:15.573Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:44:57.409Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
