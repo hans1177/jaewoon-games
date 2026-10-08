@@ -1,5 +1,48 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1k3cfsz",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/daechung-rpg/background/asset.glb",
+        "assets/generated/unity/daechung-rpg/background/master.glb",
+        "assets/generated/unity/daechung-rpg/background/preview.png",
+        "assets/generated/unity/daechung-rpg/background/preview-master.png",
+        "assets/generated/unity/daechung-rpg/background/application.json",
+        "assets/generated/unity/daechung-rpg/background/evidence.json",
+        "assets/generated/unity/daechung-rpg/item/asset.glb",
+        "assets/generated/unity/daechung-rpg/item/master.glb",
+        "assets/generated/unity/daechung-rpg/item/preview.png",
+        "assets/generated/unity/daechung-rpg/item/preview-master.png",
+        "assets/generated/unity/daechung-rpg/item/application.json",
+        "assets/generated/unity/daechung-rpg/item/evidence.json",
+        "assets/generated/unity/daechung-rpg/prop/asset.glb",
+        "assets/generated/unity/daechung-rpg/prop/master.glb",
+        "assets/generated/unity/daechung-rpg/prop/preview.png",
+        "assets/generated/unity/daechung-rpg/prop/preview-master.png",
+        "assets/generated/unity/daechung-rpg/prop/application.json",
+        "assets/generated/unity/daechung-rpg/prop/evidence.json"
+      ],
+      "baseSha": "169a3f69ba4677f02f82b38fd4d1f2ad188c5641",
+      "runId": "37822746115",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-08T19:24:01.019Z",
+      "expiresAt": "2026-10-08T20:09:01.019Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
+      ]
+    }
+  ]
 }
