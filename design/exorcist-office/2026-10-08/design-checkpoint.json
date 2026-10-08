@@ -50,25 +50,40 @@
       "name": "Start",
       "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
       "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
+    },
+    "local_authoring_parts::d679ae95edb83a5fe735d2c2eafb8201137d0e0ca4225b5ec1add45cbc81b7e5:signatureSystems:1": {
+      "id": "c",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Start immediately with simple one-thumb tap or swipe input",
+        "Play a brief run with readable feedback"
+      ],
+      "stateOutputs": [
+        "Unlock a small progression benefit",
+        "Retry quickly with minimal friction"
+      ],
+      "name": "Start",
+      "purpose": "Initiate the core gameplay loop with immediate feedback and progression",
+      "playerChoice": "Choose a simple input, receive feedback, and decide to retry or progress"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 731916,
-      "lastMs": 106724,
+      "totalMs": 836440,
+      "lastMs": 104524,
       "lastError": null,
-      "updatedAt": "2026-10-08T12:08:29.591Z"
+      "updatedAt": "2026-10-08T12:10:14.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T11:56:17.645Z",
-  "updatedAt": "2026-10-08T12:08:29.592Z",
+  "updatedAt": "2026-10-08T12:10:14.118Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1992,7 +2007,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T12:08:29.592Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T12:10:14.117Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
