@@ -599,25 +599,40 @@
     },
     "local_authoring_parts::124911ab41f04544bacef78394c2309e93b04b9a68617f3b97dcd0492302087e:trigger": {
       "trigger": "Player selects specific island resources to gather and uses them to build or improve one village function, resulting in resource accumulation and infrastructure upgrade."
+    },
+    "local_authoring_parts::124911ab41f04544bacef78394c2309e93b04b9a68617f3b97dcd0492302087e:stateChange": {
+      "stateChange": "Player selects specific island resources to gather and uses them to build or improve one village function, resulting in resource accumulation and infrastructure upgrade."
+    },
+    "local_authoring_parts::1e772fd083642c357f0fc40c930851e2654174fb727b852bb1b0f189a2cb83c5:systemInterconnections:0": {
+      "fromId": "RESOURCE_A→VILLAGE_B",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "RESOURCE_A",
+        "VILLAGE_B"
+      ],
+      "fromSystem": "Island resources → Village infrastructure",
+      "toSystem": "Village infrastructure",
+      "trigger": "Player selects specific island resources to gather and uses them to build or improve one village function, resulting in resource accumulation and infrastructure upgrade.",
+      "stateChange": "Player selects specific island resources to gather and uses them to build or improve one village function, resulting in resource accumulation and infrastructure upgrade."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2328866,
-      "lastMs": 31622,
+      "totalMs": 2361217,
+      "lastMs": 32351,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:20:11.394Z"
+      "updatedAt": "2026-10-08T23:20:43.746Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-08T23:20:11.394Z",
+  "updatedAt": "2026-10-08T23:20:43.748Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3018,7 +3033,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:20:11.394Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:20:43.748Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
