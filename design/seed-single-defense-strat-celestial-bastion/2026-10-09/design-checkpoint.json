@@ -347,25 +347,64 @@
       "name": "ENEMY_WAVE_ANALYSIS_SYSTEM",
       "purpose": "Player analyzes the enemy wave and determines the optimal placement strategy for towers or defenders.",
       "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+    },
+    "local_authoring_parts::c42e31b266579b6af7b286050911194c23d2e5cb8aa2b8a01181cf7969096c51:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "ENEMY_WAVE_ANALYSIS_B_SYSTEM",
+      "purpose": "Player analyzes the enemy wave and determines the optimal placement strategy for towers or defenders.",
+      "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+    },
+    "local_authoring_parts::c42e31b266579b6af7b286050911194c23d2e5cb8aa2b8a01181cf7969096c51:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "WORLD_STATE_INFLUENCE_SYSTEM",
+      "purpose": "Player's decision to place towers or defenders on lanes/positions that cover the threatened route directly influences the world state.",
+      "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+    },
+    "local_authoring_parts::c42e31b266579b6af7b286050911194c23d2e5cb8aa2b8a01181cf7969096c51:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENEMY_WAVE_READING"
+      ],
+      "stateOutputs": [
+        "TOWER_PLACEMENT_STRATEGY"
+      ],
+      "name": "WORLD_STATE_INFLUENCE_SYSTEM",
+      "purpose": "Player's decision to place towers or defenders on lanes/positions that cover the threatened route directly influences the world state.",
+      "playerChoice": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 996117,
-      "lastMs": 69485,
+      "totalMs": 1286962,
+      "lastMs": 98993,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:09:15.532Z"
+      "updatedAt": "2026-10-08T19:14:06.380Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:52:39.359Z",
-  "updatedAt": "2026-10-08T19:09:15.532Z",
+  "updatedAt": "2026-10-08T19:14:06.386Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2562,6 +2601,91 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::identity-core": [
       {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[0].playerChoice",
+          "value": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+        },
+        "requiredAction": "signatureSystems[0].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[1].playerChoice",
+          "value": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+        },
+        "requiredAction": "signatureSystems[1].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[2].playerChoice",
+          "value": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+        },
+        "requiredAction": "signatureSystems[2].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[3].playerChoice",
+          "value": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+        },
+        "requiredAction": "signatureSystems[3].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems[4].playerChoice",
+          "value": "TOWER_PLACEMENT_STRATEGY_IMPLEMENTATION"
+        },
+        "requiredAction": "signatureSystems[4].playerChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
         "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2605,7 +2729,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2620,10 +2744,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:09:15.532Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-08T19:14:06.381Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_MAIN_A_B_c_DELVE_REQUIRED,DESIGN_RULE_STATE_MISSING",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
