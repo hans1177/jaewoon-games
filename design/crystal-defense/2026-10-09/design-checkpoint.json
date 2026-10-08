@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::d595da5492712ac074f279bede84729241e1e90c1ba70fcaaf6284823e8f3639:identity": {
+      "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다. 게임은 단순한 웨이브 디펜스에서 시작해 플레이어가 '현재 선택'에 따라 다음 상태를 바꾼다. 중심 행동은 READ THE NEXT ATTACK PATTERN AND CHOOSE WHERE CRISTAL DEFENSES CREATE MOST VALUE이다. 두 대축은 SPEND LIMITED RESOURCES ON PLACEMENT, RESONANCE OR UPGRADES와 SURVIVE THE WAVE AND USE THE RESULT TO PREPARE A DIFFERENT COUNTER FOR THE NEXT THREAT이며, 보조 요소는 @인 것으로 구성된다. 세계 규칙은 MAIN×A×B×c의 관계를 기반으로 하며, 인과법칙은 주요 인물의 목표·두려움·비밀을 통해 실제 선택과 관계 변화로 나타난다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 166240,
+      "lastMs": 166240,
+      "lastError": null,
+      "updatedAt": "2026-10-08T18:43:13.068Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T18:40:26.824Z",
+  "updatedAt": "2026-10-08T18:43:13.068Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2200,5 +2216,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T18:43:13.068Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
