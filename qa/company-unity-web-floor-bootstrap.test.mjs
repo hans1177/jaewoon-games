@@ -338,8 +338,11 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(layout.gameplayCollisionAuthority,false);
     assert.equal(layout.saveMutation,false);
     assert.equal(layout.engineRuntimeVerified,false);
-    assert.match(runtime,/private void BuildApprovedWorldVisuals\(\)/);
-    assert.match(runtime,/BuildApprovedWorldVisuals\(\);/);
+    assert.match(runtime,/private bool BuildApprovedWorldVisuals\(\)/);
+    assert.match(runtime,/approvedEnvironmentReady = BuildApprovedWorldVisuals\(\);/);
+    assert.match(runtime,/return true;/);
+    assert.match(runtime,/return false;/);
+    assert.match(runtime,/APPROVED_ENVIRONMENT_AUTHORING_FAILED/);
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
