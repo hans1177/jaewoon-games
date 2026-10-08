@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::0980780b4e4e16d9269f46a57c722352450102aebfa7f75c36852934ad519b31:identity": {
+      "identity": "Last Lantern - Puzzle Game with Dynamic Board Mechanics and Player Agency in a Survival Context: A Reimagined Core Fun Loop Based on Board-Based Decision-Making and Emergent Gameplay Rules for Mobile Platforms with Multiplayer Support (COOP, COMPETITIVE, HYBRID). The game is designed to be played on mobile devices with Unity WebGL support, featuring a unique core fun loop that evolves through player choices, risk/reward dynamics, and emergent gameplay patterns. The design preserves the original rules and numerical data while introducing new systems and mechanics to enhance depth and replayability."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 78071,
+      "lastMs": 78071,
+      "lastError": null,
+      "updatedAt": "2026-10-08T20:50:57.759Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-08T20:49:39.630Z",
+  "updatedAt": "2026-10-08T20:50:57.759Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2046,5 +2062,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-08T20:50:57.759Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
