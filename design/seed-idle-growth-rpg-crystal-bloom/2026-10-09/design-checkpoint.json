@@ -34,25 +34,39 @@
         "인가된 대표 선택을 통해 세계 규칙과 상태 변화에 영향을 미친다. 성장은 단순한 숫자 증가보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다.",
         "게임의 시그니처 시스템은 MAIN/A/B/c/DELVE(@) 각각 포함되며, 기존 작품의 메커니즘과 밸런스, 저장, 보상, 진행을 임의 변경하지 않는다."
       ]
+    },
+    "local_authoring_parts::9f944ca55a7dfa28fa21db656c62bae6d09bbf295f56857d09f7ff2be8bf12b2:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "WORLD_STATE",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEW_WORLD_STATE"
+      ],
+      "name": "CORE_FANTASY",
+      "purpose": "Establishes the core fantasy system that connects player choices to world state changes, enabling emergent gameplay through repeated cycles of entry, risk, reward, and progression.",
+      "playerChoice": "SELECT_NEXT_INVESTMENT, CLAIM_REWARDS, UPGRAD_LEVEL_OR_SKILL, EQUIP_GEAR, CHOOSE_HERO_STAT_PATH"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 528352,
-      "lastMs": 113230,
+      "totalMs": 629423,
+      "lastMs": 101071,
       "lastError": null,
-      "updatedAt": "2026-10-08T21:30:44.036Z"
+      "updatedAt": "2026-10-08T21:32:25.109Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:21:55.662Z",
-  "updatedAt": "2026-10-08T21:30:44.036Z",
+  "updatedAt": "2026-10-08T21:32:25.109Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2298,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T21:30:44.036Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T21:32:25.109Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
