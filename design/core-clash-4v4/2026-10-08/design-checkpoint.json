@@ -85,25 +85,42 @@
       "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. / Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::28e7eb037a43bcbac1fd5b58bab5df3262c2f7416e9fcef2499d79fea8dc5b24:signatureSystems:3": {
+      "id": "CORE_FIGHT_HORDE_4V4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "FIGHT_HORDE_4V4",
+        "RUN_REWARD_4V4",
+        "UPGRADE_4V4"
+      ],
+      "stateOutputs": [
+        "FIGHT_HORDE_4V4_RESULT",
+        "RUN_REWARD_4V4_RESULT",
+        "UPGRADE_4V4_RESULT"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+      "playerChoice": "FIGHT_HORDE_4V4_RESULT / RUN_REWARD_4V4_RESULT / UPGRADE_4V4_RESULT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 363109,
-      "lastMs": 42962,
+      "totalMs": 405605,
+      "lastMs": 42496,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:21:45.219Z"
+      "updatedAt": "2026-10-08T08:22:27.716Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T08:21:45.219Z",
+  "updatedAt": "2026-10-08T08:22:27.716Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2319,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:21:45.219Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:22:27.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
