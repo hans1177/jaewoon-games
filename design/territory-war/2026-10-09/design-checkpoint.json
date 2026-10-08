@@ -967,25 +967,28 @@
     },
     "local_authoring_parts::ea4210bf9746266ac67ae083237bdf65b7703dd7ee807105782e27a180f53198:toSystem": {
       "toSystem": "BOUNDARY_PRESSURE_ANALYSIS_SYSTEM_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    },
+    "local_authoring_parts::ea4210bf9746266ac67ae083237bdf65b7703dd7ee807105782e27a180f53198:trigger": {
+      "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 43,
+      "calls": 47,
+      "successes": 44,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3327372,
-      "lastMs": 30738,
+      "totalMs": 3358159,
+      "lastMs": 30787,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T23:22:57.176Z"
+      "updatedAt": "2026-10-08T23:23:27.964Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-08T23:22:57.176Z",
+  "updatedAt": "2026-10-08T23:23:27.964Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3239,7 +3242,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:22:57.176Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:23:27.964Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
