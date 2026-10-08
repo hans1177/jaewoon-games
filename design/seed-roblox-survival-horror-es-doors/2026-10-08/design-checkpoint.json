@@ -523,25 +523,36 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::4e4c8a6a02f4151c4c31f1fc2711add82a97f3394386ea9b5af7d4e637a4fd99:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "GAME_SEED",
+      "toId": "GAME_SEED",
+      "stateKeys": [
+        "levelGoal",
+        "limitedMoves",
+        "obstacles",
+        "puzzleConstraint"
+      ],
+      "fromSystem": "GAME_SEED_SYSTEM_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_01_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1320485,
-      "lastMs": 237717,
+      "totalMs": 1430126,
+      "lastMs": 109641,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:11:43.021Z"
+      "updatedAt": "2026-10-08T13:13:32.669Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:49:42.483Z",
-  "updatedAt": "2026-10-08T13:11:43.026Z",
+  "updatedAt": "2026-10-08T13:13:32.669Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2733,10 +2744,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:11:43.021Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:13:32.669Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
