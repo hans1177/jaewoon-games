@@ -68,25 +68,42 @@
       "name": "KARMA_RETURN",
       "purpose": "플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프 구축",
       "playerChoice": "시그니처 상호작용을 통해 반복 가능한 핵심 루프 구축"
+    },
+    "local_authoring_parts::744f624ee926fbe1af8e39a48d38327529abf0f8e014b19a25475a180dc845f5:signatureSystems:2": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "B",
+      "stateInputs": [
+        "MAIN의 결과가 다음 상태로 이어지는 시그니처 상호작용",
+        "보상은 발견과 이해에 따른 약속",
+        "다음 선택은 반복 루프의 다음 단계"
+      ],
+      "stateOutputs": [
+        "시그니처 상호작용을 통해 반복 가능한 핵심 루프 구축",
+        "플레이어의 선택과 위험·보상, 성장의 조합을 통해 다양한 경로 열기",
+        "주요 인과법칙과 보조 요소를 통해 시스템의 반복 루프 구축"
+      ],
+      "name": "KARMA_RETURN_B",
+      "purpose": "플레이어의 선택과 위험·보상, 성장의 조합을 통해 반복 가능한 핵심 루프 구축",
+      "playerChoice": "시그니처 상호작용을 통해 반복 가능한 핵심 루프 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 590643,
-      "lastMs": 108848,
+      "totalMs": 698439,
+      "lastMs": 107796,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:52:26.765Z"
+      "updatedAt": "2026-10-08T08:54:14.563Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:42:36.090Z",
-  "updatedAt": "2026-10-08T08:52:26.765Z",
+  "updatedAt": "2026-10-08T08:54:14.564Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2285,7 +2302,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:52:26.765Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:54:14.563Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
