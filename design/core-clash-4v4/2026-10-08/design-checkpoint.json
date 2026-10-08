@@ -302,25 +302,123 @@
           "playerChoice": "FIGHT_HORDE_4V4_RESULT / RUN_REWARD_4V4_RESULT / UPGRADE_4V4_RESULT"
         }
       ]
+    },
+    "local_authoring_parts::a0e3898f0d7a21869869abc8eccc244b55e8107a00ac64fcdfa25a04bae7b277:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::b6774fcc2ffb8b235162bb7138ca4dc7624d94fc5177ceb03bafcfe571a0fa6c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE_FIGHT_HORDE_4V4",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "FIGHT_HORDE_4V4",
+            "RUN_REWARD_4V4",
+            "UPGRADE_4V4"
+          ],
+          "stateOutputs": [
+            "FIGHT_HORDE_4V4_RESULT",
+            "RUN_REWARD_4V4_RESULT",
+            "UPGRADE_4V4_RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. / Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "CORE_FIGHT_HORDE_4V4",
+          "grammarRole": "A",
+          "stateInputs": [
+            "FIGHT_HORDE_4V4",
+            "RUN_REWARD_4V4",
+            "UPGRADE_4V4"
+          ],
+          "stateOutputs": [
+            "FIGHT_HORDE_4V4_RESULT",
+            "RUN_REWARD_4V4_RESULT",
+            "UPGRADE_4V4_RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. / Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "CORE_FIGHT_HORDE_4V4",
+          "grammarRole": "B",
+          "stateInputs": [
+            "FIGHT_HORDE_4V4",
+            "RUN_REWARD_4V4",
+            "UPGRADE_4V4"
+          ],
+          "stateOutputs": [
+            "FIGHT_HORDE_4V4_RESULT",
+            "RUN_REWARD_4V4_RESULT",
+            "UPGRADE_4V4_RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. / Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        },
+        {
+          "id": "CORE_FIGHT_HORDE_4V4",
+          "grammarRole": "c",
+          "stateInputs": [
+            "FIGHT_HORDE_4V4",
+            "RUN_REWARD_4V4",
+            "UPGRADE_4V4"
+          ],
+          "stateOutputs": [
+            "FIGHT_HORDE_4V4_RESULT",
+            "RUN_REWARD_4V4_RESULT",
+            "UPGRADE_4V4_RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+          "playerChoice": "FIGHT_HORDE_4V4_RESULT / RUN_REWARD_4V4_RESULT / UPGRADE_4V4_RESULT"
+        },
+        {
+          "id": "CORE_FIGHT_HORDE_4V4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "FIGHT_HORDE_4V4",
+            "RUN_REWARD_4V4",
+            "UPGRADE_4V4"
+          ],
+          "stateOutputs": [
+            "FIGHT_HORDE_4V4_RESULT",
+            "RUN_REWARD_4V4_RESULT",
+            "UPGRADE_4V4_RESULT"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 주어진 시간과 자원의 제약 하에 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다.",
+          "playerChoice": "FIGHT_HORDE_4V4_RESULT / RUN_REWARD_4V4_RESULT / UPGRADE_4V4_RESULT"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 446706,
-      "lastMs": 41101,
+      "totalMs": 476325,
+      "lastMs": 29619,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:23:08.818Z"
+      "updatedAt": "2026-10-08T08:23:38.440Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T08:23:08.820Z",
+  "updatedAt": "2026-10-08T08:23:38.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2515,12 +2613,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:23:08.820Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "코어 전장 4대4의 핵심 재미와 시스템 연결을 확정한 단일 Game Designer AI의 정체성입니다. 게임은 반복 가능한 핵심 루프, 즉시 이해 가능한 입력/피드백, 그리고 다양한 상황별 대응을 포함합니다. 게임의 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'으로 구성됩니다. 게임은 모바일에서도 즉시 이해 가능한 입력과 피드백을 제공합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결합하여, 게임의 깊이와 재미를 강화합니다. 게임의 플레이어 역할은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then create",
+      "playerFantasy": "코어 전장 4대4는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로, 플레이어가 즉시 이해 가능한 입력/피드백을 제공하는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 구체화한 게임의 중심 행동과 선택으로, 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 이는 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어지는 반복 가능한 핵심 루프를 구축합니다. 플레이어는 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'과 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택을 통해, 주어진 상황에서 최적의 전략을 선택하고, 그 결과가 다음 상태로 이어집니다. 이는 주어진 시간과 자원의 제약 하에, 플레이어가 즉시 이해할 수 있는 입력/피드백을 제공하며, 게임의 깊이와 재미를 강화합니다. 게임의 시스템은 MAIN/A/B/c/@와 관련된 다양한 상태 변화를 포함하며, 각 시스템은 구체적인 목적과 선택을 담고 있습니다. 게임의 규칙은 학문적 규칙과 실제 플레이를 결",
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T08:23:38.442Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
