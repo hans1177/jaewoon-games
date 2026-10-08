@@ -362,25 +362,143 @@
           "playerChoice": "Select a board pattern, set a goal, manage move limits, and navigate through obstacles to achieve a combo score."
         }
       ]
+    },
+    "local_authoring_parts::b0248a32b4b6594577ca71f0f6531a54f2f9ba3c56e95a1c097f8f9ad21b834b:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::9e39fbd98fbc06d083ccc9bf70403a27e6242e09daf0eb65491bcd673eabcd5f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "color-cascade-signature-system-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "boardPattern",
+            "goalState",
+            "moveCount",
+            "obstacleSet",
+            "comboScore"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "updatedGoalState",
+            "remainingMoveCount",
+            "newObstacleSet",
+            "comboMultiplier"
+          ],
+          "name": "Color Cascade Signature System",
+          "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+          "playerChoice": "Select a board pattern, set a goal, and manage move limits while navigating through obstacles to achieve a combo score."
+        },
+        {
+          "id": "color-cascade-signature-system-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "boardPattern",
+            "goalState",
+            "moveCount",
+            "obstacleSet",
+            "comboScore"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "updatedGoalState",
+            "remainingMoveCount",
+            "newObstacleSet",
+            "comboMultiplier"
+          ],
+          "name": "Color Cascade Signature System",
+          "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+          "playerChoice": "Select a board pattern, set a goal, and manage move limits while navigating through obstacles to achieve a combo score."
+        },
+        {
+          "id": "color-cascade-signature-system-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "boardPattern",
+            "goalState",
+            "moveCount",
+            "obstacleSet",
+            "comboScore"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "updatedGoalState",
+            "remainingMoveCount",
+            "newObstacleSet",
+            "comboMultiplier"
+          ],
+          "name": "Color Cascade Signature System",
+          "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+          "playerChoice": "Select a board pattern, set a goal, and manage move limits while navigating through obstacles to achieve a combo score."
+        },
+        {
+          "id": "color-cascade-signature-system-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "boardPattern",
+            "goalState",
+            "moveCount",
+            "obstacleSet",
+            "comboScore"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "updatedGoalState",
+            "remainingMoveCount",
+            "newObstacleSet",
+            "comboMultiplier"
+          ],
+          "name": "Color Cascade Signature System",
+          "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+          "playerChoice": "Select a board pattern, set a goal, manage move limits, and navigate through obstacles to achieve a combo score."
+        },
+        {
+          "id": "color-cascade-signature-system-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "boardPattern",
+            "goalState",
+            "moveCount",
+            "obstacleSet",
+            "comboScore"
+          ],
+          "stateOutputs": [
+            "nextBoardPattern",
+            "updatedGoalState",
+            "remainingMoveCount",
+            "newObstacleSet",
+            "comboMultiplier"
+          ],
+          "name": "Color Cascade Signature System",
+          "purpose": "Enables players to dynamically adjust board patterns, goals, and obstacle sets based on their gameplay behavior and combo progress.",
+          "playerChoice": "Select a board pattern, set a goal, manage move limits, and navigate through obstacles to achieve a combo score."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 982134,
-      "lastMs": 73314,
+      "totalMs": 1039770,
+      "lastMs": 57636,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:10:03.612Z"
+      "updatedAt": "2026-10-08T13:11:01.251Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:53:41.331Z",
-  "updatedAt": "2026-10-08T13:10:03.614Z",
+  "updatedAt": "2026-10-08T13:11:01.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2413,12 +2531,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T13:10:03.614Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 각 레벨의 목표를 설정하고, 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 진행하며, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성한다. 이 과정에서 플레이어는 색채의 연쇄를 통해 다양한 경로, 위험, 보상, 그리고 성장의 가능성을 경험하게 된다. 게임의 핵심 재미는 선택의 결과가 월드 상태를 변화시키는 PUZZLE의 핵심 행동과 목표를 연결하는 시스템으로 구성된다. 게임의 구조는 MAIN, A/B, c, @의 상태 변화를 통해 반복 가능한 루프를 형성하며, 플레이어는 각 레벨의 목표를 설정하고, 선택의 결과를 통해 새로운 상태를 생성하고, 이 과정을 반복해 게임을 진행한다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의재",
+      "playerFantasy": "색채의 연쇄는 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 각 레벨의 목표를 설정하고, 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 진행하며, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성한다. 이 과정에서 플레이어는 색채의 연쇄를 통해 다양한 경로, 위험, 보상, 그리고 성장의 가능성을 경험하게 된다. 게임의 핵심 재미는 선택의 결과가 월드 상태를 변화시키는 PUZZLE의 핵심 행동과 목표를 연결하는 시스템으로 구성된다. 게임의 구조는 MAIN, A/B, c, @의 상태 변화를 통해 반복 가능한 루프를 형성하며, 플레이어는 각 레벨의 목표를 설정하고, 선택의 결과를 통해 새로운 상태를 생성하고, 이 과정을 반복해 게임을 진행한다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태",
+      "coreFun": "색채의 연쇄은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 각 레벨의 목표를 설정하고, 제한된 이동, 장애물, 또는 명확한 퀴즈 형태로 진행하며, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성한다. 이 과정에서 플레이어는 색채의 연쇄를 통해 다양한 경로, 위험, 보상, 그리고 성장의 가능성을 경험하게 된다. 게임의 핵심 재미는 선택의 결과가 월드 상태를 변화시키는 PUZZLE의 핵심 행동과 목표를 연결하는 시스템으로 구성된다. 게임의 구조는 MAIN, A/B, c, @의 상태 변화를 통해 반복 가능한 루프를 형성하며, 플레이어는 각 레벨의 목표를 설정하고, 선택의 결과를 통해 새로운 상태를 생성하고, 이 과정을 반복해 게임을 진행한다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태를 변화시켜 새로운 레벨을 생성하는 방식으로 설계되어, 플레이어는 다양한 경로와 결과를 경험할 수 있다. 게임의 인과법칙은 플레이어의 선택과 월드 상태의 변화를 연결하여, 게임의 재미와 깊이를 강화한다. 게임의 시스템은 각 레벨의 목표를 설정하고, 선택의 결과가 월드 상태",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T13:11:01.254Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
