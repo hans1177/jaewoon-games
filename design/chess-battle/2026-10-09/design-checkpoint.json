@@ -60,25 +60,38 @@
       "name": "Commit a move or ability that changes control of key spaces.",
       "purpose": "Establish dynamic state transitions through tactical choices.",
       "playerChoice": "Define new board configurations based on threat patterns and strategic intent."
+    },
+    "local_authoring_parts::c64abb8bcaf0be5ef90a9511630e20b0ed11c5b7948ed3bb91a06f038cf28251:signatureSystems:2": {
+      "id": "CORE_LOOP_3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "READ_BOARD_THREAT_INFO"
+      ],
+      "stateOutputs": [
+        "DESIGN_NEXT_DECISIVE_TURN"
+      ],
+      "name": "Resolve the tactical exchange and use the new board state to plan the next decisive turn.",
+      "purpose": "Establish a clear, actionable path forward based on the current board state and tactical resolution.",
+      "playerChoice": "Select a move or ability that directly influences the progression of the game toward a decisive outcome."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 586691,
-      "lastMs": 102206,
+      "totalMs": 689552,
+      "lastMs": 102861,
       "lastError": null,
-      "updatedAt": "2026-10-08T22:06:11.588Z"
+      "updatedAt": "2026-10-08T22:07:54.450Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:56:24.867Z",
-  "updatedAt": "2026-10-08T22:06:11.588Z",
+  "updatedAt": "2026-10-08T22:07:54.450Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2204,22 +2217,12 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::c64abb8bcaf0be5ef90a9511630e20b0ed11c5b7948ed3bb91a06f038cf28251:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "CORE_LOOP_1"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::c64abb8bcaf0be5ef90a9511630e20b0ed11c5b7948ed3bb91a06f038cf28251:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:06:11.588Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T22:07:54.450Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
