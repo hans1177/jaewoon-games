@@ -644,25 +644,42 @@
       "name": "CORE-LOOP-2",
       "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::32fdc0dd3c39da3a4000624e91bd071f0dcae13bc395bd620ba6ae79424ad583:signatureSystems:2": {
+      "id": "CORE-LOOP-3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT",
+        "UPGRADES",
+        "BUILD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION_CHOICE",
+        "RUN_PROGRESS",
+        "BUILD_UPGRADE"
+      ],
+      "name": "CORE-LOOP-3",
+      "purpose": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1328044,
-      "lastMs": 105889,
+      "totalMs": 1434134,
+      "lastMs": 106090,
       "lastError": null,
-      "updatedAt": "2026-10-08T10:20:32.946Z"
+      "updatedAt": "2026-10-08T10:22:19.038Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:15:41.984Z",
-  "updatedAt": "2026-10-08T10:20:32.946Z",
+  "updatedAt": "2026-10-08T10:22:19.038Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2897,7 +2914,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:20:32.946Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:22:19.038Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
