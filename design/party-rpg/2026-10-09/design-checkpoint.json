@@ -554,25 +554,98 @@
     },
     "local_authoring_parts::9a0a9f70e58e177153888032966519e4814c74acad408cced9d713128e2016c8:trigger": {
       "trigger": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::9a0a9f70e58e177153888032966519e4814c74acad408cced9d713128e2016c8:stateChange": {
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::0518d1ff1cdcecd6f832a36cdd12d3e91a69cf97f9f0cabf57109406126b166d:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_4 → BOARD_STATE",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_4 → BOARD_STATE",
+      "toSystem": "BOARD_STATE",
+      "trigger": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다.",
+      "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다."
+    },
+    "local_authoring_parts::5916b85dabc1ea5425bbbc1b791d172378a540d98a5ab7a4ca873690a8d831ed:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "SIGNATURE_SYSTEM_0",
+          "toId": "BOARD_STATE",
+          "stateKeys": [
+            "BOARD_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0 → BOARD_STATE",
+          "toSystem": "BOARD_STATE",
+          "trigger": "systemInterconnections[0].stateChange",
+          "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_1",
+          "toId": "BOARD_STATE",
+          "stateKeys": [
+            "BOARD_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_1 → BOARD_STATE",
+          "toSystem": "MATCH_GAME",
+          "trigger": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.",
+          "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_1에서 BOARD_STATE로 전환되어야 한다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_2 → BOARD_STATE",
+          "toId": "BOARD_STATE",
+          "stateKeys": [
+            "BOARD_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_2 → BOARD_STATE",
+          "toSystem": "MATCH_GAME",
+          "trigger": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.",
+          "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_2에서 BOARD_STATE로 전환되어야 한다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_0 → BOARD_STATE",
+          "toId": "BOARD_STATE",
+          "stateKeys": [
+            "BOARD_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_0 → BOARD_STATE",
+          "toSystem": "BOARD_STATE",
+          "trigger": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다.",
+          "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_0에서 BOARD_STATE로 전환되어야 한다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_4 → BOARD_STATE",
+          "toId": "BOARD_STATE",
+          "stateKeys": [
+            "BOARD_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_4 → BOARD_STATE",
+          "toSystem": "BOARD_STATE",
+          "trigger": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다.",
+          "stateChange": "시스템 간 상태 변화가 발생하며, SIGNATURE_SYSTEM_4에서 BOARD_STATE로 전환되어야 한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 45,
-      "successes": 45,
+      "calls": 46,
+      "successes": 46,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3100144,
-      "lastMs": 45749,
+      "totalMs": 3146309,
+      "lastMs": 46165,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:55:11.303Z"
+      "updatedAt": "2026-10-08T23:55:57.470Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-08T23:55:11.303Z",
+  "updatedAt": "2026-10-08T23:55:57.474Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3012,7 +3085,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:55:11.303Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:55:57.474Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
