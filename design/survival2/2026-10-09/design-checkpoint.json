@@ -388,25 +388,39 @@
       "name": "DELVE",
       "purpose": "Exploration and resource acquisition in the forest",
       "playerChoice": "Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk."
+    },
+    "local_authoring_parts::2a24946d745706aca5830bec94f9744db81d709f811cdd1316e29e59926107f4:signatureSystems:2": {
+      "id": "숲의 생존자들",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Explore the forest for a needed resource while reading environmental andcreature"
+      ],
+      "stateOutputs": [
+        "Status change to reflect new resources, risks, and group dynamics.",
+        "New status reflects improved capabilities, altered environment, or preparedness."
+      ],
+      "name": "DELVE",
+      "purpose": "Exploration and resource acquisition in the forest",
+      "playerChoice": "Choose action that enhances survival, modifies shelter/equipment, or prepares for future risk."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1047884,
-      "lastMs": 97697,
+      "totalMs": 1146087,
+      "lastMs": 98203,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:41:09.998Z"
+      "updatedAt": "2026-10-08T18:42:48.202Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:23:42.058Z",
-  "updatedAt": "2026-10-08T18:41:09.998Z",
+  "updatedAt": "2026-10-08T18:42:48.202Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2694,7 +2708,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T18:41:09.998Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T18:42:48.202Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
