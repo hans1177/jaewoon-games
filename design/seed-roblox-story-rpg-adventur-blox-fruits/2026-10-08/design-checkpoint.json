@@ -765,25 +765,28 @@
         "Board State Transition System",
         "Player-selected board patterns or obstacle combinations that determine the next级"
       ]
+    },
+    "local_authoring_parts::13e73a3b1e78b46352a42ee9d669d094c27be51b9d9b4f22dd0c94199791d64b:fromSystem": {
+      "fromSystem": "Board State Transition System"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 32,
+      "calls": 34,
+      "successes": 33,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2342345,
-      "lastMs": 64669,
+      "totalMs": 2403633,
+      "lastMs": 61288,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T10:34:31.534Z"
+      "updatedAt": "2026-10-08T10:35:32.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:01:25.970Z",
-  "updatedAt": "2026-10-08T10:34:31.534Z",
+  "updatedAt": "2026-10-08T10:35:32.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3029,7 +3032,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T10:34:31.534Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T10:35:32.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
