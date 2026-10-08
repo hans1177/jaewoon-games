@@ -107,25 +107,354 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::d529093ed08610fad2fcebd062cdf030983f7b79bec345bc42383ea2dc014481:signatureSystems:4": {
+      "id": "MATERIAL_DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_STATE",
+        "DISTANCE_STATE",
+        "SHORT_SESSION_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE_1",
+        "WORLD_STATUS_CHANGE_2",
+        "WORLD_STATUS_CHANGE_3"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::c297cb7c611a5abb602dad8a2d1c80c58179f0fe7b71f3cc541c7a14d13bd43a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ]
+    },
+    "local_authoring_parts::62f9af6c5087f6a45c175ec3e33677db2597e908636465b1b63c64a49e61da94:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ]
+    },
+    "local_authoring_parts::62f9af6c5087f6a45c175ec3e33677db2597e908636465b1b63c64a49e61da94:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9a7f613f5f6a503a0ccb2a3f82bce3082f5beadc154f9a8de92d5a49c7faaeea:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_CAUSAL_GRAMMAR",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MATERIAL_DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_STATE",
+            "DISTANCE_STATE",
+            "SHORT_SESSION_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE_1",
+            "WORLD_STATUS_CHANGE_2",
+            "WORLD_STATUS_CHANGE_3"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 수행하며 상태 변화를 만드는 중심 플레이. 입력 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프로 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::cdcbb9d306dbacb6cce0f9a2aa7299ae3c3861f1768ae3af0ea28a437c29a1e0:signatureSystems:0": {
+      "id": "MONSTER_ADVENTURE_CORE_LOOP",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT"
+      ],
+      "stateOutputs": [
+        "END_STATE"
+      ],
+      "name": "몬스터 어드벤처의 핵심 루프",
+      "purpose": "플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택 중심의 CASUAL 게임",
+      "playerChoice": "단순 한 번의 터치 또는 스위핑 입력 및 명확한 점수, 거리, 혹은 짧은 세션 목표로 시작하여 상태변화와 보상/위험을 통해 콘텐츠를 오래 연구할 만한 규칙과 관계를 형성"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 631563,
-      "lastMs": 74900,
+      "totalMs": 834721,
+      "lastMs": 70381,
       "lastError": null,
-      "updatedAt": "2026-10-08T18:10:19.424Z"
+      "updatedAt": "2026-10-08T18:13:42.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:59:47.811Z",
-  "updatedAt": "2026-10-08T18:10:19.424Z",
+  "updatedAt": "2026-10-08T18:13:42.608Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2207,12 +2536,75 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T18:10:19.424Z",
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_MAIN_A_B_c_DELVE_REQUIRED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "counts": {
+            "MAIN": 1,
+            "A": 1,
+            "B": 1,
+            "c": 1,
+            "DELVE": 1
+          },
+          "systemCount": 5,
+          "statesReady": false
+        },
+        "requiredAction": "메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "몬스터 어드벤처의 핵심 재미와 시스템 연결을 확정한 고유 정체성입니다. 게임은 단순한 점수나 관문 승계 없이, 플레이어가 즉시 시작할 수 있는 'Start' 행동과 선택을 중심으로, 진입 -> 상태변화 -> 보상/위험 -> 다음선택의 반복 루프를 통해 콘텐츠를 오래 연구할 만한 규칙과 관계로 구성됩니다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
+      "playerFantasy": "몬스터 어드벤처에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주요 인물의 목표, 두려움, 비밀은 실제 선택과 관계 변화를 만들어냅니다.",
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T18:13:42.608Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
