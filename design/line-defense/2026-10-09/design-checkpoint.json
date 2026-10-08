@@ -731,25 +731,28 @@
       "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
       "newGameplay": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
       "systemImpact": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status and providing immediate feedback on the player's defense adjustments."
+    },
+    "local_authoring_parts::870432af0f14e3f5601e4f6f0ecaf9e89acbd9f89d5ded391d44f549e83630aa:milestone": {
+      "milestone": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation. This action initiates the core gameplay loop by updating the battle status"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3313261,
-      "lastMs": 91566,
+      "totalMs": 3404619,
+      "lastMs": 91358,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:29:34.845Z"
+      "updatedAt": "2026-10-08T23:31:06.206Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T23:29:34.847Z",
+  "updatedAt": "2026-10-08T23:31:06.206Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3158,7 +3161,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:29:34.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:31:06.206Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
