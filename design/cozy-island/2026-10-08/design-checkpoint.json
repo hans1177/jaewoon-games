@@ -406,25 +406,41 @@
       "name": "자동전투 및 점령 보상",
       "purpose": "보이는 자동전투와 점령 보상 상태 변화를 구체화하고, 서버 권한으로 계산된 병력과 자원을 기반으로 보상이 발생한다.",
       "playerChoice": "자동전투 시작, 점령 보상 획득, 자원 거점 선택, 병력 확장, 전투력 증가, 보상 획득, 점령 상태 변화, 자동전투 및 보상 상태 변화"
+    },
+    "local_authoring_parts::6a14d2e00f9b27be696a45edd8b7c0f1ceb5f10b97bdeea3837475c2985e98c7:signatureSystems:2": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "B",
+      "stateInputs": [
+        "나무·식량 수집 상태 변화",
+        "주민 고용 및 자동화 상태 변화",
+        "병력 확장 및 전투력 증가",
+        "자원 거점 상태 변화 및 점령 상태 변화"
+      ],
+      "stateOutputs": [
+        "자동전투 및 점령 보상 상태 변화"
+      ],
+      "name": "자동전투 및 점령 보상",
+      "purpose": "보이는 자동전투와 점령 보상 상태 변화를 구체화하고, 서버 권한으로 계산된 병력과 자원을 기반으로 보상이 발생한다.",
+      "playerChoice": "자동전투 시작, 점령 보상 획득, 자원 거점 선택, 병력 확장, 전투력 증가, 보상 획득, 점령 상태 변화, 자동전투 및 보상 상태 변화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1304512,
-      "lastMs": 74927,
+      "totalMs": 1386138,
+      "lastMs": 81626,
       "lastError": null,
-      "updatedAt": "2026-10-08T07:04:16.898Z"
+      "updatedAt": "2026-10-08T07:05:38.527Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T06:42:32.069Z",
-  "updatedAt": "2026-10-08T07:04:16.898Z",
+  "updatedAt": "2026-10-08T07:05:38.527Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1017,7 +1033,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T07:04:16.898Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T07:05:38.527Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
