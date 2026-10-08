@@ -98,6 +98,7 @@ export function inspectSourceFunctions(source='',{language=''}={}){
   for(const pattern of patterns){
     for(const match of code.matchAll(pattern)){
       const name=match[1];if(seen.has(name))continue;
+      if(kind==='csharp'&&['if','for','foreach','while','switch','catch','using','lock','fixed'].includes(name))continue;
       const open=(match.index||0)+match[0].lastIndexOf('{'),close=matchingBrace(code,open);
       if(close<0)continue;
       seen.add(name);rows.push({name,body:raw.slice(open+1,close),code:code.slice(open+1,close),start:match.index||0,end:close+1,language:kind});

@@ -76,7 +76,7 @@ public class Game : MonoBehaviour {
   public void OnConfirm() { PlaceAt(new Vector3(2, 1, 3)); }
   private void PlaceAt(Vector3 next) { position = next; this.GrantReward(); }
   private void GrantReward() { gold += 1; }
-  public bool CanBuy() { return gold == 10; }
+  public bool CanBuy() { if (gold > 10) { return true; } else if (gold == 10) { return true; } return false; }
 }`;
   const graph=buildResponsibilityGraph({source:code,language:'unity'});
   assert.deepEqual(graph.nodes.map(row=>row.name),['OnConfirm','PlaceAt','GrantReward','CanBuy']);
