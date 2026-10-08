@@ -34,25 +34,38 @@
         "SELECT: 'Collect run rewards or experience and choose upgrades...' 또는 'Combine upgrades into a stronger build...' 등의 A/B/c 서브요소를 통해 실제 게임 상태 변화를 구현한다.",
         "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다."
       ]
+    },
+    "local_authoring_parts::7e01e1356da4a87934032246e483443d54296c590ff71095b9130e96e54b9378:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survivalrun"
+      ],
+      "stateOutputs": [
+        "OUTPUT: 주제적이고 체계적인 설계 원본인 '보석 생존전'에서 벗어나, 매 순간의 선택이 다음 상태로 이어지는 게임의 씨앗을 형성한다."
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "플레이어의 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades... 또는 Combine upgrades into a stronger build..."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 364419,
-      "lastMs": 59292,
+      "totalMs": 415724,
+      "lastMs": 51305,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:49:50.393Z"
+      "updatedAt": "2026-10-08T17:50:41.700Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:43:45.948Z",
-  "updatedAt": "2026-10-08T17:49:50.393Z",
+  "updatedAt": "2026-10-08T17:50:41.700Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:49:50.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:50:41.700Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
