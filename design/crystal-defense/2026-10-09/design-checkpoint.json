@@ -455,25 +455,40 @@
     },
     "local_authoring_parts::30886a9e4afbcf08e282f35c01233cbeb417cf55f903531998f13425ad7db88f:trigger": {
       "trigger": "플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다. 이 과정에서 'PLAYER_CHOICE'가 게임 컨텍스트로 전환되고, 결과적으로 'NEXT_WORLD_STATE'가 생성된다."
+    },
+    "local_authoring_parts::30886a9e4afbcf08e282f35c01233cbeb417cf55f903531998f13425ad7db88f:stateChange": {
+      "stateChange": "플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다. 이 과정에서 'PLAYER_CHOICE'가 게임 컨텍스트로 전환되고, 결과적으로 'NEXT_WORLD_STATE'가 생성된다."
+    },
+    "local_authoring_parts::530b659d946f1f29152a02c59e341be6b28c1710100e77c8606dc35e837b7f79:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_1",
+      "toId": "SIGNATURE_SYSTEM_2",
+      "stateKeys": [
+        "CURRENT_SELECTION",
+        "NEXT_WORLD_STATE"
+      ],
+      "fromSystem": "GAME_CONTEXT",
+      "toSystem": "GAME_CONTEXT",
+      "trigger": "플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다. 이 과정에서 'PLAYER_CHOICE'가 게임 컨텍스트로 전환되고, 결과적으로 'NEXT_WORLD_STATE'가 생성된다.",
+      "stateChange": "플레이어가 '현재 선택'을 하며, 주요 인물의 목표·두려움·비밀을 기반으로 다음 상태를 결정해야 한다. 이 과정에서 'PLAYER_CHOICE'가 게임 컨텍스트로 전환되고, 결과적으로 'NEXT_WORLD_STATE'가 생성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1692408,
-      "lastMs": 63941,
+      "totalMs": 1755903,
+      "lastMs": 63495,
       "lastError": null,
-      "updatedAt": "2026-10-08T19:08:39.612Z"
+      "updatedAt": "2026-10-08T19:09:43.109Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T18:40:26.814Z",
-  "updatedAt": "2026-10-08T19:08:39.612Z",
+  "updatedAt": "2026-10-08T19:09:43.110Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2970,7 +2985,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T19:08:39.612Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:09:43.110Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
