@@ -619,25 +619,8 @@
     ],
     "authoringIntegrity": {
       "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.detailedBlueprint.authoringIntegrity",
-      "markers": [
-        "DESIGN_SLICE_CONTENT_VALID",
-        "DESIGN_SLICE_CONTENT_REPAIR",
-        "DESIGN_FULL_FLOW_CONTENT_VALID"
-      ],
-      "evidence": [
-        "FAILED_CONTENT_PATH",
-        "REPAIR_FIELDS",
-        "SLICE_DEPENDENCY_HASH",
-        "PLAYTHROUGH_STATE_TRANSITIONS",
-        "DURATION_RATIONALE",
-        "ASSET_ROLE_EVIDENCE",
-        "RULE_STATE_GRAPH",
-        "ABILITY_CONTRACTS",
-        "PARTICIPANT_ROLE_TRACE",
-        "STRATEGY_RELATION_FINGERPRINTS",
-        "ASSET_FIT_AND_IMPROVEMENT",
-        "PHASE_REACHABILITY_AUDIT"
-      ],
+      "markers": ["DESIGN_SLICE_CONTENT_VALID", "DESIGN_SLICE_CONTENT_REPAIR", "DESIGN_FULL_FLOW_CONTENT_VALID"],
+      "evidence": ["FAILED_CONTENT_PATH", "REPAIR_FIELDS", "SLICE_DEPENDENCY_HASH", "PLAYTHROUGH_STATE_TRANSITIONS", "DURATION_RATIONALE", "ASSET_ROLE_EVIDENCE", "RULE_STATE_GRAPH", "ABILITY_CONTRACTS", "PARTICIPANT_ROLE_TRACE", "STRATEGY_RELATION_FINGERPRINTS", "ASSET_FIT_AND_IMPROVEMENT", "PHASE_REACHABILITY_AUDIT"],
       "rawPrivateReasoningLogged": false
     }
   },
