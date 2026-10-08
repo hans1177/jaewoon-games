@@ -137,6 +137,19 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
+  // 정식 설계의 MAIN/A/B/c/@는 태그만 붙여서는 안 되고 각각 고유 규칙과 상태 입출력이 있어야 한다.
+  if(selected.has('signatureSystems')){
+    const systems=list(design.signatureSystems);
+    const counts=Object.fromEntries(['MAIN','A','B','c','DELVE'].map(role=>[role,systems.filter(row=>row?.grammarRole===role).length]));
+    const ids=systems.map(row=>clean(row?.id));
+    const rolesReady=counts.MAIN===1&&counts.A===1&&counts.B===1&&counts.c>=1&&counts.DELVE>=1;
+    const statesReady=systems.length>=5&&ids.every(Boolean)&&new Set(ids).size===ids.length&&systems.every(row=>
+      list(row?.stateInputs).length>0&&list(row?.stateOutputs).length>0
+    );
+    if(!rolesReady||!statesReady)reject('DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
+      {counts,systemCount:systems.length,statesReady},
+      '메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+  }
   const declared=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
   if(design.multiplayerMode&&['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(declared)&&!(multiplayerRequired&&declared==='SINGLE')&&design.multiplayerMode!==declared){
     reject('DESIGN_MULTIPLAYER_CONTRADICTION','CATEGORY_IDENTITY',['multiplayerMode','multiplayerExpansionDecision'],{expected:declared,actual:design.multiplayerMode},'오너 입력의 플레이 모드를 보존한다. 인공지능 충원으로 혼자 플레이할 수 있어도 멀티 의도를 SINGLE로 바꾸지 않는다.');
@@ -145,6 +158,18 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     reject('DESIGN_MULTIPLAYER_CONTRADICTION','CATEGORY_IDENTITY',['multiplayerMode','multiplayerExpansionDecision'],{actual:design.multiplayerMode},'모든 게임은 멀티 필수다. 원본의 대표 행동과 저장 의미를 보존하며 디자이너가 COOP/COMPETITIVE/HYBRID 중 실제 함께 플레이할 규칙을 작성한다.');
   }
   const profiles=design.platformProfiles||{};
+  if(selected.has('platformProfiles')){
+    // 기존 중앙 공간 연출 계약을 설계 게이트에서도 적용한다. 이 기록은 실제 WebGL 실행 PASS가 아니다.
+    const spatial=profiles.UNITY?.unityWebSpatialPresentation;
+    const dimensions=['2.5D','3D'];
+    const fields=['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'];
+    const missing=fields.filter(field=>!textReady(spatial?.[field],32));
+    if(!dimensions.includes(spatial?.dimension)||missing.length){
+      reject('DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED','PLATFORM_FIT_DESIGN',['platformProfiles'],
+        {dimension:spatial?.dimension||'MISSING',missing},
+        'Unity WebGL 게임은 최소 2.5D(또는 3D) 실제 공간 그래픽을 설계한다. 세계 깊이·카메라/가림·조명/재질·모바일 브라우저 플레이와 전후 비교 검증을 각각 구체화한다. 평면 2D 카드·스프라이트·태그만으로 통과할 수 없다. 2D HUD는 가능하다.');
+    }
+  }
   for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
     for(const key of ['inputModel','multiplayerRuntime','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
       const value=clean(profiles[platform]?.[key]);
@@ -190,10 +215,6 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const nonnegative=value=>finite(value)&&value>=0;
     const distinctIds=rows=>rows.every(row=>textReady(row.id,1))&&new Set(rows.map(row=>row.id)).size===rows.length;
     if(selected.has('signatureSystems')){
-      for(const role of ['MAIN','A','B','c','DELVE']){
-        const count=systems.filter(row=>row.grammarRole===role).length;
-        if(count<1||(['MAIN','A','B'].includes(role)&&count!==1))invalid('DESIGN_RULE_ROLE_MISSING',['signatureSystems'],'signatureSystems',`${role} 역할과 그 상태 입출력을 명확히 구분해야 한다`);
-      }
       if(!distinctIds(systems)||systems.some(row=>!list(row.stateInputs).length||!list(row.stateOutputs).length))invalid('DESIGN_RULE_STATE_MISSING',['signatureSystems'],'signatureSystems','중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다');
     }
     if(selected.has('systemInterconnections')){
@@ -419,7 +440,9 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
       &&Number(preservation?.targetSessionMinutes)===Number(seed?.TARGET_SESSION_MINUTES||30)
       &&requiredLocked.every(value=>locked.has(value))
       &&requiredPasses.length===passes.size&&requiredPasses.every(value=>passes.has(value))
-      &&playMode===clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+      &&(multiplayerRequired&&clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase()==='SINGLE'
+        ?['COOP','COMPETITIVE','HYBRID'].includes(playMode)
+        :playMode===clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase());
     if(!preservationReady){
       hardFailures.push('OWNER_PRESERVATION_CONTRACT_MISSING');
       rejectionReasons.push(rejectionReason({code:'OWNER_PRESERVATION_CONTRACT_MISSING',axis:'IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',evidenceLevel:0,minimumRequired:100,evidence:{ownerRebuildMode:clean(seed?.OWNER_REBUILD_MODE),reuseExistingGameplay:seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true},requiredAction:'기존 게임의 월드·스토리·퀘스트·전투·제작·진행·밸런스·세이브 의미를 잠그고 표현 패스만 허용하는 preservationContract를 설계에 명시한다.'}));
