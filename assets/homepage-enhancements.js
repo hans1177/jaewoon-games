@@ -119,7 +119,9 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
-    .filter(hasRunnableHomepageTarget)
+    // 개발 확정 게임은 아직 배포가 없어도 플랫폼별 진행 상태와 비활성 버튼을 보여준다.
+    // 그 외 게임은 실제로 검증된 실행 링크가 있을 때만 표시한다.
+    .filter(game=>productionClassOf(game)==='DEVELOPMENT_CONFIRMED'||hasRunnableHomepageTarget(game))
     .sort((a,b)=>{
       const sa=scoreState(a),sb=scoreState(b);
       if(sa.score!==null||sb.score!==null){
@@ -387,7 +389,7 @@ function buildShelf(hub,id,title,description,rows){
   wrapper.id=id;
   wrapper.className='homeGameShelf';
   wrapper.setAttribute('aria-label',title);
-  wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):`<div class="shelfEmpty">${id==='homePlatformAvailableGameCenter'?'출시 기준을 확인한 게임이 아직 없어.':'현재 실행 가능한 개발 게임이 없어.'}</div>`}</div>`;
+  wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):`<div class="shelfEmpty">${id==='homePlatformAvailableGameCenter'?'출시 기준을 확인한 게임이 아직 없어.':'개발 중인 게임 정보가 없어.'}</div>`}</div>`;
   hub.appendChild(wrapper);
 }
 function buildRecentUpdates(catalog){
