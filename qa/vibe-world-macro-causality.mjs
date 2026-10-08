@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,distillVibeVerifiedWorldPatterns,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,distillVibeVerifiedWorldPatterns,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,createVibeProceduralWorldLayout,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -274,5 +274,58 @@ const repeatedFailure=distillVibeVerifiedWorldPatterns({events:[
 assert.equal(repeatedFailure.avoid.length,1);
 assert.equal(repeatedFailure.avoid[0].avoidCandidate,true);
 assert.ok(repeatedFailure.avoid[0].failureReasons.includes('SOFTLOCK'));
+
+
+// 절차적 자연 지형·도로·모듈 건축 배치: 정적인 제안과 실제 런타임 권한을 분리한다.
+const seedWorld={seed:'rpg-mountain-1',width:24,height:24,cellSize:3,density:.8,approvedDesign:true,mobile:true};
+const generated=createVibeProceduralWorldLayout(seedWorld);
+assert.equal(generated.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(generated.issues));
+assert.equal(generated.terrain.length,24*24);
+assert.ok(generated.river.length>0);
+assert.ok(generated.roadCells.length>5);
+assert.ok(generated.buildings.length>0);
+assert.ok(generated.buildings.length<=22);
+assert.ok(generated.routeGraph.pass);
+assert.equal(generated.sourceMutationPerformed,false);
+assert.equal(generated.nativeAssetInstancingPerformed,false);
+assert.equal(generated.runtimeVerified,false);
+assert.equal(generated.gameplayRuleMutation,false);
+assert.equal(generated.saveMeaningMutation,false);
+assert.deepEqual(generated,createVibeProceduralWorldLayout(seedWorld),'same seed, same 2D/3D layout');
+assert.notDeepEqual(generated.terrain,createVibeProceduralWorldLayout({...seedWorld,seed:'rpg-mountain-2'}).terrain,'different seeds must change terrain');
+assert.ok(generated.sightline.withinFov);
+const roadKeys=new Set(generated.roadCells.map(c=>c.x+','+c.z));
+const riverKeys=new Set(generated.river.map(c=>c.x+','+c.z));
+const occupiedKeys=new Set();
+for(const building of generated.buildings){
+  assert.ok(roadKeys.has(building.roadAccess.x+','+building.roadAccess.z));
+  assert.equal(building.modules.every(item=>item.startsWith(building.style+':')),true);
+  assert.equal(building.modules.some(item=>item.endsWith(':DOOR')),true);
+  assert.equal(building.foundation.levelY>=building.foundation.terrainMaxY,true);
+  assert.equal(building.position.x%seedWorld.cellSize,0);
+  assert.equal(building.position.z%seedWorld.cellSize,0);
+  for(const cell of building.footprint){
+    const key=cell.x+','+cell.z;
+    assert.equal(roadKeys.has(key),false,'a modular building must not cover a road');
+    assert.equal(riverKeys.has(key),false,'a modular building must not cover a waterway');
+    assert.equal(occupiedKeys.has(key),false,'buildings must not overlap');
+    occupiedKeys.add(key);
+  }
+}
+assert.equal(generated.instancingPlan.reduce((sum,item)=>sum+item.count,0),generated.buildings.length*7);
+assert.equal(generated.mobileBudget.actualDrawCallsMeasured,false);
+const optIn=createVibeAdaptiveWorldGenerationPlan({map:{name:'seeded-rpg',proceduralWorld:seedWorld}});
+assert.deepEqual(optIn.proceduralLayout,generated);
+assert.equal(createVibeAdaptiveWorldGenerationPlan({map:{name:'existing-live-world'}}).proceduralLayout,null);
+assert.equal(createVibeProceduralWorldLayout({seed:'no-approval'}).status,'APPROVED_DESIGN_REQUIRED');
+assert.equal(createVibeProceduralWorldLayout({...seedWorld,width:999}).status,'INVALID_GENERATION_INPUT');
+assert.equal(createVibeProceduralWorldLayout({...seedWorld,reservedCells:[{x:999,z:0}]}).status,'INVALID_GENERATION_INPUT');
+const reserved=createVibeProceduralWorldLayout({...seedWorld,reservedCells:Array.from({length:24},(_,z)=>({x:12,z}))});
+assert.ok(reserved.issues.some(issue=>issue.includes('REQUIRED_ROUTE_BLOCKED')||issue.includes('REQUIRED_OBJECTIVE_UNREACHABLE')));
+assert.equal(reserved.runtimeVerified,false);
+const generated2D=createVibeProceduralWorldLayout({...seedWorld,dimension:'2D'});
+assert.equal(generated2D.coordinateSystem,'XY_TOP_DOWN');
+assert.equal(generated2D.terrain.length,generated.terrain.length);
+assert.deepEqual(generated2D.roadCells,generated.roadCells);
 
 console.log('vibe-world-macro-causality: ok');
