@@ -265,6 +265,87 @@ test('preservation design rejects action descriptions in input and output state 
   }
 });
 
+// 메인: MAIN/A/B/c/@ 실제 역할을 원본 디자이너가 각각 작성·복구하는지 검증한다.
+test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid checkpoint entries',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const roles=['MAIN','A','B','c','DELVE'];
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
+    purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
+    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:item}},additionalProperties:false};
+  const checkpoint={tasks:{}},calls=[],logs=[];
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    designCheckpoint:checkpoint,modelCallStats:[],console:{log:line=>logs.push(line)},
+    clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,
+    assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const role=contract.properties.grammarRole.enum[0];
+      calls.push({role,prompt});
+      const attempt=calls.filter(row=>row.role===role).length;
+      const cloned=role==='A'&&attempt===1;
+      const id=cloned?'RULE_MAIN':'RULE_'+role;
+      return JSON.stringify({
+        id,grammarRole:role,name:cloned?'주요 자원 규칙':'원본 '+role+' 규칙',
+        purpose:cloned?'원본 주요 자원 전환을 설계한다':'원본 '+role+' 규칙에서 고유한 상태 판단을 수행한다',
+        playerChoice:cloned?'플레이어가 주요 자원 배분을 선택한다':'플레이어가 '+role+'의 대응 순서를 선택한다',
+        stateInputs:role==='c'&&attempt===1?['INPUT: 채집 → STATE: 나무 증가']:['WoodCount'],
+        stateOutputs:['WoodCount']
+      });
+    }
+  });
+  const result=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const rows=JSON.parse(JSON.stringify(result.signatureSystems));
+  assert.deepEqual(rows.map(row=>row.grammarRole),roles);
+  assert.equal(new Set(rows.map(row=>row.id)).size,5,'rules must not share the same game identity as their ID');
+  assert.deepEqual(calls.map(row=>row.role),['MAIN','A','A','B','c','c','DELVE']);
+  assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
+  assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_RULE_ID_REUSED'));
+  assert.ok(calls[5].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
+  assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
+  assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
+  const before=calls.length;
+  await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  assert.equal(calls.length,before,'previously validated MAIN/A/B/c/@ rule checkpoints are reused');
+  // 검증 전 남아 있던 오래된 잘못된 역할 캐시를 발견하면 그 역할만 다시 요청한다.
+  const savedRoles=Object.values(checkpoint.tasks);
+  savedRoles.find(row=>row.grammarRole==='A').grammarRole='MAIN';
+  savedRoles.find(row=>row.grammarRole==='B').id='RULE_MAIN';
+  savedRoles.find(row=>row.grammarRole==='c').stateInputs=['INPUT: 채집 → STATE: 나무 증가'];
+  const previousCalls=calls.length;
+  const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['A','B','c']);
+  assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
+  assert.deepEqual(JSON.parse(JSON.stringify(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs)),['WoodCount']);
+  assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
+});
+
+// 검증: 이름만 바꾼 MAIN/A/B/c/@ 복제는 설계 품질 통과가 아니다.
+test('MAIN A B c DELVE authoring gate rejects copied rule meaning with distinct IDs',()=>{
+  const roles=['MAIN','A','B','c','DELVE'];
+  const systems=roles.map(role=>({
+    id:'RULE_'+role,grammarRole:role,
+    name:role+' 시스템',
+    purpose:role+' 단계에서 원본의 서로 다른 상태 판정과 결과를 다음 선택으로 전달한다.',
+    playerChoice:role+'의 대응에 사용할 자원과 다음 행동의 우선순위를 선택한다.',
+    stateInputs:['WoodCount'],stateOutputs:['WoodCount']
+  }));
+  const baseline=validateDesignAuthoringContent({design:{signatureSystems:systems},fields:['signatureSystems']});
+  assert.equal(baseline.some(reason=>reason.code==='DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'),false);
+  const copied=structuredClone(systems);
+  copied[1].name=copied[0].name;
+  copied[1].purpose=copied[0].purpose;
+  const before=JSON.stringify(copied);
+  const invalid=validateDesignAuthoringContent({design:{signatureSystems:copied},fields:['signatureSystems']});
+  assert.ok(invalid.some(reason=>reason.code==='DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'));
+  assert.equal(JSON.stringify(copied),before,'invalid design content must not be silently rewritten or accepted');
+});
+
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
@@ -779,9 +860,26 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
 });
 
+test('three-platform policy-only checkpoint migration matches original SHA and excludes other inputs',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
+  const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
+  const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
+  const checkpoint={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seedId:'original',policyDigest:prior,engineDigest:oldEngine,phases:{},tasks:{authored:'preserved'},modelHealth:{}};
+  checkpoint.fingerprint=createHash('sha256').update(JSON.stringify({...context,policyDigest:prior,engineDigest:oldEngine})).digest('hex');
+  const allowed=(cp=checkpoint,ctx=context,only=true)=>runInNewContext(snippet+'\ncheckpointThreePlatformPolicyMigrationEligible',{designCheckpoint:cp,checkpointInputContext:ctx,DESIGN_CHECKPOINT_CONTRACT_VERSION:4,threePlatformOnlyPolicyRevision:only,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},engineDigest:'current',checkpointCompatibleEngineDigests:new Set(),createHash,clean:String});
+  assert.equal(Boolean(allowed()),true);
+  assert.equal(Boolean(allowed({...checkpoint,fingerprint:'tampered'})),false);
+  assert.equal(Boolean(allowed({...checkpoint,policyDigest:'other-policy'})),false);
+  assert.equal(Boolean(allowed(checkpoint,{...context,evidence:{source:'changed'}})),false);
+  assert.equal(Boolean(allowed(checkpoint,context,false)),false);
+  assert.equal(Boolean(allowed({...checkpoint,engineDigest:'unrecognized'})),false);
+});
+
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
-  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904']){
+  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4']){
   const checkpointInputContext={gameId:'g',date:'d',seed:{seedId:'s'},evidence:{librarySha:'unchanged'},policyDigest:'p',engineDigest:'new-engine'};
   const fingerprint=createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:oldEngine})).digest('hex');
   const cp={contractVersion:4,gameId:'g',date:'d',seedId:'s',policyDigest:'p',engineDigest:oldEngine,fingerprint,phases:{},tasks:{identity:'authored'},modelHealth:{}};

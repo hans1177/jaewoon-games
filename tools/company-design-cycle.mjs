@@ -271,6 +271,14 @@ const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
 const policyDigest=createHash('sha256').update(fs.readFileSync(CANONICAL_POLICY_PATH,'utf8')).digest('hex');
+// 중앙정책 본문 SHA가 정확히 이전/변경 승인 정책일 때만 동일 입력 체크포인트를 승계한다.
+const threePlatformOnlyPolicyRevision=policyDigest==='976fe18afb5cd559146ab42808b3edbd106181d079356a0a22ee3c69d8932c7d'&&(()=>{
+  const roadmap=readJson(CANONICAL_POLICY_PATH,{}),counting=roadmap.directNativeDualPlatformDevelopment?.platformCountingPolicy;
+  return roadmap.version===553&&roadmap.finalDevelopmentLock?.sequenceLock?.status==='LOCKED'
+    &&counting?.targetCount===3&&JSON.stringify(counting.targets)===JSON.stringify(['ROBLOX','UNITY_ANDROID','UNITY_WEB'])
+    &&counting?.noNewAdapterWorkflowOrShadowPipeline===true
+    &&roadmap.changeRecord?.ownerThreePlatformTargets20261009?.targetCount===3;
+})();
 const engineFiles=[
   'tools/company-design-cycle.mjs',
   'tools/vibe2-design-intelligence.mjs',
@@ -309,18 +317,31 @@ const checkpointCompatibleEngineDigests=new Set([
   '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b',
   '4392f6c8aaf3b4a62d3195d1aa9afdb76cd0ba1f633317503035d6af19a057b9'
 ]);
+// 기존 책임 함수: 정책상 플랫폼 개수 표시만 변경된 경우, 원본 입력 전체 SHA 일치 시 캐시 보존.
+const checkpointThreePlatformPolicyMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&threePlatformOnlyPolicyRevision
+  &&clean(designCheckpoint?.policyDigest)==='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade'
+  &&clean(designCheckpoint?.gameId)===gameId&&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&(clean(designCheckpoint?.engineDigest)===engineDigest
+    ||checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+    ||['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest)))
+  &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,policyDigest:designCheckpoint.policyDigest,engineDigest:designCheckpoint.engineDigest})).digest('hex')
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
   &&clean(designCheckpoint?.date)===date
   &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&(checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
-    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'].includes(clean(designCheckpoint?.engineDigest))
+    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest))
       &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:designCheckpoint.engineDigest})).digest('hex')))
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
-if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible)){
+if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible)){
   const previousContractVersion=Number(designCheckpoint.contractVersion||0);
   const previousEngineDigest=clean(designCheckpoint.engineDigest);
   designCheckpoint={
@@ -338,7 +359,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     checkpointMigration:{
       fromContractVersion:previousContractVersion,
       toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
-      reason:checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
+      reason:checkpointThreePlatformPolicyMigrationEligible?'THREE_PLATFORM_COUNT_EXACT_POLICY_IDENTITY_MIGRATION':checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
       previousEngineDigest,
       preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
       preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
@@ -346,7 +367,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     },
     updatedAt:new Date().toISOString()
   };
-  if(previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
+  if(checkpointThreePlatformPolicyMigrationEligible||previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
     // 작성 응답 조각은 유지하고 기존 완성 단계만 새로운 내용 검사로 재검토한다.
     delete designCheckpoint.phases.designer_draft;
     designCheckpoint.completedPhases=designCheckpoint.completedPhases.filter(phase=>phase!=='designer_draft');
@@ -1206,10 +1227,43 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
-          const value=await runCheckpointTask('local_authoring_parts',`${identity}:${field}:${index}`,()=>callLocalDesignerModel(
-            system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(rows)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\n이 항목은 ${grammarRole} 역할만 설계한다. 앞 항목의 id·name·purpose·playerChoice를 복사하지 않는다. 서로 다른 실제 규칙 ID와 대표 선택을 직접 작성하고 읽는 상태와 바꾸는 상태를 명시한다. 이 역할은 하위 필드를 따로 작성할 때도 유지한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
-          ));
-          rows.push(value);
+          // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/c/@ 역할별 원본 설계 검사
+          const itemKey=`${identity}:${field}:${index}`;
+          const itemTaskKey=`local_authoring_parts::${itemKey}`;
+          const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
+          for(let roleAttempt=0;;roleAttempt++){
+            const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
+            const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+            ));
+            if(!grammarRole){rows.push(value);break;}
+            const roleIssues=[];
+            const inputKeys=Array.isArray(value?.stateInputs)?value.stateInputs:[];
+            const outputKeys=Array.isArray(value?.stateOutputs)?value.stateOutputs:[];
+            if(value?.grammarRole!==grammarRole)roleIssues.push('DESIGN_GRAMMAR_ROLE_MISMATCH');
+            if(!clean(value?.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
+            if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
+              roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
+            if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
+              roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
+            if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
+            if(!roleIssues.length){
+              if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
+              rows.push(value);break;
+            }
+            // 실패한 역할만 무효화하고 나머지 역할과 이미 완료된 필드는 재사용한다.
+            delete designCheckpoint.tasks[itemTaskKey];
+            designCheckpoint.sliceRepairFeedback||={};
+            designCheckpoint.sliceRepairAttempts||={};
+            designCheckpoint.sliceRepairFeedback[itemTaskKey]=roleIssues.map(code=>({code,grammarRole,previousRuleIds:rows.map(row=>row.id)}));
+            designCheckpoint.sliceRepairAttempts[itemTaskKey]=(designCheckpoint.sliceRepairAttempts[itemTaskKey]||0)+1;
+            designCheckpoint.failedPhase='local_authoring_parts';
+            designCheckpoint.failedTask=`${field}:${grammarRole}`;
+            designCheckpoint.lastError=`DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED ${roleIssues.join(',')}`;
+            persistDesignCheckpoint();
+            console.log(`DESIGN_GRAMMAR_ROLE_REPAIR=${grammarRole}|${roleIssues.join(',')}|attempt=${designCheckpoint.sliceRepairAttempts[itemTaskKey]}`);
+            if(roleAttempt>=1)throw new Error(designCheckpoint.lastError);
+          }
         }
         merged[field]=rows;
       }else{

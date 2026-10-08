@@ -3,6 +3,7 @@
 // 초안 그래픽: 검증된 무료 애니메이션 Pirate/Skeleton 에셋을 실제 전투 상태와 연결한다.
 
 using UnityEngine;
+using Unity.Profiling;
 
 namespace JaewoonGames.DaechungRpg
 {
@@ -13,11 +14,20 @@ namespace JaewoonGames.DaechungRpg
         private int _enemyHp;
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
+        // 모바일 메뉴: 한 번에 필요한 화면만 그려 재계산 비용을 줄이고 탭별 스크롤을 유지한다.
+        private static readonly string[] MenuTabs = { "WORLD", "COMBAT", "SOCIAL" };
+        private readonly Vector2[] _menuScrollPositions = new Vector2[3];
+        private int _menuPage;
+        private Rect _actionButtonRect;
         private PrototypeAnimatedVisuals _visuals;
         private MultiplayerSession _multiplayer;
         private float _qaHeartbeatAt;
         private float _qaMobileTargetAt;
+        private float _qaUiBoundsAt;
         private int _coopActionSeen;
+        // 실제 WebGL 게임의 렌더 카운터. 프로파일러 미지원 환경은 값 미측정으로 둔다.
+        private ProfilerRecorder _drawCallsRecorder;
+        private ProfilerRecorder _trianglesRecorder;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -42,6 +52,29 @@ namespace JaewoonGames.DaechungRpg
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnEnable()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (!Application.absoluteURL.Contains("qa=1")) return;
+            try
+            {
+                _drawCallsRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+                _trianglesRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
+            }
+            catch (System.Exception)
+            {
+                if (_drawCallsRecorder.Valid) _drawCallsRecorder.Dispose();
+                if (_trianglesRecorder.Valid) _trianglesRecorder.Dispose();
+            }
+#endif
+        }
+
+        private void OnDisable()
+        {
+            if (_drawCallsRecorder.Valid) _drawCallsRecorder.Dispose();
+            if (_trianglesRecorder.Valid) _trianglesRecorder.Dispose();
         }
 
         private void Start()
@@ -97,53 +130,121 @@ namespace JaewoonGames.DaechungRpg
             _qaHeartbeatAt = Time.unscaledTime + 2f;
             var player = _core.Player;
             Debug.Log($"JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region={player.currentRegionId} level={player.level} hp={player.currentHp} maxHp={_core.GetMaxHp()} exp={player.experience} gold={player.gold} enemy={(_enemy != null ? _enemy.id : "none")} enemyHp={_enemyHp}");
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // 프로파일러 실측값만 전달한다. 미지원 런타임은 가짜 0값을 출력하지 않는다.
+            if (Application.absoluteURL.Contains("qa=1") && _drawCallsRecorder.Valid && _trianglesRecorder.Valid
+                && _drawCallsRecorder.LastValue > 0 && _trianglesRecorder.LastValue > 0)
+            {
+                Debug.Log($"JAEWOON_UNITY_WEB_QA RENDER_STATS game=daechung-rpg source=UNITY_NATIVE_RENDERER drawCalls={_drawCallsRecorder.LastValue} triangles={_trianglesRecorder.LastValue}");
+            }
+#endif
         }
 
         private void OnGUI()
         {
             if (_core == null)
             {
-                GUI.Label(new Rect(24, 24, Screen.width - 48, 60), "GameCore is not ready.");
+                GUI.Label(new Rect(24, 24, Mathf.Max(1f, Screen.width - 48f), 60), "GameCore is not ready.");
                 return;
             }
 
-            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.5f, 1.1f, 2f);
-            var width = Mathf.Min(Screen.width - 24f, 760f * scale);
-            var left = (Screen.width - width) * 0.5f;
-            var topHeight = Mathf.Min(220f * scale, Screen.height * 0.29f);
-            var controlsY = Screen.height * 0.60f;
-            var controlsHeight = Mathf.Max(120f, Screen.height - controlsY - 12f);
+            // 모바일: 안전 영역과 화면 회전에 맞추고, 공격 버튼 아래에 스크롤 콘텐츠를 깔지 않는다.
+            var safe = Screen.safeArea;
+            if (safe.width <= 0f || safe.height <= 0f)
+                safe = new Rect(0f, 0f, Screen.width, Screen.height);
+            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.2f, 1f, 1.6f);
+            var width = Mathf.Max(1f, Mathf.Min(safe.width - 24f, 760f * scale));
+            var left = safe.xMin + (safe.width - width) * 0.5f;
+            var topY = safe.yMin + 12f;
+            var compactLandscape = safe.width > safe.height && safe.height < 540f;
+            var topHeight = compactLandscape ? Mathf.Min(88f, safe.height * 0.24f) :
+                Mathf.Min(194f * scale, safe.height * 0.29f);
+            var controlsY = compactLandscape ? topY + topHeight + 8f :
+                Mathf.Max(topY + topHeight + 12f, safe.yMin + safe.height * 0.50f);
+            var tabsHeight = compactLandscape ? 48f : Mathf.Max(48f, 38f * scale);
+            var tabsRect = new Rect(left, controlsY, width, tabsHeight);
+
+            var margin = Mathf.Max(12f, safe.width * 0.04f);
+            var buttonWidth = Mathf.Min(Mathf.Max(1f, safe.width - margin * 2f), Mathf.Clamp(safe.width * 0.34f, 120f, 180f));
+            var buttonHeight = Mathf.Min(Mathf.Max(1f, safe.height - margin * 2f), Mathf.Clamp(safe.height * 0.08f, 56f, 84f));
+            _actionButtonRect = new Rect(safe.xMax - buttonWidth - margin, safe.yMax - buttonHeight - margin, buttonWidth, buttonHeight);
+            var menuY = tabsRect.yMax + 6f;
+            var controlsHeight = Mathf.Max(1f, _actionButtonRect.yMin - 10f - menuY);
+            var controlsRect = new Rect(left, menuY, width, controlsHeight);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1") && Event.current.type == EventType.Repaint
+                && Time.unscaledTime >= _qaUiBoundsAt)
+            {
+                _qaUiBoundsAt = Time.unscaledTime + 2f;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA UI_BOUNDS game=daechung-rpg surface=UNITY_ONGUI screenWidth={Screen.width} screenHeight={Screen.height} topLeft={left:F2} topY={topY:F2} topWidth={width:F2} topHeight={topHeight:F2} controlsLeft={controlsRect.x:F2} controlsY={controlsRect.y:F2} controlsWidth={controlsRect.width:F2} controlsHeight={controlsRect.height:F2} tabsLeft={tabsRect.x:F2} tabsY={tabsRect.y:F2} tabsWidth={tabsRect.width:F2} tabsHeight={tabsRect.height:F2} actionLeft={_actionButtonRect.x:F2} actionY={_actionButtonRect.y:F2} actionWidth={_actionButtonRect.width:F2} actionHeight={_actionButtonRect.height:F2}");
+                var target = new Vector2(tabsRect.x + tabsRect.width * (2.5f / MenuTabs.Length), tabsRect.center.y);
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_TARGET game=daechung-rpg role=tab index=2 x={target.x / Screen.width:F4} y={target.y / Screen.height:F4}");
+            }
+#endif
 
             GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
             GUI.skin.button.fontSize = Mathf.RoundToInt(17f * scale);
             GUI.skin.box.fontSize = Mathf.RoundToInt(17f * scale);
-            GUI.skin.button.fixedHeight = 46f * scale;
+            GUI.skin.button.fixedHeight = Mathf.Max(48f, 42f * scale);
 
-            GUILayout.BeginArea(new Rect(left, 12f, width, topHeight), GUI.skin.box);
-            GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
-            GUILayout.Label("Combat / growth / save / regions + verified animated actors");
-            DrawPlayerStatus();
-            GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
+            GUILayout.BeginArea(new Rect(left, topY, width, topHeight), GUI.skin.box);
+            if (compactLandscape)
+            {
+                var player = _core.Player;
+                GUILayout.Label("DAECHUNG RPG");
+                GUILayout.Label($"LV {player.level}   HP {player.currentHp}/{_core.GetMaxHp()}   GOLD {player.gold}");
+            }
+            else
+            {
+                GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
+                if (safe.height > 560f)
+                    GUILayout.Label("Combat / growth / save / regions + verified animated actors");
+                DrawPlayerStatus();
+                GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
+            }
             GUILayout.EndArea();
 
-            GUILayout.BeginArea(new Rect(left, controlsY, width, controlsHeight), GUI.skin.box);
+            // 탭 자체도 충분한 터치 높이를 유지한다. 변경하지 않은 탭의 스크롤 위치는 보존한다.
+            var selectedPage = GUI.Toolbar(tabsRect, _menuPage, MenuTabs);
+            if (selectedPage >= 0 && selectedPage < MenuTabs.Length && selectedPage != _menuPage)
+            {
+                _menuScrollPositions[_menuPage] = _scroll;
+                _menuPage = selectedPage;
+                _scroll = _menuScrollPositions[_menuPage];
+#if UNITY_WEBGL && !UNITY_EDITOR
+                if (Application.absoluteURL.Contains("qa=1"))
+                    Debug.Log($"JAEWOON_UNITY_WEB_QA MENU_INPUT game=daechung-rpg role=tab index={_menuPage} status=PASS");
+#endif
+            }
+
+            GUILayout.BeginArea(controlsRect, GUI.skin.box);
             _scroll = GUILayout.BeginScrollView(_scroll);
-
-            DrawRegionControls();
-            GUILayout.Space(6f * scale);
-            DrawCombatControls();
-            GUILayout.Space(6f * scale);
-            DrawTownControls();
-            GUILayout.Space(6f * scale);
-            _multiplayer?.DrawControls(scale);
-            GUILayout.Space(6f * scale);
-
-            GUILayout.Label("LOG");
-            GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
-
+            if (_menuPage == 0)
+            {
+                DrawRegionControls();
+                GUILayout.Space(6f * scale);
+                DrawTownControls();
+            }
+            else if (_menuPage == 1)
+            {
+                DrawCombatControls();
+                GUILayout.Space(6f * scale);
+                GUILayout.Label("LOG");
+                GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
+            }
+            else
+            {
+                _multiplayer?.DrawControls(scale);
+                GUILayout.Space(6f * scale);
+                GUILayout.Label("LOG");
+                GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
+            }
             GUILayout.EndScrollView();
+            _menuScrollPositions[_menuPage] = _scroll;
             GUILayout.EndArea();
 
+            // 하단 행동 버튼은 메뉴를 스크롤하거나 탭을 바꿔도 같은 위치에서 동작한다.
             DrawPrimaryCombatActionButton();
         }
 
@@ -216,15 +317,7 @@ namespace JaewoonGames.DaechungRpg
             var canEnterHunt = _enemy == null && _core != null && _core.Player.currentRegionId == "town";
             if (_enemy == null && !canEnterHunt) return;
 
-            var margin = Mathf.Max(12f, Screen.width * 0.04f);
-            var buttonWidth = Mathf.Clamp(Screen.width * 0.34f, 120f, 180f);
-            var buttonHeight = Mathf.Clamp(Screen.height * 0.08f, 56f, 84f);
-            var actionRect = new Rect(
-                Screen.width - buttonWidth - margin,
-                Screen.height - buttonHeight - margin,
-                buttonWidth,
-                buttonHeight
-            );
+            var actionRect = _actionButtonRect;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
             var qaMode = Application.absoluteURL.Contains("qa=1");
@@ -309,6 +402,10 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _core.SetRegion(regionId);
+            // 이동 직후 관련 메뉴를 앞에 보여준다. 게임 상태·보상·저장 의미는 그대로 둔다.
+            _menuScrollPositions[_menuPage] = _scroll;
+            _menuPage = regionId == "town" ? 0 : 1;
+            _scroll = _menuScrollPositions[_menuPage];
             _visuals?.SetRegionVisual(regionId);
             Debug.Log($"JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region={regionId}");
             _enemy = null;
@@ -384,6 +481,9 @@ namespace JaewoonGames.DaechungRpg
             {
                 _core.Player.currentHp = _core.GetMaxHp();
                 _core.SetRegion("town");
+                _menuScrollPositions[_menuPage] = _scroll;
+                _menuPage = 0;
+                _scroll = _menuScrollPositions[_menuPage];
                 _visuals?.SetRegionVisual("town");
                 _enemy = null;
                 _enemyHp = 0;

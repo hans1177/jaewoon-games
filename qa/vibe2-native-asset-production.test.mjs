@@ -5,12 +5,71 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('OBJ static validation reads actual polygons and material references without self-approving production',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'obj-geometry-'));
+  const assetDir=path.join(root,'assets');
+  try{
+    fs.mkdirSync(assetDir,{recursive:true});
+    const model=path.join(assetDir,'mesh.obj'),material=path.join(assetDir,'mesh.mtl');
+    fs.writeFileSync(material,'newmtl STONE\nKd 0.5 0.6 0.7\n');
+    fs.writeFileSync(model,'mtllib mesh.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nusemtl STONE\nf 1 2 3\n');
+    const good=inspectVibeSourceObj({repoRoot:root,source:{path:'/assets/mesh.obj'}});
+    assert.equal(good.status,'OBJ_STATIC_GEOMETRY_PASS');
+    assert.equal(good.vertexCount,3);
+    assert.equal(good.triangleCount,1);
+    assert.equal(good.nondegenerateTriangleCount,1);
+    assert.equal(good.materialCount,1);
+    assert.match(good.fileSha256,/^[0-9a-f]{64}$/);
+    assert.equal(good.actualRuntimeRenderObserved,false);
+    assert.equal(good.productionVerified,false);
+    const wrongHash=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/mesh.obj',objSha256:'0'.repeat(64)}});
+    assert.equal(wrongHash.status,'OBJ_REPAIR_REQUIRED');
+    assert.ok(wrongHash.issues.includes('OBJ_SOURCE_HASH_MISMATCH'));
+    fs.writeFileSync(model,'mtllib mesh.mtl\nv 0 0 0\nv 0 0 0\nv 0 0 0\nusemtl STONE\nf 1 2 3\n');
+    const degenerate=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/mesh.obj'}});
+    assert.equal(degenerate.status,'OBJ_REPAIR_REQUIRED');
+    assert.ok(degenerate.issues.includes('OBJ_NONDEGENERATE_MESH_REQUIRED'));
+    fs.writeFileSync(model,'mtllib mesh.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nusemtl STONE\nf 1 2 99\n');
+    const missingFace=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/mesh.obj'}});
+    assert.equal(missingFace.status,'OBJ_REPAIR_REQUIRED');
+    assert.ok(missingFace.issues.includes('OBJ_FACE_INDEX_OUT_OF_RANGE'));
+    fs.writeFileSync(model,'mtllib mesh.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nusemtl MISSING\nf 1 2 3\n');
+    const missingMaterial=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/mesh.obj'}});
+    assert.ok(missingMaterial.issues.includes('OBJ_MATERIAL_NAME_MISSING'));
+    fs.writeFileSync(model,'mtllib mesh.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nusemtl STONE\nf 1 2 3\n');
+    fs.writeFileSync(material,'newmtl STONE\nmap_Kd missing.png\n');
+    const missingTexture=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/mesh.obj'}});
+    assert.ok(missingTexture.issues.includes('OBJ_MATERIAL_TEXTURE_MISSING'));
+    const fake=inspectVibeSourceObj({repoRoot:root,source:{path:'assets/fake.obj'}});
+    assert.equal(fake.status,'SOURCE_OBJ_REQUIRED');
+    assert.equal(fake.runtimeVerified,false);
+    const outside=inspectVibeSourceObj({repoRoot:root,source:{path:'../escaped.obj'}});
+    assert.equal(outside.status,'SOURCE_OBJ_REQUIRED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('repository authored OBJ geometry is a static source, not native runtime approval',()=>{
+  for(const path of [
+    'assets/roblox/survival-core-world-v1/chest.obj',
+    'assets/roblox/survival-combat-parts-v1/blade_long.obj',
+    'assets/roblox/monster-adventure-v1/bat.obj'
+  ]){
+    const inspected=inspectVibeSourceObj({repoRoot:process.cwd(),source:{path}});
+    assert.equal(inspected.status,'OBJ_STATIC_GEOMETRY_PASS',path+': '+JSON.stringify(inspected.issues));
+    assert.ok(inspected.nondegenerateTriangleCount>0);
+    assert.equal(inspected.runtimeVerified,false);
+  }
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.match(source,/sourceObjReady=!asset\.sourceObjQa\|\|asset\.sourceObjQa\.status==='OBJ_STATIC_GEOMETRY_PASS'/);
+  assert.match(source,/ready:Boolean\(masterGlbReady&&sourceObjReady&&hasNativeReference/);
+});
 
 test('asset registry change detection skips untouched top-level serialization and tracks catalog asset mutations',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-change-detection-'));

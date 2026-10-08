@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import crypto from 'node:crypto';
 
 const args=Object.fromEntries(process.argv.slice(2).map(v=>{
   const m=v.match(/^--([^=]+)=(.*)$/);
@@ -180,6 +181,38 @@ try{
   const mobileInputObserved=markers.slice(mobileMarkerStart).some(x=>x.includes(' MOBILE_INPUT ')&&x.includes('role=action')&&x.includes('status=PASS'));
   if(!mobileInputObserved)throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_NOT_OBSERVED');
 
+  // 모바일 메뉴를 실제 손가락 입력으로 전환하고 다시 복귀시킨다. 텍스트 표시는 작동 증거가 아니다.
+  let mobileMenuInteraction=null;
+  if(gameId==='daechung-rpg'){
+    const navTarget=markers.slice().reverse().find(line=>line.includes(' MENU_TARGET ')
+      &&line.includes('game=daechung-rpg')&&line.includes('role=tab')&&line.includes('index=2'))||'';
+    const navX=Number(navTarget.match(/\bx=([0-9.]+)/)?.[1]);
+    const navY=Number(navTarget.match(/\by=([0-9.]+)/)?.[1]);
+    if(!navTarget||!Number.isFinite(navX)||!Number.isFinite(navY)||navX<=0||navX>=1||navY<=0||navY>=1)
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_TARGET_MISSING');
+    const menuTarget={x:canvasBox.x+canvasBox.width*navX,y:canvasBox.y+canvasBox.height*navY};
+    if(menuTarget.x<0||menuTarget.x>=mobileViewport.width||menuTarget.y<0||menuTarget.y>=mobileViewport.height)
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_TARGET_OFFSCREEN');
+    const menuInputStart=markers.length;
+    await page.touchscreen.tap(menuTarget.x,menuTarget.y);
+    await page.waitForTimeout(600);
+    if(!markers.slice(menuInputStart).some(line=>line.includes(' MENU_INPUT ')&&line.includes('index=2')&&line.includes('status=PASS')))
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_SOCIAL_NOT_INTERACTIVE');
+    // 동일한 탭 줄의 첫 탭으로 돌아가 원래 화면을 복구한다.
+    const boundsLine=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')&&line.includes('game=daechung-rpg'))||'';
+    const getBound=key=>Number(boundsLine.match(new RegExp('\\b'+key+'=([0-9.]+)'))?.[1]);
+    const firstTabX=(getBound('tabsLeft')+getBound('tabsWidth')/6)/getBound('screenWidth');
+    if(!Number.isFinite(firstTabX)||firstTabX<=0||firstTabX>=1)throw new Error('UNITY_WEB_QA_MOBILE_MENU_BOUNDS_INVALID');
+    const firstTapX=canvasBox.x+canvasBox.width*firstTabX;
+    const firstMenuInputStart=markers.length;
+    await page.touchscreen.tap(firstTapX,menuTarget.y);
+    await page.waitForTimeout(600);
+    if(!markers.slice(firstMenuInputStart).some(line=>line.includes(' MENU_INPUT ')&&line.includes('index=0')&&line.includes('status=PASS')))
+      throw new Error('UNITY_WEB_QA_MOBILE_MENU_WORLD_RETURN_FAILED');
+    mobileMenuInteraction={pass:true,actualBrowserTouch:true,visitedPages:['SOCIAL','WORLD'],
+      target:menuTarget,returnedToWorld:true};
+  }
+
   await canvas.focus();
   for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
@@ -227,6 +260,100 @@ try{
     framePacing.medianFrameMs>38||framePacing.p95FrameMs>100;
   const performanceBlocked=framePacingFailed||bootMilliseconds>90000;
 
+  // 실제 게임 진행 화면의 픽셀을 읽는다. 콘솔 PASS나 단순 스크린샷 파일 존재는 시각 QA가 아니다.
+  const liveCapture=await page.screenshot({fullPage:false});
+  const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
+  if(screenshot){
+    fs.mkdirSync(path.dirname(screenshot),{recursive:true});
+    fs.writeFileSync(screenshot,liveCapture);
+  }
+  const visualPixels=await page.evaluate(async encoded=>{
+    const bytes=Uint8Array.from(atob(encoded),character=>character.charCodeAt(0));
+    const bitmap=await createImageBitmap(new Blob([bytes],{type:'image/png'}));
+    const sampleWidth=80,sampleHeight=Math.max(1,Math.round(sampleWidth*bitmap.height/bitmap.width));
+    const surface=document.createElement('canvas');
+    surface.width=sampleWidth;surface.height=sampleHeight;
+    const context=surface.getContext('2d',{willReadFrequently:true});
+    if(!context)throw new Error('UNITY_WEB_QA_PIXEL_READBACK_UNAVAILABLE');
+    context.drawImage(bitmap,0,0,sampleWidth,sampleHeight);
+    bitmap.close();
+    const pixels=context.getImageData(0,0,sampleWidth,sampleHeight).data;
+    const histogram=new Map();let sampled=0,magenta=0;
+    for(let offset=0;offset<pixels.length;offset+=4){
+      const red=pixels[offset],green=pixels[offset+1],blue=pixels[offset+2],alpha=pixels[offset+3];
+      if(alpha<240)continue;
+      sampled++;
+      if(red>=185&&blue>=175&&green<=115&&red>green*1.7&&blue>green*1.7)magenta++;
+      const bucket=((red>>3)<<10)|((green>>3)<<5)|(blue>>3);
+      histogram.set(bucket,(histogram.get(bucket)||0)+1);
+    }
+    const dominant=Math.max(0,...histogram.values());
+    return {width:sampleWidth,height:sampleHeight,pixelCount:sampled,
+      magentaRatio:sampled?magenta/sampled:1,dominantColorRatio:sampled?dominant/sampled:1,
+      distinctColorBuckets:histogram.size,source:'REAL_GAMEPLAY_BROWSER_SCREENSHOT'};
+  },liveCapture.toString('base64'));
+  const mobileUiBounds=await page.evaluate(()=>{
+    const viewport={width:window.innerWidth,height:window.innerHeight};
+    const clipped=[];
+    for(const element of document.querySelectorAll('canvas,button,input,[role="button"]')){
+      const style=getComputedStyle(element),rect=element.getBoundingClientRect();
+      if(style.display==='none'||style.visibility==='hidden'||rect.width<16||rect.height<16)continue;
+      if(rect.left < -2||rect.right>viewport.width+2||rect.top < -2||rect.bottom>viewport.height+2)
+        clipped.push({tag:element.tagName,id:element.id||null,left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom});
+    }
+    return {viewport,clipped:clipped.slice(0,10)};
+  });
+  const nativeRenderMarker=markers.slice().reverse().find(line=>line.includes(' RENDER_STATS ')&&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_NATIVE_RENDERER'))||'';
+  const nativeDrawCalls=Number(nativeRenderMarker.match(/\bdrawCalls=(\d+)\b/)?.[1]);
+  const nativeTriangles=Number(nativeRenderMarker.match(/\btriangles=(\d+)\b/)?.[1]);
+  const nativeRenderCountersMeasured=Boolean(nativeRenderMarker)&&Number.isSafeInteger(nativeDrawCalls)&&nativeDrawCalls>=0&&Number.isSafeInteger(nativeTriangles)&&nativeTriangles>=0;
+  const renderBudget={drawCallsMax:500,trianglesMax:250000};
+  const renderBudgetExceeded=nativeRenderCountersMeasured&&(nativeDrawCalls>renderBudget.drawCallsMax||nativeTriangles>renderBudget.trianglesMax);
+  const nativeUiMarker=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')
+    &&line.includes(`game=${gameId}`)&&line.includes('surface=UNITY_ONGUI'))||'';
+  const nativeUiKeys=['screenWidth','screenHeight','topLeft','topY','topWidth','topHeight',
+    'controlsLeft','controlsY','controlsWidth','controlsHeight',
+    'tabsLeft','tabsY','tabsWidth','tabsHeight','actionLeft','actionY','actionWidth','actionHeight'];
+  const nativeUiRect=Object.fromEntries(nativeUiKeys.map(key=>{
+    const token=nativeUiMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return [key,token===undefined?null:Number(token.slice(key.length+1))];
+  }));
+  const nativeUiMeasured=Boolean(nativeUiMarker)&&Object.values(nativeUiRect).every(value=>Number.isFinite(value))
+    &&nativeUiRect.screenWidth>0&&nativeUiRect.screenHeight>0;
+  const withinNativeViewport=(left,top,width,height)=>left>=-2&&top>=-2&&width>0&&height>0
+    &&left+width<=nativeUiRect.screenWidth+2&&top+height<=nativeUiRect.screenHeight+2;
+  const nativeUiOffscreen=nativeUiMeasured
+    &&(!withinNativeViewport(nativeUiRect.topLeft,nativeUiRect.topY,nativeUiRect.topWidth,nativeUiRect.topHeight)
+      ||!withinNativeViewport(nativeUiRect.controlsLeft,nativeUiRect.controlsY,nativeUiRect.controlsWidth,nativeUiRect.controlsHeight)
+      ||!withinNativeViewport(nativeUiRect.tabsLeft,nativeUiRect.tabsY,nativeUiRect.tabsWidth,nativeUiRect.tabsHeight)
+      ||!withinNativeViewport(nativeUiRect.actionLeft,nativeUiRect.actionY,nativeUiRect.actionWidth,nativeUiRect.actionHeight));
+  const nativeUiOverlap=nativeUiMeasured
+    &&(nativeUiRect.topY+nativeUiRect.topHeight>nativeUiRect.tabsY+2
+      ||nativeUiRect.tabsY+nativeUiRect.tabsHeight>nativeUiRect.controlsY+2
+      ||nativeUiRect.controlsY+nativeUiRect.controlsHeight>nativeUiRect.actionY-6);
+  const nativeUiMissing=gameId==='daechung-rpg'&&!nativeUiMeasured;
+  const nativeMeshMarker=markers.slice().reverse().find(line=>line.includes(' MESH_INTEGRITY ')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_MESH_FILTER'))||'';
+  const nativeMeshMetric=key=>{
+    const token=nativeMeshMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const nativeMeshProof={
+    inspected:nativeMeshMetric('inspected'),validMeshes:nativeMeshMetric('validMeshes'),
+    triangles:nativeMeshMetric('triangles'),materialPass:nativeMeshMetric('materialPass'),
+    texturePass:nativeMeshMetric('texturePass')
+  };
+  const nativeMeshVerified=Boolean(nativeMeshMarker)&&nativeMeshMarker.includes('status=PASS')
+    &&Number.isSafeInteger(nativeMeshProof.inspected)&&nativeMeshProof.inspected>0
+    &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
+    &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
+    &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
+  const nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified;
+  const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
+  const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
+  const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
+    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing;
+
   await canvas.focus();
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(2200);
@@ -255,11 +382,6 @@ try{
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
   if(fatal.length)throw new Error(`UNITY_WEB_FATAL_RUNTIME_ERROR:${fatal.slice(0,5).join(' | ')}`);
 
-  if(screenshot){
-    fs.mkdirSync(path.dirname(screenshot),{recursive:true});
-    await page.screenshot({path:screenshot,fullPage:false});
-  }
-
   const evidence={
     version:1,
     engine:'UNITY_WEB',
@@ -272,7 +394,7 @@ try{
       geometryMarker:approvedEnvironment.required===true?worldMeshMarker:null,
       collisionPhysicsVerified:false,
     },
-    pass:!performanceBlocked,
+    pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded,
     playableBrowserTest:true,
     boot:{pass:true},
     input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved,canvasFocusedBeforeKeyboard:true,gameplayStartInput},
@@ -291,8 +413,32 @@ try{
       markers:coreFunMarkers,
     },
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
+    visualQa:{
+      pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
+      screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
+      magentaShaderLikelyMissing:shaderLikelyMissing,
+      blankOrFrozenFrame,visualPixels,mobileUiBounds,
+      nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
+        pass:nativeUiMeasured?!nativeUiOffscreen&&!nativeUiOverlap:null,offscreen:nativeUiOffscreen,
+        overlapping:nativeUiOverlap,missingRequiredCapture:nativeUiMissing,
+        sourceMarker:nativeUiMeasured?nativeUiMarker:null,rects:nativeUiMeasured?nativeUiRect:null},
+      nativeUnityMesh:{measurementState:nativeMeshMarker?'UNITY_RUNTIME_MESH_INSPECTION':'NOT_MEASURED',
+        pass:nativeMeshMarker?nativeMeshVerified:null,missingRequiredCapture:nativeMeshMissing,
+        inspector:'UNITY_MESH_FILTER',metrics:nativeMeshMarker?nativeMeshProof:null,sourceMarker:nativeMeshMarker||null,
+        libraryAssetPromotionGranted:false},
+      realDeviceVerified:false,
+    },
+    nativeRenderBudget:{
+      measurementState:nativeRenderCountersMeasured?'MEASURED_NATIVE_COUNTERS':'UNKNOWN_NOT_RECORDED',
+      pass:nativeRenderCountersMeasured?!renderBudgetExceeded:null,
+      drawCalls:nativeRenderCountersMeasured?nativeDrawCalls:null,
+      triangles:nativeRenderCountersMeasured?nativeTriangles:null,
+      limits:renderBudget,realDeviceVerified:false,
+      automaticLodOrTextureMutationPerformed:false,
+    },
     mobile:{
-      pass:mobileInputObserved,
+      pass:mobileInputObserved&&(!mobileMenuInteraction||mobileMenuInteraction.pass===true),
+      menuInteraction:mobileMenuInteraction,
       viewport:mobileViewport,
       layout:mobileLayout,
       touch:true,
@@ -319,6 +465,13 @@ try{
     if(framePacingFailed)throw new Error('UNITY_WEB_QA_FRAME_PACING_FAILED:'+JSON.stringify(framePacing));
     throw new Error('UNITY_WEB_QA_BOOT_SLOW_FAILED:'+bootMilliseconds);
   }
+  if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
+    shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
+    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
+  }));
+  if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
+    drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
+  }));
   console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
 } finally {
   await new Promise(resolve=>server.close(resolve));

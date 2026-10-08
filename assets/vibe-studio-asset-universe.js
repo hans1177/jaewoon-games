@@ -5041,6 +5041,35 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
   if(!runtimeSourceHash&&!runtimeArtifactHash)blockers.push('RUNTIME_ASSET_HASH_REQUIRED');
   if(runtimeSourceHash&&runtimeSourceHash!==sourceHash)blockers.push('RUNTIME_SOURCE_HASH_MISMATCH');
   if(runtimeArtifactHash&&artifactHash&&runtimeArtifactHash!==artifactHash)blockers.push('RUNTIME_ARTIFACT_HASH_MISMATCH');
+  // 실물 검증: 카탈로그 경로와 런타임 PASS 문자열은 메시/텍스처 실재를 입증하지 못한다.
+  const meshBearingFamily=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP'].includes(family);
+  const nativeInspection=runtimeEvidence?.nativeRenderInspection;
+  if(meshBearingFamily){
+    const expectedInspector=platform==='ROBLOX'?'ROBLOX_STUDIO_RUNTIME':'UNITY_NATIVE_RUNTIME';
+    if(!nativeInspection||nativeInspection.inspector!==expectedInspector
+      ||nativeInspection.assetId!==id||nativeInspection.gameId!==consumerGameId
+      ||nativeInspection.sourceHash!==sourceHash
+      ||(promotedArtifactHash&&nativeInspection.artifactHash!==promotedArtifactHash)
+      ||nativeInspection.actualRenderObserved!==true
+      ||!/^[0-9a-f]{64}$/i.test(text(nativeInspection.captureSha256))
+      ||!text(nativeInspection.sceneId)){
+      blockers.push('NATIVE_MESH_RENDER_EVIDENCE_REQUIRED');
+    }
+    const meshes=Array.isArray(nativeInspection?.meshes)?nativeInspection.meshes:[];
+    if(!meshes.length||meshes.some(mesh=>!['MeshFilter','SkinnedMeshRenderer','MeshPart'].includes(mesh?.component)
+      ||!Number.isSafeInteger(mesh.vertexCount)||mesh.vertexCount<3
+      ||!Number.isSafeInteger(mesh.triangleCount)||mesh.triangleCount<1
+      ||mesh.materialBound!==true)){
+      blockers.push('NATIVE_MESH_GEOMETRY_OR_MATERIAL_INVALID');
+    }
+    if(meshes.some(mesh=>!Array.isArray(mesh?.textures)
+      ||(mesh.textures.length===0&&!['VERTEX_COLOR','SOLID_COLOR'].includes(mesh.materialMode))
+      ||mesh.textures.some(texture=>texture?.assigned!==true||texture?.decoded!==true
+        ||!Number.isSafeInteger(texture.width)||texture.width<1
+        ||!Number.isSafeInteger(texture.height)||texture.height<1))){
+      blockers.push('NATIVE_TEXTURE_BINDING_OR_DECODE_INVALID');
+    }
+  }
   const eligible=blockers.length===0;
   return Object.freeze({
     version:2,eligible,blockers:Object.freeze(blockers),assetId:id||null,family:family||null,platform:platform||null,consumerGameId:consumerGameId||null,
@@ -5054,7 +5083,10 @@ export function evaluateCompanyAssetPromotion({asset={},consumer={},runtimeEvide
         assetId:id,nativeBindingPass:true,visualRuntimePass:true,mobilePerformancePass:true,regressionPass:true,licenseProvenancePass:true,
         sourceHash,editableSourceHash:sourceHash,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:masterGlbRequired?declaredDerivedFromMasterGlbHash:null,
         masterGlbQaAuthority:masterGlbRequired?masterGlbQaAuthority:null,
-        artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null
+        artifactHash:promotedArtifactHash||null,nativeArtifactHash:promotedArtifactHash||null,runtimeEvidenceId:text(runtimeEvidence?.id||runtimeEvidence?.runId)||null,
+        nativeRenderInspection:meshBearingFamily?Object.freeze({inspector:nativeInspection.inspector,sceneId:nativeInspection.sceneId,
+          captureSha256:nativeInspection.captureSha256,meshCount:nativeInspection.meshes.length,
+          triangleCount:nativeInspection.meshes.reduce((sum,mesh)=>sum+mesh.triangleCount,0)}):null
       })
     }):null,
     preparedArtifactMayNotSelfPromote:true,

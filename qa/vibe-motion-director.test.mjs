@@ -930,6 +930,30 @@ test('transition director scores smooth transitions and hard-fails event desync'
   assert.equal(bad.gameplayWindowAuthority,false);
 });
 
+test('measured transition detects joint popping and produces only bounded visual keyframe repair candidates',()=>{
+  const values={poseDiscontinuity:2,rootVelocityDelta:3,angularVelocityDelta:2,footContactBreak:0,handContactBreak:0,contactMarkerOffset:1,blendDurationPenalty:0,silhouettePop:0};
+  const trace=continuityFixture();
+  const smooth=evaluateMotionTransition({from:{id:'idle'},to:{id:'walk'},metrics:values,continuityTrace:trace,blendDurationSeconds:.16});
+  assert.equal(smooth.verdict,'PASS');
+  assert.equal(smooth.measuredContinuity.verdict,'PASS');
+  assert.equal(smooth.smoothingProposal.generated,false);
+  assert.equal(smooth.runtimeVerified,false);
+  trace.frames[15].jointPositions.head=[0,2.6,0];
+  const popped=evaluateMotionTransition({from:{id:'walk'},to:{id:'run'},metrics:values,continuityTrace:trace,blendDurationSeconds:.01});
+  assert.equal(popped.verdict,'FAIL');
+  assert.ok(popped.hardFailures.includes('MEASURED_TRANSITION_DISCONTINUITY'));
+  assert.ok(popped.hardFailures.includes('SHORT_BLEND_WITH_MEASURED_POP'));
+  assert.ok(popped.smoothingProposal.generated);
+  assert.equal(popped.smoothingProposal.nativeReplayRequired,true);
+  assert.equal(popped.smoothingProposal.automaticAssetPromotionAllowed,false);
+  assert.ok(popped.smoothingProposal.corrections.every(row=>row.displacementMeters<=.05+1e-10));
+  assert.deepEqual(trace.frames[15].jointPositions.head,[0,2.6,0],'original clip remains untouched');
+  trace.expectedSourceHash='different-revision';
+  assert.equal(evaluateMotionTransition({metrics:values,continuityTrace:trace}).verdict,'UNVERIFIED');
+  const shortButSmooth=evaluateMotionTransition({metrics:values,continuityTrace:continuityFixture(),blendDurationSeconds:.01});
+  assert.equal(shortButSmooth.verdict,'WARN');
+});
+
 test('automatic contact QA blocks promotion when foot or attack contact drifts',()=>{
   const pass=auditMotionContact({
     footSlideNormalized:0.01,
