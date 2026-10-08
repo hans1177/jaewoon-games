@@ -500,25 +500,34 @@
       "toSystem": "ACTION_SURVIVAL_ROGUELITE_PHASE_TRANSITION",
       "trigger": "Run result and enemy pressure determine the progression choice and state change effect.",
       "stateChange": "From MAIN to A, with state keys FIGHT_STATE and RUN_RESULT."
+    },
+    "local_authoring_parts::3a40868e40515cc75e0a517c4ee9b27d4623b3d38f82d05681973db4587c3d97:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "FIGHT_STATE",
+        "RUN_RESULT"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 14,
+      "calls": 18,
+      "successes": 15,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2182702,
-      "lastMs": 84812,
+      "totalMs": 2263624,
+      "lastMs": 80922,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T19:49:08.186Z"
+      "updatedAt": "2026-10-08T19:50:29.111Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T19:12:45.424Z",
-  "updatedAt": "2026-10-08T19:49:08.187Z",
+  "updatedAt": "2026-10-08T19:50:29.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2719,7 +2728,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T19:49:08.187Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T19:50:29.111Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
