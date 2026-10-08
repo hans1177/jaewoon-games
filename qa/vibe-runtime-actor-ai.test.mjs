@@ -192,6 +192,34 @@ test('social director combines selfhood relationship inner state dialogue initia
   assert.ok(director.dialogueIntent.allowedSpeechActs.includes('disagree'));
 });
 
+test('living director binds authored story NPC invites, visible village anchors and boss cinematic only to engine evidence',()=>{
+  const npc=planVibeLivingActorDirector({
+    actor:{id:'chief',role:'npc',named:true},player:{id:'player'},
+    world:{playerVisible:true,authoredAnchors:[{id:'town-square',type:'MEETING_SPOT',region:'town'}]},
+    storyBeat:{id:'arrival',sourceEventId:'player-town',engineApproved:true},
+    party:{recruitable:true,engineApproved:true,openSlots:1}
+  });
+  assert.equal(npc.socialInitiative.canInitiateConversation,true);
+  assert.equal(npc.socialInitiative.proposedPartyInvitation.candidateOnly,true);
+  assert.equal(npc.socialInitiative.proposedStoryConversation.sourceEventId,'player-town');
+  assert.equal(npc.roaming.anchors[0].id,'town-square');
+  assert.equal(npc.bossPresentation,null);
+  const blocked=planVibeLivingActorDirector({actor:{id:'chief',role:'npc'},player:{id:'player'},
+    storyBeat:{id:'arrival',sourceEventId:'player-town',engineApproved:false},
+    party:{recruitable:true,engineApproved:false,openSlots:2}});
+  assert.equal(blocked.socialInitiative.proposedPartyInvitation,null);
+  assert.equal(blocked.socialInitiative.proposedStoryConversation,null);
+  const boss=planVibeLivingActorDirector({actor:{id:'ogre',role:'boss'},player:{id:'player'},
+    world:{playerVisible:true},bossScene:{id:'ogre-intro',sourceEventId:'ogre-saw-player',
+      authoredDialogue:'You enter my territory.',engineApproved:true,maxDurationMs:4200}});
+  assert.equal(boss.socialInitiative.proposedPartyInvitation,null);
+  assert.equal(boss.bossPresentation.skipAllowed,true);
+  assert.equal(boss.bossPresentation.presentationOnly,true);
+  assert.equal(boss.bossPresentation.maxDurationMs,4200);
+  assert.equal(boss.policy.engineAuthoritative,true);
+  assert.equal(planVibeLivingActorDirector({actor:{id:'ogre',role:'boss'},bossScene:{id:'fake',engineApproved:false}}).bossPresentation,null);
+});
+
 test('common local AI personality changes allowed tactical preference but never gameplay authority',()=>{
   const cautious=new JaewoonCommonAI({personality:{caution:.9,courage:-.4,aggression:-.3}});
   const bold=new JaewoonCommonAI({personality:{caution:-.4,courage:.8,aggression:.8}});
