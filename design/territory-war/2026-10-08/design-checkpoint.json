@@ -532,25 +532,43 @@
       "name": "TERRITORY_ADAPTATION_SYSTEM",
       "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices.",
       "playerChoice": "Select a territory objective that reflects the player's current strategic priorities and adapt to the evolving border pressure, considering the player's previous choices and the new frontier line."
+    },
+    "local_authoring_parts::803630fadb3aca58bde4d5c8f400ae562454792042fc0cfe584139955e2036cf:signatureSystems:3": {
+      "id": "signatureSystem_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "borderPressure",
+        "territoryObjective",
+        "movementPath",
+        "positionSelection"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "reward",
+        "nextChoice"
+      ],
+      "name": "TERRITORY_ADAPTATION_CROSS",
+      "purpose": "Read the current border pressure and choose a territory objective that aligns with the player's strategic goals, adapting to the evolving border pressure and the player's evolving choices. This system allows for cross-territory strategic adjustments based on dynamic gameplay conditions.",
+      "playerChoice": "Select a territory objective that reflects the player's current strategic priorities, adapts to the evolving border pressure, and considers cross-territory strategic interactions and resource allocation constraints."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1687689,
-      "lastMs": 40727,
+      "totalMs": 1729974,
+      "lastMs": 42285,
       "lastError": null,
-      "updatedAt": "2026-10-08T15:22:33.771Z"
+      "updatedAt": "2026-10-08T15:23:16.058Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:16:22.910Z",
-  "updatedAt": "2026-10-08T15:22:33.771Z",
+  "updatedAt": "2026-10-08T15:23:16.058Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2611,7 +2629,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T15:22:33.771Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T15:23:16.058Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
