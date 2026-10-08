@@ -3,30 +3,18 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "451f84cf8828ddeb21487ee4e0950df26a0c4678808b09354cd8d370898aad82",
-  "policyDigest": "eba99114200a163e25cb5e254e56fd4e7d493b65219e8b179fe6ebac869985d5",
-  "engineDigest": "0804320df70a301050240b897d8a23674580b6ddd3c447416c9dc03cd439bfad",
+  "fingerprint": "92346453b518ba3021f0ccac540380c2189f552156b202a11dcc5b05d89aca31",
+  "policyDigest": "524921abde9db321009b633c6deac710193bc08f349f75e5f35d842ede53a716",
+  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 350104,
-      "lastMs": 175075,
-      "lastError": null,
-      "updatedAt": "2026-10-08T04:39:33.223Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T04:33:43.109Z",
-  "updatedAt": "2026-10-08T04:39:33.226Z",
+  "createdAt": "2026-10-08T05:14:46.221Z",
+  "updatedAt": "2026-10-08T05:14:46.237Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -738,54 +726,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_MULTIPLAYER_CONTRADICTION",
-        "kind": "HARD_GATE",
-        "axis": "CATEGORY_IDENTITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "expected": "COMPETITIVE",
-          "actual": "SINGLE"
-        },
-        "requiredAction": "오너 입력의 플레이 모드를 보존한다. 인공지능 충원으로 혼자 플레이할 수 있어도 멀티 의도를 SINGLE로 바꾸지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "multiplayerMode",
-          "multiplayerExpansionDecision"
-        ]
-      },
-      {
-        "code": "DESIGN_RULE_ROLE_MISSING",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "signatureSystems",
-          "detail": "DELVE 역할과 그 상태 입출력을 명확히 구분해야 한다"
-        },
-        "requiredAction": "signatureSystems: DELVE 역할과 그 상태 입출력을 명확히 구분해야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "lastSuccessfulModelCallAt": "2026-10-08T04:39:33.223Z",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_MULTIPLAYER_CONTRADICTION,DESIGN_RULE_ROLE_MISSING"
+  }
 }
