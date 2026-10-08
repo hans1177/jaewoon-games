@@ -464,25 +464,28 @@
       "milestone": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'",
       "newGameplay": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorldState'는 플레이어의 위치와 전략적 배치를 기반으로 결정되며, 'currentBuild'는 자원과 기술 수준에 따라 변화하고, 'availableResources'는 전투와 생존에 필요한 자원의 분포를 반영한다.",
       "systemImpact": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'로 전환하며, 'currentBuild'을 업데이트하고, 'availableResources'를 조정하고, 'enemyPressureLevel'을 조절하는 과정을 거친다. 이 전환은 플레이어의 선택과 상태 변화를 구체적으로 반영하며, 'newWorldState'는 플레이어의 위치와 전략적 배치를 기반으로 결정되며, 'currentBuild'는 자원과 기술 수준에 따라 변화하고, 'availableResources'는 전투와 생존에 필요한 자원의 분포를 반영한다."
+    },
+    "local_authoring_parts::f3a6c15fc21138566f2936311e33c1ffcde48c7b07bb3ba447e2f1cb86053dd6:milestone": {
+      "milestone": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 플레이어 역에서, 'playerPosition' 상태를 'newWorldState'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2471237,
-      "lastMs": 75709,
+      "totalMs": 2534491,
+      "lastMs": 63254,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:33:51.561Z"
+      "updatedAt": "2026-10-08T08:34:54.818Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:52:40.073Z",
-  "updatedAt": "2026-10-08T08:33:51.563Z",
+  "updatedAt": "2026-10-08T08:34:54.818Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2834,7 +2837,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:33:51.563Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:34:54.818Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
