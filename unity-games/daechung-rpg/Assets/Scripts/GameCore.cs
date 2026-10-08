@@ -33,6 +33,8 @@ namespace JaewoonGames.DaechungRpg
         public List<string> completedHiddenQuests = new();
         // 저장: 기존 세이브 키/전투·보상 필드는 보존하고 기존 플레이어 상태의 선택형 이야기만 추가한다.
         public List<string> witnessedStoryEvents = new();
+        // 실제 네트워크 협동 플레이어와 구별되는 비전투 NPC 동행 상태.
+        public bool scoutAccompanying;
     }
 
     [Serializable]
@@ -260,6 +262,15 @@ namespace JaewoonGames.DaechungRpg
             if (!HasStoryEvent("ogre-defeated")) return "오우거를 처치해 마을의 위협을 줄이자.";
             if (!HasStoryEvent("chief-ogre-report")) return "촌장에게 돌아가 사건을 보고하자.";
             return "마을 사건의 한 고비를 넘겼다. 다음 지역을 탐험하자.";
+        }
+
+        public bool TrySetScoutCompanion(bool accompanying)
+        {
+            if (Player.currentRegionId != "town" || !HasStoryEvent("chief-introduction")) return false;
+            if (Player.scoutAccompanying == accompanying) return true;
+            Player.scoutAccompanying = accompanying;
+            Save();
+            return true;
         }
 
         public bool TryBuyWeapon(string weaponId)
