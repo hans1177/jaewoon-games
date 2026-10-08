@@ -34,25 +34,43 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::ff87c7d9e058b3ad95bda39f029abe080c64b85e93908b8c164419db2c9bddba:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE",
+        "MOVE_LIMIT",
+        "OBSTACLE_PATTERN",
+        "LEVEL_GOAL"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "REWARD_SYSTEM",
+        "NEXT_LEVEL_PATTERN"
+      ],
+      "name": "Board Evolution System",
+      "purpose": "플레이어의 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.과 선택이 PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 454076,
-      "lastMs": 57167,
+      "totalMs": 513629,
+      "lastMs": 59553,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:44:31.509Z"
+      "updatedAt": "2026-10-08T08:45:31.064Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:36:57.405Z",
-  "updatedAt": "2026-10-08T08:44:31.509Z",
+  "updatedAt": "2026-10-08T08:45:31.065Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2107,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T08:44:31.509Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:45:31.065Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
