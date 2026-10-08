@@ -1082,13 +1082,16 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
       ])));
     }
   });
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole','stateInputs','stateOutputs'],properties:{
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
     id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},
+    name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
     stateInputs:{type:'array',minItems:1,items:{type:'string'}},
     stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
   },additionalProperties:false}}},additionalProperties:false};
   const result=await author('designer','original game rules',schema,{isolateFields:true});
   assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
+  assert.equal(new Set(result.signatureSystems.map(row=>row.name)).size,5,
+    'Each role must contain its own designer-authored rule content');
   assert.ok(result.signatureSystems.every(row=>row.stateInputs.length>0&&row.stateOutputs.length>0),
     'Every complete role rule must declare both consumed and produced state');
   assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
