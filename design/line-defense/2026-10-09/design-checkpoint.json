@@ -638,25 +638,104 @@
     },
     "local_authoring_parts::9e4098d536da2aa794445e267939febbf4d606a567aeafad038f0f03b9bc57c3:trigger": {
       "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions."
+    },
+    "local_authoring_parts::9e4098d536da2aa794445e267939febbf4d606a567aeafad038f0f03b9bc57c3:stateChange": {
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions."
+    },
+    "local_authoring_parts::bfb6a15ec0a95e94f38815a4a1e8cfc261aac617e9dc35684bf0d68778b4c3aa:systemInterconnections:4": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions.",
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions."
+    },
+    "local_authoring_parts::75027ca7612b3929a0eed281e9c6dc50d76eece109be7c94e90e7391cd1c2192:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "ENEMY_WAVE",
+          "toId": "BATTLE_STATUS",
+          "stateKeys": [
+            "ENEMY_WAVE",
+            "BATTLE_STATUS"
+          ],
+          "fromSystem": "CORE_LOOP_DESIGN",
+          "toSystem": "CORE_LOOP_DESIGN",
+          "trigger": "ENEMY_WAVE → BATTLE_STATUS의 상태 교환",
+          "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+        },
+        {
+          "fromId": "ENEMY_WAVE",
+          "toId": "BATTLE_STATUS",
+          "stateKeys": [
+            "ENEMY_WAVE",
+            "BATTLE_STATUS"
+          ],
+          "fromSystem": "CORE_LOOP_DESIGN",
+          "toSystem": "CORE_LOOP_DESIGN",
+          "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+        },
+        {
+          "fromId": "ENEMY_WAVE",
+          "toId": "BATTLE_STATUS",
+          "stateKeys": [
+            "ENEMY_WAVE",
+            "BATTLE_STATUS"
+          ],
+          "fromSystem": "CORE_LOOP_DESIGN",
+          "toSystem": "CORE_LOOP_DESIGN",
+          "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+        },
+        {
+          "fromId": "ENEMY_WAVE",
+          "toId": "BATTLE_STATUS",
+          "stateKeys": [
+            "ENEMY_WAVE",
+            "BATTLE_STATUS"
+          ],
+          "fromSystem": "CORE_LOOP_DESIGN",
+          "toSystem": "CORE_LOOP_DESIGN",
+          "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation.",
+          "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+        },
+        {
+          "fromId": "ENEMY_WAVE",
+          "toId": "CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION",
+          "stateKeys": [
+            "ENEMY_WAVE",
+            "CROSS_REGION_DEFENSIVE_ADAPTATION_EXPANSION"
+          ],
+          "fromSystem": "CORE_LOOP_DESIGN",
+          "toSystem": "CORE_LOOP_DESIGN",
+          "trigger": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions.",
+          "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation, incorporating regional patterns from past encounters to adapt to current conditions."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 45,
-      "successes": 45,
+      "calls": 46,
+      "successes": 46,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2952357,
-      "lastMs": 90471,
+      "totalMs": 3042774,
+      "lastMs": 90417,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:23:33.928Z"
+      "updatedAt": "2026-10-08T23:25:04.346Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-08T23:23:33.928Z",
+  "updatedAt": "2026-10-08T23:25:04.351Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3065,7 +3144,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:23:33.928Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T23:25:04.351Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
