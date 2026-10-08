@@ -579,25 +579,44 @@
         "AreaType"
       ],
       "fromSystem": "IslandResourceManagementSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0"
+    },
+    "local_authoring_parts::3f8f496b603e72ac5f5725309c4b799d9e2f6fba81cdcbb614d1b141cf1f72de:toSystem,trigger,stateChange": {
+      "toSystem": "IslandResourceManagementSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "Acquire a focused set of island resources.",
+      "stateChange": "Proceed to the next stage of village development, and unlock a new resident, activity, or area."
+    },
+    "local_authoring_parts::c93aaf1d216a1e45dc4bd000b6bdef4991cf9781f98d6552631509825df2b5ff:systemInterconnections:1": {
+      "fromId": "signatureSystems[1]",
+      "toId": "signatureSystems[2]",
+      "stateKeys": [
+        "VillageFunction",
+        "ResidentCount",
+        "ActivityType",
+        "AreaType"
+      ],
+      "fromSystem": "IslandResourceManagementSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "toSystem": "IslandResourceManagementSystem_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0",
+      "trigger": "Acquire a focused set of island resources.",
+      "stateChange": "Proceed to the next stage of village development, and unlock a new resident, activity, or area."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1605521,
-      "lastMs": 105019,
+      "totalMs": 1710753,
+      "lastMs": 105232,
       "lastError": null,
-      "updatedAt": "2026-10-08T13:03:25.421Z"
+      "updatedAt": "2026-10-08T13:05:10.654Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T12:36:39.832Z",
-  "updatedAt": "2026-10-08T13:03:25.421Z",
+  "updatedAt": "2026-10-08T13:05:10.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2807,7 +2826,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T13:03:25.421Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T13:05:10.656Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
