@@ -302,25 +302,123 @@
           "playerChoice": "세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
         }
       ]
+    },
+    "local_authoring_parts::df5f9ef829d466d0cb6ca1370cd2bda7b573ab50bbebb78de1c3b5d50ba73d00:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::eb8dd8ffd66538e819732b1c05ccc556bc33974fcc2cb0c8e24bec203b5104a7:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이",
+        "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재",
+        "게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "worldState",
+            "playerChoice",
+            "systemState"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "newPlayerChoice",
+            "newSystemState"
+          ],
+          "name": "세계의 직조자 - 입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+          "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태변"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "worldState",
+            "playerChoice",
+            "systemState"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "newPlayerChoice",
+            "newSystemState"
+          ],
+          "name": "세계의 직조자 - 입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+          "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태변"
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "worldState",
+            "playerChoice",
+            "systemState"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "newPlayerChoice",
+            "newSystemState"
+          ],
+          "name": "세계의 직조자 - 입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+          "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+          "playerChoice": "세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "worldState",
+            "playerChoice",
+            "systemState"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "newPlayerChoice",
+            "newSystemState"
+          ],
+          "name": "세계의 직조자 - 파고들기",
+          "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+          "playerChoice": "세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+        },
+        {
+          "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "worldState",
+            "playerChoice",
+            "systemState"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "newPlayerChoice",
+            "newSystemState"
+          ],
+          "name": "세계의 직조자 - 파고들기",
+          "purpose": "플레이어의 선택과 세계 상태 변화를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 구축",
+          "playerChoice": "세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1185233,
-      "lastMs": 128577,
+      "totalMs": 1273313,
+      "lastMs": 88080,
       "lastError": null,
-      "updatedAt": "2026-10-08T11:11:08.539Z"
+      "updatedAt": "2026-10-08T11:12:36.623Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T10:51:23.271Z",
-  "updatedAt": "2026-10-08T11:11:08.542Z",
+  "updatedAt": "2026-10-08T11:12:36.631Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,12 +2338,50 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T11:11:08.542Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "signatureSystems",
+          "detail": "중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다"
+        },
+        "requiredAction": "signatureSystems: 중복 없는 규칙 ID와 읽는 상태·바꾸는 상태가 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "세계의 직조자 - 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이를 나타낸다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심재",
+      "playerFantasy": "세계의 직조자에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다.",
+      "coreFun": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이로 역할을 구분한다. 게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재방문의 깊이",
+        "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임은 반복 가능한 핵심 루프를 통해 시스템과 플레이어의 선택, 위험, 보상이 연결된 캐주얼 세계를 만든다. 입력과 피드백은 즉시 이해할 수 있으며, 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공한다. 게임의 중심 행동은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보조 요소는 선택의 우선순위를 바꾸고, 파고들기는 발견, 숙련, 재",
+        "게임은 기존의 캐주얼 게임 원본을 유지하면서도, 새로운 인과법칙과 시스템을 설계하여 고유한 핵심 재미를 제공한다. 게임의 규칙은 플레이어의 선택과 세계 상태 변화를 통해 구체화되며, 보상은 발견과 이해에 맞게 약속된다. 게임은 단순한 반복을 벗어나 다양한 경로와 위험을 제공하며, 플레이어는 숙련과 재방문의 깊이를 통해 게임의 재미를 증대시킨다."
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-08T11:12:36.626Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
