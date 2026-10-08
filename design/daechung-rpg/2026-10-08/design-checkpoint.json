@@ -3,30 +3,18 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-08",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "982155d9152073c1c9d997be7b9582350fcbee63c4409be988a9bd774b36f853",
-  "policyDigest": "524921abde9db321009b633c6deac710193bc08f349f75e5f35d842ede53a716",
-  "engineDigest": "8dcc3fb07f12cee67ad39a733674fed643406c00244fe48abbf168d5a7fa165c",
+  "fingerprint": "725de40dea3350e204fef6e9da0316dce143770662b438b99f360a072527215d",
+  "policyDigest": "0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade",
+  "engineDigest": "8c8ca966a8888e75b243fb5bc484ff1748c693b0bdfc1b940335641ea6aebba6",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {},
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 485253,
-      "lastMs": 125732,
-      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-08T05:25:58.975Z"
-    }
-  },
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T05:17:53.664Z",
-  "updatedAt": "2026-10-08T05:25:58.989Z",
+  "createdAt": "2026-10-08T05:43:21.723Z",
+  "updatedAt": "2026-10-08T05:43:21.737Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1440,16 +1428,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "e09226df2ced1940fb25e1cbcf267fa055422446887e82be496b9b18ecd66c0c": true,
-    "f8e3cb8cce51c8b0da7ec36f289fe63b82745014c090bb5485dd9696cd4a9f8a": true
-  },
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED"
+  }
 }
