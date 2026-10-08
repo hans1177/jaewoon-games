@@ -34,25 +34,53 @@
         "Unlock a new resident, activity or area -> Choose next village goal.",
         "Repeat the main action with different choices and outcomes."
       ]
+    },
+    "local_authoring_parts::dadfd98b0352503bcbf54ce8082bb2826be6e15e616632291c9e785dc355a61e:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "VILLAGE_RESOURCES"
+      ],
+      "stateOutputs": [
+        "NEW_VILLAGE_FUNCTION",
+        "NEXT_VILLAGE_GOAL"
+      ],
+      "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+      "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
+    },
+    "local_authoring_parts::dadfd98b0352503bcbf54ce8082bb2826be6e15e616632291c9e785dc355a61e:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "VILLAGE_RESOURCES"
+      ],
+      "stateOutputs": [
+        "NEW_VILLAGE_FUNCTION",
+        "NEXT_VILLAGE_GOAL"
+      ],
+      "name": "RESOURCE_TO_VILLAGE_PROGRESSION",
+      "purpose": "Establishes the progression of resources to village functions, enabling players to build or improve one village function through focused resource gathering.",
+      "playerChoice": "Choose a specific resource type and determine how it will be used to enhance a village function in the next step of the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265094,
-      "lastMs": 31559,
+      "totalMs": 400448,
+      "lastMs": 67879,
       "lastError": null,
-      "updatedAt": "2026-10-08T17:50:31.042Z"
+      "updatedAt": "2026-10-08T17:52:46.398Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T17:46:05.904Z",
-  "updatedAt": "2026-10-08T17:50:31.042Z",
+  "updatedAt": "2026-10-08T17:52:46.398Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2133,7 +2161,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T17:50:31.042Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T17:52:46.398Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
