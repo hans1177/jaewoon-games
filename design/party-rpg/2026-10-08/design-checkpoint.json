@@ -615,25 +615,31 @@
       "toSystem": "BOARD_RULE_1",
       "trigger": "systemInterconnections[0].stateChange",
       "stateChange": "SIGNATURE_SYSTEM_0의 현재 상태를 BOARD_RULE_1으로 전달하여, BOARD_STATE, PLAYER_ACTION, LEVEL_GOAL, REWARD_SYSTEM, OBSTACLE_PATTERN의 값이 전달됨으로써, 다음 월드 상태와 접근 가능성에 영향을 미친다."
+    },
+    "local_authoring_parts::f83264db58aba88deba3db5f85756469ff2f63e22c23ea4e0c4db2a9ac637e30:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_1"
+    },
+    "local_authoring_parts::f83264db58aba88deba3db5f85756469ff2f63e22c23ea4e0c4db2a9ac637e30:toId": {
+      "toId": "BOARD_RULE_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1542749,
-      "lastMs": 91598,
+      "totalMs": 1717315,
+      "lastMs": 88044,
       "lastError": null,
-      "updatedAt": "2026-10-08T09:00:08.427Z"
+      "updatedAt": "2026-10-08T09:03:02.998Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T08:34:25.615Z",
-  "updatedAt": "2026-10-08T09:00:08.428Z",
+  "updatedAt": "2026-10-08T09:03:02.998Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3027,7 +3033,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T09:00:08.428Z",
+  "lastSuccessfulModelCallAt": "2026-10-08T09:03:02.998Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
