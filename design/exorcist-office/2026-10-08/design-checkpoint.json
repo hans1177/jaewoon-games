@@ -380,25 +380,60 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::fad4d834943d3cfc6c930ff2389982815f961b5c2ec859cf361eff010057ce21:signatureSystems:0": {
+      "id": "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTA",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "score",
+        "distance",
+        "short-session-goal"
+      ],
+      "stateOutputs": [
+        "status-change",
+        "progression-benefit",
+        "retry-quickly-with-minimal-friction"
+      ],
+      "name": "Start Immediately with Simple One-thumb Tap or Swipe Input",
+      "purpose": "Establish the core gameplay mechanism by which players initiate a run with a clear objective, receive feedback, and make a small risk or route choice before the run ends.",
+      "playerChoice": "Players choose a small risk or route choice before the run ends, which affects the status change and progression benefit."
+    },
+    "local_authoring_parts::fad4d834943d3cfc6c930ff2389982815f961b5c2ec859cf361eff010057ce21:signatureSystems:1": {
+      "id": "READABLE_INPUT_STATE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "readable-input",
+        "score",
+        "distance",
+        "short-session-goal"
+      ],
+      "stateOutputs": [
+        "status-change",
+        "progression-benefit",
+        "retry-quickly-with-minimal-friction"
+      ],
+      "name": "Readable Input State",
+      "purpose": "Establish the core gameplay mechanism by which players interact with the game through a readable input, receive feedback, and make a small risk or route choice before the run ends.",
+      "playerChoice": "Players choose a small risk or route choice based on a readable input, which affects the status change and progression benefit."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1173837,
-      "lastMs": 90414,
+      "totalMs": 1379787,
+      "lastMs": 102443,
       "lastError": null,
-      "updatedAt": "2026-10-08T08:02:20.396Z"
+      "updatedAt": "2026-10-08T08:05:46.358Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T07:42:46.518Z",
-  "updatedAt": "2026-10-08T08:02:20.405Z",
+  "updatedAt": "2026-10-08T08:05:46.358Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2358,10 +2393,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T08:02:20.399Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-08T08:05:46.358Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
