@@ -539,25 +539,28 @@
         "{\"fromId\": \"systemInterconnections[0]\\",
         "toId\": \"systemInterconnections[0]\"}"
       ]
+    },
+    "local_authoring_parts::12cbb3dfdcd0a47f003f65c6660528b48c0fbea19fde90296329a131ad9afc24:fromSystem": {
+      "fromSystem": "GAME_SEED→SYSTEM_INTERCONNECTION_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2072768,
-      "lastMs": 91176,
+      "totalMs": 2161872,
+      "lastMs": 89104,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T16:06:16.995Z"
+      "updatedAt": "2026-10-09T16:07:46.101Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T16:06:16.995Z",
+  "updatedAt": "2026-10-09T16:07:46.102Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2439,7 +2442,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:06:16.995Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:07:46.102Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
