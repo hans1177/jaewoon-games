@@ -1226,25 +1226,40 @@
     },
     "local_authoring_parts::e6e025627e74ea03d6db28b238c2caa062d8f6772e388e01b027977308c63d96:trigger": {
       "trigger": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::e6e025627e74ea03d6db28b238c2caa062d8f6772e388e01b027977308c63d96:stateChange": {
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::b06ce7d0f1c37738d005866f5ee6a611d8647b4ec66da8a64f5060e462cb28b6:systemInterconnections:4": {
+      "fromId": "systemInterconnections[4].trigger",
+      "toId": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS"
+      ],
+      "fromSystem": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "toSystem": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "trigger": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다.",
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 101,
-      "successes": 100,
+      "calls": 102,
+      "successes": 101,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 6935812,
-      "lastMs": 68970,
+      "totalMs": 7006272,
+      "lastMs": 70460,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:38:29.790Z"
+      "updatedAt": "2026-10-09T02:39:40.251Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T02:38:29.790Z",
+  "updatedAt": "2026-10-09T02:39:40.274Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3446,84 +3461,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "INCOMING_INSECT_WAVE"
+          "path": "systemInterconnections",
+          "detail": "systemInterconnections[0].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "INCOMING_INSECT_WAVE"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "INCOMING_INSECT_WAVE"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "INCOMING_INSECT_WAVE"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "INCOMING_INSECT_WAVE"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[0].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3538,9 +3485,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[1].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[1].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3555,9 +3502,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[2].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[2].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3572,9 +3519,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[3].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[3].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3589,26 +3536,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[4].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[4].trigger→INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3635,7 +3565,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3673,10 +3603,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:38:29.790Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T02:39:40.255Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
