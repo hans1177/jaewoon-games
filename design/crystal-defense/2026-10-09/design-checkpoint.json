@@ -35,25 +35,38 @@
         "주체는 플레이어이며, 대표 행동은 '다음 공격 패턴을 읽고 크리스트 데미지에 가장 가치 있는 위치를 선택하라'이다.",
         "대표 선택은 '제한된 자원을 투입하여 위치, 진동 또는 업그레이드를 최적화하라'이다."
       ]
+    },
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "REWARD/RISK/ NEXT SELECT"
+      ],
+      "name": "공격 패턴 예측 시스템",
+      "purpose": "플레이어가 다음 공격 패턴을 읽고 크리스트 데미지에 가장 가치 있는 위치를 선택하는 중심 행동을 촉진하기 위해 사용된다.",
+      "playerChoice": "공격 패턴의 변화를 기반으로 최적화된 위치, 진동 또는 업그레이드를 선택하라."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 380810,
-      "lastMs": 61024,
+      "totalMs": 481317,
+      "lastMs": 100507,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:48:26.697Z"
+      "updatedAt": "2026-10-09T15:50:07.206Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:05.859Z",
-  "updatedAt": "2026-10-09T15:48:26.697Z",
+  "updatedAt": "2026-10-09T15:50:07.206Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1768,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:48:26.697Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:50:07.206Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
