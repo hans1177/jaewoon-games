@@ -1411,25 +1411,42 @@
         "UPGRADES"
       ],
       "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::34c557aced9cebaca1d3f49ef0408ee4b8c1ea7a438ad238c297b56229c04cbe:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS",
+      "stateChange": "PROGRESSION_CHOICE"
+    },
+    "local_authoring_parts::581cf4b213b67f7cb7826fca58e04f5868f3ab3638ed27780f1e74032c8bab7d:systemInterconnections:4": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS",
+      "stateChange": "PROGRESSION_CHOICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 130,
-      "successes": 130,
+      "calls": 131,
+      "successes": 131,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7187622,
-      "lastMs": 31979,
+      "totalMs": 7218268,
+      "lastMs": 30646,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:26:45.045Z"
+      "updatedAt": "2026-10-09T03:27:15.692Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T03:26:45.045Z",
+  "updatedAt": "2026-10-09T03:27:15.699Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3689,9 +3706,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3706,9 +3723,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SURVIVAL_01_SIGNATURE_SYSTEM→SURVIVAL_02_SIGNATURE_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3736,7 +3753,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::a83335c7fb080b831b98ef84d8717c1bef1bc3178a8865c80590eb4b76b043ed:signatureSystems:4": 1,
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3774,10 +3791,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:26:45.045Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T03:27:15.695Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
