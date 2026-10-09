@@ -1506,25 +1506,33 @@
       "toSystem": "wild-survival_systems_1",
       "trigger": "월드 상태의 변화가 실패하여 플레이어는 새로운 목표와 전략 선택을 유도함.",
       "stateChange": "플레이어는 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하며, 과거의 경험과 현대의 환경 간의 연결성을 강화하여 깊은 숙련과 전략적 결정을 유도함."
+    },
+    "local_authoring_parts::d9f159a4a4d2f76d88847e9383b8a5f75919f71c650717d03812f6164a5e743b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_systems_0, wild-survival_systems_1, wild-survival_systems_2, wild-survival_systems_3, wild-survival_systems_4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 103,
-      "successes": 103,
+      "calls": 104,
+      "successes": 104,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4246280,
-      "lastMs": 27422,
+      "totalMs": 4275344,
+      "lastMs": 29064,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:05:20.238Z"
+      "updatedAt": "2026-10-09T07:05:49.306Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T07:05:20.240Z",
+  "updatedAt": "2026-10-09T07:05:49.306Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3727,7 +3735,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:05:20.240Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:05:49.306Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
