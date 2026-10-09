@@ -2197,6 +2197,7 @@ jobs:
           set -euo pipefail
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git checkout --detach origin/main
+          current_main="$(git rev-parse origin/main)"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
