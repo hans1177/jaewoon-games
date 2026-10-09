@@ -1566,3 +1566,39 @@ test('headless first frame must read actual runtime sentinel but proven unsuppor
  assert.equal(imageValid.reachedValidation,true);
  assert.equal(imageValid.pending,0);
 });
+
+
+/* ── 과거 Open Cloud 권한 오류 관측은 보존하되, 현재 실행에서는 특권 호출 금지 ── */
+test('legacy Open Cloud Plugin capability denial remains diagnostic rather than a server boot proof',async()=>{
+ const calls=[];
+ const responses=[
+  {path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'},
+  {state:'COMPLETE'},
+  {luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=false'},
+   {message:"JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=The current thread cannot call 'Run' (lacking capability Plugin)"},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'}
+  ]}]}
+ ];
+ const r=await probeRobloxOpenCloudEngine({
+   universeId:'1',placeId:'2',versionNumber:20,apiKey:'test-key',
+   pollIntervalMs:0,maxPolls:2,
+   fetchImpl:async(url,init={})=>{
+     calls.push({url,init});
+     const body=responses.shift();
+     return {ok:true,status:200,text:async()=>JSON.stringify(body)};
+   }
+ });
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.simulationStartCapabilityDenied,true);
+ assert.equal(r.serverBootEvidence.simulationStartCapabilityDenied,true);
+ assert.equal(r.serverBootEvidence.simulationRunningAfter,false);
+ const script=JSON.parse(calls[0].init.body).script;
+ assert.doesNotMatch(script,/RunService:Run\(\)/);
+});

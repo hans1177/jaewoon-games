@@ -1206,6 +1206,7 @@ jobs:
                 ||Number(engineProbe.worldEvidence.floatingSpawns||0)>0
                 ||Number(engineProbe.worldEvidence.unsupportedSpawns||0)>0)){
               const groundingObserved=engineProbe.worldEvidence?.spawnGroundingObserved===true;
+              const simulationStartCapabilityDenied=engineProbe.serverBootEvidence?.simulationStartCapabilityDenied===true;
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
               item.robloxIndependentQaPassed=false;
@@ -1221,6 +1222,7 @@ jobs:
                 serverContextExecuted:engineProbe.serverContextExecuted===true,
                 simulationRunningAfter:engineProbe.serverBootEvidence?.simulationRunningAfter===true,
                 simulationStartSucceeded:engineProbe.serverBootEvidence?.simulationStartSucceeded===true,
+                simulationStartCapabilityDenied,
                 observedAt:stamp,
                 authority:'roblox-open-cloud-exact-first-frame-observation'
               };
@@ -1228,7 +1230,11 @@ jobs:
               item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature=groundingObserved?'ROBLOX_FIRST_FRAME_GROUNDING_FAILED':'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED';
-              item.routingBlockers=[groundingObserved?'roblox-first-frame-grounding-failed':'roblox-first-frame-grounding-unobserved'];
+              item.routingBlockers=[
+                groundingObserved?'roblox-first-frame-grounding-failed':'roblox-first-frame-grounding-unobserved',
+                ...(simulationStartCapabilityDenied?['roblox-open-cloud-simulation-plugin-capability-denied']:[]),
+              ];
+              if(simulationStartCapabilityDenied)console.log('ROBLOX_FIRST_FRAME_SIMULATION_DIAGNOSTIC='+item.gameId+':OPEN_CLOUD_TASK_PLUGIN_CAPABILITY_DENIED');
               item.updatedAt=stamp;changed=true;
               if(groundingObserved){
                 failed++;

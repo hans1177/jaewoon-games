@@ -56,6 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "+refs/heads/company-runtime:refs/remotes/origin/company-runtime"
+          git show "origin/company-runtime:development-queue.json" > /tmp/roblox-learning-runtime-queue.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
 
@@ -84,6 +86,8 @@ jobs:
             --root=roblox-games \
             --game-id="$GAME_ID" \
             --game-ids="$GAME_IDS" \
+            --runtime-ref=origin/company-runtime \
+            --runtime-queue=/tmp/roblox-learning-runtime-queue.json \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep.json
@@ -92,6 +96,8 @@ jobs:
             --root=roblox-games \
             --game-id="$GAME_ID" \
             --game-ids="$GAME_IDS" \
+            --runtime-ref=origin/company-runtime \
+            --runtime-queue=/tmp/roblox-learning-runtime-queue.json \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
             --report=/tmp/roblox-learning-sweep-repeat.json
