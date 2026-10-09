@@ -27,25 +27,32 @@
       "identity": "주사위 전투 보드은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 주사위로 시작하여 점수나 관문을 승계하지 않고, 새로운 행동·경로·조합·관계·발견을 통해 세계의 원인과 플레이 규칙에 연결되는 핵심 재미를 경험하게 된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 가능성을 실제 플레이에 적용할 수 있다.",
       "playerFantasy": "주사위 전투 보드는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 주사위로 시작하여 점수나 관문을 승계하지 않고, 새로운 행동·경로·조합·관계·발견을 통해 세계의 원인과 플레이 규칙에 연결되는 핵심 재미를 경험하게 된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 가능성을 실제 플레이에 적용할 수 있다.",
       "coreFun": "주사위 전투 보드는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 주사위로 시작하여 점수나 관문을 승계하지 않고, 새로운 행동·경로·조합·관계·발견을 통해 세계의 원인과 플레이 규칙에 연결되는 핵심 재미를 경험하게 된다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 가능성을 실제 플레이에 적용할 수 있다."
+    },
+    "local_authoring_parts::b02a2da4bd2e00d73d9ee2782ee3f836c124bd56074c71c8d23838947ebddc74:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 주사위로 시작하여 점수나 관문을 승계하지 않고, 새로운 행동·경로·조합·관계·발견을 통해 세계의 원인과 플레이 규칙에 연결되는 핵심 재미를 경험하게 된다.",
+        "SELECT: START a board or grid level with clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "OUTPUT: 선택 결과가 다음 월드 상태를 바꾸며, 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 장르에 맞게 다양한 가능성을 실제 플레이에 적용할 수 있다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 253489,
-      "lastMs": 58230,
+      "totalMs": 317809,
+      "lastMs": 64320,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:23:06.189Z"
+      "updatedAt": "2026-10-09T08:24:10.512Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:18:52.663Z",
-  "updatedAt": "2026-10-09T08:23:06.190Z",
+  "updatedAt": "2026-10-09T08:24:10.512Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1977,7 +1984,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:23:06.190Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:24:10.512Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
