@@ -34,25 +34,40 @@
         "SELECT: Complete a short interaction or challenge and add its result to progression.",
         "OUTPUT: Add new relationship or progress indicator to the world state."
       ]
+    },
+    "local_authoring_parts::3d37c0c380dc36f8fe7071e774b887b53f9b69fad01f081429bd40230f0c9b97:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORED_SPACE",
+        "DISCOVERED_ITEM"
+      ],
+      "stateOutputs": [
+        "NEW_RELATIONSHIP",
+        "PROGRESS_INDICATOR"
+      ],
+      "name": "인간관계의 진화",
+      "purpose": "플레이어가 작은 활동 공간 내에서 인물, 작업 또는 수집 가능한 기회를 탐험하여 그에 대한 이해와 성찰을 통해 새로운 기회를 발견하고, 이를 바탕으로 다른 사람과의 관계를 형성하면서 자신의 존재 가치를 증명하며 게임을 진행한다.",
+      "playerChoice": "Explore a compact activity space and discover a person, task or collectible opportunity. -> Complete a short interaction or challenge and add its result to progression. -> Add new relationship or progress indicator to the world state."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 248347,
-      "lastMs": 25443,
+      "totalMs": 288261,
+      "lastMs": 39914,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:55:10.207Z"
+      "updatedAt": "2026-10-09T10:55:50.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:51:01.832Z",
-  "updatedAt": "2026-10-09T10:55:10.207Z",
+  "updatedAt": "2026-10-09T10:55:50.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1980,7 +1995,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:55:10.207Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:55:50.123Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
