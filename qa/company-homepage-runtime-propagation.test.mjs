@@ -341,7 +341,10 @@ test('homepage exposes only verified Unity WebGL and preserves independent Roblo
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
   assert.equal(web.releaseStage,false);
   assert.equal(policy.ownerUnityWebHomepageOnly20261010.genericHtmlCssJavascriptCanvasGameAuthoringForbidden,true);
-  assert.equal(policy.ownerUnityWebHomepageOnly20261010.homepageGameCardRequiresUnityWeb,true);
+  assert.equal(policy.ownerUnityWebHomepageOnly20261010.homepageGameCardRequiresUnityWeb,false,
+    'real canonical game cards remain visible before their Unity Web build is verified');
+  assert.equal(policy.ownerUnityWebHomepageOnly20261010.unverifiedGamePlaybackLinkMustRemainDisabled,true,
+    'unverified builds remain unplayable even when their cards stay visible');
   const surface=policy.serverHomepageIntegration.unityWebValidationSurface;
   assert.equal(surface.homepageLinkGate,'UNITY_WEB_3D_QA_AND_COMPLETE_DEPLOYED_BUNDLE');
   assert.equal(surface.homepageLinkQaPassRequired,true);
