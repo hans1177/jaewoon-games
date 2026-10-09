@@ -94,25 +94,203 @@
       "name": "PUZZLE_CORE_RULE_SET_C",
       "purpose": "게임 내 상태 변환 및 다음 선택 제공",
       "playerChoice": "플레이어가 현재 게임 상태와 행동에 기반하여 새로운 상태를 생성하거나 다음 플레이 옵션을 선택하는 데 사용됨니다. 이 과정에서는 즉각적인 결과와 상태 변화가 발생하며, 게임의 루프 확대에 기여합니다."
+    },
+    "local_authoring_parts::5d2a784172c2a69793923b7f243defd0fa4daa002b85e018d1a7af70192b77b1:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAY_OPTION"
+      ],
+      "name": "PUZZLE_CORE_DELVE_SET",
+      "purpose": "게임 내에서 발견, 숙련, 재방문에 사용되는 시스템",
+      "playerChoice": "플레이어가 게임 루프의 새로운 단계로 이동하거나, 기존 상태와 다른 선택지를 생성할 수 있는 방식으로 행동함"
+    },
+    "local_authoring_parts::4760def57208ab59fd18605c6cfed6ab76fc059a673e932eb90c7fa190441e54:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET",
+          "purpose": "PLAYERS_ACT_AS_GAME_ENGINE_TO_DRIVE_REPLAYABILITY_AND_COMPLEXITY",
+          "playerChoice": "START_WITH_CLEAR_GOAL, CHOOSE_MOVES, REACH_OBJECTIVE, EARN_REWARD, FACE_NEW_CHALLENGE, CONTINUE_THE_LOOP"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_A",
+          "purpose": "PLACEMENT_OF_PLAYER_ACTIONS_IN_VARYING_BOARD_STATES",
+          "playerChoice": "ACTION_SEQUENCE_BASED_ON_BOARD_CONFIGURATIONS_AND_PLAYER_STRATEGY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_B",
+          "purpose": "게임 내에서 사용되는 기본적인 규칙 및 상태 변환 메커니즘",
+          "playerChoice": "플레이어가 선택하는 게임 단계와 다음의 선택지를 정해 루프에 참여하게 한다는 의미로, 주체 역할과 대응 방식을 구현한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_C",
+          "purpose": "게임 내 상태 변환 및 다음 선택 제공",
+          "playerChoice": "플레이어가 현재 게임 상태와 행동에 기반하여 새로운 상태를 생성하거나 다음 플레이 옵션을 선택하는 데 사용됨니다. 이 과정에서는 즉각적인 결과와 상태 변화가 발생하며, 게임의 루프 확대에 기여합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_DELVE_SET",
+          "purpose": "게임 내에서 발견, 숙련, 재방문에 사용되는 시스템",
+          "playerChoice": "플레이어가 게임 루프의 새로운 단계로 이동하거나, 기존 상태와 다른 선택지를 생성할 수 있는 방식으로 행동함"
+        }
+      ]
+    },
+    "local_authoring_parts::03fd40998084be35178a06aaa8d2cc9f4ae6d59c5b7c612aea0a38b60c22a436:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+        "보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 @의 깊이를 구분하여 게임의 루프를 확대한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET",
+          "purpose": "PLAYERS_ACT_AS_GAME_ENGINE_TO_DRIVE_REPLAYABILITY_AND_COMPLEXITY",
+          "playerChoice": "START_WITH_CLEAR_GOAL, CHOOSE_MOVES, REACH_OBJECTIVE, EARN_REWARD, FACE_NEW_CHALLENGE, CONTINUE_THE_LOOP"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_A",
+          "purpose": "PLACEMENT_OF_PLAYER_ACTIONS_IN_VARYING_BOARD_STATES",
+          "playerChoice": "ACTION_SEQUENCE_BASED_ON_BOARD_CONFIGURATIONS_AND_PLAYER_STRATEGY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_B",
+          "purpose": "게임 내에서 사용되는 기본적인 규칙 및 상태 변환 메커니즘",
+          "playerChoice": "플레이어가 선택하는 게임 단계와 다음의 선택지를 정해 루프에 참여하게 한다는 의미로, 주체 역할과 대응 방식을 구현한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_RULE_SET_C",
+          "purpose": "게임 내 상태 변환 및 다음 선택 제공",
+          "playerChoice": "플레이어가 현재 게임 상태와 행동에 기반하여 새로운 상태를 생성하거나 다음 플레이 옵션을 선택하는 데 사용됨니다. 이 과정에서는 즉각적인 결과와 상태 변화가 발생하며, 게임의 루프 확대에 기여합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "NEXT_PLAY_OPTION"
+          ],
+          "name": "PUZZLE_CORE_DELVE_SET",
+          "purpose": "게임 내에서 발견, 숙련, 재방문에 사용되는 시스템",
+          "playerChoice": "플레이어가 게임 루프의 새로운 단계로 이동하거나, 기존 상태와 다른 선택지를 생성할 수 있는 방식으로 행동함"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 866738,
-      "lastMs": 100849,
+      "totalMs": 966680,
+      "lastMs": 99942,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:05:18.890Z"
+      "updatedAt": "2026-10-09T15:06:58.833Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:50:52.121Z",
-  "updatedAt": "2026-10-09T15:05:18.890Z",
+  "updatedAt": "2026-10-09T15:06:58.835Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1702,7 +1880,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:05:18.890Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:06:58.835Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
