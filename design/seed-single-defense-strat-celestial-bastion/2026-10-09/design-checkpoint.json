@@ -79,25 +79,40 @@
       "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
       "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 전략적 대응을 수행하며, 자원을 효율적으로 관리하는 시스템입니다.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "PLACE_TOWERS_OR_DEFENDERS"
+      ],
+      "stateOutputs": [
+        "EARN_RESOURCES",
+        "SPEND_ON_UPGRADES"
+      ],
+      "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+      "purpose": "플레이어가 주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 기반으로 전략적 대응법과 경로를 창출하며, 이 과정에서 숙련과 발견을 통해 세계를 점령해 나간다.",
+      "playerChoice": "주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 바탕으로 전략적 대응법과 경로를 선택하여, 이를 바탕으로 새로운 자원과 전략을 창출하고 위험/보상의 균형을 맞추며 세계를 점령해 나감."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 535595,
-      "lastMs": 59073,
+      "totalMs": 743746,
+      "lastMs": 208151,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:50:01.842Z"
+      "updatedAt": "2026-10-09T12:53:30.008Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:41:06.097Z",
-  "updatedAt": "2026-10-09T12:50:01.844Z",
+  "updatedAt": "2026-10-09T12:53:30.008Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2307,8 +2322,8 @@
     "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:3": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:50:01.842Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:c",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T12:53:30.008Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
