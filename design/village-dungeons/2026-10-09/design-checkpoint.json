@@ -488,25 +488,93 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9fea53ce5ec4118097f199889194258835b105b730606753c07f953c0beb49d0:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_INPUT",
+          "toId": "RUN_OUTPUT",
+          "stateKeys": [
+            "START",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_EXECUTION",
+          "trigger": "SIMPLE_TAP_OR_SWIPE",
+          "stateChange": "STATE_TRANSITION"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "REWARD_STATE",
+          "stateKeys": [
+            "SCORE",
+            "DISTANCE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_EXECUTION",
+          "trigger": "READABLE_FEEDBACK",
+          "stateChange": "STATE_TRANSITION"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "PROGRESSION_STATE",
+          "stateKeys": [
+            "PROGRESS_BENEFIT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_EXECUTION",
+          "trigger": "ACTION_SELECTION",
+          "stateChange": "STATE_TRANSITION"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "DELVE_OUTPUT",
+          "stateKeys": [
+            "PATH_EVENT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_EXECUTION",
+          "trigger": "DISCOVERY_TRIGGER",
+          "stateChange": "STATE_TRANSITION"
+        },
+        {
+          "fromId": "START_INPUT",
+          "toId": "PROGRESSION_OUTPUT",
+          "stateKeys": [
+            "MILESTONES"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_EXECUTION",
+          "trigger": "EXPLORATION_TRIGGER",
+          "stateChange": "STATE_TRANSITION"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "COST_EFFICIENT",
+        "resourceFlow": "BALANCED",
+        "balanceRules": "AUTOMATICALLY_ADJUSTED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1032260,
-      "lastMs": 300101,
+      "totalMs": 1276638,
+      "lastMs": 244378,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:28:21.328Z"
+      "updatedAt": "2026-10-09T09:32:25.708Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:09.017Z",
-  "updatedAt": "2026-10-09T09:28:21.328Z",
+  "updatedAt": "2026-10-09T09:32:25.708Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2587,7 +2655,7 @@
     "local_authoring_parts::decd5553b12c8085cb227559039d667f9831a7c23dd4f3f81ea65f31df30e48a:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:23:21.219Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:32:25.708Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
