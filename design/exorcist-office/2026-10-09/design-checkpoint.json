@@ -438,25 +438,28 @@
       "toSystem": "NEXT_WORLD_STATE",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::f123b939367b5ba58b7b28a6b1830d2055fb9ac3e82ed4d00ccd6eb0bd3ab09c:fromId": {
+      "fromId": "CORE_FUN_02"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 575579,
-      "lastMs": 33530,
+      "totalMs": 606786,
+      "lastMs": 31207,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:59:49.019Z"
+      "updatedAt": "2026-10-09T16:00:20.228Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:59:49.020Z",
+  "updatedAt": "2026-10-09T16:00:20.228Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2104,7 +2107,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:59:49.020Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:00:20.228Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
