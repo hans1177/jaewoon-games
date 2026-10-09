@@ -27,25 +27,35 @@
       "identity": "잃어버린 별의 메아리 - Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과로 다음 세계 규칙을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 정체성입니다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이, MAIN × A × B × c의 관계를 통해 다양한 경로와 위험·보상의 연결을 가진 시스템입니다. 이 게임은 단순 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 장르에 맞게 재해석하는 복합장르입니다. 기존 원본의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하여 고유한 학문적 규칙과 시스템 연결을 확정합니다.",
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과로 다음 세계 규칙을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 역할을 수행하며, 주체가 되어 전개와 결말을 결정하는 플레이어입니다. 이 게임은 단순 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 장르에 맞게 재해석하는 복합장르이며, 기존 원본의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하여 고유한 학문적 규칙과 시스템 연결을 확정합니다.",
       "coreFun": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이, MAIN × A × B × c의 관계를 통해 다양한 경로와 위험·보상의 연결을 가진 시스템입니다. 이 게임은 단순 반복보다는 새로운 행동·경로·조합·관계·발견·대응법을 열어 장르에 맞게 재해석하는 복합장르이며, 기존 원본의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토하여 고유한 학문적 규칙과 시스템 연결을 확정합니다."
+    },
+    "local_authoring_parts::b667652a6288c2594ba59b8a9ce1fa75b9b2f588f8138c0d88d6d5796360aeb3:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT/OUTPUT/STATE",
+        "ACTION_SURVIVAL_ROGUELITE",
+        "MAIN × A × B × c",
+        "FIGHT THROUGH AN ESCALATING HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE.",
+        "COLLECT RUN REWARDS OR EXPERIENCE AND CHOOSE UPGRADES, PERKS, WEAPONS, OR SKILLS THAT CHANGE THE CURRENT BUILD.",
+        "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR A BOSS, THEN CONVERT RUN RESULT INTO NEXT PROGRESSION CHOICE."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 248576,
-      "lastMs": 46071,
+      "totalMs": 302998,
+      "lastMs": 54422,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:15:31.594Z"
+      "updatedAt": "2026-10-09T09:16:26.019Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:22.951Z",
-  "updatedAt": "2026-10-09T09:15:31.595Z",
+  "updatedAt": "2026-10-09T09:16:26.019Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2254,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:15:31.595Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:16:26.019Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
