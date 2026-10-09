@@ -1290,7 +1290,7 @@
           "VIBE2_24H_FIVE_MINUTE_SAFETY_NET",
           "RECOVERY_FAST_CAUSAL_RETURN"
         ],
-        "laneMax": 64
+        "laneMax": 128
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
@@ -1351,10 +1351,10 @@
       "workLockMayNotCoverReadOnlyExploration": true,
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": "FIXED_REPEAT_DEVELOPMENT_64",
-      "refillExample": "ACTIVE_48_FREE_16_AT_FIXED_REPEAT_DEVELOPMENT_64",
+      "gamePrimaryActiveExecutionCap": "FIXED_REPEAT_DEVELOPMENT_128",
+      "refillExample": "ACTIVE_48_FREE_80_AT_FIXED_REPEAT_DEVELOPMENT_128",
       "adaptiveControl": "GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_128; TELEMETRY_MAY_OBSERVE_PRESSURE_BUT_MAY_NOT_CHANGE_RESERVATION_TARGET",
-      "gamePrimaryFixedInternalCap": 64,
+      "gamePrimaryFixedInternalCap": 128,
       "reserveIngressRuntimeSync": {
         "required": true,
         "source": "company-runtime:development-queue.json",
@@ -1514,7 +1514,7 @@
         "gamePrimaryPrewarmRunner": "ubuntu-latest"
       },
       "externalSpareBeyond30": "SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_128",
-      "repeatDevelopmentFixedSlots": 64,
+      "repeatDevelopmentFixedSlots": 128,
       "repeatDevelopmentAutomaticRefill": true,
       "externalProviderBoundaryMeaning": "PHYSICAL_QUEUE_CAPACITY_ONLY",
       "gamePrimaryMaxWorkMinutes": 60,

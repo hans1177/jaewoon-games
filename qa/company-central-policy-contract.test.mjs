@@ -1957,7 +1957,7 @@ test('current Vibe operating system is fixed while detail-chain optimization rem
   assert.equal(architecture.continuousGameplaySystemEvolutionTopology.gameIdentityConcept.causalGrammarFlow.formula,finalCausalFormula);
   assert.equal(security.gameSpecificBuildUpDirectiveSecurity.gameIdentityConceptProtections.causalGameGrammar.formula,finalCausalFormula);
   assert.equal(fixed.autonomousBottleneckManagement.required,true);
-  assert.equal(fixed.repeatDevelopmentConcurrency.fixedSlots,64);
+  assert.equal(fixed.repeatDevelopmentConcurrency.fixedSlots,128);
   assert.equal(fixed.repeatDevelopmentConcurrency.automaticRefill,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.eachVerifiedCycleReturnsToNextBuildUp,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.runnerPressureMayReduceLogicalSlots,false);

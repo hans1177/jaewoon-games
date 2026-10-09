@@ -14659,21 +14659,21 @@
       "gameStudyStillRequiresIdleGameWave": true,
       "phase2NeuralExecutionAuthority": true,
       "externalProviderAndPlanningBound": 256,
-      "refillFormula": "MAX(0, 64 - ACTIVE_GAME_PRIMARY_REPEAT_DEVELOPMENT_TASKS)",
-      "observedExample": "FIXED_TARGET_64_ACTIVE_48=>REFILL_16; RUNNER_SHORTAGE_QUEUES_WITHOUT_CHANGING_TARGET",
+      "refillFormula": "MAX(0, 128 - ACTIVE_GAME_PRIMARY_REPEAT_DEVELOPMENT_TASKS)",
+      "observedExample": "FIXED_TARGET_128_ACTIVE_48=>REFILL_80; RUNNER_SHORTAGE_QUEUES_WITHOUT_CHANGING_TARGET",
       "adaptiveBackpressureMayLowerBelow20": false,
       "adaptiveBackpressureMayLowerBelow30": false,
-      "rationale": "GAME_PRIMARY repeat development uses a fixed logical reservation target of 64. GitHub runner/provider shortage may queue work but may not tune the repeat-development target below or above 64. Exact responsible-file conflicts and exact duplicate execution still serialize.",
+      "rationale": "GAME_PRIMARY repeat development has a logical target of 128 slots. Runner pressure may queue work, but quality gates and exact file-conflict protection remain required.",
       "gamePrimaryAdaptiveSteps": [
-        64
+        128
       ],
       "gamePrimaryBaselineTarget": 128,
       "gamePrimaryAdaptiveMinimum": 128,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": 128,
-      "telemetryDenominator": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64",
-      "ownerUnlimitedConcurrencyDirective": "SUPERSEDED_FOR_GAME_PRIMARY_REPEAT_DEVELOPMENT_BY_OWNER_DIRECTIVE_2026-10-06_FIXED_64",
-      "authorityChange": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64_WITH_EXTERNAL_PROVIDER_BOUNDARY_UNCHANGED",
+      "telemetryDenominator": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_128",
+      "ownerUnlimitedConcurrencyDirective": "OWNER_DIRECTIVE_2026-10-09_FIXED_REPEAT_DEVELOPMENT_128",
+      "authorityChange": "FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_128_WITH_EXTERNAL_PROVIDER_BOUNDARY_UNCHANGED",
       "adaptiveBackpressureMayRaiseGamePrimaryAbove20": false,
       "fixedWaveBarrier": false,
       "completionEvent": "vibe2-neuron-complete",
@@ -14690,7 +14690,7 @@
       "defaultStartsAtExternalBoundary": false,
       "verifiedExternalPressureOnlyDownshift": false,
       "staleOrMissingPressureEvidenceRecoversToExternalBoundary": false,
-      "fixedRepeatDevelopmentSlots": 64,
+      "fixedRepeatDevelopmentSlots": 128,
       "externalProviderBoundaryIsPhysicalOnly": true
     },
     "livenessContract": {
@@ -28120,7 +28120,7 @@
     },
     "repeatDevelopmentConcurrency": {
       "version": 1,
-      "status": "FIXED_REPEAT_DEVELOPMENT_64",
+      "status": "FIXED_REPEAT_DEVELOPMENT_128",
       "scope": "GAME_PRIMARY_REPEAT_DEVELOPMENT_ONLY",
       "fixedSlots": 128,
       "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_REPEAT_DEVELOPMENT_TASKS",
@@ -28128,7 +28128,7 @@
       "refillAfterTaskMicroFanIn": true,
       "eachVerifiedCycleReturnsToNextBuildUp": true,
       "idleSlotAction": "WAIT_FOR_NEXT_REAL_RUNNABLE_DEVELOPMENT_TASK_NO_FAKE_WORK",
-      "runnerShortageBehavior": "KEEP_FIXED_LOGICAL_TARGET_64_AND_ALLOW_GITHUB_QUEUEING",
+      "runnerShortageBehavior": "KEEP_FIXED_LOGICAL_TARGET_128_AND_ALLOW_GITHUB_QUEUEING",
       "adaptiveDownshiftForbidden": true,
       "adaptiveUpshiftForbidden": true,
       "externalProviderBoundaryRemainsPhysicalOnly": 256,
@@ -28138,7 +28138,7 @@
       "exactDuplicateSuppressionPreserved": true,
       "lockedF0F9SequenceChanged": false,
       "newPipelineCreated": false,
-      "ownerDirective": "2026-10-06",
+      "ownerDirective": "2026-10-09",
       "runnerPressurePolicy": "EXTERNAL_GITHUB_ACTIONS_QUEUE_OWNS_PHYSICAL_BACKPRESSURE",
       "runnerPressureMayReduceLogicalSlots": false,
       "runnerPressureMaySuppressGamePrimaryDispatch": false,
@@ -28149,9 +28149,8 @@
       "externalPublicReleaseRequiresExplicitOwnerApproval": true,
       "postReleaseRepeatDevelopmentContinues": true,
       "supportedBoundPlatformLoops": [
-        "WEB",
         "ROBLOX",
-        "UNITY"
+        "UNITY_WEB"
       ]
     }
   },

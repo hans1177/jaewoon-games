@@ -236,7 +236,7 @@ test('director fallback wake reuses the canonical game-primary core without crea
   assert.match(director,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
   assert.match(director,/-f 'inputs\[execution_lane\]=game-primary'/);
   assert.equal(fallback.laneMax,128);
-  assert.match(director,/-f 'inputs\[lane_max\]=64'/);
+  assert.match(director,/-f 'inputs\[lane_max\]=128'/);
   assert.match(director,/\(\$run\.event \/\/ ""\) != "push"/);
 });
 
