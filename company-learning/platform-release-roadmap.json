@@ -1,5 +1,5 @@
 {
-  "version": 556,
+  "version": 557,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -799,7 +799,7 @@
       ]
     },
     "allGameDynamicInternalAssetBindingContract": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-10-05",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "scope": "ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK",
@@ -904,12 +904,21 @@
           "CORRUPT_SOURCE",
           "EXPLICIT_INTERNAL_USE_FORBIDDEN",
           "PLATFORM_INCOMPATIBLE_WITH_NO_SAFE_NATIVE_ADAPTATION",
-          "ROLE_INCOMPATIBLE"
+          "ROLE_INCOMPATIBLE",
+          "SPATIAL_3D_SOURCE_REQUIRED"
         ],
         "gameStyleAndRoleAdaptationRequiredWhenNeeded": true,
         "applicationCountLimit": null,
         "applicationCountMeaning": "UNLIMITED_WITH_ACTUAL_SOURCE_EVIDENCE_AND_EXISTING_SAFETY_COMPATIBILITY_PERFORMANCE_GATES",
-        "oldGraphicsReplacementMaximumCannotLimitAssetApplication": true
+        "oldGraphicsReplacementMaximumCannotLimitAssetApplication": true,
+        "gameplaySourceWhitelist": "COMPANY_ASSET_LIBRARY_REGISTERED_FILES_ONLY",
+        "unregisteredExternalFinalGameplayBindingForbidden": true,
+        "hardSpatial3dSourceRequired": true,
+        "genreOrConsumerGameQuotaForbidden": true,
+        "crossGameCrossGenreReuseRequiredWhenConceptCompatible": true,
+        "crossPlatform3dModelDonationAllowedWithNativeReauthoring": true,
+        "identicalAssetIdentityIsNotMandatoryAcrossGames": true,
+        "visualIdentityVariationRequiredAtRuntime": true
       },
       "application": {
         "existingSystemRequiresAppliedBinding": true,
@@ -924,7 +933,8 @@
         "platformNativeAdaptationRequired": true,
         "selectedValueMustReachNativeRenderConsumer": true,
         "commentLogAndCountOnlyEvidenceForbidden": true,
-        "staticBindingChecksDoNotReplaceRuntimeEvidence": true
+        "staticBindingChecksDoNotReplaceRuntimeEvidence": true,
+        "native3dRuntimePerspectiveDepthAndActorEvidenceRequired": true
       },
       "preservation": {
         "gameplayRulesImmutableForAssetReasons": true,
@@ -966,7 +976,9 @@
         "unityWebUsesSameCanonicalUnityProject": true,
         "webRequiresActualBrowserAndCloudflareDeploymentEvidence": true,
         "completeOnlyWithPerGamePlatformSourceRuntimeAndDeploymentEvidence": true,
-        "protectedGameplaySaveEconomyAndNetworkSemanticsUnchanged": true
+        "protectedGameplaySaveEconomyAndNetworkSemanticsUnchanged": true,
+        "legacy2dTo3dRedevelopmentMandatory": true,
+        "legacyPlayableUntil3dReplacementRuntimeQa": true
       },
       "spatialWorldAssetAuthoring3dOnly": true,
       "allLegacy2dOr2_5dWorldAssetsRequire3dRemodelBeforeFinalGameUse": true,
@@ -28480,7 +28492,7 @@
     "unityWeb3dRuntimeProofRequired": true
   },
   "ownerUnityWeb3dOnly20261009": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-10-09",
     "status": "OWNER_DIRECT_LOCKED",
     "notice": "모든 유니티 웹 신규·기존 게임은 3D 전용. 기존 2D·2.5D 게임은 전부 원본 Unity 프로젝트에서 3D로 재개발. 모든 게임 세계·캐릭터·몬스터·건물·무기·소품 제작 라이브러리는 실제 3D 자산만 허용.",
@@ -28525,6 +28537,36 @@
     "ownerHeldUnityAndroidUnchanged": true,
     "robloxDevelopmentContinuesIndependently": true,
     "allEligibleGameWorkRequeuedThroughExistingCanonicalPipeline": true,
-    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true
+    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true,
+    "internalSharedLibraryOnlyForGameplayAssets": true,
+    "unregisteredExternalDirectGameBindingForbidden": true,
+    "externalSourcingMayOnlySupplyExistingInternalLibraryProduction": true,
+    "registeredLibrarySpatialAssetRequiresReal3dSource": true,
+    "supported3dSourceKinds": [
+      "GLB",
+      "GLTF",
+      "FBX",
+      "OBJ",
+      "MESH",
+      "UNITY_PREFAB_WITH_NATIVE_MESH"
+    ],
+    "allCompatibleInternalAssetCandidatesEligibleWithoutQuantityCaps": true,
+    "crossGameCrossGenreReuseWithoutArtificialRestrictions": true,
+    "conceptMatchedCrossPlatform3dDonorReuseViaNativeReauthoring": true,
+    "gameSpecificVisualIdentityRequired": [
+      "SILHOUETTE",
+      "MATERIAL",
+      "PROPORTIONS",
+      "MODULAR_PARTS",
+      "MOTION",
+      "LIGHTING"
+    ],
+    "sameAssetVisualDuplicationRequiresContextSpecificAdaptation": true,
+    "raw2dIllustrationsMayBeDesignReferenceButNeverFinalSpatialModel": true,
+    "runtimeProofRequiresPerspectiveWorldDepthAndReal3dActors": true,
+    "zeroPlayableFinalPassFor2d2_5dWorldAndSpriteActors": true,
+    "verifiedAssetAdaptationLearningOnlyFromRealBuildQaAndRuntimeEvidence": true,
+    "preserveExistingGamesUntilIndependentlyVerified3dReplacement": true,
+    "canonicalExistingSourceAndBuildUpF0F9SequenceUnchanged": true
   }
 }
