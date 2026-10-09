@@ -3,143 +3,18 @@
   "gameId": "island-village",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
-  "fingerprint": "37e6c5b09a95290d6751850d81cc653b9c6d4e9eb5c009f8ecf84a37aefcaa0b",
+  "fingerprint": "2de835c94bc11fefb492729c9f7d14b37fe5bb8a4f25203b6b31184247fb902f",
   "policyDigest": "91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f",
-  "engineDigest": "82009f805d07dbc37fef4617083aa8c5a90af5bb1042521a1f511131cb58898c",
+  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::ce3a9b91b2666c379ed50b2c0db1bc51f5b37e7ff2c38ecfd0dba18cdae36f95:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "CORE_FUN_TO_LEARN",
-        "a": {
-          "system": "RESOURCE_MANAGEMENT",
-          "material": "ISLAND_RESOURCES",
-          "materialDomain": "VILLAGE_BUILDING",
-          "stateChange": "RESOURCE_ALLOCATED_TO_VILLAGE"
-        },
-        "b": {
-          "system": "GAMEPLAY_SYSTEM",
-          "material": "PLAYER_FANTASY",
-          "materialDomain": "PLAYER_ROLE",
-          "stateChange": "PLAYER_SELECTS_NEW_FUNCTION"
-        },
-        "abCausality": "RESOURCE_ALLOCATION_AND_PLAYER_CHOICE_INTERACTION",
-        "abEvolution": {
-          "aChangesB": "RESOURCE_REDUCTION_ON_FAILURE",
-          "bChangesA": "PLAYER_DETERMINED_BY_RESOURCE_LIMITATION",
-          "lateGameChange": "RESOURCE_CONSUMPTION_AND_PLAYERS_DIVERSE_SELECTION"
-        },
-        "materialFusion": {
-          "contrast": "RESOURCE_FLOW_AND_PLAYER_DECISION",
-          "causalBridge": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT",
-          "removalConsequence": "PLAYER_ROLE_CHANGE_ON_RESOURCE_SHORTAGE"
-        },
-        "storyCausalChain": {
-          "cause": "RESOURCE_LACK_IN_THE_BEGINNING",
-          "characterConflict": "PLAYER_RESPOND_WITH_AGGRESSIVE_ROLE_ASSIGNMENT",
-          "playerChoice": "PLAYER_CHOOSE_TO_EXPAND_VILLAGE_FUNCTIONS",
-          "worldChange": "VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION",
-          "nextEvent": "PLAYER_ANNOUNCES_NEW_VILLAGE_GOAL"
-        },
-        "cThemes": [
-          {
-            "name": "ECONOMIC_STABILITY",
-            "kind": "GENRE",
-            "gameplayEffect": "RESOURCE_MANAGEMENT"
-          },
-          {
-            "name": "SOCIAL_CONNECTIVITY",
-            "kind": "GENRE",
-            "gameplayEffect": "PLAYER_ROLE_ASSIGNMENT"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ECONOMICS",
-            "gameplayEffect": "RESOURCE_ALLOCATED_TO_VILLAGE"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "SOCIETY",
-            "gameplayEffect": "PLAYER_ROLE_CHANGE_ON_RESOURCE_SHORTAGE"
-          }
-        ],
-        "cGenreInterlock": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE",
-        "cWorldAndGameplayEffect": "RESOURCE_CONSUMPTION_AND_PLAYERS_DIVERSE_SELECTION",
-        "delveDiscoveries": [
-          {
-            "clue": "RESOURCES_HOARDING_BECAUSE_OF_LOW_RESOURCES",
-            "discovery": "PLAYER_CHOOSING_TO_EXPAND_VILLAGE_FUNCTIONS",
-            "newChoice": "PLAYER_SELECTS_ECONOMIC_STABILITY"
-          },
-          {
-            "clue": "PLAYERS_RESPOND_TO_RESOURCE_LACK_WITH_SOCIAL_ROLES",
-            "discovery": "PLAYER_ASSIGNS_SOCIAL_ROLES",
-            "newChoice": "PLAYER_CHOOSE_TO_ENHANCE_SOCIAL_CONNECTIONS"
-          },
-          {
-            "clue": "VILLAGE_GROWTH_IS_INCREMENTED_BY_PLAYER_INVESTMENTS",
-            "discovery": "PLAYER_ANNOUNCES_NEW_VILLAGE_GOAL",
-            "newChoice": "PLAYER_DETERMINES_NEXT_VILLAGE_FUNCTION"
-          },
-          {
-            "clue": "RESOURCE_ALLOCATION_IS_ADJUSTED_BASED_ON_PLAYERS'_DECISIONS",
-            "discovery": "PLAYER_REASSIGN_RESOURCES",
-            "newChoice": "PLAYER_MODIFIES_RESOURCE_FLOW"
-          }
-        ],
-        "delveGrowthRule": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT_AND_VILLAGE_GROWTH",
-        "finalGameIdentity": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE"
-      },
-      "playerFantasy": "주민은 자원을 조절하고 시설을 개선하는 데 참여하며, 새로운 역할과 기능을 선택해 마을의 성장에 영향을 미칩니다. 이는 단순한 플레이어 행동이 아니라 실제 사회적 관계와 경제적 결정을 반영합니다.",
-      "coreFun": "자원 분배를 통해 마을의 생존과 발전을 지원하고, 주민의 역할을 바탕으로 새로운 기능을 확정하며, 게임 내에서 중요한 상황 변화를 유도합니다. 이 과정에서는 자원의 효율적인 사용과 플레이어의 의사결정이 서로 연결되어 진실된 게임 경험을 제공합니다."
-    },
-    "local_authoring_parts::e03befabc583bcc646bd26c47e30aada26635ca5493a2bb58272d921011bc22f:coreLoop": {
-      "coreLoop": [
-        "INPUT/SELECT/OUTPUT/STATE: PLAYER_GATHER_RESOURCES -> RESOURCE_ALLOCATED_TO_VILLAGE -> REWARD_OF_ECONOMIC_STABILITY",
-        "INPUT/SELECT/OUTPUT/STATE: PLAYER_SELECT_NEW_FUNCTION -> PLAYER_ASSIGNS_SOCIAL_ROLES -> REWARD_OF_SOCIAL_CONNECTIVITY",
-        "INPUT/SELECT/OUTPUT/STATE: PLAYER_ANNOUNCES_NEW_GOAL -> VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION -> REWARD_OF_NEXT_VILLAGE_FUNCTION"
-      ]
-    },
-    "local_authoring_parts::6e03ab5025ae58036da8fe154c29e836ff75dcc39f81d3617303fcd5c43618a9:signatureSystems:0": {
-      "id": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT_AND_VILLAGE_GROWTH",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "PLAYER_GATHER_RESOURCES",
-        "PLAYER_SELECT_NEW_FUNCTION",
-        "PLAYER_ANNOUNCES_NEW_GOAL"
-      ],
-      "stateOutputs": [
-        "RESOURCE_ALLOCATED_TO_VILLAGE",
-        "PLAYER_ASSIGNS_SOCIAL_ROLES",
-        "VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION"
-      ],
-      "name": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE",
-      "purpose": "Player chooses to expand village functions based on resource allocation and social roles.",
-      "playerChoice": "PLAYER_CHOOSE_TO_EXPAND_VILLAGE_FUNCTIONS"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 446751,
-      "lastMs": 73859,
-      "lastError": null,
-      "updatedAt": "2026-10-09T17:36:19.125Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T17:28:52.266Z",
-  "updatedAt": "2026-10-09T17:36:19.171Z",
+  "createdAt": "2026-10-09T19:43:47.705Z",
+  "updatedAt": "2026-10-09T19:43:47.746Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1735,25 +1610,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::6e03ab5025ae58036da8fe154c29e836ff75dcc39f81d3617303fcd5c43618a9:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT_AND_VILLAGE_GROWTH"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::6e03ab5025ae58036da8fe154c29e836ff75dcc39f81d3617303fcd5c43618a9:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:36:19.125Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
