@@ -34,25 +34,40 @@
         "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nOUTPUT: Status change in world state, affecting future choices.",
         "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Re-evaluate situation based on new information or resource availability.\nOUTPUT: Status change in world state, affecting future choices."
       ]
+    },
+    "local_authoring_parts::8136d18e806933c4570d3a4f1f91db789814287e7a2e19ebc8553f36aee6d26e:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RESOURCE_FOUND",
+        "ENVIRONMENT_READ"
+      ],
+      "stateOutputs": [
+        "PATH_CHANGED",
+        "SURVIVAL_ADVANTAGE_GAINED"
+      ],
+      "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "purpose": "Discover resources to sustain survival and prepare for threats",
+      "playerChoice": "Select which resource to pursue and how to proceed based on environment and group readiness"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 186098,
-      "lastMs": 30380,
+      "totalMs": 226888,
+      "lastMs": 40790,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:47:39.622Z"
+      "updatedAt": "2026-10-09T11:48:20.414Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:44:33.378Z",
-  "updatedAt": "2026-10-09T11:47:39.622Z",
+  "updatedAt": "2026-10-09T11:48:20.414Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,7 +2295,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:47:39.622Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:48:20.414Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
