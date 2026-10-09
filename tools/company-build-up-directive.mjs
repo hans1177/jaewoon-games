@@ -567,6 +567,7 @@ export function extractDesignContext(record={}){
     designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
     implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
+    preservationContract:asObject(d?.preservationContract),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
@@ -577,6 +578,7 @@ export function extractDesignContext(record={}){
 // 정적 이름 일치만으로 실제 구현·플랫폼 런타임 완료를 판정하지 않는다.
 function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}={}){
   const items=[],seen=new Set();
+  const preservationOnly=clean(design?.preservationContract?.mode).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   const anchors=Array.isArray(source?.sourceAnchors)?source.sourceAnchors:[];
   const traces=Array.isArray(design?.implementationTraceability)?design.implementationTraceability:[];
   const add=(family,index,value)=>{
@@ -622,6 +624,10 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       'FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS',
       'TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE',
       'TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES'
+    ]:family==='CONTENT_MILESTONE'&&preservationOnly?[
+      'PRESENTATION_MILESTONE_BINDS_ONLY_TO_EXISTING_GAME_STATE',
+      'NO_NEW_GAMEPLAY_RULE_PROGRESSION_BALANCE_SAVE_OR_NETWORK_SEMANTIC',
+      'NATIVE_RENDER_MOTION_VFX_AUDIO_UI_AND_MOBILE_REPLAY_ONLY_WHEN_APPLICABLE'
     ]:family==='CONTENT_MILESTONE'?[
       'MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE',
       'NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL',
@@ -699,7 +705,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
   return Object.freeze({
     version:1,boundary:'EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY',
     sourceTreeFingerprint:clean(source?.sourceTreeFingerprint)||null,
-    mode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION':'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION',
+    mode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION':preservationOnly?'PRESERVATION_PRESENTATION_MILESTONES_ONLY':'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION',
     authoredItemCount:items.length,authoredCounts:Object.freeze(authoredCounts),
     namedSourceCandidateCount:items.filter(row=>row.sourceCandidates.length>0).length,
     sourceReviewRequiredCount:items.filter(row=>row.sourceCandidates.length===0).length,
@@ -708,7 +714,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     coverageState:'DESIGN_CONTENT_INDEXED_NATIVE_IMPLEMENTATION_AND_RUNTIME_PENDING',
     absenceOfNameMatchIsNotProofOfMissingImplementation:true,
     existingSaveBalanceEconomyNetworkAuthorityPreserved:true,
-    action:'BIND_EACH_APPROVED_ITEM_TO_EXISTING_RESPONSIBLE_SOURCE_AND_PROVE_CONNECTED_PLAYER_FACING_RESULT',
+    action:preservationOnly?'IMPROVE_EXISTING_RENDER_MOTION_UI_AUDIO_ONLY_AND_PRESERVE_GAMEPLAY_MEANING':'BIND_EACH_APPROVED_ITEM_TO_EXISTING_RESPONSIBLE_SOURCE_AND_PROVE_CONNECTED_PLAYER_FACING_RESULT',
     acceptance:Object.freeze([
       'EACH_AUTHORED_ITEM_REQUIRES_EXACT_DESIGN_SOURCE_AND_PLAYER_EVIDENCE',
       'CONTENT_REQUIRES_TRIGGER_STATE_PLAYER_CHOICE_NEXT_GOAL_CONNECTION_WHEN_APPLICABLE',
@@ -2101,7 +2107,8 @@ export function buildGameSpecificBuildUpDirective({
       contentVarietyPlan:design.contentVarietyPlan,
       narrativeDialoguePlan:design.narrativeDialoguePlan,
       implementationTraceability:design.implementationTraceability,
-      stabilityPriorityPlan:design.stabilityPriorityPlan
+      stabilityPriorityPlan:design.stabilityPriorityPlan,
+      preservationContract:design.preservationContract
     }),
     gameIdentityAndNonNegotiables:{
       identity,
