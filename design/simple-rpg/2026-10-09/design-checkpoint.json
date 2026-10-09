@@ -61,25 +61,38 @@
       "name": "BOARD_PATTERN_EDITOR",
       "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
       "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
+    },
+    "local_authoring_parts::d4de089bc7c0202fd1c8d2aaf19b052bce68d82aa2db75ff0cfd750ca05e135e:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+      ],
+      "stateOutputs": [
+        "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+      ],
+      "name": "BOARD_PATTERN_EDITOR",
+      "purpose": "게임 내에서 월드 패턴의 생성 및 관리",
+      "playerChoice": "보드 패턴의 새로운 구성이나 조합을 선택하여 게임 진행에 영향을 미칩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 560784,
-      "lastMs": 69007,
+      "totalMs": 630832,
+      "lastMs": 70048,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:43:36.360Z"
+      "updatedAt": "2026-10-09T08:44:46.409Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:43:36.360Z",
+  "updatedAt": "2026-10-09T08:44:46.409Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2116,7 +2129,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:43:36.360Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:44:46.409Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
