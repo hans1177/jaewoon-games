@@ -1125,25 +1125,42 @@
         "new_world_state"
       ],
       "fromSystem": "MAIN/DELVE(@)/systemInterconnections[3]/fromSystem[0]/*fromSystem[0]*: world_state -> new_world_state*fromSystem[0]*: world_state*toSystem[0]*: signatureSystems[4]/stateInputs[0]:"
+    },
+    "local_authoring_parts::b2725c716a466526e06fe3d0c1d3e4c16c965d63d5b27c8f54b465269c37c25c:toSystem,trigger,stateChange": {
+      "toSystem": "DELVE",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::92cf232139237218dcce9eb4803900334a7e7485ba17040d8c8149c29442fe47:systemInterconnections:3": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[4]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "MAIN/DELVE(@)/systemInterconnections[3]/fromSystem[0]/*fromSystem[0]*: world_state -> new_world_state*fromSystem[0]*: world_state*toSystem[0]*: signatureSystems[4]/stateInputs[0]:",
+      "toSystem": "DELVE",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 68,
-      "successes": 68,
+      "calls": 69,
+      "successes": 69,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5648193,
-      "lastMs": 79107,
+      "totalMs": 5714516,
+      "lastMs": 66323,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:33:11.335Z"
+      "updatedAt": "2026-10-09T02:34:17.659Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-09T02:33:11.335Z",
+  "updatedAt": "2026-10-09T02:34:17.660Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3156,7 +3173,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:33:11.335Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:34:17.660Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
