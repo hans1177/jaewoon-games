@@ -35,25 +35,43 @@
         "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
         "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
       ]
+    },
+    "local_authoring_parts::f47c68718d4fafdb7d3381c2336ebc5dd3a829e6b7de74411b3a9383b54f1442:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "ACTION",
+        "NEXT_SELECTION"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+      "purpose": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변화와 새로운 선택의 가능성을 만들어간다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
+      "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 272569,
-      "lastMs": 43805,
+      "totalMs": 337613,
+      "lastMs": 65044,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:06:10.735Z"
+      "updatedAt": "2026-10-09T09:07:15.782Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:01:38.141Z",
-  "updatedAt": "2026-10-09T09:06:10.735Z",
+  "updatedAt": "2026-10-09T09:07:15.782Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2285,7 +2303,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:06:10.735Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:07:15.782Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
