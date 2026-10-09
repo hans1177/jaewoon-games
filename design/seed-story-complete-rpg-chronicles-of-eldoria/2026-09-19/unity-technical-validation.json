@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-09T03:12:38.872Z",
+  "checkedAt": "2026-10-09T03:17:59.413Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37869671509,
-    "sourceCommit": "be1b401175ea0708d46e4b14027612b31e98347d",
-    "sourceTreeSha": "156b86528bd81265186452c62de7de3f409b1d56",
-    "apkSha256": "1cce053b97ae008a3981379d317a5414c59adea8f3c860173642082573170768",
+    "upstreamBuildRunId": 37872766750,
+    "sourceCommit": "c5001b457ab542c908b1f437216deefbdd4420c6",
+    "sourceTreeSha": "3def3481cb3e77058f8be31911336b7ebc5a3a33",
+    "apkSha256": "5597c262419569522177d4dd65da389c6d2a7447ba6acee91d6de6c708efd475",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -119,13 +119,13 @@
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
       "minFps": 10.9,
-      "avgFps": 13.466666666666667,
+      "avgFps": 13.633333333333333,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 53744083,
+      "maxAllocatedMemoryBytes": 52672942,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-story-complete-rpg-chronicles-of-eldoria-android-cloud-37869671509-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37869671509/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37869671509/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-story-complete-rpg-chronicles-of-eldoria-android-cloud-37872766750-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37872766750/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37872766750/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
   }
 }
