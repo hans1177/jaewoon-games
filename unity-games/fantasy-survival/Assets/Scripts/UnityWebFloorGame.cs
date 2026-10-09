@@ -39,7 +39,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private readonly List<Monster> enemies = new List<Monster>();
     private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
     private Camera camera3d;
-    private GUIStyle titleStyle, labelStyle;
+    private Vector2 craftingScroll;
 
     [Serializable] private sealed class SavedBlock { public float x, z; }
     [Serializable] private sealed class SavedMonster { public string id; public float x, z, hp; public int enemyIndex; public bool attackPlayer; }
@@ -502,38 +502,40 @@ public sealed class UnityWebFloorGame : MonoBehaviour
 
         if(spawnerOpen)
         {
-            Rect box=new Rect(sx+sw*.09f,sy+sh*.18f,sw*.82f,Mathf.Min(sh*.67f,440f));
+            Rect box=new Rect(sx+sw*.09f,sy+sh*.13f,sw*.82f,Mathf.Min(sh*.79f,440f));
             GUI.Box(box,"몬스터 스폰 블록 · 종류 / 마릿수");
+            float row=Mathf.Min(buttonHeight,box.height*.13f);
             if(kinds.Count>0)
             {
-                GUI.Label(new Rect(box.x+10,box.y+47,box.width-20,35),kinds[selectedKind].name+
+                GUI.Label(new Rect(box.x+10,box.y+box.height*.12f,box.width-20,row),kinds[selectedKind].name+
                     (kinds[selectedKind].harmless?" (무해 · 전투 금지)":""));
-                if(GUI.Button(new Rect(box.x+10,box.y+90,55,buttonHeight),"<"))selectedKind=(selectedKind+kinds.Count-1)%kinds.Count;
-                if(GUI.Button(new Rect(box.x+box.width-65,box.y+90,55,buttonHeight),">"))selectedKind=(selectedKind+1)%kinds.Count;
-                GUI.Label(new Rect(box.x+box.width*.32f,box.y+101,box.width*.40f,40),"종류 "+(selectedKind+1)+"/"+kinds.Count);
-                if(GUI.Button(new Rect(box.x+10,box.y+155,55,buttonHeight),"-"))spawnCount=Mathf.Max(1,spawnCount-1);
-                GUI.Label(new Rect(box.x+box.width*.32f,box.y+165,box.width*.40f,36),spawnCount+"마리");
-                if(GUI.Button(new Rect(box.x+box.width-65,box.y+155,55,buttonHeight),"+"))spawnCount=Mathf.Min(30,spawnCount+1);
-                if(GUI.Button(new Rect(box.x+10,box.y+220,box.width-20,buttonHeight),"소환"))SummonAtBlock();
+                if(GUI.Button(new Rect(box.x+10,box.y+box.height*.26f,55,row),"<"))selectedKind=(selectedKind+kinds.Count-1)%kinds.Count;
+                if(GUI.Button(new Rect(box.x+box.width-65,box.y+box.height*.26f,55,row),">"))selectedKind=(selectedKind+1)%kinds.Count;
+                GUI.Label(new Rect(box.x+box.width*.29f,box.y+box.height*.26f,box.width*.45f,row),"종류 "+(selectedKind+1)+"/"+kinds.Count);
+                if(GUI.Button(new Rect(box.x+10,box.y+box.height*.43f,55,row),"-"))spawnCount=Mathf.Max(1,spawnCount-1);
+                GUI.Label(new Rect(box.x+box.width*.37f,box.y+box.height*.43f,box.width*.30f,row),spawnCount+"마리");
+                if(GUI.Button(new Rect(box.x+box.width-65,box.y+box.height*.43f,55,row),"+"))spawnCount=Mathf.Min(30,spawnCount+1);
+                if(GUI.Button(new Rect(box.x+10,box.y+box.height*.61f,box.width-20,row),"소환"))SummonAtBlock();
             }
-            if(GUI.Button(new Rect(box.x+10,box.y+box.height-62,box.width-20,buttonHeight),"닫기"))spawnerOpen=false;
+            if(GUI.Button(new Rect(box.x+10,box.y+box.height*.82f,box.width-20,row),"닫기"))spawnerOpen=false;
             return;
         }
 
         if(aggressionOpen)
         {
-            Rect box=new Rect(sx+sw*.09f,sy+sh*.26f,sw*.82f,Mathf.Min(sh*.46f,300f));
+            Rect box=new Rect(sx+sw*.09f,sy+sh*.15f,sw*.82f,Mathf.Min(sh*.74f,320f));
             GUI.Box(box,"소환 몬스터 · 플레이어 공격 설정");
-            GUI.Label(new Rect(box.x+12,box.y+48,box.width-24,35),aggressionMonster!=null?aggressionMonster.kind.name:"");
-            if(GUI.Button(new Rect(box.x+12,box.y+94,box.width-24,buttonHeight),"공격 안 함 (기본)"))SetPlayerAggression(false);
-            if(GUI.Button(new Rect(box.x+12,box.y+102+buttonHeight,box.width-24,buttonHeight),"나를 공격"))SetPlayerAggression(true);
-            if(GUI.Button(new Rect(box.x+12,box.y+box.height-56,box.width-24,buttonHeight),"닫기")){aggressionOpen=false;aggressionMonster=null;}
+            float row=Mathf.Min(buttonHeight,box.height*.16f);
+            GUI.Label(new Rect(box.x+12,box.y+box.height*.18f,box.width-24,row),aggressionMonster!=null?aggressionMonster.kind.name:"");
+            if(GUI.Button(new Rect(box.x+12,box.y+box.height*.36f,box.width-24,row),"공격 안 함 (기본)"))SetPlayerAggression(false);
+            if(GUI.Button(new Rect(box.x+12,box.y+box.height*.55f,box.width-24,row),"나를 공격"))SetPlayerAggression(true);
+            if(GUI.Button(new Rect(box.x+12,box.y+box.height*.78f,box.width-24,row),"닫기")){aggressionOpen=false;aggressionMonster=null;}
             return;
         }
 
         if(inventoryOpen||craftingOpen)
         {
-            Rect box=new Rect(sx+sw*.06f,sy+sh*.17f,sw*.88f,Mathf.Min(sh*.70f,450f));
+            Rect box=new Rect(sx+sw*.06f,sy+sh*.12f,sw*.88f,Mathf.Min(sh*.82f,450f));
             GUI.Box(box,inventoryOpen?"가방":"제작");
             if(inventoryOpen)
             {
@@ -546,35 +548,41 @@ public sealed class UnityWebFloorGame : MonoBehaviour
             else
             {
                 string[] recipes={"나무 도구", "돌 도구", "철제 무기", "모닥불"};
+                Rect view=new Rect(box.x+12,box.y+45,box.width-24,box.height-112);
+                craftingScroll=GUI.BeginScrollView(view,craftingScroll,
+                    new Rect(0,0,box.width-48,recipes.Length*(buttonHeight+5)));
                 for(int i=0;i<recipes.Length;i++)
                 {
                     int cost=(i+1)*3;
-                    if(GUI.Button(new Rect(box.x+12,box.y+55+i*(buttonHeight+5),box.width-24,buttonHeight),
+                    if(GUI.Button(new Rect(0,i*(buttonHeight+5),box.width-48,buttonHeight),
                         recipes[i]+(creative?" · 무료":" · 재료 "+cost)) && (creative||resource>=cost))
                     {
                         if(!creative)resource-=cost;
                         actions++;SaveGame();
                     }
                 }
+                GUI.EndScrollView();
             }
             if(GUI.Button(new Rect(box.x+12,box.y+box.height-58,box.width-24,buttonHeight),"닫기"))
                 {inventoryOpen=false;craftingOpen=false;}
             return;
         }
 
-        float dpad=buttonHeight;
-        float bottom=sy+sh-buttonHeight*2.75f;
+        float dpad=Mathf.Clamp(sw*.115f,40f,54f);
+        float actionWidth=Mathf.Clamp(sw*.19f,64f,92f);
+        float bottom=sy+sh-dpad*2.57f;
+        float left=sx+8f,right=sx+sw-actionWidth-8f;
         touchMotion=Vector3.zero;
-        if(GUI.RepeatButton(new Rect(sx+70,bottom,60,dpad),"▲"))touchMotion.z=1f;
-        if(GUI.RepeatButton(new Rect(sx+5,bottom+dpad*.75f,60,dpad),"◀"))touchMotion.x=-1f;
-        if(GUI.RepeatButton(new Rect(sx+135,bottom+dpad*.75f,60,dpad),"▶"))touchMotion.x=1f;
-        if(GUI.RepeatButton(new Rect(sx+70,bottom+dpad*1.5f,60,dpad),"▼"))touchMotion.z=-1f;
-        if(GUI.Button(new Rect(sx+sw-96,bottom+7,90,dpad),"공격"))Attack();
-        if(GUI.Button(new Rect(sx+sw-96,bottom+dpad+12,90,dpad),"가방"))inventoryOpen=true;
-        if(GUI.Button(new Rect(sx+sw-192,bottom+dpad+12,88,dpad),"제작"))craftingOpen=true;
+        if(GUI.RepeatButton(new Rect(left+dpad,bottom,dpad,dpad),"▲"))touchMotion.z=1f;
+        if(GUI.RepeatButton(new Rect(left,bottom+dpad*.76f,dpad,dpad),"◀"))touchMotion.x=-1f;
+        if(GUI.RepeatButton(new Rect(left+dpad*2,bottom+dpad*.76f,dpad,dpad),"▶"))touchMotion.x=1f;
+        if(GUI.RepeatButton(new Rect(left+dpad,bottom+dpad*1.52f,dpad,dpad),"▼"))touchMotion.z=-1f;
+        if(GUI.Button(new Rect(right,bottom,actionWidth,dpad),"공격"))Attack();
+        if(GUI.Button(new Rect(right,bottom+dpad*1.05f,actionWidth,dpad),"가방"))inventoryOpen=true;
+        if(GUI.Button(new Rect(right-actionWidth-5f,bottom+dpad*1.05f,actionWidth,dpad),"제작"))craftingOpen=true;
         if(!creative)
         {
-            if(GUI.Button(new Rect(sx+sw-192,bottom+7,88,dpad),"채집")){wood++;stone++;resource++;SaveGame();}
+            if(GUI.Button(new Rect(right-actionWidth-5f,bottom,actionWidth,dpad),"채집")){wood++;stone++;resource++;SaveGame();}
         }
         else
         {
