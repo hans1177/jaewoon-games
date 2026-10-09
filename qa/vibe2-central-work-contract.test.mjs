@@ -214,7 +214,7 @@ test('declared generated asset outputs join the existing Work Lock and writable 
   const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
   const contract=compileVibeCentralWorkContract({
     snapshot,
-    task:{id:'asset-lock-1',gameId:'demo',target:'roblox'},
+    task:{id:'asset-lock-1',gameId:'demo',target:'roblox',assetProductionLane:true},
     plan:{target:'roblox',qa:['runtime']},
     assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[{
       id:'boss-v1',
@@ -240,6 +240,41 @@ test('declared generated asset outputs join the existing Work Lock and writable 
   ]);
   assert.deepEqual(contract.writableScope.exactCandidateFiles,contract.workLock.files);
   assert.equal(contract.writableScope.generatedAssetScopeDerivedOnlyFromDeclaredRecipes,true);
+});
+
+test('independent game workers do not lock shared read-only DCC output files',()=>{
+  const root=tempRoot();
+  writePolicy(root);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const sharedAssets={
+    nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'shared-spider',
+      outputs:['assets/roblox/world-ghosts/native/spider/spider.glb','assets/roblox/world-ghosts/native/spider/spider.png'],
+      evidenceJson:'assets/roblox/world-ghosts/native/spider/evidence.json'
+    }]}}
+  };
+  const compile=(gameId,assetProductionLane=false,evidence=[])=>compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:gameId+'-implementation',gameId,target:'unity',assetProductionLane,evidence},
+    plan:{target:'unity',qa:['runtime']},
+    assetProduction:sharedAssets,
+    route:{route:'text-source-worker'},
+    responsibleFiles:['unity-games/'+gameId+'/Assets/Scripts/UnityWebFloorGame.cs'],
+    mainSha:'abc123'
+  });
+  const first=compile('amusement-tycoon');
+  const second=compile('bug-defense');
+  assert.deepEqual(first.workLock.files,['unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs']);
+  assert.deepEqual(second.workLock.files,['unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs']);
+  assert.deepEqual(first.workLock.generatedAssetFiles,[]);
+  assert.deepEqual(second.workLock.generatedAssetFiles,[]);
+  assert.equal(first.workLock.requiredBeforeSourceWrite,true);
+  assert.deepEqual(first.writableScope.exactCandidateFiles,first.workLock.files);
+  const authoring=compile('bug-defense',true);
+  assert.ok(authoring.workLock.files.includes('assets/roblox/world-ghosts/native/spider/spider.glb'));
+  assert.ok(authoring.workLock.files.includes('assets/roblox/world-ghosts/native/spider/evidence.json'));
+  const evidenceAuthoring=compile('bug-defense',false,['asset-production-parallel:v1']);
+  assert.deepEqual(evidenceAuthoring.workLock.generatedAssetFiles,authoring.workLock.generatedAssetFiles);
 });
 
 test('Vibe candidate evidence binds all four canonical document hashes',()=>{
