@@ -103,21 +103,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 739534,
-      "lastMs": 243255,
+      "totalMs": 848520,
+      "lastMs": 108986,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:57:04.852Z"
+      "updatedAt": "2026-10-09T08:58:53.840Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:44:45.284Z",
-  "updatedAt": "2026-10-09T08:57:04.853Z",
+  "updatedAt": "2026-10-09T08:58:53.842Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2346,11 +2346,26 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::e00b2c1f4cf938683060f0105f9bc111c2a2e5a420356b180d8242d916b85d5e:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "ELDORIA_CORE_SIGNATURE_1",
+          "ELDORIA_CORE_SIGNATURE_2",
+          "ELDORIA_CORE_SIGNATURE_3",
+          "ELDORIA_CORE_SIGNATURE_4"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::e00b2c1f4cf938683060f0105f9bc111c2a2e5a420356b180d8242d916b85d5e:signatureSystems:4": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:57:04.852Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T08:58:53.840Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
