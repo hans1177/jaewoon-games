@@ -95,25 +95,117 @@
         "delveGrowthRule": "Each wave introduces new economic rules based on battlefield dynamics, requiring strategic resource allocation decisions",
         "finalGameIdentity": "Defensive strategy evolves through resource allocation decisions, leading to new economic rules in later waves"
       }
+    },
+    "local_authoring_parts::4ce9d12d0af54940f27554d54912002107868427038af7a3d8d7f9858acf8061:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 전투에서 진보하는 방어 전략에 숙련되어 있으며, 적의 유형과 토대의 특성에 따라 실시간으로 타워/방어 위치를 재설정해야 하는 경험을 받는다. 이는 단순한 자원 관리가 아닌, 전략적 판단력과 즉각적인 의사결정 능력을 요구하며, 플레이어는 매 wave마다 새로운 선택과 대응법을 배우게 된다.",
+      "coreFun": "{identity} Pocket Foundry - 진보적 방어 전략 게임\n{creativeGrammar}\n{abCausality}\n{delveDiscoveries}\n{finalGameIdentity}"
+    },
+    "local_authoring_parts::2a5add4e317f9277ceb707f4291e78a5c36badc3c6ab250073fbb276e1e0de0c:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Pocket Foundry - 진보적 방어 전략 게임",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "Enemy Wave Adaptation & Strategic Placement",
+          "material": "Dynamic enemy types, terrain composition, defense objectives",
+          "materialDomain": "Battlefield Dynamics",
+          "stateChange": "Adapt defense to enemy type, adjust placement based on terrain"
+        },
+        "b": {
+          "system": "Resource Management & Tactical Evolution",
+          "material": "Defeated enemies' resources, upgrade priorities, new placements",
+          "materialDomain": "Economic Strategy",
+          "stateChange": "Spent resources on upgrades, new placements, tactical changes before pressure increases"
+        },
+        "abCausality": "Defense adapts to enemy type → resource allocation shifts → strategic evolution occurs",
+        "abEvolution": {
+          "aChangesB": "Resource management evolves from static to dynamic",
+          "bChangesA": "Strategic placement becomes more adaptive and context-aware",
+          "lateGameChange": "New economic rules emerge based on battlefield dynamics"
+        },
+        "materialFusion": {
+          "contrast": "Enemy adaptation vs. resource economics",
+          "causalBridge": "Defensive strategy evolves through resource allocation decisions",
+          "removalConsequence": "Old defensive patterns are replaced by new resource-based strategies"
+        },
+        "storyCausalChain": {
+          "cause": "Player chooses to adapt defense to enemy type",
+          "characterConflict": "System imposes economic constraints on resource use",
+          "playerChoice": "Player decides how to allocate resources for next wave",
+          "worldChange": "New economic rules emerge based on battlefield dynamics",
+          "nextEvent": "Player faces higher difficulty due to adapted defenses"
+        },
+        "cThemes": [
+          {
+            "name": "Adaptive Defense",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Dynamic placement of towers/defenders"
+          },
+          {
+            "name": "Economic Strategy",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Resource allocation before pressure increase"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Battlefield Dynamics & Strategic Adaptation",
+            "gameplayEffect": "Defense adapts to enemy types and terrain composition"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Economic Resource Management",
+            "gameplayEffect": "Resource allocation shifts with each wave"
+          }
+        ],
+        "cGenreInterlock": "Defensive strategy evolves through resource allocation decisions, leading to new economic rules in later waves",
+        "cWorldAndGameplayEffect": "Defense becomes more adaptive as players learn to manage resources effectively",
+        "delveDiscoveries": [
+          {
+            "clue": "Enemy type adaptation is key to survival",
+            "discovery": "Players must adapt defense to different enemy types for success",
+            "newChoice": "Choose which enemy type to focus on next"
+          },
+          {
+            "clue": "Resource management changes with each wave",
+            "discovery": "New placements and upgrades are required before pressure increases",
+            "newChoice": "Allocate resources strategically for the next wave"
+          },
+          {
+            "clue": "Economic rules evolve based on battlefield dynamics",
+            "discovery": "New strategies emerge from dynamic resource allocations",
+            "newChoice": "Experiment with different resource priorities for the next wave"
+          },
+          {
+            "clue": "Adaptation leads to higher difficulty",
+            "discovery": "Old defensive patterns become obsolete due to new economic constraints",
+            "newChoice": "Try a new defensive configuration for the next wave"
+          }
+        ],
+        "delveGrowthRule": "Each wave introduces new economic rules based on battlefield dynamics, requiring strategic resource allocation decisions",
+        "finalGameIdentity": "Defensive strategy evolves through resource allocation decisions, leading to new economic rules in later waves"
+      },
+      "playerFantasy": "플레이어는 전투에서 진보하는 방어 전략에 숙련되어 있으며, 적의 유형과 토대의 특성에 따라 실시간으로 타워/방어 위치를 재설정해야 하는 경험을 받는다. 이는 단순한 자원 관리가 아닌, 전략적 판단력과 즉각적인 의사결정 능력을 요구하며, 플레이어는 매 wave마다 새로운 선택과 대응법을 배우게 된다.",
+      "coreFun": "{identity} Pocket Foundry - 진보적 방어 전략 게임\n{creativeGrammar}\n{abCausality}\n{delveDiscoveries}\n{finalGameIdentity}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 421456,
-      "lastMs": 121354,
+      "totalMs": 476604,
+      "lastMs": 55148,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:29:33.621Z"
+      "updatedAt": "2026-10-09T21:30:28.771Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:22:32.145Z",
-  "updatedAt": "2026-10-09T21:29:33.622Z",
+  "updatedAt": "2026-10-09T21:30:28.773Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1822,7 +1914,7 @@
   "localAuthoringSplits": {
     "4ce9d12d0af54940f27554d54912002107868427038af7a3d8d7f9858acf8061": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:29:33.621Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:30:28.773Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
