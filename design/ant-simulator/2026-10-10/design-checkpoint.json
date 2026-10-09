@@ -1746,25 +1746,40 @@
           "storyContext": "개미 종족 선택 → 월드 탐험 → 자원 확보 → 위험 겪기 → 목표 결정"
         }
       ]
+    },
+    "local_authoring_parts::7bc4f3462ff80d9df6eeee14765cbfcdd12c6c6517afc1cd9ce2cbb9adcb97ca:enemiesOrChallenges": {
+      "enemiesOrChallenges": [
+        {
+          "name": "개미 종족 선택",
+          "behavior": "플레이어가 개미 종족 중 하나를 선택하여 월드 탐험 및 굴 지킴 시작",
+          "counterplay": "월드 상태 변환, 자원 확보, 위험 겪기, 목표 결정 과정에서 플레이어는 실질적으로 월드 상태와 보상/위험 조정 경험",
+          "positioning": "개미 종족 선택은 게임 루프의 초기 단계로, 이는 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행됨",
+          "timing": "선택 후 즉시 월드 탐험과 진행이 이루어짐",
+          "mobility": "월드 탐험 시 다양한 지역과 자원을 확보 가능",
+          "groupRole": "주요 요소 간 상호작용을 통해 게임 루프 재설계됨",
+          "identity": "개미 종족 선택은 게임 내 주체로서 월드 상태 변화, 보상/위험 발생, 다음 목표 결정에 영향을 미침",
+          "rewardMeaning": "선택으로 인해 월드 상태와 보상/위험 조정이 일어나며, 이는 다음 행동 선택 및 목표 결정에 영향을 줌"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 81,
-      "successes": 79,
+      "calls": 82,
+      "successes": 80,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2576769,
-      "lastMs": 11200,
+      "totalMs": 2631210,
+      "lastMs": 54441,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:24:44.711Z"
+      "updatedAt": "2026-10-09T23:25:39.156Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:24:44.713Z",
+  "updatedAt": "2026-10-09T23:25:39.156Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3536,7 +3551,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:24:44.713Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:25:39.156Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
