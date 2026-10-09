@@ -3,173 +3,18 @@
   "gameId": "egg-heist",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
-  "fingerprint": "eeff619ade7a46c72ae3ff6b9852b37357ec34d485dfe0c8428325b8b3f36425",
+  "fingerprint": "69c10568f5e30537f504c507c54c612db239d7f9572a49f7fa8fe8e725ed0a8b",
   "policyDigest": "91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f",
-  "engineDigest": "82009f805d07dbc37fef4617083aa8c5a90af5bb1042521a1f511131cb58898c",
+  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::aea506b57d2668c5c8b30eacf8923581d5025aa388e9b25b7633c3de3e473a50:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "AL-MADDA-UNIQUE-STEALTHY-COMIC-ESCORT",
-        "a": {
-          "system": "경비 시스템",
-          "material": "운송 기술",
-          "materialDomain": "역사·철학·무협",
-          "stateChange": "위험 감소 및 실질적 인과 변화가 일어나며, 플레이어의 선택에 따라 실제 세계 상태 변화가 발생합니다."
-        },
-        "b": {
-          "system": "잠입 메커니즘",
-          "material": "감지 전략",
-          "materialDomain": "문학·예술·종교",
-          "stateChange": "감지 확률 증가 및 대응 방식 변경이 이루어지고, 이로 인해 플레이어의 행동 패턴이 변형됩니다."
-        },
-        "abCausality": "양방향 실제 상태 교환을 통해, 주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공합니다.",
-        "abEvolution": {
-          "aChangesB": "주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공합니다.",
-          "bChangesA": "주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공합니다.",
-          "lateGameChange": "플레이어의 선택에 따른 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시합니다."
-        },
-        "materialFusion": {
-          "contrast": "역사·철학·무협을 중심으로 한 코믹 잠입·탈출 게임의 구조적 연결입니다.",
-          "causalBridge": "경비 시스템과 운송 기술 간의 실질적 인과 변화가 일어나며, 이로 인해 플레이어의 선택에 따라 실제 세계 상태 변화가 발생합니다.",
-          "removalConsequence": "감지 전략과 대응 방식 변경이 이루어지고, 이로 인해 플레이어의 행동 패턴이 변형됩니다."
-        },
-        "storyCausalChain": {
-          "cause": "경비 생태와 운반 문제의 존재 및 복잡성",
-          "characterConflict": "플레이어의 선택과 현실 세계 상태 변화의 관계",
-          "playerChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출",
-          "worldChange": "실제 세계 상태 변화와 숙련된 선택이 함께 진행되며, 이로 인해 다음 사건이 발생합니다.",
-          "nextEvent": "플레이어의 선택에 따른 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다."
-        },
-        "cThemes": [
-          {
-            "name": "역사",
-            "kind": "MATERIAL",
-            "gameplayEffect": "주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임의 구조적 연결입니다."
-          },
-          {
-            "name": "철학",
-            "kind": "MATERIAL",
-            "gameplayEffect": "주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임의 구조적 연결입니다."
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "코믹 잠입·탈출",
-            "gameplayEffect": "플레이어의 선택과 현실 세계 상태 변화의 관계가 강화됩니다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "무협",
-            "gameplayEffect": "경비 시스템과 운송 기술 간의 실질적 인과 변화가 일어나며, 이로 인해 플레이어의 행동 패턴이 변형됩니다."
-          }
-        ],
-        "cGenreInterlock": "코믹 잠입·탈출과 무협 사이에서 주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공하며, 보조 장르 제거 시 플레이어의 선택에 따른 상호작용이 발생합니다.",
-        "cWorldAndGameplayEffect": "실제 세계 상태 변화와 숙련된 선택이 함께 진행되며, 이로 인해 다음 사건이 발생합니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "경비 생태와 운반 문제의 존재 및 복잡성",
-            "discovery": "주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임의 구조적 연결입니다.",
-            "newChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출"
-          },
-          {
-            "clue": "감지 전략과 대응 방식 변경",
-            "discovery": "플레이어의 선택과 현실 세계 상태 변화의 관계가 강화됩니다.",
-            "newChoice": "주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공한다."
-          },
-          {
-            "clue": "역사·철학·무협을 중심으로 한 코믹 잠입·탈출 게임의 구조적 연결",
-            "discovery": "플레이어의 선택에 따라 실제 세계 상태 변화가 일어나며, 이로 인해 다음 사건이 발생합니다.",
-            "newChoice": "주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공한다."
-          },
-          {
-            "clue": "경비 시스템과 운송 기술 간의 실질적 인과 변화",
-            "discovery": "감지 전략과 대응 방식 변경이 이루어지고, 이로 인해 플레이어의 행동 패턴이 변형됩니다.",
-            "newChoice": "주제와 소재를 바탕으로 한 새로운 플레이 경험을 제공한다."
-          }
-        ],
-        "delveGrowthRule": "플레이어의 선택에 따른 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시하며, 이로 인해 다음 사건이 발생합니다.",
-        "finalGameIdentity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계된 새 정체성입니다."
-      },
-      "playerFantasy": "플레이어는 주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임에서 숙련된 선택을 통해 현실 세계 상태 변화와 진정한 위험 감소를 목표로 합니다. 이 과정에서는 감지 전략과 대응 방식의 조합을 통해 새로운 플레이 경험을 창출하고, 이를 바탕으로 하여 다음 사건이 발생합니다.",
-      "coreFun": "플레이어는 주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임에서 실질적 인과 변화가 일어나며, 이로 인해 실제 세계 상태 변화가 발생합니다. 이 과정에서는 감지 전략과 대응 방식의 조합을 통해 새로운 플레이 경험을 제공하고, 이를 바탕으로 하여 다음 사건이 발생합니다. 또한, 숙련된 선택을 통해 현실 세계 상태 변화와 진정한 위험 감소를 목표로 합니다. 이로 인해 다음 질문이 제기됩니다."
-    },
-    "local_authoring_parts::c2da72c37bbcaa043af421786254b54b61175ab3f2c1dd6cedbbea788ffed560:coreLoop": {
-      "coreLoop": [
-        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
-        "감지 전략과 대응 방식 변경 -> 감지 확률 증가 -> 플레이어 행동 패턴 변형",
-        "잠입 메커니즘과 운송 기술 조합 -> 실제 세계 상태 변화 -> 숙련된 선택 및 위험 감소"
-      ]
-    },
-    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:0": {
-      "id": "SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "위험 감소",
-        "감지 확률 증가",
-        "실제 세계 상태 변화"
-      ],
-      "stateOutputs": [
-        "플레이어 선택",
-        "보상/위험",
-        "다음 사건"
-      ],
-      "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
-      "purpose": "경비 시스템과 운송 기술 간의 실질적 인과 변화를 통해 플레이어의 선택에 따라 실제 세계 상태 변화를 유도하며, 감지 전략과 대응 방식의 조합을 바탕으로 새로운 플레이 경험을 제공함",
-      "playerChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출"
-    },
-    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:1": {
-      "id": "SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "경비 생태",
-        "운반 기술"
-      ],
-      "stateOutputs": [
-        "잠입 전략",
-        "실제 세계 상태 변화"
-      ],
-      "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
-      "purpose": "플레이어가 주제와 소재를 바탕으로 한 새로운 플레이 경험을 창출하며, 실제 세계 상태 변화와 숙련된 선택을 통합하여 위험 감소를 도모합니다.",
-      "playerChoice": "경비 생태의 복잡성과 운반 기술의 변형을 통해 잠입 메커니즘을 재설계하는 선택입니다."
-    },
-    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:2": {
-      "id": "SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "경비 생태",
-        "운반 기술"
-      ],
-      "stateOutputs": [
-        "잠입 전략",
-        "실제 세계 상태 변화"
-      ],
-      "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
-      "purpose": "플레이어의 선택에 따른 실제 세계 상태 변화 및 숙련된 대응 방식 변경을 관리합니다.",
-      "playerChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출하며, 이로 인해 다음 사건이 발생합니다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 895951,
-      "lastMs": 107976,
-      "lastError": null,
-      "updatedAt": "2026-10-09T18:01:08.000Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T17:46:12.015Z",
-  "updatedAt": "2026-10-09T18:01:08.009Z",
+  "createdAt": "2026-10-09T19:52:17.910Z",
+  "updatedAt": "2026-10-09T19:52:17.924Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1612,27 +1457,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "c",
-        "previousRuleIds": [
-          "SIGNATURE_SYSTEM_0",
-          "SIGNATURE_SYSTEM_1",
-          "SIGNATURE_SYSTEM_2"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:3": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:01:08.000Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  }
 }
