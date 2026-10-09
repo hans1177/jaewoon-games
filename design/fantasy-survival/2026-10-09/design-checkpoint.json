@@ -1175,25 +1175,28 @@
     },
     "local_authoring_parts::d5e909394b501e6110a8e8a753d3d41e7aa6039232b24d6dc7b5b3890adfa422:toSystem": {
       "toSystem": "Vibe 폴리시 시스템 구축"
+    },
+    "local_authoring_parts::d5e909394b501e6110a8e8a753d3d41e7aa6039232b24d6dc7b5b3890adfa422:trigger": {
+      "trigger": "플레이어는 모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 Vibe 폴리시 시스템의 카메라 움직임 및 애니메이션 상태 전환을 유연하게 적용해야 한다. 이 과정에서 플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해, 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 64,
+      "calls": 66,
+      "successes": 65,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5651853,
-      "lastMs": 87202,
+      "totalMs": 5749581,
+      "lastMs": 97728,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:49:52.156Z"
+      "updatedAt": "2026-10-09T01:51:29.886Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:49:52.156Z",
+  "updatedAt": "2026-10-09T01:51:29.886Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3623,7 +3626,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:49:52.156Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:51:29.886Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
