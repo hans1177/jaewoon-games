@@ -1109,11 +1109,11 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
     const root=path.join(tmp,'roblox-games',gameId);
     const initialBaseline={
       ...baseline,
-      content:{...baseline.content,robloxBuildProfile:{version:4,genre:'Survival',subgenre:'Forest Survival',playMode:'SINGLE'}}
+      content:{...baseline.content,robloxBuildProfile:{...robloxBuildProfileFromBaseline(baseline),version:4,genre:'Simulation',subgenre:'Workshop Simulator'}}
     };
     const runtimeBaseline={
       ...initialBaseline,gameId,
-      content:{...initialBaseline.content,robloxBuildProfile:{...initialBaseline.content.robloxBuildProfile,subgenre:'Wilderness Survival'}}
+      content:{...initialBaseline.content,robloxBuildProfile:{...initialBaseline.content.robloxBuildProfile,subgenre:'Factory Simulator'}}
     };
     const revisedRow={
       ...verifiedExternalRow,
@@ -1172,7 +1172,7 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
     const report=JSON.parse(fs.readFileSync(reportFile,'utf8'));
     assert.equal(report.scannedGameCount,1);
     assert.equal(report.results[0].runtimeDesignBaselineSource,baselinePath);
-    assert.equal(report.results[0].designProfile.subgenre,'Wilderness Survival');
+    assert.equal(report.results[0].designProfile.subgenre,'Factory Simulator');
     assert.equal(report.results[0].newerNativeBindingPreserved,true);
     const expected=createRobloxVibe3LearningContext({
       gameId,profile:robloxBuildProfileFromBaseline(runtimeBaseline),playbooks:revisedPlaybooks
