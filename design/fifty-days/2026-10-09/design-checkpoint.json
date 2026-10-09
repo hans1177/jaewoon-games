@@ -27,25 +27,34 @@
       "identity": "50일을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerFantasy": "플레이어는 50일이라는 게임에서 **'생존하며 전투하는 시간을 빠르게 흘리며, 선택의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미'**를 경험하게 된다. 이 플레이어는 단순히 '전투'를 하기보다는 **'선택의 영향력'**, **'위험-보상의 균형'**, **'성장의 가능성'**에 집중해야 한다.",
       "coreFun": "플레이어는 50일이라는 게임에서 **'생존하며 전투하는 시간을 빠르게 흘리며, 선택의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE의 핵심 재미'**를 경험하게 된다. 이 플레이어는 단순히 '전투'를 하기보다는 **'선택의 영향력'**, **'위험-보상의 균형'**, **'성장의 가능성'**에 집중해야 한다.\n\n대표 선택: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\n\n시그니처 세계 규칙: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::b14a799accda0a80fc457e081874a1950227829f1b4ff28631aef47a56ae6c49:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.을 선택합니다.",
+        "STATE CHANGE: 게임 상태는 적군 밀집 지역에서의 생존 전투로 변환됩니다.",
+        "OUTPUT: 플레이어는 런 결과물(보상)을 수집하거나, 현재 건강도/경험 값을 업그레이드할 수 있습니다.",
+        "ACTION: 다음 월드 상태에 따라 선택이 실행되며, 성장 요소가 추가됩니다.",
+        "NEXT STEP: 새로운 선택 또는 위험-보상 패턴이 생성되어, 플레이어는 계속해서 선택을 하게 됩니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 294341,
-      "lastMs": 54784,
+      "totalMs": 350651,
+      "lastMs": 56310,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:36:45.268Z"
+      "updatedAt": "2026-10-09T08:37:41.581Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:31:50.901Z",
-  "updatedAt": "2026-10-09T08:36:45.269Z",
+  "updatedAt": "2026-10-09T08:37:41.581Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:36:45.269Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:37:41.581Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
