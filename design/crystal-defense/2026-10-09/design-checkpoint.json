@@ -91,21 +91,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 878239,
-      "lastMs": 97961,
+      "totalMs": 976766,
+      "lastMs": 98527,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:56:44.134Z"
+      "updatedAt": "2026-10-09T15:58:22.662Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:05.859Z",
-  "updatedAt": "2026-10-09T15:56:44.134Z",
+  "updatedAt": "2026-10-09T15:58:22.663Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1804,13 +1804,27 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "SIGNATURE_SYSTEM_0",
+          "SIGNATURE_SYSTEM_1",
+          "SIGNATURE_SYSTEM_2",
+          "SIGNATURE_SYSTEM_3"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": 1
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": 1,
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:56:44.134Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T15:58:22.662Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
