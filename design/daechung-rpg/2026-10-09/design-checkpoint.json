@@ -60,21 +60,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 384977,
-      "lastMs": 66483,
+      "totalMs": 489186,
+      "lastMs": 50710,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:31:34.350Z"
+      "updatedAt": "2026-10-09T08:33:18.563Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:25:09.346Z",
-  "updatedAt": "2026-10-09T08:31:34.350Z",
+  "updatedAt": "2026-10-09T08:33:18.569Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1490,11 +1490,30 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::dd7fdc7fd559c492531581f2341c2b69fbea7fd8a589ee5174b4e1dd01689539:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "RPG_STYLIZED_TOY_DARK_FANTASY"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "RPG_STYLIZED_TOY_DARK_FANTASY"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::dd7fdc7fd559c492531581f2341c2b69fbea7fd8a589ee5174b4e1dd01689539:signatureSystems:1": 2
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:31:34.350Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T08:33:18.563Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
