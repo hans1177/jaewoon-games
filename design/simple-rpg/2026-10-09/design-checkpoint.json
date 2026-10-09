@@ -442,25 +442,32 @@
     },
     "local_authoring_parts::abf483f89a0220b009fc5d14ae836349024ed9456d0753913486a00988d3d898:toId": {
       "toId": "WEAPON_SLOT"
+    },
+    "local_authoring_parts::abf483f89a0220b009fc5d14ae836349024ed9456d0753913486a00988d3d898:stateKeys": {
+      "stateKeys": [
+        "BOARD_STATE",
+        "WEAPON_SLOT",
+        "ACTION_SLOT"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2206012,
-      "lastMs": 89466,
+      "totalMs": 2296745,
+      "lastMs": 90733,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:10:22.465Z"
+      "updatedAt": "2026-10-09T13:11:53.199Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:33:36.381Z",
-  "updatedAt": "2026-10-09T13:10:22.465Z",
+  "updatedAt": "2026-10-09T13:11:53.199Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2854,7 +2861,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:10:22.465Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:11:53.199Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
