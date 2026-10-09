@@ -1640,25 +1640,31 @@
       "ruleIds": [
         "ACTION_SURVIVAL_ROGUELITE_1"
       ]
+    },
+    "local_authoring_parts::85db41cbed8c1238b9cc9f43b731f8040dcaecec5dfed92aebc739a0199f3d04:name": {
+      "name": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정"
+    },
+    "local_authoring_parts::85db41cbed8c1238b9cc9f43b731f8040dcaecec5dfed92aebc739a0199f3d04:traversal": {
+      "traversal": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 63,
+      "calls": 67,
+      "successes": 65,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2391432,
-      "lastMs": 6588,
+      "totalMs": 2408144,
+      "lastMs": 9071,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:21:39.334Z"
+      "updatedAt": "2026-10-09T23:21:56.049Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:21:39.334Z",
+  "updatedAt": "2026-10-09T23:21:56.049Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3430,7 +3436,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:21:39.334Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:21:56.049Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
