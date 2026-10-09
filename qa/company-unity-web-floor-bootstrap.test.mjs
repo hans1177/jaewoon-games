@@ -70,6 +70,12 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
+    assert.equal(source.requiredGameplayDimension,'3D');
+    assert.equal(source.f0Native3dSourceRequired,true);
+    assert.equal(source.f0Native3dSourcePassed,true);
+    assert.deepEqual(source.f0Native3dSourceEvidence,{camera:true,worldMesh:true,spatialTransform:true});
+    assert.equal(source.f0SourceOnlyNotRuntimeProof,true);
+    assert.equal(source.native3dRuntimeMeshQaPending,true);
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
     assert.equal(source.releaseOrDeploymentAuthority,false);
@@ -110,10 +116,44 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.match(runtime,/CORE_FUN[^\n]+status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
     assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
+    assert.match(runtime,/Camera\.main/);
+    assert.match(runtime,/AddComponent<Camera>/);
+    assert.match(runtime,/GameObject\.CreatePrimitive\(PrimitiveType\.Capsule\)/);
+    assert.match(runtime,/GameObject\.CreatePrimitive\(PrimitiveType\.Sphere\)/);
+    assert.doesNotMatch(runtime,/\b(?:SpriteRenderer|Rigidbody2D|Collider2D|Physics2D)\b/);
     assert.match(runtime,/enemy\.transform\.Rotate/);
     for(const dir of ['Art','Prefabs','Materials','Animations']){
       assert.equal(fs.existsSync(path.join('unity-games/test-survival/Assets',dir,'unity-web-floor-domain.json')),true);
     }
+  }finally{
+    process.chdir(old);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('legacy 2D design becomes a native 3D floor without claiming final graphics PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-floor-legacy-dimension-'));
+  const old=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{
+      identity:'Legacy survival source',spatialLayout:{dimension:'2.5D'},
+      platformProfiles:{UNITY:{platform:'UNITY'}}
+    }}));
+    const playbooks=writeVerifiedPlaybooks(root);
+    execFileSync(process.execPath,[tool.pathname,'--game-id=legacy-survival',
+      '--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/legacy-survival'
+    ],{stdio:'pipe'});
+    const manifest=JSON.parse(fs.readFileSync('unity-games/legacy-survival/unity-web-floor-source.json','utf8'));
+    const runtime=fs.readFileSync('unity-games/legacy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+    assert.equal(manifest.legacy2dOr2_5dPresentationRequires3dReplacement,true);
+    assert.equal(manifest.requiredGameplayDimension,'3D');
+    assert.equal(manifest.f0Native3dSourcePassed,true);
+    assert.equal(manifest.upperPlatformReady,false);
+    assert.match(runtime,/GameObject\.CreatePrimitive\(PrimitiveType\.Plane\)/);
+    assert.match(runtime,/AddComponent<Camera>/);
+    assert.doesNotMatch(runtime,/SpriteRenderer|Rigidbody2D/);
   }finally{
     process.chdir(old);
     fs.rmSync(root,{recursive:true,force:true});

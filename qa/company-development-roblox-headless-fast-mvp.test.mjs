@@ -35,7 +35,7 @@ test('per-game F0 persistence checks uploaded identity and never demotes a newer
 });
 
 const config='local Config={PolicySource = "company-learning/platform-release-roadmap.json", Platform = "ROBLOX", MobileFirst = true, SaveEnabled=true, PlayMode="COOP", MultiplayerRequired=true, Actions={ATTACK="ATTACK"}} return Config';
-const server='local Players=game:GetService("Players") local DSS=game:GetService("DataStoreService") local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1") local r=Instance.new("RemoteEvent") local foundationRemote=Instance.new("RemoteEvent") foundationRemote.Name="RuntimeFoundationReport" local lastRequest={} local foundationSpawn=Instance.new("SpawnLocation") local function root(p) return p.Character and p.Character:FindFirstChild("HumanoidRootPart") end local function load(p) p:SetAttribute("Progress",0) pcall(function() return DSS:GetDataStore("x"):GetAsync("x") end) end local function bind(c) local h=c:WaitForChild("Humanoid") local hrp=c:WaitForChild("HumanoidRootPart") hrp.Anchored=false h.PlatformStand=false local hit=workspace:Raycast(hrp.Position,Vector3.new(0,-10,0)) local check="GROUND_CONTACT" local move="MOVEMENT_CONFIRMED" end Players.PlayerAdded:Connect(function(p) load(p) p.CharacterAdded:Connect(bind) end) Players.PlayerRemoving:Connect(function(p) pcall(function() DSS:GetDataStore("x"):SetAsync("x",{}) end) end) r.OnServerEvent:Connect(function(p,action) if typeof(action)~="string" then return end local now=os.clock() if now-(lastRequest[p]or 0)<.1 then return end lastRequest[p]=now p:SetAttribute("Progress",1) end) foundationRemote.OnServerEvent:Connect(function() end) local participants=Players:GetPlayers() r:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants}) game:BindToClose(function() end)';
+const server='local Players=game:GetService("Players") local DSS=game:GetService("DataStoreService") local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1") local r=Instance.new("RemoteEvent") local foundationRemote=Instance.new("RemoteEvent") foundationRemote.Name="RuntimeFoundationReport" local lastRequest={} local foundationSpawn=Instance.new("SpawnLocation") local worldPart=Instance.new("Part") worldPart.Size=Vector3.new(8,1,8) worldPart.Anchored=true worldPart.Parent=workspace local function root(p) return p.Character and p.Character:FindFirstChild("HumanoidRootPart") end local function load(p) p:SetAttribute("Progress",0) pcall(function() return DSS:GetDataStore("x"):GetAsync("x") end) end local function bind(c) local h=c:WaitForChild("Humanoid") local hrp=c:WaitForChild("HumanoidRootPart") hrp.Anchored=false h.PlatformStand=false local hit=workspace:Raycast(hrp.Position,Vector3.new(0,-10,0)) local check="GROUND_CONTACT" local move="MOVEMENT_CONFIRMED" end Players.PlayerAdded:Connect(function(p) load(p) p.CharacterAdded:Connect(bind) end) Players.PlayerRemoving:Connect(function(p) pcall(function() DSS:GetDataStore("x"):SetAsync("x",{}) end) end) r.OnServerEvent:Connect(function(p,action) if typeof(action)~="string" then return end local now=os.clock() if now-(lastRequest[p]or 0)<.1 then return end lastRequest[p]=now p:SetAttribute("Progress",1) end) foundationRemote.OnServerEvent:Connect(function() end) local participants=Players:GetPlayers() r:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants}) game:BindToClose(function() end)';
 const client='local UIS=game:GetService("UserInputService") local touchEnabled=UIS.TouchEnabled local gui=Instance.new("ScreenGui") local foundationRemote=game:GetService("ReplicatedStorage"):WaitForChild("RuntimeFoundationReport") local camera=workspace.CurrentCamera local h=game.Players.LocalPlayer.Character:WaitForChild("Humanoid") if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY") end foundationRemote:FireServer("INPUT_READY") button.Activated:Connect(function() remote:FireServer("ATTACK") end) remote.OnClientEvent:Connect(function(kind,payload) if kind~="MULTIPLAYER_SYNC" or typeof(payload)~="table" then return end local synced=payload.ParticipantCount end)';
 const project='{"tree":{"$className":"DataModel","ServerScriptService":{"GameServer":{"$path":"server"}},"StarterPlayer":{"StarterPlayerScripts":{"GameClient":{"$path":"client"}}}}}';
 
@@ -54,8 +54,31 @@ test('headless FAST_MVP passes complete release checklist without Studio',()=>{
  assert.equal(r.validationMode,'HEADLESS_SOURCE_PREFLIGHT_F0');
  assert.equal(r.sourcePreflightPassed,true);
  assert.equal(r.f0SourceIntegrityPassed,true);
+ assert.equal(r.f0Native3dSourceRequired,true);
+ assert.equal(r.f0Native3dSourcePassed,true);
+ assert.equal(r.native3dRuntimeMeshVerified,false);
  assert.equal(r.sourceStartupMarkersPassed,true);
  for(const field of ['gameStartPassed','serverBootPassed','worldFoundationPassed','characterFoundationPassed','physicsAndMovementPassed','runtimeFoundationPassed','actualRuntimeEvidence','internalReleaseReady'])assert.equal(r[field],false,field);
+});
+
+test('F0 rejects a GUI-only source and missing 3D camera',()=>{
+ const params={gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),
+   artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+   artifactRunId:123,nativeLanguageCompilePassed:true,config,server,client,project};
+ const fake2d=inspectHeadlessSourceTexts({...params,
+   server:server.replace('local worldPart=Instance.new("Part") worldPart.Size=Vector3.new(8,1,8) worldPart.Anchored=true worldPart.Parent=workspace','')});
+ assert.equal(fake2d.pass,false);
+ assert.equal(fake2d.f0Native3dSourcePassed,false);
+ assert.ok(fake2d.blockers.includes('native3dWorldGeometrySource'));
+ const commentOnly=inspectHeadlessSourceTexts({...params,
+   server:server.replace('local worldPart=Instance.new("Part") worldPart.Size=Vector3.new(8,1,8) worldPart.Anchored=true worldPart.Parent=workspace','')
+     +' -- Instance.new("Part") Vector3.new(8,1,8)'});
+ assert.equal(commentOnly.pass,false);
+ assert.ok(commentOnly.blockers.includes('native3dWorldGeometrySource'));
+ const missingCamera=inspectHeadlessSourceTexts({...params,client:client.replace('workspace.CurrentCamera','nil')});
+ assert.equal(missingCamera.pass,false);
+ assert.ok(missingCamera.blockers.includes('native3dCameraAndCharacterSource'));
+ assert.equal(missingCamera.actualRuntimeEvidence,false);
 });
 
 test('F0 rejects the legacy self-hit raycast that fabricated ground contact',()=>{

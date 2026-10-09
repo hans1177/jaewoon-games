@@ -37,6 +37,15 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.sourceStartupMarkers=/Players\.PlayerAdded:Connect/.test(server)&&/ScreenGui/.test(client);
   checks.foundationSentinelContract=/native-foundation-sentinel-v1/.test(server)&&/RuntimeFoundationReport/.test(combined)&&/SpawnLocation/.test(server)&&/HumanoidRootPart/.test(server)&&/GROUND_CONTACT/.test(server)&&/MOVEMENT_CONFIRMED/.test(server)&&/CameraSubject/.test(client);
   checks.characterPhysicsGuard=/\.Anchored\s*=\s*false/.test(server)&&/PlatformStand\s*=\s*false/.test(server)&&/Raycast\s*\(/.test(server);
+   // F0: SpawnLocation·ScreenGui만으로는 3D 월드가 아니다. 실제 Roblox 입체 지형/오브젝트 소스를 검사한다.
+   const server3d=server.replace(/--\[\[[\s\S]*?\]\]|--[^\r\n]*/g,'');
+   const client3d=client.replace(/--\[\[[\s\S]*?\]\]|--[^\r\n]*/g,'');
+   const native3dGeometry=/(?:Instance\.new\s*\(\s*["'](?:Part|MeshPart|WedgePart|CornerWedgePart|TrussPart|UnionOperation)["']|workspace\.Terrain\s*:\s*Fill(?:Block|Ball|Cylinder|Region|Wedge)\s*\()/i.test(server3d);
+   checks.native3dWorldGeometrySource=native3dGeometry
+     &&/(?:\bVector3\.new\s*\(|\bCFrame\.new\s*\(|\bVector3\.one\b)/.test(server3d)
+     &&/\bworkspace\b/i.test(server3d);
+   checks.native3dCameraAndCharacterSource=/\bHumanoidRootPart\b/.test(server3d)
+     &&/\bworkspace\.CurrentCamera\b/i.test(client3d)&&/\bCameraSubject\b/.test(client3d);
   checks.groundContactNotSynthetic=!/SetAttribute\(\s*["']GROUND_CONTACT["']\s*,\s*groundHit\s*~=\s*nil\s*\)/.test(server);
   checks.mobileFirst=/MobileFirst\s*=\s*true/i.test(config)&&/UserInputService/.test(client)&&/TouchEnabled/.test(client)&&/\.Activated:Connect/.test(client);
   checks.serverClientBoundary=/RemoteEvent/.test(server)&&/OnServerEvent/.test(server)&&/FireServer/.test(client);
@@ -50,10 +59,10 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
   checks.gameplayProductReadiness=!gameplayProductReadinessRequired||gameplayProductReadiness.pass===true;
-  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.groundContactNotSynthetic&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
+  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.native3dWorldGeometrySource&&checks.native3dCameraAndCharacterSource&&checks.groundContactNotSynthetic&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
-    version:5,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
+    version:6,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
     sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),
     buildUpAssetSourceUsageFingerprint:expectedBuildUpAssetFingerprint||null,
     assetSelectionFingerprint:expectedAssetSelectionFingerprint||null,
@@ -63,6 +72,8 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
     nativeLanguageCompilePassed:checks.nativeLanguageCompilePassed,nativeCompilerVersion:clean(nativeCompilerVersion)||null,
     playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,
     sourcePreflightPassed:pass,f0SourceIntegrityPassed:checks.f0SourceIntegrity,
+    f0Native3dSourceRequired:true,f0Native3dSourcePassed:checks.native3dWorldGeometrySource&&checks.native3dCameraAndCharacterSource,
+    native3dRuntimeMeshVerified:false,
     sourceStartupMarkersPassed:checks.sourceStartupMarkers,
     gameStartPassed:false,serverBootPassed:false,worldFoundationPassed:false,characterFoundationPassed:false,physicsAndMovementPassed:false,runtimeFoundationPassed:false,
     actualRuntimeEvidence:false,internalReleaseReady:false,

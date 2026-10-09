@@ -21,8 +21,18 @@ if(!baselinePath||!fs.existsSync(baselinePath))throw new Error('UNITY_WEB_FLOOR_
 if(output!==`unity-games/${gameId}`)throw new Error('UNITY_WEB_FLOOR_OUTPUT_MUST_BE_CANONICAL_UNITY_ROOT');
 if(!playbooksPath||!fs.existsSync(playbooksPath))throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
 
+// F0 이전 플로어 생성부터 중앙정책의 3D 전용 계약을 검사한다.
+const centralPolicy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+const owner3d=centralPolicy?.ownerUnityWeb3dOnly20261009;
+if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3D'
+  ||owner3d?.unityWebFloorMustAuthorNative3dOnFirstCreation!==true
+  ||centralPolicy?.unityWebFirstStage?.graphicsPolicy?.native3dFloorBootstrapSourceRequired!==true)
+  throw new Error('UNITY_WEB_FLOOR_F0_NATIVE_3D_POLICY_REQUIRED');
 const baseline=JSON.parse(fs.readFileSync(baselinePath,'utf8'));
 const design=baseline.content||baseline;
+const legacySpatialDimension=String(design?.spatialLayout?.dimension||design?.visualDimension||'').trim().toUpperCase();
+const originalTwoDimensional=legacySpatialDimension==='2D'||legacySpatialDimension==='2.5D';
+// 2D 원본의 전투·저장 설계는 보존하되 렌더링 소스는 무조건 새 Unity 3D 월드로 작성한다.
 const profile=design?.platformProfiles?.UNITY;
 if(!profile||String(profile.platform||'').toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_PROFILE_REQUIRED');
 const identity=String(design.identity||gameName).replace(/\s+/g,' ').trim();
@@ -649,10 +659,23 @@ public static class UnityWebFloorBuild
 #endif
 `;
 
+// 3D 네이티브 월드·카메라·입체 메시 코드가 없으면 플로어 소스를 생성하지 않는다.
+const native3dCamera=/Camera\.main/.test(runtime)&&/AddComponent<Camera>/.test(runtime);
+const native3dMesh=/GameObject\.CreatePrimitive\(PrimitiveType\.(?:Plane|Cube|Capsule|Sphere|Cylinder)\)/.test(runtime);
+const native3dSpace=/new Vector3\(/.test(runtime)&&/Quaternion\.Euler\(/.test(runtime);
+if(!(native3dCamera&&native3dMesh&&native3dSpace))
+  throw new Error('UNITY_WEB_FLOOR_F0_NATIVE_3D_SOURCE_REQUIRED');
 fs.writeFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),build);
 fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify({
   version:1,gameId,gameName,identity,coreLoop,category,multiplayerMode,
+  requiredGameplayDimension:'3D',
+  f0Native3dSourceRequired:true,
+  f0Native3dSourcePassed:true,
+  f0Native3dSourceEvidence:{camera:native3dCamera,worldMesh:native3dMesh,spatialTransform:native3dSpace},
+  f0SourceOnlyNotRuntimeProof:true,
+  legacy2dOr2_5dPresentationRequires3dReplacement:originalTwoDimensional,
+  native3dRuntimeMeshQaPending:true,
   canonicalSourceRoot:`unity-games/${gameId}`,
   buildMethod:'UnityWebFloorBuild.BuildWeb',
   futureNativeBuildMethod:'UnityWebFloorBuild.Build',
@@ -693,6 +716,8 @@ fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — Unity Web Deve
 Generated from the locked common design and Unity platform profile. This source must still pass real WebGL build, browser play, independent QA, regression, and the seven-domain upper-platform readiness gate.
 `);
 console.log('UNITY_WEB_FLOOR_SOURCE='+output);
+console.log('UNITY_WEB_FLOOR_F0_NATIVE_3D_SOURCE=PASS');
+console.log('UNITY_WEB_FLOOR_NATIVE_3D_RUNTIME=UNVERIFIED');
 console.log('UNITY_WEB_FLOOR_BUILD_METHOD=UnityWebFloorBuild.BuildWeb');
 console.log('UNITY_WEB_FLOOR_RELEASE_AUTHORITY=NO');
 console.log('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING=PASS');
