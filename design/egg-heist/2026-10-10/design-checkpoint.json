@@ -136,25 +136,40 @@
       "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
       "purpose": "플레이어가 주제와 소재를 바탕으로 한 새로운 플레이 경험을 창출하며, 실제 세계 상태 변화와 숙련된 선택을 통합하여 위험 감소를 도모합니다.",
       "playerChoice": "경비 생태의 복잡성과 운반 기술의 변형을 통해 잠입 메커니즘을 재설계하는 선택입니다."
+    },
+    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "경비 생태",
+        "운반 기술"
+      ],
+      "stateOutputs": [
+        "잠입 전략",
+        "실제 세계 상태 변화"
+      ],
+      "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
+      "purpose": "플레이어의 선택에 따른 실제 세계 상태 변화 및 숙련된 대응 방식 변경을 관리합니다.",
+      "playerChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출하며, 이로 인해 다음 사건이 발생합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 573498,
-      "lastMs": 107982,
+      "totalMs": 680558,
+      "lastMs": 107060,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:55:45.541Z"
+      "updatedAt": "2026-10-09T17:57:32.602Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:46:12.015Z",
-  "updatedAt": "2026-10-09T17:55:45.541Z",
+  "updatedAt": "2026-10-09T17:57:32.603Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1602,7 +1617,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:55:45.541Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:57:32.602Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
