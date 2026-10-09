@@ -35,25 +35,43 @@
         "Create an opening, steal or move the egg and react to detection.",
         "Escape with the reward and unlock a trick, route or harder heist."
       ]
+    },
+    "local_authoring_parts::e97d677d84e64243b7add38dec499e895fa648760b0c3b690dc853ec64f28d26:signatureSystems:0": {
+      "id": "EGG-HEIST-SIGNATURE-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "SCOUT",
+        "IDENTIFY",
+        "TARGET_EGG",
+        "PATROL_RISK"
+      ],
+      "stateOutputs": [
+        "CREATE_OPENING",
+        "STEAL_OR_MOVE",
+        "ESCAPE_WITH_REWARD"
+      ],
+      "name": "Egg Heist Signature System",
+      "purpose": "Main gameplay system for strategic decision-making in a stealth comedy escape game",
+      "playerChoice": "Choose between creating an opening, stealing the egg, or escaping with a reward"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 139310,
-      "lastMs": 18085,
+      "totalMs": 158422,
+      "lastMs": 19112,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:07:03.491Z"
+      "updatedAt": "2026-10-09T11:07:22.605Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:04:43.965Z",
-  "updatedAt": "2026-10-09T11:07:03.491Z",
+  "updatedAt": "2026-10-09T11:07:22.606Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1915,7 +1933,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:07:03.491Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:07:22.605Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
