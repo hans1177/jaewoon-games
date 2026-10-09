@@ -34,25 +34,42 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::cd29a193e326b918f1c5c7d32a8426acfc9733662de14a7910945002c5929e9d:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_STATE",
+        "STATE_CHANGE",
+        "REWARD_RISK_NEXT_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "ACTION_EFFECT",
+        "PROGRESSION_INDICATOR"
+      ],
+      "name": "인과 지연 시스템",
+      "purpose": "행위의 결과가 행위자, 관계, 후대에 되돌아온다.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. -> Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. -> Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 424798,
-      "lastMs": 52544,
+      "totalMs": 488622,
+      "lastMs": 63824,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:26:35.699Z"
+      "updatedAt": "2026-10-09T12:27:39.525Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:19:30.567Z",
-  "updatedAt": "2026-10-09T12:26:35.699Z",
+  "updatedAt": "2026-10-09T12:27:39.525Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1993,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:26:35.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:27:39.525Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
