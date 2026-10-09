@@ -14,12 +14,13 @@ import {
 } from '../tools/vibe3-roblox-platform.mjs';
 
 const contract=createRobloxPlatformContract();
+const native3dF0Proof={sourceOnly:true,runtimeVerified:false,worldGeometry:true,characterAndCamera:true};
 test('static candidate promotion requires exact compiled contracts without inventing runtime proof',()=>{
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};
   const item={robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
     robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
-    robloxBuildPreflightEvidence:{...binding},robloxFoundationF0Evidence:{...binding,artifactRunId:42,nativeLanguageCompilePassed:true,
+    robloxBuildPreflightEvidence:{...binding},robloxFoundationF0Evidence:{...binding,version:6,native3dSourcePreflight:{...native3dF0Proof},artifactRunId:42,nativeLanguageCompilePassed:true,
       serverClientBoundaryPreflightPassed:true,remoteSecurityPreflightPassed:true,mobileControlUiPreflightPassed:true,
       datastoreContractPassed:true,multiplayerSyncContractPassed:true}};
   const gate=x=>validateRobloxReleaseEvidence(x,revision,{stage:'SOURCE_PROMOTION',validationMode:'STATIC'});
@@ -32,6 +33,7 @@ test('static candidate promotion requires exact compiled contracts without inven
     x=>{x.robloxBuildPreflightEvidence.sourceRevision='c'.repeat(40);},
     x=>{x.robloxFoundationF0Evidence.artifactIdentity='sha256:'+'d'.repeat(64);},
     x=>{x.robloxFoundationF0Evidence.nativeLanguageCompilePassed=false;},
+    x=>{x.robloxFoundationF0Evidence.native3dSourcePreflight.worldGeometry=false;},
     x=>{x.robloxFoundationF0Evidence.multiplayerSyncContractPassed=false;},
     x=>{x.robloxFoundationF0Evidence.datastoreContractPassed=false;},
     x=>{x.robloxFoundationF0Evidence.artifactRunId='invalid';},
@@ -45,7 +47,7 @@ test('candidate promotion requires exact native Studio and multiplayer proof wit
     robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
     robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
     robloxBuildPreflightEvidence:{...binding},
-    robloxFoundationF0Evidence:{...binding,nativeLanguageCompilePassed:true,artifactRunId:42,saveExists:true},
+    robloxFoundationF0Evidence:{...binding,version:6,native3dSourcePreflight:{...native3dF0Proof},nativeLanguageCompilePassed:true,artifactRunId:42,saveExists:true},
     robloxInternalVibePlayEvidence:{...binding,artifactRunId:42,authority:'roblox-official-studio-mcp-runtime',
       actualPlay:true,runtimeVerified:true,officialStudioMcp:true,localPlaceFile:true,onlinePlaceDirectOpen:false,
       currentSourceArtifactBinding:true,scenarioContractRequired:true,scenarioCoveragePass:true,
@@ -63,6 +65,7 @@ test('candidate promotion requires exact native Studio and multiplayer proof wit
     x=>{x.robloxInternalVibePlayEvidence.artifactIdentity='sha256:'+'e'.repeat(64);},
     x=>{x.robloxInternalVibePlayEvidence.artifactRunId=43;},
     x=>{x.robloxFoundationF0Evidence.nativeLanguageCompilePassed=false;},
+    x=>{x.robloxFoundationF0Evidence.native3dSourcePreflight.worldGeometry=false;},
     x=>{x.robloxBuildPreflightEvidence.pass=false;},
     x=>{x.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.multiplayer.replacementJoinPass=false;},
     x=>{x.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.auditProfile='FAST_DEEP';},
@@ -356,7 +359,7 @@ test('Roblox runtime candidate publish plan accepts exact F0 evidence but never 
   const plan=createRobloxRuntimeCandidatePublishPlan({
     placeFile:'roblox-games/demo/place.rbxl',
     universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
-    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+    f0Evidence:{version:6,native3dSourcePreflight:{...native3dF0Proof},sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
   });
   assert.equal(plan.executionReady,true);
   assert.equal(plan.planKind,'PRIVATE_RUNTIME_CANDIDATE');
@@ -366,12 +369,26 @@ test('Roblox runtime candidate publish plan accepts exact F0 evidence but never 
   assert.equal(plan.actualRuntimeValidationRequiredAfterPublish,true);
 });
 
+test('Roblox F0 candidate cannot deploy from an old 2D-only proof',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const create=proof=>createRobloxRuntimeCandidatePublishPlan({
+    placeFile:'roblox-games/demo/place.rbxl',universeId:'123',placeId:'456',
+    sourceRevision:revision,artifactIdentity:artifact,
+    f0Evidence:{version:6,native3dSourcePreflight:proof,sourcePreflightPassed:true,
+      f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,
+      sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+  });
+  assert.equal(create(native3dF0Proof).executionReady,true);
+  assert.ok(create({...native3dF0Proof,worldGeometry:false}).blockedReasons.includes('f0-native3d-source-required'));
+  assert.ok(create({...native3dF0Proof,runtimeVerified:true}).blockedReasons.includes('f0-native3d-source-required'));
+});
+
 test('Roblox runtime candidate publish plan rejects headless evidence that claims runtime',()=>{
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const plan=createRobloxRuntimeCandidatePublishPlan({
     placeFile:'roblox-games/demo/place.rbxl',
     universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
-    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:true,runtimeFoundationPassed:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+    f0Evidence:{version:6,native3dSourcePreflight:{...native3dF0Proof},sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:true,runtimeFoundationPassed:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
   });
   assert.equal(plan.executionReady,false);
   assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-evidence'));
