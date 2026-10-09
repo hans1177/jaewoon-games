@@ -27,25 +27,32 @@
       "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
       "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
       "coreFun": "주사위 전투 보드는 플레이어가 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+    },
+    "local_authoring_parts::6d55c90444b5154a3ab6caa6a303aed1e68783beaee31735c948ffb828ed0744:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 249122,
-      "lastMs": 26628,
+      "totalMs": 282052,
+      "lastMs": 32930,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:53:55.861Z"
+      "updatedAt": "2026-10-09T10:54:28.793Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T10:53:55.862Z",
+  "updatedAt": "2026-10-09T10:54:28.793Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1977,7 +1984,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:53:55.862Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:54:28.793Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
