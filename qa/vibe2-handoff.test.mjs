@@ -181,9 +181,9 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   const tasks = Array.from({ length: 31 }, (_, index) => {
     const n = String(index + 1).padStart(2, '0');
     const gameId = index === 0 ? 'daechung-rpg' : `e2e-${n}`;
-    const sourceRoot = index === 0 ? 'web-games/daechung-rpg' : `web-games/e2e-${n}`;
+    const sourceRoot = index === 0 ? 'web-games/daechung-rpg' : `unity-games/e2e-${n}`;
     const analysisOnly = index === 0;
-    return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
+    return { id:`e2e-${n}`, gameId, target:analysisOnly?'web':'unity', unityWebDevelopment:!analysisOnly, department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing canonical Unity Web C# maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/Assets/Scripts/Game.cs`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:analysisOnly?[]:['unity-web-first-stage'] };
   });
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:256, tasks }, null, 2));
   fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
@@ -202,8 +202,8 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(before.workState.queuedCount, 31);
 
   const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'32', output:batchFile });
-  assert.equal(reserved.selection?.webGameFlow?.target, 2);
-  assert.equal(reserved.tasks.length, 2);
+  assert.equal(reserved.selection?.webGameFlow?.target, tasks.filter(task=>task.unityWebDevelopment===true).length);
+  assert.equal(reserved.tasks.length, tasks.filter(task=>task.unityWebDevelopment===true).length);
   assert.equal(reserved.tasks.some(task=>task.id==='e2e-01'),false);
   assert.equal(reserved.selection?.lane,'game-primary');
   assert.ok(reserved.selection?.laneDeferred?.some(task=>task.id==='e2e-01'));
@@ -228,8 +228,8 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
   assert.equal(after.parallelism.currentPersistentMax, 32);
-  assert.equal(after.workState.queuedCount, 29);
-  assert.equal(after.workState.blockedCount, 2);
+  assert.equal(after.workState.queuedCount, tasks.length-reserved.tasks.length);
+  assert.equal(after.workState.blockedCount, reserved.tasks.length);
   assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
 });
 

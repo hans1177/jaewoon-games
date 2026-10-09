@@ -1,5 +1,5 @@
 // 파일명: qa/company-design-multiplayer-mode-contract.test.mjs
-// 설계 단계의 중앙 멀티플레이·MAIN/A/B/c/@·Unity WebGL 2.5D 이상 의무 검증
+// 설계 단계의 중앙 멀티플레이·MAIN/A/B/c/@·Unity WebGL 3D 전용 의무 검증
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -65,14 +65,17 @@ test('all design stages require MAIN/A/B/c/@ and the inherited multiplayer modes
   assert.deepEqual(modes,['COOP','COMPETITIVE','HYBRID']);
 });
 
-test('Unity WebGL requires 2.5D or 3D spatial presentation in the existing authored platform profile',()=>{
+test('Unity WebGL requires native 3D spatial presentation in the existing authored platform profile',()=>{
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   const central=policy.livingMotionVisualQualityContract.minimumSpatialPresentation;
-  assert.equal(central.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(central.minimumFinalGameplayDimension,'3D');
+  assert.equal(policy.ownerUnityWeb3dOnly20261009.finalGameplayDimension,'3D');
+  assert.equal(policy.ownerUnityWeb3dOnly20261009.twoPointFiveDimensionalFinalPassForbidden,true);
   assert.equal(central.flat2DFinalGameplayForbidden,true);
   assert.equal(central.uiOverlayMayRemain2D,true);
   assert.match(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
-  assert.match(design,/dimension:\{type:'string',enum:\['2.5D','3D'\]\}/);
+  assert.match(design,/dimension:\{type:'string',enum:\['3D'\]\}/);
+  assert.match(scorer,/const dimensions=\['3D'\]/);
   assert.match(design,/unityWebSpatialPresentation:UNITY_WEB_SPATIAL_PRESENTATION/);
   assert.match(scorer,/DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED/);
   assert.match(scorer,/\['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'\]/);

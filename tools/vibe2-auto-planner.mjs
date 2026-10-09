@@ -690,7 +690,10 @@ const enrichedRows=rows.map(project=>{
     ownerResumableBuildUpReason:clean(game.developmentHandling)||clean(game.lifecycleReason)||'OWNER_DIRECT_EXISTING_GAME'
   };
 });
-return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+// Unity Web 검증 게임은 Unity 앱 개발보류와 구분해 기존 canonical Unity 소스를 계속 수집한다.
+return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine,{
+  unityWebDevelopment:project.firstStageUnityWeb===true
+}));
 }
 function ownerResumableCatalogGame(game={}){
   const handling=clean(game.developmentHandling).toUpperCase();
@@ -3857,8 +3860,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       for(const candidate of packageTasks){
         const pkg=buildWorkPackage({tasks:[candidate],project:{...project,projectPath:candidate.sourceRoot},sequence:++sequence,policy});
         if(!pkg.accepted)throw new Error('INTERNAL_MOTION_WORK_PACKAGE_REJECTED:'+candidate.id);
-        queue=createVibeContinuousQueue({tasks:[...queue.tasks,...pkg.tasks],maxConcurrentTasks:queue.maxConcurrentTasks});
-        planned.push(...pkg.tasks);packages.push(pkg);
+        // 같은 owner-direct 작업은 자산 모션 전용 레인에서도 일반 BUILD_UP과 동일하게 무제한 인과 복구한다.
+        const acceptedTasks=project.ownerResumableBuildUp===true
+          ?pkg.tasks.map(item=>({...item,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
+          :pkg.tasks;
+        queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
+        planned.push(...acceptedTasks);packages.push({...pkg,tasks:acceptedTasks});
       }
       continue;
     }

@@ -241,18 +241,21 @@ test('PR creation failure remains a blocking publication failure inside Director
   assert.ok(director.includes('exit 1'));
 });
 
-test('new native development admission requires Unity Web upper-platform readiness',()=>{
+test('native development admission follows owner minimum-design readiness without Unity Web prerequisite',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
   assert.equal(dual.unityWebEnabled,true);
   assert.equal(dual.unityWebRequired,true);
-  assert.equal(dual.unityWebGateRequired,true);
+  assert.equal(dual.unityWebGateRequired,false);
   assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(dual.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
+  assert.equal(dual.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,false);
   assert.equal(dual.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(dual.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
   assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_READY');
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009?.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009?.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
