@@ -105,25 +105,39 @@
         "선택과 위험에 대한 이해 능력 향상",
         "자원 수집 및 위험 대응이 실제 세계 상태로 이어짐"
       ]
+    },
+    "local_authoring_parts::b44abf2eb7f8faf4509ed0fe2d20a65f95338c9abc0e1bd513af285f9c904817:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE",
+        "USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE"
+      ],
+      "stateOutputs": [
+        "RESEARCH_ECOLOGICAL_DATA_TO_IMPROVE_SELECTION_PROCESSING"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "주요 플레이 단계와 위험 구조를 가진다",
+      "playerChoice": "자원 수집 후 위험 대응 전략 결정하기"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 213397,
-      "lastMs": 34721,
+      "totalMs": 249744,
+      "lastMs": 36347,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:12:19.125Z"
+      "updatedAt": "2026-10-09T17:12:55.474Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:08:45.684Z",
-  "updatedAt": "2026-10-09T17:12:19.125Z",
+  "updatedAt": "2026-10-09T17:12:55.474Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1796,7 +1810,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:12:19.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:12:55.474Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
