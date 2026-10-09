@@ -690,7 +690,10 @@ const enrichedRows=rows.map(project=>{
     ownerResumableBuildUpReason:clean(game.developmentHandling)||clean(game.lifecycleReason)||'OWNER_DIRECT_EXISTING_GAME'
   };
 });
-return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+// Unity Web 검증 게임은 Unity 앱 개발보류와 구분해 기존 canonical Unity 소스를 계속 수집한다.
+return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine,{
+  unityWebDevelopment:project.firstStageUnityWeb===true
+}));
 }
 function ownerResumableCatalogGame(game={}){
   const handling=clean(game.developmentHandling).toUpperCase();
