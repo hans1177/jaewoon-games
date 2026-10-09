@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-09T14:44:16.056Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T14:47:31.715Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-09/design-seed.json",
     "contentDigest": "d8349be482c0a04df3fb92c1bd53216f8cd69b1215cc6026408f3fe695c0fdcc",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 571388,
-      "lastMs": 41660,
+      "totalMs": 767039,
+      "lastMs": 195651,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:44:16.053Z"
+      "updatedAt": "2026-10-09T14:47:31.715Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T14:44:16.064Z"
+  "updatedAt": "2026-10-09T14:47:31.721Z"
 }

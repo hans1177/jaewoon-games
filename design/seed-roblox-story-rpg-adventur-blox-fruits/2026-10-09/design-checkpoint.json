@@ -452,21 +452,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 571388,
-      "lastMs": 41660,
+      "totalMs": 767039,
+      "lastMs": 195651,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:44:16.053Z"
+      "updatedAt": "2026-10-09T14:47:31.715Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:34:44.626Z",
-  "updatedAt": "2026-10-09T14:44:16.063Z",
+  "updatedAt": "2026-10-09T14:47:31.719Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2053,15 +2053,158 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "d9cd0bb1afb2dded5515ab741f9694be873dc7474f9d499ef420346c46a772fc"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:44:16.056Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Linear",
+        "resourceFlow": "Circular",
+        "balanceRules": "Players gain rewards for strategic choices, lose progress for suboptimal actions"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Start a new puzzle level",
+          "newGameplay": "New combinations and strategies",
+          "systemImpact": "Enhanced gameplay depth and replayability"
+        },
+        {
+          "milestone": "Unlock hidden mechanics",
+          "newGameplay": "Unlocked puzzles and dynamic board transformations",
+          "systemImpact": "Increased complexity and interactivity"
+        },
+        {
+          "milestone": "Reinterpret past levels",
+          "newGameplay": "Revised rules and expanded content",
+          "systemImpact": "Deepened thematic consistency and player engagement"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Board state is unresolvable",
+          "Progress is lost due to incorrect action"
+        ],
+        "retryFlow": "Players retry with different strategies or revisit previous levels to regain progress",
+        "riskPressure": "Repeated failures may lead to frustration but also encourage deeper exploration and strategy refinement",
+        "recoveryRules": "Players can re-express old puzzles through dynamic reinterpretations, gaining both understanding and new strategies"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T14:47:31.715Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
