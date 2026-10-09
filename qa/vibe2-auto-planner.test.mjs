@@ -4649,6 +4649,9 @@ test('studio build-up task carries concept-matched survival systems and reusable
   fs.writeFileSync(path.join(source,'client','Game.client.luau'),'local ui = {}\n','utf8');
   fs.writeFileSync(path.join(source,'server','Game.server.luau'),'local world = {}\n','utf8');
   fs.writeFileSync(path.join(source,'shared','GameConfig.luau'),'return {}\n','utf8');
+  fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+  fs.writeFileSync(path.join(root,'assets','inventory-equipment.js'),'export const inventory = {};\n','utf8');
+  fs.writeFileSync(path.join(root,'assets','crafting-recipes.js'),'export const recipes = {};\n','utf8');
   writeStudioDesign(root,gameId,{
     identity:'야생에서 채집하고 제작해 거점을 세우는 생존 게임',
     coreFun:'자원과 위험을 읽고 제작과 하우징으로 다음 탐험 선택을 확장한다.',
@@ -4664,6 +4667,13 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.ok(task.systemRequirements.some(row=>(row.reusableLibraryHints||[]).includes('assets/inventory-equipment.js')));
   assert.ok(task.systemInterconnectionChains.includes('GATHERING_RESOURCE->CRAFTING->HOUSING_BUILDING'));
   assert.match(task.goal,/FLOW_SYSTEM_BLUEPRINT=/);
+  assert.match(task.goal,/CURRENT_GAME_SOURCE_INVENTORY=/);
+  assert.match(task.goal,/Game\.client\.luau/);
+  assert.match(task.goal,/Game\.server\.luau/);
+  assert.match(task.goal,/LIBRARY_PATH_CHECK=/);
+  assert.match(task.goal,/"found":\["assets\/inventory-equipment\.js","assets\/crafting-recipes\.js"/);
+  assert.match(task.goal,/"missing":\[/);
+  assert.doesNotMatch(task.goal,/동일 이름이어도 자동으로 덮어쓴다/);
   assert.match(task.goal,/생존은 채집→제작→하우징\/장비→탐험\/위험/);
   assert.ok(task.evidence.includes('flow-system-blueprint:v1'));
   assert.equal(task.studioQualityEvolution.flowSystemProfile,'ACTION_SURVIVAL_ROGUELITE');
