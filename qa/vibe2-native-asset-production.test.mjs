@@ -1658,45 +1658,44 @@ test('Web 3D actor work requires the shared Master GLB DCC path without forcing 
   assert.equal(twoD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,false);
 });
 
+
 test('task-declared Blender recipe stays mandatory even when a reusable animation candidate is ready',()=>{
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{
-      gameId:'declared-dcc-demo',
-      goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
-      assetAuthoring:{recipes:[{
-        id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
-        executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
-        script:'assets/roblox/demo/refine-motion.py',
-        args:['--output','assets/roblox/demo/native/motion-v1'],
-        outputs:[
-          'assets/roblox/demo/native/motion-v1/motion.glb',
-          'assets/roblox/demo/native/motion-v1/evidence.json',
-          'assets/roblox/demo/native/motion-v1/preview.png'
-        ],
-        evidenceJson:'assets/roblox/demo/native/motion-v1/evidence.json',
-        preview:'assets/roblox/demo/native/motion-v1/preview.png',
-        editableSource:'assets/roblox/demo/refine-motion.py',
-        runMode:'VERIFY_ONLY'
-      }]}
-    },
-    manifest:{assets:[{
-      id:'ready-motion',family:'MOTION',types:['animation'],tags:['animation','motion'],
+  const root=tempRoot();
+  try{
+    const readyMotion={id:'ready-motion',family:'MOTION',category:'MOTION',types:['animation'],tags:['animation','motion'],
       path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'project-original',
-      downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  const animation=plan.decisions.find(row=>row.type==='animation');
-  assert.equal(animation?.applyFirst?.enabled,true);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('animation'));
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+      downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[readyMotion]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      target:'roblox',repoRoot:root,
+      task:{
+        gameId:'declared-dcc-demo',
+        goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
+        assetAuthoring:{recipes:[{
+          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
+          executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
+          script:'assets/roblox/demo/refine-motion.py',
+          args:['--output','assets/roblox/demo/native/motion-v1'],
+          outputs:['assets/roblox/demo/native/motion-v1/motion.glb','assets/roblox/demo/native/motion-v1/evidence.json',
+            'assets/roblox/demo/native/motion-v1/preview.png'],
+          evidenceJson:'assets/roblox/demo/native/motion-v1/evidence.json',
+          preview:'assets/roblox/demo/native/motion-v1/preview.png',
+          editableSource:'assets/roblox/demo/refine-motion.py',runMode:'VERIFY_ONLY'
+        }]}
+      },
+      manifest:{assets:[readyMotion]},presetCatalog:{presets:[]}
+    });
+    const animation=plan.decisions.find(row=>row.type==='animation');
+    assert.equal(animation?.applyFirst?.enabled,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('animation'));
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('invalid task-declared recipe cannot be masked by generic DCC fallback',()=>{
@@ -1775,32 +1774,42 @@ test('Web native authoring stays inside Web source while Unity and Roblox keep p
   assert.equal(unity.nativeAuthoringExecution.platformReauthoringRequired,true);
 });
 
-test('web-only assets are never reused directly by Unity or Roblox',()=>{
-  const manifest={version:1,assets:[
-    {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
-    {id:'unity-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',platforms:['unity']},
-    {id:'roblox-fx',path:'',types:['effect'],tags:['이펙트'],license:'CC0',platforms:['roblox']},
-    {id:'generic-vfx',path:'',types:['effect'],tags:['이펙트'],license:'CC0'}
-  ]};
-  const task={gameId:'fantasy-survival',goal:'숲 나무 UI 이펙트 애니메이션 그래픽 개선'};
-  const unity=buildVibeAssetProductionPlan({task,target:'unity',manifest,presetCatalog:{version:1,presets:[]}});
-  const roblox=buildVibeAssetProductionPlan({task,target:'roblox',manifest,presetCatalog:{version:1,presets:[]}});
-  const unityReuse=unity.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
-  const robloxReuse=roblox.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
-  assert.equal(unityReuse.includes('web-tree'),false);
-  assert.equal(robloxReuse.includes('web-tree'),false);
-  assert.equal(unityReuse.includes('unity-ui'),true);
-  assert.equal(robloxReuse.includes('unity-ui'),false);
-  assert.equal(robloxReuse.includes('roblox-fx'),true);
-  assert.equal(unityReuse.includes('roblox-fx'),false);
-  assert.equal(unity.capabilities.canChooseDirectAuthoring,true);
-  assert.equal(roblox.capabilities.canChooseDirectAuthoring,true);
-  assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('csharp-procedural-mesh-and-low-poly-model')));
-  assert.ok(roblox.decisions.some(row=>row.directAuthoring.includes('luau-composed-low-poly-model')));
-  assert.equal(unity.policy.crossPlatformWebAssetDirectReuseForbidden,true);
-  assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
-});
 
+test('web-only assets are never reused directly by Unity or Roblox',()=>{
+  const root=tempRoot();
+  try{
+    const manifest={version:1,assets:[
+      {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
+      {id:'unity-ui',path:'unity-games/shared/UI/ui-panel.png',types:['ui'],tags:['UI'],license:'CC0',platforms:['unity']},
+      {id:'roblox-fx',path:'roblox-games/shared/VFX/impact.png',types:['effect'],tags:['이펙트'],license:'CC0',platforms:['roblox']},
+      {id:'generic-vfx',path:'',types:['effect'],tags:['이펙트'],license:'CC0'}
+    ]};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {...manifest.assets[1],family:'UI',category:'UI',status:'REPO_ASSET'},
+        {...manifest.assets[2],family:'VFX',category:'VFX',status:'REPO_ASSET'}
+      ]
+    },null,2));
+    const task={gameId:'fantasy-survival',goal:'숲 나무 UI 이펙트 애니메이션 그래픽 개선'};
+    const unity=buildVibeAssetProductionPlan({task,target:'unity',repoRoot:root,manifest,presetCatalog:{version:1,presets:[]}});
+    const roblox=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest,presetCatalog:{version:1,presets:[]}});
+    const unityReuse=unity.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+    const robloxReuse=roblox.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+    assert.equal(unityReuse.includes('web-tree'),false);
+    assert.equal(robloxReuse.includes('web-tree'),false);
+    assert.equal(unityReuse.includes('unity-ui'),true);
+    assert.equal(robloxReuse.includes('unity-ui'),false);
+    assert.equal(robloxReuse.includes('roblox-fx'),true);
+    assert.equal(unityReuse.includes('roblox-fx'),false);
+    assert.equal(unity.capabilities.canChooseDirectAuthoring,true);
+    assert.equal(roblox.capabilities.canChooseDirectAuthoring,true);
+    assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('csharp-procedural-mesh-and-low-poly-model')));
+    assert.ok(roblox.decisions.some(row=>row.directAuthoring.includes('luau-composed-low-poly-model')));
+    assert.equal(unity.policy.crossPlatformWebAssetDirectReuseForbidden,true);
+    assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('Roblox planner reuses source-bound same-game assets before cross-game library candidates',()=>{
   const root=tempRoot();
