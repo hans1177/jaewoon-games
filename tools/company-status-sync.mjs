@@ -105,6 +105,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       const sentence=raw.match(/^(.{20,125}?[.!?。])(?:\s|$)/)?.[1]||raw;
       const summary=sentence.length>112?sentence.slice(0,110).replace(/\s+\S*$/,'')+'…':sentence;
       if(summary){game.description=summary;game.homepageDesignSource=designPath;}
+      // 카탈로그 identity 설명은 보존하며 홈페이지 렌더러가 검증된 최신 설계를 우선 표시한다.
     }
     const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
     const score=developmentHomepageScore(queue);
