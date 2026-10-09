@@ -146,25 +146,39 @@
       "name": "MONSTER_CAPTURE_SYSTEM",
       "purpose": "실제 선택 및 전술 수행",
       "playerChoice": "플레이어가 포획 결과에 따라 월드 상태 변화와 비용/위험/보상 연결을 결정하는 선택 과정입니다."
+    },
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "MONSTER_COUNT",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "WORLD_CHANGE"
+      ],
+      "name": "MONSTER_CAPTURE_SYSTEM",
+      "purpose": "플레이어 선택에 따른 실제 세계 상태 변화 및 다음 사건 연결",
+      "playerChoice": "실제 세계 상태 변화 및 다음 사건의 연결로 인해 월드 상태 변화가 발생함으로써, 점수/거리/세션 목표 기반 반복 가능한 루프가 생성됨니다। 이는 플레이어의 숙련 과정에서 중요한 역할을 하며, 모바일 게임 중심의 입력/피드백 제공을 통해 깊은 세계 깊이와 조명 등 모든 요소를 포함한 플레이어 역할을 수행합니다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 416421,
-      "lastMs": 35637,
+      "totalMs": 456092,
+      "lastMs": 39671,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:42:31.846Z"
+      "updatedAt": "2026-10-09T17:43:11.519Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:35:35.348Z",
-  "updatedAt": "2026-10-09T17:42:31.847Z",
+  "updatedAt": "2026-10-09T17:43:11.519Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1743,8 +1757,8 @@
     "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:3": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:42:31.846Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:c",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T17:43:11.519Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
