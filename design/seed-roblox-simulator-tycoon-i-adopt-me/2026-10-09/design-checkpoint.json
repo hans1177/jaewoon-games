@@ -759,25 +759,33 @@
     },
     "local_authoring_parts::fee24289b6524364c80e7f5ff78218f988cf0217343b58bfcb6f77605ce38ef3:newGameplay": {
       "newGameplay": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::fee24289b6524364c80e7f5ff78218f988cf0217343b58bfcb6f77605ce38ef3:systemImpact": {
+      "systemImpact": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::1a92d88e7e94288c3ac8c4ac3c10b75472eaeecd3a3b8b758c86923a981bdc39:contentExpansionPlan:0": {
+      "milestone": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+      "newGameplay": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+      "systemImpact": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1973859,
-      "lastMs": 33355,
+      "totalMs": 2007509,
+      "lastMs": 33650,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:14:05.718Z"
+      "updatedAt": "2026-10-09T12:14:39.369Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T12:14:05.718Z",
+  "updatedAt": "2026-10-09T12:14:39.376Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3529,7 +3537,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:14:05.718Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:14:39.376Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
