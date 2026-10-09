@@ -574,25 +574,28 @@
     },
     "local_authoring_parts::51306387a933a8de69c4a2841758e76a01d765074b56640319599a88ce4adbb5:fromSystem": {
       "fromSystem": "READ NEXT ENEMY WAVE AND PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+    },
+    "local_authoring_parts::51306387a933a8de69c4a2841758e76a01d765074b56640319599a88ce4adbb5:toSystem": {
+      "toSystem": "STATE_CHANGE_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2013336,
-      "lastMs": 51633,
+      "totalMs": 2060520,
+      "lastMs": 47184,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:53:18.569Z"
+      "updatedAt": "2026-10-09T09:54:05.755Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:19:44.888Z",
-  "updatedAt": "2026-10-09T09:53:18.569Z",
+  "updatedAt": "2026-10-09T09:54:05.755Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3072,7 +3075,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:53:18.569Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:54:05.755Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
