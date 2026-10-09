@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 주사위 전투 보드에서 매 순간 선택을 통해 게임 세계를 재구성하며, 진입 단계부터 시작하여 다양한 상태 변환과 위험-보상 관계에 맞춰 최종 목적지를 달성해야 한다. 이 과정에서는 플레이어가 직접 만든 새로운 문제와 도전을 생성해 게임 세계를 점진적으로 발전시킨다.",
       "coreFun": "주사위 전투 보드의 핵심 재미는 실제 플레이 선택을 기반으로 설계되며, 진행·위험·보상이 서로 연결되는 반복 가능한 루프 구조로 구성된다. 이 루프는 입력→판정→상태 변화→보상 및 다음 선택 순서로 정립되어 있으며, 각 단계마다 새로운 문제와 도전을 유도함으로써 게임 세계를 지속적으로 발전시켜 나간다."
+    },
+    "local_authoring_parts::e6bfa3d15be87179c412a42057c7fca7470f795434de7252cfd17c1c69af5751:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 674766,
-      "lastMs": 105620,
+      "totalMs": 754137,
+      "lastMs": 79371,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:37:13.012Z"
+      "updatedAt": "2026-10-09T17:38:32.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:25:58.203Z",
-  "updatedAt": "2026-10-09T17:37:13.014Z",
+  "updatedAt": "2026-10-09T17:38:32.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1798,7 +1805,7 @@
   "localAuthoringSplits": {
     "7525cde9178d38c1015766c5d8d24f7ca639dad5c25b0943de6a36b092ebceb5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:37:13.014Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:38:32.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
