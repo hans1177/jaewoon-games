@@ -725,25 +725,28 @@
     },
     "local_authoring_parts::fd2c811917f3ce0cb2cbdd2d878bebde622965529b3dbc71392897afa5117ef0:milestone": {
       "milestone": "게임 상태는 ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::fd2c811917f3ce0cb2cbdd2d878bebde622965529b3dbc71392897afa5117ef0:newGameplay": {
+      "newGameplay": "게임 상태는 ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4329455,
-      "lastMs": 97456,
+      "totalMs": 4425407,
+      "lastMs": 95952,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:49:21.317Z"
+      "updatedAt": "2026-10-09T02:50:57.270Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T02:49:21.317Z",
+  "updatedAt": "2026-10-09T02:50:57.270Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3238,7 +3241,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:49:21.317Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:50:57.270Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
