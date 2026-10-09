@@ -440,25 +440,117 @@
         "delveGrowthRule": "Strategic progression occurs through adaptive defense mechanisms that evolve with each wave of combat.",
         "finalGameIdentity": "A dynamic, evolving single-player tower-defense game where player choices drive both economic strategy and defensive evolution across multiple gameplay phases."
       }
+    },
+    "local_authoring_parts::465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 전투 중 적들의 종류에 따라 방어 전략을 선택하며, 자원 확보 및 위험 관리를 통해 게임 세계 상태를 직접 영향을 미칩니다. 이 과정에서 플레이어는 단순한 전략 게임이 아닌 실제 세계 상태 변화와 선택 사이의 끝없는 교차 조합을 경험하게 됩니다.",
+      "coreFun": "게임에서는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route'이라는 중심 행동을 기반으로 하여, 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 이 행동을 통해 진입 장벽, 자원 확보, 위험 관리 등 다양한 시스템 간의 인과적 연결을 맺게 되며, 이는 단순한 전략 게임이 아니라 실제 세계 상태 변화와 플레이어의 선택 사이에 끝없는 교차 조합이 존재하는 핵심 재미를 가집니다."
+    },
+    "local_authoring_parts::26408511ab483c577636dbc2ec2ccd95db125cb66ef4bffa894d9514d51fd577:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Pocket Foundry은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 이 행동을 통해 진입 장벽, 자원 확보, 위험 관리 등 다양한 시스템 간의 인과적 연결을 맺게 된다. 이 게임은 단순한 전략 게임이 아니라, 실제 세계 상태 변화와 플레이어의 선택 사이에 끝없는 교차 조합이 존재하는 핵심 재미를 가진다.",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "ECONOMICS",
+          "material": "Resource Allocation",
+          "materialDomain": "Economic System",
+          "stateChange": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        "b": {
+          "system": "DEFENSE_STRATEGY",
+          "material": "Tactical Adaptation",
+          "materialDomain": "Military Strategy",
+          "stateChange": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        "abCausality": "Enemy type adaptation → Resource allocation → Defensive strategy evolution",
+        "abEvolution": {
+          "aChangesB": "Enemy type adaptation triggers resource allocation",
+          "bChangesA": "Defensive strategy evolution initiates resource allocation",
+          "lateGameChange": "Final defense choices trigger defensive strategy evolution"
+        },
+        "materialFusion": {
+          "contrast": "Enemy type adaptation ↔ Resource allocation ↔ Defensive strategy evolution",
+          "causalBridge": "Adaptation → Allocation → Strategy Evolution",
+          "removalConsequence": "Removing enemy type adaptation removes resource allocation and defensive strategy evolution"
+        },
+        "storyCausalChain": {
+          "cause": "Player's initial choice of enemy type adaptation",
+          "characterConflict": "Character's desire for strategic advantage vs. risk of resource depletion",
+          "playerChoice": "Player adapts defense to enemy types, allocates resources, and evolves strategy",
+          "worldChange": "World state changes as player implements adaptive strategies",
+          "nextEvent": "New game mechanics emerge from evolved defensive strategies"
+        },
+        "cThemes": [
+          {
+            "name": "Adaptation",
+            "kind": "GENRE",
+            "gameplayEffect": "Player's strategic evolution through enemy type adaptation"
+          },
+          {
+            "name": "Economic System",
+            "kind": "GENRE",
+            "gameplayEffect": "Resource allocation and economic strategy implementation"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Defense Evolution",
+            "gameplayEffect": "Strategic progression through adaptive defense mechanisms"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Economics & Resource Management",
+            "gameplayEffect": "Resource allocation and economic system integration"
+          }
+        ],
+        "cGenreInterlock": "Enemy type adaptation → Resource allocation → Defensive strategy evolution",
+        "cWorldAndGameplayEffect": "Player's actions directly influence world state changes, resource availability, and defensive strategy evolution across multiple gameplay phases and scenarios.",
+        "delveDiscoveries": [
+          {
+            "clue": "Enemy type adaptation",
+            "discovery": "Player initiates strategic defense by adapting to enemy types and wave compositions.",
+            "newChoice": "Selects specific enemy types for defense placement and tactical changes."
+          },
+          {
+            "clue": "Resource allocation",
+            "discovery": "Earns resources from defeated enemies and allocates them strategically.",
+            "newChoice": "Chooses which resources to spend on upgrades, placements, or defensive evolution."
+          },
+          {
+            "clue": "Defensive strategy evolution",
+            "discovery": "Adapts defense based on enemy types and evolves strategies over time.",
+            "newChoice": "Evolves defense choices to handle more complex threats in later waves."
+          },
+          {
+            "clue": "World state change",
+            "discovery": "Player's actions directly influence the game world's state and resource availability.",
+            "newChoice": "Creates new gameplay mechanics through evolved defensive strategies."
+          }
+        ],
+        "delveGrowthRule": "Strategic progression occurs through adaptive defense mechanisms that evolve with each wave of combat.",
+        "finalGameIdentity": "A dynamic, evolving single-player tower-defense game where player choices drive both economic strategy and defensive evolution across multiple gameplay phases."
+      },
+      "playerFantasy": "플레이어는 전투 중 적들의 종류에 따라 방어 전략을 선택하며, 자원 확보 및 위험 관리를 통해 게임 세계 상태를 직접 영향을 미칩니다. 이 과정에서 플레이어는 단순한 전략 게임이 아닌 실제 세계 상태 변화와 선택 사이의 끝없는 교차 조합을 경험하게 됩니다.",
+      "coreFun": "게임에서는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route'이라는 중심 행동을 기반으로 하여, 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 이 행동을 통해 진입 장벽, 자원 확보, 위험 관리 등 다양한 시스템 간의 인과적 연결을 맺게 되며, 이는 단순한 전략 게임이 아니라 실제 세계 상태 변화와 플레이어의 선택 사이에 끝없는 교차 조합이 존재하는 핵심 재미를 가집니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1176474,
-      "lastMs": 83412,
+      "totalMs": 1256032,
+      "lastMs": 79558,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:13:24.361Z"
+      "updatedAt": "2026-10-09T18:14:43.933Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:53:47.848Z",
-  "updatedAt": "2026-10-09T18:13:24.374Z",
+  "updatedAt": "2026-10-09T18:14:43.935Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2168,7 +2260,7 @@
     "465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e": true,
     "781fc60926591f2fc5355640421baf6175a705be225803085ac38b733ce72190": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:13:24.374Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:14:43.935Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
