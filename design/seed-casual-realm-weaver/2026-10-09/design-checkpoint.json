@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::7b248a398fb62c62b975f0d157a33dc71c60315577877b2b86b30dcd93f552a7:identity": {
+      "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 207224,
+      "lastMs": 207224,
+      "lastError": null,
+      "updatedAt": "2026-10-09T09:09:40.571Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:13.327Z",
-  "updatedAt": "2026-10-09T09:06:13.341Z",
+  "updatedAt": "2026-10-09T09:09:40.571Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T09:09:40.571Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
