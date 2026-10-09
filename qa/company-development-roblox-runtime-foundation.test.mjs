@@ -1508,10 +1508,12 @@ test('survival anchored world ground contains the camp, resources and enemy spaw
 test('headless first frame must read actual runtime sentinel but proven unsupported spawn remains blocked',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const first=workflow.indexOf("            if(engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true\n              &&(engineProbe?.worldEvidence?.spawnGroundingObserved!==true");
- const next=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",first);
- const sentinel=workflow.indexOf('            let sentinel;',next);
- assert.ok(first>=0&&next>first&&sentinel>next,'the existing first frame must feed the canonical exact runtime sentinel');
- const control=workflow.slice(first,next);
+ const sentinel=workflow.indexOf('            let sentinel;',first);
+ const next=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",sentinel);
+ const validation=workflow.indexOf('            const result=validateRobloxRuntimeFoundationEvidence({',next);
+ assert.ok(first>=0&&sentinel>first&&next>sentinel&&validation>next,
+   'the exact runtime sentinel must be checked before the unchanged image/release gate');
+ const control=workflow.slice(first,sentinel);
  const run=new Function('engineProbe',`const item={gameId:'canary'},candidate={placeId:'42',versionNumber:11};
  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64),stamp='2026-10-09T00:00:00Z';
  let failed=0,pending=0,changed=false,reachedSentinel=false;
@@ -1545,4 +1547,22 @@ test('headless first frame must read actual runtime sentinel but proven unsuppor
  assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.artifactIdentity===artifactIdentity/);
  assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.placeId===String\(candidate\.placeId\)/);
  assert.match(unavailable,/unobservedFirstFrame\s*\?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
+ assert.match(unavailable,/engineProbe\?\.imageEvidence\?\.imageContentPassed===true/,
+   'missing images may not authorize internal QA from a sentinel 404');
+ const imageGate=workflow.slice(next,validation);
+ const gate=new Function('engineProbe',`let pending=0,changed=false,reachedValidation=false;
+   const item={gameId:'canary'},stamp='2026-10-09T00:00:00Z',console={log(){}};
+   for(let i=0;i<1;i++){ ${imageGate} reachedValidation=true; }
+   return {item,pending,reachedValidation};`);
+ const imageMissing=gate({imageEvidence:{imageContentPassed:false}});
+ assert.equal(imageMissing.reachedValidation,false);
+ assert.equal(imageMissing.pending,1);
+ assert.equal(imageMissing.item.robloxRuntimeFoundationPassed,false);
+ assert.equal(imageMissing.item.robloxRuntimePassed,false);
+ assert.equal(imageMissing.item.robloxIndependentQaPassed,false);
+ assert.equal(imageMissing.item.robloxRegressionPassed,false);
+ assert.equal(imageMissing.item.robloxFailureSignature,'ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED');
+ const imageValid=gate({imageEvidence:{imageContentPassed:true}});
+ assert.equal(imageValid.reachedValidation,true);
+ assert.equal(imageValid.pending,0);
 });
