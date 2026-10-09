@@ -8326,3 +8326,12 @@ test('asset optimization compares decoded pixels across PNG filters and rejects 
   assert.throws(()=>compareVibeAssetPreviewPng(baseline,baseline.subarray(0,30)),/TRUNCATED/);
   const corrupt=Buffer.from(baseline);corrupt[29]^=1;assert.throws(()=>compareVibeAssetPreviewPng(baseline,corrupt),/CHECKSUM_INVALID/);
 });
+
+ 
+test('scoped content queue and exact-source evidence survive focused worker prompt reduction',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/volume\.selectionVersion===2/);
+  assert.match(source,/selectedFromQueue=volume\.selectionVersion===2\?volume\.activeItem:null/);
+  assert.match(source,/contentUnitSelection=/);
+  assert.match(source,/contentUnitSelection=','volumeImplementation=/);
+});

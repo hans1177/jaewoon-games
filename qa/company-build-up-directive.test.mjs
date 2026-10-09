@@ -1330,3 +1330,111 @@ test('preservation-only approved design keeps all volume entries but forbids new
   assert.doesNotMatch(lines,/volumeImplementation=ref:/,
     'presentation-only preservation must not be executed as a new progression mechanic');
 });
+
+ 
+// 설계 항목별 실제 구현 대기열은 일반적인 런타임 성공이나 세대 변경만으로 건너뛰지 않는다.
+test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 elements while scoped runtime evidence controls handoff',()=>{
+  const approved=design();
+  approved.content.coreLoop=['진입','탐색','선택','판정','다음 목표'];
+  approved.content.signatureSystems=Array.from({length:17},(_,i)=>({
+    id:'sys-'+i,name:'설계 시스템 '+i,purpose:'권위 상태에 의한 선택',
+    playerChoice:'선택 '+i,stateInputs:['world'],stateOutputs:['battle']
+  }));
+  approved.content.systemInterconnections=Array.from({length:18},(_,i)=>({
+    fromId:'sys-'+(i%17),toId:'sys-'+((i+1)%17),
+    trigger:'실제 행동',stateChange:'연결 상태 갱신'
+  }));
+  approved.content.contentExpansionPlan=Array.from({length:3},(_,i)=>({
+    milestone:'해금 '+i,newGameplay:'전투 구간 '+i,systemImpact:'다음 목표 '+i
+  }));
+  approved.content.contentVarietyPlan={
+    regions:Array.from({length:9},(_,i)=>({id:'area-'+i,name:'지역 '+i})),
+    enemiesOrChallenges:[{name:'지휘관',counterplay:'공격 전조에 회피'}]
+  };
+  const owner='roblox-games/volume-scope/server/Game.server.luau';
+  const obs={sourceRoot:'roblox-games/volume-scope',sourceTreeFingerprint:'a'.repeat(64),
+    topFiles:[{file:owner,score:15}],sourceAnchors:[],observations:[],
+    signals:{combat:1,progression:1,save:1,content:1}};
+  const create=(previousDirective=null,previousDirectiveOutcome='',fingerprint='a'.repeat(64),runtimeEvidence={})=>
+    buildGameSpecificBuildUpDirective({
+      gameId:'volume-scope',platform:'ROBLOX',designRecord:approved,
+      sourceObservation:{...obs,sourceTreeFingerprint:fingerprint},
+      responsibleFiles:[owner],previousDirective,previousDirectiveOutcome,runtimeEvidence
+    });
+  const first=create();
+  const volume=first.designedGameVolume;
+  assert.equal(first.designImplementationContext.signatureSystems.length,17);
+  assert.equal(first.designImplementationContext.systemInterconnections.length,18);
+  assert.equal(first.designImplementationContext.contentExpansionPlan.length,3);
+  assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,17);
+  assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,18);
+  assert.equal(volume.authoredCounts.CONTENT_MILESTONE,3);
+  assert.equal(volume.authoredCounts.VARIETY_REGIONS+volume.authoredCounts.VARIETY_ENEMIESORCHALLENGES,10);
+  assert.equal(volume.authoredCounts.CORE_LOOP,5);
+  assert.equal(volume.selectionVersion,2);
+  assert.equal(volume.activeItem.ref,'CORE_LOOP[0]');
+  assert.ok(volume.items.every(row=>!row.implementationVerified&&!row.runtimeVerified));
+  assert.match(directivePrompt(first),/DESIGNED_GAME_UNIT_SELECTION: active=CORE_LOOP\[0\]/);
+ 
+  const generic=create(first,'verified','b'.repeat(64),{runtimeObserved:true,runtimePassed:true});
+  assert.equal(generic.designedGameVolume.activeItem.ref,volume.activeItem.ref,
+    'general runtime success without content-specific replay does not advance the unit');
+  assert.equal(generic.designedGameVolume.scopedAdvancementObserved,false);
+ 
+  const failed=create(generic,'failed','c'.repeat(64),{
+    runtimeObserved:true,runtimePassed:false,failureStage:'F3',failureSignature:'state-regression'
+  });
+  assert.equal(failed.primaryFocus,'STABILITY');
+  assert.equal(failed.designedGameVolume.activeItem,null);
+  assert.equal(failed.designedGameVolume.deferredItem.ref,volume.activeItem.ref);
+ 
+  const restored=create(failed,'verified','d'.repeat(64),{runtimeObserved:true,runtimePassed:true});
+  assert.equal(restored.designedGameVolume.activeItem.ref,volume.activeItem.ref,
+    'repair of an unrelated foundation error cannot close pending content');
+  const scoped=create(restored,'verified','e'.repeat(64),{
+    runtimeObserved:true,runtimePassed:true,
+    contentUnitVerification:{
+      ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
+      gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'e'.repeat(64),
+      sourceFile:owner,sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
+      independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
+      runtimeRunId:'actual-runtime-run',evidenceArtifactId:'verified-artifact'
+    }
+  });
+  assert.notEqual(scoped.designedGameVolume.activeItem.ref,volume.activeItem.ref,
+    'only a scoped successful native replay may change the selected content item');
+  assert.equal(scoped.designedGameVolume.scopedAdvancementObserved,true);
+  assert.equal(scoped.designedGameVolume.runtimeVerifiedCount,0,
+    'directive planning must not write authoritative runtime PASS');
+  assert.ok(scoped.designedGameVolume.items.every(row=>row.runtimeVerified===false));
+ 
+  const wrongSource=create(restored,'verified','f'.repeat(64),{
+    runtimeObserved:true,runtimePassed:true,
+    contentUnitVerification:{
+      ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
+      gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'f'.repeat(64),
+      sourceFile:'roblox-games/volume-scope/server/Fake.server.luau',
+      sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
+      independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
+      runtimeRunId:'generic-runtime',evidenceArtifactId:'generic-artifact'
+    }
+  });
+  assert.equal(wrongSource.designedGameVolume.activeItem.ref,volume.activeItem.ref);
+});
+ 
+test('preservation-only approved design never schedules novel gameplay from the content inventory',()=>{
+  const approved=design();
+  approved.content.preservationContract={mode:'PRESERVATION_PRESENTATION_UPGRADE'};
+  const owner='roblox-games/volume-preserve/client/Game.client.luau';
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'volume-preserve',platform:'ROBLOX',designRecord:approved,
+    sourceObservation:{sourceRoot:'roblox-games/volume-preserve',sourceTreeFingerprint:'b'.repeat(64),
+      topFiles:[{file:owner,score:10}],sourceAnchors:[],observations:[],
+      signals:{combat:0,progression:0,content:1}},
+    responsibleFiles:[owner]
+  });
+  assert.equal(directive.designedGameVolume.mode,'PRESERVATION_PRESENTATION_MILESTONES_ONLY');
+  assert.equal(directive.designedGameVolume.activeItem,null);
+  assert.equal(directive.designedGameVolume.deferredItem,null);
+  assert.equal(directive.designedGameVolume.runtimeVerifiedCount,0);
+});

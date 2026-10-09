@@ -2299,8 +2299,15 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const volumeOwned=volumePool.filter(row=>(row.sourceCandidates||[]).some(candidate=>
     responsibleFiles.some(file=>posix(candidate.file)===posix(file)||posix(candidate.file).endsWith('/'+posix(file)))));
   const volumeChoices=volumeOwned.length?volumeOwned:volumePool;
-  const chosenVolume=volumeApplicable&&volumeChoices.length
-    ?volumeChoices[(Math.max(1,Number(d.generation)||1)-1)%volumeChoices.length]:null;
+  // #6509의 항목 인덱스를 재사용한다. 신규 계약은 세대 번호가 아닌 검증된 항목 위치를 따른다.
+  const selectedFromQueue=volume.selectionVersion===2?volume.activeItem:null;
+  const ownsSelected=!selectedFromQueue?.sourceCandidates?.length||!responsibleFiles.length
+    ||selectedFromQueue.sourceCandidates.some(candidate=>responsibleFiles.some(file=>
+      posix(candidate.file)===posix(file)||posix(candidate.file).endsWith('/'+posix(file))));
+  const chosenVolume=volumeApplicable
+    ?volume.selectionVersion===2?(ownsSelected?selectedFromQueue:null)
+      :(volumeChoices.length?volumeChoices[(Math.max(1,Number(d.generation)||1)-1)%volumeChoices.length]:null)
+    :null;
   // 설계별 지형·행동·보상·비용·쿨다운 원문을 기존 책임 워커에 전달한다.
   // 상세 항목은 일반화하지 않으며 원본 수치와 규칙을 보존한다.
   const volumeSpecFields=[
@@ -2372,6 +2379,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
     ...(volume.version===1?[`contentVolume=authored:${Number(volume.authoredItemCount||0)} sourceNamedCandidates:${Number(volume.namedSourceCandidateCount||0)} sourceReview:${Number(volume.sourceReviewRequiredCount||0)} runtimeVerified:${Number(volume.runtimeVerifiedCount||0)} status:DESIGN_SOURCE_AND_RUNTIME_UNVERIFIED`]:[]),
+    ...(volume.selectionVersion===2?[`contentUnitSelection=active:${clean(volume.activeItem?.ref)||'NONE'} deferred:${clean(volume.deferredItem?.ref)||'NONE'} next:${clean(volume.nextItemSelection)} proof:EXACT_NATIVE_PLAYER_ACTION_AND_INDEPENDENT_QA_REQUIRED pass:UNVERIFIED`]:[]),
     ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} linkedRules:${(chosenVolume.linkedRuleIds||[]).map(clean).join(',')||'NONE'} sourceOwner:${clean(chosenVolume.designResponsibleSystem)||'REVIEW_ACTUAL_SOURCE_OWNER'} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
     ...volumeSpecs,
     ...(chosenVolume?[`volumeRequiredBehavior=${(chosenVolume.requiredBehavior||[]).map(clean).filter(Boolean).join(' | ')}; status=NATIVE_PLAY_QA_REQUIRED; designOnlyPass=FORBIDDEN`]:[]),
@@ -2408,11 +2416,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
+    'visual=','platform=','preserve=','acceptance=','nextVibeAction=','contentUnitSelection=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'nextVibeAction=','contentVolume=','contentUnitSelection=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2448,7 +2456,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
+    'contentTheme=','contentVolume=','contentUnitSelection=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
