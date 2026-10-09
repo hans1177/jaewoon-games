@@ -1341,25 +1341,31 @@
         "{\"from\": \"START_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임 시작 후 목표 설정 및 초기 상태 전환",
         "playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use\n"
       ]
+    },
+    "local_authoring_parts::ef2597c803daffc9fd163acd2eff21e88a71a19a2d49d5eb5f6c20aabe6dcdd6:fromSystem": {
+      "fromSystem": "START_GAME"
+    },
+    "local_authoring_parts::ef2597c803daffc9fd163acd2eff21e88a71a19a2d49d5eb5f6c20aabe6dcdd6:toSystem": {
+      "toSystem": "BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 138,
-      "successes": 138,
+      "calls": 140,
+      "successes": 140,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11015027,
-      "lastMs": 92842,
+      "totalMs": 11191983,
+      "lastMs": 88476,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:04:03.658Z"
+      "updatedAt": "2026-10-09T05:07:00.616Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T05:04:03.658Z",
+  "updatedAt": "2026-10-09T05:07:00.616Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3627,7 +3633,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:04:03.658Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:07:00.616Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
