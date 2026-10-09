@@ -588,25 +588,42 @@
       "name": "오픈월드 멀티 시뮬레이터의 DELVE 규칙",
       "purpose": "플레이어 선택에 따른 월드 상태와 보상/위험의 순차적 루프 재설계 및 게임 루프 재시작을 관리하는 주요 규칙",
       "playerChoice": "월드 상태, 자원, 위험, 진행 상태를 바탕으로 장르 핵심 행동을 결정하여, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어짐"
+    },
+    "local_authoring_parts::71443f285aa1cf8eca064a559a52b4ddae47c35920290fa5a8e23a5a6ffead2a:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "stateOutputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "name": "개미 시뮬레이터 기본 규칙",
+      "purpose": "게임 내 상태 및 목표 추론을 통해 장르 핵심 행동 선택 및 월드 상태 변환, 보상/위험 발생, 다음 목표 결정의 순차적 루프 실행",
+      "playerChoice": "실제 입력으로 월드 상태와 보상/위험 조정됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 13,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1238901,
-      "lastMs": 77628,
+      "totalMs": 1275191,
+      "lastMs": 36290,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:00:48.911Z"
+      "updatedAt": "2026-10-09T23:03:02.939Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:02:26.645Z",
+  "updatedAt": "2026-10-09T23:03:02.939Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2342,10 +2359,10 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:00:48.913Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:03:02.939Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
