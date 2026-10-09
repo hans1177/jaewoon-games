@@ -247,9 +247,9 @@ test('기존 HTML 게임과 저장 데이터는 검증 없는 Unity 정식 주�
   assert(originFetch>=0&&migrationGate>originFetch&&deleteRuntime>migrationGate,
     '검증 전에 현재 정식 게임 디렉터리를 삭제해서는 안 된다');
   assert.match(publish,/if \[ "\$READINESS_PASS" = 'true' \] && git cat-file -e "origin\/main:web-games\/\$GAME_ID\/index\.html"/);
-  const grepLine=publish.split('\\n').find(line=>line.includes("grep -Eq 'createUnityInstance"));
+  const grepLine=publish.split(String.fromCharCode(10)).find(line=>line.includes("grep -Eq 'createUnityInstance"));
   assert(grepLine,'expected native Unity index detection');
-  assert.equal((grepLine.match(/\\\\/g)||[]).length,1,'grep ERE must contain only one escape before opening parenthesis');
+  assert.equal([...grepLine].filter(char=>char.charCodeAt(0)===92).length,1,'grep ERE requires exactly one escape before literal parenthesis');
   assert.match(publish,/exit 1/);
   assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
   assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
