@@ -631,25 +631,49 @@
         "월드 상태"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::827421626cf823aad928ed22c1cca78f84a91e7194ed40e728b4d76fe2e51c2e:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEMS[4]",
+      "trigger": "월드 상태",
+      "stateChange": "새로운 사건 생성"
+    },
+    "local_authoring_parts::239f7958dad280e71ef6df9fa1438f2e0b1533db1a341f06c01d025e9ca6bba2:systemInterconnections:3": {
+      "fromId": "MAIN",
+      "toId": "SIGNATURE_SYSTEMS[4]",
+      "stateKeys": [
+        "월드 상태"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "SIGNATURE_SYSTEMS[4]",
+      "trigger": "월드 상태",
+      "stateChange": "새로운 사건 생성"
+    },
+    "local_authoring_parts::76218e83646e959aab0076f890a7df50e1ce6f0e73d638a99f3cd1d386dee25a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MAIN",
+      "toId": "SIGNATURE_SYSTEMS[4]",
+      "stateKeys": [
+        "월드 상태"
+      ],
+      "fromSystem": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 836765,
-      "lastMs": 31266,
+      "totalMs": 898877,
+      "lastMs": 31297,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:19:56.226Z"
+      "updatedAt": "2026-10-09T18:20:58.343Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:19:56.227Z",
+  "updatedAt": "2026-10-09T18:20:58.343Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2538,7 +2562,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:19:56.226Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:20:58.343Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
