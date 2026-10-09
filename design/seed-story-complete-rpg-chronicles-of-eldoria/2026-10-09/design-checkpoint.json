@@ -34,25 +34,42 @@
         "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
         "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
       ]
+    },
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:0": {
+      "id": "ELDORIA_CORE_SIGNATURE_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORATION_STATUS",
+        "CHARACTER_INTERACTION_STATUS",
+        "STORY_PROGRESS_STATUS"
+      ],
+      "stateOutputs": [
+        "LOCATION_CHANGE_STATUS",
+        "ITEM_GAINED_STATUS",
+        "EVENT_TRIGGERED_STATUS"
+      ],
+      "name": "엘도리아 연대기 시그니처 체계 1: 세계 속에서 탐험, 인물 만나며 이야기 진척시키는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.의 결과로 다음 세계 상태와 접근 가능성을 결정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 323193,
-      "lastMs": 46211,
+      "totalMs": 376165,
+      "lastMs": 52972,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:48:45.226Z"
+      "updatedAt": "2026-10-09T15:49:38.235Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:43:21.699Z",
-  "updatedAt": "2026-10-09T15:48:45.227Z",
+  "updatedAt": "2026-10-09T15:49:38.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1795,7 +1812,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:48:45.226Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:49:38.235Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
