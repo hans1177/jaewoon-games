@@ -3,47 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-s7h7w8",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs",
-        "assets/roblox/world-ghosts/native/spider/spider.glb",
-        "assets/roblox/world-ghosts/native/spider/spider.png",
-        "assets/roblox/world-ghosts/native/spider/evidence.json",
-        "assets/generated/unity/survival/background/asset.glb",
-        "assets/generated/unity/survival/background/master.glb",
-        "assets/generated/unity/survival/background/preview.png",
-        "assets/generated/unity/survival/background/preview-master.png",
-        "assets/generated/unity/survival/background/application.json",
-        "assets/generated/unity/survival/background/evidence.json",
-        "assets/generated/unity/survival/item/asset.glb",
-        "assets/generated/unity/survival/item/master.glb",
-        "assets/generated/unity/survival/item/preview.png",
-        "assets/generated/unity/survival/item/preview-master.png",
-        "assets/generated/unity/survival/item/application.json",
-        "assets/generated/unity/survival/item/evidence.json",
-        "assets/generated/unity/survival/prop/asset.glb",
-        "assets/generated/unity/survival/prop/master.glb",
-        "assets/generated/unity/survival/prop/preview.png",
-        "assets/generated/unity/survival/prop/preview-master.png",
-        "assets/generated/unity/survival/prop/application.json",
-        "assets/generated/unity/survival/prop/evidence.json"
-      ],
-      "baseSha": "4b9da10951c12b96f6de4ba4df05a425ea53254f",
-      "runId": "37887772657",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-09T05:29:48.302Z",
-      "expiresAt": "2026-10-09T06:14:48.302Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-83njp9",
       "worker": "vibe2",
       "taskId": "internal-motion-kuchisake-walk-v1",
@@ -250,6 +209,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-bulgasari-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1mhraj6",
+      "worker": "vibe2",
+      "taskId": "internal-motion-karakasa-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/karakasa/init.luau"
+      ],
+      "baseSha": "6f991643f40a068aad33c6d01c3b4688f19603bc",
+      "runId": "37888534274",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-09T06:15:10.607Z",
+      "expiresAt": "2026-10-09T07:00:10.607Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-karakasa-walk-v1"
       ]
     }
   ]
