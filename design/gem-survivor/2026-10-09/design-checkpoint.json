@@ -19,25 +19,42 @@
     "local_authoring_parts::c82a30e6f8d26aaf18be5250dc79b22a116f34907c7c01a4bbeb9e82db7c477d:identity,playerFantasy": {
       "identity": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다.",
       "playerFantasy": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다."
+    },
+    "local_authoring_parts::c82a30e6f8d26aaf18be5250dc79b22a116f34907c7c01a4bbeb9e82db7c477d:coreFun": {
+      "coreFun": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다."
+    },
+    "local_authoring_parts::ccb602d5c03b8879b1cd4505e73a11f633e89b8db5ee2667c8f54bde9ad3ca32:identity,playerFantasy,coreFun": {
+      "identity": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다.",
+      "playerFantasy": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다.",
+      "coreFun": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다."
+    },
+    "local_authoring_parts::86dd764bb27606cc9ec21fe0d05cc180b8198c024a706b448cf3436191433d02:coreLoop": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택",
+        "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 223334,
-      "lastMs": 27176,
+      "totalMs": 300558,
+      "lastMs": 46112,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:59:39.095Z"
+      "updatedAt": "2026-10-09T13:00:56.325Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:55:55.739Z",
-  "updatedAt": "2026-10-09T12:59:39.097Z",
+  "updatedAt": "2026-10-09T13:00:56.326Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:59:39.097Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:00:56.326Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
