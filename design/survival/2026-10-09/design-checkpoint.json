@@ -1480,25 +1480,34 @@
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
       "trigger": "RUN_REWARDS_OR_EXPERIENCE",
       "stateChange": "PROGRESSION_CHOICE_GENERATED"
+    },
+    "local_authoring_parts::f14e309df3803ccb30b3f7beb57a1231133b14a165d43b8ccad388d4b2ef7579:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 135,
-      "successes": 135,
+      "calls": 136,
+      "successes": 136,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7585785,
-      "lastMs": 91110,
+      "totalMs": 7678868,
+      "lastMs": 93083,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:11:48.160Z"
+      "updatedAt": "2026-10-09T04:13:21.247Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T04:11:48.163Z",
+  "updatedAt": "2026-10-09T04:13:21.247Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3843,7 +3852,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:11:48.163Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:13:21.247Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
