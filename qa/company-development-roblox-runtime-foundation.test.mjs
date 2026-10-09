@@ -1502,3 +1502,47 @@ test('survival anchored world ground contains the camp, resources and enemy spaw
   assert.doesNotMatch(source,/spawnHit\.Position\.Y - nativeFoundationSpawn\.Size\.Y \* 0\.5/);
   assert.match(source,/params\.ExcludeInstances = \{character, nativeFoundationSpawn\}/);
 });
+
+
+/* ── F1: 비시뮬레이션 관측과 실제 런타임 센티널 분리 ── */
+test('headless first frame must read actual runtime sentinel but proven unsupported spawn remains blocked',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const first=workflow.indexOf("            if(engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true\n              &&(engineProbe?.worldEvidence?.spawnGroundingObserved!==true");
+ const next=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",first);
+ const sentinel=workflow.indexOf('            let sentinel;',next);
+ assert.ok(first>=0&&next>first&&sentinel>next,'the existing first frame must feed the canonical exact runtime sentinel');
+ const control=workflow.slice(first,next);
+ const run=new Function('engineProbe',\`const item={gameId:'canary'},candidate={placeId:'42',versionNumber:11};
+ const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64),stamp='2026-10-09T00:00:00Z';
+ let failed=0,pending=0,changed=false,reachedSentinel=false;
+ const console={log(){}};
+ for(let i=0;i<1;i++){ \${control} reachedSentinel=true; }
+ return {item,failed,pending,reachedSentinel};\`);
+ const base={
+   engineExecuted:true,exactPlace:true,exactVersion:true,
+   serverBootObserved:false,serverContextExecuted:true,
+   serverBootEvidence:{simulationRunningAfter:false,simulationStartSucceeded:false},
+   worldEvidence:{observed:true,basePartCount:1,spawnCount:0,
+     runtimeWorldReady:false,spawnGroundingObserved:false,
+     unsupportedSpawns:0,floatingSpawns:0}
+ };
+ const unobserved=run(base);
+ assert.equal(unobserved.reachedSentinel,true,'a headless world scan is not game-script boot failure');
+ assert.equal(unobserved.item.robloxRuntimeFoundationPassed,false,'sentinel is still required before F1 PASS');
+ assert.equal(unobserved.item.robloxFailureSignature,'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED');
+ assert.equal(unobserved.pending,0,'do not count pending twice before the actual sentinel');
+ const invalidGround=run({...base,worldEvidence:{...base.worldEvidence,
+   spawnCount:1,spawnGroundingObserved:true,unsupportedSpawns:1}});
+ assert.equal(invalidGround.reachedSentinel,false,'observed unsupported spawn cannot be ignored');
+ assert.equal(invalidGround.failed,1);
+ assert.equal(invalidGround.item.robloxRuntimeFoundationPassed,false);
+ const grounded=run({...base,worldEvidence:{...base.worldEvidence,
+   spawnCount:1,spawnGroundingObserved:true}});
+ assert.equal(grounded.reachedSentinel,true);
+ const unavailable=workflow.slice(workflow.indexOf('if(/HTTP_404/.test(message))',sentinel));
+ assert.match(unavailable,/const unobservedFirstFrame=/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.sourceRevision===sourceRevision/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.artifactIdentity===artifactIdentity/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.placeId===String\(candidate\.placeId\)/);
+ assert.match(unavailable,/unobservedFirstFrame\s*\?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
+});
