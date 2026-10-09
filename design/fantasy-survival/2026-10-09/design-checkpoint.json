@@ -34,25 +34,42 @@
         "선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
         "주변의 적·아이템·NPC와 플레이어의 선택이 서로 영향을 미치며, 시스템 내에서 조건별로 변화된 대안과 결과를 경험하게 된다."
       ]
+    },
+    "local_authoring_parts::e0938ca09e9fb5c87cb1213d77cedc142c1c5fdb3eb0dc0da90350a79f3346a1:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "environment",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "newBehavior",
+        "newRelationship",
+        "reward",
+        "risk"
+      ],
+      "name": "worldRuleSystem",
+      "purpose": "enforce causal relationships between player actions and environmental responses",
+      "playerChoice": "select new behavior, relationship, reward, or risk based on current state and rules"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 449660,
-      "lastMs": 102821,
+      "totalMs": 539370,
+      "lastMs": 89710,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:33:07.145Z"
+      "updatedAt": "2026-10-09T02:34:36.857Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T02:25:37.455Z",
-  "updatedAt": "2026-10-09T02:33:07.145Z",
+  "updatedAt": "2026-10-09T02:34:36.857Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T02:33:07.145Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:34:36.857Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
