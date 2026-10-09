@@ -440,21 +440,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 816029,
-      "lastMs": 101184,
+      "totalMs": 914096,
+      "lastMs": 98067,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:40:25.440Z"
+      "updatedAt": "2026-10-09T22:42:03.508Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:11:00.791Z",
-  "updatedAt": "2026-10-09T22:40:25.440Z",
+  "updatedAt": "2026-10-09T22:42:03.510Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2189,11 +2189,22 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::36b21ab42f649072a2f455b57cd46c92fe62466d77bd1e49fe075f607c1f2635:signatureSystems:2": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "signatureSystems[0]",
+          "signatureSystems[1]"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::0b98b41a5b0a48e30f17048b4f6aa30b1607c301da2c9fcf16dce00503809f92:signatureSystems:2": 2,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "local_authoring_parts::36b21ab42f649072a2f455b57cd46c92fe62466d77bd1e49fe075f607c1f2635:signatureSystems:2": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2291,10 +2302,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:40:25.440Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T22:42:03.508Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
