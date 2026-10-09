@@ -62,25 +62,39 @@
       "name": "CASUAL_GAME_FLOW_A",
       "purpose": "MAIN × A × B × c의 상태 교환을 실제 시스템으로 연결하는 보조 인과법칙",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nFinish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nStart again with the same rules and state to continue the game flow."
+    },
+    "local_authoring_parts::1b6c121ed79c77fde8de4deea5f9b03e9a83f7b7958abb5bc32ef39086291578:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_INPUT",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "END_RESULT"
+      ],
+      "name": "CASUAL_GAME_FLOW_B",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nStart immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 424243,
-      "lastMs": 42109,
+      "totalMs": 666240,
+      "lastMs": 241997,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:13:17.601Z"
+      "updatedAt": "2026-10-09T09:17:19.599Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:13.327Z",
-  "updatedAt": "2026-10-09T09:13:17.601Z",
+  "updatedAt": "2026-10-09T09:17:19.599Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2004,7 +2018,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:13:17.601Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:17:19.599Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
