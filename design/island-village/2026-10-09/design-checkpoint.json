@@ -34,25 +34,39 @@
         "Use them to build or improve one village function.",
         "Unlock a new resident, activity or area and choose the next village goal."
       ]
+    },
+    "local_authoring_parts::dd3e9341221ddf743dd6fe43ccda8a36ee496999c7bed8803f5442a64fc383d9:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "BUILD_VILLAGE_FUNCTION",
+        "UNLOCK_NEW_ELEMENT"
+      ],
+      "name": "ISLAND_RESOURCE_MANAGER",
+      "purpose": "Manage and allocate island resources to drive village development",
+      "playerChoice": "Select resource types to build or improve village functions"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 339646,
-      "lastMs": 36694,
+      "totalMs": 435622,
+      "lastMs": 95976,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:56:29.434Z"
+      "updatedAt": "2026-10-09T11:58:05.412Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T11:56:29.434Z",
+  "updatedAt": "2026-10-09T11:58:05.412Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2133,7 +2147,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:56:29.434Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:58:05.412Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
