@@ -62,25 +62,39 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "END_WORLD_STATE"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "Player action that directly alters the world state by triggering a brief run with feedback, collecting rewards, and making a small risk or route choice before ending.",
+      "playerChoice": "Select a target location, obtain a reward, and take a low-risk path to progress in the game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 536973,
-      "lastMs": 16073,
+      "totalMs": 621953,
+      "lastMs": 84980,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:50:40.743Z"
+      "updatedAt": "2026-10-09T01:17:42.666Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:16:17.677Z",
+  "updatedAt": "2026-10-09T01:17:42.666Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2180,8 +2194,8 @@
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T23:50:40.743Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T01:17:42.666Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
