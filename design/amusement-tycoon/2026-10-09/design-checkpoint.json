@@ -525,25 +525,41 @@
     },
     "local_authoring_parts::a419a538f5ce773556b1e1198666e08eb550b5a19f5deb831f1866089cc358a6:trigger": {
       "trigger": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::a419a538f5ce773556b1e1198666e08eb550b5a19f5deb831f1866089cc358a6:stateChange": {
+      "stateChange": "CORE_FUN_01에서 RUN_INPUT로 연결되어, 즉시 상태 변화가 발생하며, START_INPUT, SCORE_KEY, DISTANCE_KEY 등의 입력값을 기반하여 플레이어에게 명확한 피드백을 제공하고, 적절한 리워드 수집 및 소소한 위험 또는 경로 선택을 수행하여 게임 경험을 강화한다."
+    },
+    "local_authoring_parts::e92e9b9ad621b5d46884c6c466bd9576dd307ba268ee73d40cc413be024af8b7:systemInterconnections:0": {
+      "fromId": "CORE_FUN_01",
+      "toId": "RUN_INPUT",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_KEY",
+        "DISTANCE_KEY"
+      ],
+      "fromSystem": "CORE_FUN_01",
+      "toSystem": "RUN_INPUT",
+      "trigger": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "stateChange": "CORE_FUN_01에서 RUN_INPUT로 연결되어, 즉시 상태 변화가 발생하며, START_INPUT, SCORE_KEY, DISTANCE_KEY 등의 입력값을 기반하여 플레이어에게 명확한 피드백을 제공하고, 적절한 리워드 수집 및 소소한 위험 또는 경로 선택을 수행하여 게임 경험을 강화한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1193453,
-      "lastMs": 87614,
+      "totalMs": 1286441,
+      "lastMs": 92988,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:37:07.285Z"
+      "updatedAt": "2026-10-09T09:38:40.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:37:07.285Z",
+  "updatedAt": "2026-10-09T09:38:40.277Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2892,7 +2908,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:37:07.285Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:38:40.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
