@@ -599,21 +599,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1758551,
-      "lastMs": 100061,
+      "totalMs": 1858583,
+      "lastMs": 100032,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:34:44.567Z"
+      "updatedAt": "2026-10-09T18:36:24.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:25.966Z",
-  "updatedAt": "2026-10-09T18:34:44.567Z",
+  "updatedAt": "2026-10-09T18:36:24.603Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2312,15 +2312,30 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::d1ec8e6617a030a1e4888d405bd4af3e47f2cf500f65cb86ee1fa2740e3287dd:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "signatureSystems[0]",
+          "signatureSystems[1]",
+          "signatureSystems[2]",
+          "signatureSystems[3]"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::d1ec8e6617a030a1e4888d405bd4af3e47f2cf500f65cb86ee1fa2740e3287dd:signatureSystems:4": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "de3a2567b5b3fd56b4cf08b531052b7041f29bdd1150c9c0d56b0b94a44a8dd4": true,
     "12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:34:44.567Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T18:36:24.601Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
