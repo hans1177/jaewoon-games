@@ -279,11 +279,36 @@ test('V5 creative C and individually sourced A/B are required for authored build
   assert.equal(authored.source,'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS');
   assert.deepEqual(authored.roleSystemIds.c,[]);
   assert.equal(authored.cPrimarySecondaryGenres.length,2);
+  const v5Trace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:base.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(v5Trace.roleBindings.map(row=>row.role),['MAIN','A','B','@']);
+  assert.equal(v5Trace.creativeCBinding.designAuthored,true);
+  assert.deepEqual(v5Trace.creativeCBinding.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+  assert.ok(!v5Trace.gapReasons.some(reason=>reason.startsWith('DESIGN_ROLE_NOT_AUTHORED:')||reason.includes('DESIGN_MAIN_A_B_C_AT_INCOMPLETE')));
+  assert.equal(v5Trace.sourceImplementationPassed,false,'authored grammar is never runtime implementation evidence');
   const broken=structuredClone(base);
   broken.content.creativeGrammar.cGenres.pop();
   broken.content.signatureSystems.push({id:'legacy-c',grammarRole:'c',name:'날씨',purpose:'이전 버전의 기계적 상황 변화',playerChoice:'날씨 확인',stateInputs:['SchoolState'],stateOutputs:['SchoolState']});
   const unverified=buildGameSpecificBuildUpDirective({...args,designRecord:broken}).identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
   assert.equal(unverified.source,'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE');
+  const missingGenreTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:broken.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.equal(missingGenreTrace.creativeCBinding.designAuthored,false);
+  assert.ok(missingGenreTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
+  const legacy=structuredClone(base.content);
+  delete legacy.creativeGrammar;
+  legacy.signatureSystems.push({
+    id:'old-weather',grammarRole:'c',name:'기존 날씨 규칙',
+    purpose:'기존 환경 상태를 활용한 선택 제약',playerChoice:'현재 날씨에 맞춰 행동을 선택한다',
+    stateInputs:['SchoolState'],stateOutputs:['SchoolState']
+  });
+  const legacyTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:legacy,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(legacyTrace.roleBindings.map(row=>row.role),['MAIN','A','B','c','@']);
+  assert.ok(!legacyTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{

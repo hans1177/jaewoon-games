@@ -20,6 +20,22 @@ import {normalizeWebCanonicalAndExpansionPolicy} from '../tools/company-design-p
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+test('V5 designer instructions require creative C without inventing a legacy c mechanical axis',()=>{
+  const draftStart=design.indexOf('async function generateDesignerDraft(){');
+  const draftEnd=design.indexOf('function scoreCurrentDesign(',draftStart);
+  const draft=design.slice(draftStart,draftEnd);
+  const authorStart=design.indexOf('async function authorDesignInCheckpointedSlices(');
+  const authorEnd=design.indexOf('function ',authorStart+15);
+  const author=design.slice(authorStart,authorEnd);
+  assert.ok(draftStart>=0&&draftEnd>draftStart&&authorStart>=0);
+  assert.match(draft,/MAIN\/A\/B\/C\/@와 상태 변화를 직접 생성한다/);
+  assert.doesNotMatch(draft,/MAIN\/A\/B\/c\/@/);
+  assert.match(draft,/소문자 c 보조 시스템을 필수로 생성하지 않는다/);
+  assert.match(draft,/기존 c 규칙이 실제 원본에 있으면 그대로 보존한다/);
+  assert.match(author,/MAIN\/A\/B\/C\/@와 causalDNA 연결/);
+  assert.doesNotMatch(author,/MAIN\/A\/B\/c\/@/);
+});
+
 // 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
 test('design target selection never waits for three other games to validate the engine',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');

@@ -758,7 +758,21 @@ export function buildDesignToPlatformCodingTrace({
     'NOT_SELECTED_NATIVE_PLATFORM';
   const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
   const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
-  const roles=['MAIN','A','B','c','DELVE'];
+  // V5의 C는 두 소재·두 장르의 인과 계약이다. 원본에 없는 예전 c 기계축을 요구하지 않는다.
+  const creativeGrammar=design.creativeGrammar&&typeof design.creativeGrammar==='object'&&!Array.isArray(design.creativeGrammar)?design.creativeGrammar:null;
+  const hasCreativeGrammar=Boolean(creativeGrammar&&Object.keys(creativeGrammar).length);
+  const cThemes=Array.isArray(creativeGrammar?.cThemes)?creativeGrammar.cThemes:[];
+  const cGenres=Array.isArray(creativeGrammar?.cGenres)?creativeGrammar.cGenres:[];
+  const sourcedAB=['a','b'].every(key=>clean(creativeGrammar?.[key]?.system)&&clean(creativeGrammar?.[key]?.material)
+    &&clean(creativeGrammar?.[key]?.materialDomain)&&clean(creativeGrammar?.[key]?.stateChange));
+  const creativeCReady=hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
+    &&cThemes.length===2&&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cGenres.length===2&&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect);
+  const includeLegacyC=!hasCreativeGrammar||designRoles.some(row=>row?.grammarRole==='c');
+  const roles=['MAIN','A','B',...(includeLegacyC?['c']:[]),'DELVE'];
   const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
   const mode=clean(design.multiplayerMode).toUpperCase();
   const modeReady=['COOP','COMPETITIVE','HYBRID'].includes(mode);
@@ -845,7 +859,8 @@ export function buildDesignToPlatformCodingTrace({
     });
   });
   const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
-    &&bindings.every(row=>row.designStatus==='AUTHORED');
+    &&bindings.every(row=>row.designStatus==='AUTHORED')
+    &&(!hasCreativeGrammar||creativeCReady);
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
   const spatialReady=clean(unityDepth.dimension)==='3D'
@@ -863,7 +878,8 @@ export function buildDesignToPlatformCodingTrace({
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
   const gapReasons=[
-    ...(!authoredRolesComplete?['DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(!authoredRolesComplete?[hasCreativeGrammar?'DESIGN_MAIN_A_B_C_AT_INCOMPLETE':'DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(hasCreativeGrammar&&!creativeCReady?['DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING']:[]),
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
@@ -878,6 +894,13 @@ export function buildDesignToPlatformCodingTrace({
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
+    creativeCBinding:hasCreativeGrammar?Object.freeze({
+      themes:Object.freeze(cThemes.map(row=>Object.freeze({name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genreInterlock:clean(creativeGrammar?.cGenreInterlock),
+      abGameplayEffect:clean(creativeGrammar?.cWorldAndGameplayEffect),
+      designAuthored:Boolean(creativeCReady),runtimeVerified:false
+    }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
     executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
     gapReasons:Object.freeze(uniq(gapReasons)),
