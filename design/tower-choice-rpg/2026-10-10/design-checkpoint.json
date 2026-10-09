@@ -187,25 +187,32 @@
       },
       "playerFantasy": "생존 전략 - 플레이어 선택 및 결과의 연계",
       "coreFun": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성"
+    },
+    "local_authoring_parts::f28c2f9228c76d4b605374091a40c789fca92218544389f177d5dd10c9ba21eb:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        "선택 -> 상태 변화",
+        "보상/위험 -> 다음 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 673558,
-      "lastMs": 94423,
+      "totalMs": 764230,
+      "lastMs": 90672,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:51:42.440Z"
+      "updatedAt": "2026-10-09T20:53:13.115Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T20:51:42.441Z",
+  "updatedAt": "2026-10-09T20:53:13.115Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:51:42.441Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:53:13.115Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
