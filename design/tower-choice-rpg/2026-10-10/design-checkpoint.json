@@ -480,25 +480,38 @@
       "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
       "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성",
       "playerChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성"
+    },
+    "local_authoring_parts::bcc5d85de5af943c2f49e4e523820ddcf795a5507fb9dee1bce4864f250a1fd0:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "선택"
+      ],
+      "stateOutputs": [
+        "상태 변화"
+      ],
+      "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+      "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+      "playerChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2174553,
-      "lastMs": 101547,
+      "totalMs": 2276191,
+      "lastMs": 101638,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:54:32.819Z"
+      "updatedAt": "2026-10-09T22:56:14.460Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T22:54:32.821Z",
+  "updatedAt": "2026-10-09T22:56:14.460Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2353,10 +2366,10 @@
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:54:32.819Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:56:14.460Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
