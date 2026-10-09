@@ -519,25 +519,51 @@
       "name": "small-world survival pressure",
       "purpose": "to create a dynamic survival loop where player choices impact ecological consequences",
       "playerChoice": "selecting between resource gathering or combat"
+    },
+    "local_authoring_parts::3b792c572173a9d9702566cfd713d118174b655a8bf69988f80a77a20daaca56:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "Establishes the core gameplay mechanism of navigating a small-scale ecological environment through resource gathering and risk assessment.",
+      "playerChoice": "Player selects between gathering resources or engaging in combat based on environmental context and personal strategy."
+    },
+    "local_authoring_parts::3b792c572173a9d9702566cfd713d118174b655a8bf69988f80a77a20daaca56:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "Preserve original gameplay mechanics through ecological lens",
+      "playerChoice": "Select between resource gathering or combat strategies"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 650429,
-      "lastMs": 10553,
+      "totalMs": 671964,
+      "lastMs": 10173,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:52:46.474Z"
+      "updatedAt": "2026-10-09T22:53:08.012Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T22:52:46.474Z",
+  "updatedAt": "2026-10-09T22:53:08.012Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2340,7 +2366,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:52:46.474Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:53:08.012Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
