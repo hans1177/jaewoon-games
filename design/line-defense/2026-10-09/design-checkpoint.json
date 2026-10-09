@@ -1671,25 +1671,42 @@
         "TOWER_PLACEMENT"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::8ec192305954ff383a37de915735a1b88fd0adc234d5865905721e0d750c1d54:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "ENEMY_WAVE→BATTLE_STATUS",
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+    },
+    "local_authoring_parts::f089813c73c1567c4b08c975fcac2bc7be59989f7e39d7d6d8fbe05a1c8ce8bd:systemInterconnections:4": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "ENEMY_WAVE→BATTLE_STATUS",
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 124,
-      "successes": 124,
+      "calls": 125,
+      "successes": 125,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7700400,
-      "lastMs": 32793,
+      "totalMs": 7733852,
+      "lastMs": 33452,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:40:17.823Z"
+      "updatedAt": "2026-10-09T06:40:51.276Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T06:40:17.823Z",
+  "updatedAt": "2026-10-09T06:40:51.285Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3991,7 +4008,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 8
+    "designer_draft_slices::systems-progression": 9
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4030,10 +4047,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:40:17.823Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:40:51.280Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
