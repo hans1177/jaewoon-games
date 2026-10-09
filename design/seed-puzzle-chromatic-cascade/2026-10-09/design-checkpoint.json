@@ -1784,25 +1784,34 @@
       "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
       "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
       "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
+    },
+    "local_authoring_parts::067c0c567833a72b1b18feaa550b2c86bf35df4de9c5d29ccbacc99f13ac654c:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_MINIMUM_OR_MORE_LENGTH_AND_CONTENT_DESCRIPTION_IS_THE_SAME_AS_FOLLOWING_THE_SYSTEM_INTERCONNECTIONS_SECTION_OF_THE_GAMEPLA"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 140,
-      "successes": 140,
+      "calls": 141,
+      "successes": 141,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10184552,
-      "lastMs": 98813,
+      "totalMs": 10225316,
+      "lastMs": 40764,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:04:06.461Z"
+      "updatedAt": "2026-10-09T07:04:47.237Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T07:04:06.470Z",
+  "updatedAt": "2026-10-09T07:04:47.237Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3985,10 +3994,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:04:06.465Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:04:47.237Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
