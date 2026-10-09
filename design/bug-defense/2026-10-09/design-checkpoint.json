@@ -74,25 +74,38 @@
       "name": "ENVIRONMENTAL_ADAPTATION_B",
       "purpose": "Player's choice to adapt to the incoming insect wave and its threat pattern, influencing the game world state through resource allocation and strategic placement.",
       "playerChoice": "Adjust defenders and spend limited resources on the highest-value counter to optimize defense effectiveness and future strategy options."
+    },
+    "local_authoring_parts::60c69b056a106f6e1e2ee4b9d345f53431f2cae4d3c0dbefd3ef33ee64a64c65:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "ALTERED_WORLD_STATE"
+      ],
+      "name": "ENVIRONMENTAL_ADAPTATION_C",
+      "purpose": "Provides a flexible and adaptive system for responding to changing environmental conditions in the game world.",
+      "playerChoice": "The player can choose from multiple strategies and tactics that are dynamically adjusted based on the incoming insect wave pattern and the current state of the environment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 675430,
-      "lastMs": 98859,
+      "totalMs": 773503,
+      "lastMs": 98073,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:10:40.576Z"
+      "updatedAt": "2026-10-09T15:12:18.650Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:25.113Z",
-  "updatedAt": "2026-10-09T15:10:40.576Z",
+  "updatedAt": "2026-10-09T15:12:18.650Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1765,7 +1778,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:10:40.576Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:12:18.650Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
