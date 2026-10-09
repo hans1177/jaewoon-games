@@ -4098,7 +4098,8 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
           after=after.replace(find,replace);
         }
         if(!exact)continue; // 기존 exact-edit 검증 단계에서 별도로 거부한다.
-        const existing=inspectSourceFunctions(before),proposed=inspectSourceFunctions(after);
+        const language=/\.lua[u]?$/i.test(relative)?'luau':/\.cs$/i.test(relative)?'csharp':'javascript';
+        const existing=inspectSourceFunctions(before,{language}),proposed=inspectSourceFunctions(after,{language});
         if(!existing.length&&!proposed.length)continue; // 미지원 문법은 근거 없이 심볼 PASS를 주장하지 않는다.
         const existingByName=new Map(existing.map(row=>[row.name,row]));
         const proposedByName=new Map(proposed.map(row=>[row.name,row]));
