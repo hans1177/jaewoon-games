@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 매 단계에서 명확한 목표, 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 시작하며, 선택에 따라 월드 상태가 바뀌는 PUZZLE 게임입니다. 주제: 탐험, 재미: 반복 가능한 핵심 루프, 장르: 보드/전략/액션, 메인 장르: 탐험, 보조 장르: 선택 및 규칙 변주, 인과법칙: 현재 상태와 다음 선택의 비용/위험/보상 연결.",
       "coreFun": "플레이어는 매 단계에서 명확한 목표, 제한된 이동, 장애물 또는 시각적 퀴즈로 구성된 레벨을 시작하며, 선택에 따라 월드 상태가 바뀌고, 이 상태 변화는 새로운 문제 생성으로 이어지며, 재방문 과정에서는 월드 상태 변화와 새로운 문제 해결이 필요해짐."
+    },
+    "local_authoring_parts::3444c25122e3d5c59199edc50c367d22409ac05a2a46cc8be1a5b69486b9a749:coreLoop": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험/다음선택",
+        "플레이어의 선택에 따라 월드 상태가 바뀌며, 이 상태 변화는 새로운 문제 생성으로 이어진다.",
+        "재방문 과정에서는 월드 상태 변화와 새로운 문제 해결이 필요하며, 이는 플레이어의 숙련 및 재해석을 촉진함."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1405311,
-      "lastMs": 108408,
+      "totalMs": 1501964,
+      "lastMs": 96653,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:35:45.923Z"
+      "updatedAt": "2026-10-09T18:37:22.580Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:12:20.577Z",
-  "updatedAt": "2026-10-09T18:35:45.925Z",
+  "updatedAt": "2026-10-09T18:37:22.580Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2039,7 +2046,7 @@
     "7152648a695f3a3e80288876175094f85558d9bb2f4d50069bf247448899fc60": true,
     "91fc9141695613a090c370f3ef17ba68f342004feac6994305acfa09aacbcf7b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:35:45.925Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:37:22.580Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
