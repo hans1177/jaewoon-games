@@ -1306,25 +1306,28 @@
     },
     "local_authoring_parts::eed65fc9da17a9418902e74ef602ad66f7fb38e77bac25bb6eddb74f9892ca3f:retryFlow": {
       "retryFlow": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
+    },
+    "local_authoring_parts::eed65fc9da17a9418902e74ef602ad66f7fb38e77bac25bb6eddb74f9892ca3f:riskPressure": {
+      "riskPressure": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 138,
-      "successes": 138,
+      "calls": 139,
+      "successes": 139,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4577765,
-      "lastMs": 35720,
+      "totalMs": 4613436,
+      "lastMs": 35671,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:51:13.529Z"
+      "updatedAt": "2026-10-09T01:51:49.201Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:51:13.529Z",
+  "updatedAt": "2026-10-09T01:51:49.202Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3650,7 +3653,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:51:13.529Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:51:49.201Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
