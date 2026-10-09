@@ -34,25 +34,42 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::62eb6fc40f137ad41fb92fc9026038d741cfc5264986cd732bc310c0baf04c95:signatureSystems:0": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE",
+        "DISTANCE"
+      ],
+      "stateOutputs": [
+        "RUN_STATUS",
+        "REWARD",
+        "PROGRESSION"
+      ],
+      "name": "CORE_FUN_TO_LEARN",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 핵심 재미와 시스템 연결을 확정합니다.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. -> Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. -> Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 240447,
-      "lastMs": 33234,
+      "totalMs": 294323,
+      "lastMs": 53876,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:22:02.623Z"
+      "updatedAt": "2026-10-09T09:22:56.500Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:18:02.096Z",
-  "updatedAt": "2026-10-09T09:22:02.623Z",
+  "updatedAt": "2026-10-09T09:22:56.500Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2138,7 +2155,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:22:02.623Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:22:56.500Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
