@@ -27,25 +27,61 @@
       "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerFantasy": "알 도둑 대작전에서 플레이어는 Scout a small area and identify the target egg and patrol risk.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "coreFun": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::8536c2ac90fdca7c07f84829172eddea405db96319d6a00796717bf7d0de832b:coreLoop": {
+      "coreLoop": [
+        "Scout a small area and identify the target egg and patrol risk.",
+        "Create an opening, steal or move the egg and react to detection.",
+        "Escape with the reward and unlock a trick, route or harder heist."
+      ]
+    },
+    "local_authoring_parts::bad13b0f8731661aa930eff44b3ada0c9fcedd85cb46106de844e97b460320c5:signatureSystems:0": {
+      "id": "EGG-HEIST-SIGNATURE-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "SCOUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Egg Heist Signature System",
+      "purpose": "Main gameplay mechanism for risk-reward escape and strategic progression in a stealth comedy game.",
+      "playerChoice": "Scout, select, output, state change — all core mechanics of the game's unique playstyle and progression system."
+    },
+    "local_authoring_parts::bad13b0f8731661aa930eff44b3ada0c9fcedd85cb46106de844e97b460320c5:signatureSystems:1": {
+      "id": "EGG-HEIST-SIGNATURE-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "SCOUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Egg Heist Signature System II",
+      "purpose": "Player's core action and strategic choice that drives the game state change and generates emergent gameplay.",
+      "playerChoice": "Scout a small area and identify the target egg and patrol risk, then select an opening strategy to steal or move the egg while reacting to detection."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 283189,
-      "lastMs": 33266,
+      "totalMs": 452802,
+      "lastMs": 100647,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:21:47.483Z"
+      "updatedAt": "2026-10-09T08:24:37.101Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:04.269Z",
-  "updatedAt": "2026-10-09T08:21:47.484Z",
+  "updatedAt": "2026-10-09T08:24:37.101Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1907,7 +1943,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:21:47.484Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:24:37.101Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
