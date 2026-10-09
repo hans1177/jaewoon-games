@@ -268,7 +268,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!connected||!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main))){
       reject('DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED','SYSTEM_INTERCONNECTION_DESIGN',['systemInterconnections'],
         {edgeCount:edges.length,connected},
-        '기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
+        Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5
+          ?'기존 규칙의 실제 상태 입출력으로 MAIN/A/B/@를 연결하고 C 소재와 주·보조 장르가 A/B 선택에 영향을 주는 인과를 증명한다. 기존 c 시스템이 없으면 만들지 않는다. 임시 보상·가짜 상태를 추가하지 않는다.'
+          :'기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
     }
   }
   const detailed=requirements.required&&(requirePlayableContract||seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'||design.designIntegrityPlan?.authoringVersion===2||list(design.signatureSystems).some(row=>row.grammarRole));

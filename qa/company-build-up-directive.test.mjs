@@ -1079,7 +1079,9 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
     assert.match(worker,/designCodeRole=/);
     assert.match(worker,/designCodeVerification=/);
-    assert.match(worker,/KEEP EVERY MAIN\/A\/B\/c\/@ ROLE/);
+    assert.match(worker,/KEEP EVERY AUTHORED MAIN\/A\/B\/C\/@ ROLE/);
+    assert.match(worker,/designCodeCreativeC=/);
+    assert.match(worker,/Legacy c is optional in V5/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
