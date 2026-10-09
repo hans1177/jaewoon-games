@@ -1367,25 +1367,55 @@
       "toSystem": "LOCATION_CHANGE_STATE",
       "trigger": "EXPLORATION_STATE",
       "stateChange": "LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::b38238398dd0928c057cde5433eb02b7083659e9082dc565e19692bb25dad1aa:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::b38238398dd0928c057cde5433eb02b7083659e9082dc565e19692bb25dad1aa:toSystem,trigger,stateChange": {
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE",
+      "stateChange": "LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::6c1ba372c805362042f5d908eecaa6f89aa0b96a1134237e963b3def983cbe49:systemInterconnections:2": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE",
+      "stateChange": "LOCATION_CHANGE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 82,
-      "successes": 81,
+      "calls": 84,
+      "successes": 83,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 6511765,
-      "lastMs": 90755,
+      "totalMs": 6698973,
+      "lastMs": 92557,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:47:42.116Z"
+      "updatedAt": "2026-10-09T02:50:49.329Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T02:47:42.118Z",
+  "updatedAt": "2026-10-09T02:50:49.331Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3763,7 +3793,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:47:42.118Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:50:49.331Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
