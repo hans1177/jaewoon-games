@@ -312,25 +312,264 @@
           "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
         }
       ]
+    },
+    "local_authoring_parts::d50c00ffaa8817548a90ebcbb29a8ad6adbaef324d7ced3cdc203ff3324d1ad1:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::87eedd14560bd25f6a33d084f4ed0f99f6252ac0446309ef679650cbeb1fe557:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "탐험 행동 -> 인물 만나기 -> 스토리 진행 -> 정보 획득 -> 월드 상태 변경",
+        "플레이어 선택 -> 세계 규칙 변형 -> 새로운 사건 생성 -> 루프 회복"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경을 이해하며, 전투, 성장, 보상을 통한 인과 관계를 형성하는 주요 메커니즘",
+          "playerChoice": "타오르기, 스토리 진행, 정보 획득, 월드 상태 변경의 선택들 중 하나를 하는 실제 플레이어 행동 및 결과의 연결 구조를 구성함으로써 게임의 학문적 진입점과 인식 기반을 강화합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 전투, 성장, 보상을 통한 인과 관계에 참여하여 세계 규칙과 스토리 진행을 촉진하는 주제",
+          "playerChoice": "탐험 행동, 인물 만나기, 스토리 진행, 정보 획득, 월드 상태 변경"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+          "playerChoice": "탐험, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사·경제 혼합 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 역사적 배경과 경제적 자원의 상호작용에 의해 실질적으로 변화함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사-경제 혼합 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 경제적 자원을 통한 인과 관계를 경험하며, 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 촉진함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "엘도리아 연대기의 학문적 진입점과 플레이어 중심의 인식 기반을 바탕으로, 탐험, 관찰, 성장의 순환적인 루프가 실제 선택과 상태 변화로 연결되는 STORY_COMPLETE_RPG 게임입니다.",
+      "creativeGrammar": {
+        "mainIdentity": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "a": {
+          "system": "전투/성장/보상",
+          "material": "몬스터 전투, 아이템 획득, 스토리 진행",
+          "materialDomain": "역사, 경제, 정치, 신앙, 생태",
+          "stateChange": "플레이어의 선택 결과가 다음 월드 상태와 위험/보상에 연결됨"
+        },
+        "b": {
+          "system": "스토리 종료 및 후속 작업",
+          "material": "완결된 스토리, 후속 퀘스트, 시리즈 시작",
+          "materialDomain": "문화, 사회, 민심, 권리, 지지",
+          "stateChange": "A의 결과가 B의 선택과 상황 변화를 통해 새로운 플레이 패턴을 형성함"
+        },
+        "abCausality": "A→B, B→A의 양방향 실제 상태 교환이 각각 다른 조건과 피드백으로 일어나며, 이는 MAIN의 핵심 재미와 보조 장르 간의 인과 관계로 구체화됩니다.",
+        "abEvolution": {
+          "aChangesB": "A의 선택이 B의 상태 변화와 비용 구조를 바꾸고, 이는 게임의 진입 절차와 초기 선택에 영향을 미침",
+          "bChangesA": "B의 선택이 A의 상태 변화와 우선순위를 바꾸고, 이는 중후반의 선택과 루프 회복에 기여함",
+          "lateGameChange": "게임의 최종 정체성이 A/B/C의 인과 연결을 통한 무한 발전 규칙에서 생성됨"
+        },
+        "materialFusion": {
+          "contrast": "주제·소재의 유사성을 유지하면서도, 시스템 및 장르별 차이를 강조하여, 단일 장르의 반복적 플레이가 아닌 다양한 콘텐츠의 혼합을 가능하게 한다.",
+          "causalBridge": "C의 주제/소재 두 개가 서로 다른 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY)로 분류되어, 각각의 상호작용은 실제 상태 교환으로 증명된다.",
+          "removalConsequence": "C의 제거 시 MAIN/A/B의 관계가 평범한 기능 조합으로 돌아간다. 이는 학문적 깊이와 게임의 구조적 독립성에 영향을 미침"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+          "characterConflict": "주요 인물의 목표·두려움·비밀이 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨",
+          "worldChange": "플레이어의 선택 결과가 다음 월드 상태와 위험/보상에 직접적인 연관성을 형성하며, 이는 게임의 학문적 진입점과 플레이어 중심의 인식 기반을 강화함",
+          "nextEvent": "게임의 새로운 사건이 주제/소재의 유사성과 인과 관계를 통해 생성되며, 이는 무한 발전 규칙의 일환으로 작용함"
+        },
+        "cThemes": [
+          {
+            "name": "역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "스토리의 역사적 배경과 전투 시스템의 구조적 상호작용을 통한 인과 관계"
+          },
+          {
+            "name": "경제",
+            "kind": "MATERIAL",
+            "gameplayEffect": "경제적 자원과 전투, 성장, 보상의 상호작용을 통한 인과 관계"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전투 및 성장",
+            "gameplayEffect": "전투, 성장, 보상의 순환적 루프가 실제 선택과 상태 변화로 연결됨"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "문화 및 사회",
+            "gameplayEffect": "문화적 가치와 사회적 권력의 상호작용을 통한 인과 관계"
+          }
+        ],
+        "cGenreInterlock": "주제/소재의 유사성을 유지하면서도, 게임의 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY) 간의 인과 관계를 강화하여, 단일 장르의 반복적 플레이가 아닌 다양한 콘텐츠의 혼합을 가능하게 한다.",
+        "cWorldAndGameplayEffect": "게임의 세계 규칙은 주제/소재의 유사성과 인과 관계를 통해 생성되며, 이는 학문적 깊이와 게임의 구조적 독립성에 영향을 미침.",
+        "delveDiscoveries": [
+          {
+            "clue": "역사의 배경과 전투 시스템의 연관성",
+            "discovery": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+            "newChoice": "전투, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+          },
+          {
+            "clue": "경제적 자원과 전투, 성장, 보상의 상호작용",
+            "discovery": "A의 선택이 B의 상태 변화와 비용 구조를 바꾸고, 이는 게임의 진입 절차와 초기 선택에 영향을 미침",
+            "newChoice": "B의 선택이 A의 상태 변화와 우선순위를 바꾸고, 이는 중후반의 선택과 루프 회복에 기여함"
+          },
+          {
+            "clue": "문화 및 사회 가치와 권력의 상호작용",
+            "discovery": "게임의 최종 정체성이 A/B/C의 인과 연결을 통한 무한 발전 규칙에서 생성되며, 이는 학문적 깊이와 게임의 구조적 독립성을 강화함",
+            "newChoice": "C의 주제/소재 두 개가 서로 다른 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY)로 분류되어, 각각의 상호작용은 실제 상태 교환으로 증명됨"
+          },
+          {
+            "clue": "역사·경제·문화 등 다양한 주제의 혼합",
+            "discovery": "주제/소재의 유사성과 인과 관계를 통해 게임의 세계 규칙과 플레이어 중심의 인식 기반이 형성됨",
+            "newChoice": "다양한 주제의 혼합이 게임의 새로운 사건과 인과 관계를 통해 생성되고, 이는 무한 발전 규칙의 일환으로 작용함"
+          }
+        ],
+        "delveGrowthRule": "주제/소재의 유사성을 유지하면서도, 게임의 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY) 간의 인과 관계를 강화하여, 단일 장르의 반복적 플레이가 아닌 다양한 콘텐츠의 혼합을 가능하게 한다.",
+        "finalGameIdentity": "게임의 세계 규칙은 주제/소재의 유사성과 인과 관계를 통한 학문적 깊이와 구조적 독립성에 영향을 미침. 이는 탐험, 관찰, 성장의 순환적인 루프가 실제 선택과 상태 변화로 연결되어 최종 정체성이 형성됨."
+      },
+      "playerFantasy": "플레이어는 자신의 선택과 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 경험하고, 이는 게임의 학문적 진입점과 플레이어 중심의 인식 기반을 강화하며, 동시에 새로운 사건과 인과 관계를 통해 무한 발전 규칙의 일환으로 작용함.",
+      "coreFun": "플레이어의 탐험 행동과 선택 결과가 다음 월드 상태와 위험/보상에 직접적인 연관성을 형성하며, 이는 게임의 학문적 진입점과 플레이어 중심의 인식 기반을 강화하여, 단일 장르의 반복적 플레이가 아닌 다양한 콘텐츠의 혼합을 가능하게 한다.",
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "탐험 행동 -> 인물 만나기 -> 스토리 진행 -> 정보 획득 -> 월드 상태 변경",
+        "플레이어 선택 -> 세계 규칙 변형 -> 새로운 사건 생성 -> 루프 회복"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경을 이해하며, 전투, 성장, 보상을 통한 인과 관계를 형성하는 주요 메커니즘",
+          "playerChoice": "타오르기, 스토리 진행, 정보 획득, 월드 상태 변경의 선택들 중 하나를 하는 실제 플레이어 행동 및 결과의 연결 구조를 구성함으로써 게임의 학문적 진입점과 인식 기반을 강화합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 전투, 성장, 보상을 통한 인과 관계에 참여하여 세계 규칙과 스토리 진행을 촉진하는 주제",
+          "playerChoice": "탐험 행동, 인물 만나기, 스토리 진행, 정보 획득, 월드 상태 변경"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+          "playerChoice": "탐험, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사·경제 혼합 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 역사적 배경과 경제적 자원의 상호작용에 의해 실질적으로 변화함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사-경제 혼합 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 경제적 자원을 통한 인과 관계를 경험하며, 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 촉진함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 435199,
-      "lastMs": 36806,
+      "totalMs": 465061,
+      "lastMs": 29862,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:13:14.632Z"
+      "updatedAt": "2026-10-09T18:13:44.497Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:13:14.635Z",
+  "updatedAt": "2026-10-09T18:13:44.506Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2069,12 +2308,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:13:14.635Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:13:44.500Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-10/design-seed.json",
+    "contentDigest": "ab53fb310c73e75ee85365068f29f94034cba504bb65ef9d4b5c35a34b0a7f4c",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
