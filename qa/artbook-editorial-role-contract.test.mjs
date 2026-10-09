@@ -176,21 +176,22 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
 
-test('Roblox and Unity are the active equal tier while UEFN remains owner-held and development-paused',()=>{
+test('Roblox and Unity Web develop independently while Unity Android and UEFN remain owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
   assert.equal(strategy.priorityMeaning,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER');
-  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'OWNER_HOLD'});
+  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'});
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
-  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,false);
+  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
   assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
+  assert.equal(strategy.UNITY.developmentAlwaysAllowed,false);
   assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
   assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
   assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
