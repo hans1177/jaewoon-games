@@ -47,25 +47,38 @@
       "name": "BOARD_RECONFIGURATION",
       "purpose": "플레이어의 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 핵심 인과법칙",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::d5280e4e7915b2d98a518cb0396c044cb06dda982e8c5205103e43db5f7c684a:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "BOARD_RECONFIGURATION",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 267594,
-      "lastMs": 34109,
+      "totalMs": 295879,
+      "lastMs": 28285,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:39:26.577Z"
+      "updatedAt": "2026-10-09T15:39:54.863Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:34:58.766Z",
-  "updatedAt": "2026-10-09T15:39:26.577Z",
+  "updatedAt": "2026-10-09T15:39:54.864Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1655,7 +1668,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:39:26.577Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:39:54.863Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
