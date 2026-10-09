@@ -238,24 +238,32 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
     assert.ok(repair.includes(`      ${permission}\n`),`repair caller must grant callee permission: ${permission}`);
   }
 });
-test('only complete 3D Unity WebGL builds reach the stable game URL with fullscreen support',()=>{
+test('a playable native-3D owner build receives a separate test URL while final QA still guards the stable URL',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
   const publish=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'));
-  assert.match(publish,/if: steps\.readiness\.outputs\.pass == 'true'/);
-  assert.doesNotMatch(publish,/steps\.readiness\.outputs\.pass == 'false'/);
+  assert.match(publish,/if: steps\.evidence\.outputs\.owner_test_eligible == 'true'/);
+  assert.match(publish,/test "\$OWNER_TEST_ELIGIBLE" = "true"/);
   assert.match(publish,/runtime_dir="web-games\/\$GAME_ID"/);
-  assert.doesNotMatch(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
+  assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
+  assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
+  assert.doesNotMatch(publish,/test "\$READINESS_PASS" = "true"/);
   assert.match(publish,/test -s "\$runtime_dir\/index\.html"/);
   assert.match(publish,/test -s "\$runtime_dir\/unity-web-gameplay-validation\.json"/);
   assert.match(publish,/test -s "\$runtime_dir\/unity-web-independent-qa\.json"/);
   assert.match(publish,/test -s "\$runtime_dir\/unity-web-regression\.json"/);
+  assert.match(workflow,/ownerBrowserTestEligible:true/);
+  assert.match(workflow,/UNITY_WEB_OWNER_TEST_REQUIRES_REAL_3D_GAMEPLAY/);
+  assert.match(workflow,/const verified3d=checks\.every/);
+  assert.match(workflow,/const gatePass=checks\.every/);
+  assert.match(workflow,/owner_test_eligible=true/);
   assert.match(workflow,/UNITY_WEB_FULLSCREEN_BUTTON=READY/);
   assert.match(workflow,/requestFullscreen/);
   assert.match(workflow,/overscroll-behavior:none/);
   assert.match(workflow,/touch-action:none/);
   assert.match(homepage,/unity-web-deploy-manifest\.json/);
+  assert.match(homepage,/Unity Web · 테스트/);
   assert.doesNotMatch(homepage,/bundleGroupsFromUnityIndex/);
   assert.match(headers,/Content-Encoding: gzip/);
 });
