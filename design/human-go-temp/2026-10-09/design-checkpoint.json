@@ -34,25 +34,40 @@
         "플레이어가 흉기로 타협 없이 진입하여 전투에 참여해야 한다.",
         "적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다."
       ]
+    },
+    "local_authoring_parts::128dcb8a71104e3fc358547298f6c273882cae8a797f6d48180639b7a4d882a5:signatureSystems:0": {
+      "id": "V1_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player's core action and progression driver, driving immediate state change through combat and resource management.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 272788,
-      "lastMs": 42910,
+      "totalMs": 315273,
+      "lastMs": 42485,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:25:28.998Z"
+      "updatedAt": "2026-10-09T08:26:11.485Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:25:28.998Z",
+  "updatedAt": "2026-10-09T08:26:11.485Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:25:28.998Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:26:11.485Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
