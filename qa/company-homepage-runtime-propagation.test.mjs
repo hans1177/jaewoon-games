@@ -2,8 +2,39 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
+import {applyHomepageRuntimeInfo,mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
+
+// 최신 설계 요약은 기존 게임의 이름·설명·세이브용 카탈로그 identity를 덮어쓰지 않는다.
+test('검증된 설계 요약은 홈페이지 전용으로 표시하고 원본 게임 identity는 보존한다',()=>{
+  const id='homepage-summary-game';
+  const path='design/homepage-summary-game/2026-10-10/design-revised.json';
+  const original='기존 게임 설명과 식별 정보는 보존해야 한다.';
+  const summary='빛나는 숲을 탐험하고 유적을 회복하는 입체 모험 게임.';
+  const catalog={games:[{
+    id,name:'숲속 모험',description:original,productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE'
+  }]};
+  const developmentQueue={items:[{gameId:id,designBaselineSource:path,minimumDesignContract:{source:path}}]};
+  const designBaselines={[id]:{source:path,value:{gameId:id,content:{identity:summary}}}};
+  applyHomepageRuntimeInfo({catalog,developmentQueue,designBaselines});
+  const game=catalog.games[0];
+  assert.equal(game.description,original);
+  assert.equal(game.canonical.identity.description,original);
+  assert.equal(game.homepageDesignSource,path);
+  assert.equal(game.homepageDesignSummary,summary);
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const renderer=vm.runInNewContext(source+';mergeGame', {
+    document:{readyState:'loading',addEventListener(){}}
+  });
+  assert.equal(renderer(game).description,summary);
+
+  // 원본 검증이 없어지면 이전 설계 요약을 그대로 재사용하지 않는다.
+  applyHomepageRuntimeInfo({catalog,developmentQueue,designBaselines:{}});
+  assert.equal(game.homepageDesignSummary,undefined);
+  assert.equal(game.homepageDesignSource,undefined);
+  assert.equal(renderer(game).description,original);
+});
 
 test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하고 옛 게임 주소는 유지한다',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
