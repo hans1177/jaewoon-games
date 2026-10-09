@@ -595,25 +595,28 @@
       "toSystem": "STATE_CHANGE_01",
       "trigger": "READ NEXT ENEMY WAVE AND PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE",
       "stateChange": "READ NEXT ENEMY WAVE AND PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE: CONDITION IS MET, ACTION IS PERFORMED, STATE TRANSITION OCCURS, REWARD IS EARNED THROUGH RESOURCE GAIN, PRESSURE INCREASES, NEXT CHOICE IS MADE TO ADAPT DEFENCE STRATEGY."
+    },
+    "local_authoring_parts::9531bccd82127d822600cd4cc9b044d592a977eaf8f6267188f7fa444afcbc8d:fromId": {
+      "fromId": "SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 20,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2173256,
-      "lastMs": 61201,
+      "totalMs": 2221266,
+      "lastMs": 48010,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:55:58.495Z"
+      "updatedAt": "2026-10-09T09:56:46.513Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:19:44.888Z",
-  "updatedAt": "2026-10-09T09:55:58.502Z",
+  "updatedAt": "2026-10-09T09:56:46.513Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3093,7 +3096,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:55:58.502Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:56:46.513Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
