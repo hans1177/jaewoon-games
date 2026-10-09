@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 23,
-  "lastSuccessfulModelCallAt": "2026-10-09T23:12:54.328Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 25,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:14:06.853Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "designerSeed": {
     "file": "design/ant-simulator/2026-10-10/design-seed.json",
     "contentDigest": "872503c1fc5713dead8acdaa798b4c665fc1e7c90dbcfa94a60b79e452e4e299",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 19,
+      "calls": 22,
+      "successes": 20,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1866501,
-      "lastMs": 160385,
+      "totalMs": 1939023,
+      "lastMs": 72522,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:12:54.328Z"
+      "updatedAt": "2026-10-09T23:14:06.851Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T23:12:54.329Z"
+  "updatedAt": "2026-10-09T23:14:06.857Z"
 }

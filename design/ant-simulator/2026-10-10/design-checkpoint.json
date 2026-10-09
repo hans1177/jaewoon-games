@@ -1101,25 +1101,271 @@
           "storyContext": "게임 루프 재설계"
         }
       ]
+    },
+    "local_authoring_parts::a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "주요 요소",
+          "behavior": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생",
+          "counterplay": "월드 상태 변화 및 보상/위험 발생",
+          "positioning": "게임 루프 재설계 시 주요 요소와 보조 요소 간 상호작용을 통해 이루어짐",
+          "timing": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "mobility": "월드 탐험 중 자원 확보 시 위험 감수",
+          "groupRole": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨",
+          "identity": "주요 요소와 보조 요소의 초기 위치",
+          "rewardMeaning": "자원 확보 시 위험 감수"
+        },
+        {
+          "name": "보조 요소",
+          "behavior": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "counterplay": "월드 상태 변화 및 보상/위험 발생",
+          "positioning": "게임 루프 재설계 시 플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 지역",
+          "timing": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "mobility": "월드 탐험 중 자원 확보 시 위험 감수",
+          "groupRole": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 후 다음 목표 결정",
+          "identity": "플레이어 선택 결정지",
+          "rewardMeaning": "자원 확보 시 위험 감수"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "주요 목적",
+          "variation": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        },
+        {
+          "role": "보조 목적",
+          "variation": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정"
+        }
+      ],
+      "antiMonotonyRule": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨"
+    },
+    "local_authoring_parts::f58a3f038f20a1ecec3c93caefd2b0b1fb129c0eb744915df20b032152db66df:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "OPENING",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[0]",
+          "trigger": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "위험",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어의 선택이 월드 상태와 보상/위험에 영향을 미친다.",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환 및 보상/위험 발생",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "OPENING",
+          "costKey": "OPENING_COST",
+          "cooldownKey": "OPENING_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_2",
+          "name": "MAIN",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[1]",
+          "trigger": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "MAIN",
+          "costKey": "MAIN_COST",
+          "cooldownKey": "MAIN_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_3",
+          "name": "SUB",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[2]",
+          "trigger": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 후 다음 목표 결정",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "SUB",
+          "costKey": "SUB_COST",
+          "cooldownKey": "SUB_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_4",
+          "name": "DELVE",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[3]",
+          "trigger": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정의 순차적 루프 재설계됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "DELVE",
+          "costKey": "DELVE_COST",
+          "cooldownKey": "DELVE_COOLDOWN"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER_1",
+          "humanTool": "OPENING",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "OPENING",
+          "removedState": "MAIN",
+          "changedChoice": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨"
+        },
+        {
+          "humanId": "PLAYER_2",
+          "humanTool": "SUB",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "SUB",
+          "removedState": "MAIN",
+          "changedChoice": "실제 입력으로 월드 상태와 보상/위험 조정됨"
+        }
+      ],
+      "regions": [
+        {
+          "id": "REGION_A",
+          "ruleIds": [
+            "ACTION_SURVIVAL_ROGUELITE_1",
+            "ACTION_SURVIVAL_ROGUELITE_2"
+          ],
+          "name": "주요 요소 및 보조 요소의 초기 위치",
+          "traversal": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생",
+          "riskReward": "자원 확보 시 위험 감수",
+          "landmark": "개미 종족 선택과 월드 탐험 시작 지점",
+          "encounterPattern": "월드 상태 변화 및 보상/위험 발생",
+          "resourcePressure": "자원 압박",
+          "storyContext": "게임 루프 재설계"
+        },
+        {
+          "id": "REGION_B",
+          "ruleIds": [
+            "ACTION_SURVIVAL_ROGUELITE_2",
+            "ACTION_SURVIVAL_ROGUELITE_3"
+          ],
+          "name": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 지역",
+          "traversal": "실제 입력으로 월드 상태와 보상/위험 조정",
+          "riskReward": "자원 확보 시 위험 감수",
+          "landmark": "플레이어 선택 결정지",
+          "encounterPattern": "월드 상태 변화 및 보상/위험 발생",
+          "resourcePressure": "자원 압박",
+          "storyContext": "게임 루프 재설계"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "주요 요소",
+          "behavior": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생",
+          "counterplay": "월드 상태 변화 및 보상/위험 발생",
+          "positioning": "게임 루프 재설계 시 주요 요소와 보조 요소 간 상호작용을 통해 이루어짐",
+          "timing": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "mobility": "월드 탐험 중 자원 확보 시 위험 감수",
+          "groupRole": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨",
+          "identity": "주요 요소와 보조 요소의 초기 위치",
+          "rewardMeaning": "자원 확보 시 위험 감수"
+        },
+        {
+          "name": "보조 요소",
+          "behavior": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "counterplay": "월드 상태 변화 및 보상/위험 발생",
+          "positioning": "게임 루프 재설계 시 플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 지역",
+          "timing": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "mobility": "월드 탐험 중 자원 확보 시 위험 감수",
+          "groupRole": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 후 다음 목표 결정",
+          "identity": "플레이어 선택 결정지",
+          "rewardMeaning": "자원 확보 시 위험 감수"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "주요 목적",
+          "variation": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        },
+        {
+          "role": "보조 목적",
+          "variation": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정"
+        }
+      ],
+      "antiMonotonyRule": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 19,
+      "calls": 22,
+      "successes": 20,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1866501,
-      "lastMs": 160385,
+      "totalMs": 1939023,
+      "lastMs": 72522,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:12:54.328Z"
+      "updatedAt": "2026-10-09T23:14:06.851Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:12:54.328Z",
+  "updatedAt": "2026-10-09T23:14:06.856Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2719,22 +2965,182 @@
   },
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "68cea48f648f2103e408489584ba80ea4bd8cf7f4f45a3cea09159b785b713bc"
+    "designer_draft_slices::systems-progression": "68cea48f648f2103e408489584ba80ea4bd8cf7f4f45a3cea09159b785b713bc",
+    "designer_draft_slices::content-rules": "a9955846cdd5e19bf423ebe7486bc1ea547012f86d26d601402ae696bf08c6c9"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::content-rules": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[0].source",
+          "value": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[0].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[1].source",
+          "value": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[1].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[2].source",
+          "value": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[2].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[3].source",
+          "value": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[3].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.ACTION_SURVIVAL_ROGUELITE_1",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.ACTION_SURVIVAL_ROGUELITE_1: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.ACTION_SURVIVAL_ROGUELITE_2",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.ACTION_SURVIVAL_ROGUELITE_2: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.ACTION_SURVIVAL_ROGUELITE_3",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.ACTION_SURVIVAL_ROGUELITE_3: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.ACTION_SURVIVAL_ROGUELITE_4",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.ACTION_SURVIVAL_ROGUELITE_4: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_MAP_RULE_UNBOUND",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "regions",
+          "detail": "각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다"
+        },
+        "requiredAction": "regions: 각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
     "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:2": 1,
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 2,
+    "designer_draft_slices::content-rules": 1
   },
-  "slicePartialResults": {},
+  "slicePartialResults": {
+    "designer_draft_slices::content-rules": {}
+  },
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:12:54.328Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:14:06.853Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
