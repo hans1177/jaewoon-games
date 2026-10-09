@@ -187,25 +187,32 @@
       },
       "playerFantasy": "퇴마 사무소는 플레이어가 직접 선택하는 단순한 입력(단 한 손 가볍게 터치 또는 스ワイ프)에서 시작하여, 즉시 이해 가능한 피드백과 보상을 제공하며, 작은 위험/선택을 포함해 반복적인 핵심 루프를 형성합니다. 이 게임은 모바일 플랫폼에 최적화되어 있으며, 사용자가 간단하게 시작할 수 있는 기본 행동과 대응법을 통해 진입 단계부터 진행됩니다.",
       "coreFun": "{\"identity\": \"START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"a\": {\"system\": \"ACTION_SEQUENCE\", \"material\": \"SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS\", \"stateChange\": \"INPUT_TO_STATE_CHANGE\"},\n \"b\": {\"system\": \"DECISION_FLOW\", \"material\": \"READABILITY_AND_PLAYABILITY\", \"stateChange\": \"PLAYER_ACTION_TO_DECISION_FLOW\"},\n \"abCausality\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"abEvolution\": {\"aChangesB\": \"YES, REWARD_AND_RISK_CHANGED\", \"bChangesA\": \"YES, INPUT_AND_MENU_TRANSITIONS_CHANGED\", \"lateGameChange\": \"YES, NEW_ACTION_AND_ROUTE_OPTION_ADDED\"},\n \"material"
+    },
+    "local_authoring_parts::0eb8b20f98efa1abe38de2b0080217f31cfc3f19c441cb405ff01f69fa241921:coreLoop": {
+      "coreLoop": [
+        "입력 -> 상태 변화 -> 보상/위험/다음 선택의 연결",
+        "단순한 입력(1 손 터치 또는 스ワイ프)에서 즉시 이해 가능한 피드백 및 보상을 제공하며, 작은 위험/선택을 포함해 반복적인 핵심 루프 형성",
+        "진행 단계: 시작 → 실행 → 피드백 → 보상/위험 → 다음 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 410496,
-      "lastMs": 43677,
+      "totalMs": 444396,
+      "lastMs": 33900,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:03:38.935Z"
+      "updatedAt": "2026-10-09T21:04:12.837Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:56:48.393Z",
-  "updatedAt": "2026-10-09T21:03:38.936Z",
+  "updatedAt": "2026-10-09T21:04:12.837Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1685,7 +1692,7 @@
   "localAuthoringSplits": {
     "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:03:38.936Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:04:12.837Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
