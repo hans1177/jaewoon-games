@@ -4491,6 +4491,104 @@ test('semantic diff invariant allows unrelated source repair when save binding i
   assert.deepEqual(result.saveContractMutations,[]);
 });
 
+test('native Unity save identities are preserved for direct and constant-backed PlayerPrefs keys',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo');
+  const fixtures=[
+    {
+      source:'private const string SaveKey = "legacy-v1";\nvoid Save(){ PlayerPrefs.SetString(SaveKey, data); }\n',
+      find:'"legacy-v1"',replace:'"changed-v2"',failure:/SAVE_CONTRACT_MUTATION:.*binding:SaveKey/
+    },
+    {
+      source:'private const string SavePrefix = "legacy:";\nvoid Save(){ PlayerPrefs.SetInt(SavePrefix + "level", level); }\n',
+      find:'"legacy:"',replace:'"changed:"',failure:/SAVE_CONTRACT_MUTATION:.*binding:SavePrefix/
+    },
+    {
+      source:'void Save(){ PlayerPrefs.SetInt("legacy-level", level); }\n',
+      find:'"legacy-level"',replace:'"new-level"',failure:/SAVE_CONTRACT_MUTATION:.*native:PlayerPrefs.SetInt/
+    }
+  ];
+  for(const fixture of fixtures){
+    write(path.join(root,'Assets/Scripts/GameCore.cs'),fixture.source);
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:fixture.find,replace:fixture.replace}]},
+      editContract:{
+        responsibilityConfidence:'LOW',primaryTargets:[],
+        codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+        semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}
+      },sourceRoot:root
+    });
+    assert.equal(result.pass,false,fixture.source);
+    assert.equal(result.saveContractInvariantEnforced,true);
+    assert.match(result.violations.join('|'),fixture.failure);
+  }
+});
+
+test('native Roblox DataStore names and player record prefixes remain unchanged',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/demo'),relative='server/Game.server.luau';
+  const fixtures=[
+    {
+      source:'local store = DSS:GetDataStore("profile-v1")\nstore:SetAsync("player:"..player.UserId, data)\n',
+      find:'"profile-v1"',replace:'"profile-v2"',failure:/SAVE_CONTRACT_MUTATION:.*native:GetDataStore/
+    },
+    {
+      source:'local store = DSS:GetDataStore("profile-v1")\nstore:GetAsync("player:"..player.UserId)\n',
+      find:'"player:"',replace:'"wrong:"',failure:/SAVE_CONTRACT_MUTATION:.*native:DataStore:GetAsync/
+    },
+    {
+      source:'local savePrefix = "player:"\nstore:UpdateAsync(savePrefix..player.UserId, function(old) return old end)\n',
+      find:'"player:"',replace:'"wrong:"',failure:/SAVE_CONTRACT_MUTATION:.*binding:savePrefix/
+    }
+  ];
+  for(const fixture of fixtures){
+    write(path.join(root,relative),fixture.source);
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:relative,find:fixture.find,replace:fixture.replace}]},
+      editContract:{
+        responsibilityConfidence:'LOW',primaryTargets:[],
+        codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+        semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}
+      },sourceRoot:root
+    });
+    assert.equal(result.pass,false,fixture.source);
+    assert.match(result.violations.join('|'),fixture.failure);
+  }
+});
+
+test('native save invariant permits gameplay payload changes and equivalent key whitespace',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo'),relative='Assets/Scripts/GameCore.cs';
+  const source='void Save(){ PlayerPrefs.SetInt( SavePrefix + "level", level); }\n';
+  write(path.join(root,relative),source);
+  const changes=[
+    {find:'level);',replace:'level+1);'},
+    {find:'SavePrefix + "level"',replace:'SavePrefix+"level"'},
+    {find:'Save(){ ',replace:'Save(){ PlayerPrefs.SetInt("extra-slot",1); '}
+  ];
+  for(const edit of changes){
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:relative,...edit}]},
+      editContract:{responsibilityConfidence:'LOW',codingArchitecture:{developmentMode:'PRESERVE_PATCH'},semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}},
+      sourceRoot:root
+    });
+    assert.equal(result.pass,true,JSON.stringify(result.violations));
+    assert.deepEqual(result.saveContractMutations,[]);
+  }
+});
+
+test('native save key changes remain possible only through the explicit migration contract',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo'),relative='Assets/Scripts/GameCore.cs';
+  write(path.join(root,relative),'void Save(){ PlayerPrefs.SetString("legacy-slot", data); }\n');
+  const candidate={edits:[{path:relative,find:'"legacy-slot"',replace:'"new-slot"'}]};
+  const result=evaluateSemanticDiffBudget({
+    candidate,editContract:{
+      responsibilityConfidence:'LOW',codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['SAVE'],saveKeyMigrationAllowed:true}
+    },sourceRoot:root
+  });
+  assert.equal(result.pass,true);
+  assert.equal(result.saveKeyMigrationAllowed,true);
+  assert.ok(result.saveContractMutations.some(row=>row.includes('native:PlayerPrefs.SetString')));
+});
+
 test('candidate release gate mirrors variable-backed save contract invariant',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
   assert.match(workflow,/const storageContract=raw=>/);
