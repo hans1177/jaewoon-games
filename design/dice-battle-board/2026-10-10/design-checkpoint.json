@@ -80,25 +80,53 @@
         "worldChange": "실제 세계 상태 변화를 통해 발전 규칙 적용됨",
         "nextEvent": "다음 사건으로 이어지는 플레이 사례 구성"
       }
+    },
+    "local_authoring_parts::6e6e883b1fe22f6ba187b0196dd94b9bccaa2e47e28c13bcc62c48ae0a5e0b40:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "주사위 전투",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 내에서 주사위로 결정되는 이벤트 및 결과"
+        },
+        {
+          "name": "보드 게임",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 보드에 설정하는 목표와 장애물을 해결해야 하는 구조"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략",
+          "gameplayEffect": "플레이어의 선택과 보상 사이의 복잡한 관계"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "플레이어의 성장, 스토리 진입, 캐릭터 개발"
+        }
+      ],
+      "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
+      "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1154835,
-      "lastMs": 277335,
+      "totalMs": 1282363,
+      "lastMs": 127528,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:24:12.950Z"
+      "updatedAt": "2026-10-09T21:26:20.480Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:04:58.089Z",
-  "updatedAt": "2026-10-09T21:24:12.951Z",
+  "updatedAt": "2026-10-09T21:26:20.480Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1720,7 @@
     "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true,
     "02c84d48073200c40ac89cf8adc15cd4bcca11ee719bb3a52560db5fd7b136ff": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:24:12.951Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:26:20.480Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
