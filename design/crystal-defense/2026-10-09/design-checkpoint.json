@@ -67,21 +67,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 270810,
-      "lastMs": 36073,
+      "totalMs": 307171,
+      "lastMs": 36361,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:50:17.990Z"
+      "updatedAt": "2026-10-09T11:50:54.352Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:45:47.159Z",
-  "updatedAt": "2026-10-09T11:50:17.990Z",
+  "updatedAt": "2026-10-09T11:50:54.353Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2270,29 +2270,24 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "KARMA_RETURN"
-        ]
-      },
+    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:2": [
       {
         "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
+        "grammarRole": "B",
         "previousRuleIds": [
-          "KARMA_RETURN"
+          "KARMA_RETURN",
+          "KARMA_RETURN_2"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:1": 1
+    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:1": 1,
+    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:2": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:50:17.990Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T11:50:54.352Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
