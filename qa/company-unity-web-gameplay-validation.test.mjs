@@ -351,3 +351,22 @@ test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한
   assert.match(source,/observedTriangles:nativeMeshVerified\?nativeMeshProof\.triangles:0/);
   assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
 });
+
+test('Unity Web 3D gameplay rejects pseudo-depth even when triangles exist',()=>{
+  assert.match(source,/const nativeDepthMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+  assert.match(source,/source=UNITY_WORLD_MESH_DEPTH/);
+  assert.match(source,/nativeDepthProof\.cameraPerspective===1/);
+  assert.match(source,/nativeDepthProof\.worldMeshes3d>=2/);
+  assert.match(source,/nativeDepthProof\.worldDepthCm>=50/);
+  assert.match(source,/nativeDepthProof\.gameplayActors3d>=1/);
+  assert.match(source,/nativeDepthProof\.spriteGameplayActors===0/);
+  assert.match(source,/&&nativeDepthVerified/);
+  assert.match(source,/depthPass:nativeDepthVerified/);
+  const build=fs.readFileSync(new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../tools/company-development-unity-web-worker.mjs',import.meta.url),'utf8');
+  assert.match(build,/VerifyNativeSpatialDepth\(\)/);
+  assert.match(build,/FindObjectsByType<MeshFilter>/);
+  assert.match(build,/FindObjectsByType<SpriteRenderer>/);
+  assert.match(worker,/qa\?\.spatialGameplay\?\.depthPass===true/);
+  assert.match(worker,/qa\?\.spatialGameplay\?\.spriteGameplayActors===0/);
+});

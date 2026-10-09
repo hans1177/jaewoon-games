@@ -1910,6 +1910,43 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
   assert.match(task.goal,/실제 2명 이상 상태 동기화/);
 });
 
+test('existing Unity Web floor game reuses original UnityWebFloorGame source for mandatory 3D repair',()=>{
+  const root=tempRepo(),gameId='unity-floor-legacy';
+  const project=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(project,'Assets','Scripts'),{recursive:true});
+  fs.mkdirSync(path.join(project,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(project,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(project,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(project,'Assets','Scripts','UnityWebFloorGame.cs'),[
+    'using UnityEngine;',
+    'public class UnityWebFloorGame : MonoBehaviour {',
+    'void Start(){ Debug.Log("JAEWOON_UNITY_WEB_QA BOOT"); }',
+    'void Update(){ if(Application.absoluteURL.Contains("qa=1")){} }',
+    '}'
+  ].join('\n'));
+  fs.writeFileSync(path.join(project,'Assets','Editor','UnityWebFloorBuild.cs'),'public static class UnityWebFloorBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(project,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Legacy Floor',productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Legacy Floor',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'DEVELOPMENT_CONFIRMED',
+      selectedPlatform:'ROBLOX',webSourcePath:`web-games/${gameId}`,
+      minimumDesignContract:{pass:true},
+      platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
+      concurrentTargetPlatforms:['ROBLOX','UNITY']
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId&&String(row.id).includes('unity-web-repair'));
+  assert.ok(task,'existing Unity Web gameplay source must be repaired rather than replaced with new wrapper');
+  assert.deepEqual(task.responsibleFiles,[`unity-games/${gameId}/Assets/Scripts/UnityWebFloorGame.cs`]);
+  assert.match(task.goal,/company-asset-library\.json/);
+  assert.match(task.goal,/SPATIAL_DEPTH/);
+});
+
 test('Unity native presentation responsibility excludes gameplay core when a visual owner exists',()=>{
   const root=tempRepo();
   const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');

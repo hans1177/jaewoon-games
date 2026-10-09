@@ -45,8 +45,9 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
       criteria:{
         design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:[
           ...['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
-            stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
-            observedMeshCount:6,observedTriangles:240
+            stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+            observedMeshCount:6,observedTriangles:240,depthPass:true,perspectiveCamera:true,
+             worldMeshes3d:6,worldDepthCm:450,gameplayActors3d:2,spriteGameplayActors:0
           }))
         ]},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
@@ -88,6 +89,33 @@ test('older 2D readiness and boolean-only 3D markers cannot reopen Unity Web dev
     result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.web.state,'UNITY_WEB_FLOOR');
     assert.equal(result.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('pseudo 2.5D sprite actors fail admission even when the terrain has genuine 3D triangles',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-sprite-gate-'));
+  try{
+    write(root,'unity-games/flat-actors/Assets/Scripts/Game.cs','public class Game {}');
+    write(root,'unity-games/flat-actors/Assets/Editor/WebBuild.cs','public static class WebBuild { public static void BuildWeb(){} }');
+    const tree=unitySourceTreeSha256(path.join(root,'unity-games/flat-actors'));
+    write(root,'web-games/flat-actors/upper-platform-development-readiness.json',{
+      version:1,gameId:'flat-actors',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+      unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
+      criteria:{
+        design:{pass:true},code:{pass:true},
+        graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:
+          ['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+            stage,pass:true,requiredDimension:'3D',
+            source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+            observedMeshCount:6,observedTriangles:240,depthPass:true,perspectiveCamera:true,
+            worldMeshes3d:6,worldDepthCm:450,gameplayActors3d:0,spriteGameplayActors:2
+          }))},
+        webglBuild:{pass:true},actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
+      }
+    });
+    const state=classifyUpperPlatformAdmission(baseItem('flat-actors'),{repoRoot:root});
+    assert.equal(state.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(state.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

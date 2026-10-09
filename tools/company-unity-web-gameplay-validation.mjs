@@ -376,7 +376,28 @@ try{
     triangles:nativeMeshMetric('triangles'),volumetricMeshes:nativeMeshMetric('volumetricMeshes'),materialPass:nativeMeshMetric('materialPass'),
     texturePass:nativeMeshMetric('texturePass')
   };
+  // 메시 존재만으로는 2.5D를 배제할 수 없다. Unity에서 카메라·3축 깊이·게임플레이 모델을 실측한다.
+  const nativeDepthMarker=markers.slice().reverse().find(line=>line.includes(' SPATIAL_DEPTH ')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_WORLD_MESH_DEPTH'))||'';
+  const nativeDepthMetric=key=>{
+    const token=nativeDepthMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const nativeDepthProof={
+    cameraPerspective:nativeDepthMetric('cameraPerspective'),
+    worldMeshes3d:nativeDepthMetric('worldMeshes3d'),
+    worldDepthCm:nativeDepthMetric('worldDepthCm'),
+    gameplayActors3d:nativeDepthMetric('gameplayActors3d'),
+    spriteGameplayActors:nativeDepthMetric('spriteGameplayActors'),
+  };
+  const nativeDepthVerified=Boolean(nativeDepthMarker)&&nativeDepthMarker.includes('status=PASS')
+    &&nativeDepthProof.cameraPerspective===1
+    &&Number.isSafeInteger(nativeDepthProof.worldMeshes3d)&&nativeDepthProof.worldMeshes3d>=2
+    &&Number.isSafeInteger(nativeDepthProof.worldDepthCm)&&nativeDepthProof.worldDepthCm>=50
+    &&Number.isSafeInteger(nativeDepthProof.gameplayActors3d)&&nativeDepthProof.gameplayActors3d>=1
+    &&nativeDepthProof.spriteGameplayActors===0;
   const nativeMeshVerified=Boolean(nativeMeshMarker)&&nativeMeshMarker.includes('status=PASS')
+    &&nativeDepthVerified
     &&Number.isSafeInteger(nativeMeshProof.inspected)&&nativeMeshProof.inspected>0
     &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
     &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
@@ -450,7 +471,11 @@ try{
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
     spatialGameplay:{
       requiredDimension:'3D',pass:nativeMeshVerified,
-      source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
+      depthPass:nativeDepthVerified,perspectiveCamera:nativeDepthProof.cameraPerspective===1,
+      gameplayActors3d:nativeDepthProof.gameplayActors3d,worldMeshes3d:nativeDepthProof.worldMeshes3d,
+      worldDepthCm:nativeDepthProof.worldDepthCm,
+      spriteGameplayActors:nativeDepthProof.spriteGameplayActors,
+      source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
       requiredForAllUnityWebGames:true,
       observedMeshCount:nativeMeshVerified?nativeMeshProof.validMeshes:0,
       observedTriangles:nativeMeshVerified?nativeMeshProof.triangles:0,
@@ -470,7 +495,8 @@ try{
       nativeUnityMesh:{measurementState:nativeMeshMarker?'UNITY_RUNTIME_MESH_INSPECTION':'NOT_MEASURED',
         pass:nativeMeshMarker?nativeMeshVerified:null,missingRequiredCapture:nativeMeshMissing,
         inspector:'UNITY_MESH_FILTER',metrics:nativeMeshMarker?nativeMeshProof:null,sourceMarker:nativeMeshMarker||null,
-        libraryAssetPromotionGranted:false},
+        spatialDepth:{pass:nativeDepthVerified,sourceMarker:nativeDepthMarker||null,metrics:nativeDepthProof},
+         libraryAssetPromotionGranted:false},
       realDeviceVerified:false,
     },
     nativeRenderBudget:{
@@ -512,7 +538,8 @@ try{
   }
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
-    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
+    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,
+    nativeDepthVerified,nativeDepthProof,visualPixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget

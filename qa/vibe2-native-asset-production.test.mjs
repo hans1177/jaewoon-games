@@ -511,6 +511,30 @@ test('full library scan preserves low quality assets but rejects unsafe corrupt 
   }
 });
 
+test('all game spatial families reject flat 2D assets but allow unlimited cross-game 3D donor reuse',()=>{
+  const assets=[
+    {id:'flat-creature',family:'CREATURE',license:'project-original',platform:'WEB_REFERENCE',path:'/assets/flat.png'},
+    {id:'shared-creature',family:'CREATURE',license:'project-original',platform:'ROBLOX',
+      companyCommonBase:true,path:'/assets/shared/spider.png',nativeArtifacts:['assets/shared/spider.glb']},
+    {id:'another-creature',family:'CREATURE',license:'CC0',platform:'SHARED_NATIVE_SOURCE',
+      companyCommonBase:true,path:'/assets/shared/wolf.obj'},
+    {id:'building-part',family:'BUILDING',license:'project-original',platform:'ROBLOX',
+      companyCommonBase:true,path:'/assets/shared/wall.obj'},
+    {id:'ui-icon',family:'UI',license:'CC0',path:'/assets/shared/icon.png'}
+  ];
+  for(const target of ['roblox','unity','web']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:9,assets},target,gameId:'any-genre'});
+    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['shared-creature','another-creature']);
+    assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),['building-part']);
+    assert.deepEqual(plan.familyCandidates.UI.map(asset=>asset.assetId),['ui-icon']);
+    assert.equal(plan.hardBlockedAssetCount,1);
+    assert.equal(plan.crossGameAndGenreReuseUnrestricted,true);
+    assert.equal(plan.noArtificialAssetCountCap,true);
+    assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
+    assert.equal(plan.internalRegisteredAssetsOnly,true);
+  }
+});
+
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
     gameId:'demo',
@@ -2036,7 +2060,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('native asset plan prefers verified company library then repository then external gap fill',()=>{
+test('game asset selection uses only the registered internal company library',()=>{
   const root=tempRoot();
   try{
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
@@ -2048,8 +2072,8 @@ test('native asset plan prefers verified company library then repository then ex
       externalSources:[{id:'external-source'}]
     },null,2));
     const manifest={version:1,assets:[
-      {id:'repo-ui',path:'unity-games/demo/Assets/UI/repo.png',types:['ui'],tags:['UI'],license:'project-original'},
-      {id:'external-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',source:'KayKit',sourceUrl:'https://example.invalid/ui',downloaded:false,platforms:['unity']}
+      {id:'unregistered-ui',path:'unity-games/demo/Assets/UI/repo.png',types:['ui'],tags:['UI'],license:'project-original'},
+      {id:'external-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',source:'External',sourceUrl:'https://example.invalid/ui',downloaded:false}
     ]};
     const plan=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'UI 그래픽 개선'},target:'unity',repoRoot:root,
@@ -2058,23 +2082,18 @@ test('native asset plan prefers verified company library then repository then ex
     const row=plan.decisions.find(item=>item.type==='ui');
     assert.ok(row);
     assert.deepEqual(row.companyCandidates.map(item=>item.id),['company-ui']);
-    assert.deepEqual(row.repositoryCandidates.map(item=>item.id),['repo-ui']);
-    assert.deepEqual(row.externalCandidates.map(item=>item.id),['external-ui']);
-    assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui','repo-ui']);
-    assert.deepEqual(row.decisionOrder.slice(1,4),[
-      'REUSE_VERIFIED_COMPANY_ASSET',
-      'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
-      'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'
-    ]);
+    assert.deepEqual(row.repositoryCandidates.map(item=>item.id),[]);
+    assert.deepEqual(row.externalCandidates.map(item=>item.id),[]);
+    assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui']);
     assert.equal(plan.summary.companyCandidateTypes>0,true);
-    assert.equal(plan.summary.externalCandidateTypes>0,true);
+    assert.equal(plan.summary.externalCandidateTypes,0);
+    assert.ok(!row.decisionOrder.includes('ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'));
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
 
-
-test('downloaded external asset keeps external provenance and must compare against internal assets before selection',()=>{
+test('an externally acquired asset can be evaluated only after registration in the internal library',()=>{
   const root=tempRoot();
   try{
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
@@ -2082,6 +2101,10 @@ test('downloaded external asset keeps external provenance and must compare again
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
         path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity'],sourceHash:'company-ui-v1'
+      },{
+        id:'downloaded-external-ui',category:'UI',license:'CC0',status:'REPO_ASSET',
+        path:'unity-games/demo/Assets/UI/external.png',platforms:['unity'],sourceHash:'external-ui-v1',
+        source:'External Pack',sourceUrl:'https://example.invalid/ui-pack',downloaded:true
       }]
     },null,2));
     const manifest={version:1,assets:[{
