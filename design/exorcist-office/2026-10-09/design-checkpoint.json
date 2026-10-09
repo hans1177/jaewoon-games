@@ -531,25 +531,40 @@
     },
     "local_authoring_parts::8485cb475e7afaa4d40e81776b1c17e559a0f5fe3d4792f77e15ae1f52be2b16:trigger": {
       "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::8485cb475e7afaa4d40e81776b1c17e559a0f5fe3d4792f77e15ae1f52be2b16:stateChange": {
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+    },
+    "local_authoring_parts::7bdf5bc118659870bf7e75785ba6a1dd6555e5a8e2863430eebdd2f8d8f9bbeb:systemInterconnections:3": {
+      "fromId": "CORE_FUN_04",
+      "toId": "DELVE_CONTENT",
+      "stateKeys": [
+        "RUN_RESULT",
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "fromSystem": "CORE_FUN_04",
+      "toSystem": "DELVE_CONTENT",
+      "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1224454,
-      "lastMs": 33508,
+      "totalMs": 1260163,
+      "lastMs": 35709,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:10:37.926Z"
+      "updatedAt": "2026-10-09T16:11:13.636Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T16:10:37.926Z",
+  "updatedAt": "2026-10-09T16:11:13.638Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2197,7 +2212,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:10:37.926Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:11:13.638Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
