@@ -239,25 +239,173 @@
       "name": "생존 전투 시스템 - 인과적 선택 및 성장",
       "purpose": "주요 시스템의 진입을 통한 보조 시스템의 변화로 인해 실제 선택이 결정되며, 이는 게임 내부 상호작용 및 결과 변화에 의해 표현됨",
       "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다"
+    },
+    "local_authoring_parts::4b869940197b66ad839b81b376a86f4beb879ecd6614759d8a06cc8c4dbce179:signatureSystems:3": {
+      "id": "delve_0",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "적의 행동 패턴 변경",
+        "게임 내부 상호작용 및 결과 변화"
+      ],
+      "stateOutputs": [
+        "주요 시스템의 변화",
+        "보조 시스템의 변화"
+      ],
+      "name": "보석 생존전 - 게임 내부 상호작용 및 결과 변화",
+      "purpose": "주요 시스템과 보조 시스템 간의 인과적 연결은 플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통해 이루어지며, 이는 주요 시스템의 진입을 통해 보조 시스템의 변화가 실제로 일어난다.",
+      "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다."
+    },
+    "local_authoring_parts::1a1e1ae2820a8ad5363006224497376797bd2664abbbc53a9d5d9cb4df03a73c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 숙련과 선택의 인과적 연결",
+          "purpose": "플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통한 적의 행동 패턴 변환 및 성장 가능성 확대의 핵심 루프 형성",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현됨"
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 인과적 선택 및 성장",
+          "purpose": "플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통해 적의 행동 패턴 변환과 성장 가능성 확대의 핵심 루프 형성을 구현",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현됨"
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 인과적 선택 및 성장",
+          "purpose": "주요 시스템의 진입을 통한 보조 시스템의 변화로 인해 실제 선택이 결정되며, 이는 게임 내부 상호작용 및 결과 변화에 의해 표현됨",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다"
+        },
+        {
+          "id": "delve_0",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "적의 행동 패턴 변경",
+            "게임 내부 상호작용 및 결과 변화"
+          ],
+          "stateOutputs": [
+            "주요 시스템의 변화",
+            "보조 시스템의 변화"
+          ],
+          "name": "보석 생존전 - 게임 내부 상호작용 및 결과 변화",
+          "purpose": "주요 시스템과 보조 시스템 간의 인과적 연결은 플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통해 이루어지며, 이는 주요 시스템의 진입을 통해 보조 시스템의 변화가 실제로 일어난다.",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다."
+        }
+      ]
+    },
+    "local_authoring_parts::6d99bc242fcc8cfe0c701be29de048da3aaafe072426de47c6d9e2374968fd15:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "진입 단계에서 플레이어의 숙련도 증가 및 새로운 선택 기회 제공을 통해 적의 행동 패턴 변환과 성장 가능성 확대의 핵심 루프 형성",
+        "주요 시스템의 진입을 통한 보조 시스템의 변화로 인해 실제 선택이 결정되며, 이는 게임 내부 상호작용 및 결과 변화에 의해 표현됨",
+        "중후반에서는 두 시스템 간의 관계 변화가 실제로 일어나며, 이는 플레이어의 선택과 세계 상태 변화로 재구성됨"
+      ],
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 숙련과 선택의 인과적 연결",
+          "purpose": "플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통한 적의 행동 패턴 변환 및 성장 가능성 확대의 핵심 루프 형성",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현됨"
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 인과적 선택 및 성장",
+          "purpose": "플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통해 적의 행동 패턴 변환과 성장 가능성 확대의 핵심 루프 형성을 구현",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현됨"
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "숙련도 증가",
+            "새로운 선택 기회 제공"
+          ],
+          "stateOutputs": [
+            "적의 행동 패턴 변환",
+            "성장 가능성 확대"
+          ],
+          "name": "생존 전투 시스템 - 인과적 선택 및 성장",
+          "purpose": "주요 시스템의 진입을 통한 보조 시스템의 변화로 인해 실제 선택이 결정되며, 이는 게임 내부 상호작용 및 결과 변화에 의해 표현됨",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다"
+        },
+        {
+          "id": "delve_0",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "적의 행동 패턴 변경",
+            "게임 내부 상호작용 및 결과 변화"
+          ],
+          "stateOutputs": [
+            "주요 시스템의 변화",
+            "보조 시스템의 변화"
+          ],
+          "name": "보석 생존전 - 게임 내부 상호작용 및 결과 변화",
+          "purpose": "주요 시스템과 보조 시스템 간의 인과적 연결은 플레이어의 숙련도 증가와 새로운 선택 기회 제공을 통해 이루어지며, 이는 주요 시스템의 진입을 통해 보조 시스템의 변화가 실제로 일어난다.",
+          "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현되어야 한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1123563,
-      "lastMs": 104423,
+      "totalMs": 1231808,
+      "lastMs": 108245,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:56:30.336Z"
+      "updatedAt": "2026-10-09T20:58:18.584Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:37:46.738Z",
-  "updatedAt": "2026-10-09T20:56:30.338Z",
+  "updatedAt": "2026-10-09T20:58:18.590Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1964,19 +2112,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::4b869940197b66ad839b81b376a86f4beb879ecd6614759d8a06cc8c4dbce179:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "coreLoop_0",
-          "coreLoop_1",
-          "coreLoop_2"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::4b869940197b66ad839b81b376a86f4beb879ecd6614759d8a06cc8c4dbce179:signatureSystems:3": 1
   },
@@ -1984,8 +2120,8 @@
   "localAuthoringSplits": {
     "f9e24080ff37b4cdc4d643a8cf35985a30c9468e7de3beea6c94ffed7e1cb43f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:56:30.336Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T20:58:18.590Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
