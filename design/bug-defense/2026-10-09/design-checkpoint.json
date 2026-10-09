@@ -1501,25 +1501,28 @@
         "INCOMING_INSECT_WAVE",
         "DEFENDER_POSITIONS"
       ]
+    },
+    "local_authoring_parts::f22d5affd2a0f0d8e2d26a3e519d620387c0ad64fbd2b641dc18fa61cbedf420:fromSystem": {
+      "fromSystem": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 136,
-      "successes": 135,
+      "calls": 137,
+      "successes": 136,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 9238513,
-      "lastMs": 63495,
+      "totalMs": 9316813,
+      "lastMs": 78300,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:34:11.334Z"
+      "updatedAt": "2026-10-09T05:35:29.636Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T05:34:11.334Z",
+  "updatedAt": "2026-10-09T05:35:29.636Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3948,7 +3951,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:34:11.334Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:35:29.636Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
