@@ -194,25 +194,40 @@
         "플레이어의 숙련된 전략 -> 상태 변화 -> 보상/위험/다음 선택",
         "플레이어의 선택이 상태를 변화시키고, 이는 다시 다른 선택으로 이어지는 양방향 실제 상태 교환"
       ]
+    },
+    "local_authoring_parts::0328babfb163883041aa1272573c8b2d835e90021694b8ba30b4119fc57b772e:signatureSystems:0": {
+      "id": "coreFun",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerChoice",
+        "environmentState"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "rewardOrRisk"
+      ],
+      "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+      "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하여, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현",
+      "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 실질적 세계 상태 변화를 일관되게 생성하며, 상황별로 조합을 변경하고, 이동 속도나 타격 손맛을 조절하여 새로운 선택과 보상/위험을 유도한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 743592,
-      "lastMs": 100403,
+      "totalMs": 855080,
+      "lastMs": 111488,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:08:08.415Z"
+      "updatedAt": "2026-10-09T21:09:59.905Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:55:44.798Z",
-  "updatedAt": "2026-10-09T21:08:08.415Z",
+  "updatedAt": "2026-10-09T21:09:59.905Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1940,7 @@
   "localAuthoringSplits": {
     "271d072a82ddae35e1db6f383331e5ac2cf26d5ab1bfba7a853709177da2b91d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:08:08.415Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:09:59.905Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
