@@ -430,7 +430,11 @@ nativeFoundationSpawn.CanCollide = true
 nativeFoundationSpawn.Parent = workspace
 
 -- F2: 현재 월드의 충돌 지면을 확인한 뒤에만 월드·스폰을 기록한다.
-if parkWorld and parkWorld.Parent == workspace and lobbyGround.Parent == workspace and lobbyGround.CanCollide then
+if parkWorld and parkWorld.Parent == workspace
+  and parkWorld:FindFirstChild("EntranceCounter")
+  and parkWorld:FindFirstChild("RideBuildPad")
+  and parkWorld:FindFirstChild("StarterPath")
+  and lobbyGround.Parent == workspace and lobbyGround.CanCollide then
   foundationCheckpoint("WORLD_READY", nil, {worldReady = true})
 end
 local spawnSupportParams = RaycastParams.new()
@@ -445,8 +449,8 @@ local spawnSupport = workspace:Raycast(
   spawnSupportParams
 )
 local spawnBottom = nativeFoundationSpawn.Position.Y - nativeFoundationSpawn.Size.Y * 0.5
-if nativeFoundationSpawn:IsA("SpawnLocation") and nativeFoundationSpawn.CanCollide
-  and spawnSupport and spawnSupport.Normal.Y >= 0.55
+if foundationSeen.WORLD_READY and nativeFoundationSpawn:IsA("SpawnLocation")
+  and nativeFoundationSpawn.CanCollide and spawnSupport and spawnSupport.Normal.Y >= 0.55
   and math.abs(spawnSupport.Position.Y - spawnBottom) <= 0.6 then
   foundationCheckpoint("SPAWN_READY", nil, {spawnY = nativeFoundationSpawn.Position.Y, groundY = spawnSupport.Position.Y})
 end
@@ -540,7 +544,7 @@ local function bindNativeFoundationCharacter(character)
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
       character:SetAttribute("NativeFoundationGroundingVersion", 2)
-      if foundationPlayer then
+      if foundationPlayer and foundationSeen.CHARACTER_READY then
         foundationCheckpoint("GROUND_CONTACT", foundationPlayer, {groundY = contact.Position.Y, rootY = rootPart.Position.Y})
       end
       return
