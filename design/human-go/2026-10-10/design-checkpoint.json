@@ -577,25 +577,38 @@
       "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
       "purpose": "To initiate the game by allowing the player to explore a limited area and uncover elements of the game world.",
       "playerChoice": "The player chooses whether to engage with the environment or continue exploring for new discoveries."
+    },
+    "local_authoring_parts::41a4bed5e34cfe37a2987ef702d9e446aca57ff9e64b96ff9c6e08567314b3da:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_USE_ITEM"
+      ],
+      "stateOutputs": [
+        "FIGURE_AFFECT_ENVIRONMENT"
+      ],
+      "name": "Resource Management",
+      "purpose": "Grant temporary invisibility in certain environments",
+      "playerChoice": "Use the item for survival or exploration"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 14,
+      "calls": 16,
+      "successes": 15,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1667107,
-      "lastMs": 68039,
+      "totalMs": 1730534,
+      "lastMs": 63427,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:10:28.035Z"
+      "updatedAt": "2026-10-09T23:11:31.463Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T23:10:28.035Z",
+  "updatedAt": "2026-10-09T23:11:31.463Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2242,7 +2255,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:10:28.035Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:11:31.463Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
