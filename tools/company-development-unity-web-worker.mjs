@@ -214,6 +214,12 @@ if(mode==='result'){
         const token=nativeMeshMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
         return token===undefined?null:Number(token.slice(key.length+1));
       };
+      const nativeDepthMarker=qaMarkers.slice().reverse().find(marker=>marker.includes(' SPATIAL_DEPTH ')
+        &&marker.includes(`game=${gameId}`)&&marker.includes('source=UNITY_WORLD_MESH_DEPTH'))||'';
+      const nativeDepthMetric=key=>{
+        const token=nativeDepthMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+        return token===undefined?null:Number(token.slice(key.length+1));
+      };
       const actualMeshProof=qa?.visualQa?.nativeUnityMesh?.metrics||{};
       const native3dVerified=qa?.pass===true
         &&qa?.spatialGameplay?.pass===true
@@ -224,6 +230,12 @@ if(mode==='result'){
         &&Number(qa?.spatialGameplay?.gameplayActors3d)>=1
         &&Number(qa?.spatialGameplay?.worldMeshes3d)>=2
         &&qa?.spatialGameplay?.spriteGameplayActors===0
+        &&nativeDepthMarker.includes('status=PASS')
+        &&nativeDepthMetric('cameraPerspective')===1
+        &&nativeDepthMetric('worldMeshes3d')===qa.spatialGameplay.worldMeshes3d
+        &&nativeDepthMetric('worldDepthCm')===qa.spatialGameplay.worldDepthCm
+        &&nativeDepthMetric('gameplayActors3d')===qa.spatialGameplay.gameplayActors3d
+        &&nativeDepthMetric('spriteGameplayActors')===0
         &&Number(qa?.spatialGameplay?.observedMeshCount)>0
         &&Number(qa?.spatialGameplay?.observedTriangles)>0
         &&Number(qa?.spatialGameplay?.observedVolumetricMeshes)>0
