@@ -1169,25 +1169,28 @@
         "trigger",
         "stateChange"
       ]
+    },
+    "local_authoring_parts::d5e909394b501e6110a8e8a753d3d41e7aa6039232b24d6dc7b5b3890adfa422:fromSystem": {
+      "fromSystem": "Vibe 폴리시 시스템 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 63,
-      "successes": 62,
+      "calls": 64,
+      "successes": 63,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5475790,
-      "lastMs": 88059,
+      "totalMs": 5564651,
+      "lastMs": 88861,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:46:56.091Z"
+      "updatedAt": "2026-10-09T01:48:24.953Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:46:56.091Z",
+  "updatedAt": "2026-10-09T01:48:24.953Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3617,7 +3620,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:46:56.091Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:48:24.953Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
