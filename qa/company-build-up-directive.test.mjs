@@ -1351,6 +1351,10 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
     regions:Array.from({length:9},(_,i)=>({id:'area-'+i,name:'지역 '+i})),
     enemiesOrChallenges:[{name:'지휘관',counterplay:'공격 전조에 회피'}]
   };
+  approved.content.implementationTraceability=Array.from({length:10},(_,i)=>({
+    designElement:'설계 시스템 '+i,responsibleSystem:'기존 권위 상태',
+    validationEvidence:'실제 플레이 입력과 저장 재접속 검증'
+  }));
   const owner='roblox-games/volume-scope/server/Game.server.luau';
   const obs={sourceRoot:'roblox-games/volume-scope',sourceTreeFingerprint:'a'.repeat(64),
     topFiles:[{file:owner,score:15}],sourceAnchors:[],observations:[],
@@ -1363,18 +1367,38 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
     });
   const first=create();
   const volume=first.designedGameVolume;
-  assert.equal(first.designImplementationContext.signatureSystems.length,17);
+  assert.equal(first.designImplementationContext.signatureSystems.length,12,
+    'compressed ordinary prompt context is intentionally bounded even when full volume is preserved');
   assert.equal(first.designImplementationContext.systemInterconnections.length,18);
   assert.equal(first.designImplementationContext.contentExpansionPlan.length,3);
+  assert.equal(first.designImplementationContext.implementationTraceability.length,8);
   assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,17);
   assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,18);
   assert.equal(volume.authoredCounts.CONTENT_MILESTONE,3);
+  assert.equal(volume.authoredCounts.IMPLEMENTATION_TRACE,10);
   assert.equal(volume.authoredCounts.VARIETY_REGIONS+volume.authoredCounts.VARIETY_ENEMIESORCHALLENGES,10);
   assert.equal(volume.authoredCounts.CORE_LOOP,5);
   assert.equal(volume.selectionVersion,2);
   assert.equal(volume.activeItem.ref,'CORE_LOOP[0]');
   assert.ok(volume.items.every(row=>!row.implementationVerified&&!row.runtimeVerified));
   assert.match(directivePrompt(first),/DESIGNED_GAME_UNIT_SELECTION: active=CORE_LOOP\[0\]/);
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const activePrompt=guide({target:'roblox',gameId:'volume-scope',buildUpDirective:first},[owner]);
+  assert.match(activePrompt,/contentUnitSelection=active:CORE_LOOP\\[0\\]/);
+  assert.match(activePrompt,/volumeImplementation=ref:CORE_LOOP\\[0\\]/);
+  const compactPrompt=compact(activePrompt,{compact:true,responsiblePaths:[owner]});
+  assert.match(compactPrompt,/contentUnitSelection=active:CORE_LOOP\\[0\\]/);
+  assert.match(compactPrompt,/volumeImplementation=ref:CORE_LOOP\\[0\\]/);
  
   const generic=create(first,'verified','b'.repeat(64),{runtimeObserved:true,runtimePassed:true});
   assert.equal((generic.designedGameVolume.activeItem||generic.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
@@ -1392,13 +1416,13 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   assert.equal(restored.designedGameVolume.activeItem.ref,volume.activeItem.ref,
     'repair of an unrelated foundation error cannot close pending content');
   const scoped=create(restored,'verified','e'.repeat(64),{
-    runtimeObserved:true,runtimePassed:true,
+    runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
     contentUnitVerification:{
       ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
       gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'e'.repeat(64),
       sourceFile:owner,sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
       independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
-      runtimeRunId:'actual-runtime-run',evidenceArtifactId:'verified-artifact'
+      runtimeRunId:'37936660265',evidenceArtifactId:'sha256:'+'7'.repeat(64)
     }
   });
   assert.notEqual((scoped.designedGameVolume.activeItem||scoped.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
@@ -1409,17 +1433,39 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   assert.ok(scoped.designedGameVolume.items.every(row=>row.runtimeVerified===false));
  
   const wrongSource=create(restored,'verified','f'.repeat(64),{
-    runtimeObserved:true,runtimePassed:true,
+    runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
     contentUnitVerification:{
       ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
       gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'f'.repeat(64),
       sourceFile:'roblox-games/volume-scope/server/Fake.server.luau',
       sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
       independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
-      runtimeRunId:'generic-runtime',evidenceArtifactId:'generic-artifact'
+      runtimeRunId:'37936660265',evidenceArtifactId:'sha256:'+'8'.repeat(64)
     }
   });
   assert.equal((wrongSource.designedGameVolume.activeItem||wrongSource.designedGameVolume.deferredItem).ref,volume.activeItem.ref);
+
+  const malformedProof=create(restored,'verified','e'.repeat(64),{
+    runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
+    contentUnitVerification:{
+      ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
+      gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'e'.repeat(64),
+      sourceFile:owner,sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
+      independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
+      runtimeRunId:'invented-run',evidenceArtifactId:'verified-by-name'
+    }
+  });
+  assert.equal((malformedProof.designedGameVolume.activeItem||malformedProof.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
+    'a free-form marker cannot pass the scoped evidence gate');
+
+  approved.content.signatureSystems[16].name='changed late design system';
+  const changedDesign=create(scoped,'verified','f'.repeat(64),{
+    runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true
+  });
+  assert.notEqual(changedDesign.designedGameVolume.authoredDesignFingerprint,
+    scoped.designedGameVolume.authoredDesignFingerprint);
+  assert.equal((changedDesign.designedGameVolume.activeItem||changedDesign.designedGameVolume.deferredItem).ref,
+    volume.activeItem.ref,'editing a system beyond the ordinary prompt summary resets stale unit selection');
 });
  
 test('preservation-only approved design never schedules novel gameplay from the content inventory',()=>{
