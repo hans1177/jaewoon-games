@@ -12,7 +12,7 @@ test('per-game F0 persistence checks uploaded identity and never demotes a newer
   const section=workflow.slice(workflow.indexOf("Persist this game's F0 result immediately"));
   const code=section.match(/node <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
-  const evidence={gameId:'garden',pass:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:200};
+  const evidence={version:6,gameId:'garden',pass:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:200,native3dSourcePreflight:{worldGeometry:true,characterAndCamera:true}};
   const execute=(item,proof=evidence,env={})=>{
     const writes=new Map(),exit=Symbol('exit');
     const original={items:[item,{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'}]};
@@ -24,6 +24,9 @@ test('per-game F0 persistence checks uploaded identity and never demotes a newer
   const passed=execute(item);
   assert.equal(passed.items[0].currentStep,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
   assert.equal(passed.items[0].robloxFoundationF0Passed,true);
+  assert.equal(execute(item,{...evidence,version:5}).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,{...evidence,native3dSourcePreflight:{worldGeometry:false,characterAndCamera:true}}).items[0].robloxFoundationF0Passed,false);
+
   assert.deepEqual(passed.items[1],{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'});
   for(const proof of [null,{...evidence,gameId:'other'},{...evidence,artifactIdentity:'wrong'}])assert.equal(execute(item,proof).items[0].robloxFoundationF0Passed,false);
   assert.equal(execute(item,evidence,{PACKAGE_ARTIFACT_READY:'false'}).items[0].robloxFoundationF0Passed,false);
