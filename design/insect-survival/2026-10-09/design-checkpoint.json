@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:identity": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.' 및 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문 깊이로 역할을 구분한다. 세계 규칙은 MAIN × A × B × c의 상태 교환에 기반하여 동일한 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 인과법칙은 KARMA_RETURN와 MANDATE_LEGITIMACY로 구체화되어, 성장은 수치 증가뿐만 아니라 새 행동·경로·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 시그니처 시스템은 각각 5개 이상의 서로 다른 메커니즘을 포함하며, 저장·보상·진행을 임의 변경하지 않는다. 게임은 UNITY 플랫폼에서 웹 브라우저로 배포되며, 모바일 터치 컨트롤 없이 실제 세계 깊이·가림·조명을 지원한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 245837,
+      "lastMs": 245837,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:55:59.113Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:51:53.255Z",
-  "updatedAt": "2026-10-09T11:51:53.271Z",
+  "updatedAt": "2026-10-09T11:55:59.113Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2241,5 +2257,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:55:59.113Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
