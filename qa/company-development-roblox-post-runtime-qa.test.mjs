@@ -441,8 +441,12 @@ test('exact private candidate first-frame diagnostics retain server simulation s
     'sourceRevision,','artifactIdentity,',"placeId:String(candidate.placeId||'')",
     'candidateVersionNumber:Number(candidate.versionNumber||0)',
     'simulationRunningAfter:engineProbe.serverBootEvidence?.simulationRunningAfter===true',
+    'simulationStartCapabilityDenied,',
     'serverContextExecuted:engineProbe.serverContextExecuted===true'
   ])assert.ok(workflow.includes(fact),'missing exact first-frame causal evidence: '+fact);
+  assert.ok(workflow.includes("const simulationStartCapabilityDenied=engineProbe.serverBootEvidence?.simulationStartCapabilityDenied===true"));
+  assert.ok(workflow.includes("'roblox-open-cloud-simulation-plugin-capability-denied'"));
+  assert.ok(workflow.includes('ROBLOX_FIRST_FRAME_SIMULATION_DIAGNOSTIC='));
   assert.ok(workflow.includes("item.robloxRuntimeFoundationPassed=false;"));
   assert.ok(workflow.includes("item.robloxRuntimePassed=false;"));
   assert.ok(workflow.includes("item.robloxIndependentQaPassed=false;"));
