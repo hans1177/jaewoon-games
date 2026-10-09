@@ -75,25 +75,38 @@
       "name": "진행 인과법칙",
       "purpose": "기존 진행 기반의 상태 변화를 유도하며, 플레이어의 숙련 및 대응에 따라 새로운 경로와 관계가 생성된다.",
       "playerChoice": "플레이어는 현재 진행 단계에서 선택 결과를 통해 세계의 상태 변화를 직접적으로 영향을 미친다."
+    },
+    "local_authoring_parts::db90b86aa91a21a02196321a286e39178bb43fb12293e24b5727446a9623177d:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "재방문 인과법칙",
+      "purpose": "Player's repeated exploration of world state through diverse interactions and progression.",
+      "playerChoice": "Revisit previously explored regions, revisit core fun, or explore new paths based on system mastery and discovery."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 841330,
-      "lastMs": 92504,
+      "totalMs": 928268,
+      "lastMs": 86938,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:48:19.637Z"
+      "updatedAt": "2026-10-09T12:49:46.577Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:34:18.260Z",
-  "updatedAt": "2026-10-09T12:48:19.637Z",
+  "updatedAt": "2026-10-09T12:49:46.577Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2170,7 +2183,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:48:19.637Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:49:46.577Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
