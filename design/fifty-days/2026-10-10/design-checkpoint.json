@@ -2046,25 +2046,223 @@
       "name": "생존 전략 교환 시스템",
       "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
       "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가"
+    },
+    "local_authoring_parts::71a879dd3e07e575873f62456890da5152ce06d0b21b837a122cb1f2f4df61c4:landmark,encounterPattern,resourcePressure,storyContext": {
+      "landmark": "생존 전략 교환 시스템",
+      "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+      "resourcePressure": "50% 자원 배분",
+      "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+    },
+    "local_authoring_parts::079b977b7a5a4dc6b42eb129ef582d012bcfc9bd21609437a2172f4610af4ef5:regions:1": {
+      "id": "50일-생존 전략 교환 시스템",
+      "ruleIds": [
+        "signatureSystems[0]",
+        "signatureSystems[1]",
+        "signatureSystems[2]"
+      ],
+      "name": "생존 전략 교환 시스템",
+      "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
+      "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가",
+      "landmark": "생존 전략 교환 시스템",
+      "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+      "resourcePressure": "50% 자원 배분",
+      "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+    },
+    "local_authoring_parts::57152152a1b9becca622d5bfa521d27ac40b9e11b0a36a3b0cd8470adeed8d86:regions": {
+      "regions": [
+        {
+          "id": "50일-생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
+          "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가",
+          "landmark": "생존 전략 교환 시스템",
+          "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+          "resourcePressure": "50% 자원 배분",
+          "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+        },
+        {
+          "id": "50일-생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
+          "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가",
+          "landmark": "생존 전략 교환 시스템",
+          "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+          "resourcePressure": "50% 자원 배분",
+          "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+        }
+      ]
+    },
+    "local_authoring_parts::7a4e8758899c1b8526035bc746596394e5fd582aa54ce358c5c96b492cd18746:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[0]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "무기/속성",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "비교",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "무기/속성",
+          "costKey": "무기/속성",
+          "cooldownKey": "무기/속성"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[1]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "퀘스트/보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "비교",
+          "effect": "주제/역사/철학 선택",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "퀘스트/보상",
+          "costKey": "퀘스트/보상",
+          "cooldownKey": "퀘스트/보상"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[2]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "주제/역사/철학",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "비교",
+          "effect": "새로운 전략 경로",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "주제/역사/철학",
+          "costKey": "주제/역사/철학",
+          "cooldownKey": "주제/역사/철학"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "50일-무기/속성 선택",
+          "humanTool": "실시간 속도/강화 기능 증가",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-무기/속성 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "실시간 속도/강화 기능 감소",
+          "changedChoice": "무기/속성 선택"
+        },
+        {
+          "humanId": "50일-퀘스트/보상 선택",
+          "humanTool": "주제/역사/철학 선택",
+          "humanAbilityId": "50일-퀘스트/보상 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "주제/역사/철학 선택",
+          "removedState": "주제/역사/철학 감소",
+          "changedChoice": "퀘스트/보상 선택"
+        },
+        {
+          "humanId": "50일-주제/역사/철학 선택",
+          "humanTool": "새로운 전략 경로",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "새로운 전략 경로",
+          "removedState": "새로운 전략 경로 감소",
+          "changedChoice": "주제/역사/철학 선택"
+        }
+      ],
+      "regions": [
+        {
+          "id": "50일-생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
+          "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가",
+          "landmark": "생존 전략 교환 시스템",
+          "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+          "resourcePressure": "50% 자원 배분",
+          "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+        },
+        {
+          "id": "50일-생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "traversal": "주제/역사/철학 선택 → 퀘스트/보상 선택 → 무기/속성 선택",
+          "riskReward": "주제/역사/철학 선택: 새로운 전략 경로 연출, 퀘스트/보상 선택: 게임 세계관 진입 및 경험 상승, 무기/속성 선택: 실시간 속도/강화 기능 증가",
+          "landmark": "생존 전략 교환 시스템",
+          "encounterPattern": "주제/역사/철학 → 퀘스트/보상 → 무기/속성",
+          "resourcePressure": "50% 자원 배분",
+          "storyContext": "실시간 속도/강화 기능 증가, 게임 세계관 진입 및 경험 상승, 새로운 전략 경로"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 22,
+      "calls": 29,
+      "successes": 23,
       "failures": 6,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 3982016,
-      "lastMs": 58944,
+      "totalMs": 4023153,
+      "lastMs": 41137,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:52:17.979Z"
+      "updatedAt": "2026-10-09T23:52:59.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T23:52:17.979Z",
+  "updatedAt": "2026-10-09T23:52:59.122Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3885,7 +4083,7 @@
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:52:17.979Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:52:59.122Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
