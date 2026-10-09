@@ -47,25 +47,38 @@
       "name": "단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 세계 규칙",
       "purpose": "플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다.",
       "playerChoice": "Read the current border pressure and choose one territory objective. This choice triggers a new world state and relationship change. The result is either 'Commit units or resources to attack, reinforce or expand economy.' or 'Resolve the territorial change and adapt the next plan to the new front line.'"
+    },
+    "local_authoring_parts::9682dac2dc2ea36ea6d13207485b710279c59ed4edae4077086287f7ba6e6da1:signatureSystems:1": {
+      "id": "territory-war-signature-systems-1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "current_border_pressure"
+      ],
+      "stateOutputs": [
+        "new_territory_objective"
+      ],
+      "name": "단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 세계 규칙",
+      "purpose": "영토전쟁에서 플레이어가 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다.",
+      "playerChoice": "현재 경계 압력에 따라 영토 목표를 선택하는 대안적 결정 과정을 포함함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 660438,
-      "lastMs": 256028,
+      "totalMs": 767109,
+      "lastMs": 106671,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:31:41.219Z"
+      "updatedAt": "2026-10-09T15:33:27.892Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:20:40.748Z",
-  "updatedAt": "2026-10-09T15:31:41.220Z",
+  "updatedAt": "2026-10-09T15:33:27.892Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1612,8 +1625,8 @@
     "local_authoring_parts::9682dac2dc2ea36ea6d13207485b710279c59ed4edae4077086287f7ba6e6da1:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:31:41.219Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T15:33:27.892Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
