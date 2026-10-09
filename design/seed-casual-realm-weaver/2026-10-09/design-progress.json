@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-09T09:26:54.733Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T09:31:49.248Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-casual-realm-weaver/2026-10-09/design-seed.json",
     "contentDigest": "62c9166431336e63620ea7ee771ee06aa9d7fc6ac1b6ca0cd2cbe33fabea203b",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1241364,
-      "lastMs": 87058,
+      "totalMs": 1535871,
+      "lastMs": 294507,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:26:54.730Z"
+      "updatedAt": "2026-10-09T09:31:49.248Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T09:26:54.741Z"
+  "updatedAt": "2026-10-09T09:31:49.253Z"
 }
