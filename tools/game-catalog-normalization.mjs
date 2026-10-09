@@ -248,7 +248,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
           const groups=manifest.requiredGroups||{};
           if(!['loader','data','framework','wasm'].every(key=>
             Array.isArray(groups[key])&&groups[key].length>0
-            &&groups[key].some(ref=>{
+            &&groups[key].every(ref=>{
               if(typeof ref!=='string'||!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
               try{return filesystem.statSync(candidate+'/'+ref).isFile()&&filesystem.statSync(candidate+'/'+ref).size>0;}catch{return false;}
             })))continue;
