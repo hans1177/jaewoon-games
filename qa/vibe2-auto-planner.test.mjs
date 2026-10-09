@@ -2005,6 +2005,15 @@ test('Unity Web 3D floor repair and independent native asset source can be plann
   assert.equal(repair.sourceRoot,assets.sourceRoot);
   assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false,
     'the existing file conflict guard must remain intact');
+  // 2.5D 액터가 기존 시각 책임 파일에 있다면 이 파일은 코어 수리가 소유하고 자산 작업이 병행 수정하지 않는다.
+  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
+  const collisionRows=findSafeTasks(project,root,{tasks:[]});
+  const collisionRepair=collisionRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.ok(collisionRepair?.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
+  assert.equal(collisionRows.some(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs')),false);
 });
 
 test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{
