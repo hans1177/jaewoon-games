@@ -67,7 +67,7 @@ function updateFilters(){
   if(!raw)continue;
   if(/^https?:\/\//i.test(raw)){folderPaths.add('외부 경로');continue;}
   const parts=raw.replace(/^\//,'').split('/').filter(Boolean);
-  folderPaths.add(parts.length>2?parts.slice(0,2).join('/'):parts.length>1?parts[0]:'최상위');
+  folderPaths.add(parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위');
  }
  for(const folder of [...folderPaths].sort((a,b)=>a.localeCompare(b,'ko')))folderFilter.add(new Option(folder,folder));
  folderFilter.value=[...folderFilter.options].some(option=>option.value===oldFolder)?oldFolder:'';
@@ -88,7 +88,7 @@ function showList(){
  const filtered=rows.filter(row=>{
   const asset=row.asset||{},source=String(asset.sourcePath||asset.path||'').trim();
   const parts=source.replace(/^\//,'').split('/').filter(Boolean);
-  const folder=!source?'':/^https?:\/\//i.test(source)?'외부 경로':parts.length>2?parts.slice(0,2).join('/'):parts.length>1?parts[0]:'최상위';
+  const folder=!source?'':/^https?:\/\//i.test(source)?'외부 경로':parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위';
   const platform=String(asset.platform||'').trim(),sameSource=sourceCounts.get(source)||0;
   const verified=asset.productionVerified===true?'verified':asset.productionVerified===false?'unverified':'unknown';
   const text=[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,
@@ -158,8 +158,9 @@ async function choose(row,force=false){
  const sharedSource=sourcePath?(registry?.assets||[]).filter(asset=>String(asset?.sourcePath||asset?.path||'').trim()===sourcePath).length:0;
  const sourceInfo=sourcePath?'원본 경로: '+sourcePath:'원본 경로: 미기재';
  const sharedInfo=sharedSource>1?'동일 경로 등록 '+sharedSource+'개 · 실제 중복 여부는 별도 확인 필요':'';
- const sourceVersion=row.asset?.sourceRevision||row.asset?.version?'등록 버전: '+(row.asset.sourceRevision||row.asset.version):'';
- $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,sourceInfo,sharedInfo,sourceVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
+ const sourceVersion=row.asset?.sourceRevision||row.asset?.version?'자산 버전: '+(row.asset.sourceRevision||row.asset.version):'';
+ const registryVersion=registry?.version?'등록부 버전: '+registry.version:'';
+ $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;
  $('previewStatus').textContent='미리보기를 불러오는 중…';$('previewBadge').textContent='불러오는 중';
