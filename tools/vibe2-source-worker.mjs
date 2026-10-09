@@ -2285,6 +2285,20 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const completeness=expansion?.existingCompletenessReview||{};
   const completionAcceptance=(expansion?.completionAcceptance||[]).map(clean).filter(Boolean);
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
+  // 기존 코딩 작업에 승인된 개별 콘텐츠를 연결한다. 정적 소스 이름은 PASS 증거가 아니다.
+  const volume=d?.designedGameVolume||{};
+  const authoredItems=Array.isArray(volume.items)?volume.items:[];
+  const focus=clean(d.primaryFocus).toUpperCase();
+  const volumeApplicable=['CORE_FUN','PROGRESSION'].includes(focus)&&volume.mode!=='SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION';
+  const volumePreferred=focus==='PROGRESSION'
+    ?authoredItems.filter(row=>/CONTENT_MILESTONE|VARIETY_REGIONS|VARIETY_OBJECTIVES|NARRATIVE_QUESTSTATES|SYSTEM_CONNECTION/.test(clean(row.family)))
+    :authoredItems.filter(row=>/CORE_LOOP|SIGNATURE_SYSTEM|SYSTEM_CONNECTION|VARIETY_ENEMIESORCHALLENGES|VARIETY_ABILITIES/.test(clean(row.family)));
+  const volumePool=volumePreferred.length?volumePreferred:authoredItems;
+  const volumeOwned=volumePool.filter(row=>(row.sourceCandidates||[]).some(candidate=>
+    responsibleFiles.some(file=>posix(candidate.file)===posix(file)||posix(candidate.file).endsWith('/'+posix(file)))));
+  const volumeChoices=volumeOwned.length?volumeOwned:volumePool;
+  const chosenVolume=volumeApplicable&&volumeChoices.length
+    ?volumeChoices[(Math.max(1,Number(d.generation)||1)-1)%volumeChoices.length]:null;
   const codingTrace=d?.designToPlatformCodingTrace||{};
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
@@ -2323,7 +2337,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
     'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
-    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be 2.5D or 3D; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
+    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must use real native 3D meshes and depth; flat 2D or 2.5D cannot be a final PASS; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
@@ -2340,6 +2354,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
     `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
+    ...(volume.version===1?[`contentVolume=authored:${Number(volume.authoredItemCount||0)} sourceNamedCandidates:${Number(volume.namedSourceCandidateCount||0)} sourceReview:${Number(volume.sourceReviewRequiredCount||0)} runtimeVerified:${Number(volume.runtimeVerifiedCount||0)} status:DESIGN_SOURCE_AND_RUNTIME_UNVERIFIED`]:[]),
+    ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
     `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
@@ -2377,7 +2393,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'nextVibeAction=','contentVolume=','volumeImplementation=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2413,7 +2429,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentCompletionAcceptance=',
+    'contentTheme=','contentVolume=','volumeImplementation=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
