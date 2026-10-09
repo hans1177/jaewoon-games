@@ -2440,3 +2440,32 @@ test('quality-first asset lane fixes 63 slots and prioritizes current Roblox con
   const held=reserveVibeTaskBatch(overfull,{lane:'asset-development',policy});
   assert.equal(held.tasks.length,0);assert.equal(held.queue.tasks.filter(t=>t.status==='running').length,64);
 });
+
+test('Unity Web receives sixteen distinct-game priority slots without a seventeenth-game cap; Android stays held',()=>{
+  const policy={
+    directNativeDualPlatformDevelopment:{ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']}},
+    developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:16}}
+  };
+  const web=Array.from({length:18},(_,i)=>({
+    id:'unity-web-'+i,gameId:'unity-web-'+i,target:'unity',
+    evidence:['unity-web-first-stage'],sourceRoot:'unity-games/unity-web-'+i,
+    responsibleFiles:['unity-games/unity-web-'+i+'/Assets/Scripts/GameCore.cs'],
+    department:'development',type:'implementation',goal:'independent WebGL development',status:'queued'
+  }));
+  const android={id:'android-held',gameId:'android-held',target:'unity',
+    sourceRoot:'unity-games/android-held',responsibleFiles:['unity-games/android-held/Assets/Scripts/GameCore.cs'],
+    department:'development',type:'implementation',goal:'Android app only',status:'queued'};
+  const roblox={id:'roblox-live',gameId:'roblox-live',target:'roblox',
+    sourceRoot:'roblox-games/roblox-live',responsibleFiles:['roblox-games/roblox-live/server/Game.server.luau'],
+    department:'development',type:'implementation',goal:'Roblox development',status:'queued'};
+  const result=reserveVibeTaskBatch({maxConcurrentTasks:25,tasks:[...web,android,roblox]},{
+    policy,maxConcurrentTasks:25,lane:'game-primary',
+    reservation:{id:'independent-two-platforms',runId:'local',reservedAt:new Date().toISOString()}
+  });
+  assert.equal(new Set(result.tasks.filter(t=>t.target==='unity').map(t=>t.gameId)).size,18);
+  assert.equal(result.selection.webGameFlow.target,16);
+  assert.equal(result.selection.webGameFlow.shortfall,0);
+  assert.equal(result.queue.tasks.find(t=>t.id==='android-held').ownerDevelopmentHold,true);
+  assert.equal(result.queue.tasks.find(t=>t.id==='android-held').status,'queued');
+  assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
+});

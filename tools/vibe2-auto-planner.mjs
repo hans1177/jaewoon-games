@@ -386,7 +386,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     &&firstStagePolicy?.appliesToAllGames===true;
   const unityWebDevelopmentFloor=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
     &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&firstStagePolicy?.developmentAdmissionAuthority===false
+    &&firstStagePolicy?.enabled!==false
     &&firstStagePolicy?.validationSurfaceOnly===false;
   const grandfatherIds=new Set((centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[]).map(clean).filter(Boolean));
   const unityWebGrandfathered=unityWebDevelopmentFloor&&grandfatherIds.has(id)&&nativeUpperPlatformAlreadyStarted(item);
@@ -742,7 +742,7 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return false; // Legacy HTML web is not Unity WebGL.
+  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -3777,13 +3777,19 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
   const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowGames=new Set(developmentPool.filter(item=>item.unityWebDevelopment===true&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
+  const webFlowUnityOnly=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status==='ACTIVE';
+  const webFlowMatches=item=>webFlowUnityOnly?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage')):item.target==='web';
+  const webFlowGames=new Set(developmentPool.filter(item=>webFlowMatches(item)&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
+  const distinctTarget=Math.max(0,Math.floor(Number(centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.distinctGameDevelopmentTarget)||0));
+  const activeGameIds=new Set(developmentPool.filter(item=>item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)).filter(Boolean));
+  const eligibleMissingGameIds=new Set(allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).map(project=>clean(project.gameId)).filter(gameId=>gameId&&!activeGameIds.has(gameId)));
+  const distinctSeedCapacity=Math.min(eligibleMissingGameIds.size,Math.max(0,distinctTarget-activeGameIds.size),persistentCapacity);
   const internalAssetFocus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
   const assetLaneMax=Number(centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
   const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,assetLaneMax-internalMotionActive):0;
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity);
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -3799,6 +3805,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     ownerResumableSeedCapacity,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
     webGameFlow:{target:webFlowTarget,gameIds:[...webFlowGames],shortfall:Math.max(0,webFlowTarget-webFlowGames.size),seedCapacity:webSeedCapacity,normalBacklogBypass:normalCapacity===0&&webSeedCapacity>0},
+    distinctGameFlow:{target:distinctTarget,gameIds:[...activeGameIds],shortfall:Math.max(0,distinctTarget-activeGameIds.size),seedCapacity:distinctSeedCapacity},
     executionWaveMax,
     persistentQueueMax
   };
@@ -3809,17 +3816,19 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
   const planningProjects=[
-    ...(webSeedCapacity?projects.filter(project=>project.engine==='unity'&&project.firstStageUnityWeb===true&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true})):[]),
-    ...projects.map(project=>({project,webSeed:false}))
+    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false})):[]),
+    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true})):[]),
+    ...projects.map(project=>({project,webSeed:false,distinctSeed:false}))
   ];
-  for(const {project,webSeed} of planningProjects){
+  for(const {project,webSeed,distinctSeed} of planningProjects){
     if(planned.length>=capacity)break;
     if(webSeed&&(webFlowGames.size>=webFlowTarget||webFlowGames.has(project.gameId)))continue;
-    if(!webSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
+    if(distinctSeed&&(activeGameIds.size>=distinctTarget||activeGameIds.has(project.gameId)))continue;
+    if(!webSeed&&!distinctSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=webSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
-    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(candidate.unityWebDevelopment===true&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
+    const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
@@ -3847,7 +3856,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
-    for(const task of developmentPlanningPool(queue))if(task.unityWebDevelopment===true&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
+    if(acceptedTasks.some(task=>task.executionLane==='GAME_PRIMARY'))activeGameIds.add(project.gameId);
+    planningBacklog.distinctGameFlow.gameIds=[...activeGameIds];
+    planningBacklog.distinctGameFlow.shortfall=Math.max(0,distinctTarget-activeGameIds.size);
+    for(const task of developmentPlanningPool(queue))if(webFlowMatches(task)&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
     planningBacklog.webGameFlow.gameIds=[...webFlowGames];
     planningBacklog.webGameFlow.shortfall=Math.max(0,webFlowTarget-webFlowGames.size);
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
