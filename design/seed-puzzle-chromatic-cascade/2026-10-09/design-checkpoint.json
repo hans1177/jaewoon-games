@@ -34,25 +34,46 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::42e4a3d4fe77b2ecda970ac9b8279749f4a98c3d53102039adadfcedbeb5fe98:signatureSystems:0": {
+      "id": "color-chain-signature-system",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "boardState",
+        "goal",
+        "movesLeft",
+        "obstacles",
+        "comboCount"
+      ],
+      "stateOutputs": [
+        "nextBoardState",
+        "newGoal",
+        "remainingMoves",
+        "updatedObstacles",
+        "newComboCount"
+      ],
+      "name": "Color Chain Signature System",
+      "purpose": "Establishes the causal relationship between player choices and emergent game states, ensuring that each decision leads to a new configuration of the board, goal, and gameplay dynamics.",
+      "playerChoice": "Player selects a move or combination that alters the current state, triggering a new set of rules and constraints for the next level of play."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 242421,
-      "lastMs": 36483,
+      "totalMs": 284075,
+      "lastMs": 41654,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:38:37.719Z"
+      "updatedAt": "2026-10-09T15:39:19.375Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:34:35.274Z",
-  "updatedAt": "2026-10-09T15:38:37.719Z",
+  "updatedAt": "2026-10-09T15:39:19.375Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,7 +1663,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:38:37.719Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:39:19.375Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
