@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::2822aba6093b119e66352349c214bc0115a3f288ce99dcaa0f715aa144a3a0cb:identity": {
+      "identity": "Harbor Days: A Survival Roguelite with Dynamic Progression and Deep Player Agency in a Real-Time Arena of Conflict and Growth"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 179308,
+      "lastMs": 179308,
+      "lastError": null,
+      "updatedAt": "2026-10-09T08:57:18.050Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:54:18.722Z",
-  "updatedAt": "2026-10-09T08:54:18.736Z",
+  "updatedAt": "2026-10-09T08:57:18.051Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T08:57:18.050Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
