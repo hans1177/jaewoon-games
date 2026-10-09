@@ -1574,25 +1574,35 @@
       "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_RUN_STATE_TO_NEXT_WORLD_STATE_01_BRIEF_RUN_WITH_READABLE_FEEDBACK",
       "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
       "stateChange": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::1d95e737ab1c00119996e5bffb86c644460ec6ba0362b59bee33f8893218e7f8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_START_STATE_TO_RUN_STATE_01_SIMPLE_INPUT_AND_CLEAR_GOAL_01_CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 95,
+      "calls": 99,
+      "successes": 96,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6247383,
-      "lastMs": 39863,
+      "totalMs": 6286463,
+      "lastMs": 39080,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:50:18.735Z"
+      "updatedAt": "2026-10-09T02:50:57.818Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T02:50:18.736Z",
+  "updatedAt": "2026-10-09T02:50:57.819Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3661,7 +3671,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:50:18.736Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:50:57.818Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
