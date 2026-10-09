@@ -420,7 +420,7 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
   assert.match(runtime,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.unityWeb\?'유니티 웹 플레이':'게임 입장'/);
+  assert.match(runtime,/const actionLabel=links\.unityWeb\?\(game\.unityWebTestOnly\?'유니티 웹 개발 테스트':'유니티 웹 플레이'\):'게임 입장'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
