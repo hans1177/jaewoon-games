@@ -486,25 +486,42 @@
     },
     "local_authoring_parts::38d49faa7f3cb25e4143e12c28dacbac7036d5dc88cf2c3e1829bc7734dd773b:trigger": {
       "trigger": "Resource collection and utilization for village function improvement, involving selecting specific resources and determining their application for development purposes."
+    },
+    "local_authoring_parts::38d49faa7f3cb25e4143e12c28dacbac7036d5dc88cf2c3e1829bc7734dd773b:stateChange": {
+      "stateChange": "Resource collection and utilization for village function improvement, involving selecting specific resources and determining their application for development purposes."
+    },
+    "local_authoring_parts::044e0874a9e1b5cb2d7a55e1653c41ca297151c728408120a5aa12f10d994335:systemInterconnections:1": {
+      "fromId": "GATHER_RESOURCES",
+      "toId": "UNLOCK_RESIDENT",
+      "stateKeys": [
+        "RESOURCE_COLLECTION",
+        "FUNCTION_IMPROVEMENT",
+        "NEW_RESIDENT_UNLOCKING",
+        "NEXT_GOAL_SELECTION"
+      ],
+      "fromSystem": "GATHER_RESOURCES",
+      "toSystem": "GATHER_RESOURCES",
+      "trigger": "Resource collection and utilization for village function improvement, involving selecting specific resources and determining their application for development purposes.",
+      "stateChange": "Resource collection and utilization for village function improvement, involving selecting specific resources and determining their application for development purposes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2216075,
-      "lastMs": 89327,
+      "totalMs": 2305819,
+      "lastMs": 89744,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:34:28.822Z"
+      "updatedAt": "2026-10-09T09:35:58.567Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:57:32.662Z",
-  "updatedAt": "2026-10-09T09:34:28.822Z",
+  "updatedAt": "2026-10-09T09:35:58.568Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2900,7 +2917,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:34:28.822Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:35:58.568Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
