@@ -79,25 +79,41 @@
       "name": "SINGLE_DEFENSE_STRATEGY",
       "purpose": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES",
       "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+    },
+    "local_authoring_parts::2ba61f873446267cc818e5c8d777daa4abd644cc5f7dd712973df974d61841d8:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ NEXT ENEMY WAVE",
+        "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+      ],
+      "stateOutputs": [
+        "ADAPT DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION",
+        "PROTECT OBJECTIVE",
+        "CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+      ],
+      "name": "ADAPTATION_AND_STRATEGY",
+      "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
+      "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 910574,
-      "lastMs": 86310,
+      "totalMs": 991139,
+      "lastMs": 80565,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:34:55.692Z"
+      "updatedAt": "2026-10-09T09:36:16.260Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:19:44.888Z",
-  "updatedAt": "2026-10-09T09:34:55.692Z",
+  "updatedAt": "2026-10-09T09:36:16.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2310,7 @@
     "local_authoring_parts::2ba61f873446267cc818e5c8d777daa4abd644cc5f7dd712973df974d61841d8:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:34:55.692Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:36:16.260Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
