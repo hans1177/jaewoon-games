@@ -1538,25 +1538,41 @@
         "world_state"
       ],
       "fromSystem": "wild-survival_systems_0, wild-survival_systems_1, wild-survival_systems_2, wild-survival_systems_3, wild-survival_systems_4"
+    },
+    "local_authoring_parts::e6fc7257c49c17c321b3b935653762574c5947b192d24dba79d73a0c39f3a2ad:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_systems_1",
+      "trigger": "월드 상태의 변화가 실패하여 플레이어는 새로운 목표와 전략 선택을 유도함.",
+      "stateChange": "플레이어는 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하며, 과거의 경험과 현대의 환경 간의 연결성을 강화하여 깊은 숙련과 전략적 결정을 유도함."
+    },
+    "local_authoring_parts::251bd469532d90d5c2bd2e518734246a7e91e107a691bc4d95218dd0e74c5824:systemInterconnections:2": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_systems_0, wild-survival_systems_1, wild-survival_systems_2, wild-survival_systems_3, wild-survival_systems_4",
+      "toSystem": "wild-survival_systems_1",
+      "trigger": "월드 상태의 변화가 실패하여 플레이어는 새로운 목표와 전략 선택을 유도함.",
+      "stateChange": "플레이어는 현재 상황을 이해하고, 재방문에 따른 새로운 목표와 전략 선택을 생성하며, 과거의 경험과 현대의 환경 간의 연결성을 강화하여 깊은 숙련과 전략적 결정을 유도함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 106,
-      "successes": 106,
+      "calls": 107,
+      "successes": 107,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4340173,
-      "lastMs": 36741,
+      "totalMs": 4368249,
+      "lastMs": 28076,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:06:54.141Z"
+      "updatedAt": "2026-10-09T07:07:22.220Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T07:06:54.142Z",
+  "updatedAt": "2026-10-09T07:07:22.223Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3759,7 +3775,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:06:54.141Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:07:22.223Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
