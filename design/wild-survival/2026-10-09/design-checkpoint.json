@@ -986,25 +986,41 @@
         "world_state"
       ],
       "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::7fc3812aa01cf5ed9900c3091468368ce23dd0d54e23ce27fec52d175f87df17:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태에 대한 실질적 입력 및 선택",
+      "stateChange": "월드 상태가 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 변환됨"
+    },
+    "local_authoring_parts::7f255d4ac9e7c52cdb3d601852aa0596e9a476598911cd195fc374c19670370d:systemInterconnections:4": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태에 대한 실질적 입력 및 선택",
+      "stateChange": "월드 상태가 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 변환됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 60,
-      "successes": 60,
+      "calls": 61,
+      "successes": 61,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2607685,
-      "lastMs": 34959,
+      "totalMs": 2627364,
+      "lastMs": 19679,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:28:45.283Z"
+      "updatedAt": "2026-10-09T01:29:04.964Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T01:28:45.283Z",
+  "updatedAt": "2026-10-09T01:29:04.972Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3169,7 +3185,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 5
+    "designer_draft_slices::systems-progression": 6
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3207,10 +3223,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:28:45.283Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:29:04.968Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
