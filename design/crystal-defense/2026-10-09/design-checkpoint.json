@@ -49,25 +49,41 @@
       "name": "Read the next attack pattern and choose where crystal defenses create the most value.",
       "purpose": "Player learns to read enemy patterns and select optimal defense placements, altering world state and strategy path.",
       "playerChoice": "Select placement, resonance, or upgrade that maximizes defensive effectiveness against current threat level and future scenarios."
+    },
+    "local_authoring_parts::9289cb97bf4f550fa0f4795625beac2e090312bd6aadbcecb8f3b1d06fef84f2:signatureSystems:1": {
+      "id": "CRYSTAL-DEFENSE-SIGNATURE-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "SELECT_PLACEMENT",
+        "SELECT_RESONANCE",
+        "SELECT_UPGRADE"
+      ],
+      "stateOutputs": [
+        "MODIFY_WORLD_STATE",
+        "ALTER_STRATEGY_PATH"
+      ],
+      "name": "Select Placement, Resonance, or Upgrade Path",
+      "purpose": "Player chooses the optimal defense strategy based on resource allocation and tactical considerations.",
+      "playerChoice": "Optimize placement, enhance resonance, or prioritize upgrade path for maximum defensive effectiveness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 364346,
-      "lastMs": 38449,
+      "totalMs": 598457,
+      "lastMs": 234111,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:11:06.096Z"
+      "updatedAt": "2026-10-09T09:15:00.209Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:05:01.721Z",
-  "updatedAt": "2026-10-09T09:11:06.097Z",
+  "updatedAt": "2026-10-09T09:15:00.209Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2258,7 +2274,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:11:06.096Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:15:00.209Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
