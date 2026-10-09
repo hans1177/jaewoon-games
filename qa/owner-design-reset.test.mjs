@@ -76,6 +76,17 @@ test('only main pushes or explicit dispatch can run a writable design reset',()=
   assert.equal((workflow.match(/node tools\/company-shared-context\.mjs --output=\/tmp\/owner-reset-shared-context\.json/g)||[]).length,2,'PR and official reset must both enforce current central policy before writing');
 });
 
+test('explicit reset opt-out applies only to a trailing marker, not a squash-merge history bullet',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.match(workflow,/!endsWith\(github\.event\.head_commit\.message, '\[owner-reset-trigger-scope-only\]'\)/);
+  assert.doesNotMatch(workflow,/!contains\(github\.event\.head_commit\.message, '\[owner-reset-trigger-scope-only\]'\)/);
+  const marker='[owner-reset-trigger-scope-only]';
+  const mergeMessage='Fix reset workflow (#6527)\\n\\n* prior scoped-test commit '+marker+'\\n\\n* fix runtime branch checkout';
+  assert.equal(mergeMessage.includes(marker),true);
+  assert.equal(mergeMessage.endsWith(marker),false,'squashed history must not suppress the official main reset');
+  assert.equal(('no-reset-intended '+marker).endsWith(marker),true,'direct scoped write must stay opt-out');
+});
+
 test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
   const copy=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');

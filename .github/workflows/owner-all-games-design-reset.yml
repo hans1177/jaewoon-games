@@ -39,7 +39,7 @@ jobs:
           node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
 
   reset-to-design:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !endsWith(github.event.head_commit.message, '[owner-reset-trigger-scope-only]'))
     permissions:
       contents: write
       actions: write
