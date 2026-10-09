@@ -27,25 +27,32 @@
       "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계된다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되며, 이 행동은 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성되어 있다. 보조 요소 c는 이들을 변주하는 서브요소로, 발견·숙련·재방문 @를 통해 깊이를 표현한다. 시그니처 시스템에는 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택, 목표 진행이 서로 영향을 주는 월드 상태가 포함되며, 인과법칙은 기존 규칙 ID를 유지하고, 각 상태 키는 실제 상태 이름만 참조한다. 게임은 단순 반복보다는 경로·위험·결과의 차이를 만든다.",
       "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임되어, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다.",
       "coreFun": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임하여, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다."
+    },
+    "local_authoring_parts::72724cb19cc2496289f96482fe0f3473b7bec6487e3b8a429c86d5064fb994cf:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change in world state, affecting future choices.",
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nOUTPUT: Status change in world state, affecting future choices.",
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Re-evaluate situation based on new information or resource availability.\nOUTPUT: Status change in world state, affecting future choices."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 155718,
-      "lastMs": 28738,
+      "totalMs": 186098,
+      "lastMs": 30380,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:47:09.239Z"
+      "updatedAt": "2026-10-09T11:47:39.622Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:44:33.378Z",
-  "updatedAt": "2026-10-09T11:47:09.241Z",
+  "updatedAt": "2026-10-09T11:47:39.622Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2273,7 +2280,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:47:09.241Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:47:39.622Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
