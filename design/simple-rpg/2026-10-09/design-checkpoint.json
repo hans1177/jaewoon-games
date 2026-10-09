@@ -464,25 +464,46 @@
     },
     "local_authoring_parts::3ef9bad627ef569d4ed7e81cbd37bcddc32ceb0ceb9d8818dfc0cfbe4158b144:trigger": {
       "trigger": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+    },
+    "local_authoring_parts::3ef9bad627ef569d4ed7e81cbd37bcddc32ceb0ceb9d8818dfc0cfbe4158b144:stateChange": {
+      "stateChange": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함, 이 선택 결과로 다음 월드 상태로 전환하며, 해당 행동은 게임 내 맵의 기능을 통해 이루어진다."
+    },
+    "local_authoring_parts::c539d7f079c40a919f1e4f720726731aa7651547dee930700c0be765103d8ff7:systemInterconnections:1": {
+      "fromId": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见",
+      "toId": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_OR_UNLOCK_NEXT_STAGE",
+      "stateKeys": [
+        "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见",
+        "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_OR_UNLOCK_NEXT_STAGE"
+      ],
+      "fromSystem": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见 → CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_OR_UNLOCK_NEXT_STAGE",
+      "toSystem": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_OR_UNLOCK_NEXT_STAGE",
+      "trigger": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함",
+      "stateChange": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함, 이 선택 결과로 다음 월드 상태로 전환하며, 해당 행동은 게임 내 맵의 기능을 통해 이루어진다."
+    },
+    "local_authoring_parts::9ecfc6d4ced31262b94d8bdbac366f1d9e07347fe9e5bf2fbb2a8d8ad561242a:fromId": {
+      "fromId": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+    },
+    "local_authoring_parts::9ecfc6d4ced31262b94d8bdbac366f1d9e07347fe9e5bf2fbb2a8d8ad561242a:toId": {
+      "toId": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_OR_UNLOCK_NEXT_STAGE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1789201,
-      "lastMs": 59419,
+      "totalMs": 1968249,
+      "lastMs": 57681,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:04:05.182Z"
+      "updatedAt": "2026-10-09T09:07:04.235Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T09:04:05.182Z",
+  "updatedAt": "2026-10-09T09:07:04.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2740,7 +2761,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:04:05.182Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:07:04.235Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
