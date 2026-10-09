@@ -491,25 +491,40 @@
     },
     "local_authoring_parts::37b125f3dc67d07d41d1b43d9247ea24e92d1b70f7f72749cbdc66c90bde1653:trigger": {
       "trigger": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀"
+    },
+    "local_authoring_parts::37b125f3dc67d07d41d1b43d9247ea24e92d1b70f7f72749cbdc66c90bde1653:stateChange": {
+      "stateChange": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀"
+    },
+    "local_authoring_parts::5f3ba89d0b53419b58ec1c27704e56c2940ad0dbe841b1b1ce216c55afe9368e:systemInterconnections:2": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+      "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "START_LEVEL_STATE",
+        "END_LEVEL_STATE"
+      ],
+      "fromSystem": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+      "toSystem": "PLAYER_END_LEVEL_STATE",
+      "trigger": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀",
+      "stateChange": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 949107,
-      "lastMs": 32146,
+      "totalMs": 980254,
+      "lastMs": 31147,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:22:47.660Z"
+      "updatedAt": "2026-10-09T09:23:18.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:58.445Z",
-  "updatedAt": "2026-10-09T09:22:47.660Z",
+  "updatedAt": "2026-10-09T09:23:18.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2716,7 +2731,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:22:47.660Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:23:18.809Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
