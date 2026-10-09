@@ -1482,25 +1482,33 @@
       "toSystem": "wild-survival_signature_systems_1",
       "trigger": "월드 상태 변환 시스템 실행",
       "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::919127b980231a4030a427db322198dc6788f96ec99f7263d0488b849e63e6e8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_systems_0, wild-survival_systems_1, wild-survival_systems_2, wild-survival_systems_3, wild-survival_systems_4"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 101,
-      "successes": 101,
+      "calls": 102,
+      "successes": 102,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4012405,
-      "lastMs": 10839,
+      "totalMs": 4218858,
+      "lastMs": 206453,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:18:57.967Z"
+      "updatedAt": "2026-10-09T07:04:52.814Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T07:01:26.358Z",
+  "updatedAt": "2026-10-09T07:04:52.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3703,10 +3711,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:18:57.970Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:04:52.815Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
