@@ -1,5 +1,5 @@
 {
-  "version": 560,
+  "version": 561,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6746,9 +6746,9 @@
         "staleSharedRobloxTargetMayNotActivate": true,
         "playableWebCompanionActionEnabled": false,
         "playableWebCompanionActionLabel": "DISABLED",
-        "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
-        "playableWebCompanionRequiresPlayableAndArchive": true,
-        "playableWebCompanionRequiresExistingCanonicalIndex": true,
+        "playableWebCompanionSource": "LEGACY_REFERENCE_ONLY",
+        "playableWebCompanionRequiresPlayableAndArchive": false,
+        "playableWebCompanionRequiresExistingCanonicalIndex": false,
         "playableWebCompanionMayBeDirectLaunchFallback": false,
         "playableWebCompanionDoesNotClaimRelease": true,
         "platformAvailableShelfRequiresVerifiedLobbyOrOwnerConfirmation": true,
@@ -6756,8 +6756,8 @@
           "로비 체험",
           "본게임 가능"
         ],
-        "cardVisibilityRequiresRunnableTarget": true,
-        "titleOnlyCardExposureForbidden": true
+        "cardVisibilityRequiresRunnableTarget": false,
+        "titleOnlyCardExposureForbidden": false
       },
       "recentUpdates": {
         "enabled": true,
@@ -6779,7 +6779,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 12,
+    "version": 13,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6814,7 +6814,7 @@
       "publishAfterRuntimeSyncAndHomepageQa": true,
       "reconcileExistingCatalogGamesEveryStatusSync": true,
       "existingCanonicalIndexEnablesWebPlay": false,
-      "missingCanonicalIndexHidesTitleOnlyCard": true,
+      "missingCanonicalIndexHidesTitleOnlyCard": false,
       "discoverCanonicalEntriesEverySync": true,
       "webExposureQualityRef": "catalogNormalization.ownerWebAutoIngest.webExposureQuality",
       "genericWebUploadsAreReferenceOnly": true
@@ -28779,7 +28779,9 @@
       "heroMaximumBytes": 143360,
       "compressionMayNotDestroyFineDetailsOrText": true,
       "publicationWithoutNewActualArtwork": "REPAIR_REQUIRED",
-      "cardArtworkQualityGateIndependentOfGameRuntime": true
+      "cardArtworkQualityGateIndependentOfGameRuntime": true,
+      "missingActualArtworkAction": "KEEP_GAME_CARD_VISIBLE_AND_ROUTE_TO_EXISTING_GRAPHICS_ASSET_REPAIR",
+      "artworkQualityJudgementIndependentOfGameRuntime": true
     },
     "description": {
       "location": "DIRECTLY_BELOW_GAME_TITLE",
@@ -28791,8 +28793,14 @@
     "noShadowWrapperTemporaryBypass": true,
     "independentQaBeforeCompletion": true,
     "allGamesMigrationViaExistingCanonicalUnityWebWorkflow": true,
-    "homepageCardRendering": "CANONICAL_ACTIVE_GAME_CATALOG_WITH_UNIQUE_GAME_TITLE_ART_AND_CURRENT_DESCRIPTION",
+    "homepageCardRendering": "LIST_ALL_NONTRIVIAL_CANONICAL_GAMES_REGARDLESS_OF_GAMEPLAY_QA_OR_UNITY_WEB_BUILD",
     "gameCardRenderingDoesNotRequireGameRuntimeQa": true,
-    "unverifiedGamePlaybackLinkMustRemainDisabled": true
+    "unverifiedGamePlaybackLinkMustRemainDisabled": true,
+    "homepageCardInclusion": "EVERY_ACTIVE_CANONICAL_GAME_EXCEPT_CONFIRMED_SIMPLE_BUTTON_CONTROL_TEST_AND_NON_GAME_SURFACE",
+    "excludeFromHomepageByExistingClassification": [
+      "WITHDRAWN_SIMPLE_PROTOTYPE",
+      "NON_GAME_SURFACE"
+    ],
+    "homepageCardVisibilityNotBlockedByAbsentArtwork": true
   }
 }
