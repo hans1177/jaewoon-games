@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임에서 숙련된 선택을 통해 현실 세계 상태 변화와 진정한 위험 감소를 목표로 합니다. 이 과정에서는 감지 전략과 대응 방식의 조합을 통해 새로운 플레이 경험을 창출하고, 이를 바탕으로 하여 다음 사건이 발생합니다.",
       "coreFun": "플레이어는 주제와 소재를 바탕으로 한 코믹 잠입·탈출 게임에서 실질적 인과 변화가 일어나며, 이로 인해 실제 세계 상태 변화가 발생합니다. 이 과정에서는 감지 전략과 대응 방식의 조합을 통해 새로운 플레이 경험을 제공하고, 이를 바탕으로 하여 다음 사건이 발생합니다. 또한, 숙련된 선택을 통해 현실 세계 상태 변화와 진정한 위험 감소를 목표로 합니다. 이로 인해 다음 질문이 제기됩니다."
+    },
+    "local_authoring_parts::c2da72c37bbcaa043af421786254b54b61175ab3f2c1dd6cedbbea788ffed560:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "감지 전략과 대응 방식 변경 -> 감지 확률 증가 -> 플레이어 행동 패턴 변형",
+        "잠입 메커니즘과 운송 기술 조합 -> 실제 세계 상태 변화 -> 숙련된 선택 및 위험 감소"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 255066,
-      "lastMs": 255066,
+      "totalMs": 355366,
+      "lastMs": 100300,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:50:27.104Z"
+      "updatedAt": "2026-10-09T17:52:07.406Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:46:12.015Z",
-  "updatedAt": "2026-10-09T17:50:27.104Z",
+  "updatedAt": "2026-10-09T17:52:07.406Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1563,7 +1570,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:50:27.104Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:52:07.406Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
