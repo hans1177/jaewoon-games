@@ -535,25 +535,42 @@
         "playerGoal"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar (주요 상태 교환 원본 규칙 적용됨, 실제 상태 변화 기반 확보됨, 이전 항목과 동일한 상태 연결됨, 현재 소스 확인 후 재작성 진행 중임)"
+    },
+    "local_authoring_parts::870900d3757bda6f1b17b2546d44f3d421820269724d50f7af58270aba0bafd1:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections",
+      "trigger": "signatureSystems[3]→signatureSystems[4]",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
+    },
+    "local_authoring_parts::d46a640820cb6ec2106d3ca6999c10be5f74d89ffe9d494badbc6038d587cc83:systemInterconnections:3": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar (주요 상태 교환 원본 규칙 적용됨, 실제 상태 변화 기반 확보됨, 이전 항목과 동일한 상태 연결됨, 현재 소스 확인 후 재작성 진행 중임)",
+      "toSystem": "systemInterconnections",
+      "trigger": "signatureSystems[3]→signatureSystems[4]",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 936013,
-      "lastMs": 33023,
+      "totalMs": 954399,
+      "lastMs": 18386,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:55:30.772Z"
+      "updatedAt": "2026-10-09T15:55:49.159Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:55:30.772Z",
+  "updatedAt": "2026-10-09T15:55:49.160Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2301,7 +2318,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:55:30.772Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:49.160Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
