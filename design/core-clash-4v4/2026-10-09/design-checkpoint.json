@@ -1695,25 +1695,71 @@
         "OUTPUT"
       ],
       "fromSystem": "STAGE_GATE_SCORING_V2"
+    },
+    "local_authoring_parts::54524a7427dd99825fbebf67ef9546bfc05482e25c606beda466db2f4b7d375f:toSystem,trigger,stateChange": {
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "systemInterconnections",
+      "stateChange": "CORE-4V4-SIGNATURE-1→CORE-4V4-SIGNATURE-2의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::f74dae797240d2535e190e0930a38fe79cd05906c34536fe3f5a48f8f146d796:systemInterconnections:4": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2",
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "systemInterconnections",
+      "stateChange": "CORE-4V4-SIGNATURE-1→CORE-4V4-SIGNATURE-2의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::f0099fc1a0774bf24b3777e7ef2afd9c6b83ce7998be3306d92107ca8e804ef5:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2"
+    },
+    "local_authoring_parts::f0099fc1a0774bf24b3777e7ef2afd9c6b83ce7998be3306d92107ca8e804ef5:toSystem,trigger,stateChange": {
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
+    },
+    "local_authoring_parts::1c6f3dc76bc33e58b21838f414eadcee3108b0983c783ff482095e2d3a0d231f:systemInterconnections:0": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2",
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 111,
-      "successes": 108,
+      "calls": 114,
+      "successes": 111,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10086387,
-      "lastMs": 93371,
+      "totalMs": 10258946,
+      "lastMs": 39667,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:40:21.238Z"
+      "updatedAt": "2026-10-09T06:43:13.811Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T06:40:21.238Z",
+  "updatedAt": "2026-10-09T06:43:13.813Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4019,7 +4065,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4058,7 +4104,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:40:21.238Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:43:13.813Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
