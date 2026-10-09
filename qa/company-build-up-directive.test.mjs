@@ -1377,7 +1377,7 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   assert.match(directivePrompt(first),/DESIGNED_GAME_UNIT_SELECTION: active=CORE_LOOP\[0\]/);
  
   const generic=create(first,'verified','b'.repeat(64),{runtimeObserved:true,runtimePassed:true});
-  assert.equal(generic.designedGameVolume.activeItem.ref,volume.activeItem.ref,
+  assert.equal((generic.designedGameVolume.activeItem||generic.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
     'general runtime success without content-specific replay does not advance the unit');
   assert.equal(generic.designedGameVolume.scopedAdvancementObserved,false);
  
@@ -1401,7 +1401,7 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
       runtimeRunId:'actual-runtime-run',evidenceArtifactId:'verified-artifact'
     }
   });
-  assert.notEqual(scoped.designedGameVolume.activeItem.ref,volume.activeItem.ref,
+  assert.notEqual((scoped.designedGameVolume.activeItem||scoped.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
     'only a scoped successful native replay may change the selected content item');
   assert.equal(scoped.designedGameVolume.scopedAdvancementObserved,true);
   assert.equal(scoped.designedGameVolume.runtimeVerifiedCount,0,
@@ -1419,7 +1419,7 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
       runtimeRunId:'generic-runtime',evidenceArtifactId:'generic-artifact'
     }
   });
-  assert.equal(wrongSource.designedGameVolume.activeItem.ref,volume.activeItem.ref);
+  assert.equal((wrongSource.designedGameVolume.activeItem||wrongSource.designedGameVolume.deferredItem).ref,volume.activeItem.ref);
 });
  
 test('preservation-only approved design never schedules novel gameplay from the content inventory',()=>{
