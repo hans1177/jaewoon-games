@@ -80,25 +80,40 @@
       "name": "Select Placement, Resonance, or Upgrade Path",
       "purpose": "Choose the most effective defense strategy based on current attack patterns and resource availability.",
       "playerChoice": "Optimize placement, resonance, or upgrade path to maximize defensive effectiveness and adapt to future threats."
+    },
+    "local_authoring_parts::9289cb97bf4f550fa0f4795625beac2e090312bd6aadbcecb8f3b1d06fef84f2:signatureSystems:3": {
+      "id": "CRYSTAL-DEFENSE-SIGNATURE-4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "READ_NEXT_ATTACK_PATTERN",
+        "CHOOSE_CRYSTAL_DEFENCE"
+      ],
+      "stateOutputs": [
+        "MODIFY_WORLD_STATE",
+        "ALTER_STRATEGY_PATH"
+      ],
+      "name": "Reinforce Strategy and Expand Possibilities",
+      "purpose": "Enhance strategic depth by reinforcing the player's ability to adapt and expand on their current strategy.",
+      "playerChoice": "Refine and extend existing strategies through iterative exploration and refinement of gameplay mechanics and world state interactions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 696332,
-      "lastMs": 97875,
+      "totalMs": 794946,
+      "lastMs": 98614,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:16:38.085Z"
+      "updatedAt": "2026-10-09T09:18:16.700Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:05:01.721Z",
-  "updatedAt": "2026-10-09T09:16:38.085Z",
+  "updatedAt": "2026-10-09T09:18:16.700Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2289,7 +2304,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:16:38.085Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:18:16.700Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
