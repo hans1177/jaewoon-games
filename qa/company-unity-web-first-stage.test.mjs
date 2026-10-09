@@ -254,6 +254,8 @@ test('a playable native-3D owner build receives a separate test URL while final 
   assert.match(publish,/test -s "\$runtime_dir\/unity-web-independent-qa\.json"/);
   assert.match(publish,/test -s "\$runtime_dir\/unity-web-regression\.json"/);
   assert.match(workflow,/ownerBrowserTestEligible:true/);
+  assert.match(workflow,/&&e\.visualQa\?\.pass===true/);
+  assert.match(homepage,/&&row\?\.visualQa\?\.pass===true/);
   assert.match(workflow,/UNITY_WEB_OWNER_TEST_REQUIRES_REAL_3D_GAMEPLAY/);
   assert.match(workflow,/const verified3d=checks\.every/);
   assert.match(workflow,/const gatePass=checks\.every/);
