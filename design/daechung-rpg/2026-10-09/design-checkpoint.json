@@ -39,25 +39,42 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::dd7fdc7fd559c492531581f2341c2b69fbea7fd8a589ee5174b4e1dd01689539:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마을 귀환",
+        "포탈 전투",
+        "보스 격파"
+      ],
+      "stateOutputs": [
+        "레벨 증가",
+        "무기/방어구 성장",
+        "파티 확장"
+      ],
+      "name": "5포탈 지역",
+      "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터.",
+      "playerChoice": "AI 유저와 파티 구성, 보스 공략, 보스 동료 해금, 파티 조합 확장, 런 보스 격파, 장비 및 퀘스트 준비, 레벨 성장, 무기/방어구 단순 성장, 5포탈 지역 등 다양한 시스템 포함됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 318494,
-      "lastMs": 55257,
+      "totalMs": 384977,
+      "lastMs": 66483,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:30:27.866Z"
+      "updatedAt": "2026-10-09T08:31:34.350Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:25:09.346Z",
-  "updatedAt": "2026-10-09T08:30:27.866Z",
+  "updatedAt": "2026-10-09T08:31:34.350Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1476,7 +1493,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:30:27.866Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:31:34.350Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
