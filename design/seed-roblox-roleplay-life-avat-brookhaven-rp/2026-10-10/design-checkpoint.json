@@ -194,25 +194,42 @@
         "플레이어 행동 → 환경 응답 → 실시간 전략 적응",
         "실시간 생존 루프: 적군 밀집 → 건강한 팀 형성 → 업그레이드 및 선택 → 새로운 도전 → 최종 목적지 달성"
       ]
+    },
+    "local_authoring_parts::d193f20ab984a23fe1a50a9477791da6b71dfd527551e7f5c98b23f76d1b90e7:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BUILD_UPGRADE",
+        "EVENT_TRIGGER",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_STRATEGY",
+        "ADAPTIVE_PLAYSTYLE",
+        "TERMINAL_STATE"
+      ],
+      "name": "Harbor Days - A Mobile Survival Roguelite with Dynamic Playstyle and Adaptive Gameplay",
+      "purpose": "A mobile survival roguelite where players adapt to real-time environmental changes and dynamic build progression.",
+      "playerChoice": "Adapt to new locations or risks, optimize positioning, and achieve final goals through strategic upgrades and multi-choice outcomes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 643542,
-      "lastMs": 101670,
+      "totalMs": 745260,
+      "lastMs": 101718,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:16:36.533Z"
+      "updatedAt": "2026-10-09T20:18:18.254Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:05:52.963Z",
-  "updatedAt": "2026-10-09T20:16:36.535Z",
+  "updatedAt": "2026-10-09T20:18:18.254Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1935,8 +1952,8 @@
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:16:36.533Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-09T20:18:18.254Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
