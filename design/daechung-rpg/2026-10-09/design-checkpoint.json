@@ -39,25 +39,40 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::84a175f369a68f3a417e49343c3991b132113e30a7603c6755be2bcfc3e51d41:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마을 귀환 금지",
+        "전투 중 귀환 차단"
+      ],
+      "stateOutputs": [
+        "전투 종료 후 귀환 허용",
+        "보스 동료 해금 저장"
+      ],
+      "name": "초원 런 보스 봉인 해제 조건",
+      "purpose": "1번 초원 랜덤 런의 EXIT에는 금빛 큰뿔이 등장하며, 일반/정예 전투 몬스터를 모두 처치하면 봉인이 해제되어 보스전을 시작한다.",
+      "playerChoice": "1번 포탈 랜덤 런 선택 또는 2~5포탈 로그라이크 자동변형 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 258363,
-      "lastMs": 39908,
+      "totalMs": 296562,
+      "lastMs": 38199,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:21:55.506Z"
+      "updatedAt": "2026-10-09T14:22:33.706Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:17:37.117Z",
-  "updatedAt": "2026-10-09T14:21:55.506Z",
+  "updatedAt": "2026-10-09T14:22:33.706Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1059,7 +1074,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:21:55.506Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:22:33.706Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
