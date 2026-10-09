@@ -1043,25 +1043,53 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01"
+    },
+    "local_authoring_parts::83799a6b2451c0aff7fd1ee312d8f2cfabf95548108bb1f06dc035e310728bee:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
+    },
+    "local_authoring_parts::1a909e938a4a6692ac7060c252abb32be12877d9345053e134b5dd965ea00681:systemInterconnections:0": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01",
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
+    },
+    "local_authoring_parts::dc2157548afba3c5c75b9f40b3a64b6107c716a8f739c33337c380a6012f809d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 53,
+      "calls": 55,
+      "successes": 55,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4537569,
-      "lastMs": 47233,
+      "totalMs": 4631603,
+      "lastMs": 50668,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:23:50.599Z"
+      "updatedAt": "2026-10-09T01:25:24.640Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T01:23:50.599Z",
+  "updatedAt": "2026-10-09T01:25:24.640Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3436,7 +3464,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:23:50.599Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:25:24.640Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
