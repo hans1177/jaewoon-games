@@ -1648,25 +1648,28 @@
     },
     "local_authoring_parts::76d00b140d66c86e41b2e6e0f139c085e644cd2f7aaf532ad99ccf9b9e17cdc1:toSystem": {
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::76d00b140d66c86e41b2e6e0f139c085e644cd2f7aaf532ad99ccf9b9e17cdc1:trigger": {
+      "trigger": "RUN_REWARDS 및 UPGRADES의 입력 상태가 시스템 내에서 정확히 반영되어야 하며, 이로 인해 SURVIVAL_01_SIGNATURE_SYSTEM의 OUTPUT인 PROGRESSION_CHOICE가 SURVIVAL_02_SIGNATURE_SYSTEM의 INPUT으로 전달된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 160,
-      "successes": 160,
+      "calls": 161,
+      "successes": 161,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9813120,
-      "lastMs": 88126,
+      "totalMs": 9847547,
+      "lastMs": 34427,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:48:55.566Z"
+      "updatedAt": "2026-10-09T06:36:07.970Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T04:48:55.567Z",
+  "updatedAt": "2026-10-09T06:36:07.970Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4181,7 +4184,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:48:55.566Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:36:07.970Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
