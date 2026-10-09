@@ -2286,6 +2286,20 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const completionAcceptance=(expansion?.completionAcceptance||[]).map(clean).filter(Boolean);
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const codingTrace=d?.designToPlatformCodingTrace||{};
+  const contentImplementation=d?.designContentImplementation||{};
+  const activeContentUnit=contentImplementation?.activeUnit||null;
+  const selectedContentUnit=activeContentUnit?{
+    id:activeContentUnit.id,kind:activeContentUnit.kind,title:activeContentUnit.title,
+    designOrigin:activeContentUnit.designOrigin,playerAction:activeContentUnit.playerAction,
+    trigger:activeContentUnit.trigger,stateChange:activeContentUnit.stateChange,
+    nextConnection:activeContentUnit.nextConnection,authoredDetails:activeContentUnit.authoredDetails,
+    sourceOwnerCandidates:(activeContentUnit.sourceOwnerCandidates||[]).filter(file=>
+      !responsibleFiles.length||responsibleFiles.some(allowed=>
+        posix(file)===posix(allowed)||posix(file).endsWith('/'+posix(allowed))
+      )
+    ),implementationStatus:activeContentUnit.implementationStatus,
+    acceptance:activeContentUnit.acceptance
+  }:null;
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
   const designRoleRows=(codingTrace?.roleBindings||[]).map(row=>({
@@ -2323,7 +2337,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
     'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
-    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be 2.5D or 3D; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
+    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be real native 3D meshes, spatial camera and depth; flat 2D and 2.5D are not final PASS. UI overlays may remain 2D. Bind compatible library models/materials/motion into actual 3D render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
@@ -2337,6 +2351,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     ...sourceRepair,
     `contentExpansionVersion=${Number(expansion?.version||0)} executionBoundary=${clean(expansion?.executionBoundary)||'EXISTING_BUILD_UP_ONLY'} decisionOwner=${clean(expansion?.autonomousDecisionOwner)||'VIBE'}`,
     `contentTheme=${clean(expansion?.selectedTheme)||'AUTO'} themeDepth=${Number(expansion?.themeDepth||1)} mode=${clean(expansion?.executionMode)||'AUTONOMOUS_CONTENT_BUILD_UP'}`,
+    `contentVolume=${JSON.stringify(contentImplementation?.authoredVolume||{})}`,
+    `contentSlice=${JSON.stringify(selectedContentUnit)}`,
+    `contentImplementationRule=${clean(contentImplementation?.nextUnitSelection)||'DESIGN_PENDING'}; firstSession=${clean(contentImplementation?.firstSessionAcceptance)||'UNKNOWN'}; midLate=${clean(contentImplementation?.midLateAcceptance)||'WHEN_DESIGNED'}; acceptance=${(contentImplementation?.acceptance||[]).map(clean).filter(Boolean).join(',')}`,
+    'contentSourceRule=Implement the authored content slice in its allowed existing responsible source. Preserve every approved system/connection/milestone for later verified cycles, not just the first twelve systems. Design inventory and source tokens never prove playable implementation; native runtime input/state/feedback/progression and save/reconnect replay are mandatory. Do not invent unrelated systems for an absent design or change locked balance, economy or authority.',
     `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
     `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
@@ -2373,11 +2391,13 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
+    'visual=','platform=','preserve=','acceptance=','nextVibeAction=',
+    'contentVolume=','contentSlice=','contentImplementationRule=','contentSourceRule=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'contentVolume=','contentSlice=','contentImplementationRule=','contentSourceRule=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2413,7 +2433,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentCompletionAcceptance=',
+    'contentTheme=','contentCompletionAcceptance=','contentVolume=','contentSlice=','contentImplementationRule=','contentSourceRule=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
