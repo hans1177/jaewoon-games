@@ -187,25 +187,32 @@
       },
       "playerFantasy": "세계의 직조자는 플레이어가 직접 참여하는 세계 창조 게임이다. 이 게임에서는 단순한 입력(예: 한 손바닥 터치 또는 스ワイ프)으로 시작하여, 점수, 거리, 혹은 짧은 세션 목표에 도달할 수 있는 간단한 루프를 경험하게 된다. 이후에는 작은 위험이나 선택지를 통해 게임 진행을 제안받으며, 그 결과로는 점수나 보상을 얻거나, 새로운 진입점이나 상태 변화를 획득하게 된다. 이러한 과정에서 플레이어는 자신의 행동이 어떻게 게임 상태와 연결되는지 이해하며, 계속해서 새로운 선택을 하여 세계의 구조를 재설계해 나아간다.",
       "coreFun": "세계의 직조자는 대표적인 핵심 재미인 '반복 가능한 핵심 루프'를 제공한다. 이 루프는 다음과 같은 형태로 구성된다: 먼저, 간단한 입력과 명확한 점수/거리/짧은 세션 목표를 갖춘 초기 실행이 이루어진다. 다음으로, 플레이어는 작은 위험 또는 선택지를 통해 게임 진행을 제안받고, 그 결과로는 점수나 보상을 얻거나, 새로운 진입점을 획득하게 된다. 마지막으로, 이 결과가 다시 반복되며, 플레이어는 자신이 어떤 선택을 할 수 있는지 배우게 되고, 세계의 구조에 따라 새로운 선택을 하여 게임을 지속적으로 발전시킨다."
+    },
+    "local_authoring_parts::9d6560bdb9432bba3e5f60c8cfc0f7517d31cb89f493e15e1a110b7daa1e75ad:coreLoop": {
+      "coreLoop": [
+        "Player's initial action → feedback/reward → progression/retry",
+        "Player's decision → state change via scoring, progressions, and retry mechanics",
+        "Discovery leads to growth, which leads to more discovery, creating an endless loop of exploration and learning"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 687816,
-      "lastMs": 92363,
+      "totalMs": 748841,
+      "lastMs": 61025,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:50:42.759Z"
+      "updatedAt": "2026-10-09T18:51:43.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:39:14.913Z",
-  "updatedAt": "2026-10-09T18:50:42.760Z",
+  "updatedAt": "2026-10-09T18:51:43.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1685,7 +1692,7 @@
   "localAuthoringSplits": {
     "7d13aea6edee6c890096e50f33fb561a63033d57a116cc4d3580567dbdaa37f8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:50:42.760Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:51:43.787Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
