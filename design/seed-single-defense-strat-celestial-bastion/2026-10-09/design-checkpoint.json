@@ -64,25 +64,40 @@
       "name": "RESOURCE_MANAGEMENT_AND_STRATEGY_ADAPTATION",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "PLACE_TOWERS_OR_DEFENDERS"
+      ],
+      "stateOutputs": [
+        "EARN_RESOURCES",
+        "SPEND_ON_UPGRADES"
+      ],
+      "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+      "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 전략적 대응을 수행하며, 자원을 효율적으로 관리하는 시스템입니다.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 420304,
-      "lastMs": 46194,
+      "totalMs": 476522,
+      "lastMs": 56218,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:48:06.549Z"
+      "updatedAt": "2026-10-09T12:49:02.768Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:41:06.097Z",
-  "updatedAt": "2026-10-09T12:48:06.549Z",
+  "updatedAt": "2026-10-09T12:49:02.768Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2279,7 +2294,7 @@
     "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:48:06.549Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:49:02.768Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
