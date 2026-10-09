@@ -587,25 +587,28 @@
       "stateKeys": [
         "START_STATE -> END_STATE"
       ]
+    },
+    "local_authoring_parts::8d78eabdf9249380a58d16c881ac233b70fd1ed796132b330a22ef712d6bfe1c:fromSystem": {
+      "fromSystem": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 17,
+      "calls": 20,
+      "successes": 18,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2254056,
-      "lastMs": 75250,
+      "totalMs": 2340862,
+      "lastMs": 86806,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T13:06:12.167Z"
+      "updatedAt": "2026-10-09T13:07:38.974Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T13:06:12.167Z",
+  "updatedAt": "2026-10-09T13:07:38.975Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2775,7 +2778,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:06:12.167Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:07:38.974Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
