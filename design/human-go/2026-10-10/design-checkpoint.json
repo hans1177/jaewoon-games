@@ -80,25 +80,53 @@
         "worldChange": "발견 -> 숙련 -> 재방문 -> 재해석 -> 고급 운용",
         "nextEvent": "재해석을 바탕으로 고급 운용이 이루어지며, 이는 새로운 정체성을 형성한다."
       }
+    },
+    "local_authoring_parts::b0b5b8923508918466018ba601a8e327df31b76d0efa604c33c8124e37d25c00:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "사회적 관계",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 다른 플레이어와의 관계를 수집하며, 이는 게임 내에서 중요한 진화 요소로 작용"
+        },
+        {
+          "name": "발견",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어는 새로운 인물, 작업이나 콘텐츠를 발견하여 게임 진행에 영향을 미친다"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "생활 탐험",
+          "gameplayEffect": "게임 자체가 주제를 중심으로 하며, 플레이어가 사회적 관계와 발견을 통해 세계를 탐험하는 방식이 적용된다"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "진화 및 가능성",
+          "gameplayEffect": "기존 메커니즘과 새로운 가능성을 결합해 게임의 진화 과정을 구현하고, 이를 바탕으로 정체성이 형성된다"
+        }
+      ],
+      "cGenreInterlock": "사회적 관계 → 발现在 → 성장 → 진화 → 가능성 확보",
+      "cWorldAndGameplayEffect": "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택; 이는 기존 메커니즘과 새로운 가능성 사이에서 양방향 실제 상태 교환을 보여준다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1061032,
-      "lastMs": 119082,
+      "totalMs": 1179446,
+      "lastMs": 118414,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:56:50.479Z"
+      "updatedAt": "2026-10-09T17:58:48.896Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T17:56:50.480Z",
+  "updatedAt": "2026-10-09T17:58:48.896Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1616,7 +1644,7 @@
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:56:50.480Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:58:48.896Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
