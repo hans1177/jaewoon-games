@@ -146,25 +146,39 @@
       "name": "Experience-Based Planning System",
       "purpose": "Experience gain tracking and survival outcome inference",
       "playerChoice": "Plan for adaptive deployment based on past experiences"
+    },
+    "local_authoring_parts::7b4be175cbe65f923ce339fe89b063e640db4d842ff801e378c35cadc2562a55:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "defender_configuration",
+        "resource_cost"
+      ],
+      "stateOutputs": [
+        "next_defense_plan"
+      ],
+      "name": "Adaptive Defense System",
+      "purpose": "Player's desire for survival vs. need to allocate resources",
+      "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296808,
-      "lastMs": 35012,
+      "totalMs": 333392,
+      "lastMs": 36584,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:54:40.767Z"
+      "updatedAt": "2026-10-09T17:55:17.352Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T17:54:40.767Z",
+  "updatedAt": "2026-10-09T17:55:17.353Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1837,7 +1851,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:54:40.767Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:55:17.352Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
