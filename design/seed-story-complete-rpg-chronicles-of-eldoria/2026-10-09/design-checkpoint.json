@@ -1747,25 +1747,36 @@
       "toSystem": "LOCATION_CHANGE_STATE",
       "trigger": "EXPLORATION_STATE",
       "stateChange": "LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::7a647e5ca37269232027e53c48d896e18ffd993cc5c85f1b6f19e03fbcd43c80:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 129,
-      "successes": 128,
+      "calls": 130,
+      "successes": 129,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 10795706,
-      "lastMs": 88986,
+      "totalMs": 10889176,
+      "lastMs": 93470,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:58:26.789Z"
+      "updatedAt": "2026-10-09T07:00:00.263Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T06:58:26.791Z",
+  "updatedAt": "2026-10-09T07:00:00.263Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4143,7 +4154,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:58:26.791Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:00:00.263Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
