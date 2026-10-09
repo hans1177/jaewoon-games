@@ -77,25 +77,39 @@
       "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
       "purpose": "Player must actively select from a variety of upgrade options to alter their gameplay strategy and progression.",
       "playerChoice": "Select from a list of available upgrades, including but not limited to: weapon enhancements, skill trees, perk combinations, and resource management strategies that directly impact the player's survival efficiency and long-term viability in combat scenarios."
+    },
+    "local_authoring_parts::128dcb8a71104e3fc358547298f6c273882cae8a797f6d48180639b7a4d882a5:signatureSystems:3": {
+      "id": "V1_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Expand the game's progression through dynamic content expansion and layered experience design",
+      "purpose": "Introduce new gameplay layers, narrative depth, and player-driven progression through curated content expansion",
+      "playerChoice": "Curate and expand the game's content through strategic layering and adaptive progression systems that evolve with player choice and context-aware design decisions"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 407295,
-      "lastMs": 49962,
+      "totalMs": 451608,
+      "lastMs": 44313,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:27:43.511Z"
+      "updatedAt": "2026-10-09T08:28:27.825Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:27:43.511Z",
+  "updatedAt": "2026-10-09T08:28:27.825Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2308,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:27:43.511Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:28:27.825Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
