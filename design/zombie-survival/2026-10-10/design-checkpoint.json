@@ -222,25 +222,39 @@
       "name": "생존 진입 시스템",
       "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 주요 행동 및 전술을 정의합니다.",
       "playerChoice": "주요 행동인 '생존' 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 됩니다."
+    },
+    "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "RESULT"
+      ],
+      "name": "생존 진입 시스템",
+      "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 전략적 선택 및 자원 배분 기능",
+      "playerChoice": "업그레이드 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성되고, 다음 사건이 형성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1121745,
-      "lastMs": 111438,
+      "totalMs": 1229965,
+      "lastMs": 108220,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:33:28.992Z"
+      "updatedAt": "2026-10-09T18:35:17.214Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:14:47.214Z",
-  "updatedAt": "2026-10-09T18:33:28.993Z",
+  "updatedAt": "2026-10-09T18:35:17.214Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1947,17 +1961,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "signatureSystems[0]"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:1": 1
   },
@@ -1965,7 +1969,7 @@
   "localAuthoringSplits": {
     "5b1c35ed59e786a73d9f4b30700e88e8d49e4deb1f9ec003b20cce05b9c17bd6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:33:28.992Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:35:17.214Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
