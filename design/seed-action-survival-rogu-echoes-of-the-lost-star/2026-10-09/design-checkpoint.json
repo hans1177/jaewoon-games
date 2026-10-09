@@ -37,25 +37,40 @@
         "COLLECT RUN REWARDS OR EXPERIENCE AND CHOOSE UPGRADES, PERKS, WEAPONS, OR SKILLS THAT CHANGE THE CURRENT BUILD.",
         "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR A BOSS, THEN CONVERT RUN RESULT INTO NEXT PROGRESSION CHOICE."
       ]
+    },
+    "local_authoring_parts::95ef5739339033087013b2cf5063835141ecbae1baabeeb281556d439e974d0d:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT THROUGH AN ESCALATING HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITION",
+        "COLLECT RUN REWARDS OR EXPERIENCE AND CHOOSE UPGRADES, PERKS, WEAPONS, OR SKILLS",
+        "COMBINE UPGRADS INTO STRONGER BUILD, SURVIVE HARDER WAVES OR A BOSS"
+      ],
+      "stateOutputs": [
+        "NEXT PROGRESSION CHOICE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이, MAIN × A × B × c의 관계를 통해 다양한 경로와 위험·보상의 연결을 가진 시스템입니다.",
+      "playerChoice": "FIGHT THROUGH AN ESCALATING HORDE IN SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 302998,
-      "lastMs": 54422,
+      "totalMs": 366801,
+      "lastMs": 63803,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:16:26.019Z"
+      "updatedAt": "2026-10-09T09:17:29.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:22.951Z",
-  "updatedAt": "2026-10-09T09:16:26.019Z",
+  "updatedAt": "2026-10-09T09:17:29.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2254,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:16:26.019Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:17:29.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
