@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "village-dungeons-build-up-g33-cfa51495cec7",
-  "directiveFingerprint": "cfa51495cec76cf5728a44382bbd5e0be003125ac28ba9261f7e1ee83592e29e",
-  "previousDirectiveFingerprint": "d596d6b3518e9f68c7b611c746e8fe4f641e19642158098995ee01f5c0dbe84d",
-  "forbiddenRepeatFingerprint": "d596d6b3518e9f68c7b611c746e8fe4f641e19642158098995ee01f5c0dbe84d",
+  "directiveId": "village-dungeons-build-up-g34-b1e940c9b70e",
+  "directiveFingerprint": "b1e940c9b70e9515f410d2f2e31b554c2f92bf7cea1f71f77a1d7ab784b45830",
+  "previousDirectiveFingerprint": "cfa51495cec76cf5728a44382bbd5e0be003125ac28ba9261f7e1ee83592e29e",
+  "forbiddenRepeatFingerprint": "cfa51495cec76cf5728a44382bbd5e0be003125ac28ba9261f7e1ee83592e29e",
   "gameId": "village-dungeons",
   "gameName": "마을 던전 RPG",
-  "generation": 33,
+  "generation": 34,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/village-dungeons",
-  "sourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+  "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
   "designFingerprint": "66c3672e92a3f54e4c59730d533a07721548e7f0f7ff5e4a112dc632bb01d59e",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "마을 재건 시설 연동 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "리스크 배낭 정밀 적재 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -104,7 +114,7 @@
           "3단계: 무한의 미궁 시련 모드 및 고대 유물 연구소 콘텐츠 개방",
           "층마다 무작위 페널티와 버프가 부여되는 엔드게임 로그라이트형 연속 던전 돌파 콘텐츠가 도입된다."
         ],
-        "sourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+        "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +124,319 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "village-dungeons",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "66c3672e92a3f54e4c59730d533a07721548e7f0f7ff5e4a112dc632bb01d59e",
+    "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
+    "multiplayerMode": "SINGLE",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/village-dungeons",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/village-dungeons",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/village-dungeons",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "addItemToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "reviewDungeonState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "damageMonster",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "addItemToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "reviewDungeonState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "damageMonster",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "addItemToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "reviewDungeonState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "damageMonster",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/village-dungeons/client/Game.client.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/server/Game.server.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "addItemToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "reviewDungeonState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "damageMonster",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/village-dungeons/server/Game.server.luau",
+          "roblox-games/village-dungeons/shared/GameConfig.luau",
+          "roblox-games/village-dungeons/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "addItemToInventory",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "reviewDungeonState",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/server/Game.server.luau",
+            "symbol": "damageMonster",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/village-dungeons/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/shared/GameConfig.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/village-dungeons/server/Game.server.luau",
+      "roblox-games/village-dungeons/client/Game.client.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "MULTIPLAYER_DESIGN_MODE_MISSING",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -331,7 +654,7 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 184,
+      "combat": 185,
       "progression": 246,
       "ai": 27,
       "save": 76,
@@ -348,7 +671,7 @@
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 60,
-      "map": 338,
+      "map": 339,
       "landmark": 9,
       "interaction": 41,
       "inventory": 65,
@@ -645,9 +968,9 @@
   "previousVersionDelta": {
     "previousGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 32,
-    "previousSourceTreeFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
-    "currentSourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+    "previousGeneration": 33,
+    "previousSourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+    "currentSourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1802,7 +2125,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 122536,
+        "sourceBytes": 122924,
         "largestFileBytes": 48817,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1835,8 +2158,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 5,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=3.",
+    "themeDepth": 6,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1844,7 +2167,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 6,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
@@ -1857,7 +2180,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -1891,7 +2214,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 110,
+        "score": 92,
         "gapDomains": []
       },
       {
@@ -2005,11 +2328,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 33,
-    "previousGeneration": 32,
+    "generation": 34,
+    "previousGeneration": 33,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
-    "priorSourceFingerprint": "dc26f0713e3e43aa902020f28a67fe00658860372828a999bca726f56a0fa150",
+    "sourceFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
+    "priorSourceFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2472,7 +2795,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+    "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2567,7 +2890,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+    "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2827,7 +3150,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "6fbac1c49e1e70f67ccecec09a355a36bbb0ba20240f7f9af1bd5881e13c0ac2",
+      "sourceTreeFingerprint": "f04cd812f5161ea07d86c61116d705c6da43f8c0cd6f60dbd83d4713cc4c914d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "F0_SOURCE_INTEGRITY",
@@ -2882,7 +3205,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 34,
+    "nextGeneration": 35,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2944,5 +3267,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T15:03:51.513Z"
+  "generatedAt": "2026-10-09T03:02:39.992Z"
 }

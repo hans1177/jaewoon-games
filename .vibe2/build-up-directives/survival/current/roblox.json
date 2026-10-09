@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "survival-build-up-g18-436a342e7eb6",
-  "directiveFingerprint": "436a342e7eb686382725243e4ff1d8fe8c6d9971cd187d2903184c35dd7e41fe",
-  "previousDirectiveFingerprint": "fed6c841682a69639cc3a5becc6d0b0230bcf91b90a87f777805132986922b20",
-  "forbiddenRepeatFingerprint": "fed6c841682a69639cc3a5becc6d0b0230bcf91b90a87f777805132986922b20",
+  "directiveId": "survival-build-up-g19-cb6710bb62e7",
+  "directiveFingerprint": "cb6710bb62e7d2e3eb08287c663e0b7369de6b9806a0edbcf8ed3c8d541f5da4",
+  "previousDirectiveFingerprint": "436a342e7eb686382725243e4ff1d8fe8c6d9971cd187d2903184c35dd7e41fe",
+  "forbiddenRepeatFingerprint": "436a342e7eb686382725243e4ff1d8fe8c6d9971cd187d2903184c35dd7e41fe",
   "gameId": "survival",
   "gameName": "나의 생존기",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/survival",
-  "sourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+  "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
   "designFingerprint": "e60723e2b180470e9c4e29084c252a3ee96b3241f3e92fbe7c1678720f1f2986",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "일일 생존 기록 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "즉석 제작 및 개조 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -104,7 +114,7 @@
           "Late-Game Challenge (Days 21+)",
           "Boss waves, complex environmental hazards, and advanced skill trees."
         ],
-        "sourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+        "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +124,319 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "survival",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "e60723e2b180470e9c4e29084c252a3ee96b3241f3e92fbe7c1678720f1f2986",
+    "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
+    "multiplayerMode": "SINGLE",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/survival",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/survival",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/survival",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/survival/server/Game.server.luau",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "attackEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "updateProgressionRecord",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "startNightWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/survival/server/Game.server.luau",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "attackEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "updateProgressionRecord",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "startNightWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/survival/server/Game.server.luau",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "attackEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "updateProgressionRecord",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "startNightWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/survival/client/Game.client.luau",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival/server/Game.server.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "attackEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "updateProgressionRecord",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "startNightWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/survival/server/Game.server.luau",
+          "roblox-games/survival/shared/GameConfig.luau",
+          "roblox-games/survival/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "attackEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "updateProgressionRecord",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "startNightWave",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/survival/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
+      "roblox-games/survival/client/Game.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/client/Game.client.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "MULTIPLAYER_DESIGN_MODE_MISSING",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -337,7 +660,7 @@
       "animation": 46,
       "motionStates": 214,
       "gameFeel": 32,
-      "vfx": 51,
+      "vfx": 56,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 15,
@@ -353,11 +676,11 @@
       "equipment": 14,
       "settings": 2,
       "feedback": 69,
-      "session": 19,
+      "session": 20,
       "content": 165,
       "choice": 30,
       "connection": 6,
-      "performance": 43,
+      "performance": 44,
       "lighting": 39,
       "primitive": 15,
       "todo": 0,
@@ -374,7 +697,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "score": 235
+        "score": 240
       },
       {
         "file": "roblox-games/survival/default.project.json",
@@ -392,7 +715,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 706,
+        "line": 722,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -512,7 +835,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 735,
+        "line": 751,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -691,9 +1014,9 @@
   "previousVersionDelta": {
     "previousGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
-    "currentSourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+    "currentSourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1847,7 +2170,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 129144,
+        "sourceBytes": 129934,
         "largestFileBytes": 48546,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1879,14 +2202,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1895,7 +2218,6 @@
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -1907,7 +2229,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -1918,19 +2241,17 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
@@ -1938,16 +2259,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -1976,19 +2287,29 @@
         "gapDomains": []
       },
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 12,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": -128,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -2054,11 +2375,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
-    "priorSourceFingerprint": "e006e5c2e3c0660790d7cdedda3126e7d8ff9be5e48834f5dc1f90485fb17993",
+    "sourceFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
+    "priorSourceFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2303,9 +2624,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2320,7 +2641,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 706,
+        "line": 722,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -2520,7 +2841,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+    "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2614,7 +2935,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+    "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2653,9 +2974,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "sourceAnchors": [
@@ -2673,7 +2994,7 @@
       },
       {
         "file": "roblox-games/survival/client/Game.client.luau",
-        "line": 706,
+        "line": 722,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -2797,9 +3118,9 @@
     "gameId": "survival",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/survival/shared/GameConfig.luau",
-      "roblox-games/survival/server/Game.server.luau",
       "roblox-games/survival/client/Game.client.luau",
+      "roblox-games/survival/server/Game.server.luau",
+      "roblox-games/survival/shared/GameConfig.luau",
       "roblox-games/survival/default.project.json"
     ],
     "impact": {
@@ -2874,7 +3195,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7fc56bf57fdeaf852aaea7fa8341ce0d84672b31d5cc3b4befb489f37086ac00",
+      "sourceTreeFingerprint": "e4d7e846818f8ef7db3001b5b93422026a34d532e2b9db661c2eb0302972e71f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -2929,7 +3250,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2993,5 +3314,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T14:41:09.550Z"
+  "generatedAt": "2026-10-09T03:02:39.893Z"
 }
