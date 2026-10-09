@@ -432,25 +432,42 @@
         "SURVIVAL_RESOURCES"
       ],
       "fromSystem": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO"
+    },
+    "local_authoring_parts::9b5885469312abe3484e6669f3451fe9b64ff3fdb5a000601a3b137085c638ce:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL_RESOURCES",
+      "trigger": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO",
+      "stateChange": "FOREST_ECO_SYSTEM → SURVIVAL_RESOURCES"
+    },
+    "local_authoring_parts::cfe5463129c7b36028c4af5d1a5be967339f9f4aed69d03167eb7dba5258eaf1:systemInterconnections:0": {
+      "fromId": "forest_eco_system",
+      "toId": "survival_resources",
+      "stateKeys": [
+        "FOREST_ECO_SYSTEM",
+        "SURVIVAL_RESOURCES"
+      ],
+      "fromSystem": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO",
+      "toSystem": "SURVIVAL_RESOURCES",
+      "trigger": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO",
+      "stateChange": "FOREST_ECO_SYSTEM → SURVIVAL_RESOURCES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 532352,
-      "lastMs": 34762,
+      "totalMs": 566592,
+      "lastMs": 34240,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:26:23.803Z"
+      "updatedAt": "2026-10-09T08:26:58.044Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:31.411Z",
-  "updatedAt": "2026-10-09T08:26:23.803Z",
+  "updatedAt": "2026-10-09T08:26:58.045Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2823,7 +2840,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:26:23.803Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:26:58.045Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
