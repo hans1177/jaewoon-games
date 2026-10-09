@@ -474,25 +474,41 @@
     },
     "local_authoring_parts::48beede4001758c35c8d4ff675df46b0fed5feaf41a56ec92941d91d42b8b0e7:trigger": {
       "trigger": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions and rewa"
+    },
+    "local_authoring_parts::48beede4001758c35c8d4ff675df46b0fed5feaf41a56ec92941d91d42b8b0e7:stateChange": {
+      "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임에서, HumanCount, MonsterCount, EliminatedCount 상태값을 바탕으로 NextProgressionChoice 상태변화를 유도하여, 플레이어의 전략적 선택과 상황적 반응을 기반으로 새로운 진행 방식을 도출한다."
+    },
+    "local_authoring_parts::20aaa8ea1c9d395938e2905770f7ca44fc6c2c98c6390a0214e4ea8f78558034:systemInterconnections:0": {
+      "fromId": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+      "toId": "NEXT_PROGRESSION_CHOICE",
+      "stateKeys": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "fromSystem": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+      "toSystem": "NEXT_PROGRESSION_CHOICE",
+      "trigger": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions and rewa",
+      "stateChange": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임에서, HumanCount, MonsterCount, EliminatedCount 상태값을 바탕으로 NextProgressionChoice 상태변화를 유도하여, 플레이어의 전략적 선택과 상황적 반응을 기반으로 새로운 진행 방식을 도출한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1820828,
-      "lastMs": 90518,
+      "totalMs": 1919384,
+      "lastMs": 98556,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:19:57.920Z"
+      "updatedAt": "2026-10-09T16:21:36.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T16:19:57.920Z",
+  "updatedAt": "2026-10-09T16:21:36.479Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2364,7 +2380,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:19:57.920Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:21:36.479Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
