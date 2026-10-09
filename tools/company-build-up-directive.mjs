@@ -1634,7 +1634,7 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
   const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
   const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
@@ -1672,7 +1672,7 @@ export function directivePrompt(d={}){
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
-    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
+    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/C/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
@@ -1686,7 +1686,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: 기존게임은 새 장르를 강제로 덮어쓰지 않는다. 현재 설계와 실제 소스에서 MAIN, A/B 대축, c 서브요소, @ 파고들기 근거를 먼저 확인하고 서로 따로 노는 연결을 우선 보강한다. 기존 밸런스·세이브·경제·권한 의미는 보존한다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: 과거 MAIN 소재뿐인 설계를 정식 설계로 보존하지 않는다. 현재 실행 게임의 실제 행동·저장·밸런스·권한을 읽고 MAIN 게임 정체성, A/B 각각 시스템×창작 소재, C 두 소재와 메인·보조 장르, @ 발견·숙련을 새로 설계해 서로 실제 상태를 바꾸게 한다. 설계 문서만으로 구현 완료나 런타임 PASS를 인정하지 않는다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
