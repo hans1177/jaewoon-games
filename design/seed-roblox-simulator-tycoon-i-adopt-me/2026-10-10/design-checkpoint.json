@@ -539,25 +539,39 @@
         "Earns resources from defeated enemies and allocates them strategically.",
         "Adapts defense based on enemy types and evolves strategies over time."
       ]
+    },
+    "local_authoring_parts::ddec38a1d10370e1c94be5f8e6f8ee0bb4127306c7444f30222b072bfa44f6c2:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Enemy type adaptation",
+        "Resource allocation"
+      ],
+      "stateOutputs": [
+        "Defensive strategy evolution"
+      ],
+      "name": "Defense Evolution",
+      "purpose": "Strategic progression through adaptive defense mechanisms",
+      "playerChoice": "Player adapts defense to enemy types, allocates resources, and evolves strategy across multiple gameplay phases and scenarios in a single-player tower-defense game with dynamic world state changes and evolving defensive strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1317854,
-      "lastMs": 61822,
+      "totalMs": 1451720,
+      "lastMs": 65892,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:15:45.758Z"
+      "updatedAt": "2026-10-09T18:17:59.627Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:53:47.848Z",
-  "updatedAt": "2026-10-09T18:15:45.758Z",
+  "updatedAt": "2026-10-09T18:17:59.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,15 +2274,27 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::ddec38a1d10370e1c94be5f8e6f8ee0bb4127306c7444f30222b072bfa44f6c2:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "signatureSystems[0]"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::ddec38a1d10370e1c94be5f8e6f8ee0bb4127306c7444f30222b072bfa44f6c2:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e": true,
     "781fc60926591f2fc5355640421baf6175a705be225803085ac38b733ce72190": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:15:45.758Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T18:17:59.627Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
