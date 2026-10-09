@@ -194,25 +194,40 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::aef696b6d983bfbd7465390b88a0c317e3f5b8d366b361f4f125511dbc6dc4fa:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "threatLevel",
+        "resourceInvestmentThreshold"
+      ],
+      "stateOutputs": [
+        "defensiveConfiguration",
+        "economicTradeOffDecision"
+      ],
+      "name": "킹샷 광고풍",
+      "purpose": "Real-time tactical adaptation and resource allocation under pressure",
+      "playerChoice": "Strategic placement of defenses based on enemy behavior and threat level"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 605797,
-      "lastMs": 52938,
+      "totalMs": 674788,
+      "lastMs": 68991,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:34:33.267Z"
+      "updatedAt": "2026-10-09T20:35:42.260Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:24:27.159Z",
-  "updatedAt": "2026-10-09T20:34:33.267Z",
+  "updatedAt": "2026-10-09T20:35:42.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1936,7 @@
   "localAuthoringSplits": {
     "549c0283e9358353ce2af4968bf8ab2321e28d15b68f2ff26fa768a3fbf6f3fd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:34:33.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:35:42.260Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
