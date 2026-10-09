@@ -27,25 +27,32 @@
       "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장성과 지역 기지의 단일 점령을 중심으로 설계됨. 총체적인 플레이어 역할은 '주민', '병사', '전투기'로 구분되어 있으며, 이들의 행동과 선택은 진입→자원 수집→자동화→병력 강화→거점 공격 순서에 따라 진행됨. 각 단계에는 실제 상태 변화와 보상이 포함되며, 최종적으로는 왕국 정복 및 해전 등 대규모 결과가 발생함.",
       "playerFantasy": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임입니다. 플레이어는 '주민', '병사', '전투기' 세 가지 역할로 구분되어 있으며, 이들의 행동과 선택은 진입 → 자원 수집 → 자동화 → 병력 강화 → 거점 공격 순서에 따라 진행됩니다. 각 단계에는 실제 상태 변화와 보상이 포함되며, 최종적으로는 왕국 정복 및 해전 등 대규모 결과가 발생합니다.",
       "coreFun": "나무와 식량을 직접 채집하여 주민을 고용하고, 이를 자동화해 생산 과정을 줄이고, 병사들을 모아 전투력을 강화하며, 5개 거점을 차례로 점령하는 게임입니다. 이 과정에서 플레이어는 '주민', '병사', '전투기' 세 가지 역할을 수행하며, 진입 → 자원 수집 → 자동화 → 병력 강화 → 거점 공격 순서에 따라 진행됩니다. 각 단계에서는 실제 상태 변화와 보상을 경험하게 되며, 최종적으로는 왕국 정복 및 해전 등 대규모 결과가 발생합니다."
+    },
+    "local_authoring_parts::104ffe652ee425f952dc7cf667f3beb214b7d1220a08cf8e6e4107fd915f6765:coreLoop": {
+      "coreLoop": [
+        "진입 → 자원 수집 → 자동화 → 병력 강화 → 거점 공격",
+        "선택 → 상태 변화 → 보상/위험 → 다음 선택",
+        "자동 전투 및 점령 보상 → 협동 지원 → 거점 확보"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 202632,
-      "lastMs": 35201,
+      "totalMs": 237048,
+      "lastMs": 34416,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:38:19.110Z"
+      "updatedAt": "2026-10-09T08:38:53.529Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:56.457Z",
-  "updatedAt": "2026-10-09T08:38:19.111Z",
+  "updatedAt": "2026-10-09T08:38:53.529Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -600,7 +607,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:38:19.111Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:38:53.529Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
