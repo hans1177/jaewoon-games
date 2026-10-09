@@ -60,25 +60,38 @@
       "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::805ed275072b6d1d2b1a464a245d2b972c22d03d84a7d29c1db3f8ed3e22bdc9:signatureSystems:2": {
+      "id": "CORE_FUN_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE"
+      ],
+      "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "purpose": "Establish a conditional relationship between the outcome of the main action and the next world state, introducing variability through risk/reward choices.",
+      "playerChoice": "Select a short run with clear feedback, gather rewards, and take a minimal risk or choose a simple path before completion."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 183684,
-      "lastMs": 16452,
+      "totalMs": 200321,
+      "lastMs": 16637,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:53:17.088Z"
+      "updatedAt": "2026-10-09T15:53:33.727Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:53:17.090Z",
+  "updatedAt": "2026-10-09T15:53:33.728Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1568,8 +1581,8 @@
     "local_authoring_parts::805ed275072b6d1d2b1a464a245d2b972c22d03d84a7d29c1db3f8ed3e22bdc9:signatureSystems:2": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:53:17.088Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T15:53:33.728Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
