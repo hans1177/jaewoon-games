@@ -1339,7 +1339,7 @@ UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY
     const nativeVisualNeeded=Boolean(nativeVisualSource)
       &&(readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
         ||readiness?.data?.criteria?.graphics?.native3dVerified===false
-        ||/\\bSpriteRenderer\\b|\\b2[._]?5D\\b|\\b2D\\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
+        ||/\bSpriteRenderer\b|\b2[._]?5D\b|\b2D\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
     const files=[coreRel,runtimeRel,floorRuntimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
       .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
