@@ -1141,25 +1141,42 @@
         "SCORE_DISTANCE_SHORT_SESSION"
       ],
       "fromSystem": "systems-progression"
+    },
+    "local_authoring_parts::3875e0e05d09c0fa18b7b49ced32353011dbc209001bd4a4b5240e0be690b946:toSystem,trigger,stateChange": {
+      "toSystem": "systems-progression",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
+    },
+    "local_authoring_parts::d6dacf0cebee7523e784c779152af72ee12de85b355d58bc2fcae1b1a3b2fe0b:systemInterconnections:2": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "fromSystem": "systems-progression",
+      "toSystem": "systems-progression",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 90,
-      "successes": 90,
+      "calls": 91,
+      "successes": 91,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5408234,
-      "lastMs": 91761,
+      "totalMs": 5500271,
+      "lastMs": 92037,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:54:36.517Z"
+      "updatedAt": "2026-10-09T04:56:08.556Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T04:54:36.517Z",
+  "updatedAt": "2026-10-09T04:56:08.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3393,7 +3410,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:54:36.517Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:56:08.557Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
