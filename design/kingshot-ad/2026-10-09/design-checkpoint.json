@@ -83,21 +83,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 632496,
-      "lastMs": 240410,
+      "totalMs": 672357,
+      "lastMs": 39861,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:52:55.444Z"
+      "updatedAt": "2026-10-09T00:53:35.306Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T00:52:55.444Z",
+  "updatedAt": "2026-10-09T00:53:35.307Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2290,23 +2290,25 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": [
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:3": [
       {
         "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
+        "grammarRole": "c",
         "previousRuleIds": [
           "SIGNATURE_SYSTEM_0",
-          "SIGNATURE_SYSTEM_1"
+          "SIGNATURE_SYSTEM_1",
+          "SIGNATURE_SYSTEM_2"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": 4
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": 4,
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:3": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T00:52:55.444Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T00:53:35.306Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:c",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
