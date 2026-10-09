@@ -1175,25 +1175,60 @@
       "toSystem": "systems-progression",
       "trigger": "Read the next enemy wave and place towers or defenders on lanes/positions that cover the threatened route.",
       "stateChange": "The game state shifts to a new defensive configuration, increasing pressure and resource availability."
+    },
+    "local_authoring_parts::babd863e29247ca9a8d56786ac1f63528811b0595680e689282c5be0e0c21704:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_CONFIGURATION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "systems-progression"
+    },
+    "local_authoring_parts::babd863e29247ca9a8d56786ac1f63528811b0595680e689282c5be0e0c21704:toSystem,trigger,stateChange": {
+      "toSystem": "systems-progression",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes/positions that cover the threatened route.",
+      "stateChange": "The game state shifts to a new defensive configuration, increasing pressure and resource availability."
+    },
+    "local_authoring_parts::e4d90300fbeb00a62d7a0b85bcd5860b5fb0df4651b19fe3dacca1c9472413be:systemInterconnections:2": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_CONFIGURATION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "systems-progression",
+      "toSystem": "systems-progression",
+      "trigger": "Read the next enemy wave and place towers or defenders on lanes/positions that cover the threatened route.",
+      "stateChange": "The game state shifts to a new defensive configuration, increasing pressure and resource availability."
+    },
+    "local_authoring_parts::af33f2e28d4da0800be09d7cbfbc65d7b9411c340dbe06ca721298655a2615f8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_CONFIGURATION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "systems-progression"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 109,
-      "successes": 109,
+      "calls": 112,
+      "successes": 112,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8998070,
-      "lastMs": 62526,
+      "totalMs": 9186819,
+      "lastMs": 63188,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:38:41.391Z"
+      "updatedAt": "2026-10-09T06:41:50.148Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T06:38:41.393Z",
+  "updatedAt": "2026-10-09T06:41:50.148Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3535,7 +3570,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:38:41.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:41:50.148Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
