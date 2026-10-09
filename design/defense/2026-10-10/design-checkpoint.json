@@ -194,25 +194,40 @@
         "방어 요소 배치 → 적 웨이브 읽기 → 실질적 위험-보상 관계 형성",
         "선명한 방어 전략 → 자원 재분배 → 다층적 방어 시스템 구축"
       ]
+    },
+    "local_authoring_parts::7a73196c7db20553585c7286433018ac702e6cc78671edfc626d9be0f1b57c96:signatureSystems:0": {
+      "id": "defense_signature_system",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "defensiveConfiguration",
+        "resourceExpenditureDecision"
+      ],
+      "stateOutputs": [
+        "adaptiveDefenseStrategy",
+        "multiLayeredDefensivePrioritization"
+      ],
+      "name": "Defense Signature System",
+      "purpose": "Enables player choice in defensive configuration and economic resource management to shape adaptive defense strategies and multi-layered defensive prioritization.",
+      "playerChoice": "Strategic resource allocation decision under pressure to achieve dynamic defensive configurations and prioritize survival/expansion based on enemy composition and environmental constraints."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 554475,
-      "lastMs": 60220,
+      "totalMs": 655818,
+      "lastMs": 101343,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:55:49.698Z"
+      "updatedAt": "2026-10-09T19:57:31.044Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:46:35.196Z",
-  "updatedAt": "2026-10-09T19:55:49.698Z",
+  "updatedAt": "2026-10-09T19:57:31.044Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1936,7 @@
   "localAuthoringSplits": {
     "de619f8198b3052df60b6bf980bc2d045f52e51aac8a32e9578b1d59c30ded5f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:55:49.698Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:57:31.044Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
