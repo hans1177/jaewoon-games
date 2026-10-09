@@ -690,7 +690,11 @@ const enrichedRows=rows.map(project=>{
     ownerResumableBuildUpReason:clean(game.developmentHandling)||clean(game.lifecycleReason)||'OWNER_DIRECT_EXISTING_GAME'
   };
 });
-return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+// Unity Web는 실제 3D 개발 대상이고, Unity Android만 보류한다. 기존 정책 판단기에 프로젝트별 Unity Web 증거를 전달한다.
+return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine,{
+  ...project,
+  unityWebDevelopment:project.firstStageUnityWeb===true
+}));
 }
 function ownerResumableCatalogGame(game={}){
   const handling=clean(game.developmentHandling).toUpperCase();

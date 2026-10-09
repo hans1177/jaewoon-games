@@ -1070,8 +1070,17 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
-  if(autoExpanded){
+  const canonicalUnityBootstrap=first.task.evidence.includes('unity-web-first-stage')
+    &&first.task.evidence.includes('source-root-bootstrap-required');
+  if(canonicalUnityBootstrap){
+    // Unity Web의 3D 원본이 아직 없으면 F0 소스 부트스트랩을 우선하며 다른 내용으로 패키지를 부풀리지 않는다.
+    assert.equal(first.task.sourceRoot,'unity-games/demo');
+    assert.equal(first.task.unityWebDevelopment,true);
+    assert.deepEqual(first.task.responsibleFiles,[
+      'unity-games/demo/Assets/Scripts/GameCore.cs',
+      'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+    ]);
+  }else if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   }else{
@@ -4441,7 +4450,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
   const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
   assert.ok(resumed);
-  assert.equal(resumed.maxRetries,null);
+  assert.equal(resumed.maxRetries==null,true,'missing or null limit means no artificial retry cap');
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
 });
@@ -4461,6 +4470,9 @@ test('actual fantasy-survival routes future source development to canonical Unit
   const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='unity'&&row.firstStageUnityWeb===true);
   assert.ok(project,'actual fantasy-survival must be in the canonical Unity Web development lane');
   assert.equal(project.projectPath,'unity-games/fantasy-survival');
+  // 실제 게임이 Unity Android 보류에 잘못 흡수되면 이 검사는 실패한다.
+  assert.equal(project.unityWebDevelopmentFloor,true);
+  assert.equal(project.firstStageEngine,'UNITY_WEB');
 
   const work=findSafeTasks(project,root,{tasks:[]});
   assert.ok(work.length>0,'existing Unity Web must have a real source repair or implementation task');
