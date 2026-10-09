@@ -934,25 +934,60 @@
       "toSystem": "A",
       "trigger": "world_state",
       "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::1ded116e7e448d7b8ef651b6946a828a9dc549fda40706902c6663f41d089b42:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[1]",
+      "toId": "signatureSystems[2]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "A"
+    },
+    "local_authoring_parts::1ded116e7e448d7b8ef651b6946a828a9dc549fda40706902c6663f41d089b42:toSystem,trigger,stateChange": {
+      "toSystem": "B",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::62eba6759a6fc62d58d291366adcf25cb3a5bab96e45cb0ec3beba2c3ea091d0:systemInterconnections:1": {
+      "fromId": "signatureSystems[1]",
+      "toId": "signatureSystems[2]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "A",
+      "toSystem": "B",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::9a7e5ef63cdd921c70b6938b36ac609e86ba9fd3845df23dabeeef0cacf74378:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "MAIN/DELVE(@)/systemInterconnections[0]/fromSystem[0]/*fromSystem*/world_state/*fromSystem*/world_state/*fromSystem*/world_state/*fromSystem*/world_state/*fromSystem*/world_state/*"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 53,
+      "calls": 56,
+      "successes": 56,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4658717,
-      "lastMs": 57490,
+      "totalMs": 4839520,
+      "lastMs": 64589,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:27:55.599Z"
+      "updatedAt": "2026-10-09T01:30:56.409Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-09T01:27:55.601Z",
+  "updatedAt": "2026-10-09T01:30:56.409Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2965,7 +3000,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:27:55.601Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:30:56.409Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
