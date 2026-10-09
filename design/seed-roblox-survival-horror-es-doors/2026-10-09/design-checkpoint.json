@@ -1133,25 +1133,41 @@
     },
     "local_authoring_parts::adfcc7240433a4701fd3200c913fe09b5b8227a95757e753599096f59dc49874:trigger": {
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::adfcc7240433a4701fd3200c913fe09b5b8227a95757e753599096f59dc49874:stateChange": {
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::996b4af2f77ccd6d3ccaac29418c092ad98899d34c6780729fb491d77a54d3f7:systemInterconnections:2": {
+      "fromId": "SIGNATURE_SYSTEM_01",
+      "toId": "BOARD_STATE_TRANSITION_SYSTEM",
+      "stateKeys": [
+        "LEVEL_GOAL_STATE",
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_01",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "trigger": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 121,
-      "successes": 121,
+      "calls": 122,
+      "successes": 122,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4030088,
-      "lastMs": 32937,
+      "totalMs": 4062660,
+      "lastMs": 32572,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:42:05.823Z"
+      "updatedAt": "2026-10-09T01:42:38.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:42:05.823Z",
+  "updatedAt": "2026-10-09T01:42:38.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3477,7 +3493,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:42:05.823Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:42:38.397Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
