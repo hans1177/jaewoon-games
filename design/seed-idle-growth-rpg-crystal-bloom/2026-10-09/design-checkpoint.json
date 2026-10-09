@@ -605,25 +605,115 @@
     "local_authoring_parts::90cfb76d0fc752b3c6d6984abc55ddc68d5010666c2e0792cca9473051487218:progressionLoop,resourceFlow": {
       "progressionLoop": "{\"type\": \"loop\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}",
       "resourceFlow": "{\"type\": \"flow\", \"items\": [\"FROM\",\"TO\",\"ACTION\",\"RESULT\",\"RISK\",\"NEXT_CHOICE\"], \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+    },
+    "local_authoring_parts::90cfb76d0fc752b3c6d6984abc55ddc68d5010666c2e0792cca9473051487218:balanceRules": {
+      "balanceRules": "{\"type\": \"rule\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+    },
+    "local_authoring_parts::5a9248311d19d73e0b6bf095ab3721426bc68c50821229e3320c19f5784deff4:progressionEconomyBalance": {
+      "progressionLoop": "{\"type\": \"loop\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}",
+      "resourceFlow": "{\"type\": \"flow\", \"items\": [\"FROM\",\"TO\",\"ACTION\",\"RESULT\",\"RISK\",\"NEXT_CHOICE\"], \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}",
+      "balanceRules": "{\"type\": \"rule\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+    },
+    "local_authoring_parts::b3688d216a10dd2c59a34897c1e0190247279e78809d86390e88138fa68937af:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "{\"type\": \"loop\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}",
+        "resourceFlow": "{\"type\": \"flow\", \"items\": [\"FROM\",\"TO\",\"ACTION\",\"RESULT\",\"RISK\",\"NEXT_CHOICE\"], \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}",
+        "balanceRules": "{\"type\": \"rule\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+      }
+    },
+    "local_authoring_parts::79c1122db39f08316b4d88dc7d33c5dd95e1a0fe1a4d9fa75e045edb8b5f16b8:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "fromSystem": "IDLE_GROWTH_RPG_CORE_RULE",
+          "toSystem": "IDLE_GROWTH_RPG_A_RULE",
+          "trigger": "INPUT_SELECT_OUTPUT",
+          "stateChange": "RESULT_RISK_NEXT_CHOICE"
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "fromSystem": "IDLE_GROWTH_RPG_A_RULE",
+          "toSystem": "IDLE_GROWTH_RPG_B_RULE",
+          "trigger": "INPUT_SELECT_OUTPUT",
+          "stateChange": "RESULT_RISK_NEXT_CHOICE"
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "fromSystem": "IDLE_GROWTH_RPG_B_RULE",
+          "toSystem": "IDLE_GROWTH_RPG_C_RULE",
+          "trigger": "INPUT_SELECT_OUTPUT",
+          "stateChange": "RESULT_RISK_NEXT_CHOICE"
+        },
+        {
+          "fromId": "C",
+          "toId": "DELVE",
+          "stateKeys": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "fromSystem": "IDLE_GROWTH_RPG_C_RULE",
+          "toSystem": "IDLE_GROWTH_RPG_DELVE_RULE",
+          "trigger": "INPUT_SELECT_OUTPUT",
+          "stateChange": "RESULT_RISK_NEXT_CHOICE"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "fromSystem": "IDLE_GROWTH_RPG_DELVE_RULE",
+          "toSystem": "IDLE_GROWTH_RPG_CORE_RULE",
+          "trigger": "INPUT_SELECT_OUTPUT",
+          "stateChange": "RESULT_RISK_NEXT_CHOICE"
+        }
+      ],
+      "progressionDirection": "{\"type\": \"sequence\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}, \"progressionEconomyBalance\": {\"type\": \"balance\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}",
+      "progressionEconomyBalance": {
+        "progressionLoop": "{\"type\": \"loop\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}",
+        "resourceFlow": "{\"type\": \"flow\", \"items\": [\"FROM\",\"TO\",\"ACTION\",\"RESULT\",\"RISK\",\"NEXT_CHOICE\"], \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}",
+        "balanceRules": "{\"type\": \"rule\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1815752,
-      "lastMs": 98588,
+      "totalMs": 1909040,
+      "lastMs": 93288,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T16:13:04.401Z"
+      "updatedAt": "2026-10-09T16:14:37.690Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T16:13:04.401Z",
+  "updatedAt": "2026-10-09T16:14:37.694Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2335,7 +2425,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T16:13:04.401Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:14:37.694Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
