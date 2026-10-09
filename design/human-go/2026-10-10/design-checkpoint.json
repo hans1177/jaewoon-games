@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256:identity": {
+      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 휴먼 GO에서 Explore a compact activity space and discover a person, task or collectible opportunity.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 게임은 주제가 중심이며, A/B/c/@와 세계 인과법칙에 따라 다양한 상태 변화와 진화를 통해 새로운 정체성을 형성한다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600203,
-      "lastMs": 300101,
+      "totalMs": 836284,
+      "lastMs": 236081,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:49:09.642Z"
+      "updatedAt": "2026-10-09T17:53:05.728Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T17:49:09.642Z",
+  "updatedAt": "2026-10-09T17:53:05.728Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1543,5 +1547,9 @@
   "localAuthoringSplits": {
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T17:53:05.728Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
