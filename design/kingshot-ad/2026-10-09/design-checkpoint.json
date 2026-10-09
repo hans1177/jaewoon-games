@@ -64,25 +64,40 @@
       "name": "ADAPTATION_AND_STRATEGY",
       "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_TYPE",
+        "TOWER_CAPACITY"
+      ],
+      "stateOutputs": [
+        "DEFENSE_STRATEGY",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "name": "ADAPTATION_AND_STRATEGIC_REFLECTION",
+      "purpose": "Player adapts defense to enemy types and wave composition, protecting the objective, and clearing stages/bosses to unlock harder defense choices.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 392086,
-      "lastMs": 26819,
+      "totalMs": 632496,
+      "lastMs": 240410,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:06:01.782Z"
+      "updatedAt": "2026-10-09T00:52:55.444Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T00:48:55.027Z",
+  "updatedAt": "2026-10-09T00:52:55.444Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2290,8 +2305,8 @@
     "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": 4
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T00:06:01.782Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T00:52:55.444Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
