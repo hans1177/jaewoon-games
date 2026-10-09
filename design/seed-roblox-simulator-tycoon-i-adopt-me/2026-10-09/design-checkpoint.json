@@ -458,25 +458,98 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::1c8515e9b124ea6312bab62adb190350fd2f58c40883b024cda539c3253f6298:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "MAIN",
+          "toId": "A",
+          "stateKeys": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_DEFENDERS"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH_V4",
+          "toSystem": "EMERGENT_GENRE",
+          "trigger": "INPUT_SELECT",
+          "stateChange": "STATE_CHANGE_TO_RESOURCES"
+        },
+        {
+          "fromId": "A",
+          "toId": "B",
+          "stateKeys": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES_PLACEMENTS"
+          ],
+          "fromSystem": "EMERGENT_GENRE",
+          "toSystem": "SYSTEM_INTERCONNECTIONS",
+          "trigger": "ACTION_EXECUTION",
+          "stateChange": "STATE_CHANGE_TO_PRESSURE"
+        },
+        {
+          "fromId": "B",
+          "toId": "C",
+          "stateKeys": [
+            "ADAPT_DEFENCE",
+            "PROTECT_OBJECTIVE",
+            "CLEAR_STAGE_BOSS"
+          ],
+          "fromSystem": "SYSTEM_INTERCONNECTIONS",
+          "toSystem": "EMERGENT_GENRE",
+          "trigger": "DECISION_MADE",
+          "stateChange": "STATE_CHANGE_TO_UNLOCK_HARDER_DEFENSE"
+        },
+        {
+          "fromId": "C",
+          "toId": "DELVE",
+          "stateKeys": [
+            "CHOOSE_STRATEGIES",
+            "PRIORITIZE_PROTECTION",
+            "STRATEGIC_CLEAR"
+          ],
+          "fromSystem": "EMERGENT_GENRE",
+          "toSystem": "SYSTEM_INTERCONNECTIONS",
+          "trigger": "ACTION_EXECUTION",
+          "stateChange": "STATE_CHANGE_TO_EMBRACE_ADAPTATION"
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "MAIN",
+          "stateKeys": [
+            "DISCOVER_NEW_STRATEGIES",
+            "EXTEND_CONTENT",
+            "REFRESH_REINTERPRET"
+          ],
+          "fromSystem": "EMERGENT_GENRE",
+          "toSystem": "GAMEPLAY_SKETCH_V4",
+          "trigger": "INPUT_SELECT",
+          "stateChange": "STATE_CHANGE_TO_EVOLVE_GAME"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "INCREASING_COMPLEXITY",
+        "resourceFlow": "RESOURCE_CONSUMPTION_AND_GROWTH",
+        "balanceRules": "BALANCE_BETWEEN_SIMPLE_PLAY_AND_DEEP_ENGAGEMENT"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1418733,
-      "lastMs": 300102,
+      "totalMs": 1703912,
+      "lastMs": 285179,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:43:23.875Z"
+      "updatedAt": "2026-10-09T09:48:09.056Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:19:44.888Z",
-  "updatedAt": "2026-10-09T09:43:23.875Z",
+  "updatedAt": "2026-10-09T09:48:09.056Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2675,7 +2748,7 @@
     "local_authoring_parts::2ba61f873446267cc818e5c8d777daa4abd644cc5f7dd712973df974d61841d8:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:38:23.765Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:48:09.056Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
