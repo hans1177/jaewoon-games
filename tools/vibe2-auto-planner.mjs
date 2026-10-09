@@ -3522,7 +3522,19 @@ export function findSafeTasks(project,repoRoot,queue){
     if(project.firstStageUnityWeb!==true)return [];
     if(project.firstStageUnityWeb===true){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
-      if(firstStage)return[firstStage];
+      if(firstStage){
+        // Unity Web 3D 재개발의 코어 수리가 공용 3D 자산 제작을 가로막지 않게 한다.
+        // 실제 동일 책임 파일이 겹치는 후보만 제외하고 기존 ASSET_DEVELOPMENT를 병행한다.
+        const parallelAssetTasks=uniqueTaskCandidates([
+          ...holisticBackfillTasks,
+          findDeclaredDccAuthoringTask(project,repoRoot,queue),
+          findPresentationQualityTask(project,repoRoot,queue),
+          ...normalStudioTasks
+        ]).filter(assetTask=>assetTask?.assetProductionLane===true
+          &&Array.isArray(assetTask.responsibleFiles)&&assetTask.responsibleFiles.length>0
+          &&!sameRootResponsibilityConflict(firstStage,assetTask));
+        return uniqueTaskCandidates([firstStage,...parallelAssetTasks]);
+      }
       return uniqueTaskCandidates([
         ...holisticBackfillTasks,
         findDeclaredDccAuthoringTask(project,repoRoot,queue),
