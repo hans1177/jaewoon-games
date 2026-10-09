@@ -47,25 +47,38 @@
       "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "purpose": "Plays as the core gameplay mechanic, where players take control of the initial state and transition to new states through strategic choices.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives.','inputSequence':['INPUT_START','SELECT_ACTION','OUTPUT_RESULT','STATE_TRANSITION'],'actionSequence':['ACTION_BEGIN','MOVE_SELECTION','RESULT_FEEDBACK','STATE_CHANGE'],'systemInterconnections':[{'role':'PRIMARY','name':'BOARD_PATTERN','purpose':'Determines the visual and procedural structure of each level','playerAction':'Define the 2"
+    },
+    "local_authoring_parts::4f0a26028262cf3c4c80c2a1d7d06b79befd2a33c8e527d7b3f1ce4ab58254bb:signatureSystems:1": {
+      "id": "STAR-FRONTIER-CORE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "플레이어가 시작하는 게임 공간에서 선택의 결과가 다음 상태로 연결되는 PUZZLE 게임의 핵심 재미와 시스템 연결을 확정합니다.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 384799,
-      "lastMs": 50393,
+      "totalMs": 422107,
+      "lastMs": 37308,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:43:27.731Z"
+      "updatedAt": "2026-10-09T14:44:05.040Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:37:02.904Z",
-  "updatedAt": "2026-10-09T14:43:27.731Z",
+  "updatedAt": "2026-10-09T14:44:05.040Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1655,7 +1668,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:43:27.731Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:44:05.040Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
