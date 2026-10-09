@@ -1480,6 +1480,27 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   assert.equal((malformedProof.designedGameVolume.activeItem||malformedProof.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
     'a free-form marker cannot pass the scoped evidence gate');
 
+  const unassigned='roblox-games/volume-scope/server/Unassigned.server.luau';
+  const unassignedProof=buildGameSpecificBuildUpDirective({
+    gameId:'volume-scope',platform:'ROBLOX',designRecord:approved,
+    sourceObservation:{...obs,sourceTreeFingerprint:'1'.repeat(64),
+      topFiles:[{file:owner,score:15},{file:unassigned,score:10}]},
+    responsibleFiles:[owner],previousDirective:restored,previousDirectiveOutcome:'verified',
+    runtimeEvidence:{
+      runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
+      contentUnitVerification:{
+        ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
+        gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'1'.repeat(64),
+        sourceFile:unassigned,sourceDeltaVerified:true,nativeRuntimeObserved:true,
+        nativeRuntimePassed:true,independentQaPassed:true,playerActionStateResultPassed:true,
+        saveReconnectRegressionPassed:true,runtimeRunId:'1234567890123',
+        evidenceArtifactId:'sha256:'+'9'.repeat(64)
+      }
+    }
+  });
+  assert.equal(unassignedProof.designedGameVolume.scopedAdvancementObserved,false,
+    'a source-search candidate is not an authorized assigned file');
+
   approved.content.signatureSystems[16].name='changed late design system';
   const changedDesign=create(scoped,'verified','f'.repeat(64),{
     runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true
