@@ -27,25 +27,32 @@
       "identity": "킹샷 광고풍은 플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다. 이 게임은 기존의 단순한 방어 전략을 근본적으로 변형하여, 플레이어가 다양한 상황에 대응할 수 있는 복잡한 시스템을 설계하고 있다.",
       "playerFantasy": "플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이며, 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다."
+    },
+    "local_authoring_parts::d2d8125d4334031a4a5b0790ebe2db136d8b1a89a2ba6e2bfedc36b738515024:coreLoop": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 394279,
-      "lastMs": 63299,
+      "totalMs": 451469,
+      "lastMs": 57190,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:29:57.767Z"
+      "updatedAt": "2026-10-09T15:30:54.961Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:23:23.460Z",
-  "updatedAt": "2026-10-09T15:29:57.769Z",
+  "updatedAt": "2026-10-09T15:30:54.961Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1751,7 +1758,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:29:57.769Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:30:54.961Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
