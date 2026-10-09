@@ -3153,7 +3153,7 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3183,7 +3183,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-09T05:19:50.636Z",
+      "updatedAt": "2026-10-09T05:30:51.151Z",
       "robloxSourceCommit": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
       "robloxSourceBootstrapPassedAt": "2026-10-08T19:54:49.292Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -4235,7 +4235,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -4254,17 +4254,17 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-first-frame-grounding-unobserved"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "sourceRevision": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
-        "artifactIdentity": "sha256:8a6ec8161fd4ece31cb8d32ea79012d14dac99dae6a1ba5133c7ebf3c7b07138",
-        "candidateVersionNumber": 10,
+        "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
+        "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
+        "candidateVersionNumber": 11,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -4276,9 +4276,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-08T15:04:11.613Z"
+        "verifiedAt": "2026-10-09T05:30:51.151Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-08T14:36:13.307Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-09T05:30:51.151Z",
       "robloxStudioRuntimeSession": {
         "version": 1,
         "sessionId": "36977432837:daechung-rpg:36958178395:36958178395",
@@ -5260,7 +5260,18 @@
           "gameplayInteractionVerified": false,
           "authority": "OPEN_CLOUD_WORLD_STRUCTURE_ONLY"
         },
-        "sameLuauExecutionSession": true
+        "sameLuauExecutionSession": true,
+        "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
+        "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
+        "placeId": "79150944093879",
+        "candidateVersionNumber": 11,
+        "serverBootObserved": false,
+        "serverContextExecuted": true,
+        "simulationRunningAfter": false,
+        "simulationStartSucceeded": false,
+        "simulationStartCapabilityDenied": false,
+        "observedAt": "2026-10-09T05:30:51.151Z",
+        "authority": "roblox-open-cloud-exact-first-frame-observation"
       },
       "robloxBuildUpAssetSourceUsageFingerprint": "8a86555dfd6c0792b4244bfea59b644182092bcf9abf9487f506a7806a98a3bf",
       "robloxBuildUpAssetSourceUsageLibraryVersion": 121,
@@ -24834,7 +24845,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-09T05:30:15.259Z",
+  "updatedAt": "2026-10-09T05:30:51.151Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
