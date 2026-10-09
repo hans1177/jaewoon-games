@@ -451,7 +451,7 @@ export function createDuelCombatAuthoringRecipe({
   martialStyle='MMA_HYBRID',
   role='LIGHT_COMBO',
   motionId='',
-  platform='ROBLOX'
+  platform='ROBLOX',combatTraditions=[],terrainMaterial='UNSPECIFIED',effectMaterial='PHYSICAL',artisticIntent=''
 }={}){
   const loadout=createDuelCombatMotionLoadout({weaponFamily,martialStyle,platform});
   const normalizedRole=upper(role)||'LIGHT_COMBO';
@@ -479,6 +479,7 @@ export function createDuelCombatAuthoringRecipe({
     ?(UNARMED_MARTIAL_MECHANICS[loadout.martialStyle]||UNARMED_MARTIAL_MECHANICS.MMA_HYBRID)
     :null;
   const phases=DUEL_COMBAT_AUTHORING_PHASES[normalizedRole]||DUEL_COMBAT_AUTHORING_PHASES.LIGHT_COMBO;
+  const actionPresentation=buildSkillMotionSequence({combatTraditions,weaponFamily:loadout.weaponFamily,terrainMaterial,effectMaterial,artisticIntent});
   return Object.freeze({
     target:DUEL_COMBAT_MOTION_TARGET,
     platform:upper(platform),
@@ -488,6 +489,7 @@ export function createDuelCombatAuthoringRecipe({
     phases,
     weaponMechanics,
     martialMechanics,
+    actionPresentation:actionPresentation.creativeChoreography,
     jointPriority:Object.freeze(['FEET','HIPS','SPINE','SHOULDERS','ARMS_OR_WEAPON','HEAD_GAZE']),
     authoredMotionRequirements:Object.freeze({
       fullBodyWeightTransfer:true,
@@ -3048,7 +3050,13 @@ export function createMotionDirectorPlan({
       measuredTransitionQa:transition?evaluateMotionTransition(transition).verdict:'UNVERIFIED',
       runtimeVerified:false
     }),
-    skillSequence:buildSkillMotionSequence(skill),
+    skillSequence:buildSkillMotionSequence({
+      ...skill,
+      combatTraditions:skill.combatTraditions??context.combatTraditions??combat?.combatTraditions??[],
+      weaponFamily:skill.weaponFamily??studio.weaponFamily??context.weaponFamily??combat?.weaponFamily??selectedDNA.WEAPON_FAMILY??'UNARMED',
+      terrainMaterial:skill.terrainMaterial??context.terrainMaterial??'UNSPECIFIED',
+      effectMaterial:skill.effectMaterial??context.effectMaterial??'PHYSICAL'
+    }),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,
     transition:transition?evaluateMotionTransition(transition):null,
