@@ -1514,25 +1514,130 @@
     },
     "local_authoring_parts::bc3034bc342dcafd4611a0e6eb12791d0243364bbb4ff9dca30caa6d8fce8bb2:costKey": {
       "costKey": "ACTION_SURVIVAL_ROGUELITE_1"
+    },
+    "local_authoring_parts::bc3034bc342dcafd4611a0e6eb12791d0243364bbb4ff9dca30caa6d8fce8bb2:cooldownKey": {
+      "cooldownKey": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차"
+    },
+    "local_authoring_parts::672bdc9489a12081be5b4adc3c76f20d3f4e788824092ac130f8aca52b8b238f:abilities:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_1",
+      "name": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+      "kind": "INFECTION",
+      "ownerId": "ACTION_SURVIVAL_ROGUELITE_1",
+      "ruleId": "ACTION_SURVIVAL_ROGUELITE_1",
+      "trigger": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+      "range": 100,
+      "rangeUnit": "개미 종족 선택",
+      "resource": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차",
+      "cost": 100,
+      "cooldownSeconds": 5,
+      "telegraph": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+      "avoidance": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+      "effect": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+      "stateInputs": [
+        "{\"id\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"name\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+        "kind\":\"INFECTION\",\"ownerId\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"ruleId\":\"ACTION_SURV활",
+        "trigger\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기,목",
+        "range\": 100, "
+      ],
+      "stateOutputs": [
+        "{\"id\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"name\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+        "kind\":\"INFECTION\",\"ownerId\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"ruleId\":\"ACTION_SURV\"",
+        "trigger\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기,목",
+        "range\": 100, \"rangeUnit\":\"개미 종족 선택\", \"resource\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 ",
+        "\"cost\": 100, \"cooldownSeconds\": 5, \"telegraph\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 ",
+        "행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로월"
+      ],
+      "source": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+      "rangeKey": "ACTION_SURVIVAL_ROGUELITE_1",
+      "costKey": "ACTION_SURVIVAL_ROGUELITE_1",
+      "cooldownKey": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차"
+    },
+    "local_authoring_parts::7bc4f3462ff80d9df6eeee14765cbfcdd12c6c6517afc1cd9ce2cbb9adcb97ca:abilities": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+          "kind": "INFECTION",
+          "ownerId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "ruleId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "trigger": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+          "range": 100,
+          "rangeUnit": "개미 종족 선택",
+          "resource": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핸들링",
+          "cost": 100,
+          "cooldownSeconds": 5,
+          "telegraph": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "avoidance": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "effect": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "rangeKey": "ACTION_SURVIVAL_ROGUELITE_1",
+          "costKey": "ACTION_SURVIVAL_ROGUELITE_1",
+          "cooldownKey": "ACTION_SURVIVAL_ROGUELITE_1"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+          "kind": "INFECTION",
+          "ownerId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "ruleId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "trigger": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "range": 100,
+          "rangeUnit": "개미 종족 선택",
+          "resource": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차",
+          "cost": 100,
+          "cooldownSeconds": 5,
+          "telegraph": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "avoidance": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "effect": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "stateInputs": [
+            "{\"id\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"name\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+            "kind\":\"INFECTION\",\"ownerId\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"ruleId\":\"ACTION_SURV활",
+            "trigger\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기,목",
+            "range\": 100, "
+          ],
+          "stateOutputs": [
+            "{\"id\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"name\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정",
+            "kind\":\"INFECTION\",\"ownerId\":\"ACTION_SURVIVAL_ROGUELITE_1\",\"ruleId\":\"ACTION_SURV\"",
+            "trigger\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기,목",
+            "range\": 100, \"rangeUnit\":\"개미 종족 선택\", \"resource\":\"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 ",
+            "\"cost\": 100, \"cooldownSeconds\": 5, \"telegraph\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 ",
+            "행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로월"
+          ],
+          "source": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다.",
+          "rangeKey": "ACTION_SURVIVAL_ROGUELITE_1",
+          "costKey": "ACTION_SURVIVAL_ROGUELITE_1",
+          "cooldownKey": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 61,
-      "successes": 59,
+      "calls": 62,
+      "successes": 60,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2304131,
-      "lastMs": 6184,
+      "totalMs": 2315226,
+      "lastMs": 11095,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:20:12.025Z"
+      "updatedAt": "2026-10-09T23:20:23.121Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:20:12.025Z",
+  "updatedAt": "2026-10-09T23:20:23.124Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3304,7 +3409,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:20:12.025Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:20:23.124Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
