@@ -194,25 +194,42 @@
         "플레이어 선택 → 상태 변화 → 새로운 전략/경로/성장 가능성이 생성됨",
         "무한 발전 규칙: 진입점에서 단순 전투보다는 숨겨진 세계로 이어지는 생존 로그라이트"
       ]
+    },
+    "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player choice of build composition",
+        "Threat type shift",
+        "Terrain adaptation"
+      ],
+      "stateOutputs": [
+        "Resource allocation",
+        "Risk management",
+        "Dynamic terrain adjustment"
+      ],
+      "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+      "purpose": "Players must balance resource management and combat efficiency in a dynamic survival environment.",
+      "playerChoice": "Shift in threat type triggers new gameplay mechanics, altering strategy and decision-making."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 532535,
-      "lastMs": 54289,
+      "totalMs": 633564,
+      "lastMs": 101029,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:40:00.956Z"
+      "updatedAt": "2026-10-09T20:41:41.987Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-09T20:40:00.956Z",
+  "updatedAt": "2026-10-09T20:41:41.987Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1942,7 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:40:00.956Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:41:41.987Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
