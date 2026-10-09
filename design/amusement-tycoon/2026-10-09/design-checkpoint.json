@@ -398,25 +398,88 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::8c9fb226f98d306fa0b1f61e5d3a95f85f345966eaf7a5160139d9ab7f95c945:systemInterconnections,progressionDirection": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_STATE",
+          "toId": "END_STATE",
+          "stateKeys": [
+            "SCORE",
+            "DISTANCE"
+          ],
+          "fromSystem": "GAME_RULE",
+          "toSystem": "PLAYER_CHOICE",
+          "trigger": "INITIAL_INPUT",
+          "stateChange": "INPUT_TO_SCORE"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "REWARD",
+            "RISK",
+            "ROUTE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_ACTION",
+          "trigger": "RUN_FEEDBACK",
+          "stateChange": "FEEDBACK_TO_REWARD"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "PROGRESSION_BENEFIT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_PROGRESS",
+          "trigger": "RUN_RESULT",
+          "stateChange": "RESULT_TO_PROGRESSION"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "FAILURE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_RISK",
+          "trigger": "RUN_FAILURE",
+          "stateChange": "FAILURE_TO_RISK"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "END_STATE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_END",
+          "trigger": "RUN_COMPLETE",
+          "stateChange": "COMPLETE_TO_END"
+        }
+      ],
+      "progressionDirection": "CASCADING_EXPANSION_WITH_INHERITED_SOLUTIONS_AND_ADAPTIVE_RISKS_OR_CHANCES_20260917_V4_A_MERGEABLE_VERSION_OF_THE_BASELINE_CASUAL_GAME_FLOW_20250823_B_FUTURE_PLAYABILITY_STUDY_20260917_D_MULTIPLE_VIABLE_SOLUTIONS_E_NEXT_OPEN_QUESTION_FUTURE_PLAYABILITY_STUDY_20260917_G_RELATED_TO_WORLD_RELATIONSHIP_H_I_J_K_L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z_20260917_A_B_C_CORE_FUN_20250823_AB_C_MAIN_A_B_C_C_DELVE_20260917_D_CONTENT_EXPANSION_PLAN_20260917_E_PROGRESSION_DIRECTION_20260917_F_SYSTEM_INTERCONNECTIONS_20260917_G_SYSTEM_INTERDEPENDENCE_20260917_H_CONTEXTUAL_TRADEOFFS_20260917_I_COMBINATORIAL_NEW_USES_20260917_J_MULTIPLE_VIABLE_SOLUTIONS_20260917_K_MASTERY_CHANGES_CHOICES_20260917_L_NEXT_OPEN_QUESTION_20260917_M_PRESERVE_GENRE_SAVE_AND_BALANCE_20260917_N_COMPARE_BEFORE_AFTER_PLAYER_CHOICES_20260917_O_FAILED_HYPOTHESIS_MUST_INFORM_NEXT_ITERATION_20260917_P_PAYOFF_AXES_20260917_Q_NEW_ACTION_20260917_R"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1449208,
-      "lastMs": 300087,
+      "totalMs": 1672306,
+      "lastMs": 223098,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T12:52:47.297Z"
+      "updatedAt": "2026-10-09T12:56:30.397Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T12:52:47.298Z",
+  "updatedAt": "2026-10-09T12:56:30.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2342,7 +2405,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:42:47.100Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:56:30.397Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
