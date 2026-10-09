@@ -27,25 +27,32 @@
       "identity": "숲길 디펜스는 플레이어가 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택하여 공격자를 막아내는 단일 전략 게임이다. 이 게임에서는 주체인 플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'라는 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다.",
       "playerFantasy": "플레이어는 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택해 공격자를 막아내는 단일 전략 게임에서 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다.",
       "coreFun": "플레이어는 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택하여 공격자를 막아내는 단일 전략 게임에서 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다."
+    },
+    "local_authoring_parts::46f56423dabcf656922e8d286bcb419f71a1f265b67ed6c77e15d5821bd25377:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: The game state is transformed to reflect the new defense strategy, with increased resource pool and reduced threat level."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 268925,
-      "lastMs": 52542,
+      "totalMs": 313252,
+      "lastMs": 44327,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:26:08.286Z"
+      "updatedAt": "2026-10-09T12:26:52.617Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:21:39.332Z",
-  "updatedAt": "2026-10-09T12:26:08.288Z",
+  "updatedAt": "2026-10-09T12:26:52.617Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:26:08.288Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:26:52.617Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
