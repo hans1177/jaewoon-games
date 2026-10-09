@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::ac3c84927f6ecd6458e73191e8a718d30642af859a85efff439bb4f3716c51ea:identity": {
+      "identity": "잃어버린 별의 메아리 - 진입, 선택, 위험, 보상, 재방문의 반복 루프로 구성된 ACTION_SURVIVAL_ROGUELITE 게임 정체성입니다. 플레이어는 단순한 생존 흐름에서 심층적인 인과 관계와 콘텐츠 확대를 경험하며, 주요 행동은 '전투'이며, 대축은 '보상 수집' 및 '업그레이드 선택', 보조 요소는 '재방문'입니다. 시그니처 세계 규칙은 '전투 -> 보상 -> 다음 전투'의 순환 구조로 연결됩니다. 이 게임은 기존 장르 태그 하나만으로도 충분히 표현되며, 학문적 깊이를 유지합니다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 73455,
+      "lastMs": 73455,
+      "lastError": null,
+      "updatedAt": "2026-10-09T15:03:50.636Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:02:36.962Z",
-  "updatedAt": "2026-10-09T15:02:37.067Z",
+  "updatedAt": "2026-10-09T15:03:50.636Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1719,5 +1735,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T15:03:50.636Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
