@@ -1049,25 +1049,35 @@
       "toSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
       "trigger": "ATTACK_PATTERNS",
       "stateChange": "PLACEMENT → RESONANCE 상태 교환"
+    },
+    "local_authoring_parts::e58258e4e245d06b8ca03e61751f1835ea2107f678b405b28eff9b0c20f23511:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 73,
-      "successes": 73,
+      "calls": 74,
+      "successes": 74,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6771119,
-      "lastMs": 93506,
+      "totalMs": 6865692,
+      "lastMs": 94573,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:49:40.351Z"
+      "updatedAt": "2026-10-09T02:51:14.928Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T02:49:40.353Z",
+  "updatedAt": "2026-10-09T02:51:14.928Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3403,7 +3413,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:49:40.352Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:51:14.928Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
