@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::77008aefbe0aa29ccb831a031df89c9ec590cc61fa97c534c9d8208782340d50:identity,creativeGrammar": {
+      "identity": "인간4명과 몬스터4명이 시작하는 8인 감염 추격전에서, 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 명시적 감염 공격으로 인간을 전환하는 4대4 감염전.",
+      "creativeGrammar": {
+        "mainIdentity": "감염 전환 게임 주제 및 정체성",
+        "a": {
+          "system": "AI 충원 시스템",
+          "material": "인간4명/몬스터4명의 빈자리 AI 충원 기반 창작 소재",
+          "materialDomain": "게임 내부 상태 교환",
+          "stateChange": "AI가 빈 자리를 채운 후 인물 역할 변주"
+        },
+        "b": {
+          "system": "인간 정화 시스템",
+          "material": "정화 공격으로 몬스터를 제거하는 기능",
+          "materialDomain": "게임 내부 상태 변화",
+          "stateChange": "정화 공격 -> 몬스터 제거 진행 중"
+        },
+        "abCausality": "AI 충원 → 정화 공격 순차적으로 상호 작용하여 실제 플레이어 대상 상태 변화 발생",
+        "abEvolution": {
+          "aChangesB": "AI 충원 → 정화 공격 순차적으로 상호 작용",
+          "bChangesA": "정화 공격 → 몬스터 제거로 인식됨, AI가 빈 자리 채우는 과정을 통해 실질적 인과 변화 일어남",
+          "lateGameChange": "AI 충원 및 정화 공격이 모두 완료되면 8인 감염전 종료"
+        },
+        "materialFusion": {
+          "contrast": "감염 전환의 중심은 인간·몬스터의 역할 변화에 있으며, 보조 장르는 정화 공격과 AI 충원의 상호작용에 담당한다.",
+          "causalBridge": "감염 공격과 정화 공격은 서로 다른 시스템으로서 인과적으로 연결되어야 하며, 각각의 상태 변화는 게임 전체 진행에 영향을 미친다.",
+          "removalConsequence": "감염된 인간은 몬스터로 전환되며, 이는 정화 공격과 AI 충원의 결과로 인해 실제 플레이어 대상 상태 변화를 유발함"
+        },
+        "storyCausalChain": {
+          "cause": "인간4명/몬스터4명 배정 및 AI 충원",
+          "characterConflict": "감염 공격과 정화 공격 갈등 발생, AI가 빈 자리 채우는 선택 사례",
+          "playerChoice": "AI 충원 → 정화 공격 순차적 상호 작용",
+          "worldChange": "AI 충원 및 정화 공격이 모두 완료되면 8인 감염전 종료, 새로운 플레이어 대상 상태 변화 발생",
+          "nextEvent": "게임 종료 또는 새로운 플레이 시작 여부 결정"
+        },
+        "cThemes": [
+          {
+            "name": "감염 전환",
+            "kind": "GENRE",
+            "gameplayEffect": "인간·몬스터 역할 변주와 AI 충원 기반 상태 교환"
+          },
+          {
+            "name": "인간 정화",
+            "kind": "GENRE",
+            "gameplayEffect": "정화 공격으로 몬스터 제거 및 게임 진행 중단"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "감염 전환 게임 장르",
+            "gameplayEffect": "인간·몬스터 역할 변화 및 AI 충원 기반 상태 교환"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "정화 공격 게임 장르",
+            "gameplayEffect": "정화 공격으로 인한 몬스터 제거 및 게임 진행 중단"
+          }
+        ],
+        "cGenreInterlock": "감염 전환과 정화 공격은 서로 다른 시스템이며, 각각의 상태 변화는 게임 전체 진행에 영향을 미침. 감염 전환이 완료되면 정화 공격이 실행됨.",
+        "cWorldAndGameplayEffect": "감염 전환과 정화 공격은 서로 다른 메커니즘으로서 인과적으로 연결되어야 하며, 각각의 상태 변화는 실제 플레이어 대상 상태 변화를 유발함.",
+        "delveDiscoveries": [
+          {
+            "clue": "AI 충원 및 정화 공격 순차적 상호 작용",
+            "discovery": "AI가 빈 자리 채우는 과정에서 실질적 인과 변화 일어남",
+            "newChoice": "AI 충원 → 정화 공격 순차적 상호 작용"
+          },
+          {
+            "clue": "인간4명/몬스터4명 배정 및 AI 충원",
+            "discovery": "AI가 빈 자리를 채운 후 인간·몬스터 역할 변주 발생",
+            "newChoice": "AI 충원 → 정화 공격 순차적 상호 작용"
+          },
+          {
+            "clue": "감염 공격과 정화 공격 갈등 발생",
+            "discovery": "AI가 빈 자리 채우는 선택 사례로 인해 감염 공격과 정화 공격 갈등 발생",
+            "newChoice": "AI 충원 → 정화 공격 순차적 상호 작용"
+          },
+          {
+            "clue": "게임 종료 또는 새로운 플레이 시작 여부 결정",
+            "discovery": "AI 충원 및 정화 공격이 모두 완료되면 게임 종료 또는 새로운 플레이 시작 결정됨",
+            "newChoice": "AI 충원 → 정화 공격 순차적 상호 작용"
+          }
+        ],
+        "delveGrowthRule": "감염 전환과 정화 공격은 서로 다른 시스템이며, 각각의 상태 변화는 실제 플레이어 대상 상태 변화를 유발함. 감염 전환이 완료되면 정화 공격이 실행됨.",
+        "finalGameIdentity": "인간4명/몬스터4명의 8인 감염 추격전에서 AI 충원 및 정화 공격을 통해 실질적 인과 변화 일어남, 감염 전환과 정화 공격은 서로 다른 메커니즘으로서 인과적으로 연결되어야 하며, 각각의 상태 변화는 실제 플레이어 대상 상태 변화를 유발함."
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300089,
-      "lastMs": 300089,
+      "totalMs": 486347,
+      "lastMs": 186258,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:15:32.370Z"
+      "updatedAt": "2026-10-09T17:18:38.630Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:10:32.263Z",
-  "updatedAt": "2026-10-09T17:15:32.370Z",
+  "updatedAt": "2026-10-09T17:18:38.630Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1630,5 +1717,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "77008aefbe0aa29ccb831a031df89c9ec590cc61fa97c534c9d8208782340d50": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T17:18:38.630Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
