@@ -593,25 +593,188 @@
       "name": "게임 초기 설정 및 세계 상태 관리 혼합",
       "purpose": "플레이어 선택과 세계 상태 변환 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
       "playerChoice": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 게임의 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+    },
+    "local_authoring_parts::5e380249f582b8a87171e1af276d1398c0328fd2d07059109e3798bda7402b94:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어 선택",
+        "세계 상태 변환"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+      "purpose": "플레이어 선택과 세계 상태 변환에 기반하여 보상을 제공하는 데 사용되는 전술",
+      "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
+    },
+    "local_authoring_parts::76a72d384caca896d302ea0d935e5413158f4d6eb42f7fadb4e291b74f2bd930:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력",
+            "선택"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정",
+          "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+          "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어의 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등을 유도하여 선택의 중요성을 강조함으로써 게임 진행 동기를 부여함"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+          "playerChoice": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 게임의 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환에 기반하여 보상을 제공하는 데 사용되는 전술",
+          "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
+        }
+      ]
+    },
+    "local_authoring_parts::06fa61f3ee0edaaec1a0ff3299694cd2a46512b1c8cb8cb232c87c69795a783a:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험/다음 선택",
+        "선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "게임 종료 시 보상 및 재방문 기회 제공"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력",
+            "선택"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정",
+          "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+          "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어의 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등을 유도하여 선택의 중요성을 강조함으로써 게임 진행 동기를 부여함"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+          "playerChoice": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 게임의 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환에 기반하여 보상을 제공하는 데 사용되는 전술",
+          "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1943349,
-      "lastMs": 104195,
+      "totalMs": 2044960,
+      "lastMs": 101611,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:54:21.725Z"
+      "updatedAt": "2026-10-09T18:56:03.338Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:54:21.725Z",
+  "updatedAt": "2026-10-09T18:56:03.341Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2092,7 +2255,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:54:21.725Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:56:03.341Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
