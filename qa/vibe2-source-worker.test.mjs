@@ -4253,6 +4253,27 @@ test('semantic diff validates Luau function ownership rather than an adjacent ma
   assert.deepEqual(result.unapprovedSymbols,['server/Game.server.luau:grantGold']);
 });
 
+test('semantic diff validates Unity C# methods without depending on language keywords in source',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'unity-games/demo');
+  write(path.join(sourceRoot,'Assets/Scripts/GameCore.cs'),[
+    'internal class CombatCore {',
+    '  void HandleMovement() { playerPosition += 1; }',
+    '  int GrantReward() { return 10; }',
+    '}'
+  ].join('\n'));
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'return 10;',replace:'return 100;'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['HandleMovement'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['playerPosition'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unapprovedSymbols,['Assets/Scripts/GameCore.cs:GrantReward']);
+});
+
 test('semantic diff hard gate protects existing save keys from silent removal',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
