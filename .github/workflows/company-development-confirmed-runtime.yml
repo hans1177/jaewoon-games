@@ -50,9 +50,9 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 5
     concurrency:
-      # Admission is read-only; run-scoped groups avoid GitHub replacing pending batch wakes.
-      # The existing oldest-active-batch scan still dedupes the actual planning action.
-      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
+      # Coalesce only unscoped same-revision batch gate jobs. Exact-game gate jobs remain independent.
+      # This is job-scoped: native per-game execution is never serialized by a coordinator wake.
+      group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
