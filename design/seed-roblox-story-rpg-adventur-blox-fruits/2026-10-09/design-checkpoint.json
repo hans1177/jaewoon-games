@@ -85,25 +85,42 @@
       "name": "PUZZLE_LOOP_B",
       "purpose": "A/B 대축으로서, MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
       "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination with dynamic risk and reward distribution based on current board state and player strategy selection."
+    },
+    "local_authoring_parts::bcd6e9af73b0830ddeed4faf603fe28fb57cb493d4e4f5391692513c44931291:signatureSystems:3": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "REWARD",
+        "RISK",
+        "NEXT_CHOICE"
+      ],
+      "name": "PUZZLE_LOOP_C",
+      "purpose": "플레이어가 선택 결과와 세계 인과법칙에 따라 새로운 상태 변환 및 재방문 기회를 열어, 게임의 복잡성과 유연성을 강화하는 보조 요소입니다.",
+      "playerChoice": "Make strategic decisions that align with the world's causal rules and lead to new board states or reward/risk combinations. These choices should reflect player agency and allow for multiple paths of progression based on different contextual conditions and resource allocations."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 375197,
-      "lastMs": 36567,
+      "totalMs": 418018,
+      "lastMs": 42821,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:02:30.448Z"
+      "updatedAt": "2026-10-09T13:03:13.270Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:02:30.448Z",
+  "updatedAt": "2026-10-09T13:03:13.270Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2140,7 +2157,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:02:30.448Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:03:13.270Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
