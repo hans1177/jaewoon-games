@@ -1294,25 +1294,34 @@
           "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
         }
       ]
+    },
+    "local_authoring_parts::eed65fc9da17a9418902e74ef602ad66f7fb38e77bac25bb6eddb74f9892ca3f:failureStates": {
+      "failureStates": [
+        "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 STRATEGIC_DECISIONS을 통해 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 136,
-      "successes": 136,
+      "calls": 137,
+      "successes": 137,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4501503,
-      "lastMs": 32006,
+      "totalMs": 4542045,
+      "lastMs": 40542,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:49:57.260Z"
+      "updatedAt": "2026-10-09T01:50:37.807Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:49:57.263Z",
+  "updatedAt": "2026-10-09T01:50:37.807Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3638,7 +3647,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:49:57.263Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:50:37.807Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
