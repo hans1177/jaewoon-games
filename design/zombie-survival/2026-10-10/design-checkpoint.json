@@ -194,25 +194,40 @@
         "실시간 스타트업 루프를 생성하여 전투 방식 및 장비 선택을 통해 진입 시 흐름에 맞춘 게임 진행",
         "보상/위험/다음 선택을 통해 플레이어의 전략적 결정과 환경/지역 변화 간 인과적 연결"
       ]
+    },
+    "local_authoring_parts::ff82871165db9f732a53910c9798ba51dc7d934f045492362a290428a4d88d80:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어의 숙련된 전략적 결정",
+        "실제 상황에서 발생한 위협"
+      ],
+      "stateOutputs": [
+        "장비/기술 선택",
+        "환경/지역 변화"
+      ],
+      "name": "실시간 스타트업 루프 시스템",
+      "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출 및 실시간 전투 방식 변경을 위한 인과적 연결",
+      "playerChoice": "장비/기술 선택 → 환경/지역 변화 → 보상/위험/다음 선택의 연속적인 인과적 변화를 생성함으로써 게임 진행 속도와 전략적 결정이 조절됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 696992,
-      "lastMs": 96580,
+      "totalMs": 802280,
+      "lastMs": 105288,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:28:28.858Z"
+      "updatedAt": "2026-10-09T21:30:14.147Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T21:28:28.858Z",
+  "updatedAt": "2026-10-09T21:30:14.147Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1940,7 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:28:28.858Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:30:14.147Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
