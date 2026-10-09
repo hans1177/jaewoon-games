@@ -40,20 +40,22 @@ jobs:
           touch _site/.nojekyll
 
       - name: Publish gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/magic-forest-pages
-          mkdir -p /tmp/magic-forest-pages
-          cp -a _site/. /tmp/magic-forest-pages/
+          # Sparse checkout와 무관한 정적 결과 디렉터리에서만 배포 커밋 생성.
+          # 기존 루트의 LFS 변환 파일을 checkout하지 않아 20개 파일 오염 오류 방지.
+          cd _site
+          git init -q
           git config user.name "jaewoon-pages"
           git config user.email "pages@users.noreply.github.com"
-          git sparse-checkout disable
-          git switch --orphan magic-forest-pages-publish
-          git rm -rf . >/dev/null 2>&1 || true
-          cp -a /tmp/magic-forest-pages/. .
+          git checkout -qb magic-forest-pages-publish
           git add -A
-          git commit -m "pages: publish magic forest"
+          git commit -qm "pages: publish magic forest"
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          gh auth setup-git
           git push origin HEAD:gh-pages --force
 
       - name: Enable branch-based GitHub Pages
