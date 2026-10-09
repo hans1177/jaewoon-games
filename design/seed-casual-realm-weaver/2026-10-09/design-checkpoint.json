@@ -27,25 +27,32 @@
       "identity": "세계의 직조자은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어는 시작 단계에서 즉시 실행 가능한 간단한 입력(1 손 가립 또는 스ワイ프)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 플레이하며, 이 선택이 세계 상태와 다음 선택에 직접 영향을 미친다.\n\n이 게임에서는 대표 행동인 'Start'과 선택인 'Play a brief run...'가 서로 다른 월드 상태로 전환되며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 플레이 경험을 제공한다.",
       "playerFantasy": "세계의 직조자는 시작 단계에서 즉시 실행 가능한 간단한 입력(1 손 가립 또는 스ワイ프)과 명확한 점수, 거리, 혹은 짧은 세션 목표를 통해 게임을 시작하며, 이 선택은 세계 상태와 다음 선택에 직접 영향을 미친다. 플레이어는 'Start'이라는 중심 행동과 'Play a brief run...'라는 선택 사이에서 서로 다른 월드 상태로 전환되며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 플레이 경험을 제공한다.",
       "coreFun": "세계의 직조자는 시작 단계에서 즉시 실행 가능한 간단한 입력(1 손 가립 또는 스ワイ프)과 명확한 점수, 거리, 혹은 짧은 세션 목표를 통해 게임을 시작하며, 이 선택은 세계 상태와 다음 선택에 직접 영향을 미친다. 플레이어는 'Start'이라는 중심 행동과 'Play a brief run...'라는 선택 사이에서 서로 다른 월드 상태로 전환되며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 플레이 경험을 제공한다."
+    },
+    "local_authoring_parts::592c3f293edd0d8886133797681fc8a17e6d8d9364c679393da3f2c02477b758:coreLoop": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\nSELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n\nSTATE CHANGE: World state transitions based on player action and system rules.\n\nREWARD: Score,獎",
+        ">// 게임 내부에서 사용되는 상태 변화 및 보상 내용 정의됨 (실제 플레이 시에 따라 다름) // 실제 보상은 캐주얼 게임 특성에 맞게 수정 필요함 (예: 점수, 거리, 또는 짧은 세션 목표 등) // 이 부분은 구현 단계에서 추가해야 함 (보안 및 네트워크 권한 제약 포함) // 예시: ",
+        "Reward: Score increase by 10 points"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 126539,
-      "lastMs": 20875,
+      "totalMs": 157147,
+      "lastMs": 30608,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:20:54.593Z"
+      "updatedAt": "2026-10-09T14:21:25.203Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:18:48.035Z",
-  "updatedAt": "2026-10-09T14:20:54.594Z",
+  "updatedAt": "2026-10-09T14:21:25.203Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1522,7 +1529,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:20:54.594Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:21:25.203Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
