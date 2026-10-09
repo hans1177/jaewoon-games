@@ -1052,25 +1052,42 @@
         "playerFantasy"
       ],
       "fromSystem": "CORE_FUNCS"
+    },
+    "local_authoring_parts::a1c5251aee27eee7dc13f21aca34da99ff62be1a95672f7d1f271f34fb1b8084:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "GAME_PROGRESS_UPDATE",
+      "stateChange": "GAME_FANTASY_UPDATED"
+    },
+    "local_authoring_parts::b19ce97ab454497db9f71bb07be348d9cc1c8f949386ecd21ba188223ade2cee:systemInterconnections:2": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy"
+      ],
+      "fromSystem": "CORE_FUNCS",
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "GAME_PROGRESS_UPDATE",
+      "stateChange": "GAME_FANTASY_UPDATED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 47,
+      "calls": 49,
+      "successes": 48,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4141245,
-      "lastMs": 90537,
+      "totalMs": 4230355,
+      "lastMs": 89110,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:24:41.507Z"
+      "updatedAt": "2026-10-09T01:26:10.619Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:24:41.508Z",
+  "updatedAt": "2026-10-09T01:26:10.621Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3330,7 +3347,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:24:41.507Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:26:10.621Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
