@@ -1238,25 +1238,28 @@
     },
     "local_authoring_parts::96a1c358bafe58aaf90f73385a1b5fb129b8b7ca01ceb908cadcfaa0c3474335:toSystem": {
       "toSystem": "Village infrastructure management system"
+    },
+    "local_authoring_parts::96a1c358bafe58aaf90f73385a1b5fb129b8b7ca01ceb908cadcfaa0c3474335:trigger": {
+      "trigger": "Player selects specific island resources to gather, initiating the resource accumulation process. This action triggers the Island resources gathering system to transition into the Resource accumulation state. The player's choice of resources is recorded as the state input for the Island resources-ga"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 105,
-      "successes": 105,
+      "calls": 106,
+      "successes": 106,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6531432,
-      "lastMs": 89058,
+      "totalMs": 6629009,
+      "lastMs": 97577,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:50:28.231Z"
+      "updatedAt": "2026-10-09T02:52:05.810Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T02:50:28.231Z",
+  "updatedAt": "2026-10-09T02:52:05.810Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3657,7 +3660,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:50:28.231Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:52:05.810Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
