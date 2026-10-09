@@ -292,6 +292,19 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     }
 
     [Serializable]
+    private sealed class BuildingRecord
+    {
+        public string recipeId;
+        public Vector3 position;
+    }
+
+    private sealed class BuiltStructure
+    {
+        public string recipeId;
+        public GameObject obj;
+    }
+
+    [Serializable]
     private sealed class MonsterRecord
     {
         public int id, opponentId;
@@ -309,6 +322,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public List<BlockRecord> blocks = new List<BlockRecord>();
         public List<MonsterRecord> monsters = new List<MonsterRecord>();
         public List<string> crafted = new List<string>();
+        public List<BuildingRecord> buildings = new List<BuildingRecord>();
     }
 
     private enum ScreenMode { Title, SelectMode, Playing }
@@ -319,6 +333,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly List<Monster> monsters = new List<Monster>();
     private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
     private readonly List<string> crafted = new List<string>();
+    private readonly List<BuiltStructure> buildings = new List<BuiltStructure>();
     private readonly Dictionary<Collider, Monster> monsterColliders = new Dictionary<Collider, Monster>();
     private readonly Dictionary<Collider, SpawnBlock> blockColliders = new Dictionary<Collider, SpawnBlock>();
     private readonly Dictionary<string, int> materials = new Dictionary<string, int>();
@@ -503,6 +518,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void ClearEntities()
     {
         foreach (Monster m in monsters) if (m.obj != null) Destroy(m.obj);
+        foreach (BuiltStructure building in buildings) if (building.obj != null) Destroy(building.obj);
+        buildings.Clear();
         foreach (SpawnBlock b in blocks) if (b.obj != null) Destroy(b.obj);
         monsters.Clear();
         blocks.Clear();
@@ -801,6 +818,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             building.transform.position=player.position+player.forward*2.5f+Vector3.up*.65f;
             building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
             Tint(building,new Color(.55f,.4f,.27f));
+            buildings.Add(new BuiltStructure { recipeId=recipe.id, obj=building });
         }
         info=recipe.name+" 제작 완료";
         if(creative)SaveCreative();
@@ -849,6 +867,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(SpawnBlock b in blocks)record.blocks.Add(new BlockRecord{id=b.id,position=b.obj.transform.position});
         foreach(Monster m in monsters)if(m.creative && m.hp>0)record.monsters.Add(new MonsterRecord{id=m.runtimeId,opponentId=m.opponentId,speciesId=m.spec.id,position=m.obj.transform.position,hp=m.hp,attackPlayer=m.attackPlayer && m.spec.mood!="harmless"});
         record.crafted.AddRange(crafted);
+        foreach(BuiltStructure building in buildings)if(building.obj!=null)record.buildings.Add(new BuildingRecord { recipeId=building.recipeId, position=building.obj.transform.position });
         PlayerPrefs.SetString(CreativeSaveKey,JsonUtility.ToJson(record));
         PlayerPrefs.Save();
     }
@@ -863,6 +882,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         player.position=record.playerPosition;
         nextId=Mathf.Max(1,record.nextId);
         if(record.crafted!=null)crafted.AddRange(record.crafted);
+        if(record.buildings!=null)foreach(BuildingRecord item in record.buildings)
+        {
+            if(buildings.Count>=300)break;
+            if(recipes.Find(x=>x.id==item.recipeId && x.kind=="structure")==null)continue;
+            GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
+            building.name="Built_"+item.recipeId;
+            building.transform.SetParent(worldRoot.transform);
+            building.transform.position=item.position;
+            building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
+            Tint(building,new Color(.55f,.4f,.27f));
+            buildings.Add(new BuiltStructure { recipeId=item.recipeId, obj=building });
+        }
         if(record.blocks!=null)foreach(BlockRecord b in record.blocks)
         {
             if(blocks.Count>=100)break;
@@ -946,6 +977,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 if(creative)SaveCreative();
                 panel=Panel.None;
                 screenMode=ScreenMode.Title;
+                GUILayout.EndArea();
                 return;
             }
         }
