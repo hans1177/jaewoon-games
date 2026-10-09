@@ -44,11 +44,14 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
   const evidence=()=>({
     engine:'UNITY_WEB',gameId:'demo',pass:legacyRootHeld||!previewMode,playableBrowserTest:true,
     boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},
-    mobile:{pass:true},noCriticalRuntimeError:true,performance:{pass:legacyRootHeld||!previewMode},
-    spatialGameplay:{pass:!invalid3d,requiredDimension:'3D',depthPass:true,perspectiveCamera:true,
+    mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},
+    noCriticalRuntimeError:true,performance:{pass:legacyRootHeld||!previewMode},
+    spatialGameplay:{pass:!invalid3d,requiredDimension:'3D',
+      source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+      depthPass:true,perspectiveCamera:true,
       observedMeshCount:3,observedTriangles:500,worldMeshes3d:2,worldDepthCm:70,
       gameplayActors3d:1,spriteGameplayActors:0},
-    visualQa:{pass:!invalidVisual,nativeUnityMesh:{pass:!invalid3d}}
+    visualQa:{pass:!invalidVisual,nativeUnityMesh:{pass:!invalid3d,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'}}
   });
   const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
     document:{readyState:'loading',addEventListener(){}},
@@ -58,13 +61,17 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
       fetched.push(location);
       const preview=location.includes('/unity/');
       if(location.includes('index.html'))return{ok:preview===previewMode,
-        text:async()=>'<script>createUnityInstance(canvas,{})</script>'};
+        text:async()=>'<script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas,{})</script>'};
       if(preview!==previewMode)return{ok:false};
       if(location.includes('unity-web-deploy-manifest.json'))return{ok:true,json:async()=>({
-        engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,requiredGroups:group
+        engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,requiredGroups:group,
+        canonicalSourceRoot:'unity-games/demo',requiredDimension:'3D',
+        sourceCommit:'a'.repeat(40),buildTreeSha256:'b'.repeat(64),unitySourceTreeSha256:'c'.repeat(64),
+        homepageVerified:!previewMode||legacyRootHeld,ownerPlayableVerified:true
       })};
       if(location.includes('unity-web-build.json'))return{ok:true,json:async()=>({
         engine:'UNITY_WEB',gameId:'demo',bootSmoke:'PASS',ownerBrowserTestEligible:true,
+        upperPlatformGateCandidate:legacyRootHeld||!previewMode,
         sourceCommit:'a'.repeat(40),buildTreeSha256:'b'.repeat(64),unitySourceTreeSha256:'c'.repeat(64),
         canonicalSourceRoot:'unity-games/demo',buildOutputRoot:'web-games/demo',legacyRootPreservedForSave:legacyRootHeld,
         actualBrowserPlay:previewMode?'PLAYABLE_TEST_ONLY':'PASS'
@@ -74,7 +81,8 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
       if(location.includes('unity-web-regression.json'))return{ok:true,json:async()=>evidence()};
       if(location.includes('upper-platform-development-readiness.json'))return{ok:true,json:async()=>({
         gameId:'demo',state:legacyRootHeld||!previewMode?'UPPER_PLATFORM_DEVELOPMENT_READY':'REPAIR_REQUIRED',pass:legacyRootHeld||!previewMode,
-        sourceCommit:'a'.repeat(40),buildTreeSha256:(mismatchedBuild?'f':'b').repeat(64),unitySourceTreeSha256:'c'.repeat(64)
+        sourceCommit:'a'.repeat(40),buildTreeSha256:(mismatchedBuild?'f':'b').repeat(64),unitySourceTreeSha256:'c'.repeat(64),
+        criteria:{graphics:{native3dVerified:true},qa:{pass:true,multiplayerPass:true}}
       })};
       return{ok:options.method==='HEAD'&&(!missingWasm||!location.includes('demo.wasm'))};
     }
