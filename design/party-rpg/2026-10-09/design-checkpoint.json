@@ -709,25 +709,34 @@
           "systemImpact": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
         }
       ]
+    },
+    "local_authoring_parts::bfafad7143d7c898f6d6c959f7ebf4e3efd4d2bf7ed3bf573eba93b8442186ad:failureStates": {
+      "failureStates": [
+        "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "failureRetryRisk.riskPressure의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 58,
+      "calls": 59,
+      "successes": 59,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3744508,
-      "lastMs": 49900,
+      "totalMs": 3817979,
+      "lastMs": 73471,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:05:55.704Z"
+      "updatedAt": "2026-10-09T00:07:09.181Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T00:05:55.708Z",
+  "updatedAt": "2026-10-09T00:07:09.181Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3167,7 +3176,7 @@
       "progressionDirection": "{\"from\": \"START_GAME\", \"to\": \"MATCH_GAME\"}"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:05:55.708Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:07:09.181Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
