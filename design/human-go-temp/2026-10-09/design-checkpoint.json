@@ -27,25 +27,32 @@
       "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다.",
       "playerFantasy": "플레이어는 휴먼 GO!에서 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다.",
       "coreFun": "플레이어는 휴먼 GO!에서 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다."
+    },
+    "local_authoring_parts::754a1d206f65ce96828e4caec3ea8de20af7ed0f02ebdd504177c9953da7b1d9:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어가 흉기로 타협 없이 진입하여 전투에 참여해야 한다.",
+        "적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 229878,
-      "lastMs": 51934,
+      "totalMs": 272788,
+      "lastMs": 42910,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:24:46.085Z"
+      "updatedAt": "2026-10-09T08:25:28.998Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:24:46.086Z",
+  "updatedAt": "2026-10-09T08:25:28.998Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:24:46.086Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:25:28.998Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
