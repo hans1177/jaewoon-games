@@ -288,7 +288,11 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
         if(String(asset.family||asset.category).toUpperCase()!==family||!(asset.sourceHash||asset.contentHash||asset.sha256)||!Array.isArray(asset.mapDetailRoles)||!asset.mapDetailRoles.includes(layer)||asset.districtFunctions?.length&&!asset.districtFunctions.includes(district.function))return false;
         if(asset.securityBlocked===true||asset.quarantined===true||asset.rightsPass===false||asset.catalogActive===false)return false;
         if(['ENVIRONMENT','BUILDING','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
-          const sources=[asset.path,asset.masterGlb,asset.meshArtifact,asset.masterSourcePath,...(asset.nativeArtifacts||[]),...(asset.sourceFiles||[]),...(asset.fileRoles?.models||[])];
+          // 유효한 원본 경로 배열만 탐색한다. 잘못된 자산 메타데이터는 승인하거나 예외로 전체 계획을 중단하지 않는다.
+          const sources=[asset.path,asset.masterGlb,asset.meshArtifact,asset.masterSourcePath,
+            ...(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[]),
+            ...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[]),
+            ...(Array.isArray(asset.fileRoles?.models)?asset.fileRoles.models:[])];
           if(!sources.some(item=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(item||''))))return false;
         }
         return true;
