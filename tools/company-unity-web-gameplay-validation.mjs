@@ -17,6 +17,14 @@ const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
 const port=Number(args.port||4187);
 
+// 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
+const ownerPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const owner3d=ownerPolicy?.ownerUnityWeb3dOnly20261009;
+if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3D'
+  ||owner3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
+  ||ownerPolicy?.unityWebFirstStage?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
+  throw new Error('UNITY_WEB_3D_ONLY_POLICY_REQUIRED');
+
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
@@ -373,7 +381,7 @@ try{
     &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
     &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
     &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
-  const nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified;
+  const nativeMeshMissing=!nativeMeshVerified;
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
@@ -438,6 +446,14 @@ try{
       markers:coreFunMarkers,
     },
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
+    spatialGameplay:{
+      requiredDimension:'3D',pass:nativeMeshVerified,
+      source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
+      requiredForAllUnityWebGames:true,
+      observedMeshCount:nativeMeshVerified?nativeMeshProof.validMeshes:0,
+      observedTriangles:nativeMeshVerified?nativeMeshProof.triangles:0,
+      legacy2dOr2_5dRequires3dRebuild:!nativeMeshVerified,
+    },
     visualQa:{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
