@@ -156,7 +156,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
   const candidates=enabled?catalog.games.filter(game=>{
     const id=gameIdOf(game);
     const unity=sourcesOf(game).unity||{};
-    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\\/+|\\/+$/g,'');
+    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
     return /^[a-z0-9][a-z0-9-]*$/.test(id)&&projectPath===`unity-games/${id}`;
   }):[];
   const available=new Map();
@@ -170,7 +170,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
         ]);
         if(!indexResponse.ok||!manifestResponse.ok)continue;
         const [html,manifest]=await Promise.all([indexResponse.text(),manifestResponse.json()]);
-        if(!/createUnityInstance\\s*\\(/.test(html)||!/\\.loader\\.js/.test(html))continue;
+        if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
         const hex64=/^[a-f0-9]{64}$/,hex40=/^[a-f0-9]{40}$/;
         if(manifest?.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true||
            manifest.homepageVerified!==true||manifest.requiredDimension!=='3D'||
@@ -180,7 +180,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
            !hex40.test(String(manifest.sourceCommit||'')))continue;
         const groups=manifest.requiredGroups||{};
         const refs=['loader','data','framework','wasm'].map(key=>groups[key]?.[0]);
-        if(!refs.every(ref=>typeof ref==='string'&&/^Build\\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
+        if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
         const files=['unity-web-build.json','upper-platform-development-readiness.json',
           'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
         const responses=await Promise.all(files.map(file=>probeFetch(`${href}${file}?ts=${stamp}`).catch(()=>null)));
