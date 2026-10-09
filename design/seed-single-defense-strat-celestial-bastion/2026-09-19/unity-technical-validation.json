@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:31:56.387Z",
+  "checkedAt": "2026-10-09T06:08:32.770Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37328596662,
-    "sourceCommit": "01aad774cfdb73616c746a711dac18ee00e290b7",
-    "sourceTreeSha": "217af11d1f685b424905147745412cf712245fa3",
-    "apkSha256": "21ddaf6ca184837037e0911369617a2edcde57ca9bdc157bbe5e1a8f9c45cc48",
+    "upstreamBuildRunId": 37815511744,
+    "sourceCommit": "cffebe13c27c2d181ca3915e05745171d2f533a4",
+    "sourceTreeSha": "163f464cafa2d1dc539340e36a6cb1f4c6c41d35",
+    "apkSha256": "a7874216a705842e25e034ac0d0df035e5702dfa3e10b8313c7f76a6e82fe62d",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -115,17 +115,17 @@
       "state": "PASS",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
       "sampleCount": 5,
-      "totalFramesRendered": 126,
+      "totalFramesRendered": 125,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": 10.4,
-      "avgFps": 13.299999999999999,
+      "minFps": 11.3,
+      "avgFps": 13.433333333333332,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 52702829,
+      "maxAllocatedMemoryBytes": 53760073,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-single-defense-strat-celestial-bastion-android-cloud-37328596662-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37328596662/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37328596662/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-single-defense-strat-celestial-bastion-android-cloud-37815511744-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37815511744/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37815511744/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-single-defense-strat-celestial-bastion"
   }
 }
