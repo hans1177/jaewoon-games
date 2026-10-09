@@ -434,7 +434,13 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
       &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
       &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
-    if(!existingRobloxRuntime)continue;
+    // Roblox F0를 통과한 기존 소스는 Unity Web 3D 재개발과 독립적으로 계속 계획한다.
+    // F0는 런타임 PASS가 아니므로 runtimeVerified로 승격하지 않는다.
+    const robloxSourcePath=posix(item?.robloxProjectPath);
+    const independentlyStartedRoblox=item?.robloxFoundationF0Passed===true
+      &&/^roblox-games\/[a-zA-Z0-9._-]+$/.test(robloxSourcePath)
+      &&fs.existsSync(path.join(repoRoot,robloxSourcePath));
+    if(!existingRobloxRuntime&&!independentlyStartedRoblox)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
