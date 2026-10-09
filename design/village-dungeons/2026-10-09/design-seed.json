@@ -11,20 +11,20 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "a212b88d22fb3174b29ead28a62113af3f2290da3955bc7c113ef0eda6d85ccd",
-  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
-  "contentDigest": "36a68a3911b10e473497997b918b84f7d22144ee4d8f82a0dc444f1e037ae22e",
+  "fingerprint": "f05be7a28c3927f2a0c6cdce3b5a99289f1f0c0a4208e8a809a063b550a84609",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "4a509505158d655aafbd1facfed5719a65618b27e07ca180b89664348a278d08",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어는 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다. 이 선택은 세계의 기본 규칙과 연결되어 있으며, 이후의 플레이 스타일은 주체 행동과 대응법에 따라 다양하게 변형된다.\n\n주요 행동은 'Start'이며, 두 대축 A/B와 보조 요소 c는 선택 결과에 따라 상호작용하며, 발견·숙련·재방문 깊이로 구분된다. 각각의 시스템은 실제 메커니즘의 역할을 유지하고, 저장·보상·진행 등 기존 원본 규칙을 따르며, 최종 장르는 CASUAL로 고정한다.",
-    "playerFantasy": "마을 던전 RPG에서는 플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다. 이 선택은 세계의 기본 규칙과 연결되어 있으며, 이후의 플레이 스타일은 주체 행동과 대응법에 따라 다양하게 변형된다.",
-    "coreFun": "마을 던전 RPG에서는 플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다. 이 선택은 세계의 기본 규칙과 연결되어 있으며, 이후의 플레이 스타일은 주체 행동과 대응법에 따라 다양하게 변형된다. 주요 행동은 'Start'이며, 두 대축 A/B와 보조 요소 c는 선택 결과에 따라 상호작용하며, 발견·숙련·재방문 깊이로 구분된다. 각각의 시스템은 실제 메커니즘의 역할을 유지하고, 저장·보상·진행 등 기존 원본 규칙을 따르며, 최종 장르는 CASUAL로 고정된다.",
+    "identity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다. 이 과정에서 진입 시점부터의 모든 행동과 선택은 실제 게임 내부의 인과법칙에 따라 순차적으로 진행된다. 주체인 플레이어는 단순한 입력만으로도 전반적인 게임 경험을 제공하며, 점수 및 거리는 게임의 핵심 재미와 관계성을 구축하는 데 기여한다.",
+    "playerFantasy": "플레이어는 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다. 이 과정에서 진입 시점부터의 모든 행동과 선택은 실제 게임 내부의 인과법칙에 따라 순차적으로 진행된다. 주체인 플레이어는 단순한 입력만으로도 전반적인 게임 경험을 제공하며, 점수 및 거리는 게임의 핵심 재미와 관계성을 구축하는 데 기여한다.",
+    "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용",
     "coreLoop": [
-      "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
-      "SELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n",
-      "OUTPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     ],
     "signatureSystems": [
       {
@@ -32,35 +32,33 @@
         "grammarRole": "MAIN",
         "stateInputs": [
           "START_INPUT",
-          "SCORE_DISTANCE",
-          "SHORT_SESSION"
+          "SCORE_STATE",
+          "DISTANCE_STATE"
         ],
         "stateOutputs": [
-          "FINISH_OR_FAILE",
-          "RECEIVE_SCORE_REWARD",
-          "UNLOCK_PROGRESSION_BENEFIT",
-          "RETRY_WITH_MINIMAL_FRIC"
+          "RUN_OUTPUT",
+          "REWARD_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "월드 상태 교환 시스템",
-        "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
-        "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        "name": "CASUAL_GAME_FLOW",
+        "purpose": "플레이어가 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다.",
+        "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다."
       },
       {
         "id": "SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
           "START_INPUT",
-          "SCORE_DISTANCE",
-          "SHORT_SESSION"
+          "SCORE_STATE",
+          "DISTANCE_STATE"
         ],
         "stateOutputs": [
-          "FINISH_OR_FAILE",
-          "RECEIVE_SCORE_REWARD",
-          "UNLOCK_PROGRESSION_BENEFIT",
-          "RETRY_WITH_MINIMAL_FRIC"
+          "RUN_OUTPUT",
+          "REWARD_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시작 상태 교환 시스템",
-        "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
+        "name": "CASUAL_GAME_FLOW_A",
+        "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
         "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
       },
       {
@@ -68,57 +66,52 @@
         "grammarRole": "B",
         "stateInputs": [
           "START_INPUT",
-          "SCORE_DISTANCE",
-          "SHORT_SESSION"
+          "SCORE_STATE",
+          "DISTANCE_STATE"
         ],
         "stateOutputs": [
-          "FINISH_OR_FAILE",
-          "RECEIVE_SCORE_REWARD",
-          "UNLOCK_PROGRESSION_BENEFIT",
-          "RETRY_WITH_MINIMAL_FRIC"
+          "RUN_OUTPUT",
+          "REWARD_STATE",
+          "PROGRESSION_STATE"
         ],
-        "name": "시작 상태 교환 시스템",
-        "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
-        "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        "name": "CASUAL_GAME_FLOW_B",
+        "purpose": "A/B 대축 중 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+        "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       },
       {
         "id": "SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
           "START_INPUT",
-          "SCORE_DISTANCE",
-          "SHORT_SESSION"
+          "SCORE_STATE",
+          "DISTANCE_STATE"
         ],
         "stateOutputs": [
-          "FINISH_OR_FAILE",
-          "RECEIVE_SCORE_REWARD",
-          "UNLOCK_PROGRESSION_BENEFIT",
-          "RETRY_WITH_MINIMAL_FRIC"
+          "DELVE_OUTPUT",
+          "PROGRESSION_OUTPUT"
         ],
-        "name": "재방문 상태 교환 시스템",
-        "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
-        "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        "name": "DELVE_DEPTH_LAYER",
+        "purpose": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다.",
+        "playerChoice": "Discover a new path or event that aligns with the existing causal rules and offers an unexpected but meaningful experience for the player to explore and master."
       },
       {
         "id": "SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
           "START_INPUT",
-          "SCORE_DISTANCE",
-          "SHORT_SESSION"
+          "SCORE_STATE",
+          "DISTANCE_STATE"
         ],
         "stateOutputs": [
-          "FINISH_OR_FAILE",
-          "RECEIVE_SCORE_REWARD",
-          "UNLOCK_PROGRESSION_BENEFIT",
-          "RETRY_WITH_MINIMAL_FRIC"
+          "DELVE_OUTPUT",
+          "PROGRESSION_OUTPUT"
         ],
-        "name": "재방문 상태 교환 시스템",
-        "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 하며 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 초점을 맞춘다.",
-        "playerChoice": "재방문 깊이로 구분되어진 선택 결과에 따라 세계의 기본 규칙과 상호작용하며, 발견과 숙련에 따른 새로운 용도와 조합을 생성한다."
+        "name": "DELVE_DEPTH_LAYER",
+        "purpose": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 데 사용된다.",
+        "playerChoice": "플레이어는 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다."
       }
     ],
     "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-08T19:25:21.282Z"
+  "updatedAt": "2026-10-09T09:23:21.225Z"
 }
