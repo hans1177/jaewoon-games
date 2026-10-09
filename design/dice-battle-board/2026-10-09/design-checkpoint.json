@@ -470,25 +470,28 @@
       "toSystem": "BOARD_STATE_SYSTEM",
       "trigger": "플레이어가 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 하며, 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지함.",
       "stateChange": "플레이어가 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 하며, 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지함."
+    },
+    "local_authoring_parts::f42257b9721d2762fe33b5a4714f914828e3556a115ad753732fdbd2d665abea:fromId": {
+      "fromId": "BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2392373,
-      "lastMs": 93436,
+      "totalMs": 2478048,
+      "lastMs": 85675,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:24:15.148Z"
+      "updatedAt": "2026-10-09T16:25:40.826Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:44:22.707Z",
-  "updatedAt": "2026-10-09T16:24:15.149Z",
+  "updatedAt": "2026-10-09T16:25:40.826Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2325,7 +2328,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:24:15.149Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:25:40.826Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
