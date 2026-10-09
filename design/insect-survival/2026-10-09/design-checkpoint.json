@@ -3,73 +3,18 @@
   "gameId": "insect-survival",
   "date": "2026-10-09",
   "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
-  "fingerprint": "322ce6015612b430b5afc762c278bbce5df7669ceaf534691db240cc7e331f0a",
-  "policyDigest": "976fe18afb5cd559146ab42808b3edbd106181d079356a0a22ee3c69d8932c7d",
+  "fingerprint": "6de4e5539043b67c48bce0b83d3c1973d680996edff463ed45524502b27a8e2b",
+  "policyDigest": "e52d6ff61e4cec0c252bb23c569e8ece7cfcebb20513b56aff2ac91ee3eff92b",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:identity": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다."
-    },
-    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:playerFantasy": {
-      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
-    },
-    "local_authoring_parts::0192de5fe13809f8137ac28c8054c6f27f982bd4bb4494f47aedfaa42bb9daf1:identity,playerFantasy": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
-    },
-    "local_authoring_parts::0192de5fe13809f8137ac28c8054c6f27f982bd4bb4494f47aedfaa42bb9daf1:coreFun": {
-      "coreFun": "플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
-    },
-    "local_authoring_parts::eba89ee69d2ee680e3f55f7b0871ef9ecce052a2625cea844702fd0945cfd2c7:identity,playerFantasy,coreFun": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다.",
-      "coreFun": "플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험에 노출되어도 희망적인 결과로 이끄는 선택을 하는 독자적 생존 게임이다. 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 탐험, 수집, 귀환의 순환 중 하나를 선택하는 것이 주요 플레이 방식이다."
-    },
-    "local_authoring_parts::2e5a5c1083c10ce9f69e9ba1f646f6119c07a356cabf8828b16373a25011f1a9:coreLoop": {
-      "coreLoop": [
-        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
-        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
-        "OUTPUT: Status change based on risk assessment and resource acquisition.",
-        "ACTION: Move through environment, adjust path, and reach next objective.",
-        "NEXT SELECT: Use learned ecosystem knowledge to survive stronger pressure and advance toward meaningful goal."
-      ]
-    },
-    "local_authoring_parts::52944d820ff9973a4b4d23e87975faa14eb28777c57ac40f7ccf73596ff6b102:signatureSystems:0": {
-      "id": "MATERIAL_CAUSAL_GRAMMAR",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "RISK_ASSESSMENT",
-        "RESOURCE_ACQUISITION"
-      ],
-      "stateOutputs": [
-        "ENVIRONMENT_ADJUSTMENT",
-        "OBJECTIVE_REACHABILITY"
-      ],
-      "name": "Survival Risk Assessment System",
-      "purpose": "Player's decision to explore and assess risk in a small-scale habitat, converting outcomes into survival tools or safer routes.",
-      "playerChoice": "Assess risk through exploration, resource gathering, and combat, then convert results into survival tools or safer paths."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1544276,
-      "lastMs": 24727,
-      "lastError": null,
-      "updatedAt": "2026-10-09T06:33:06.691Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-08T21:57:57.113Z",
-  "updatedAt": "2026-10-09T06:33:06.710Z",
+  "createdAt": "2026-10-09T09:06:09.269Z",
+  "updatedAt": "2026-10-09T09:06:09.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2296,26 +2241,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::52944d820ff9973a4b4d23e87975faa14eb28777c57ac40f7ccf73596ff6b102:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "MATERIAL_CAUSAL_GRAMMAR"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::52944d820ff9973a4b4d23e87975faa14eb28777c57ac40f7ccf73596ff6b102:signatureSystems:0": 1,
-    "local_authoring_parts::52944d820ff9973a4b4d23e87975faa14eb28777c57ac40f7ccf73596ff6b102:signatureSystems:1": 12
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T06:33:06.691Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
