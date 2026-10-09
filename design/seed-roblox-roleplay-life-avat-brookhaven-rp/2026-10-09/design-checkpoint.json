@@ -797,25 +797,28 @@
     },
     "local_authoring_parts::0453828efdc2689e4f345fb811d425ad2e853f47dc2b650c38431e011c5b9305:retryFlow": {
       "retryFlow": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::0453828efdc2689e4f345fb811d425ad2e853f47dc2b650c38431e011c5b9305:riskPressure": {
+      "riskPressure": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 59,
-      "successes": 59,
+      "calls": 60,
+      "successes": 60,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4995421,
-      "lastMs": 82445,
+      "totalMs": 5078006,
+      "lastMs": 82585,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:26:26.787Z"
+      "updatedAt": "2026-10-09T00:27:49.373Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T00:26:26.787Z",
+  "updatedAt": "2026-10-09T00:27:49.373Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3543,7 +3546,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:26:26.787Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:27:49.373Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
