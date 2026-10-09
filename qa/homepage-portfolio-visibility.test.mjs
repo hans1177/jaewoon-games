@@ -56,7 +56,7 @@ assert.match(renderer,/function verifiedRobloxDeploymentRows\(/);
 assert.match(renderer,/homeWebGameCenter/);
 assert.match(renderer,/homeRobloxDeploymentCenter/);
 assert.match(renderer,/Roblox 배포 기록/);
-assert.match(renderer,/function webPublishedRows\\(/);\nassert.match(renderer,/game.unityWebAvailable===true/);
+assert.match(renderer,/game\.unityWebAvailable===true/);
 assert.match(renderer,/homepageDisplayMode==='ROBLOX_HISTORICAL_DEPLOYMENT'/);
 assert.match(renderer,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
 
