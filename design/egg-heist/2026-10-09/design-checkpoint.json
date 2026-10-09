@@ -1531,25 +1531,42 @@
         "new_world_state"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_01AI_01AJ_01AK_01AL"
+    },
+    "local_authoring_parts::04d3f6727b48b0eedabef3ce7bed77e07a5bf353939bd0e3ce42033e906d048f:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_01AI_01AJ_01AK_01AL",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::05905a90f7e0f4613160d8d1502431ddd1b1a83ee30c360b7b6860dbdab9efc5:systemInterconnections:4": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_01AI_01AJ_01AK_01AL",
+      "toSystem": "CORE_LOOP_DESIGN_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG_01AH_01AI_01AJ_01AK_01AL",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 100,
-      "successes": 100,
+      "calls": 101,
+      "successes": 101,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8603906,
-      "lastMs": 112771,
+      "totalMs": 8713214,
+      "lastMs": 109308,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:28:54.204Z"
+      "updatedAt": "2026-10-09T06:30:43.514Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-09T06:28:54.205Z",
+  "updatedAt": "2026-10-09T06:30:43.522Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3455,9 +3472,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3489,9 +3506,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[3]→signatureSystems[4]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3518,7 +3535,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 9
+    "designer_draft_slices::systems-progression": 10
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3562,10 +3579,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:28:54.204Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:30:43.518Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
