@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::dd4e29491fa3e01732e139046d91fb90ed6670dc0567dd9843759681265272bc:identity": {
+      "identity": "놀이공원 타이쿤 - 게임 정체성 및 인과적 연결 강화 계획서 (V5 Design Seed Version 2026-09-19, Owner Reset Revision 17-09-2026-09-17-1): 게임의 핵심 재미, 플레이어 역할, 상태 변화, 루프 구성, 시스템 연결, 메인/보조 장르, @ 발전 규칙, 씨앗 기반 확장 계획서"
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600202,
-      "lastMs": 300101,
+      "totalMs": 790374,
+      "lastMs": 190172,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:17:10.896Z"
+      "updatedAt": "2026-10-09T21:20:21.069Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:07:10.671Z",
-  "updatedAt": "2026-10-09T21:17:10.896Z",
+  "updatedAt": "2026-10-09T21:20:21.069Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1506,5 +1510,9 @@
   "localAuthoringSplits": {
     "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true,
     "dd4e29491fa3e01732e139046d91fb90ed6670dc0567dd9843759681265272bc": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T21:20:21.069Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
