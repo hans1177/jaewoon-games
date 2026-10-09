@@ -1,3 +1,4 @@
+// 파일명: tools/game-catalog-normalization.mjs
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -211,7 +212,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
     if(valid){
       // 기존 카탈로그 정규화 흐름 안에서 일반 웹/Unity WebGL을 실제 산출물과 QA로 구분한다.
       const html=filesystem.readFileSync(indexFile,'utf8');
-      if(!/createUnityInstance\\s*\\(/.test(html)){
+      if(!/createUnityInstance\s*\(/.test(html)){
         valid=false;
         sourceState='LEGACY_WEB_REFERENCE_ONLY';
       }else{
@@ -226,7 +227,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
           &&['loader','data','framework','wasm'].every(key=>
             Array.isArray(groups[key])&&groups[key].length>0
             &&groups[key].every(filename=>{
-              if(!/^Build\\/[a-zA-Z0-9_.-]+$/.test(filename))return false;
+              if(!/^Build\/[a-zA-Z0-9_.-]+$/.test(filename))return false;
               try{const file=dir+'/'+filename;return filesystem.statSync(file).isFile()&&filesystem.statSync(file).size>0;}catch{return false;}
             })
           );
