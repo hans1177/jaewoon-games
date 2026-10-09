@@ -150,6 +150,8 @@ function normalizedCanonicalSketch(game,seed){
   return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
 }
 function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
+  // 브리프만 접수된 게임과 디자이너 직접 시드는 창작을 모델에 맡기고 임시 문법으로 덮지 않는다.
+  if(['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(clean(seed?.designInputMode)))return false;
   // 기존 MAIN 중심 설계도 새 MAIN/A/B/C/@ 문법으로 재작성한다. 원본 게임 규칙은 별도 보존.
   if(completeNovelGrammarV5(seed))return false;
   // 접수용 임시 V5를 매 실행마다 다시 쓰지 않는다. 디자이너가 고유 소재와 장르를 직접 완성해야 한다.
@@ -307,7 +309,8 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
   if(!designGames.length)throw new Error('NO_DESIGN_ONLY_GAMES_IN_CATALOG');
   const state=readJson(path.join(root,seedFile),{version:2,policyDocument:'company-learning/platform-release-roadmap.json',seeds:[]});
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
-  const catalogIds=new Set(designGames.map(game=>clean(game.id)).filter(Boolean));
+  // 설계 초기화 대상과 무관하게, 정식 카탈로그에 있는 개발 진행 게임은 일시정지시키지 않는다.
+  const catalogIds=new Set((catalog.games||[]).map(game=>clean(game?.id)).filter(Boolean));
   const existingByGame=new Map();
   for(const seed of state.seeds){const id=clean(seed?.gameId);if(id&&!existingByGame.has(id))existingByGame.set(id,seed);}
   let created=0,reactivated=0,paused=0;
@@ -317,7 +320,16 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
     else{state.seeds.push(next);existingByGame.set(id,next);created++;}
   }
   for(const seed of state.seeds){
-    const id=clean(seed?.gameId);if(!id||catalogIds.has(id))continue;
+    const id=clean(seed?.gameId);
+    if(!id)continue;
+    if(catalogIds.has(id)){
+      // 카탈로그에 복귀한 활성 게임의 오래된 일시정지 표시만 정리하고 게임 상태는 보존한다.
+      if(clean(seed.status).toUpperCase()==='ACTIVE'&&clean(seed.pausedReason)==='NOT_IN_CANONICAL_GAME_CATALOG'){
+        delete seed.pausedReason;
+        delete seed.pausedAt;
+      }
+      continue;
+    }
     if(clean(seed.status).toUpperCase()==='ACTIVE'){seed.status='PAUSED';seed.pausedReason='NOT_IN_CANONICAL_GAME_CATALOG';seed.pausedAt=timestamp;paused++;}
   }
   state.version=Math.max(2,Number(state.version)||0);
