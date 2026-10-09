@@ -1212,25 +1212,51 @@
       "toSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
       "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
       "stateChange": "START_BOARD → END_MATCH"
+    },
+    "local_authoring_parts::f2ce2e75a8f531773568b2428a02a88a4d25b85bfbcbd3cae92525d86112def1:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46"
+    },
+    "local_authoring_parts::f2ce2e75a8f531773568b2428a02a88a4d25b85bfbcbd3cae92525d86112def1:toSystem,trigger,stateChange": {
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH"
+    },
+    "local_authoring_parts::7218610d98719151f0e1b04722be84b3b7b4746e86a57e0b2cd603adcfaf8598:systemInterconnections:3": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 96,
-      "successes": 96,
+      "calls": 98,
+      "successes": 98,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6101743,
-      "lastMs": 106378,
+      "totalMs": 6317639,
+      "lastMs": 108824,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:00:38.248Z"
+      "updatedAt": "2026-10-09T03:04:14.152Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T03:00:38.251Z",
+  "updatedAt": "2026-10-09T03:04:14.154Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3413,7 +3439,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:00:38.251Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:04:14.154Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
