@@ -470,25 +470,28 @@
       "toSystem": "ENVIRONMENTAL_ADAPTATION_D",
       "trigger": "INCOMING_INSECT_WAVE_PATTERN가 도달할 때, 환경 적응 시스템은 현재 상태를 기반으로 실시간으로 전략적 자원 배분 및 방어 위치 조정을 수행하여 진입 단계에서의 위험 패턴을 파악하고 다음 단계로 전환한다.",
       "stateChange": "INCOMING_INSECT_WAVE_PATTERN가 도달할 때, 환경 적응 시스템은 현재 상태를 기반으로 실시간으로 전략적 자원 배분 및 방어 위치 조정을 수행하여 진입 단계에서의 위험 패턴을 파악하고 다음 단계로 전환한다."
+    },
+    "local_authoring_parts::7bf3c7d79574e0365f2eda78adf7991e3969769fe45434ee2b3f1cb1b4ed187b:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2425673,
-      "lastMs": 95560,
+      "totalMs": 2517889,
+      "lastMs": 92216,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:39:50.867Z"
+      "updatedAt": "2026-10-09T15:41:23.086Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:25.113Z",
-  "updatedAt": "2026-10-09T15:39:50.869Z",
+  "updatedAt": "2026-10-09T15:41:23.086Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2671,7 +2674,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:39:50.869Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:41:23.086Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
