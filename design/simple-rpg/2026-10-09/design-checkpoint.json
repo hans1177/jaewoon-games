@@ -47,25 +47,38 @@
       "name": "BOARD_TO_WEAPON",
       "purpose": "Player performs a board-based action, resulting in the acquisition of a weapon slot.",
       "playerChoice": "Select a tile to place as a starting position, then use strategic movement and combat to secure a weapon slot."
+    },
+    "local_authoring_parts::173c8f3c83d991f857037640b3294dc7d35140fda12862858b54ff094548ff27:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "WEAPON_SLOT"
+      ],
+      "name": "BOARD_TO_WEAPON",
+      "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 446193,
-      "lastMs": 36295,
+      "totalMs": 698301,
+      "lastMs": 252108,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:41:02.605Z"
+      "updatedAt": "2026-10-09T12:45:14.715Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:33:36.381Z",
-  "updatedAt": "2026-10-09T12:41:02.605Z",
+  "updatedAt": "2026-10-09T12:45:14.715Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2115,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:41:02.605Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:45:14.715Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
