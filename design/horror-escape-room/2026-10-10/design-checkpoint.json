@@ -195,25 +195,40 @@
         "상태변化: AI가 빈 자리 채우며 감염 전환 발생, 몬스터 제거 진행 중",
         "보상: 감염 전환이 완료되면 8인 감염전 종료, 새로운 플레이어 대상 상태 변화 발생"
       ]
+    },
+    "local_authoring_parts::dc14f76ad271a0d907a7a57612cc4d8da8eb241d19e599c96b4cccc7aad4e57e:signatureSystems:0": {
+      "id": "AI_충원",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "인간4명/몬스터4명 배정",
+        "AI 충원"
+      ],
+      "stateOutputs": [
+        "감염 전환",
+        "정화 공격 실행"
+      ],
+      "name": "AI 충원 기반 상태 교환 시스템",
+      "purpose": "인간4명/몬스터4명의 빈 자리를 채우며 감염 전환이 발생하는 게임 내부 상태 교환 메커니즘",
+      "playerChoice": "AI 충원 → 정화 공격 순차적 상호 작용 선택 사례"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 661281,
-      "lastMs": 95345,
+      "totalMs": 759502,
+      "lastMs": 98221,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:21:33.569Z"
+      "updatedAt": "2026-10-09T17:23:11.792Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:10:32.263Z",
-  "updatedAt": "2026-10-09T17:21:33.569Z",
+  "updatedAt": "2026-10-09T17:23:11.792Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1818,7 +1833,7 @@
   "localAuthoringSplits": {
     "77008aefbe0aa29ccb831a031df89c9ec590cc61fa97c534c9d8208782340d50": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:21:33.569Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:23:11.792Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
