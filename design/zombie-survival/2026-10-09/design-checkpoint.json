@@ -27,25 +27,32 @@
       "identity": "좀비 생존기은 플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다. 이 선택은 기존의 ACTION_SURVIVAL_ROGUELITE 시스템에서 새로운 인과법칙과 관계를 통해 재생되고, 성장은 새 행동·경로·조합 등에 의해 열린다.",
       "playerFantasy": "플레이어는 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다. 이 선택은 기존의 ACTION_SURVIVAL_ROGUELITE 시스템에서 새로운 인과법칙과 관계를 통해 재생되고, 성장은 새 행동·경로·조합 등에 의해 열린다.",
       "coreFun": "플레이어는 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다. 이 선택은 기존의 ACTION_SURVIVAL_ROGUELITE 시스템에서 새로운 인과법칙과 관계를 통해 재생되고, 성장은 새 행동·경로·조합 등에 의해 열린다."
+    },
+    "local_authoring_parts::002192f76e44250351eb3e6b694705507bda17894ed9cca5ab1c888676ed6589:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다.",
+        "SELECT: 수집 및 경험 획득 또는 업그레이드 선택, 현재 빈도와 기능 병렬 추가로 새로운 건강 상태를 생성.",
+        "OUTPUT: 성장의 신호가 발생하여 새 행동·경로·조합 등에 의해 열린다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 226815,
-      "lastMs": 38667,
+      "totalMs": 275520,
+      "lastMs": 48705,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:16:06.593Z"
+      "updatedAt": "2026-10-09T12:16:55.301Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:12:19.666Z",
-  "updatedAt": "2026-10-09T12:16:06.595Z",
+  "updatedAt": "2026-10-09T12:16:55.301Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:16:06.595Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:16:55.301Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
