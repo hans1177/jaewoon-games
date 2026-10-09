@@ -1785,25 +1785,104 @@
     },
     "local_authoring_parts::7e1a2953142a39835bc2b64593452d318fbe343c2e4958ed36c34ecaa50d4594:trigger": {
       "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::7e1a2953142a39835bc2b64593452d318fbe343c2e4958ed36c34ecaa50d4594:stateChange": {
+      "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::b0738df49cb6293dbf55bc0ae620a680ffa92ec2491734dd9789182a384f966e:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02",
+      "toId": "SIGNATURE_SYSTEM_02",
+      "stateKeys": [
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN"
+      ],
+      "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+      "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::08d9ddb58832812f1650335e9e5266ca00cf5705973c9c3fc8fbd8875e3649a4:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_01",
+          "stateKeys": [
+            "LEVEL_GOAL_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_02",
+          "stateKeys": [
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_02",
+          "stateKeys": [
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02",
+          "toId": "SIGNATURE_SYSTEM_02",
+          "stateKeys": [
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02",
+          "toId": "SIGNATURE_SYSTEM_02",
+          "stateKeys": [
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN"
+          ],
+          "fromSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 215,
-      "successes": 215,
+      "calls": 216,
+      "successes": 216,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9183002,
-      "lastMs": 46809,
+      "totalMs": 9230545,
+      "lastMs": 47543,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:06:22.318Z"
+      "updatedAt": "2026-10-09T07:07:09.863Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T07:06:22.318Z",
+  "updatedAt": "2026-10-09T07:07:09.867Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3993,7 +4072,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:06:22.318Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:07:09.867Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
