@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::5be0c38899445b528b8536c92c4c86461c0094da54019d75f78b9ca9c6a624da:identity": {
+      "identity": "야생 생존 - 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임\n플레이어: 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.\n시그니처 세계 규칙: 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하여 반복 가능한 게임 루프,\n실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.\n주체 역할: 플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.\n시그니처 시스템: INPUT/SELECT/OUTPUT/STATE 변화에 따라 구조적 조정이 이루어지며, 각 시스템은 주체 역할과 직접적인 연관성을 유지한다.\n게임 규칙: MAIN/A/B/c/@ 역할을 통해 중심 행동, 두 대축, 보조 요소, 발견·숙련·재방문 깊이를 구현하고, 진입→판정→상태 변화→대응→다음 선택으로 확장된다.\n플랫폼별 구현 제약: ROBLOX에서 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\n보안 및 저장 의미: 기존 원본 규칙과 수치를 보존하여 게임의 안정성과 일관성을 유지한다.\n설계 수정: 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다.\n사전 검증: 점수와 통과 판정은 결정론적 검증기가 담당하며, 실패·중단·재접속·저장은 원본 의미를 보존한다.\n기능 목록 및 장식 세계관: 일반적인 기능 목록 및 장식 세계관은 생략하고, 실제 역할과 상태로 연결한다.\n구현 버그와 설계 모순의 원인·수정 책임: 구분하고 안정성을 먼저 다룬다.\n최소 두 실제 대안 비교: 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과는 확정하지 않는다.\n공공영역 고전 재해석: 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다.\n보호된 인물/대사/장면: 복제하지 않는다.\n설계 수정: 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다.\n점수와 통과 판정: 결정론적"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 170624,
+      "lastMs": 170624,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:51:34.089Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:48:43.445Z",
-  "updatedAt": "2026-10-09T12:48:43.459Z",
+  "updatedAt": "2026-10-09T12:51:34.089Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2067,5 +2083,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:51:34.089Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
