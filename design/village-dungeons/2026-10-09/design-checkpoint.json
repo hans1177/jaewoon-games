@@ -27,25 +27,34 @@
       "identity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어는 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하며, 이 선택이 세계의 상태 변화로 연결되어야 한다.\n\n이 선택은 주체로서 플레이어의 행동과 대응법에 따라 다양한 위험, 보상, 그리고 새로운 경로를 열어준다.\n\n주요 인물의 목표와 두려움은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.\n\n몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며,\n지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.\n\n플레이어의 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 루프에서 벗어날 수 없으며,\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "playerFantasy": "플레이어는 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하며, 이 선택이 세계의 상태 변화로 연결되어야 한다.\n\n이 선택은 주체로서 플레이어의 행동과 대응법에 따라 다양한 위험, 보상, 그리고 새로운 경로를 열어준다.\n\n주요 인물의 목표와 두려움은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.\n\n몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며,\n지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.\n\n플레이어의 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 루프에서 벗어날 수 없으며,\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
       "coreFun": "플레이어는 즉시 시작하여 단순한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하며, 이 선택이 세계의 상태 변화로 연결되어야 한다.\n\n이 선택은 주체로서 플레이어의 행동과 대응법에 따라 다양한 위험, 보상, 그리고 새로운 경로를 열어준다.\n\n주요 인물의 목표와 두려움은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.\n\n몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재이며,\n지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.\n\n플레이어의 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 루프에서 벗어날 수 없으며,\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::71563c0d96847a6b965b9285964b9a3bef046e9de467ff9ba6eb2135d4522455:coreLoop": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n",
+        "STATE CHANGE: Player's action triggers world state shift, linking to core fun and signature systems.\n",
+        "OUTPUT: Play brief run with readable feedback, collect rewards, make small risk/route choice before end.\n",
+        "ACTION: Player makes decision that alters world state, triggering new path/risks/rewards.\n",
+        "NEXT SELECT: New gameplay option emerges based on player's mastery of system interactions."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 479124,
-      "lastMs": 119978,
+      "totalMs": 559418,
+      "lastMs": 80294,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:42:17.416Z"
+      "updatedAt": "2026-10-09T12:43:37.717Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:34:18.260Z",
-  "updatedAt": "2026-10-09T12:42:17.421Z",
+  "updatedAt": "2026-10-09T12:43:37.717Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2122,7 +2131,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:42:17.421Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:43:37.717Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
