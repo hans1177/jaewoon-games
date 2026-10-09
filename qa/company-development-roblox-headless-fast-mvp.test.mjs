@@ -404,3 +404,48 @@ test('village-dungeons F0 uses bounded actual ground contact rather than a one-f
   assert.ok(server.includes('character:SetAttribute("GROUND_CONTACT", groundContact)'));
   assert.ok(!server.includes('character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)'));
 });
+
+
+/* ── 놀이공원 타이쿤 실제 서버 부팅·월드·지면 증거 ── */
+test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
+ const source=fs.readFileSync('roblox-games/amusement-tycoon/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/amusement-tycoon/client/Game.client.luau','utf8');
+ const config=fs.readFileSync('roblox-games/amusement-tycoon/shared/GameConfig.luau','utf8');
+ // 기존 경제 저장소와 별도의 같은-version 구조화 증거만 저장한다.
+ assert.match(source,/GetDataStore\("amusement-tycoon-development-v1"\)/);
+ assert.match(source,/GetDataStore\("native-foundation-sentinel-v1"\)/);
+ assert.match(source,/foundationStore:UpdateAsync\("latest",function\(previous\)/);
+ assert.match(source,/data\.requirements\s*=\s*\{/);
+ assert.match(source,/saveEnabled\s*=\s*Config\.SaveEnabled == true/);
+ assert.match(source,/tostring\(previous\.placeId or ""\) == tostring\(game\.PlaceId\)/);
+ assert.match(source,/tonumber\(previous\.placeVersion\) == game\.PlaceVersion/);
+ assert.match(source,/return nil -- 이미 같은 후보에서 검증한 단계는 다시 쓰지 않는다/);
+ assert.match(source,/if foundationSeen\[name\] then return true end/);
+ assert.match(config,/GameId = "amusement-tycoon"/);
+ const markers=[
+   'SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY',
+   'CHARACTER_READY','GROUND_CONTACT','MOVEMENT_CONFIRMED'
+ ];
+ for(const marker of markers)assert.ok(source.includes('foundationCheckpoint("'+marker+'"'),'missing proof: '+marker);
+ const ordered=markers.slice(0,6).map(marker=>source.indexOf('foundationCheckpoint("'+marker+'"'));
+ assert.deepEqual([...ordered].sort((a,b)=>a-b),ordered,'F1-F4 evidence producers must follow actual initialization');
+ // 구조물만 만들고 지면 검사를 통과시키지 않는다.
+ assert.match(source,/spawnSupportParams\.FilterDescendantsInstances = \{nativeFoundationSpawn\}/);
+ assert.match(source,/spawnSupportParams\.RespectCanCollide = true/);
+ assert.match(source,/spawnSupport\.Normal\.Y >= 0\.55/);
+ assert.match(source,/math\.abs\(spawnSupport\.Position\.Y - spawnBottom\) <= 0\.6/);
+ assert.match(source,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
+ assert.match(source,/math\.abs\(rootPart\.AssemblyLinearVelocity\.Y\) < 3/);
+ assert.match(source,/foundationCheckpoint\("GROUND_CONTACT", foundationPlayer, \{groundY = contact\.Position\.Y/);
+ assert.match(source,/speed > 0\.1 and displacement\.Magnitude > 0\.5/);
+ assert.match(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED", foundationPlayer, \{displacement = displacement\.Magnitude\}/);
+ assert.match(source,/rootPart\.Anchored = false/);
+ assert.match(source,/humanoid\.PlatformStand = false/);
+ assert.match(source,/if foundationPlayer then\s*foundationCheckpoint\("CHARACTER_READY", foundationPlayer/);
+ assert.match(client,/nativeFoundationRemote:FireServer\("CAMERA_READY"\)/);
+ assert.match(client,/nativeFoundationRemote:FireServer\(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY"\)/);
+ assert.match(source,/store:UpdateAsync\("player:" \.\. player\.UserId/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("GROUND_CONTACT",nil/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED",nil/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("CORE_LOOP_READY"/);
+});
