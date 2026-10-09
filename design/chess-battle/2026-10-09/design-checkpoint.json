@@ -464,25 +464,43 @@
         "playerChoices"
       ],
       "fromSystem": "systemInterconnections[0]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin"
+    },
+    "local_authoring_parts::82333fd4bb84e7bad5123e6c1adc1601450fe61e5ebdb35d047eca93ef0c1609:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[0]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
+    },
+    "local_authoring_parts::b020caa87598e2c7a9bd6f8e96f7d9b1e078927a6586589c8cfeb114441e00eb:systemInterconnections:2": {
+      "fromId": "worldState",
+      "toId": "newWorldState",
+      "stateKeys": [
+        "boardState",
+        "threats",
+        "playerChoices"
+      ],
+      "fromSystem": "systemInterconnections[0]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin",
+      "toSystem": "systemInterconnections[0]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1119624,
-      "lastMs": 63783,
+      "totalMs": 1177493,
+      "lastMs": 57869,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:30:12.076Z"
+      "updatedAt": "2026-10-09T14:31:09.946Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:30:12.076Z",
+  "updatedAt": "2026-10-09T14:31:09.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2267,7 +2285,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:30:12.076Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:31:09.947Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
