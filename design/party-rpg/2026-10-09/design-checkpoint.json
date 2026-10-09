@@ -1589,25 +1589,41 @@
         "BOARD_STATE"
       ],
       "fromSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD12345678901234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF"
+    },
+    "local_authoring_parts::8134c162583e6302d98092b3d5365d44c85ae4b5d6d9cb19186d19c420d94eda:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "trigger": "START_GAME→BOARD_STATE",
+      "stateChange": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축"
+    },
+    "local_authoring_parts::e73f72086832dd3da821293cec68ff56caa0bacd9c9b76200e7a3c344aa17ee6:systemInterconnections:4": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD12345678901234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "toSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "trigger": "START_GAME→BOARD_STATE",
+      "stateChange": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 172,
-      "successes": 172,
+      "calls": 173,
+      "successes": 173,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12646818,
-      "lastMs": 38509,
+      "totalMs": 12684947,
+      "lastMs": 38129,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:44:33.377Z"
+      "updatedAt": "2026-10-09T06:45:11.507Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:44:33.377Z",
+  "updatedAt": "2026-10-09T06:45:11.515Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3751,7 +3767,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 8
+    "designer_draft_slices::systems-progression": 9
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3790,10 +3806,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:44:33.377Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:45:11.510Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
