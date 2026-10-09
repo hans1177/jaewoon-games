@@ -1787,25 +1787,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAMEPLAY_CORE_LOOP_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0"
+    },
+    "local_authoring_parts::7e93b42d27b327c6e7e2364a1a7430ad4967275dcf14a1583a37a0934a9bac62:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_CORE_LOOP_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "{\"from\": \"PLACEMENT\", \"to\": \"RESONANCE\"}"
+    },
+    "local_authoring_parts::f2242d387de30343308c9f66b4cdc0c0cdfd140aa14cf9e4a28712dc532f6dbe:systemInterconnections:3": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAMEPLAY_CORE_LOOP_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0",
+      "toSystem": "GAMEPLAY_CORE_LOOP_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "{\"from\": \"PLACEMENT\", \"to\": \"RESONANCE\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 126,
-      "successes": 126,
+      "calls": 127,
+      "successes": 127,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11234884,
-      "lastMs": 102408,
+      "totalMs": 11336274,
+      "lastMs": 101390,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:52:28.499Z"
+      "updatedAt": "2026-10-09T06:54:09.893Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T06:52:28.499Z",
+  "updatedAt": "2026-10-09T06:54:09.894Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4141,7 +4159,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:52:28.499Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:54:09.894Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
