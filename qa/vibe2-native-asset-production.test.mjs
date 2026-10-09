@@ -1286,30 +1286,39 @@ test('NPC companion hostile humanoid mini boss and boss types resolve to the sha
   assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('npc'));
 });
 
+
 test('Master GLB static QA alone never grants production verification',()=>{
-  const master='assets/roblox/world-ghosts/native/spider/spider.glb';
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
-    manifest:{assets:[{
-      id:'static-spider',family:'CREATURE',types:['enemy'],tags:['enemy','spider'],
-      license:'project-original',platforms:['roblox'],path:master,masterGlb:master,
-      downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',verifiedAnimation:true,animations:['idle','walk'],
+  const root=tempRoot();
+  try{
+    const master='assets/roblox/world-ghosts/native/spider/spider.glb';
+    const model=path.join(root,master);
+    fs.mkdirSync(path.dirname(model),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),master),model);
+    const staticAsset={
+      id:'static-spider',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      types:['enemy'],tags:['enemy','spider'],license:'project-original',platforms:['roblox'],
+      path:master,masterGlb:master,downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',
+      verifiedAnimation:true,animations:['idle','walk'],
       productionVerified:false,verifiedCompanyReusable:false
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  const enemy=plan.decisions.find(row=>row.type==='enemy');
-  const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
-  assert.ok(candidate);
-  assert.equal(candidate.masterGlbStaticQaPass,true);
-  assert.equal(candidate.sourceHash,null);
-  assert.equal(candidate.editableSourceHash,null);
-  assert.equal(candidate.artifactHash,null);
-  assert.equal(candidate.nativeArtifactHash,null);
-  assert.ok(candidate.masterGlbHash);
-  assert.equal(candidate.productionVerified,false);
-  assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+    };
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[staticAsset]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',
+      task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
+      manifest:{assets:[staticAsset]},presetCatalog:{presets:[]}
+    });
+    const enemy=plan.decisions.find(row=>row.type==='enemy');
+    const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
+    assert.ok(candidate);
+    assert.equal(candidate.masterGlbStaticQaPass,true);
+    assert.equal(candidate.sourceHash,null);
+    assert.equal(candidate.editableSourceHash,null);
+    assert.equal(candidate.artifactHash,null);
+    assert.equal(candidate.nativeArtifactHash,null);
+    assert.ok(candidate.masterGlbHash);
+    assert.equal(candidate.productionVerified,false);
+    assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
@@ -1721,33 +1730,43 @@ test('invalid task-declared recipe cannot be masked by generic DCC fallback',()=
   assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
 });
 
+
 test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
-    manifest:{assets:[{
-      id:'boss-authoring-base',family:'CREATURE',types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
+  const root=tempRoot();
+  try{
+    const authoringAsset={
+      id:'boss-authoring-base',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
+      nativeArtifacts:['assets/roblox/demo/native/boss/boss.glb'],
       sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
       authoringRecipes:[{
         id:'boss-blender-v1',executor:'BLENDER_PYTHON',types:['boss'],targetPlatforms:['ROBLOX'],
         script:'assets/roblox/demo/build-boss.py',args:['--output','assets/roblox/demo/native/boss'],
-        outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/evidence.json','assets/roblox/demo/native/boss/preview.png'],
-        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',preview:'assets/roblox/demo/native/boss/preview.png',editableSource:'assets/roblox/demo/build-boss.py',runMode:'VERIFY_ONLY'
+        outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/evidence.json',
+          'assets/roblox/demo/native/boss/preview.png'],
+        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+        preview:'assets/roblox/demo/native/boss/preview.png',
+        editableSource:'assets/roblox/demo/build-boss.py',runMode:'VERIFY_ONLY'
       }]
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
-  assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
-  assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
+    };
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[authoringAsset]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',
+      task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
+      manifest:{assets:[authoringAsset]},presetCatalog:{presets:[]}
+    });
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
+    assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
+    assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Web native authoring stays inside Web source while Unity and Roblox keep platform-native recreation',()=>{
