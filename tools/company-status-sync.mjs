@@ -86,7 +86,7 @@ const latestById=(rows,idField)=>{const map=new Map();for(const row of Array.isA
 const developmentHomepageScore=()=>({score:null,label:'점수 미평가',current:false,source:'DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'});
 const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
 
-export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
+export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={},designBaselines={}}={}){
   if(!catalog||!Array.isArray(catalog.games))return catalog;
   const queueById=latestById(developmentQueue?.items,'gameId');
   const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
@@ -96,6 +96,16 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
   for(const game of catalog.games){
     const id=clean(game?.id);if(!id)continue;
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
+    // 최신 중앙 설계의 실제 내용에서만 짧은 홈페이지 소개를 갱신한다.
+    const design=designBaselines[id];
+    const designPath=clean(queue?.designBaselineSource||queue?.minimumDesignContract?.source);
+    if(design?.source===designPath&&design?.value?.gameId===id){
+      const content=design.value.content||{};
+      const raw=clean(content.homepageDescription||content.shortSummary||content.identity||content.coreFun).replace(/\s+/g,' ');
+      const sentence=raw.match(/^(.{20,125}?[.!?。])(?:\s|$)/)?.[1]||raw;
+      const summary=sentence.length>112?sentence.slice(0,110).replace(/\s+\S*$/,'')+'…':sentence;
+      if(summary){game.description=summary;game.homepageDesignSource=designPath;}
+    }
     const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
     const score=developmentHomepageScore(queue);
     const baseGenres=Array.isArray(game?.genre)?game.genre:[];
