@@ -27,25 +27,37 @@
       "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 R15 시각 언어를 사용하며, AI 동료는 격파한 보스의 실루엣·색·핵심 이펙트를 그대로 계승한다. 게임은 로블로X 플랫폼에 맞게 2.5D 이상의 그래픽 스타일을 적용하여, 초원·협곡·유적·설원·심연의 독립 대형 사냥터를 전투로 돌파할 수 있는 성장 재미를 제공한다.",
       "playerFantasy": "마을에서 장비와 퀘스트를 준비하며, 5개의 포탈 사냥터를 돌며 AI 유저들과 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣·색·핵심 이펙트를 그대로 계승한다. 게임은 로블로X 플랫폼에 맞게 2.5D 이상의 그래픽 스타일을 적용하여, 초원·협곡·유적·설원·심연의 독립 대형 사냥터를 전투로 돌파할 수 있는 성장 재미를 제공한다.",
       "coreFun": "마을에서 장비와 퀘스트를 준비하며, 5개의 포탈 사냥터를 돌며 AI 유저들과 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣·색·핵심 이펙트를 그대로 계승한다."
+    },
+    "local_authoring_parts::9c6054e81541988302423904af8e38b175409bfb2ba92765e53e92674e28e58e:coreLoop": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 218455,
-      "lastMs": 31048,
+      "totalMs": 258363,
+      "lastMs": 39908,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:21:15.595Z"
+      "updatedAt": "2026-10-09T14:21:55.506Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:17:37.117Z",
-  "updatedAt": "2026-10-09T14:21:15.596Z",
+  "updatedAt": "2026-10-09T14:21:55.506Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1047,7 +1059,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:21:15.596Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:21:55.506Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
