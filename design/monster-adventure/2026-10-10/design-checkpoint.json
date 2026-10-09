@@ -164,21 +164,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 456092,
-      "lastMs": 39671,
+      "totalMs": 492841,
+      "lastMs": 36749,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:43:11.519Z"
+      "updatedAt": "2026-10-09T17:43:48.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:35:35.348Z",
-  "updatedAt": "2026-10-09T17:43:11.519Z",
+  "updatedAt": "2026-10-09T17:43:48.270Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,25 +1740,27 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:3": [
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:4": [
       {
         "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "c",
+        "grammarRole": "DELVE",
         "previousRuleIds": [
           "signatureSystems[0]",
           "signatureSystems[1]",
-          "signatureSystems[2]"
+          "signatureSystems[2]",
+          "signatureSystems[3]"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:2": 1,
-    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:3": 1
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:3": 1,
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:43:11.519Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T17:43:48.269Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
