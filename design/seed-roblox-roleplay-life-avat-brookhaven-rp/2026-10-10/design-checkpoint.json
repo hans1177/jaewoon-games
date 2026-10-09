@@ -95,25 +95,117 @@
         "delveGrowthRule": "Each Discovery Adds a New Layer of Gameplay Complexity and Player Agency",
         "finalGameIdentity": "Harbor Days - A Mobile Survival Roguelite with Dynamic Playstyle and Adaptive Gameplay"
       }
+    },
+    "local_authoring_parts::82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간 생존 게임에서 점점 더 어려워지는 적군 밀집 전투에 맞서 빠르게 발전하는 건강한 팀을 형성하며, 다양한 선택과 업그레이드로 최종 목적지를 달성해야 한다. 이 과정에서는 환경 변화, 새로운 도전, 그리고 인적 관계가 함께 영향을 미치며, 플레이어의 숙련과 성장이 즉시 반영되는 반복 가능한 핵심 루프를 경험하게 된다.",
+      "coreFun": "플레이어는 매 단계에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 통해 진입, 대응, 및 다음 선택을 반복적으로 수행하면서, 주제와 위험, 목표 사이의 상호작용을 체험하고, 실제 선택과 결과가 서로 다른 시스템 간의 교환을 통해 게임 정체성을 확립한다."
+    },
+    "local_authoring_parts::b394b3128bd75fdd068f614b0d843bea1cf275b51818273f84a59f5f8e1a3e13:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Harbor Days - A Mobile Survival Roguelite with Dynamic Playstyle and Adaptive Gameplay",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Dynamic Build Progression",
+          "materialDomain": "Real-Time Strategy & Resource Management",
+          "stateChange": "Build Upgrade -> Risk Assessment -> New Strategy"
+        },
+        "b": {
+          "system": "Roguelite",
+          "material": "Adaptive Pathfinding",
+          "materialDomain": "Randomized World Events & Player Choice",
+          "stateChange": "Event Trigger -> New Objective -> Multi-Choice Outcome"
+        },
+        "abCausality": "Build Progression → Event Response → Strategic Adaptation",
+        "abEvolution": {
+          "aChangesB": "New Weapon/Perk -> Increased Difficulty -> Rebalanced Strategy",
+          "bChangesA": "New Location/Path -> Reduced Risk -> Optimized Positioning",
+          "lateGameChange": "Boss Encounter -> Final Objective -> Terminal State"
+        },
+        "materialFusion": {
+          "contrast": "Survival vs. Roguelite - Real-Time vs. Randomized",
+          "causalBridge": "Player Action → Environmental Response → Adaptive Playstyle",
+          "removalConsequence": "Original Gameplay Rules Remain, but Mechanic Evolution Occurs"
+        },
+        "storyCausalChain": {
+          "cause": "Player's Initial Build and Strategy Selection",
+          "characterConflict": "Environmental Changes and Boss Encounters",
+          "playerChoice": "Adaptation to New Locations or Risks",
+          "worldChange": "Final Goal Achievement with Unique Playstyle Outcomes",
+          "nextEvent": "Replay Hook with Expanded Gameplay Scope"
+        },
+        "cThemes": [
+          {
+            "name": "Real-Time Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Dynamic Resource Management"
+          },
+          {
+            "name": "Roguelite Elements",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Randomized World Events"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Mobile Survival Roguelite",
+            "gameplayEffect": "Touch-Responsive Gameplay"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Adaptive Strategic Play",
+            "gameplayEffect": "Multi-Choice Outcome Generation"
+          }
+        ],
+        "cGenreInterlock": "Survival Mechanics Interact with Roguelite Systems in Real Time",
+        "cWorldAndGameplayEffect": "Player Action → Environmental Response → Adaptive Playstyle Change",
+        "delveDiscoveries": [
+          {
+            "clue": "Dynamic Build Progression",
+            "discovery": "New Weapon/Perk -> Increased Difficulty -> Rebalanced Strategy",
+            "newChoice": "New Location/Path"
+          },
+          {
+            "clue": "Environmental Changes",
+            "discovery": "Boss Encounter -> Final Objective -> Terminal State",
+            "newChoice": "Replay Hook with Expanded Gameplay Scope"
+          },
+          {
+            "clue": "Player Adaptation",
+            "discovery": "Adapt to New Locations or Risks -> Optimized Positioning",
+            "newChoice": "Final Goal Achievement with Unique Playstyle Outcomes"
+          },
+          {
+            "clue": "Terminal State",
+            "discovery": "Replay Hook with Expanded Gameplay Scope",
+            "newChoice": "Replay Hook with Expanded Gameplay Scope"
+          }
+        ],
+        "delveGrowthRule": "Each Discovery Adds a New Layer of Gameplay Complexity and Player Agency",
+        "finalGameIdentity": "Harbor Days - A Mobile Survival Roguelite with Dynamic Playstyle and Adaptive Gameplay"
+      },
+      "playerFantasy": "플레이어는 실시간 생존 게임에서 점점 더 어려워지는 적군 밀집 전투에 맞서 빠르게 발전하는 건강한 팀을 형성하며, 다양한 선택과 업그레이드로 최종 목적지를 달성해야 한다. 이 과정에서는 환경 변화, 새로운 도전, 그리고 인적 관계가 함께 영향을 미치며, 플레이어의 숙련과 성장이 즉시 반영되는 반복 가능한 핵심 루프를 경험하게 된다.",
+      "coreFun": "플레이어는 매 단계에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 통해 진입, 대응, 및 다음 선택을 반복적으로 수행하면서, 주제와 위험, 목표 사이의 상호작용을 체험하고, 실제 선택과 결과가 서로 다른 시스템 간의 교환을 통해 게임 정체성을 확립한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 413690,
-      "lastMs": 113661,
+      "totalMs": 478458,
+      "lastMs": 64768,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:12:46.674Z"
+      "updatedAt": "2026-10-09T20:13:51.444Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:05:52.963Z",
-  "updatedAt": "2026-10-09T20:12:46.674Z",
+  "updatedAt": "2026-10-09T20:13:51.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1826,7 +1918,7 @@
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:12:46.674Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:13:51.445Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
