@@ -20,6 +20,13 @@ if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_FLOOR_GA
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error('UNITY_WEB_FLOOR_DESIGN_BASELINE_MISSING');
 if(output!==`unity-games/${gameId}`)throw new Error('UNITY_WEB_FLOOR_OUTPUT_MUST_BE_CANONICAL_UNITY_ROOT');
 if(!playbooksPath||!fs.existsSync(playbooksPath))throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+// 최초 플로어부터 F0 네이티브 3D 전용 원본을 생성한다.
+const centralPolicy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+const floor3d=centralPolicy?.development3dFromF0AndFloor20261009;
+if(floor3d?.status!=='ACTIVE_EXECUTABLE_CONTRACT'
+  ||floor3d?.unityFloorNative3dSceneCameraAndMeshesRequired!==true
+  ||centralPolicy?.unityWebFirstStage?.graphicsPolicy?.minimumDevelopmentGameplayDimension!=='3D')
+  throw new Error('UNITY_WEB_FLOOR_F0_NATIVE_3D_POLICY_REQUIRED');
 
 const baseline=JSON.parse(fs.readFileSync(baselinePath,'utf8'));
 const design=baseline.content||baseline;
@@ -108,6 +115,11 @@ const verifiedLearningApplication=Object.freeze({
 // 월드 설계가 승인한 신규 3D 공간만 기존 유니티 소스로 생성한다. 기존 게임은 기본 렌더링을 그대로 유지한다.
 const approvedWorldRequest=design?.spatialLayout?.proceduralWorld;
 const hasApprovedWorld=approvedWorldRequest?.approvedDesign===true;
+// 지정된 차원이 2D 또는 2.5D면 승인 여부와 관계없이 최초 소스 생성을 차단한다.
+for(const dimension of [design?.spatialLayout?.dimension,approvedWorldRequest?.dimension]){
+  const declared=String(dimension||'').trim().toUpperCase();
+  if(declared&&declared!=='3D')throw new Error('UNITY_WEB_FLOOR_NATIVE_3D_DESIGN_REQUIRED:'+declared);
+}
 if(hasApprovedWorld&&String(design.spatialLayout?.dimension||approvedWorldRequest.dimension).toUpperCase()!=='3D')
   throw new Error('UNITY_WEB_PROCEDURAL_WORLD_DIMENSION_REQUIRES_NATIVE_3D_RENDERER');
 const worldProposal=hasApprovedWorld
@@ -415,11 +427,11 @@ ${nativeWorldRuntime}
         BuildWorld();
         ${worldData?'RestoreWorldObjects();':''}
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=REPAIR_REQUIRED reason=3D_BOOTSTRAP_ACTOR_NEEDS_VERIFIED_MODEL");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=REPAIR_REQUIRED reason=3D_BOOTSTRAP_ACTOR_NEEDS_VERIFIED_MODEL");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=" +
                    (approvedEnvironmentReady ? "PASS" : "REPAIR_REQUIRED reason=APPROVED_ENVIRONMENT_AUTHORING_FAILED"));
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=REPAIR_REQUIRED reason=3D_BOOTSTRAP_PROP_NEEDS_GAME_ASSET");
         int nativeMotionActors = BindNativeMotionActors();
         Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
                   " status=" + (nativeMotionActors > 0 ? "STARTED" : "REPAIR_REQUIRED") +
@@ -451,6 +463,7 @@ ${nativeWorldRuntime}
             cam = cameraObject.AddComponent<Camera>();
             cameraObject.tag = "MainCamera";
         }
+        cam.orthographic = false;
         cam.transform.position = new Vector3(0f, 6.5f, -9f);
         cam.transform.rotation = Quaternion.Euler(24f, 0f, 0f);
         cam.backgroundColor = new Color(0.06f,0.08f,0.13f);
@@ -487,6 +500,12 @@ ${nativeWorldRuntime}
         landmark.transform.position = new Vector3(0f,1.5f,3f);
         landmark.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
         ${worldData?'approvedEnvironmentReady = BuildApprovedWorldVisuals();':''}
+        bool source3d = Camera.main != null && !Camera.main.orthographic
+            && player.GetComponent<MeshFilter>() != null && enemy.GetComponent<MeshFilter>() != null
+            && ground.GetComponent<MeshRenderer>() != null;
+        Debug.Log("UNITY_WEB_FLOOR_NATIVE_3D_SOURCE game=" + GameId +
+            " status=" + (source3d ? "SOURCE_AUTHORED_RUNTIME_QA_REQUIRED" : "REPAIR_REQUIRED") +
+            " models=BOOTSTRAP_ONLY renderer=UNITY_NATIVE_3D");
     }
 
     private void Update()
@@ -639,6 +658,13 @@ public static class UnityWebFloorBuild
             :EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);
         var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT")??new GameObject("UNITY_WEB_FLOOR_ROOT");
         if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>();
+        // 개발 플로어 씬도 실제 Unity 원근 3D 카메라로 저장한다.
+        var nativeCameraObject=GameObject.FindWithTag("MainCamera");
+        if(nativeCameraObject==null){nativeCameraObject=new GameObject("Main Camera");nativeCameraObject.tag="MainCamera";}
+        var nativeCamera=nativeCameraObject.GetComponent<Camera>()??nativeCameraObject.AddComponent<Camera>();
+        nativeCamera.orthographic=false;
+        nativeCamera.nearClipPlane=.1f;
+        nativeCamera.farClipPlane=500f;
         EditorSceneManager.MarkSceneDirty(scene);
         if(!EditorSceneManager.SaveScene(scene,ScenePath))throw new Exception("SCENE_SAVE_FAILED");
         EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};
@@ -674,6 +700,12 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   unityPlatformProfile:profile,
   purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
   developmentFloor:true,
+  requiredAuthoringDimension:'3D',
+  f0Native3dSourcePreflight:{
+    sourceOnly:true,runtimeVerified:false,meshGeometryCreatedByNativeUnity:true,
+    perspectiveCameraAuthoredInScene:true,actorModelUpgradeRequired:true,
+    primitiveBootstrapIsVisualDebt:true,finalGraphicsPass:false
+  },
   presentationState:'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP',
   upperPlatformReady:false,
   releaseOrDeploymentAuthority:false,
@@ -695,6 +727,7 @@ Generated from the locked common design and Unity platform profile. This source 
 console.log('UNITY_WEB_FLOOR_SOURCE='+output);
 console.log('UNITY_WEB_FLOOR_BUILD_METHOD=UnityWebFloorBuild.BuildWeb');
 console.log('UNITY_WEB_FLOOR_RELEASE_AUTHORITY=NO');
+console.log('UNITY_WEB_FLOOR_NATIVE_3D=SOURCE_GENERATED_RUNTIME_UNVERIFIED');
 console.log('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING=PASS');
 console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COVERAGE=${verifiedLearningApplication.mandatoryApplicationCoveragePct}`);
 console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedLearningApplication.appliedCount}`);
