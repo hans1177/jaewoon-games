@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 매 월드 시작 시 'Next Event'로 이어지는 선택 과정에서, 새로운 전략적 자원 배분과 위험/보상 구조에 따라 행동을 바꾸며, 게임 내에서 다양한 플레이 경험을 제공한다.",
       "coreFun": "매 월드 시작 시 'Enemy Type Change'이라는 단서가 나타나며, 이를 기반하여 'Defense Strategy Update'라는 대응 방식을 선택하게 되고, 이후 'Resource Spending Pattern Change'의 보상 형태로 이어지면서, 최종적으로 'New Play Option Formation'이라는 새로운 선택 옵션을 형성해 객관적인 진입 상태와 주요 행동을 정립한다."
+    },
+    "local_authoring_parts::ad3e0164555926ff93ba4470e71b766b08f62adaba0bdca3c666c844fad18d13:coreLoop": {
+      "coreLoop": [
+        "Input: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "State Change: Resources acquired and spent, defense strategy updated.",
+        "Reward: New play option formation."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1470655,
-      "lastMs": 104379,
+      "totalMs": 1565078,
+      "lastMs": 94423,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:46:10.926Z"
+      "updatedAt": "2026-10-09T18:47:45.353Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:40.225Z",
-  "updatedAt": "2026-10-09T18:46:10.928Z",
+  "updatedAt": "2026-10-09T18:47:45.353Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,7 +2267,7 @@
     "282e07c4f86efbe0d3307ad28126c011786c503d2f3ffea4b364808e760ff761": true,
     "82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:46:10.928Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:47:45.353Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
