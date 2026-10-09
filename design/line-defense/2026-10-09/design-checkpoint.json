@@ -1099,25 +1099,42 @@
         "TOWER_PLACEMENT"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::4c32dce506159eb8b4db984f21b701b3bef16d72ba85a543731dfbc88dcf1013:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::a796b6a2ac5865545bf8424ce42bfaa14e0a8bcf147834eff2d230c89169b6e0:systemInterconnections:2": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 80,
-      "successes": 80,
+      "calls": 81,
+      "successes": 81,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5180999,
-      "lastMs": 14501,
+      "totalMs": 5195538,
+      "lastMs": 14539,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:26:54.861Z"
+      "updatedAt": "2026-10-09T01:27:09.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T01:26:54.861Z",
+  "updatedAt": "2026-10-09T01:27:09.402Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3458,7 +3475,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:26:54.861Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:27:09.402Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
