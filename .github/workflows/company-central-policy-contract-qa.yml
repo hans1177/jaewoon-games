@@ -106,6 +106,10 @@ on:
       - 'qa/company-high-end-visual-contract.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
+      - 'tools/company-unity-web-first-stage.mjs'
+      - 'tools/company-unity-web-gameplay-validation.mjs'
+      - 'qa/company-unity-web-first-stage.test.mjs'
+      - 'qa/company-unity-web-gameplay-validation.test.mjs'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
     branches: [main]
@@ -204,6 +208,10 @@ on:
       - 'qa/company-high-end-visual-contract.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
+      - 'tools/company-unity-web-first-stage.mjs'
+      - 'tools/company-unity-web-gameplay-validation.mjs'
+      - 'qa/company-unity-web-first-stage.test.mjs'
+      - 'qa/company-unity-web-gameplay-validation.test.mjs'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
 
@@ -321,6 +329,8 @@ jobs:
             qa/company-high-end-visual-contract.test.mjs \
             qa/vibe-visual-runtime-quality.test.mjs \
             qa/vibe2-native-asset-production.test.mjs \
+            qa/company-unity-web-first-stage.test.mjs \
+            qa/company-unity-web-gameplay-validation.test.mjs \
             qa/company-machine-development-lifecycle.test.mjs \
             qa/vibe2-post-release-focus.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
