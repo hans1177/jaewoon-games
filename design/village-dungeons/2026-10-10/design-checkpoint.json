@@ -234,25 +234,160 @@
       "name": "경제 시스템 트레이드오프",
       "purpose": "실제 선택과 관련된 경제적 트레이드오프을 구현하며, 중후반 두 시스템의 관계 변화에 대한 명확한 피드백 제공",
       "playerChoice": "플레이어가 자원과 비용 간의 균형을 결정하는 다양한 전략 및 경로 선택 가능성이 실제 세계 상태 변화와 인과적으로 연계됨입니다만, 이는 기존 시스템과 상호작용하여 게임 진행 방향이 재설계됩니다."
+    },
+    "local_authoring_parts::552e3f09c6c5e2fa77ac8c24be67d119ab8271afc971ef9e9174fe4628cd8b8a:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "입력(손 tap/swipe)"
+      ],
+      "stateOutputs": [
+        "상태변화(첫 성공, 첫 위험/선택)",
+        "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백"
+      ],
+      "name": "역사와 철학의 인과적 영향",
+      "purpose": "플레이어 선택에 역사적 배경과 철학적 가치관을 기반으로 실제 세계 상태 변화를 유도하며, 중후반 두 시스템 간의 관계 변화를 통해 게임 진행 방향을 재설계함.",
+      "playerChoice": "4개 이상의 초기 사례 및 무제한 발전 규칙을 바탕으로 새로운 전략/경로/성장 가능성이 실질적으로 달라지는 경험을 제공함."
+    },
+    "local_authoring_parts::03857dfb4e90f184d92dcd73705e18a313be8b608f8f8985fdda637500d303c1:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)"
+          ],
+          "name": "액션 RPG 기본 루프",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력 및 피드백, 단순한 한 손 tap/swipe",
+          "playerChoice": "새로운 전략/경로/성장 가능성이 실제로 달라지는 경험의 시작점으로서, 기존 시스템과 인과적으로 연계됨을 나타냄니다만, 이는 실제 세계 상태 변화에 따라 재설계됩니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)"
+          ],
+          "name": "경제 시스템 트레이드오프",
+          "purpose": "플레이어가 실질적 인과 변화에 따라 선택하는 경제적 압박 유형 및 지역 규칙의 표현",
+          "playerChoice": "실제 선택과 관련된 경제적 트레이드오프의 구체적인 예시와 전략적 대응 방안 제공됨으로서 플레이어의 행동에 영향을 주는 역할을 수행함으로써 게임 진행 방향이 재설계됨을 나타냄니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)",
+            "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백"
+          ],
+          "name": "경제 시스템 트레이드오프",
+          "purpose": "실제 선택과 관련된 경제적 트레이드오프을 구현하며, 중후반 두 시스템의 관계 변화에 대한 명확한 피드백 제공",
+          "playerChoice": "플레이어가 자원과 비용 간의 균형을 결정하는 다양한 전략 및 경로 선택 가능성이 실제 세계 상태 변화와 인과적으로 연계됨입니다만, 이는 기존 시스템과 상호작용하여 게임 진행 방향이 재설계됩니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)",
+            "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백"
+          ],
+          "name": "역사와 철학의 인과적 영향",
+          "purpose": "플레이어 선택에 역사적 배경과 철학적 가치관을 기반으로 실제 세계 상태 변화를 유도하며, 중후반 두 시스템 간의 관계 변화를 통해 게임 진행 방향을 재설계함.",
+          "playerChoice": "4개 이상의 초기 사례 및 무제한 발전 규칙을 바탕으로 새로운 전략/경로/성장 가능성이 실질적으로 달라지는 경험을 제공함."
+        }
+      ]
+    },
+    "local_authoring_parts::50f7c6b962519ca2b81cc4edce0235ba5efec49fa816c87022a9dfe674b3ff02:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력(손 tap/swipe) → 상태변화(첫 성공, 첫 위험/선택) → 보상/위험/다음 선택 연결",
+        "실제 세계 상태 변화에 따라 플레이어가 새로운 전략/경로/성장 가능성이 발생하며, 이는 기존 시스템과 인과적으로 연계됨.",
+        "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백을 통해 게임 진행 방향이 재설계됨."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)"
+          ],
+          "name": "액션 RPG 기본 루프",
+          "purpose": "플레이어가 즉시 이해할 수 있는 입력 및 피드백, 단순한 한 손 tap/swipe",
+          "playerChoice": "새로운 전략/경로/성장 가능성이 실제로 달라지는 경험의 시작점으로서, 기존 시스템과 인과적으로 연계됨을 나타냄니다만, 이는 실제 세계 상태 변화에 따라 재설계됩니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)"
+          ],
+          "name": "경제 시스템 트레이드오프",
+          "purpose": "플레이어가 실질적 인과 변화에 따라 선택하는 경제적 압박 유형 및 지역 규칙의 표현",
+          "playerChoice": "실제 선택과 관련된 경제적 트레이드오프의 구체적인 예시와 전략적 대응 방안 제공됨으로서 플레이어의 행동에 영향을 주는 역할을 수행함으로써 게임 진행 방향이 재설계됨을 나타냄니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)",
+            "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백"
+          ],
+          "name": "경제 시스템 트레이드오프",
+          "purpose": "실제 선택과 관련된 경제적 트레이드오프을 구현하며, 중후반 두 시스템의 관계 변화에 대한 명확한 피드백 제공",
+          "playerChoice": "플레이어가 자원과 비용 간의 균형을 결정하는 다양한 전략 및 경로 선택 가능성이 실제 세계 상태 변화와 인과적으로 연계됨입니다만, 이는 기존 시스템과 상호작용하여 게임 진행 방향이 재설계됩니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력(손 tap/swipe)"
+          ],
+          "stateOutputs": [
+            "상태변화(첫 성공, 첫 위험/선택)",
+            "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백"
+          ],
+          "name": "역사와 철학의 인과적 영향",
+          "purpose": "플레이어 선택에 역사적 배경과 철학적 가치관을 기반으로 실제 세계 상태 변화를 유도하며, 중후반 두 시스템 간의 관계 변화를 통해 게임 진행 방향을 재설계함.",
+          "playerChoice": "4개 이상의 초기 사례 및 무제한 발전 규칙을 바탕으로 새로운 전략/경로/성장 가능성이 실질적으로 달라지는 경험을 제공함."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1020935,
-      "lastMs": 105332,
+      "totalMs": 1126594,
+      "lastMs": 105659,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:18:06.946Z"
+      "updatedAt": "2026-10-09T21:19:52.607Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-09T21:18:06.946Z",
+  "updatedAt": "2026-10-09T21:19:52.610Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1885,7 +2020,7 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:18:06.946Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:19:52.610Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
