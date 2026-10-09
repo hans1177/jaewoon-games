@@ -36,25 +36,39 @@
         "STATE CHANGE: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
         "NEXT SELECT: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::d309223535445d6fd7042a47075f9d6a1188b1d027efcc1247994665259773c3:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_RESULT",
+        "BUILD_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player's core action that drives the game's progression and determines the next state of play.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 369795,
-      "lastMs": 62357,
+      "totalMs": 411136,
+      "lastMs": 41341,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:27:54.890Z"
+      "updatedAt": "2026-10-09T12:28:36.232Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:21:45.064Z",
-  "updatedAt": "2026-10-09T12:27:54.890Z",
+  "updatedAt": "2026-10-09T12:28:36.232Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2253,7 +2267,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:27:54.890Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:28:36.232Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
