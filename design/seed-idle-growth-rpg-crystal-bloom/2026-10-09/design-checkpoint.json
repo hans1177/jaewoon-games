@@ -724,25 +724,28 @@
         "riskPressure": "플레이어는 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서 발견, 숙련, 재방문의 깊이를 나타내며 위험을 관리해야 함.",
         "recoveryRules": "플레이어는 새로운 상태와 자원을 획득하며, 이 과정에서 경로, 위험, 보상을 연결해 다양한 결과를 내게 됩니다."
       }
+    },
+    "local_authoring_parts::f51b89a7bbae29088c0653ff7d5ba9e7d00825ca5934db512da117c5da32c194:fromId": {
+      "fromId": "systemInterconnections[0].trigger"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 14,
+      "calls": 17,
+      "successes": 15,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2042828,
-      "lastMs": 133788,
+      "totalMs": 2133546,
+      "lastMs": 90718,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T16:16:51.483Z"
+      "updatedAt": "2026-10-09T16:18:22.210Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T16:16:51.489Z",
+  "updatedAt": "2026-10-09T16:18:22.211Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2768,10 +2771,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:16:51.485Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:18:22.211Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
