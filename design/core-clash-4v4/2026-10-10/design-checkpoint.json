@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
       "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay."
+    },
+    "local_authoring_parts::5a9c4dfdf20bc208a54fddbed440216d8a58e25ec8a36a7ff43645c7458dba66:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "DISCOVERABLE_CLUE",
+          "discovery": "Player discovers new play options based on previous events.",
+          "newChoice": "Selecting upgrades, weapons, or skills that alter the current build."
+        },
+        {
+          "clue": "EXPERIMENT_OR_MASTERY_CHOICE",
+          "discovery": "Player experiments with different builds and strategies.",
+          "newChoice": "Combining upgrades into a stronger build."
+        },
+        {
+          "clue": "COST_AND_COUNTERPLAY",
+          "discovery": "Player learns about cost vs. counterplay in their strategy.",
+          "newChoice": "Choosing rewards or experience to upgrade their build."
+        },
+        {
+          "clue": "NEW_PLAY_OPTION",
+          "discovery": "Player creates new play options through experimentation.",
+          "newChoice": "Positioning around enemy pressure during survival runs."
+        }
+      ],
+      "delveGrowthRule": "The game grows through player choices that connect action and survival elements, leading to new progression choices and deeper gameplay layers.",
+      "finalGameIdentity": "A dynamic ACTION_SURVIVAL_ROGUELITE game where players evolve through choices that link action, survival, and roguelite elements, creating a deep and evolving gameplay experience."
+    },
+    "local_authoring_parts::33f5c4c6c66aade4759df590b5c44a5d9685ab3417625cf0653a13567a4a2aef:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "ACTION_SURVIVAL",
+          "kind": "GENRE",
+          "gameplayEffect": "Survival pressure and progression"
+        },
+        {
+          "name": "ROGUELITE",
+          "kind": "GENRE",
+          "gameplayEffect": "Short runs with progression choices"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Combination of action, survival, and roguelite elements"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "MOBILE_SURVIVAL_roguelite",
+          "gameplayEffect": "Mobile-friendly short-run gameplay"
+        }
+      ],
+      "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
+      "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay.",
+      "delveDiscoveries": [
+        {
+          "clue": "DISCOVERABLE_CLUE",
+          "discovery": "Player discovers new play options based on previous events.",
+          "newChoice": "Selecting upgrades, weapons, or skills that alter the current build."
+        },
+        {
+          "clue": "EXPERIMENT_OR_MASTERY_CHOICE",
+          "discovery": "Player experiments with different builds and strategies.",
+          "newChoice": "Combining upgrades into a stronger build."
+        },
+        {
+          "clue": "COST_AND_COUNTERPLAY",
+          "discovery": "Player learns about cost vs. counterplay in their strategy.",
+          "newChoice": "Choosing rewards or experience to upgrade their build."
+        },
+        {
+          "clue": "NEW_PLAY_OPTION",
+          "discovery": "Player creates new play options through experimentation.",
+          "newChoice": "Positioning around enemy pressure during survival runs."
+        }
+      ],
+      "delveGrowthRule": "The game grows through player choices that connect action and survival elements, leading to new progression choices and deeper gameplay layers.",
+      "finalGameIdentity": "A dynamic ACTION_SURVIVAL_ROGUELITE game where players evolve through choices that link action, survival, and roguelite elements, creating a deep and evolving gameplay experience."
+    },
+    "local_authoring_parts::6463864b9eb1add8aa96bc8be847147045b708e4123f149d5c74d59a88b1f974:creativeGrammar": {
+      "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice.",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+      },
+      "abCausality": "A <-> B: The state of the game is exchanged between the two systems through the player's choices.",
+      "abEvolution": {
+        "aChangesB": "A → B: Player makes a choice that directly affects the state of system A, leading to changes in system B.",
+        "bChangesA": "B → A: Player makes a choice that directly affects the state of system B, leading to changes in system A.",
+        "lateGameChange": "Late game, when systems are deeply interdependent, choices can have cascading effects across multiple systems."
+      },
+      "materialFusion": {
+        "contrast": "Contrast between action and survival elements in gameplay.",
+        "causalBridge": "The causal bridge connects player choices to game states through the interaction of systems.",
+        "removalConsequence": "Removing one system may disrupt the causal chain if it is essential for maintaining balance or progression."
+      },
+      "storyCausalChain": {
+        "cause": "Player's initial decision to fight through an escalating horde",
+        "characterConflict": "The conflict between survival pressure and the desire for progress",
+        "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build",
+        "worldChange": "The transformation of the run result into the next progression choice",
+        "nextEvent": "The emergence of new play options based on the previous event"
+      },
+      "cThemes": [
+        {
+          "name": "ACTION_SURVIVAL",
+          "kind": "GENRE",
+          "gameplayEffect": "Survival pressure and progression"
+        },
+        {
+          "name": "ROGUELITE",
+          "kind": "GENRE",
+          "gameplayEffect": "Short runs with progression choices"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Combination of action, survival, and roguelite elements"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "MOBILE_SURVIVAL_roguelite",
+          "gameplayEffect": "Mobile-friendly short-run gameplay"
+        }
+      ],
+      "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
+      "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay.",
+      "delveDiscoveries": [
+        {
+          "clue": "DISCOVERABLE_CLUE",
+          "discovery": "Player discovers new play options based on previous events.",
+          "newChoice": "Selecting upgrades, weapons, or skills that alter the current build."
+        },
+        {
+          "clue": "EXPERIMENT_OR_MASTERY_CHOICE",
+          "discovery": "Player experiments with different builds and strategies.",
+          "newChoice": "Combining upgrades into a stronger build."
+        },
+        {
+          "clue": "COST_AND_COUNTERPLAY",
+          "discovery": "Player learns about cost vs. counterplay in their strategy.",
+          "newChoice": "Choosing rewards or experience to upgrade their build."
+        },
+        {
+          "clue": "NEW_PLAY_OPTION",
+          "discovery": "Player creates new play options through experimentation.",
+          "newChoice": "Positioning around enemy pressure during survival runs."
+        }
+      ],
+      "delveGrowthRule": "The game grows through player choices that connect action and survival elements, leading to new progression choices and deeper gameplay layers.",
+      "finalGameIdentity": "A dynamic ACTION_SURVIVAL_ROGUELITE game where players evolve through choices that link action, survival, and roguelite elements, creating a deep and evolving gameplay experience."
+    },
+    "local_authoring_parts::84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice.",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+        },
+        "abCausality": "A <-> B: The state of the game is exchanged between the two systems through the player's choices.",
+        "abEvolution": {
+          "aChangesB": "A → B: Player makes a choice that directly affects the state of system A, leading to changes in system B.",
+          "bChangesA": "B → A: Player makes a choice that directly affects the state of system B, leading to changes in system A.",
+          "lateGameChange": "Late game, when systems are deeply interdependent, choices can have cascading effects across multiple systems."
+        },
+        "materialFusion": {
+          "contrast": "Contrast between action and survival elements in gameplay.",
+          "causalBridge": "The causal bridge connects player choices to game states through the interaction of systems.",
+          "removalConsequence": "Removing one system may disrupt the causal chain if it is essential for maintaining balance or progression."
+        },
+        "storyCausalChain": {
+          "cause": "Player's initial decision to fight through an escalating horde",
+          "characterConflict": "The conflict between survival pressure and the desire for progress",
+          "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build",
+          "worldChange": "The transformation of the run result into the next progression choice",
+          "nextEvent": "The emergence of new play options based on the previous event"
+        },
+        "cThemes": [
+          {
+            "name": "ACTION_SURVIVAL",
+            "kind": "GENRE",
+            "gameplayEffect": "Survival pressure and progression"
+          },
+          {
+            "name": "ROGUELITE",
+            "kind": "GENRE",
+            "gameplayEffect": "Short runs with progression choices"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "Combination of action, survival, and roguelite elements"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "MOBILE_SURVIVAL_roguelite",
+            "gameplayEffect": "Mobile-friendly short-run gameplay"
+          }
+        ],
+        "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
+        "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay.",
+        "delveDiscoveries": [
+          {
+            "clue": "DISCOVERABLE_CLUE",
+            "discovery": "Player discovers new play options based on previous events.",
+            "newChoice": "Selecting upgrades, weapons, or skills that alter the current build."
+          },
+          {
+            "clue": "EXPERIMENT_OR_MASTERY_CHOICE",
+            "discovery": "Player experiments with different builds and strategies.",
+            "newChoice": "Combining upgrades into a stronger build."
+          },
+          {
+            "clue": "COST_AND_COUNTERPLAY",
+            "discovery": "Player learns about cost vs. counterplay in their strategy.",
+            "newChoice": "Choosing rewards or experience to upgrade their build."
+          },
+          {
+            "clue": "NEW_PLAY_OPTION",
+            "discovery": "Player creates new play options through experimentation.",
+            "newChoice": "Positioning around enemy pressure during survival runs."
+          }
+        ],
+        "delveGrowthRule": "The game grows through player choices that connect action and survival elements, leading to new progression choices and deeper gameplay layers.",
+        "finalGameIdentity": "A dynamic ACTION_SURVIVAL_ROGUELITE game where players evolve through choices that link action, survival, and roguelite elements, creating a deep and evolving gameplay experience."
+      }
+    },
+    "local_authoring_parts::7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c:identity,creativeGrammar": {
+      "identity": "코어 전장 4대4은 플레이어가 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 통해, 단순한 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 가진 ACTION_SURVIVAL_ROGUELITE 장르의 월드입니다. 이 게임은 주체인 플레이어가 '전장 4대4'라는 이름의 중심 행동을 수행하며, 선택 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 상호작용을 통해 진화합니다. 이는 기존의 ACTION_SURVIVAL_ROGUELITE 관습을 최종 장르로 고정하지 않고, 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 결과가 A/B/c와 세계 인과법칙을 거쳐 MAIN을 다시 바꾼다는 방식으로 설계됩니다. 이는 무한히 파고드는 발견·숙련·재방문 계층을 구현하고, 각각의 사례는 상한이 아닌 실제 역할과 상태로 연결되며, 점수와 통과 판정은 결정론적 검증기가 담당합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice.",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+        },
+        "abCausality": "A <-> B: The state of the game is exchanged between the two systems through the player's choices.",
+        "abEvolution": {
+          "aChangesB": "A → B: Player makes a choice that directly affects the state of system A, leading to changes in system B.",
+          "bChangesA": "B → A: Player makes a choice that directly affects the state of system B, leading to changes in system A.",
+          "lateGameChange": "Late game, when systems are deeply interdependent, choices can have cascading effects across multiple systems."
+        },
+        "materialFusion": {
+          "contrast": "Contrast between action and survival elements in gameplay.",
+          "causalBridge": "The causal bridge connects player choices to game states through the interaction of systems.",
+          "removalConsequence": "Removing one system may disrupt the causal chain if it is essential for maintaining balance or progression."
+        },
+        "storyCausalChain": {
+          "cause": "Player's initial decision to fight through an escalating horde",
+          "characterConflict": "The conflict between survival pressure and the desire for progress",
+          "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build",
+          "worldChange": "The transformation of the run result into the next progression choice",
+          "nextEvent": "The emergence of new play options based on the previous event"
+        },
+        "cThemes": [
+          {
+            "name": "ACTION_SURVIVAL",
+            "kind": "GENRE",
+            "gameplayEffect": "Survival pressure and progression"
+          },
+          {
+            "name": "ROGUELITE",
+            "kind": "GENRE",
+            "gameplayEffect": "Short runs with progression choices"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "Combination of action, survival, and roguelite elements"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "MOBILE_SURVIVAL_roguelite",
+            "gameplayEffect": "Mobile-friendly short-run gameplay"
+          }
+        ],
+        "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
+        "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay.",
+        "delveDiscoveries": [
+          {
+            "clue": "DISCOVERABLE_CLUE",
+            "discovery": "Player discovers new play options based on previous events.",
+            "newChoice": "Selecting upgrades, weapons, or skills that alter the current build."
+          },
+          {
+            "clue": "EXPERIMENT_OR_MASTERY_CHOICE",
+            "discovery": "Player experiments with different builds and strategies.",
+            "newChoice": "Combining upgrades into a stronger build."
+          },
+          {
+            "clue": "COST_AND_COUNTERPLAY",
+            "discovery": "Player learns about cost vs. counterplay in their strategy.",
+            "newChoice": "Choosing rewards or experience to upgrade their build."
+          },
+          {
+            "clue": "NEW_PLAY_OPTION",
+            "discovery": "Player creates new play options through experimentation.",
+            "newChoice": "Positioning around enemy pressure during survival runs."
+          }
+        ],
+        "delveGrowthRule": "The game grows through player choices that connect action and survival elements, leading to new progression choices and deeper gameplay layers.",
+        "finalGameIdentity": "A dynamic ACTION_SURVIVAL_ROGUELITE game where players evolve through choices that link action, survival, and roguelite elements, creating a deep and evolving gameplay experience."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1145095,
-      "lastMs": 112382,
+      "totalMs": 1260518,
+      "lastMs": 115423,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:14:57.589Z"
+      "updatedAt": "2026-10-09T18:16:53.013Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:52.465Z",
-  "updatedAt": "2026-10-09T18:14:57.589Z",
+  "updatedAt": "2026-10-09T18:16:53.019Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,7 +2172,7 @@
     "7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c": true,
     "84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:14:57.589Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:16:53.019Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
