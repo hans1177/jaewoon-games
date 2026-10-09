@@ -1177,25 +1177,42 @@
         "NEXT_WORLD_STATE"
       ],
       "fromSystem": "SYSTEM_0_PRIMARY_PATHWAY"
+    },
+    "local_authoring_parts::a6130e8aeab09635ccf6128fc20e23b91f9149a49815e7ee868654d6f62cd3dd:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_0_PRIMARY_PATHWAY",
+      "trigger": "RESULT_STATE → NEXT_WORLD_STATE",
+      "stateChange": "사용자가 선택 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::68a8d7257ec7ec0559753dc4ce66947a8188301ab4771d42057cff35d7c73b15:systemInterconnections:3": {
+      "fromId": "RESULT_STATE",
+      "toId": "NEXT_WORLD_STATE",
+      "stateKeys": [
+        "RESULT_STATE",
+        "NEXT_WORLD_STATE"
+      ],
+      "fromSystem": "SYSTEM_0_PRIMARY_PATHWAY",
+      "toSystem": "SYSTEM_0_PRIMARY_PATHWAY",
+      "trigger": "RESULT_STATE → NEXT_WORLD_STATE",
+      "stateChange": "사용자가 선택 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 66,
+      "calls": 70,
+      "successes": 67,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5125906,
-      "lastMs": 66059,
+      "totalMs": 5160210,
+      "lastMs": 34304,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:05:29.429Z"
+      "updatedAt": "2026-10-09T01:22:51.969Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T01:22:17.654Z",
+  "updatedAt": "2026-10-09T01:22:51.971Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3264,7 +3281,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:05:29.429Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:22:51.971Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
