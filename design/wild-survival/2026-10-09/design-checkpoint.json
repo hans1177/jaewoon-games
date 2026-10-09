@@ -626,25 +626,41 @@
         "world_state"
       ],
       "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::a95940d49f76f98ded09fb2d38a3693d3f8519f0f4ef390cdba78c64a560b471:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
+    },
+    "local_authoring_parts::d5a540cb0bc2df34679f02cc7a80c6fa33ef08050b67c3fdbc2658c11c832e6d:systemInterconnections:4": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 실행",
+      "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 941008,
-      "lastMs": 37050,
+      "totalMs": 962774,
+      "lastMs": 21766,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:08:50.925Z"
+      "updatedAt": "2026-10-09T00:09:12.693Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T00:08:50.925Z",
+  "updatedAt": "2026-10-09T00:09:12.701Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2763,9 +2779,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "wild-survival_systems_3→wild-survival_systems_4의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "wild-survival_systems_0→wild-survival_systems_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: wild-survival_systems_3→wild-survival_systems_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: wild-survival_systems_0→wild-survival_systems_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2809,7 +2825,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2847,10 +2863,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:08:50.925Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T00:09:12.696Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
