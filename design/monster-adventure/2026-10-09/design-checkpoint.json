@@ -443,25 +443,39 @@
     },
     "local_authoring_parts::64361873efbb81a0e06cc9cd43fce8bc51038aaa337d22648c22891c31e6c214:trigger": {
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::64361873efbb81a0e06cc9cd43fce8bc51038aaa337d22648c22891c31e6c214:stateChange": {
+      "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::f7dd765c312803572b08c4ca0c831d959cc92a5090aa5020649fff4085098469:systemInterconnections:0": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "END_WORLD_STATE"
+      ],
+      "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+      "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1168322,
-      "lastMs": 30346,
+      "totalMs": 1203980,
+      "lastMs": 35658,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:26:49.073Z"
+      "updatedAt": "2026-10-09T01:27:24.733Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:26:49.073Z",
+  "updatedAt": "2026-10-09T01:27:24.734Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2702,7 +2716,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:26:49.073Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:27:24.734Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
