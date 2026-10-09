@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::b105e164ddbef5e55fd3d588d670cc313de9a6f41a69aeb4cd4002c8f1f2ecde:identity": {
       "identity": "50일을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 행동은 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.로 시작하여, 이 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 생성한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::b105e164ddbef5e55fd3d588d670cc313de9a6f41a69aeb4cd4002c8f1f2ecde:playerFantasy": {
+      "playerFantasy": "플레이어는 50일이라는 게임 내에서 '진격 푸시'라는 주제 아래, 단순한 생존 전투를 넘어 다양한 선택과 위험, 성장의 루프를 통해 세계를 탐험하며, 자신의 능력과 정체성에 따라 새로운 행동과 경로를 개척해야 한다. 이 과정에서는 시간과 자원의 효율적인 사용, 적 대응, 그리고 자신만의 방식으로의 성장이 핵심이다."
+    },
+    "local_authoring_parts::e8bed174c40f5d3557b2fcb9d7969e2b1130beba0433dd3cf0ba3cc30176d78e:identity,playerFantasy": {
+      "identity": "50일을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 대표 행동은 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.로 시작하여, 이 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 생성한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerFantasy": "플레이어는 50일이라는 게임 내에서 '진격 푸시'라는 주제 아래, 단순한 생존 전투를 넘어 다양한 선택과 위험, 성장의 루프를 통해 세계를 탐험하며, 자신의 능력과 정체성에 따라 새로운 행동과 경로를 개척해야 한다. 이 과정에서는 시간과 자원의 효율적인 사용, 적 대응, 그리고 자신만의 방식으로의 성장이 핵심이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201965,
-      "lastMs": 201965,
+      "totalMs": 230937,
+      "lastMs": 28972,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:39:33.137Z"
+      "updatedAt": "2026-10-09T14:40:02.110Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:36:11.151Z",
-  "updatedAt": "2026-10-09T14:39:33.137Z",
+  "updatedAt": "2026-10-09T14:40:02.112Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,7 +1747,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:39:33.137Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:40:02.112Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
