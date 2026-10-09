@@ -63,25 +63,39 @@
       "name": "PUZZLE_WORLD_RULE_SET_A",
       "purpose": "게임 내에서 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
       "playerChoice": "선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조组合이 열린다."
+    },
+    "local_authoring_parts::d262f8f52e527b0c62eda1e9a80821365deb4c79b5ed68d5c57cf64343b47d04:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE",
+        "GROWTH_OPPORTUNITY"
+      ],
+      "name": "PUZZLE_WORLD_RULE_SET_B",
+      "purpose": "A/B 대축의 선택 결과가 다음 월드 상태와 성장 기회를 연결하는 데 사용된다.",
+      "playerChoice": "Board pattern or obstacle combination that triggers WORLD_STATUS_CHANGE and GROWTH_OPPORTUNITY based on the current state and player strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 371403,
-      "lastMs": 31087,
+      "totalMs": 403945,
+      "lastMs": 32542,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:05:12.225Z"
+      "updatedAt": "2026-10-09T12:05:44.768Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:05:12.225Z",
+  "updatedAt": "2026-10-09T12:05:44.768Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2118,7 +2132,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:05:12.225Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:05:44.768Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
