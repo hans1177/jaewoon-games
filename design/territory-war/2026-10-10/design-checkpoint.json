@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4:identity": {
       "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다."
+    },
+    "local_authoring_parts::73668671cd7c70e4ebc5d4b780a4cb8a59258456f09e6412279a076a66893cde:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "a": {
+        "system": "게임 시스템 + 해석 축",
+        "material": "영토 전략, 자원 배분, 전선 이동",
+        "materialDomain": "지역 특성, 전선 변화, 자원 우선순위",
+        "stateChange": "전선 위치 변경 → 자원 할당 결정 → 전략 실행"
+      },
+      "b": {
+        "system": "다른 시스템 + 해석 축",
+        "material": "전략적 판단, 리스크 관리, 경제 확대",
+        "materialDomain": "전략적 선택, 리스크 대응, 경제 성장",
+        "stateChange": "전선 변화에 따른 자원 재배분 → 새로운 전략 수립 → 전선 이동 반영"
+      },
+      "abCausality": "양방향 실제 상태 교환: 전선 변화 → 자원 분배 → 전략 실행; 자원 분배 → 전선 이동 → 새 전략 수립"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 689837,
-      "lastMs": 89732,
+      "totalMs": 800730,
+      "lastMs": 110893,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:50:37.093Z"
+      "updatedAt": "2026-10-09T17:52:27.989Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:07.229Z",
-  "updatedAt": "2026-10-09T17:50:37.093Z",
+  "updatedAt": "2026-10-09T17:52:27.989Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1569,7 +1585,7 @@
     "e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2": true,
     "d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:50:37.093Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:52:27.989Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
