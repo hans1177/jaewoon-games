@@ -68,25 +68,42 @@
       "name": "CASUAL_GAME_FLOW_A",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::decd5553b12c8085cb227559039d667f9831a7c23dd4f3f81ea65f31df30e48a:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_STATE",
+        "DISTANCE_STATE"
+      ],
+      "stateOutputs": [
+        "RUN_OUTPUT",
+        "REWARD_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "name": "CASUAL_GAME_FLOW_B",
+      "purpose": "A/B 대축 중 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 369632,
-      "lastMs": 46920,
+      "totalMs": 419112,
+      "lastMs": 49480,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:17:18.679Z"
+      "updatedAt": "2026-10-09T09:18:08.160Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:09.017Z",
-  "updatedAt": "2026-10-09T09:17:18.679Z",
+  "updatedAt": "2026-10-09T09:18:08.160Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2163,7 +2180,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:17:18.679Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:18:08.160Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
