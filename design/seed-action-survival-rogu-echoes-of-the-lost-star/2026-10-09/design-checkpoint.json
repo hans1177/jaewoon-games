@@ -27,25 +27,32 @@
       "identity": "잃어버린 별의 메아리 - Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과로 다음 세계 규칙을 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 정체성입니다. 플레이어는 단순히 생존을 넘어선 성장, 위험, 그리고 선택에 대한 심층적 경험을 통해 세계의 원인과 인과법칙을 직접 체험하며, 이는 기존 장르 태그 하나가 아닌 복합장르로 재해석됩니다. 주요 행동은 '전투'이며, 두 대축 A/B는 '보상/위험' 및 '선택/변환'으로 연결되어 있으며, c 서브 요소는 전투 상태와 관련된 새로운 조합을 열어냅니다. @ 파고들기 요소는 발견, 숙련, 재방문의 깊이를 나타내며, 이는 실제 플레이에서 반복 가능한 루프를 형성합니다. 게임의 모든 구성 요소는 이 원본에서만 작성되며, 시스템 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지는 방식으로 설계되었습니다. MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성됩니다. 게임의 전체 항목은 공통: 임시 식별자·같은 문장 반복으로 채우지 않으며, 앞에서 확정한 중심 행동·두 핵심 축·보조 요소·파고들기·게임 규칙·저장 의미를 유지하고 입력→판정→상태 변화→대응→다음 선택으로 구체화됩니다. 기존 규칙과 수치를 보존하며, 단순 장르 태그나 기능 합산으로 분리할 수 없습니다.",
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 '전투'라는 중심 행동을 통해 세계의 원인과 인과법칙을 직접 체험하며, 이는 기존 장르 태그 하나가 아닌 복합장르로 재해석됩니다. 주요 행동은 '전투', 두 대축 A/B는 '보상/위험' 및 '선택/변환'으로 연결되어 있으며, c 서브 요소는 전투 상태와 관련된 새로운 조합을 열어냅니다. @ 파고들기 요소는 발견, 숙련, 재방문의 깊이를 나타내며, 이는 실제 플레이에서 반복 가능한 루프를 형성합니다.",
       "coreFun": "플레이어는 단순히 생존을 넘어선 성장, 위험, 그리고 선택에 대한 심층적 경험을 통해 세계의 원인과 인과법칙을 직접 체험하며, 이는 기존 장르 태그 하나가 아닌 복합장르로 재해석됩니다. 주요 행동은 '전투'이며, 두 대축 A/B는 '보상/위험' 및 '선택/변환'으로 연결되어 있으며, c 서브 요소는 전투 상태와 관련된 새로운 조합을 열어냅니다. @ 파고들기 요소는 발견, 숙련, 재방문의 깊이를 나타내며, 이는 실제 플레이에서 반복 가능한 루프를 형성합니다."
+    },
+    "local_authoring_parts::a0b3af4430b9be6f99eca3229d244fb5427fbe112eb289eb8693d7e9d666885f:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 '전투'라는 중심 행동을 통해 세계의 원인과 인과법칙을 직접 체험하며, 이는 기존 장르 태그 하나가 아닌 복합장르로 재해석됩니다.",
+        "SELECT: 전투 상태를 바탕으로 보상/위험 및 선택/변환 두 가지 대축을 교환하여 새로운 게임 상태를 생성합니다.",
+        "OUTPUT: 전투 결과가 다음 상태로 변형되어, 주요 행동은 '전투', A/B/c/@ 서브 요소가 서로 영향을 줄 수 있는 실제 게임 상태를 만듭니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 344957,
-      "lastMs": 55430,
+      "totalMs": 409786,
+      "lastMs": 64829,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:24:53.542Z"
+      "updatedAt": "2026-10-09T12:25:58.374Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:19:08.560Z",
-  "updatedAt": "2026-10-09T12:24:53.543Z",
+  "updatedAt": "2026-10-09T12:25:58.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:24:53.543Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:25:58.374Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
