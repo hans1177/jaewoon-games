@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::2b6b2b7f1e7a90235dd31502b2b2ed371185a266db5cf8f49068ea0f9e2814cb:identity": {
       "identity": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다."
+    },
+    "local_authoring_parts::2b6b2b7f1e7a90235dd31502b2b2ed371185a266db5cf8f49068ea0f9e2814cb:playerFantasy": {
+      "playerFantasy": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다."
+    },
+    "local_authoring_parts::2c7a22c7d2a7654099a16aac3294a8f13ce42e81f194c40eeed2cbf4e33969b3:identity,playerFantasy": {
+      "identity": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
+      "playerFantasy": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 70359,
-      "lastMs": 70359,
+      "totalMs": 88899,
+      "lastMs": 18540,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:30:32.615Z"
+      "updatedAt": "2026-10-09T14:30:51.156Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:30:32.615Z",
+  "updatedAt": "2026-10-09T14:30:51.157Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1736,7 +1743,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:30:32.615Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:30:51.157Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
