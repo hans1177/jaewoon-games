@@ -873,25 +873,28 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "BOARD_STATE",
       "stateChange": "NEW_BOARD_STATE"
+    },
+    "local_authoring_parts::4d6ef7665ede64172a658e4db6d9204e10633909fab3a02d3b1593b70778844c:fromId": {
+      "fromId": "BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 73,
-      "successes": 73,
+      "calls": 74,
+      "successes": 74,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5070110,
-      "lastMs": 95767,
+      "totalMs": 5163430,
+      "lastMs": 93320,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:54:05.915Z"
+      "updatedAt": "2026-10-09T00:55:39.246Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T00:54:05.923Z",
+  "updatedAt": "2026-10-09T00:55:39.246Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3159,10 +3162,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:54:05.918Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:55:39.246Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
