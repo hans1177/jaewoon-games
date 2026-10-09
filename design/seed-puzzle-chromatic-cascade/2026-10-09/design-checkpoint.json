@@ -60,25 +60,38 @@
       "name": "COLOR_CHAIN_EFFECT",
       "purpose": "색채의 연쇄에서 선택 결과가 다음 월드 상태로 전환하는 첫 번째 대축.",
       "playerChoice": "Board state transition with color-based constraints and immediate feedback to determine the next level pattern or obstacle combination."
+    },
+    "local_authoring_parts::2d1f4a4c181f933e3504b26c481f43b5af68c2be5ead46beda1a70c56ab85c82:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "COLOR_CHAIN_EFFECT",
+      "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 324227,
-      "lastMs": 28537,
+      "totalMs": 353905,
+      "lastMs": 29678,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:29:35.037Z"
+      "updatedAt": "2026-10-09T12:30:04.716Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:24:10.768Z",
-  "updatedAt": "2026-10-09T12:29:35.037Z",
+  "updatedAt": "2026-10-09T12:30:04.716Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2115,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:29:35.037Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:30:04.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
