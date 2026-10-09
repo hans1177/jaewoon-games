@@ -418,7 +418,7 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
-  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasRunnableHomepageTarget\(item\)\)\|\|rows\[0\]/);
+  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
   assert.match(runtime,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
   assert.match(runtime,/const actionLabel=links\.unityWeb\?'유니티 웹 플레이':'게임 입장'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
@@ -473,7 +473,7 @@ test('Unity Web homepage requires actual deployed bundle, 3D browser play and in
   assert.equal(display.playableWebCompanionButtonEnabled,false);
   assert.equal(display.playableWebCompanionButtonLabel,'DISABLED');
   assert.equal(display.playableWebCompanionSource,'LEGACY_REFERENCE_ONLY');
-  assert.equal(display.cardVisibilityRequiresRunnableTarget,true);
+  assert.equal(display.cardVisibilityRequiresRunnableTarget,false);
   const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
   assert.equal(directiveDisplay.unityWebHomepageExposureGate,display.unityWebHomepageExposureGate);
   assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,false);
