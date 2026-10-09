@@ -212,25 +212,43 @@
       "name": "OPENING",
       "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 수행한다.",
       "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정의 순차적 루프로 연결됨으로 인해 주요 요소가 서로 영향을 미친다."
+    },
+    "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "개미 종족 선택",
+        "월드 상태 및 자원 정보",
+        "위험 및 진행 상태"
+      ],
+      "stateOutputs": [
+        "장르 핵심 행동 결정",
+        "월드 상태 변환",
+        "보상/위험 발생",
+        " 다음 목표 결정"
+      ],
+      "name": "OPENING",
+      "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+      "playerChoice": "실제 입력에 따라 월드 상태, 자원, 위험, 진행 상태가 변환되고, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 716714,
-      "lastMs": 48933,
+      "totalMs": 760863,
+      "lastMs": 44149,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:52:06.702Z"
+      "updatedAt": "2026-10-09T20:52:50.853Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T20:52:06.702Z",
+  "updatedAt": "2026-10-09T20:52:50.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1835,7 +1853,7 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:52:06.702Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:52:50.853Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
