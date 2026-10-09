@@ -93,25 +93,201 @@
       "name": "Enemy Wave Completion and Resource Gain",
       "purpose": "Player evaluates the cost, risk, and reward of previous choices to re-evaluate their strategy and open new paths.",
       "playerChoice": "Reassess prior decisions to generate new actions and routes."
+    },
+    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:4": {
+      "id": "CORE-05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENEMY_WAVE_COMPLETED",
+        "RESOURCE_GAINED"
+      ],
+      "stateOutputs": [
+        "UPGRADE_AVAILABLE",
+        "NEW_PLACEMENT_OPPORTUNITY"
+      ],
+      "name": "Enemy Wave Completion and Resource Gain",
+      "purpose": "Player evaluates the cost, risk, and reward of previous choices to adapt their strategy and open new paths.",
+      "playerChoice": "Re-evaluate prior decisions to select new tactics and opportunities for placement or upgrades."
+    },
+    "local_authoring_parts::0dab98b86a2d67599dd663cea44dbb9b9849b1380c3b2ab58eff03652a5a6ca9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of completing an enemy wave and gaining resources, then re-evaluates their strategy to open new paths.",
+          "playerChoice": "Reevaluate strategy based on previous costs, risks, and rewards, opening new paths through upgrades or placements."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates previous choices, re-evaluates cost, risk, reward, and opens new paths for strategy development.",
+          "playerChoice": "Selects optimal placement and upgrade path based on current resource state and enemy wave progress."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of previous choices to re-evaluate their strategy and open new paths.",
+          "playerChoice": "Reassess prior decisions to generate new actions and routes."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of previous choices to adapt their strategy and open new paths.",
+          "playerChoice": "Re-evaluate prior decisions to select new tactics and opportunities for placement or upgrades."
+        }
+      ]
+    },
+    "local_authoring_parts::83d119a6754dc635752c0b870fa0672a51cdfea20258841147770b6257498036:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다.",
+        "플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다.",
+        "세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "CHANGED_WORLD_STATE"
+          ],
+          "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of completing an enemy wave and gaining resources, then re-evaluates their strategy to open new paths.",
+          "playerChoice": "Reevaluate strategy based on previous costs, risks, and rewards, opening new paths through upgrades or placements."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates previous choices, re-evaluates cost, risk, reward, and opens new paths for strategy development.",
+          "playerChoice": "Selects optimal placement and upgrade path based on current resource state and enemy wave progress."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of previous choices to re-evaluate their strategy and open new paths.",
+          "playerChoice": "Reassess prior decisions to generate new actions and routes."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE_COMPLETED",
+            "RESOURCE_GAINED"
+          ],
+          "stateOutputs": [
+            "UPGRADE_AVAILABLE",
+            "NEW_PLACEMENT_OPPORTUNITY"
+          ],
+          "name": "Enemy Wave Completion and Resource Gain",
+          "purpose": "Player evaluates the cost, risk, and reward of previous choices to adapt their strategy and open new paths.",
+          "playerChoice": "Re-evaluate prior decisions to select new tactics and opportunities for placement or upgrades."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 450752,
-      "lastMs": 37214,
+      "totalMs": 486804,
+      "lastMs": 36052,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:48:42.517Z"
+      "updatedAt": "2026-10-09T11:49:18.572Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:48:42.519Z",
+  "updatedAt": "2026-10-09T11:49:18.574Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2303,26 +2479,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:4": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "CORE-01",
-          "CORE-02",
-          "CORE-03",
-          "CORE-04"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:48:42.517Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-09T11:49:18.574Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
