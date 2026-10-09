@@ -1085,25 +1085,35 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "border_pressure→territory_objective",
       "stateChange": "new_strategy→updated_front_line→expanded_resources"
+    },
+    "local_authoring_parts::ac0e8aadd2ba5c8f46b8835c3b016a59dda818ccb96aa504e8816359c9939d2e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "territory_objective",
+      "stateKeys": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "fromSystem": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 64,
-      "successes": 61,
+      "calls": 65,
+      "successes": 62,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3992298,
-      "lastMs": 90722,
+      "totalMs": 4085242,
+      "lastMs": 92944,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:57:09.179Z"
+      "updatedAt": "2026-10-09T00:58:42.128Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T00:57:09.182Z",
+  "updatedAt": "2026-10-09T00:58:42.128Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3272,7 +3282,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:57:09.182Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:58:42.128Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
