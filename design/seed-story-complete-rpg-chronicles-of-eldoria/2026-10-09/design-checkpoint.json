@@ -977,25 +977,36 @@
       "toSystem": "LOCATION_CHANGE_STATE",
       "trigger": "EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE",
       "stateChange": "FROM: EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE TO: LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::6b3782cda0b0f72b5412a935a73a27fb0af8ba0ea88bb7a6db01aaf91bd99d71:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE: 탐험 중 지역 변화 없음, 인물 상호작용 실패, 퀘스트 완료 실패 상태에서 월드 상태 전환 시스템에 입력됨, 새로운 정보 및 아이템 획득 후 월드 상태 전환 시스템에 출력됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 55,
+      "calls": 57,
+      "successes": 56,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4484948,
-      "lastMs": 63586,
+      "totalMs": 4555075,
+      "lastMs": 70127,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:18:01.258Z"
+      "updatedAt": "2026-10-09T00:19:11.389Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T00:18:01.260Z",
+  "updatedAt": "2026-10-09T00:19:11.389Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3373,7 +3384,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:18:01.260Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:19:11.389Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
