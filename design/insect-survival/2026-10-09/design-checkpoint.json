@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:identity": {
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.' 및 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문 깊이로 역할을 구분한다. 세계 규칙은 MAIN × A × B × c의 상태 교환에 기반하여 동일한 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 인과법칙은 KARMA_RETURN와 MANDATE_LEGITIMACY로 구체화되어, 성장은 수치 증가뿐만 아니라 새 행동·경로·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 시그니처 시스템은 각각 5개 이상의 서로 다른 메커니즘을 포함하며, 저장·보상·진행을 임의 변경하지 않는다. 게임은 UNITY 플랫폼에서 웹 브라우저로 배포되며, 모바일 터치 컨트롤 없이 실제 세계 깊이·가림·조명을 지원한다."
+    },
+    "local_authoring_parts::33e067983b8270aaca9838f72e3144a96439c3e9d5f042721ad1f87275ec8c93:playerFantasy": {
+      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계 속에 서 있는 곤충의 시점에서, 먹이 사슬과 생태계의 위험을 직접 체감하는 독자의 생존 게임이다. 이 게임은 단순한 탐험보다는 진보적 선택과 위험의 결과로 인해 성장하며, 다양한 경로와 보상이 존재하여 플레이어에게 새로운 경험과 의미를 제공한다."
+    },
+    "local_authoring_parts::0192de5fe13809f8137ac28c8054c6f27f982bd4bb4494f47aedfaa42bb9daf1:identity,playerFantasy": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.' 및 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문 깊이로 역할을 구분한다. 세계 규칙은 MAIN × A × B × c의 상태 교환에 기반하여 동일한 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 인과법칙은 KARMA_RETURN와 MANDATE_LEGITIMACY로 구체화되어, 성장은 수치 증가뿐만 아니라 새 행동·경로·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 시그니처 시스템은 각각 5개 이상의 서로 다른 메커니즘을 포함하며, 저장·보상·진행을 임의 변경하지 않는다. 게임은 UNITY 플랫폼에서 웹 브라우저로 배포되며, 모바일 터치 컨트롤 없이 실제 세계 깊이·가림·조명을 지원한다.",
+      "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계 속에 서 있는 곤충의 시점에서, 먹이 사슬과 생태계의 위험을 직접 체감하는 독자의 생존 게임이다. 이 게임은 단순한 탐험보다는 진보적 선택과 위험의 결과로 인해 성장하며, 다양한 경로와 보상이 존재하여 플레이어에게 새로운 경험과 의미를 제공한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 245837,
-      "lastMs": 245837,
+      "totalMs": 293168,
+      "lastMs": 47331,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:55:59.113Z"
+      "updatedAt": "2026-10-09T11:56:46.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:51:53.255Z",
-  "updatedAt": "2026-10-09T11:55:59.113Z",
+  "updatedAt": "2026-10-09T11:56:46.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:55:59.113Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:56:46.446Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
