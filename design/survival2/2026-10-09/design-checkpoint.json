@@ -1911,25 +1911,53 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-"
+    },
+    "local_authoring_parts::50faea17c81f80373a447f5b0499211821560c13a67ab688ecb0f8925f9bdf36:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act; Enhanced gameplay mechanics, improved survival conditions, and strategic depth; New game states, altered progression paths, and expanded player agency"
+    },
+    "local_authoring_parts::f47c17cd1aff7957045a990433aebaede68cd12475b630e3b2ae9901243cf669:systemInterconnections:1": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-",
+      "toSystem": "SURVIVAL2-MAIN-02-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act; Enhanced gameplay mechanics, improved survival conditions, and strategic depth; New game states, altered progression paths, and expanded player agency"
+    },
+    "local_authoring_parts::52878abdc4ed7986de3b4293e5d5770a3ca910a802b874afe982ca64fe0ff407:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 115,
-      "successes": 115,
+      "calls": 117,
+      "successes": 117,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8678382,
-      "lastMs": 82402,
+      "totalMs": 8847669,
+      "lastMs": 86603,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:47:48.069Z"
+      "updatedAt": "2026-10-09T06:50:37.363Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T06:47:48.070Z",
+  "updatedAt": "2026-10-09T06:50:37.363Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4304,7 +4332,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:47:48.070Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:50:37.363Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
