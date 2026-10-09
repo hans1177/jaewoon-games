@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 길의 설계者로, 선택에 따라 세계가 변하는 게임 속에서 진입하여, 행동 결과와 보상을 통해 현실적인 세계 상태를 만든다. 이는 플레이어의 역할로서, 선택의 영향력과 실제 세계의 변화를 직접 경험하게 된다.",
       "coreFun": "{\"system\":\"3D 경영 시뮬레이션\",\"material\":\"길의 설계와 관리\",\"materialDomain\":\"건설\"}\n{\"stateChange\":\"길의 길이 증가 -> 손님 수 상승 -> 팀원 추가 가능\"}\n{\"choice\": \"길의 길이 증가 선택 → 상태 변화 발생 → 보상 제공\"}"
+    },
+    "local_authoring_parts::7d0e6c2e350203e18e8d09d9d36db435408fa023f3cdbe65770b4913d869a5cd:coreLoop": {
+      "coreLoop": [
+        "게임 정체성 확립: 길의 설계와 관리, 플레이어 선택 시스템",
+        "입력/선택 -> 상태변화 -> 보상 제공",
+        "실제 세계 상태 변화 및 다음 사건 발생"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1435715,
-      "lastMs": 99944,
+      "totalMs": 1517562,
+      "lastMs": 81847,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:31:06.422Z"
+      "updatedAt": "2026-10-09T21:32:28.272Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:07:10.671Z",
-  "updatedAt": "2026-10-09T21:31:06.423Z",
+  "updatedAt": "2026-10-09T21:32:28.272Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2031,7 +2038,7 @@
     "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true,
     "dd4e29491fa3e01732e139046d91fb90ed6670dc0567dd9843759681265272bc": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:31:06.423Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:32:28.272Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
