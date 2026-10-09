@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
+test('central policy preserves every result artifact while coalescing callback workflows under pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,499);
+  assert.ok(Number(policy.version)>=554);
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED_PRESSURE_COHORT_FANIN');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
@@ -36,7 +36,9 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/String\(run\.id\|\|''\)!==String\(process\.env\.CURRENT_RUN\|\|''\)/);
-  assert.match(workflow,/String\(run\.head_sha\|\|''\)===String\(process\.env\.CURRENT_MAIN\|\|''\)/);
+  assert.doesNotMatch(workflow,/String\(run\.head_sha\|\|''\)===String\(process\.env\.CURRENT_MAIN\|\|''\)/);
+  assert.match(workflow,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST=/);
+  assert.doesNotMatch(workflow,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
   assert.doesNotMatch(workflow,/refill_active="\$\(REFILL_TITLE=[\s\S]{0,300}node - <<'NODE'/);
   assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-neuron-refill-active\.txt/);
   assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-regression-refill-active\.txt/);
@@ -45,4 +47,12 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-regression-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
   assert.match(workflow,/cancel-in-progress: false/);
+});
+
+test('confirmed coordinator does not replace pending development game or batch jobs',()=>{
+  const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  assert.match(router,/group:\s*company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(router,/group:\s*company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
+  assert.match(router,/DEVELOPMENT_COORDINATOR_ADMISSION=OLDEST_ACTIVE_BATCH/);
+  assert.match(router,/cancel-in-progress:\s*false/);
 });
