@@ -508,25 +508,28 @@
       "toSystem": "PUZZLE_WORLD_RULE_SET_B",
       "trigger": "선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
       "stateChange": "플레이어가 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다."
+    },
+    "local_authoring_parts::5cb60b2f757f1c8f5cfa44041dd044ec93a4bcaa14bcf2cdad8de4497293d43e:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1969906,
-      "lastMs": 91124,
+      "totalMs": 2057912,
+      "lastMs": 88006,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:31:50.771Z"
+      "updatedAt": "2026-10-09T12:33:18.781Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:31:50.773Z",
+  "updatedAt": "2026-10-09T12:33:18.782Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2937,7 +2940,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:31:50.773Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:33:18.781Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
