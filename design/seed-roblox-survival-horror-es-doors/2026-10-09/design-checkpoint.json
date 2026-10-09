@@ -1000,25 +1000,31 @@
           "stateChange": "시스템은 BOARD_STATE 상태를 입력받아, PLAYER_CHOICE의 선택 기반으로 NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시킨다."
         }
       ]
+    },
+    "local_authoring_parts::9b501c1b87ce7cc527fc8bd913977aafaa349258438f21590c0ddef774f28d60:failureStates": {
+      "failureStates": [
+        "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+        "시스템은 BOARD_STATE 상태를 입력받아, PLAYER_CHOICE의 선택 기반으로 NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시킨다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 96,
-      "successes": 96,
+      "calls": 97,
+      "successes": 97,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3196257,
-      "lastMs": 32856,
+      "totalMs": 3231840,
+      "lastMs": 35583,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:16:34.517Z"
+      "updatedAt": "2026-10-09T00:17:10.104Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:16:34.519Z",
+  "updatedAt": "2026-10-09T00:17:10.104Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3344,7 +3350,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:16:34.519Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:17:10.104Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
