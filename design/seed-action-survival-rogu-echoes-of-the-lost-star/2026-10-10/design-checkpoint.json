@@ -539,25 +539,39 @@
         "Collects run rewards or experience, chooses upgrades, perks, weapons, or skills that change the current build.",
         "Combines upgrades into a stronger build, survives harder waves or a boss, then converts the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::c1dc00f1fcd49b7e7f4885bfb151cb081393bb8c699c3e367c4c5fe6f2aa9193:signatureSystems:0": {
+      "id": "RUN_RESULT_20260917",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_FRICTION_20260917",
+        "ENEMY_PRESSURE_20260917"
+      ],
+      "stateOutputs": [
+        "NEXT_PROGRESSION_CHOICE_20260917"
+      ],
+      "name": "Lost Star's Whisper - Player input directly shapes the game world, fostering adaptive progression and emergent gameplay.",
+      "purpose": "Player experiences friction in their choices, leading to increased tension and player-driven progression.",
+      "playerChoice": "UPGRADE_BUILDING_20260917"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1564393,
-      "lastMs": 86384,
+      "totalMs": 1663953,
+      "lastMs": 99560,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:03:52.864Z"
+      "updatedAt": "2026-10-09T18:05:32.426Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:37:48.429Z",
-  "updatedAt": "2026-10-09T18:03:52.864Z",
+  "updatedAt": "2026-10-09T18:05:32.426Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2285,7 @@
     "cb2fdd83b67ccbbd161d13e0a17070e25bd5285ec9b25008ce185ad0bf38a28f": true,
     "852fc3ed43fe1701a4ff03077bdc1b3c4de88e2efa75349054f74707c3e65fbd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:03:52.864Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:05:32.426Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
