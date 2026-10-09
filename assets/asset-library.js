@@ -219,6 +219,9 @@ async function refresh(force=false){
   const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature;
   manifest=nextManifest;registry=nextRegistry;registryViewSignature=nextRegistrySignature;syncFeaturedButtons();
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
+  // 등록 경로 수는 파일 존재 또는 실제 제작 검증 수와 같지 않다.
+  $('sourcePathCount').textContent=new Set(registry.assets.map(asset=>String(asset?.sourcePath||asset?.path||'').trim()).filter(Boolean)).size.toLocaleString('ko-KR');
+  $('productionMarkCount').textContent=registry.assets.filter(asset=>asset?.productionVerified===true).length.toLocaleString('ko-KR');
   $('allCount').textContent=registry.assets.length;
   $('monsterCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='CREATURE').length;
   $('environmentCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='ENVIRONMENT').length;

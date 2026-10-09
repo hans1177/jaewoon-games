@@ -2757,6 +2757,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
       if(['node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','.git','build','dist'].includes(entry.name))continue;
       const full=path.join(current,entry.name);
+      if(entry.isSymbolicLink())continue;
       if(entry.isDirectory()){stack.push(full);continue;}
       if(!extensions.has(path.extname(entry.name).toLowerCase()))continue;
       candidates.push(posix(path.relative(repoRoot,full)));
@@ -2769,7 +2770,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     gameId:project.gameId,
     genre:project.genre||project.category||project.gameCategory||'',
     baseline:flowBaseline,
-    inventory:candidates.map(sourcePath=>({path:sourcePath,label:sourcePath.slice(sourceRoot.length+1)}))
+    inventory:[]
   }):null;
   const flowAssetRequirements=flowArchitecture?buildFlowAssetRequirements({
     architecture:flowArchitecture,
@@ -2781,10 +2782,12 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const sourceLibraryHints=flowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[];
   const availableLibrarySources=sourceLibraryHints.map(hint=>{
     if(!hint.startsWith('assets/'))return null;
-    const file=path.resolve(repoRoot,hint),sourceRoot=path.resolve(repoRoot,'assets')+path.sep;
-    if(!file.startsWith(sourceRoot))return null;
+    const file=path.resolve(repoRoot,hint),assetRoot=path.resolve(repoRoot,'assets')+path.sep;
+    if(!file.startsWith(assetRoot))return null;
     try{
-      if(!fs.statSync(file).isFile())return null;
+      // 저장소 외부로 연결되는 링크는 내부 자산의 검증 근거로 취급하지 않는다.
+      const actualRoot=fs.realpathSync(path.resolve(repoRoot,'assets'))+path.sep;
+      if(!fs.realpathSync(file).startsWith(actualRoot)||!fs.statSync(file).isFile())return null;
       const contents=fs.readFileSync(file);
       return{path:hint,bytes:contents.length,sha256:crypto.createHash('sha256').update(contents).digest('hex')};
     }catch{return null;}
@@ -2831,7 +2834,9 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const responsibleFiles=candidates.sort((a,b)=>relevance(b)-relevance(a)||a.localeCompare(b)).slice(0,responsibleFileLimit);
   const responsibleFileFingerprints=responsibleFiles.map(file=>{
     try{
-      const contents=fs.readFileSync(path.join(repoRoot,file));
+      const sourcePath=path.join(repoRoot,file);
+      if(!fs.lstatSync(sourcePath).isFile())return{path:file,readStatus:'UNAVAILABLE_NOT_VERIFIED'};
+      const contents=fs.readFileSync(sourcePath);
       return{path:file,bytes:contents.length,sha256:crypto.createHash('sha256').update(contents).digest('hex')};
     }catch{return{path:file,readStatus:'UNAVAILABLE_NOT_VERIFIED'};}
   });

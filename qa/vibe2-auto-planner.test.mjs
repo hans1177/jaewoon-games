@@ -10,6 +10,7 @@ import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2Au
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
@@ -4639,6 +4640,18 @@ test('company runtime projects project exact post-F9 Roblox continuation and pri
   }
 });
 
+test('existing game flow keeps its inventory-seeded decisions while file discovery stays outside gameplay identity',()=>{
+  const baseline={content:{identity:'탐험 생존',coreLoop:['채집','제작','탐험']}};
+  const query={gameId:'library-flow-seed-regression',genre:'ACTION_SURVIVAL_ROGUELITE',baseline};
+  const reference=buildGameFlowArchitecture({...query,inventory:[]});
+  const pick=row=>JSON.stringify({returnMode:row.returnStructure.selectedMode,failure:row.failureModel.modes,victory:row.victoryModel.modes});
+  const variants=Array.from({length:24},(_,i)=>buildGameFlowArchitecture({
+    ...query,inventory:[{path:'roblox-games/library-flow-seed-regression/client/Scene'+i+'.luau',label:'Scene'+i}]
+  }));
+  assert.ok(variants.some(row=>pick(row)!==pick(reference)),'explicit inventory contract must retain its previous deterministic routing');
+  assert.deepEqual(buildGameFlowArchitecture({...query,inventory:[]}).returnStructure,reference.returnStructure);
+});
+
 test('studio build-up task carries concept-matched survival systems and reusable library hints',()=>{
   const root=tempRepo();
   const gameId='survival-flow-systems';
@@ -4684,6 +4697,24 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.ok(task.studioQualityEvolution.flowRequiredSystemCount>=8);
   assert.equal(task.studioQualityEvolution.flowSystemExistingLibraryFirst,true);
   assert.equal(task.studioQualityEvolution.flowSystemShadowAuthorityForbidden,true);
+  // 다른 디렉터리에 연결된 소스와 라이브러리 링크는 내부 재사용 증거로 채택하지 않는다.
+  const externalSource=path.join(root,'untrusted-client.luau');
+  const externalLibrary=path.join(root,'untrusted-library.js');
+  fs.writeFileSync(externalSource,'local privateState = true\n','utf8');
+  fs.writeFileSync(externalLibrary,'export const privateKey = true;\n','utf8');
+  fs.symlinkSync(externalSource,path.join(source,'client','Untrusted.client.luau'));
+  fs.unlinkSync(path.join(root,'assets','crafting-recipes.js'));
+  fs.symlinkSync(externalLibrary,path.join(root,'assets','crafting-recipes.js'));
+  const guarded=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(guarded);
+  assert.doesNotMatch(guarded.goal,/Untrusted\.client\.luau/);
+  const match=guarded.goal.match(/LIBRARY_PATH_CHECK=(\{.+?\})\. 실제 소스/s);
+  assert.ok(match,'expected existing library evidence in normal build-up goal');
+  const evidence=JSON.parse(match[1]);
+  assert.ok(evidence.missing.includes('assets/crafting-recipes.js'));
+  assert.ok(evidence.found.includes('assets/inventory-equipment.js'));
+  assert.ok(evidence.sourceFingerprints.every(row=>row.path!=='assets/crafting-recipes.js'));
+  assert.equal(guarded.studioQualityEvolution.flowSystemProfile,task.studioQualityEvolution.flowSystemProfile);
 });
 
 
