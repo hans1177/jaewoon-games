@@ -1624,25 +1624,35 @@
       "toSystem": "CORE_LOOP_DESIGN_0_BASELINE_V1_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZRSTUVWXYZABCD_EF0123456789ABCDFGHIJKL_MNO_PQRS_TUV_WXYZ_1234567890_1234567890_1234567890_12",
       "trigger": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE",
       "stateChange": "FROM_DEFENSE_COVERAGE_LEVEL_X_TO_DEFENSE_COVERAGE_LEVEL_Y, RESOURCE_ACUMULATION_VALUE_INCREMENTED, TACTICAL_FLEXIBILITY_VALUE_INCREMENTED"
+    },
+    "local_authoring_parts::57d53e96d8383c27cc61b1d4a56785b3ede28a9c3a92499bad1dea3af6e9cb5e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_0_BASELINE_V1_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZRSTUVWXYZABCD_EF0123456789ABCDFGHIJKL_MNO_PQRS_TUV_WXYZ_1234567890_1234567890_1234567890_12"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 100,
-      "successes": 97,
+      "calls": 101,
+      "successes": 98,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7571203,
-      "lastMs": 40800,
+      "totalMs": 7610855,
+      "lastMs": 39652,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:15:05.946Z"
+      "updatedAt": "2026-10-09T05:15:45.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T05:15:05.947Z",
+  "updatedAt": "2026-10-09T05:15:45.601Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3982,7 +3992,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:15:05.947Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:15:45.601Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
