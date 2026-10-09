@@ -411,25 +411,106 @@
           "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다"
         }
       ]
+    },
+    "local_authoring_parts::181552bca89087027242f9a474a3a32f9c6874b03c19e38501f85a878d2ee43a:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::0783f7930910d61642f0da70d17031476b3a2b8316a1205d0707f370e6c8f03c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 포탈 전투 선택 → 상태변화: 금빛 큰뿔 등장 → 보상: 파티 구성 및 보스 처치",
+        "입력: 보스 동료 수집 선택 → 상태변化: 보스 영입 → 보상: AI 동료 자동 동기화",
+        "입력: 파티 조합 확장 선택 → 상태변化: Lv.40 2차 완성형 생성 → 보상: Lv.60 만렙/숙련"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "포탈 전투 선택",
+            "보스 동료 수집 선택",
+            "파티 조합 확장 선택"
+          ],
+          "stateOutputs": [
+            "금빛 큰뿔 등장",
+            "보스 영입",
+            "Lv.40 2차 완성형 생성"
+          ],
+          "name": "포탈 전투 및 보스 격파 중심적 역할",
+          "purpose": "포탈 전투와 보스 동료 수집의 연관성을 구체화하며, 파티 조합 확장에 대한 진입 및 해금 시점 결정",
+          "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화, 별도 장비 노가 다 없음"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "포탈 전투 선택",
+            "보스 동료 수집 선택",
+            "파티 조합 확장 선택"
+          ],
+          "stateOutputs": [
+            "금빛 큰뿔 등장",
+            "보스 영입",
+            "Lv.40 2차 완성형 생성"
+          ],
+          "name": "포탈 전투 → 보스 동료 수집 → 파티 조합 확장",
+          "purpose": "포탈 전투의 상태변화와 보상에 따라 보스 동료 수집 및 파티 조합 확장의 시작점",
+          "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "포탈 전투 선택",
+            "보스 동료 수집 선택",
+            "파티 조합 확장 선택"
+          ],
+          "stateOutputs": [
+            "금빛 큰뿔 등장",
+            "보스 영입",
+            "Lv.40 2차 완성형 생성"
+          ],
+          "name": "포탈 전투 → 보스 동료 수집 → 파티 조합 확장",
+          "purpose": "포탈 전투의 결과를 바탕으로 보스 동료 수집을 수행하며, 이를 통해 파티 조합 확장을 이어간다.",
+          "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하여, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "포탈 전투 선택",
+            "보스 동료 수집 선택",
+            "파티 조합 확장 선택"
+          ],
+          "stateOutputs": [
+            "금빛 큰뿔 등장",
+            "보스 영입",
+            "Lv.40 2차 완성형 생성"
+          ],
+          "name": "포탈 전투 → 보스 동료 수집 → 파티 조합 확장",
+          "purpose": "포탈 전투의 결과로 보스 동료를 수집하여 파티 구성 및 레벨업을 촉진하는 양방향 상태 교환 시스템",
+          "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1360126,
-      "lastMs": 109276,
+      "totalMs": 1450219,
+      "lastMs": 90093,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:38:22.653Z"
+      "updatedAt": "2026-10-09T20:39:52.750Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:15:42.496Z",
-  "updatedAt": "2026-10-09T20:38:22.656Z",
+  "updatedAt": "2026-10-09T20:39:52.762Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2173,15 +2254,147 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]",
+            "signatureSystems[3]"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "creativeGrammar": {
+        "mainIdentity": "초원 시드형 로그라이크 런 - 1번 포탈 초원은 빈 런 시작 시 Seed로 방/길/전투/이벤트/보물/정예 구성을 다시 조합한다.",
+        "a": {
+          "system": "포탈 전투",
+          "material": "초원 몬스터 10종",
+          "materialDomain": "체형, 전조, 사거리, 패링 가능 여부, 특수공격",
+          "stateChange": "랜덤 런의 EXIT에는 금빛 큰뿔이 등장한다. 황금뿔 돌진은 패링 가능, 대지 짓밟기는 패링/막기 불가, 삼연속 돌진은 연속 대응을 요구한다."
+        },
+        "b": {
+          "system": "보스 동료 수집",
+          "material": "초원 런 보스",
+          "materialDomain": "영입 가능한 보스",
+          "stateChange": "영입 가능한 보스를 처음 격파하면 해당 보스가 AI 동료로 영구 해금된다."
+        },
+        "abCausality": "A→B: 포탈 전투 → 보스 동료 수집; B→A: 보스 동료 수집 → 포탈 전투",
+        "abEvolution": {
+          "aChangesB": "A→B: 포탈 전투 → 보스 동료 수집; B→A: 보스 동료 수집 → 포탈 전투",
+          "bChangesA": "B→A: 보스 동료 수집 → 포탈 전투; A→B: 포탈 전투 → 보스 동료 수집",
+          "lateGameChange": "1+3 동료 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련"
+        },
+        "materialFusion": {
+          "contrast": "초원 몬스터 10종과 초원 런 보스의 체형, 전조, 사거리, 패링 가능 여부, 특수공격을 융합하여 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 된다.",
+          "causalBridge": "포탈 전투에서 보스 동료 수집으로 연결되어 진입 및 해금 시점이 결정된다.",
+          "removalConsequence": "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 사용한다."
+        },
+        "storyCausalChain": {
+          "cause": "포탈 전투 시작 -> 상태변화: 금빛 큰뿔 등장 -> 인물 갈등: 보스 동료 영입 -> 플레이어 선택: 파티 구성 -> 실제 세계 상태 변화: 보스 처치 -> 다음 사건: 파티 조합 확장",
+          "characterConflict": "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 그대로 동료 정체성으로 사용한다.",
+          "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다.",
+          "worldChange": "초원은 진행할수록 어둡고 신비롭게 대비되며, 몬스터는 체형부터 다르게 만든다.",
+          "nextEvent": "파티 조합 확장 → Lv.40 2차 완성형 → Lv.60 만렙/숙련"
+        },
+        "cThemes": [
+          {
+            "name": "초원",
+            "kind": "MATERIAL",
+            "gameplayEffect": "포탈 전투 및 보스 격파의 중심적 역할"
+          },
+          {
+            "name": "레벨 성장",
+            "kind": "GENRE",
+            "gameplayEffect": "레벨업마다 최대체력 +10, 공격력 +10"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "5포탈 지역",
+            "gameplayEffect": "5개 대형 사냥터로 구성된 메인 장르"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "보스 동료 수집",
+            "gameplayEffect": "AI 동료를 통해 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 된다."
+          }
+        ],
+        "cGenreInterlock": "5포탈 지역과 보스 동료 수집은 상호작용하며, 보조 장르 제거 시 파티 조합 확장이 바뀌는 플레이가 발생한다.",
+        "cWorldAndGameplayEffect": "초원 몬스터 10종과 초원 런 보스의 체형, 전조, 사거리, 패링 가능 여부, 특수공격을 융합하여 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 된다.",
+        "delveDiscoveries": [
+          {
+            "clue": "포탈 전투 시작 -> 금빛 큰뿔 등장 -> 보스 동료 영입",
+            "discovery": "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 그대로 동료 정체성으로 사용한다.",
+            "newChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
+          },
+          {
+            "clue": "보스 동료 수집 -> 포탈 전투",
+            "discovery": "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 그대로 동료 정체성으로 사용한다.",
+            "newChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
+          },
+          {
+            "clue": "파티 조합 확장 -> Lv.40 2차 완성형 -> Lv.60 만렙/숙련",
+            "discovery": "Lv.60 레벨캡 이후 비전투력 직업 숙련으로 전환되며, 2차에서 다시 분기하지 않는다.",
+            "newChoice": "1+3 동료 조합 → Lv.40 2차 완성형 → Lv.60 만렙/숙련"
+          },
+          {
+            "clue": "초원 몬스터 10종과 초원 런 보스의 체형, 전조, 사거리, 패링 가능 여부, 특수공격 융합",
+            "discovery": "보스 동료는 별도 인간형 캐릭터로 다시 만들지 않고 원본 보스 외형을 읽기 쉽게 축소·정리해 그대로 동료 정체성으로 사용한다.",
+            "newChoice": "포탈 전투 및 보스 격파의 중심적 역할이 결정된다."
+          }
+        ],
+        "delveGrowthRule": "발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙",
+        "finalGameIdentity": "초원 시드형 로그라이크 런 - 포탈 전투 및 보스 격파의 중심적 역할, 보스 동료 수집, 파티 조합 확장, Lv.60 만렙/숙련"
+      },
+      "playerFantasy": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서, 플레이어는 다양한 직업과 전직 시점에 따라 선택 가능한 1차 전직 분기 중 하나로 발전하며, AI 동료를 통해 실제 선택·규칙·사건을 변주하는 게임 세계관을 경험한다.",
+      "coreFun": "포탈 전투 → 보스 동료 수집 → 파티 조합 확장 → Lv.40 2차 완성형 → Lv.60 만렙/숙련의 순환적 상태 변화를 거쳐, 최종적으로 초원 시드형 로그라이크 런의 정체성을 형성한다.",
+      "coreLoop": [
+        "입력: 포탈 전투 선택 → 상태변화: 금빛 큰뿔 등장 → 보상: 파티 구성 및 보스 처치",
+        "입력: 보스 동료 수집 선택 → 상태변化: 보스 영입 → 보상: AI 동료 자동 동기화",
+        "입력: 파티 조합 확장 선택 → 상태변化: Lv.40 2차 완성형 생성 → 보상: Lv.60 만렙/숙련"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:38:22.656Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T20:39:52.753Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
