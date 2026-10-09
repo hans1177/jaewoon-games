@@ -237,6 +237,7 @@ fear-bear-armor|공포 곰 중갑|junglebench|armor|fearBearHide:7,fearBearClaw:
 fear-bear-hunter-armor|공포 곰 사냥갑|junglebench|armor|fearBearHide:6,fearBearClaw:4,monopolyIngot:7,flowerLeather:3|0
 monopoly-pick|독점석 곡괭이|junglebench|tool|monopolyIngot:8,goldIngot:4,wood:3|0
 toxic-furnace|독가스 용광로|junglebench|structure|monopolyStone:15,ironIngot:25,goldIngot:17,wood:20|0
+sunstone-bench|태양석 제작대|junglebench|structure|sunstoneOre:8,monopolyIngot:6,goldIngot:4,wood:3|0
 sunstone-pick|태양석 곡괭이|sunstonebench|tool|sunstoneOre:8,monopolyIngot:5,wood:3|0
 sunstone-greatsword|태양석 대검|sunstonebench|weapon|sunstoneIngot:12,monopolyIngot:8,goldIngot:6|480
 sunstone-dagger|태양석 암살 단검|sunstonebench|weapon|sunstoneIngot:10,monopolyIngot:4,goldIngot:4|180
@@ -348,6 +349,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public List<BlockRecord> blocks = new List<BlockRecord>();
         public List<MonsterRecord> monsters = new List<MonsterRecord>();
         public List<string> crafted = new List<string>();
+        public string equippedWeapon;
         public List<BuildingRecord> buildings = new List<BuildingRecord>();
     }
 
@@ -593,7 +595,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         PrimitiveType shape=(humanoid||spirit)?PrimitiveType.Capsule:(plant?PrimitiveType.Cylinder:PrimitiveType.Sphere);
         if(insect)shape=PrimitiveType.Capsule;
         GameObject body=CreatePart(root.transform,shape,"Body",new Vector3(0f,scale*.70f,0f),
-            new Vector3(scale*(serpent?1.65f:fish?1.55f:fourLeg?1.3f:.95f),scale*(serpent?.37f:fourLeg?.72f:1.25f),scale*(serpent?.53f:1f)),baseColor,true);
+            new Vector3(scale*(serpent?1.65f:fish?1.55f:fourLeg?1.3f:.95f),scale*(serpent? .37f:fourLeg? .72f:1.25f),scale*(serpent? .53f:1f)),baseColor,true);
         Collider hitbox=body.GetComponent<Collider>();
         if(hitbox!=null)monsterColliders[hitbox]=monster;
         if(fourLeg || insect)
@@ -757,7 +759,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             float reach=opponent!=null?1.4f:.95f;
             if(distanceToTarget>reach && distanceToTarget < (m.creative?18f:24f))
             {
-                float slowFactor=Time.time<m.slowedUntil?.7f:1f;
+                float slowFactor=Time.time<m.slowedUntil? .7f:1f;
                 float move=Mathf.Clamp(m.spec.speed/35f,.75f,5f)*slowFactor;
                 m.obj.transform.position+=delta.normalized*move*dt;
                 if(delta.sqrMagnitude>.01f)
@@ -834,9 +836,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         Recipe weapon=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
         string id=weapon!=null?weapon.id:"";
         bool sand=id=="sand-spirit-staff",mummy=id=="wasteland-mummy-staff",orb=id=="sunstone-orb";
-        float cooldown=sand?1.1f:mummy?1.5f:orb?.9f:
-            id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"?.35f:
-            id=="sunstone-scorpion-blade"?.85f:.65f;
+        float cooldown=sand?1.1f:mummy?1.5f:orb? .9f:
+            id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"? .35f:
+            id=="sunstone-scorpion-blade"? .85f:.65f;
         attackCooldown=Time.time+cooldown;
         float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
             id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
@@ -856,7 +858,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             sphere.name=sand?"SandSpirit_Homing":"Sunstone_Homing";
             sphere.transform.SetParent(worldRoot.transform);
             sphere.transform.position=player.position+Vector3.up*1.2f;
-            sphere.transform.localScale=Vector3.one*(sand?.55f:.48f);
+            sphere.transform.localScale=Vector3.one*(sand? .55f:.48f);
             Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
             Collider collider=sphere.GetComponent<Collider>();
             if(collider!=null)Destroy(collider);
@@ -1014,6 +1016,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         if(!creative)
         {
+            if(recipe.station=="sunstonebench" &&
+               !buildings.Exists(b=>b.recipeId=="sunstone-bench" && b.obj!=null && Vector3.Distance(player.position,b.obj.transform.position)<5f))
+            { info="태양석 제작대 가까이에서 제작해야 해.";return; }
             string[] costs=recipe.cost.Split(',');
             foreach(string entry in costs)
             {
@@ -1114,6 +1119,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(SpawnBlock b in blocks)record.blocks.Add(new BlockRecord{id=b.id,position=b.obj.transform.position});
         foreach(Monster m in monsters)if(m.creative && m.hp>0)record.monsters.Add(new MonsterRecord{id=m.runtimeId,opponentId=m.opponentId,speciesId=m.spec.id,position=m.obj.transform.position,hp=m.hp,attackPlayer=m.attackPlayer && m.spec.mood!="harmless"});
         record.crafted.AddRange(crafted);
+        record.equippedWeapon=equippedWeapon;
         foreach(BuiltStructure building in buildings)if(building.obj!=null)record.buildings.Add(new BuildingRecord { recipeId=building.recipeId, position=building.obj.transform.position });
         PlayerPrefs.SetString(CreativeSaveKey,JsonUtility.ToJson(record));
         PlayerPrefs.Save();
@@ -1164,6 +1170,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         player.position=record.playerPosition;
         nextId=Mathf.Max(1,record.nextId);
         if(record.crafted!=null)crafted.AddRange(record.crafted);
+        if(!string.IsNullOrEmpty(record.equippedWeapon) && crafted.Contains(record.equippedWeapon) && recipes.Exists(r=>r.id==record.equippedWeapon && r.kind=="weapon"))equippedWeapon=record.equippedWeapon;
         if(record.buildings!=null)foreach(BuildingRecord item in record.buildings)
         {
             if(buildings.Count>=300)break;
@@ -1299,7 +1306,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             for(int i=craftPage*8;i<Mathf.Min(recipes.Count,craftPage*8+8);i++)
             {
                 Recipe recipe=recipes[i];
-                if(GUILayout.Button(recipe.name+" · "+recipe.kind+(creative?" · 무료":" · "+recipe.cost),GUILayout.Height(48)))Craft(recipe);
+                string perk=recipe.id=="sand-spirit-staff"?" · 유도/모래 둔화 30%":
+                    recipe.id=="wasteland-mummy-staff"?" · 5% 아군 미라(400/70/2초)":"";
+                if(GUILayout.Button(recipe.name+" · "+recipe.kind+perk+(creative?" · 무료":" · "+recipe.cost),GUILayout.Height(48)))Craft(recipe);
             }
             GUILayout.EndScrollView();
         }
