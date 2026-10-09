@@ -34,3 +34,18 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
 });
+
+
+test('only same-revision batch coordinator jobs coalesce, while game lanes stay independent',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const start=workflow.indexOf('  coordinator-gate:\n');
+  const end=workflow.indexOf('\n  native-plan:',start);
+  assert.ok(start>=0&&end>start);
+  const gate=workflow.slice(start,end);
+  assert.ok(gate.includes("group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}"));
+  assert.match(gate,/cancel-in-progress: false/);
+  assert.match(gate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  assert.ok(workflow.slice(0,workflow.indexOf('\njobs:\n')).includes("github.run_id"));
+  assert.match(workflow,/  dispatch-roblox:[\s\S]*?matrix:\n        game_id:/);
+  assert.match(workflow,/  dispatch-unity-web-floor:[\s\S]*?matrix:\n        game_id:/);
+});
