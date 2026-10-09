@@ -49,7 +49,9 @@ jobs:
             git fetch --depth=1 origin \
               "+refs/heads/main:refs/remotes/origin/main" \
               "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
-            git checkout -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            # A disposable CI main checkout may have Git LFS Unity files marked modified.
+            # All required script sources were copied to /tmp above; discard only checkout-local edits.
+            git checkout -f -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git show origin/main:game-catalog.json > game-catalog.json
             node /tmp/company-all-games-design-reset.mjs | tee /tmp/design-reset-state.txt
             git add -- game-seed-state.json
