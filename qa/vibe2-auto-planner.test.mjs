@@ -4671,6 +4671,9 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.match(task.goal,/Game\.client\.luau/);
   assert.match(task.goal,/Game\.server\.luau/);
   assert.match(task.goal,/LIBRARY_PATH_CHECK=/);
+  assert.match(task.goal,/"responsibleSourceFingerprints":\[\{"path":"roblox-games\/survival-flow-systems\//);
+  assert.match(task.goal,/"path":"assets\/inventory-equipment\.js","bytes":\d+,"sha256":"[0-9a-f]{64}"/);
+  assert.match(task.goal,/"path":"assets\/crafting-recipes\.js","bytes":\d+,"sha256":"[0-9a-f]{64}"/);
   assert.match(task.goal,/"found":\[[^\]]*"assets\/inventory-equipment\.js"/);
   assert.match(task.goal,/"found":\[[^\]]*"assets\/crafting-recipes\.js"/);
   assert.match(task.goal,/"missing":\[/);
