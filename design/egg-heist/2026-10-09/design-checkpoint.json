@@ -891,25 +891,42 @@
         "new_world_state"
       ],
       "fromSystem": "DELVE(@)"
+    },
+    "local_authoring_parts::1e4e850b5b79dac19d0760da1e59c73eda4b10740d5135c62846a3a8c87db410:toSystem,trigger,stateChange": {
+      "toSystem": "DELVE(@)",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
+    },
+    "local_authoring_parts::652f9572ae1f2fe96b996360cb7985515ef3e750257203f7a5b957d6a541e496:systemInterconnections:4": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "world_state",
+        "new_world_state"
+      ],
+      "fromSystem": "DELVE(@)",
+      "toSystem": "DELVE(@)",
+      "trigger": "world_state",
+      "stateChange": "new_world_state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 50,
-      "successes": 50,
+      "calls": 51,
+      "successes": 51,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4513051,
-      "lastMs": 59506,
+      "totalMs": 4570950,
+      "lastMs": 57899,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:25:29.821Z"
+      "updatedAt": "2026-10-09T01:26:27.722Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:16.280Z",
-  "updatedAt": "2026-10-09T01:25:29.821Z",
+  "updatedAt": "2026-10-09T01:26:27.729Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2815,9 +2832,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "signatureSystems[0]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[1]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: signatureSystems[0]→signatureSystems[2]의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2878,7 +2895,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 4
+    "designer_draft_slices::systems-progression": 5
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2922,10 +2939,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:25:29.821Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:26:27.725Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
