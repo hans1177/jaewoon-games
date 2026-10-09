@@ -706,25 +706,45 @@
         "adjusted_entry_exit_strategy"
       ],
       "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION"
+    },
+    "local_authoring_parts::fdb81d527a44c50d499a56b7f6d3cca91d26abf757f4fda85167cbc72c9c1437:toSystem,trigger,stateChange": {
+      "toSystem": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
+      "trigger": "world_state_revisitation_trigger",
+      "stateChange": "new_world_state_revisitation"
+    },
+    "local_authoring_parts::e17ec00d81071da846d3023defb89f47cc30697d076f58f93cb45a37c1e4fe24:systemInterconnections:3": {
+      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
+      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
+      "stateKeys": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION",
+      "toSystem": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
+      "trigger": "world_state_revisitation_trigger",
+      "stateChange": "new_world_state_revisitation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 878093,
-      "lastMs": 27521,
+      "totalMs": 893054,
+      "lastMs": 14961,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:37:13.211Z"
+      "updatedAt": "2026-10-09T14:37:28.174Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:37:13.211Z",
+  "updatedAt": "2026-10-09T14:37:28.176Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2471,7 +2491,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:37:13.211Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:37:28.176Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
