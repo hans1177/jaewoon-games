@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::08d765b4f622727f53e18be7a3b64bb31292df3d7cdae66503b38f22d40cc81b:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "야생 생존",
+      "creativeGrammar": {
+        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
+        "a": {
+          "system": "OPENWORLD",
+          "material": "BIODIVERSITY_AND_ENVIRONMENTAL_ADAPTATION",
+          "materialDomain": "REALISTIC_ANIMAL_BEHAVIOR_AND_WEATHER_CONDITIONS",
+          "stateChange": "WEATHER_CHANGE_AND_BODY_TEMPERATURE_ADJUSTMENT"
+        },
+        "b": {
+          "system": "SIMULATION",
+          "material": "RESOURCE_MANAGEMENT_AND_AGGRESSIVE_ENEMY_INTERACTIONS",
+          "materialDomain": "ECOLOGICAL_RESOURCE_DEPLETION_AND_HUMAN_RESCUE_STRATEGIES",
+          "stateChange": "RESOURCE_LOSS_AND_AGGRESSIVE_RESPONDING_TO_THEM"
+        },
+        "abCausality": "BIDIRECTIONAL_STATE_EXCHANGE_WITHOUT_MATERIAL_FUSION",
+        "abEvolution": {
+          "aChangesB": "REQUIRE_BIODETENTION_AND_RESILIENCE_UPGRADE",
+          "bChangesA": "NEED_FOR_SUSTAINED_LIFE_SUPPORT_SYSTEMS",
+          "lateGameChange": "FINALIZE_BIODETENTION_AND_RESILIENCE_PARAMETERS"
+        },
+        "materialFusion": {
+          "contrast": "BIOTIC_RESOURCES_VS_ABUNDANT_NATURE",
+          "causalBridge": "ENVIRONMENTAL_PRESSURE_DRIVE_ANNOTATED_BY_ECOLOGIST_CONCEPTS",
+          "removalConsequence": "UNABLE_TO_SURVIVE_IN_UNSTABLE_ENVIRONMENTS"
+        },
+        "storyCausalChain": {
+          "cause": "ENVIRONMENTAL_CHALLENGE",
+          "characterConflict": "PLAYER_NEEDS_TO_FIND_NEW_SURVIVAL_STRATEGY",
+          "playerChoice": "SELECT_BIODETENTION_AND_RESILIENCE_UPGRADES",
+          "worldChange": "ALTER_WEATHER_CONDITIONS_AND_BODY_TEMPERATURE_ADJUSTMENT",
+          "nextEvent": "FINALIZE_BIODETENTION_AND_RESILIENCE_PARAMETERS"
+        },
+        "cThemes": [
+          {
+            "name": "BIOTIC_RESOURCES",
+            "kind": "MATERIAL",
+            "gameplayEffect": "ENHANCED_AGGRESSIVENESS_AND_RESCUE_CAPACITIES"
+          },
+          {
+            "name": "ABUNDANT_NATURE",
+            "kind": "MATERIAL",
+            "gameplayEffect": "ENVIRONMENTAL_STABILITY_AND_LIFE_SUPPORT_SYSTEMS"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "BIDIRECTIONAL_STATE_EXCHANGE_WITHOUT_MATERIAL_FUSION"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "SIMULATION",
+            "gameplayEffect": "RESOURCE_MANAGEMENT_AND_ENEMY_INTERACTIONS"
+          }
+        ],
+        "cGenreInterlock": "INTERACTING_WITH_THE_ENVIRONMENT_INCREASED_AGGRESSIVENESS_AND_DEPLETED_RESOURCE_LOSS",
+        "cWorldAndGameplayEffect": "WEATHER_CHANGE_AND_BODY_TEMPERATURE_ADJUSTMENT",
+        "delveDiscoveries": [
+          {
+            "clue": "ENVIRONMENTAL_PRESSURE_DRIVE_ANNOTATED_BY_ECOLOGIST_CONCEPTS",
+            "discovery": "PLAYER_NEEDS_TO_FIND_NEW_SURVIVAL_STRATEGY",
+            "newChoice": "SELECT_BIODETENTION_AND_RESILIENCE_UPGRADES"
+          },
+          {
+            "clue": "UNSTABLE_ENVIRONMENTS",
+            "discovery": "ALTER_WEATHER_CONDITIONS_AND_BODY_TEMPERATURE_ADJUSTMENT",
+            "newChoice": "FINALIZE_BIODETENTION_AND_RESILIENCE_PARAMETERS"
+          },
+          {
+            "clue": "BIOTIC_RESOURCES_VS_ABUNDANT_NATURE",
+            "discovery": "INTERACTING_WITH_THE_ENVIRONMENT_INCREASED_AGGRESSIVENESS_AND_DEPLETED_RESOURCE_LOSS",
+            "newChoice": "BIDIRECTIONAL_STATE_EXCHANGE_WITHOUT_MATERIAL_FUSION"
+          },
+          {
+            "clue": "ENHANCED_AGGRESSIVENESS_AND_RESCUE_CAPACITIES",
+            "discovery": "FINALIZE_BIODETENTION_AND_RESILIENCE_PARAMETERS",
+            "newChoice": "ACTION_SURVIVAL_ROGUELITE"
+          }
+        ],
+        "delveGrowthRule": "INCREMENTALLY_REFINE_THE_BASELINE_WITHIN_THE_GAMEPLAY_LOOP",
+        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE_WITH_BIODETENTION_AND_RESILIENCE_UPGRADE_ANNOTATED_BY_ECOLOGIST_CONCEPTS"
+      },
+      "playerFantasy": "야생 생존의 실제 플레이 핵심 행동과 선택을 구체화,행동 결과가 진행·위험·보상과 연결되는 반복 가능한 게임 루프,모바일에서도 즉시 이해되는 입력·피드백·실패·재도전 흐름",
+      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 235069,
+      "lastMs": 235069,
+      "lastError": null,
+      "updatedAt": "2026-10-09T20:28:53.339Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:24:58.251Z",
-  "updatedAt": "2026-10-09T20:24:58.265Z",
+  "updatedAt": "2026-10-09T20:28:53.339Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1611,5 +1712,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T20:28:53.339Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
