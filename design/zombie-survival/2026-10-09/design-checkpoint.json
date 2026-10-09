@@ -27,25 +27,32 @@
       "identity": "좀비 생존기: 선택형 생존 게임, 플레이어가 단순한 콘텐츠를 반복적으로 수행하며 즉각적인 결과와 위험/보상을 얻는 루프를 만든다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 두 대축 A/B는 'Collect run rewards or experience and choose upgrades...' 및 'Combine upgrades into a stronger build...'",
       "playerFantasy": "좀비 생존기에서 플레이어는 단순한 콘텐츠를 반복적으로 수행하며 즉각적인 결과와 위험/보상을 얻는 루프를 만든다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 두 대축 A/B는 'Collect run rewards or experience and choose upgrades...' 및 'Combine upgrades into a stronger build...'",
       "coreFun": "플레이어가 단순한 콘텐츠를 반복적으로 수행하며 즉각적인 결과와 위험/보상을 얻는 루프를 만든다. 중심 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 두 대축 A/B는 'Collect run rewards or experience and choose upgrades...' 및 'Combine upgrades into a stronger build...'"
+    },
+    "local_authoring_parts::493689e54265c8bd0092e326755649da0137f29837b699cd79bb34b862bd8bdf:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.' 중심 행동을 수행합니다.",
+        "SELECT: 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택지를 합니다.",
+        "OUTPUT: 상태 변화(예: 생명력 감소, 경험 점수 증가, 새로운 빌드 생성) 및 다음 선택의 가능성입니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 185648,
-      "lastMs": 33718,
+      "totalMs": 237555,
+      "lastMs": 51907,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:23:26.690Z"
+      "updatedAt": "2026-10-09T15:24:18.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:20:21.023Z",
-  "updatedAt": "2026-10-09T15:23:26.692Z",
+  "updatedAt": "2026-10-09T15:24:18.601Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:23:26.691Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:24:18.601Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
