@@ -1957,25 +1957,35 @@
       "toSystem": "SURVIVAL2-MAIN-02-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-",
       "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act; Enhanced gameplay mechanics, improved survival conditions, and strategic depth; New game states, altered progression paths, and expanded player agency"
+    },
+    "local_authoring_parts::5297fff1d4c3946796815d89e63c62c89adea09151c3cc21ff09a7c63457009a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01-system-interconnections-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-01-"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 118,
-      "successes": 118,
+      "calls": 119,
+      "successes": 119,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8927608,
-      "lastMs": 79939,
+      "totalMs": 9010235,
+      "lastMs": 82627,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:51:57.304Z"
+      "updatedAt": "2026-10-09T06:53:19.936Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T06:51:57.307Z",
+  "updatedAt": "2026-10-09T06:53:19.936Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4350,7 +4360,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:51:57.307Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:53:19.936Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
