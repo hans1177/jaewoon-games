@@ -155,19 +155,20 @@ function playableWebHref(row){
   return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';
 }
 async function bindAvailableUnityWebSurfaces(catalog){
-  if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
+  if(!Array.isArray(catalog?.games))return catalog;
+  const enabled=platformExposure?.unityWebEnabled===true;
   const probeFetch=async(url,options={})=>{
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),2500);
-    try{return await fetch(url,{...options,signal:controller.signal});}
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{return await fetch(url,{...options,signal:controller.signal,cache:'no-store'});}
     finally{clearTimeout(timer);}
   };
-  const candidates=catalog.games.filter(game=>{
+  const candidates=enabled?catalog.games.filter(game=>{
     const id=gameIdOf(game),unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
     return /^[a-z0-9][a-z0-9-]*$/.test(id)
       &&(projectPath===`unity-games/${id}`||['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)));
-  });
+  }):[];
   const available=new Map();
   await Promise.all(candidates.map(async game=>{
     const id=gameIdOf(game),stamp=Date.now();
@@ -179,12 +180,16 @@ async function bindAvailableUnityWebSurfaces(catalog){
       const {href,testOnly}=route;
       try{
         const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
-        if(!indexResponse.ok||!/createUnityInstance\s*\(/.test(await indexResponse.text()))continue;
+        if(!indexResponse.ok)continue;
+        const html=await indexResponse.text();
+        if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
         const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
         if(!manifestResponse.ok)continue;
         const manifest=await manifestResponse.json(),groups=manifest?.requiredGroups||{};
         if(manifest?.engine!=='UNITY_WEB'||manifest?.gameId!==id||manifest?.bundleComplete!==true
+          ||manifest.requiredDimension!=='3D'||manifest.canonicalSourceRoot!==`unity-games/${id}`
           ||!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
+        if(testOnly?manifest.ownerPlayableVerified!==true:manifest.homepageVerified!==true)continue;
         const evidence=await Promise.all([
           'unity-web-build.json','unity-web-gameplay-validation.json','unity-web-independent-qa.json',
           'unity-web-regression.json','upper-platform-development-readiness.json'
@@ -204,22 +209,33 @@ async function bindAvailableUnityWebSurfaces(catalog){
           || readiness?.buildTreeSha256!==expectedBuild
           || readiness?.unitySourceTreeSha256!==expectedUnity
           || build?.canonicalSourceRoot!==`unity-games/${id}`
-          || build?.buildOutputRoot!==`web-games/${id}`)continue;
+          || build?.buildOutputRoot!==`web-games/${id}`
+          || manifest.sourceCommit!==expectedSource
+          || manifest.buildTreeSha256!==expectedBuild
+          || manifest.unitySourceTreeSha256!==expectedUnity)continue;
         const ownerPlayable3d=row=>row?.engine==='UNITY_WEB'&&row?.gameId===id
           &&row?.playableBrowserTest===true&&row?.boot?.pass===true
           &&row?.input?.pass===true&&row?.gameplay?.pass===true&&row?.coreFun?.pass===true
-          &&row?.mobile?.pass===true&&row?.saveRestore?.pass===true&&row?.noCriticalRuntimeError===true
+          &&row?.mobile?.pass===true&&row?.mobile?.actualBrowserTouchDispatched===true
+          &&row?.mobile?.realGameTouchHandlerObserved===true
+          &&row?.saveRestore?.pass===true&&row?.noCriticalRuntimeError===true
           &&row?.visualQa?.pass===true
           &&row?.spatialGameplay?.pass===true&&row?.spatialGameplay?.requiredDimension==='3D'
+          &&row?.spatialGameplay?.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
           &&row?.spatialGameplay?.depthPass===true&&row?.spatialGameplay?.perspectiveCamera===true
           &&Number(row?.spatialGameplay?.observedMeshCount)>0&&Number(row?.spatialGameplay?.observedTriangles)>0
           &&Number(row?.spatialGameplay?.worldMeshes3d)>=2&&Number(row?.spatialGameplay?.worldDepthCm)>=50
           &&Number(row?.spatialGameplay?.gameplayActors3d)>=1&&row?.spatialGameplay?.spriteGameplayActors===0
-          &&row?.visualQa?.nativeUnityMesh?.pass===true;
+          &&row?.visualQa?.nativeUnityMesh?.pass===true
+          &&row?.visualQa?.nativeUnityMesh?.measurementState==='UNITY_RUNTIME_MESH_INSPECTION';
         if(![gameplay,independent,regression].every(ownerPlayable3d))continue;
         if(build?.engine!=='UNITY_WEB'||build?.gameId!==id||build?.bootSmoke!=='PASS')continue;
         const ready=readiness?.pass===true&&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY'
-          &&readiness?.gameId===id&&[gameplay,independent,regression].every(e=>e.pass===true&&e.performance?.pass===true);
+          &&readiness?.gameId===id&&build?.upperPlatformGateCandidate===true
+          &&build?.actualBrowserPlay==='PASS'&&build?.legacyRootPreservedForSave!==true
+          &&readiness.criteria?.graphics?.native3dVerified===true
+          &&readiness.criteria?.qa?.pass===true&&readiness.criteria?.qa?.multiplayerPass===true
+          &&[gameplay,independent,regression].every(e=>e.pass===true&&e.performance?.pass===true);
         const preview=testOnly&&readiness?.gameId===id&&build?.ownerBrowserTestEligible===true
           &&['PASS','PLAYABLE_TEST_ONLY'].includes(build?.actualBrowserPlay)
           &&((readiness?.pass===false&&readiness?.state==='REPAIR_REQUIRED')
