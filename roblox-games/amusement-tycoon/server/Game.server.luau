@@ -20,6 +20,73 @@ if not remote then
   remote.Parent = ReplicatedStorage
 end
 
+-- F1~F4 메인: 기존 게임과 별도로 실제 Roblox 서버 관측만 기록한다.
+-- 진행도·보상·기존 플레이어 저장 키에는 접근하지 않는다.
+local foundationStore = nil
+local foundationStoreOk, foundationStoreResult = pcall(function()
+  return DataStoreService:GetDataStore("native-foundation-sentinel-v1")
+end)
+if foundationStoreOk then foundationStore = foundationStoreResult end
+local foundationSeen = {}
+local foundationSequence = 0
+local function foundationCheckpoint(name, player, facts)
+  if foundationSeen[name] then return true end
+  if not foundationStore then return false end
+  local row = {
+    name = name, at = os.time(), userId = player and player.UserId or 0,
+    gameId = Config.GameId, placeId = tostring(game.PlaceId), placeVersion = game.PlaceVersion,
+  }
+  if typeof(facts) == "table" then
+    for key, value in pairs(facts) do
+      if typeof(value) == "boolean" or typeof(value) == "number" or typeof(value) == "string" then
+        row[key] = value
+      end
+    end
+  end
+  for attempt = 1, 3 do
+    local committedSequence = foundationSequence
+    local ok = pcall(function()
+      foundationStore:UpdateAsync("latest", function(previous)
+        local exact = typeof(previous) == "table"
+          and tostring(previous.gameId or "") == Config.GameId
+          and tostring(previous.placeId or "") == tostring(game.PlaceId)
+          and tonumber(previous.placeVersion) == game.PlaceVersion
+        local data = exact and previous or {
+          version = 3, gameId = Config.GameId, placeId = tostring(game.PlaceId),
+          placeVersion = game.PlaceVersion, checkpoints = {}, sequence = 0,
+        }
+        data.checkpoints = typeof(data.checkpoints) == "table" and data.checkpoints or {}
+        if typeof(data.checkpoints[name]) == "table" then
+          committedSequence = math.floor(tonumber(data.checkpoints[name].sequence) or 0)
+          return nil -- 이미 같은 후보에서 검증한 단계는 다시 쓰지 않는다.
+        end
+        committedSequence = math.max(foundationSequence, math.floor(tonumber(data.sequence) or 0)) + 1
+        row.sequence = committedSequence
+        data.sequence = committedSequence
+        data.checkpoints[name] = row
+        data.updatedAt = os.time()
+        data.requirements = {
+          saveEnabled = Config.SaveEnabled == true,
+          multiplayerRequired = Config.MultiplayerRequired == true,
+        }
+        return data
+      end)
+    end)
+    if ok and committedSequence > 0 then
+      foundationSeen[name] = true
+      foundationSequence = math.max(foundationSequence, committedSequence)
+      workspace:SetAttribute("Foundation_" .. name, true)
+      return true
+    end
+    if attempt < 3 then task.wait(0.15 * attempt) end
+  end
+  if player then player:SetAttribute("FoundationFailure", "CHECKPOINT_WRITE_FAILED:" .. name) end
+  warn("ROBLOX_FOUNDATION_CHECKPOINT_WRITE_FAILED:" .. name)
+  return false
+end
+foundationCheckpoint("SERVER_BOOT", nil, {placeVersion = game.PlaceVersion})
+foundationCheckpoint("MODULE_GRAPH_READY", nil, {modulesReady = true})
+
 local lastAction = {}
 local function readNumber(player, name, fallback)
   local value = player:GetAttribute(name)
@@ -362,8 +429,35 @@ nativeFoundationSpawn.Anchored = true
 nativeFoundationSpawn.CanCollide = true
 nativeFoundationSpawn.Parent = workspace
 
+-- F2: 현재 월드의 충돌 지면을 확인한 뒤에만 월드·스폰을 기록한다.
+if parkWorld and parkWorld.Parent == workspace
+  and parkWorld:FindFirstChild("EntranceCounter")
+  and parkWorld:FindFirstChild("RideBuildPad")
+  and parkWorld:FindFirstChild("StarterPath")
+  and lobbyGround.Parent == workspace and lobbyGround.CanCollide then
+  foundationCheckpoint("WORLD_READY", nil, {worldReady = true})
+end
+local spawnSupportParams = RaycastParams.new()
+spawnSupportParams.FilterType = Enum.RaycastFilterType.Exclude
+spawnSupportParams.FilterDescendantsInstances = {nativeFoundationSpawn}
+spawnSupportParams.RespectCanCollide = true
+spawnSupportParams.IgnoreWater = true
+spawnSupportParams.CollisionGroup = nativeFoundationSpawn.CollisionGroup
+local spawnSupport = workspace:Raycast(
+  nativeFoundationSpawn.Position + Vector3.new(0, 4, 0),
+  Vector3.new(0, -20, 0),
+  spawnSupportParams
+)
+local spawnBottom = nativeFoundationSpawn.Position.Y - nativeFoundationSpawn.Size.Y * 0.5
+if foundationSeen.WORLD_READY and nativeFoundationSpawn:IsA("SpawnLocation")
+  and nativeFoundationSpawn.CanCollide and spawnSupport and spawnSupport.Normal.Y >= 0.55
+  and math.abs(spawnSupport.Position.Y - spawnBottom) <= 0.6 then
+  foundationCheckpoint("SPAWN_READY", nil, {spawnY = nativeFoundationSpawn.Position.Y, groundY = spawnSupport.Position.Y})
+end
+
 -- 공원 핵심 월드는 buildThemeParkWorld에서 생성하며 foundation은 같은 오브젝트를 재사용한다.
 local function bindNativeFoundationCharacter(character)
+  local foundationPlayer = Players:GetPlayerFromCharacter(character)
   local humanoid = character:WaitForChild("Humanoid", 10)
   local rootPart = character:WaitForChild("HumanoidRootPart", 10)
   if not humanoid or not rootPart then
@@ -406,12 +500,31 @@ local function bindNativeFoundationCharacter(character)
   rootPart.AssemblyLinearVelocity = Vector3.zero
   rootPart.AssemblyAngularVelocity = Vector3.zero
 
+  -- F3: 실제 캐릭터·루트 파트가 생성되고 유효한 좌표에 배치된 경우만 기록한다.
+  local position = rootPart.Position
+  if position.X ~= position.X or position.Y ~= position.Y or position.Z ~= position.Z
+    or math.abs(position.X) == math.huge or math.abs(position.Y) == math.huge
+    or math.abs(position.Z) == math.huge then
+    character:SetAttribute("FoundationFailure", "INVALID_ROOT_POSITION")
+    return
+  end
+  if foundationPlayer then
+    foundationCheckpoint("CHARACTER_READY", foundationPlayer, {
+      rootAnchored = rootPart.Anchored,
+      platformStand = humanoid.PlatformStand,
+      rootX = position.X, rootY = position.Y, rootZ = position.Z,
+    })
+  end
+
   local movementOrigin = rootPart.Position
   humanoid.Running:Connect(function(speed)
     if not rootPart.Parent or humanoid.FloorMaterial == Enum.Material.Air then return end
     local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
     if speed > 0.1 and displacement.Magnitude > 0.5 then
       character:SetAttribute("MOVEMENT_CONFIRMED", true)
+      if foundationPlayer and foundationSeen.GROUND_CONTACT then
+        foundationCheckpoint("MOVEMENT_CONFIRMED", foundationPlayer, {displacement = displacement.Magnitude})
+      end
     end
   end)
 
@@ -431,6 +544,9 @@ local function bindNativeFoundationCharacter(character)
       character:SetAttribute("GROUND_CONTACT", true)
       character:SetAttribute("FoundationFailure", nil)
       character:SetAttribute("NativeFoundationGroundingVersion", 2)
+      if foundationPlayer and foundationSeen.CHARACTER_READY then
+        foundationCheckpoint("GROUND_CONTACT", foundationPlayer, {groundY = contact.Position.Y, rootY = rootPart.Position.Y})
+      end
       return
     end
     task.wait(0.1)
