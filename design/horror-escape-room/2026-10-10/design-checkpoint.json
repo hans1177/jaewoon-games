@@ -196,25 +196,40 @@
         "감염 후 정화 기능 적용",
         "감염된 인간은 원래 직업에 대응하는 고유 스킬로 옛 팀 추격 시작"
       ]
+    },
+    "local_authoring_parts::635194f61eb8e835fd84dcfb0a5584ef7532694e5c889154d4762e04d27f2669:signatureSystems:0": {
+      "id": "BROADCAST",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "passive",
+        "infectedAbility"
+      ],
+      "stateOutputs": [
+        "boostedSignal",
+        "alarmTrigger"
+      ],
+      "name": "방송부",
+      "purpose": "신호 송신기로 인해 정화 및 감염 기능을 수행하며, 가짜 경보 신호를 전송함",
+      "playerChoice": "정화 공격 또는 감염 공격 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 849688,
-      "lastMs": 70233,
+      "totalMs": 954449,
+      "lastMs": 104761,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:58:05.892Z"
+      "updatedAt": "2026-10-09T23:04:37.694Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:43:55.966Z",
-  "updatedAt": "2026-10-09T23:02:52.927Z",
+  "updatedAt": "2026-10-09T23:04:37.694Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1829,8 +1844,8 @@
   "localAuthoringSplits": {
     "39611f6de9f13432a720e8014c1730a38b7b91df650874386676992f1292c420": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:58:05.892Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-09T23:04:37.694Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
