@@ -27,25 +27,32 @@
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험과 기회를 실시간으로 판단하며, 먹이와 자원을 수집하여 생존하기 위한 선택을 하게 된다. 이 과정에서, 플레이어는 자신의 역할, 책임, 그리고 실제 행동에 따라 다양한 결과를 경험하게 되며, 그 중 일부는 숙련되어야 하는 전략적 결정이 될 것이다.",
       "coreFun": "플레이어가 작은 세계에서 살아남는 데 최선을 다해, 위험과 기회를 실시간으로 판단하며, 먹이와 자원을 수집하여 생존하기 위한 선택을 하게 된다. 이 과정에서, 플레이어는 자신의 역할, 책임, 그리고 실제 행동에 따라 다양한 결과를 경험하게 되며, 그 중 일부는 숙련되어야 하는 전략적 결정이 될 것이다. 주요 선택은 '위험을 감당하고 자원을 확보' 또는 '안전한 경로를 찾기'이며, 결과적으로는 '생존의 단계', '자원의 집중', '환경의 이해' 등이 이루어진다."
+    },
+    "local_authoring_parts::d02ab0b0c59721fb648dea9011f1ac525e9edb93e2f6b27428b2e9fd863edccd:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+        "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "OUTPUT: Status change based on risk assessment and resource acquisition."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 246697,
-      "lastMs": 34100,
+      "totalMs": 278604,
+      "lastMs": 31907,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:10:15.990Z"
+      "updatedAt": "2026-10-09T09:10:47.900Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:09.269Z",
-  "updatedAt": "2026-10-09T09:10:15.992Z",
+  "updatedAt": "2026-10-09T09:10:47.900Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2284,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:10:15.991Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:10:47.900Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
