@@ -1767,25 +1767,42 @@
         "END_MATCH"
       ],
       "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR"
+    },
+    "local_authoring_parts::bcd75b7a1264d418b13a572cd177ad0696308965bb56ccd636f63f857f12c7dc:toSystem,trigger,stateChange": {
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
+    },
+    "local_authoring_parts::137eb1f10a18d9356e4bea9dd3687cf819339f8da5398fda35295ce5e2b7bdfe:systemInterconnections:4": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 139,
-      "successes": 139,
+      "calls": 140,
+      "successes": 140,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10085739,
-      "lastMs": 96328,
+      "totalMs": 10184552,
+      "lastMs": 98813,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:02:27.646Z"
+      "updatedAt": "2026-10-09T07:04:06.461Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T07:02:27.646Z",
+  "updatedAt": "2026-10-09T07:04:06.470Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3929,7 +3946,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 10
+    "designer_draft_slices::systems-progression": 11
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3968,10 +3985,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:02:27.646Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T07:04:06.465Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
