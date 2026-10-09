@@ -19,25 +19,33 @@
     "local_authoring_parts::5f19f60ed6254956bae44d601e31e29e5062d0f7d018b1b6840332a51c1fcc70:identity,playerFantasy": {
       "identity": "놀이공원 타이쿤을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\n대표 행동: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n 대표 선택: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n 시그니처 세계 규칙: 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n핵심 루프:\n1. 입력 → 상태변화 → 보상/위험/다음 선택\n2. 반복 가능한 학습적 경로\n3. 즉각적인 결과 및 피드백 제공\n\n시그니처 시스템:\n- MAIN: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n- A: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n- B: 完",
       "playerFantasy": "플레이어는 시작 단계에서 간단한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 참여하며, 이 선택은 세계 상태와 다음 플레이 방향에 직접 영향을 미친다. 이 과정에서는 즉각적인 피드백, 보상을 수집하여 새로운 경로나 위험을 선택할 수 있는 기회가 제공된다."
+    },
+    "local_authoring_parts::5f19f60ed6254956bae44d601e31e29e5062d0f7d018b1b6840332a51c1fcc70:coreFun": {
+      "coreFun": "{플레이어는 시작 단계에서 간단한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 참여하며, 이 선택은 세계 상태와 다음 플레이 방향에 직접 영향을 미친다. 이 과정에서는 즉각적인 피드백, 보상을 수집하여 새로운 경로나 위험을 선택할 수 있는 기회가 제공된다.}"
+    },
+    "local_authoring_parts::4990accc65fe1c6f417b82f4bfa70a821f6ca53b4256fbe729ec68886e0cc264:identity,playerFantasy,coreFun": {
+      "identity": "놀이공원 타이쿤을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\n대표 행동: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n 대표 선택: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n 시그니처 세계 규칙: 플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n핵심 루프:\n1. 입력 → 상태변화 → 보상/위험/다음 선택\n2. 반복 가능한 학습적 경로\n3. 즉각적인 결과 및 피드백 제공\n\n시그니처 시스템:\n- MAIN: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n- A: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n- B: 完",
+      "playerFantasy": "플레이어는 시작 단계에서 간단한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 참여하며, 이 선택은 세계 상태와 다음 플레이 방향에 직접 영향을 미친다. 이 과정에서는 즉각적인 피드백, 보상을 수집하여 새로운 경로나 위험을 선택할 수 있는 기회가 제공된다.",
+      "coreFun": "{플레이어는 시작 단계에서 간단한 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 데 참여하며, 이 선택은 세계 상태와 다음 플레이 방향에 직접 영향을 미친다. 이 과정에서는 즉각적인 피드백, 보상을 수집하여 새로운 경로나 위험을 선택할 수 있는 기회가 제공된다.}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 269282,
-      "lastMs": 35899,
+      "totalMs": 308440,
+      "lastMs": 39158,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:56:47.458Z"
+      "updatedAt": "2026-10-09T14:57:26.618Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:52:18.154Z",
-  "updatedAt": "2026-10-09T14:56:47.459Z",
+  "updatedAt": "2026-10-09T14:57:26.619Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1514,7 +1522,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:56:47.459Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:57:26.619Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
