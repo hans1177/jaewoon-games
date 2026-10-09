@@ -139,25 +139,40 @@
       "name": "별길 개척자의 핵심 재미",
       "purpose": "플레이어 선택과 실제 세계 상태 변화 사이에서 양방향 인과적 연결을 형성하며, 기존 규칙과 일치해야 한다.",
       "playerChoice": "플레이어의 선택은 A/B 상태 교환을 통해 상호작용하고, 이는 실제 세계의 변화와 인과적으로 연결된다."
+    },
+    "local_authoring_parts::33dd954754701ee3faca59caec9fe2dc7cdfacb61a01c02486b9743f5a83fb14:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "playerChoice",
+        "worldChange"
+      ],
+      "stateOutputs": [
+        "systemInteraction",
+        "gameplayEffect"
+      ],
+      "name": "별길 개척자의 핵심 재미",
+      "purpose": "플레이어 선택과 실제 세계 상태 변화 사이에서 양방향 인과적 연결을 맺고, 기존 규칙과 일치하는 게임 정체성의 대표 행동을 수행",
+      "playerChoice": "플레이어는 A/B 상태 교환을 통해 선택하며, 이는 실제 세계의 변화와 인과적으로 연관된다고 해석되어야 한다고 명시됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 339040,
-      "lastMs": 39375,
+      "totalMs": 380249,
+      "lastMs": 41209,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:14:58.257Z"
+      "updatedAt": "2026-10-09T21:15:39.467Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:09:19.145Z",
-  "updatedAt": "2026-10-09T21:14:58.257Z",
+  "updatedAt": "2026-10-09T21:15:39.467Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,7 +1657,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:14:58.257Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:15:39.467Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
