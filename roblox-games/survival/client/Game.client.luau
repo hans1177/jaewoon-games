@@ -494,7 +494,7 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" or (verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" and control == nil and hasStudioAssetAtom("VFX", "IMPACT_FLASH")) then
   local character = verifiedLearningPlayer.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if character and rootPart then
@@ -518,7 +518,7 @@ local function playVerifiedLearningActionFeedback(control)
     particles.Lifetime = NumberRange.new(0.18, 0.32)
     particles.Speed = NumberRange.new(5, 9)
     particles.SpreadAngle = Vector2.new(45, 45)
-    particles.LightEmission = 0.7
+    particles.LightEmission = hasStudioAssetAtom("VFX", "SHAPE_BURST") and 0.7 or 0.3
     particles.Parent = impactAttachment
     particles:Emit(18)
     local impactLight = Instance.new("PointLight")
