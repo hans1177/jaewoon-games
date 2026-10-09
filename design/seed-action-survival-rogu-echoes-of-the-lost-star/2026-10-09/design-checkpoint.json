@@ -34,25 +34,40 @@
         "전투 -> 보상 -> 전투",
         "업그레이드 선택 -> 보상 -> 업그레이드 선택"
       ]
+    },
+    "local_authoring_parts::b79f298477b3601f56cb43197908bcf4d1d995e60a2476c9246d9529da79cf4b:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "플레이어가 단순한 생존 흐름에서 심층적인 인과 관계와 콘텐츠 확대를 경험하며, 주요 행동은 '전투'이며, 대축은 '보상 수집' 및 '업그레이드 선택', 보조 요소는 '재방문'입니다.",
+      "playerChoice": "전투 -> 보상 -> 전투, 업그레이드 선택 -> 보상 -> 업그레이드 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 114715,
-      "lastMs": 13493,
+      "totalMs": 134169,
+      "lastMs": 19454,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:04:31.901Z"
+      "updatedAt": "2026-10-09T15:04:51.356Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:02:36.962Z",
-  "updatedAt": "2026-10-09T15:04:31.901Z",
+  "updatedAt": "2026-10-09T15:04:51.357Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1762,7 +1777,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:04:31.901Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:04:51.357Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
