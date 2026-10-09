@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 웨이브 패턴에 따라 공명 연결과 배치 조합의 가치 평가를 수행하며, 선택에 따른 자원 활용 전략 최적화 결정을 한다.",
       "coreFun": "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계를 가진 게임 내 웨이브 패턴 분석 및 공명 연결 기반의 배치 조합 진입 시점 변경을 통해 방어 성능 변환을 구현한다."
+    },
+    "local_authoring_parts::27c06f1d77382313f077f6f8756055be71ae97b2809aa2ca5bc3b300ac858b57:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "웨이브 패턴 분석 및 공명 연결 기반의 배치 조합 진입 시점 변경을 통해 방어 성능 변환",
+        "성능 변환 → 선택 변화 → 성능 재변화의 순차적 플레이어 행동 결과로 세계 규칙 변경"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1264051,
-      "lastMs": 99837,
+      "totalMs": 1360689,
+      "lastMs": 96638,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:26:30.054Z"
+      "updatedAt": "2026-10-09T18:28:06.698Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:25.966Z",
-  "updatedAt": "2026-10-09T18:26:30.056Z",
+  "updatedAt": "2026-10-09T18:28:06.698Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2256,7 +2263,7 @@
     "de3a2567b5b3fd56b4cf08b531052b7041f29bdd1150c9c0d56b0b94a44a8dd4": true,
     "12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:26:30.056Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:28:06.698Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
