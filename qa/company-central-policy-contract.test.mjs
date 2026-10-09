@@ -97,12 +97,14 @@ test('director fallback wake only re-dispatches existing queued GAME_PRIMARY wor
   assert.doesNotMatch(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=.*CREATE_(?:TASK|QUEUE|SCHEDULER)/);
 });
 
-test('Unity Web log contract matches the mandatory upper-platform development floor and per-game bootstrap parallelism',()=>{
+test('Unity Web remains a non-blocking browser QA floor with per-game bootstrap parallelism',()=>{
   const evidence=logMap.unityWebGameDevelopmentEvidence;
   assert.equal(evidence.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(evidence.nativeGateAuthority,false);
   assert.equal(evidence.developmentAdmissionAuthority,false);
-  assert.equal(evidence.requiredForDevelopmentAdmission,true);
+  assert.equal(evidence.requiredForDevelopmentAdmission,false);
+  assert.equal(evidence.independentFromRoblox,true);
+  assert.equal(evidence.unityAndroidAutonomousDevelopmentHeld,true);
   assert.equal(evidence.requiredForNativeRuntimePass,false);
   assert.equal(evidence.requiredForRelease,false);
   assert.equal(evidence.canonicalSource,'unity-games/<gameId>/');
@@ -423,7 +425,7 @@ test('equal-tier scheduling keeps strict design as a parallel quality signal, no
   assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
-test('Unity and Roblox share the active first development tier while Fortnite UEFN remains owner-held',()=>{
+test('Roblox and Unity Web stay independently active while Unity Android and UEFN are owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
@@ -435,9 +437,13 @@ test('Unity and Roblox share the active first development tier while Fortnite UE
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
   assert.equal(strategy.roadmapPhaseEntryGatesForbidden,false);
-  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,false);
+  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'});
+  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
+  assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
+  assert.equal(roadmap.changeRecord.ownerUnityWeb3dOnly20261009.unityWebMode,'REAL_3D_ONLY');
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
   assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
@@ -1971,7 +1977,7 @@ test('current Vibe operating system is fixed while detail-chain optimization rem
   assert.equal(fixed.repeatDevelopmentConcurrency.externalPublicReleaseIsCheckpointNotTerminal,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.externalPublicReleaseRequiresExplicitOwnerApproval,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.postReleaseRepeatDevelopmentContinues,true);
-  assert.deepEqual(fixed.repeatDevelopmentConcurrency.supportedBoundPlatformLoops,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(fixed.repeatDevelopmentConcurrency.supportedBoundPlatformLoops,['ROBLOX','UNITY_WEB']);
   assert.equal(logMap.fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressGamePrimaryRefill,false);
   assert.equal(logMap.fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressNextCycleRefill,false);
   assert.equal(architecture.fixedRepeatDevelopment64.logicalCapacityUnaffectedByRunnerPressure,true);
