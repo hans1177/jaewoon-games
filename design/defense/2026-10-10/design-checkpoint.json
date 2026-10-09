@@ -104,25 +104,40 @@
         "State Change: Resources are earned from defeated enemies and spent on upgrades, new placements, or tactical changes before pressure increases.",
         "Reward: Players adapt defense strategies based on enemy types and wave compositions, protecting objectives and clearing stages."
       ]
+    },
+    "local_authoring_parts::a2f780bbcf1b84104d14cb817772acb61a86f7ebed46e58b5cca80ddd278f5ce:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "DefensesPlaced"
+      ],
+      "stateOutputs": [
+        "ResourcesEarned",
+        "StrategyAdapted",
+        "ObjectiveProtected"
+      ],
+      "name": "Resource Management & Strategic Placement",
+      "purpose": "Player chooses where to place defenses based on current state and future risk/reward",
+      "playerChoice": "Player selects defense positions considering enemy type, wave composition, and resource availability for optimal strategy adaptation and objective protection"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 208230,
-      "lastMs": 35118,
+      "totalMs": 245301,
+      "lastMs": 37071,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:23:44.204Z"
+      "updatedAt": "2026-10-09T17:24:21.277Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:15.929Z",
-  "updatedAt": "2026-10-09T17:23:44.204Z",
+  "updatedAt": "2026-10-09T17:24:21.277Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1828,7 +1843,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:23:44.204Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:24:21.277Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
