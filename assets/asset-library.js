@@ -39,7 +39,7 @@ function allRows(){
   return {id:asset.id,title:atom?(motionLabels[key]||key):sample?(category==='ENVIRONMENT'?biomes[sample.id]||sample.title:sample.title):asset.title||asset.id,
    category,form:category,role:[asset.platform,asset.status].filter(Boolean).join(' · '),sample,atom,asset,retiredPreview,
    image:retiredPreview?'':localImage(asset.previewPath)||localImage(asset.path),sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)};
- }).sort((a,b)=>a.category.localeCompare(b.category)||a.title.localeCompare(b.title,'ko'));
+ }).sort((a,b)=>{const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];const rank=row=>{const i=families.indexOf(row.category);return i<0?families.length:i;};return rank(a)-rank(b)||String(a.asset?.subfamily||'').localeCompare(String(b.asset?.subfamily||''),'ko')||a.title.localeCompare(b.title,'ko')||a.id.localeCompare(b.id,'en');});
  if(kind==='common')return publicAssets(registry.assets).filter(row=>row.category==='MOTION').map(asset=>{
   const atom=common.get(asset.id),key=atom?.atomId||asset.id;
   return {id:asset.id,title:atom?(motionLabels[key]||key):asset.title||asset.id,category:'MOTION',asset,
