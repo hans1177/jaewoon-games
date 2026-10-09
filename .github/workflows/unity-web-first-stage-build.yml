@@ -712,6 +712,29 @@ jobs:
             releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString(),
           };
+          // 기존 공식 Unity QA에서 나온 동일 원본·번들 증거만 홈페이지 링크에 사용할 수 있다.
+          const manifestPath=path.join(root,'unity-web-deploy-manifest.json');
+          const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+          if(manifest.engine!=='UNITY_WEB'||manifest.gameId!==gameId||manifest.bundleComplete!==true)
+            throw new Error('UNITY_WEB_DEPLOY_MANIFEST_IDENTITY_INVALID');
+          manifest.canonicalSourceRoot=build.canonicalSourceRoot;
+          manifest.sourceCommit=build.sourceCommit;
+          manifest.unitySourceTreeSha256=build.unitySourceTreeSha256;
+          manifest.buildTreeSha256=build.buildTreeSha256;
+          manifest.requiredDimension='3D';
+          manifest.homepageVerified=pass;
+          manifest.ownerPlayableVerified=build.ownerBrowserTestEligible===true;
+          manifest.browserVerification={
+            actualBrowserPlay:play.pass===true,
+            independentQa:independent.pass===true,
+            regression:regression.pass===true,
+            realMobileTouch:play.mobile?.realGameTouchHandlerObserved===true,
+            saveRestore:qaPass,
+            native3d:graphicsPass&&native3dVerified,
+            multiplayer:multiplayerPass,
+            source:'OFFICIAL_UNITY_WEB_DEVELOPMENT_FLOOR'
+          };
+          fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
           fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
           console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
