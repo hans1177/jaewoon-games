@@ -1113,7 +1113,7 @@ test('completed diagnostic package is never recreated after assessment and compl
   }
 });
 
-test('completed Unity Web package is not duplicated after completion and retains explicit expansion scopes',()=>{
+test('completed Unity Web package is not duplicated and remains source-scoped for minimum necessary repair',()=>{
   const root=tempRepo();
   fs.mkdirSync(path.join(root,'unity-games/demo/ProjectSettings'),{recursive:true});
   fs.writeFileSync(path.join(root,'unity-games/demo/ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
@@ -1122,12 +1122,18 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
+  const sourceScopedSingleTask=first.task.unityWebDevelopment===true
+    &&first.task.sourceRoot==='unity-games/demo'
+    &&first.task.responsibleFiles.length>0
+    &&first.task.responsibleFiles.every(file=>file.startsWith('unity-games/demo/'));
+  assert.equal(autoExpanded||parallelPackage||sourceScopedSingleTask,true);
   if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  }else if(parallelPackage){
+    assert.equal(first.packages[0].accepted,true);
   }else{
-    assert.equal(parallelPackage,true);
+    assert.equal(sourceScopedSingleTask,true,'a one-file native repair may not inflate into artificial packages');
     assert.equal(first.packages[0].accepted,true);
   }
   const done={...first.task,status:'verified',result:'PASS'};
@@ -4449,6 +4455,28 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+});
+
+test('owner scope keeps canonical Unity Web runnable while native Unity and legacy Web remain held',()=>{
+  const root=tempRepo(),gameId='scoped-unity-web';
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Game.cs'),'public class Game {}\\n');
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><title>Legacy archive</title>');
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']},
+    developmentAccess:{UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'}
+  }));
+  const catalog={games:[{id:gameId,name:'Scoped Unity Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',webPath:`/web-games/${gameId}/`,hasWebArchive:true,homepageWebPlayable:true}]};
+  const status={projects:[{gameId,ownerDecision:'PASS',target:'unity',projectPath:`unity-games/${gameId}`}]};
+  const projects=collectProjects(status,catalog,root,{items:[]});
+  assert.equal(projects.filter(row=>row.gameId===gameId&&row.engine==='unity'&&row.firstStageUnityWeb===true).length,1);
+  assert.equal(projects.some(row=>row.gameId===gameId&&row.engine==='unity'&&row.firstStageUnityWeb!==true),false);
+  assert.equal(projects.some(row=>row.gameId===gameId&&row.engine==='web'),false);
 });
 
 test('actual fantasy-survival routes future source development to canonical Unity Web 3D instead of legacy HTML',()=>{
