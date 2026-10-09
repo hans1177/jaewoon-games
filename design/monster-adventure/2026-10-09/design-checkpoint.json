@@ -50,25 +50,41 @@
       "name": "MONSTER_ADVENTURE_CORE_FUN",
       "purpose": "PLAYER_IMMEDIATE_ACTION_AND_PROGRESSION",
       "playerChoice": "SIMPLE_TAP_OR_SWIPE_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS"
+    },
+    "local_authoring_parts::47fcb618838503bfd4a52a6e868d6c8bc64c06a57f0cf712e5b5fbe29ee99570:signatureSystems:1": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_IMMEDIATE_INPUT",
+        "BRIEF_RUN_FEEDBACK"
+      ],
+      "stateOutputs": [
+        "SCORE_DISPLAY",
+        "REWARD_COLLECTION",
+        "PROGRESSION_BENEFIT"
+      ],
+      "name": "MONSTER_ADVENTURE_CORE_FUN",
+      "purpose": "Establishes the core fun through immediate input, brief run feedback, and progression benefits.",
+      "playerChoice": "Player selects a simple input (tap/swipe) with clear goals, receives feedback, collects rewards, and progresses through small benefits."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 613571,
-      "lastMs": 100442,
+      "totalMs": 716731,
+      "lastMs": 103160,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:17:43.479Z"
+      "updatedAt": "2026-10-09T15:19:26.641Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:07:29.878Z",
-  "updatedAt": "2026-10-09T15:17:43.479Z",
+  "updatedAt": "2026-10-09T15:19:26.641Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1632,7 +1648,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:17:43.479Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:19:26.641Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
