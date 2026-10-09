@@ -63,25 +63,40 @@
       "name": "Enemy Wave Completion and Resource Gain",
       "purpose": "Player evaluates the cost, risk, and reward of completing an enemy wave and gaining resources, then re-evaluates their strategy to open new paths.",
       "playerChoice": "Reevaluate strategy based on previous costs, risks, and rewards, opening new paths through upgrades or placements."
+    },
+    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:2": {
+      "id": "CORE-03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_WAVE_COMPLETED",
+        "RESOURCE_GAINED"
+      ],
+      "stateOutputs": [
+        "UPGRADE_AVAILABLE",
+        "NEW_PLACEMENT_OPPORTUNITY"
+      ],
+      "name": "Enemy Wave Completion and Resource Gain",
+      "purpose": "Player evaluates previous choices, re-evaluates cost, risk, reward, and opens new paths for strategy development.",
+      "playerChoice": "Selects optimal placement and upgrade path based on current resource state and enemy wave progress."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 279168,
-      "lastMs": 85471,
+      "totalMs": 375421,
+      "lastMs": 96253,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:45:50.930Z"
+      "updatedAt": "2026-10-09T11:47:27.184Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:45:50.930Z",
+  "updatedAt": "2026-10-09T11:47:27.184Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2276,7 +2291,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:45:50.930Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:47:27.184Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
