@@ -625,25 +625,40 @@
       "name": "Forest Resource Dynamics",
       "purpose": "Establishes the causal relationship between resource availability and group decision-making in cooperative gameplay.",
       "playerChoice": "Decide which members should focus on survival tasks based on resource distribution and environmental risk assessment."
+    },
+    "local_authoring_parts::936053b5dd00e34f7afc7381b330a3d92460399a1e13071b68174d30d607ab7f:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Interdependent goal achievement"
+      ],
+      "name": "Forest Resource Dynamics",
+      "purpose": "Establishes the dynamic interplay between ecological adaptation and cooperative strategy that evolves with each discovery.",
+      "playerChoice": "Decide which members should focus on survival tasks based on resource availability and environmental conditions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1677183,
-      "lastMs": 22063,
+      "totalMs": 1700272,
+      "lastMs": 23089,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:01:12.131Z"
+      "updatedAt": "2026-10-09T23:01:35.221Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T23:01:12.131Z",
+  "updatedAt": "2026-10-09T23:01:35.226Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2381,7 +2396,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3
+    "designer_draft_slices::identity-core": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2482,10 +2497,10 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:01:12.131Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:01:35.222Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
