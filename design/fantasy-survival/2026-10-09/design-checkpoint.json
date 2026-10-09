@@ -27,25 +27,32 @@
       "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
       "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져들고, 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 이 과정에서 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
       "coreFun": "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다."
+    },
+    "local_authoring_parts::1cdabb56a55108d7e3d10cf508ddfcc58b1e0ea7bdfe49f3c11a6352b59dcf41:coreLoop": {
+      "coreLoop": [
+        "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다.",
+        "선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
+        "주변의 적·아이템·NPC와 플레이어의 선택이 서로 영향을 미치며, 시스템 내에서 조건별로 변화된 대안과 결과를 경험하게 된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 346839,
-      "lastMs": 74806,
+      "totalMs": 449660,
+      "lastMs": 102821,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:31:24.320Z"
+      "updatedAt": "2026-10-09T02:33:07.145Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T02:25:37.455Z",
-  "updatedAt": "2026-10-09T02:31:24.322Z",
+  "updatedAt": "2026-10-09T02:33:07.145Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T02:31:24.322Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:33:07.145Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
