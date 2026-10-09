@@ -400,7 +400,7 @@ test('village-dungeons F0 uses bounded actual ground contact rather than a one-f
   });
   assert.equal(r.pass,true,r.blockers.join(','));
   assert.match(server,/for attempt = 1, 30 do/);
-  assert.match(server,/groundHit ~= nil and groundHit\\.Instance ~= nil and humanoid\\.FloorMaterial ~= Enum\\.Material\\.Air/);
-  assert.match(server,/character:SetAttribute\\("GROUND_CONTACT", groundContact\\)/);
-  assert.doesNotMatch(server,/character:SetAttribute\\("GROUND_CONTACT", groundHit ~= nil\\)/);
+  assert.ok(server.includes('groundHit ~= nil and groundHit.Instance ~= nil and humanoid.FloorMaterial ~= Enum.Material.Air'));
+  assert.ok(server.includes('character:SetAttribute("GROUND_CONTACT", groundContact)'));
+  assert.ok(!server.includes('character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)'));
 });
