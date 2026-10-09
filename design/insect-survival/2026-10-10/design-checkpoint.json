@@ -138,25 +138,42 @@
       "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
       "purpose": "Define the core gameplay mechanics and causal relationships in a survival game focused on ecological adaptation and strategic decision-making.",
       "playerChoice": "Selecting between gathering resources or engaging in combat based on environmental pressures and adaptive strategies."
+    },
+    "local_authoring_parts::d61da667a55f6ca3b6b93f714814ce998415a1ea5be45a876837399c413b0548:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT",
+        "CHOICE",
+        "STATE_CHANGE",
+        "REWARD/THREAT",
+        "NEXT_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "combat strategy, risk evaluation, adaptive behavior",
+      "purpose": "to evaluate environmental risks and make strategic decisions based on ecological feedback",
+      "playerChoice": "selecting between resource gathering or combat to maximize survival progression through adaptive strategies in a dynamic environment with evolving threats and ecological consequences"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 254006,
-      "lastMs": 36128,
+      "totalMs": 289978,
+      "lastMs": 35972,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:57:28.541Z"
+      "updatedAt": "2026-10-09T20:58:04.514Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T20:57:28.541Z",
+  "updatedAt": "2026-10-09T20:58:04.514Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1829,7 +1846,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:57:28.541Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:58:04.514Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
