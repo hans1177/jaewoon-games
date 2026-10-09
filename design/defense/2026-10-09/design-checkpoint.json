@@ -2109,25 +2109,28 @@
         "RESOURCE_ACUMULATION",
         "TACTICAL_FLEXIBILITY"
       ]
+    },
+    "local_authoring_parts::df03245c347ca8009ffbc22eeb649b6ad8ad91a54709c0940247e0e3b9c2ab59:fromSystem": {
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 171,
-      "successes": 168,
+      "calls": 172,
+      "successes": 169,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10869896,
-      "lastMs": 59924,
+      "totalMs": 10927564,
+      "lastMs": 57668,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T07:34:24.121Z"
+      "updatedAt": "2026-10-09T07:35:21.791Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T07:34:24.121Z",
+  "updatedAt": "2026-10-09T07:35:21.792Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4552,7 +4555,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:34:24.121Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:35:21.791Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
