@@ -738,25 +738,40 @@
     },
     "local_authoring_parts::ec6078009ac79f978b42c19581667000f6a94254902f9825df56743a9ce70486:resourceFlow": {
       "resourceFlow": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::ec6078009ac79f978b42c19581667000f6a94254902f9825df56743a9ce70486:balanceRules": {
+      "balanceRules": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::d2bb6165ffb4340ee59f6505063bb85067d914212acbc01bde118808ff4b0a49:progressionEconomyBalance": {
+      "progressionLoop": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+      "resourceFlow": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+      "balanceRules": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::5183aa0b64a2836bdf2079569467ca8719aa745095ea641fde913cb76eeadf4e:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+        "resourceFlow": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다.",
+        "balanceRules": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1873345,
-      "lastMs": 33611,
+      "totalMs": 1907058,
+      "lastMs": 33713,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:12:25.195Z"
+      "updatedAt": "2026-10-09T12:12:58.910Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T12:12:25.195Z",
+  "updatedAt": "2026-10-09T12:12:58.913Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3508,7 +3523,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:12:25.195Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:12:58.913Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
