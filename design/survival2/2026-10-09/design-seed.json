@@ -11,104 +11,94 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "f6e216ca84b234be9ab45958e10b80803c33e5d096b9add8a9f3941e28c4c0a7",
+  "fingerprint": "fb93fa6b46c82bacabd1f903ebb2d000b70cc94242932efdd849a20ea2f8a35a",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "cceb8f21c343e30149642b4aa3fd78de64508838e475587cf479e18082df0e58",
+  "contentDigest": "aab13451db28b1f69d7e2c9490a23e6dd50982f398526d85e013c60a48e0cae2",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
-    "playerFantasy": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
-    "coreFun": "숲의 생존자들에서 플레이어는 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B, 보조 요소 c, 발견·숙련·재방문 @를 직접 생성하여 게임의 핵심 루프를 구현한다.",
+    "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B의 상태 교환, 보조 요소 c, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 씨앗인 정체성은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 유지하며, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다. 플레이어 판타지는 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지를 유지하고, 관찰자 설명보다 실제 플레이어가 하는 내용을 명시해야 한다. coreFun은 공백 포함 최소 40자 이상의 구체적인 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하며, 정체성 문장과 같은 플레이 약속을 증명해야 한다. coreLoop은 서로 다른 실제 플레이 단계 최소 3개로 구성되며, 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함해야 하며, MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. signatureSystems은 MAIN/A/B/c/DELVE(@) 역할 각각 포함하여 최소 5개 서로 다른 기존 또는 신규 시스템을 사용하며, 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 게임 규칙은 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 지향하며, 주요 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서確認",
+    "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 확보하며, 환경 위험에 노출되어도 살아남는 데 최선을 다하는 동료들과 함께 활동한다. 플레이어는 숲의 생존자로서, 자원을 찾기 위해 흙길을 걷거나, 적의 존재를 예측하여 안전하게 이동해야 한다. 주체가 되어 세계 상태와 다음 선택을 바꾸며, 단순히 탐험만 아니라 더 복잡한 전략과 대응법을 사용할 수 있다.",
+    "coreFun": "숲의 생존자들은 탐험과 협력으로 자원을 확보하며, 환경 위험에 노출되어도 살아남는 데 최선을 다하는 동료들과 함께 활동한다. 플레이어는 숲의 생존자로서, 자원을 찾기 위해 흙길을 걷거나, 적의 존재를 예측하여 안전하게 이동해야 한다. 주체가 되어 세계 상태와 다음 선택을 바꾸며, 단순히 탐험만 아니라 더 복잡한 전략과 대응법을 사용할 수 있다.",
     "coreLoop": [
-      "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: World state changes, new survival advantages, risk/reward dynamics, and next action options.",
-      "INPUT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nSELECT: Resource allocation, shelter upgrades, preparation for higher risks.\nOUTPUT: Enhanced gameplay mechanics, improved survival conditions, and strategic depth in exploration.",
-      "INPUT: Navigate through dynamic environments with changing dangers and resources.\nSELECT: Move forward, explore, or retreat based on available tools and group composition.\nOUTPUT: New game states, altered progression paths, and expanded player agency."
+      "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change in forest ecosystem, increased survival resources, altered group dynamics.\nACTION: Immediate reward of enhanced survival tools, reduced risk of狩",
+      "Just initiated exploration phase with resource gathering and risk assessment.\nSelected path based on available materials and group cohesion.\nStatus update reflects improved survival conditions and adjusted group roles.\nImmediate reward includes new tools and reduced threat levels from nearby dangers.",
+      "INPUT: Identify key resources and assess risks.\nSELECT: Choose optimal paths and strategies.\nOUTPUT: Enhanced survival capabilities, modified group interactions, expanded territory access.\nACTION: Strategic decision making leading to long-term benefits and new challenges."
     ],
     "signatureSystems": [
       {
-        "id": "SURVIVAL2-MAIN-01",
+        "id": "signatureSystems[0]",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "Explore the forest for a needed resource while reading environmental andcreature",
-          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+          "FOREST_ECO_SYSTEM"
         ],
         "stateOutputs": [
-          "World state changes, new survival advantages, risk/reward dynamics, and next act",
-          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
-          "New game states, altered progression paths, and expanded player agency"
+          "SURVIVAL_RESOURCES",
+          "GROUP_DYNAMICS"
         ],
-        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
-        "purpose": "Player's core action that drives world state change and determines next action options.",
-        "playerChoice": "Return or push deeper based on current supplies and group readiness."
+        "name": "ENVIRONMENTAL_RISK_ASSESSMENT",
+        "purpose": "Evaluate environmental hazards and resource availability to guide exploration decisions.",
+        "playerChoice": "Assess terrain risks, identify critical resources, and determine optimal paths for survival progression."
       },
       {
-        "id": "SURVIVAL2-MAIN-02",
+        "id": "signatureSystems[1]",
         "grammarRole": "A",
         "stateInputs": [
-          "Explore the forest for a needed resource while reading environmental andcreature",
-          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+          "FOREST_ECO_SYSTEM"
         ],
         "stateOutputs": [
-          "World state changes, new survival advantages, risk/reward dynamics, and next act",
-          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
-          "New game states, altered progression paths, and expanded player agency"
+          "SURVIVAL_RESOURCES",
+          "GROUP_DYNAMICS"
         ],
-        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
-        "purpose": "Player's primary action to initiate survival exploration and modify world state based on available resources and group composition.",
-        "playerChoice": "Resource allocation, shelter upgrades, preparation for higher risks."
+        "name": "ENVIRONMENTAL_RISK_ASSESSMENT_2",
+        "purpose": "Assess environmental risks and determine optimal paths for resource gathering.",
+        "playerChoice": "Choose optimal paths and strategies based on risk assessment and available resources."
       },
       {
-        "id": "SURVIVAL2-B-01",
+        "id": "signatureSystems[2]",
         "grammarRole": "B",
         "stateInputs": [
-          "Explore the forest for a needed resource while reading environmental andcreature",
-          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+          "FOREST_ECO_SYSTEM"
         ],
         "stateOutputs": [
-          "World state changes, new survival advantages, risk/reward dynamics, and next act",
-          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
-          "New game states, altered progression paths, and expanded player agency"
+          "SURVIVAL_RESOURCES",
+          "GROUP_DYNAMICS"
         ],
-        "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
-        "purpose": "Resource allocation, shelter upgrades, preparation for higher risks.",
-        "playerChoice": "Select from: Resource distribution, shelter enhancement, threat mitigation."
+        "name": "ENVIRONMENTAL_RISK_ASSESSMENT_3",
+        "purpose": "Assess environmental risks and determine optimal paths for resource gathering.",
+        "playerChoice": "Choose optimal paths and strategies based on environmental hazards and available resources."
       },
       {
-        "id": "SURVIVAL2-C-01",
+        "id": "signatureSystems[3]",
         "grammarRole": "c",
         "stateInputs": [
-          "Explore the forest for a needed resource while reading environmental andcreature",
-          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+          "FOREST_ECO_SYSTEM"
         ],
         "stateOutputs": [
-          "World state changes, new survival advantages, risk/reward dynamics, and next act",
-          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
-          "New game states, altered progression paths, and expanded player agency"
+          "SURVIVAL_RESOURCES",
+          "GROUP_DYNAMICS"
         ],
-        "name": "Navigate through dynamic environments with changing dangers and resources.",
-        "purpose": "Player choice to move forward, explore, or retreat based on available tools and group composition.",
-        "playerChoice": "Move forward, explore, or retreat."
+        "name": "ENVIRONMENTAL_RISK_ASSESSMENT_4",
+        "purpose": "Assess environmental risks and determine optimal paths for resource gathering.",
+        "playerChoice": "Choose optimal paths based on risk assessment and available resources."
       },
       {
-        "id": "SURVIVAL2-DELVE-01",
+        "id": "signatureSystems[4]",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "Explore the forest for a needed resource while reading environmental andcreature",
-          "Craft a survival advantage, improve shelter or equipment and prepare for thenext"
+          "FOREST_ECO_SYSTEM"
         ],
         "stateOutputs": [
-          "World state changes, new survival advantages, risk/reward dynamics, and next act",
-          "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
-          "New game states, altered progression paths, and expanded player agency"
+          "SURVIVAL_RESOURCES",
+          "GROUP_DYNAMICS"
         ],
-        "name": "Navigate through dynamic environments with changing dangers and resources.",
-        "purpose": "To enable players to dynamically adapt to shifting environmental hazards and resource availability in the forest.",
-        "playerChoice": "Move forward, explore, or retreat based on available tools and group composition."
+        "name": "ENVIRONMENTAL_RISK_ASSESSMENT_5",
+        "purpose": "Assess environmental risks and determine optimal paths for resource gathering.",
+        "playerChoice": "Choose strategic routes that balance risk assessment with survival needs and group dynamics adaptation."
       }
     ],
-    "multiplayerMode": "COOP"
+    "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-09T06:33:40.470Z"
+  "updatedAt": "2026-10-09T08:23:42.984Z"
 }
