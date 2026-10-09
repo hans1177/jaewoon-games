@@ -104,25 +104,42 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::0b98b41a5b0a48e30f17048b4f6aa30b1607c301da2c9fcf16dce00503809f92:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Fight through an escalating horde in a short real-time survival run while boxing",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills",
+        "Combine upgrades into a stronger build, survive harder waves or a boss"
+      ],
+      "stateOutputs": [
+        "Survival Threshold Shift",
+        "Multi-Stage Engagement",
+        "Dynamic Difficulty Scaling"
+      ],
+      "name": "Adaptive Combat",
+      "purpose": "Real-Time Engagement",
+      "playerChoice": "Tactical Positioning, Resource Allocation, Adaptive Combat"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 179508,
-      "lastMs": 25123,
+      "totalMs": 200482,
+      "lastMs": 20974,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:14:00.519Z"
+      "updatedAt": "2026-10-09T20:14:21.494Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:11:00.791Z",
-  "updatedAt": "2026-10-09T20:14:00.519Z",
+  "updatedAt": "2026-10-09T20:14:21.494Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1849,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:14:00.519Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:14:21.494Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
