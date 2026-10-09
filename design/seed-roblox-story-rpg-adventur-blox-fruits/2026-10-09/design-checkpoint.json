@@ -568,25 +568,53 @@
         "resourceFlow": "Resource Allocation Based on Player Agency",
         "balanceRules": "Equilibrium between player autonomy and game mechanics"
       }
+    },
+    "local_authoring_parts::632787a45e910c3011c6e6fa8f13d8d9879220fce5a440d46968edf95817dbb2:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Board Level Selection",
+          "newGameplay": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint.",
+          "systemImpact": "Establishes the initial interaction between player choice and board state, creating dynamic foundation for subsequent gameplay."
+        },
+        {
+          "milestone": "Strategic Moves & Combos",
+          "newGameplay": "Make matches or deliberate puzzle moves to solve objective, create combos, use immediate feedback to solve current goal.",
+          "systemImpact": "Introduces new combinations and strategies that influence next state and reward distribution."
+        },
+        {
+          "milestone": "Reward System Activation",
+          "newGameplay": "Clear level goal to earn rewards or unlock next stage, then face new pattern/obstacle combination.",
+          "systemImpact": "Drives progression by linking short-term success to long-term goals and unlocking new challenges."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to meet objective due to insufficient strategy or misjudgment of constraints.",
+          "System introduces risk based on player's decision-making process."
+        ],
+        "retryFlow": "Player retries with adjusted approach, considering updated risks and rewards.",
+        "riskPressure": "Dynamic risk/reward distribution based on current board state and player agency.",
+        "recoveryRules": "Player re-evaluates choices, balancing autonomy with game mechanics."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1068020,
-      "lastMs": 292890,
+      "totalMs": 1184819,
+      "lastMs": 116799,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T13:14:03.292Z"
+      "updatedAt": "2026-10-09T13:16:00.092Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:14:03.292Z",
+  "updatedAt": "2026-10-09T13:16:00.098Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2620,15 +2648,158 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "424da2a345d6a58c94ab6c7b491414e6087a038db441b1d481db477bfb3edec1"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:14:03.292Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Dynamic Board State Evolution",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Linear Progression",
+        "resourceFlow": "Resource Allocation Based on Player Agency",
+        "balanceRules": "Equilibrium between player autonomy and game mechanics"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Board Level Selection",
+          "newGameplay": "Player selects a board level with clear goal, limited moves, obstacles, or visible puzzle constraint.",
+          "systemImpact": "Establishes the initial interaction between player choice and board state, creating dynamic foundation for subsequent gameplay."
+        },
+        {
+          "milestone": "Strategic Moves & Combos",
+          "newGameplay": "Make matches or deliberate puzzle moves to solve objective, create combos, use immediate feedback to solve current goal.",
+          "systemImpact": "Introduces new combinations and strategies that influence next state and reward distribution."
+        },
+        {
+          "milestone": "Reward System Activation",
+          "newGameplay": "Clear level goal to earn rewards or unlock next stage, then face new pattern/obstacle combination.",
+          "systemImpact": "Drives progression by linking short-term success to long-term goals and unlocking new challenges."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Player fails to meet objective due to insufficient strategy or misjudgment of constraints.",
+          "System introduces risk based on player's decision-making process."
+        ],
+        "retryFlow": "Player retries with adjusted approach, considering updated risks and rewards.",
+        "riskPressure": "Dynamic risk/reward distribution based on current board state and player agency.",
+        "recoveryRules": "Player re-evaluates choices, balancing autonomy with game mechanics."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T13:16:00.094Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
