@@ -34,25 +34,42 @@
         "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.\nSELECT: Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.\nOUTPUT: Status change in world state due to ecological knowledge, increased resilience, or goal progression.\nSTATE: Main × A ×",
         "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.\nSELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.\nOUTPUT: Status change in world state due to risk assessment, resource conversion, or path optimization.\nSTATE: Main × A × B × c"
       ]
+    },
+    "local_authoring_parts::81279fc73e1e671ec43fa0bdf9e291db55dccbcee38f46dc74122fe231741fae:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORED_HABITAT",
+        "ACQUIRED_RESOURCES",
+        "MITIGATED_THREAT"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE",
+        "INCREASED_RESILIENCE",
+        "PROGRESSED_GOAL"
+      ],
+      "name": "KARMA_RETURN",
+      "purpose": "INDIRECT_EFFECT_ON_WORLD_STATE",
+      "playerChoice": "RISK_ASSESSMENT_AND_RESOURCE_CONVERSION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 458173,
-      "lastMs": 92804,
+      "totalMs": 508146,
+      "lastMs": 49973,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:59:31.454Z"
+      "updatedAt": "2026-10-09T12:00:21.429Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:51:53.255Z",
-  "updatedAt": "2026-10-09T11:59:31.454Z",
+  "updatedAt": "2026-10-09T12:00:21.429Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2301,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:59:31.454Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:00:21.429Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
