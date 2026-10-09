@@ -6543,7 +6543,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-09T10:31:46.042Z",
+  "updatedAt": "2026-10-09",
   "priorityTiers": [
     {
       "tier": 1,
@@ -27218,17 +27218,17 @@
         "tools/company-build-up-directive.mjs"
       ],
       "novelCausalGameGrammar": {
-        "version": 2,
-        "status": "ACTIVE_WITHIN_EXISTING_CANONICAL_RESPONSIBILITIES",
+        "version": 3,
+        "status": "OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_CANONICAL",
         "authority": "OWNER_DIRECTIVE_2026-10-06",
-        "purpose": "FUSE_OWNER_PROPOSED_CULTURAL_CAUSAL_MATERIALS_WITH_GENERAL_GAME_SYSTEMS_TO_CREATE_A_NEW_GAME_GRAMMAR_THAT_ITSELF_BECOMES_THE_COMPOSITE_GENRE",
+        "purpose": "START_WITH_MAIN_GAME_TOPIC_AND_IDENTITY; BIND_EACH_A_AND_B_SYSTEM_TO_ITS_OWN_CREATIVE_SOURCE; CAUSALLY_FUSE_TWO_C_THEMES_WITH_AT_LEAST_ONE_GENRE; EXTEND_UNBOUNDED_DELVE_IN_VERIFIED_GAMEPLAY",
         "executionBoundary": "EXISTING_GAME_SEED_DESIGN_STORY_BUILD_UP_ONLY",
         "pipelineMutationForbidden": true,
         "newWorkflowForbidden": true,
         "newQueueForbidden": true,
         "newSchedulerForbidden": true,
         "shadowOrWrapperPipelineForbidden": true,
-        "canonicalFormula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
+        "canonicalFormula": "MAIN × A × B × C + @ = EMERGENT_COMPOSITE_GENRE",
         "materialGrammar": {
           "allMaterialsPeerLevel": true,
           "depthHierarchyForbidden": true,
@@ -27246,7 +27246,24 @@
             "POLITICS",
             "HISTORICAL_FIGURE_ARCHETYPES",
             "FOLKLORE",
-            "EVERYDAY_LIFE_AND_SOCIAL_ARCHETYPE"
+            "EVERYDAY_LIFE_AND_SOCIAL_ARCHETYPE",
+            "EASTERN_CULTURE",
+            "WESTERN_CULTURE",
+            "MARTIAL_ARTS_WUXIA_XIANXIA",
+            "PEOPLE_AND_HISTORICAL_FIGURES",
+            "VISUAL_ART",
+            "MUSIC_AND_PERFORMANCE",
+            "ARCHITECTURE_AND_DESIGN",
+            "SCIENCE",
+            "BIOLOGY",
+            "ASTRONOMY",
+            "TECHNOLOGY",
+            "MYSTERY",
+            "HORROR",
+            "BIZARRE_ABSURDITY",
+            "MONSTERS",
+            "SOCIAL_HISTORY",
+            "LIFE_AND_CRAFTS"
           ],
           "existingSeedMaterialPoolPreserved": true,
           "metadataOnlyExtension": [
@@ -27278,44 +27295,76 @@
             "ABSURD_BUREAUCRACY",
             "NAME_AND_REPUTATION_POWER"
           ],
-          "abstractionRule": "USE_CAUSAL_STRUCTURE_HUMAN_CONFLICT_ARCHETYPE_AND_RELATIONSHIP_AS_MATERIAL; DO_NOT_COPY_PROTECTED_MODERN_CHARACTERS_DIALOGUE_SCENES_OR_UNIQUE_SETTING_EXPRESSION"
+          "abstractionRule": "USE_CAUSAL_STRUCTURE_HUMAN_CONFLICT_ARCHETYPE_AND_RELATIONSHIP_AS_MATERIAL; DO_NOT_COPY_PROTECTED_MODERN_CHARACTERS_DIALOGUE_SCENES_OR_UNIQUE_SETTING_EXPRESSION",
+          "sourceDomainListIsIllustrativeOnly": true
         },
         "generalizedSystemFusion": {
-          "formula": "MAIN × A × B × c",
+          "formula": "MAIN × A × B × C",
           "MAIN": {
-            "role": "CENTRAL_REPEATED_PLAYER_ACTION_OR_CONTENT",
+            "role": "PRIMARY_GAME_TOPIC_AND_IDENTITY",
+            "examples": [
+              "SCHOOL_TYCOON",
+              "SURVIVAL",
+              "RPG",
+              "DEFENSE",
+              "LIFE_SIM",
+              "PUZZLE"
+            ],
+            "mustDefinePlayerIdentityAndRepeatedObjective": true,
             "mustProduceGameState": true
           },
           "A": {
-            "role": "FIRST_MAJOR_GENERAL_SYSTEM_AXIS",
+            "role": "FIRST_GAME_SYSTEM_MULTIPLIED_BY_ITS_OWN_CREATIVE_MATERIAL",
+            "systemMustBeGenreNative": true,
+            "sourceMaterialAndDomainRequired": true,
+            "creativeMaterialMustChangePlayerActionOrState": true,
             "mustExchangeStateWith": "MAIN_AND_B"
           },
           "B": {
-            "role": "SECOND_MAJOR_GENERAL_SYSTEM_AXIS",
+            "role": "SECOND_GAME_SYSTEM_MULTIPLIED_BY_ITS_OWN_CREATIVE_MATERIAL",
+            "systemMustBeGenreNative": true,
+            "sourceMaterialAndDomainRequired": true,
+            "creativeMaterialMustChangePlayerActionOrState": true,
             "mustExchangeStateWith": "MAIN_AND_A"
           },
-          "c": {
-            "role": "SUB_ELEMENT_COLLECTION_NOT_MAJOR_AXIS",
-            "examples": [
-              "WEATHER",
-              "TIMING",
-              "REGIONAL_RULE",
-              "EVENT",
-              "SECONDARY_RESOURCE",
-              "STATUS_VARIABLE",
-              "MINOR_RISK_MODIFIER",
-              "SMALL_SUPPORT_MECHANIC"
-            ],
-            "rule": "c_MUTATES_OR_CONNECTS_MAIN_A_B_CONTEXTUALLY_BUT_DOES_NOT_OWN_AN_EQUAL_MAJOR_LOOP"
-          },
-          "crossSystemRule": "MAIN_A_B_MUST_EXCHANGE_CAUSE_COST_RISK_REWARD_INFORMATION_OR_WORLD_STATE; c_VARIATES_THE_RELATIONSHIP",
+          "crossSystemRule": "MAIN_DEFINES_IDENTITY; A_AND_B_EACH_MUST_HAVE_SYSTEM_PLUS_CREATIVE_SOURCE; A_AND_B_MUTUALLY_CHANGE_CAUSE_COST_RISK_REWARD_OR_STATE; C_TWO_THEMES_ONE_MANDATORY_GENRE_CHANGES_THE_WHOLE_CAUSAL_GAME",
           "parallelFeatureStackingDoesNotCount": true,
           "majorAxesExactlyTwo": true,
           "onlyMajorAxes": [
             "A",
             "B"
           ],
-          "cIsSubordinateElements": true
+          "C": {
+            "role": "TWO_CREATIVE_THEMES_FUSED_WITH_GAMEPLAY",
+            "themeCount": 2,
+            "genreMinimum": 1,
+            "genreMayBeEitherTheme": true,
+            "secondThemeDomainOpen": true,
+            "genreExamplesOnly": [
+              "HORROR",
+              "COMEDY",
+              "MYSTERY",
+              "BIZARRE",
+              "WUXIA",
+              "FANTASY",
+              "THRILLER",
+              "ACTION"
+            ],
+            "creativeSourceExamplesOnly": [
+              "HISTORY",
+              "MYTH",
+              "RELIGION",
+              "PHILOSOPHY",
+              "PEOPLE",
+              "ART",
+              "SCIENCE",
+              "SOCIAL_CULTURE"
+            ],
+            "mustChange": "A_B_PLAYER_DECISIONS_WORLD_RULES_STORY_CONFLICT_OR_CONSEQUENCES",
+            "genreCannotBeDecorativeOnly": true,
+            "notATertiaryMechanicalAxis": true
+          },
+          "CisCreativeThemeFusionNotMinorMechanic": true
         },
         "delveLayer": {
           "symbol": "@",
@@ -27333,15 +27382,17 @@
             "META_RULE",
             "RARE_CAUSAL_COMBINATION"
           ],
-          "connectionRule": "EACH_@_ELEMENT_CONNECTS_TO_AT_LEAST_TWO_OF_MAIN_A_B_OR_THEIR_c_SUB_ELEMENTS",
+          "connectionRule": "EACH_AT_ELEMENT_CHANGES_AT_LEAST_TWO_MAIN_A_B_C_RULES_OR_THEIR_CONNECTED_GAMEPLAY_SURFACES",
           "rewardRule": "@_SHOULD_OPEN_NEW_USE_INTERPRETATION_ROUTE_COMBINATION_OR_STATE_CONTROL_NOT_ONLY_MORE_STATS",
           "isFourthSystem": false,
-          "isSubElement": false
+          "isSubElement": false,
+          "maximumElements": null,
+          "longTermExpansion": "UNBOUNDED_VERIFIED_DISCOVERY_MASTERY_REVISIT_COMBINATION_ACROSS_SYSTEMS_AND_THEMES"
         },
         "emergentGenre": {
           "finalGenrePredetermined": false,
           "gameCategoryRole": "SEED_DISCOVERY_OPERATIONAL_ROUTING_AND_COMPATIBILITY_HINT_ONLY_NOT_FINAL_GENRE",
-          "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
+          "formula": "MAIN × A × B × C + @ = EMERGENT_COMPOSITE_GENRE",
           "namingRule": "NAME_AND_DEFINE_THE_GENRE_AFTER_THE_COMBINED_GRAMMAR_EXISTS",
           "singleConventionalGenreMayBeInsufficient": true,
           "identityRule": "THE_NEW_GAME_GRAMMAR_ITSELF_IS_THE_COMPOSITE_GENRE",
@@ -27357,18 +27408,20 @@
         "newGameApplication": {
           "mode": "CREATE_GRAMMAR_THEN_NAME_EMERGENT_GENRE",
           "required": [
-            "CAUSAL_DNA_FUSION",
-            "NEW_PRIMARY_VERB",
-            "WORLD_RULE",
-            "MAIN_A_B_c_SYSTEM_FUSION",
-            "AT_DELVE_LAYER",
-            "EMERGENT_GENRE",
+            "MAIN_GAME_TOPIC_IDENTITY",
+            "A_SYSTEM_AND_CREATIVE_SOURCE",
+            "B_SYSTEM_AND_CREATIVE_SOURCE",
+            "A_B_BIDIRECTIONAL_CAUSAL_EFFECT",
+            "C_TWO_THEMES_AT_LEAST_ONE_GENRE",
+            "STORY_WORLD_CAUSAL_CONFLICT",
+            "AT_DELVE_UNBOUNDED_EXPANSION",
+            "EMERGENT_GAME_IDENTITY",
             "EXPANSION_VECTORS"
           ],
           "finalGenreMustNotSimplyCopyGameCategory": true
         },
         "existingGameApplication": {
-          "mode": "DISCOVER_AND_DEEPEN_EXISTING_GRAMMAR",
+          "mode": "REWRITE_WEAK_LEGACY_GAME_DESIGNS_WITH_OWNER_MAIN_AB_C_GRAMMAR",
           "sourceInspectionFirst": true,
           "reconstruct": "CURRENT_MAIN × CURRENT_A × CURRENT_B × CURRENT_c + CURRENT_OR_MISSING_@",
           "preserveExistingIdentity": true,
@@ -27378,7 +27431,16 @@
           "identityRewriteRequired": false,
           "rule": "DO_NOT_FORCE_A_NEW_GENRE_LABEL_OR_REWRITE_WORKING_GAME_MEANING; DISCOVER_EXISTING_RELATIONSHIPS_AND_STRENGTHEN_THEM",
           "reconstructFromCurrentDesignAndSourceFirst": true,
-          "noIdentityRewriteRequired": true
+          "noIdentityRewriteRequired": true,
+          "existingDesignPreservationRequired": false,
+          "priorMainOnlyDesignCountsAsComplete": false,
+          "applyToAllExistingGameDesigns": true,
+          "redesignFromCurrentPlayableGameAndOwnerIntent": true,
+          "coreGameSourceAndSavePreservedUntilApprovedReplacement": true,
+          "requireExplicitSystemMaterialForEachAB": true,
+          "requireCAtLeastOneGenre": true,
+          "requireUnboundedDelvePlan": true,
+          "priorVerifiedDesignMustBeReevaluatedForNewGrammar": true
         },
         "designAndGate": {
           "existingDesignFieldsRemainCanonical": true,
@@ -27396,21 +27458,23 @@
             "designIntegrityPlan"
           ],
           "requiredCarry": [
-            "EMERGENT_GENRE_NAME",
-            "NEW_PRIMARY_VERB",
-            "MAIN",
-            "A",
-            "B",
-            "AT_LEAST_ONE_c",
-            "AT_LEAST_ONE_@",
-            "AT_LEAST_TWO_CAUSAL_DNA"
+            "MAIN_TOPIC_IDENTITY",
+            "A_SYSTEM_PLUS_SOURCE",
+            "B_SYSTEM_PLUS_SOURCE",
+            "AB_CAUSALITY",
+            "C_TWO_THEMES",
+            "C_GENRE_AT_LEAST_ONE",
+            "AT_INITIAL_FOUR_UNBOUNDED_GROWTH",
+            "STORY_WORLD_PLAYER_CHOICE",
+            "EMERGENT_GAME_IDENTITY"
           ],
           "strictGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED",
           "cMustNotBePromotedToThirdMajorAxis": true,
-          "atMustNotBePromotedToGeneralSystem": true
+          "atMustNotBePromotedToGeneralSystem": true,
+          "oldMainOnlyDesignsMustReenterDesignCycle": true
         },
         "expansionRule": {
-          "rule": "EXPAND_BY_CHANGING_RELATIONSHIPS_AMONG_EXISTING_SYSTEMS_AND_BY_ADDING_NEW_c_OR_@_USES_BEFORE_ISOLATED_FEATURE_COUNT",
+          "rule": "DEEPEN_A_B_AND_C_CAUSAL_RELATIONSHIPS_AND_GROW_UNBOUNDED_AT_DISCOVERY_BEFORE_ADDING_DISCONNECTED_FEATURES",
           "mutationVerbs": [
             "TRANSFER",
             "DISTORT",
@@ -27434,13 +27498,16 @@
           "existingEngineOnly": true,
           "source": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
           "separateLorePipelineForbidden": true,
-          "mainABcAtRolesMustRemainConsistent": true
+          "mainABcAtRolesMustRemainConsistent": false,
+          "mainABCAtRolesMustRemainConsistent": true
         },
         "buildUpIntegration": {
           "existingBuildUpOnly": true,
           "reconstructExistingGameGrammarEveryRelevantBuildUp": true,
           "currentSourceAndDesignEvidenceRequired": true,
-          "genericFeatureCountCannotProveGrammarGrowth": true
+          "genericFeatureCountCannotProveGrammarGrowth": true,
+          "mainTopicAndBothAxisMaterialsAndCGenreRequired": true,
+          "neverClaimRealPlayFromDesignOnly": true
         },
         "bindings": [
           "tools/game-seed-state.mjs",
@@ -27452,7 +27519,8 @@
           "tools/company-build-up-directive.mjs",
           "tools/vibe2-artbook-story-engine.mjs",
           "tools/vibe2-artbook-story-core.mjs"
-        ]
+        ],
+        "documentation": "company-learning/game-design-grammar.md"
       }
     }
   },
