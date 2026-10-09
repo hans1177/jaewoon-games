@@ -27,25 +27,32 @@
       "identity": "Harbor Days: A Survival Roguelite with Dynamic Progression and Deep Player Agency in a Real-Time Arena of Conflict and Growth",
       "playerFantasy": "Harbor Days is a real-time survival roguelite where players take on the role of a lone survivor navigating an ever-evolving battlefield filled with shifting alliances, escalating threats, and dynamic choices that shape both your progression and the world around you.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
+    },
+    "local_authoring_parts::5afe4fa6601eea76de721de4fe549582457c0e8b062c01f28292edb441dac718:coreLoop": {
+      "coreLoop": [
+        "INPUT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: Status changes based on player choices and game mechanics."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 214898,
-      "lastMs": 19499,
+      "totalMs": 240323,
+      "lastMs": 25425,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:57:53.644Z"
+      "updatedAt": "2026-10-09T08:58:19.072Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:54:18.722Z",
-  "updatedAt": "2026-10-09T08:57:53.646Z",
+  "updatedAt": "2026-10-09T08:58:19.072Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:57:53.646Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:58:19.072Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
