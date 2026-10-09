@@ -1340,25 +1340,28 @@
     },
     "local_authoring_parts::c038b0aae8784730ca0219860271da412d176e0f6947c73245517def72426e5a:fromId": {
       "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
+    },
+    "local_authoring_parts::c038b0aae8784730ca0219860271da412d176e0f6947c73245517def72426e5a:toId": {
+      "toId": "territory_objective"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 83,
-      "successes": 80,
+      "calls": 84,
+      "successes": 81,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5709648,
-      "lastMs": 89880,
+      "totalMs": 5797526,
+      "lastMs": 87878,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:31:41.423Z"
+      "updatedAt": "2026-10-09T02:33:09.304Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T02:31:41.423Z",
+  "updatedAt": "2026-10-09T02:33:09.304Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3612,7 +3615,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:31:41.423Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:33:09.304Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
