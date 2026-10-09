@@ -243,3 +243,19 @@ test('continuation control jobs use slim runners while model preflight stays on 
   assert.match(section('preflight-persist','dispatch-headless'),/runs-on:\s*ubuntu-slim/);
   assert.match(section('dispatch-headless',null),/runs-on:\s*ubuntu-slim/);
 });
+
+// 최신 main으로 예약된 동일 게임의 pending 재검증을 구 버전 워커가 취소시키지 않도록 방지한다.
+test('post-package Roblox preflight dispatch dedupes against the fetched current main, not its initiating run SHA',()=>{
+  const step='      - name: Dispatch Roblox HEADLESS FAST_MVP continuation';
+  const start=runtime.indexOf(step);
+  assert.ok(start>=0);
+  const end=runtime.indexOf('\n      - name: ',start+step.length);
+  const block=runtime.slice(start,end<0?undefined:end);
+  assert.match(block,/current_main="\\$\\(git rev-parse origin\\/main\\)"/);
+  assert.match(block,/runs\\?per_page=100&head_sha=\\$current_main/);
+  assert.match(block,/CURRENT_MAIN_SHA="\\$current_main" node <<'NODE' > \\/tmp\\/roblox-continuation-active-ids/);
+  assert.match(block,/const currentSha=String\\(process\\.env\\.CURRENT_MAIN_SHA\\|\\|''\\)\\.trim\\(\\)/);
+  assert.doesNotMatch(block,/const currentSha=String\\(process\\.env\\.GITHUB_SHA\\|\\|''\\)\\.trim\\(\\)/);
+  assert.match(block,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:\\$id:\\$current_main/);
+  assert.match(block,/gh workflow run company-development-roblox-runtime-continuation\\.yml --repo/);
+});
