@@ -27,25 +27,32 @@
       "identity": "엘도리아 연대기: 플레이어가 세계 속에서 탐험, 인물 만나며 이야기를 진척시키는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다. 중심 행동은 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'이며, 선택 결과는 'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'와 'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.'로 구성됩니다. 이 게임의 정체성은 단순한 탐험과 전투에 그치지 않고, 상황별로 다양한 위험, 보상, 자원, 경로를 제공하는 복합적인 플레이 경험으로 설계되었습니다.",
       "playerFantasy": "엘도리아 연대기: 플레이어가 세계 속에서 탐험, 인물 만나며 이야기를 진척시키는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다. 중심 행동은 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'이며, 선택 결과는 'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'와 'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.'로 구성됩니다. 이 게임의 정체성은 단순한 탐험과 전투에 그치지 않고, 상황별로 다양한 위험, 보상, 자원, 경로를 제공하는 복합적인 플레이 경험으로 설계되었습니다.",
       "coreFun": "탐험, 인물 만나기, 이야기 진척, 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾼 STORY_COMPLETE_RPG 게임입니다. 중심 행동은 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'이며, 선택 결과는 'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'와 'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.'로 구성됩니다. 이 게임의 정체성은 단순한 탐험과 전투에 그치지 않고, 상황별로 다양한 위험, 보상, 자원, 경로를 제공하는 복합적인 플레이 경험으로 설계되었습니다."
+    },
+    "local_authoring_parts::a346c8c794fdd69c5e41c4e9872096007926398a98927449f92175a6726b7711:coreLoop": {
+      "coreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 276982,
-      "lastMs": 62085,
+      "totalMs": 323193,
+      "lastMs": 46211,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:47:58.858Z"
+      "updatedAt": "2026-10-09T15:48:45.226Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:43:21.699Z",
-  "updatedAt": "2026-10-09T15:47:58.859Z",
+  "updatedAt": "2026-10-09T15:48:45.227Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1788,7 +1795,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:47:58.859Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:48:45.226Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
