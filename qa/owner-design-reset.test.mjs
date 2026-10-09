@@ -64,6 +64,37 @@ test('all-games reset workflow binds expected reset set to current DESIGN_ONLY c
 });
 
 
+test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  const copy=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');
+  const checkout=workflow.indexOf('git checkout -f -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"');
+  assert.ok(copy>=0&&checkout>copy,'canonical runtime script must be preserved before switching branches');
+  assert.match(workflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git push --force|git clean -fdx/);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-lfs-'));
+  const git=(...args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
+  const pass=(...args)=>{const result=git(...args);assert.equal(result.status,0,result.stderr);return result;};
+  try{
+    pass('init','-q','-b','main');
+    pass('config','user.name','owner-reset-test');
+    pass('config','user.email','owner-reset-test@example.invalid');
+    const filename='hero-idle.tga';
+    const asset=path.join(root,filename);
+    fs.writeFileSync(asset,'committed Unity asset');
+    pass('add',filename);
+    pass('commit','-qm','main asset');
+    pass('checkout','-qb','company-runtime');
+    pass('rm','-q',filename);
+    pass('commit','-qm','runtime state only');
+    pass('checkout','-q','main');
+    fs.writeFileSync(asset,'modified CI checkout asset');
+    assert.notEqual(git('checkout','-B','owner-all-games-design-reset-runtime','company-runtime').status,0);
+    pass('checkout','-f','-B','owner-all-games-design-reset-runtime','company-runtime');
+    assert.equal(fs.existsSync(asset),false);
+    assert.equal(pass('branch','--show-current').stdout.trim(),'owner-all-games-design-reset-runtime');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
