@@ -69,7 +69,19 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
   if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE',data,currentTree};
   if(data.releaseOrDeploymentAuthority!==false)return{pass:false,reason:'READINESS_RELEASE_AUTHORITY_INVALID',data,currentTree};
   // 기존의 2D/2.5D 검증 기록은 3D 전용 정책이 적용된 새 런타임 증거가 아니다.
-  if(data.criteria?.graphics?.native3dVerified!==true)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
+  const graphics=data.criteria?.graphics||{};
+  const native3dChecks=Array.isArray(graphics.native3dChecks)?graphics.native3dChecks:[];
+  const requiredProofStages=['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'];
+  const native3dEvidencePass=graphics.native3dVerified===true
+    &&graphics.requiredDimension==='3D'
+    &&native3dChecks.length===requiredProofStages.length
+    &&native3dChecks.every((proof,index)=>
+      proof?.stage===requiredProofStages[index]&&proof.pass===true
+      &&proof.requiredDimension==='3D'
+      &&proof.source==='UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF'
+      &&Number.isSafeInteger(proof.observedMeshCount)&&proof.observedMeshCount>0
+      &&Number.isSafeInteger(proof.observedTriangles)&&proof.observedTriangles>0);
+  if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
   return{pass:true,reason:'READY',data,currentTree};
 }
 
