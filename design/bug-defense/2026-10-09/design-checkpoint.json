@@ -931,25 +931,43 @@
         "EXPANDED_GAMEPLAY_POSSIBILITIES"
       ],
       "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM"
+    },
+    "local_authoring_parts::4906d83a8a33036725caa0ee62043628df498d8e480a6b6a2ad2beb9bd97fce6:toSystem,trigger,stateChange": {
+      "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+      "trigger": "INCOMING_INSECT_WAVE",
+      "stateChange": "World state changes, new strategy implementation, and expanded gameplay possibilities"
+    },
+    "local_authoring_parts::1b48939a78931c0961ce97816a5ba87b3074e83648a3d17c524caa9eac0a8f88:systemInterconnections:0": {
+      "fromId": "INCOMING_INSECT_WAVE",
+      "toId": "DEFENDER_POSITIONS",
+      "stateKeys": [
+        "WORLD_STATE_CHANGE",
+        "NEW_STRATEGY_IMPLEMENTATION",
+        "EXPANDED_GAMEPLAY_POSSIBILITIES"
+      ],
+      "fromSystem": "INSECT_THREAT_ANALYSIS_SYSTEM",
+      "toSystem": "INSECT_DEFENSE_ADAPTABILITY_SYSTEM",
+      "trigger": "INCOMING_INSECT_WAVE",
+      "stateChange": "World state changes, new strategy implementation, and expanded gameplay possibilities"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 57,
+      "calls": 59,
+      "successes": 58,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3649367,
-      "lastMs": 34155,
+      "totalMs": 3682672,
+      "lastMs": 33305,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:15:29.584Z"
+      "updatedAt": "2026-10-09T00:16:02.891Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T00:15:29.584Z",
+  "updatedAt": "2026-10-09T00:16:02.892Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3293,7 +3311,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:15:29.584Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:16:02.892Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
