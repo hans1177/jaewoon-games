@@ -584,25 +584,40 @@
       "name": "Combine upgrades into a stronger build",
       "purpose": "Player chooses to combine upgrades into a stronger build",
       "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+    },
+    "local_authoring_parts::935e0a148cf85a5dbd6ab3c71e4721d71e0244ba57da1d1765fe3a22ef40424a:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "fightThroughHorde",
+        "collectRewards"
+      ],
+      "stateOutputs": [
+        "delveDiscoveries",
+        "delveGrowthRule"
+      ],
+      "name": "Delve into the core of reality construction",
+      "purpose": "Player chooses to delve into the core of reality construction",
+      "playerChoice": "Select discoveries, grow through build combinations, and revisit progressions in a layered manner with advanced play mechanics and narrative depth within the game's core theme of action survival roguelite gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1791043,
-      "lastMs": 95987,
+      "totalMs": 1888828,
+      "lastMs": 97785,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:02:42.623Z"
+      "updatedAt": "2026-10-09T19:04:20.410Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T19:02:42.623Z",
+  "updatedAt": "2026-10-09T19:04:20.410Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2469,7 +2484,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:02:42.623Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:04:20.410Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
