@@ -11,89 +11,109 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "fe3b72424d94df83ad3fd3b41522c515e79efe590889d4bdd4cdc79d5a86d799",
+  "fingerprint": "390fcff6d6d080778a703e58209b698d40ad44677f97299d4c01957bd147e528",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "ecc397e63cc187ea807080a8ced570f4b9011ac44868f462da53c1b2f3b91550",
+  "contentDigest": "a3543ebef97fc7b90628963cd9ac66e3c86004e205ebfb0409e3aec1ce9f34eb",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 이 게임은 성장이 아닌 단순 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
-    "playerFantasy": "플레이어는 시작 시점에서 게임 내 세계 상태를 바꾸는 중심 행동을 수행하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석할 수 있다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
-    "coreFun": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 이 게임은 성장이 아닌 단순 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
+    "identity": "Shardbound Odyssey - Reimagined Puzzle Loop with Dynamic Board States and Player Agency in a Mobile-First Framework",
+    "playerFantasy": "플레이어는 매 게임 시작 시 한 장의 보드 레벨을 선택하며, 그 목적은 단순한 퀘스트나 복잡한 패턴 해결에 있다. 이 레벨에서는 최소 3개의 선택이 있으며, 각 선택은 즉각적인 상태 변화와 보상/위험/다음 선택을 포함한다. 플레이어는 자신의 판단력과 전략적 사고로 이 레벨을 해석하고, 이를 바탕으로 다음 레벨이나 새로운 패턴을 결정해야 한다.",
+    "coreFun": "플레이어는 매 게임 시작 시 한 장의 보드 레벨을 선택하며, 그 목적은 단순한 퀘스트나 복잡한 패턴 해결에 있다. 이 레벨에서는 최소 3개의 선택이 있으며, 각 선택은 즉각적인 상태 변화와 보상/위험/다음 선택을 포함한다. 플레이어는 자신의 판단력과 전략적 사고로 이 레벨을 해석하고, 이를 바탕으로 다음 레벨이나 새로운 패턴을 결정해야 한다.",
     "coreLoop": [
-      "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.",
-      "주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
-      "선택 시 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다."
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     ],
     "signatureSystems": [
       {
         "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "START_LEVEL_STATE"
+          "BOARD_STATE",
+          "PLAYER_ACTION"
         ],
         "stateOutputs": [
-          "END_LEVEL_STATE"
+          "NEW_BOARD_STATE",
+          "REWARD",
+          "RISK",
+          "NEXT_CHOICE"
         ],
-        "name": "PUZZLE_GAME_WORLD_RULE",
-        "purpose": "Player's START LEVEL ACTION results in END LEVEL STATE change, connecting core loop and signature systems.",
-        "playerChoice": "Start a board or grid level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+        "name": "PUZZLE_LOOP_CORE",
+        "purpose": "Player's initial board selection and decision-making process that drives the game state change, reward system, risk mechanism, and next choice.",
+        "playerChoice": "Select a board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the objective. Earn rewards or unlock new stages, then face a new board pattern or obstacle combination."
       },
       {
         "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
-          "START_LEVEL_STATE"
+          "BOARD_STATE",
+          "PLAYER_ACTION"
         ],
         "stateOutputs": [
-          "END_LEVEL_STATE"
+          "NEW_BOARD_STATE",
+          "REWARD",
+          "RISK",
+          "NEXT_CHOICE"
         ],
-        "name": "PUZZLE_GAME_WORLD_RULE_A",
-        "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 주체와 대응 방식을 정의합니다.",
-        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 통해 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석합니다."
+        "name": "PUZZLE_LOOP_A",
+        "purpose": "Establishes the initial interaction between the player's choice and the board state, creating a dynamic foundation for subsequent gameplay.",
+        "playerChoice": "Select a specific board pattern or obstacle configuration that aligns with the current goal and constraints of the level, while ensuring it is solvable through strategic moves and immediate feedback from the board interface."
       },
       {
         "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "START_LEVEL_STATE"
+          "BOARD_STATE",
+          "PLAYER_ACTION"
         ],
         "stateOutputs": [
-          "END_LEVEL_STATE"
+          "NEW_BOARD_STATE",
+          "REWARD",
+          "RISK",
+          "NEXT_CHOICE"
         ],
-        "name": "PUZZLE_GAME_WORLD_RULE_B",
-        "purpose": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀",
-        "playerChoice": "選擇後產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀"
+        "name": "PUZZLE_LOOP_B",
+        "purpose": "A/B 대축으로서, MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+        "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination with dynamic risk and reward distribution based on current board state and player strategy selection."
       },
       {
         "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "START_LEVEL_STATE"
+          "BOARD_STATE",
+          "PLAYER_ACTION"
         ],
         "stateOutputs": [
-          "END_LEVEL_STATE"
+          "NEW_BOARD_STATE",
+          "REWARD",
+          "RISK",
+          "NEXT_CHOICE"
         ],
-        "name": "PUZZLE_GAME_WORLD_RULE_C",
-        "purpose": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다.",
-        "playerChoice": "새로운 행동·경로·조합·관계·발견 또는 대응법을 통해 세계 상태의 변화를 유도하여 플레이어에게 즉각적인 피드백을 제공한다."
+        "name": "PUZZLE_LOOP_C",
+        "purpose": "플레이어가 선택 결과와 세계 인과법칙에 따라 새로운 상태 변환 및 재방문 기회를 열어, 게임의 복잡성과 유연성을 강화하는 보조 요소입니다.",
+        "playerChoice": "Make strategic decisions that align with the world's causal rules and lead to new board states or reward/risk combinations. These choices should reflect player agency and allow for multiple paths of progression based on different contextual conditions and resource allocations."
       },
       {
         "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "START_LEVEL_STATE"
+          "BOARD_STATE",
+          "PLAYER_ACTION"
         ],
         "stateOutputs": [
-          "END_LEVEL_STATE"
+          "NEW_BOARD_STATE",
+          "REWARD",
+          "RISK",
+          "NEXT_CHOICE"
         ],
-        "name": "PUZZLE_GAME_WORLD_RULE_DELVE",
-        "purpose": "플레이어가 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임에서 발견, 숙련, 재방문하는 과정을 실제 상태 변화로 표현합니다.",
-        "playerChoice": "선택 시 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석됩니다."
+        "name": "PUZZLE_LOOP_DELVE",
+        "purpose": "플레이어가 선택한 주제나 패턴에 따라 다음 상태와 보상을 결정하는 숨은 운용",
+        "playerChoice": "선택한 주제 또는 패턴의 의미, 구조, 혹은 전략적 대응을 바탕으로 다음 상태를 결정하여 새로운 보상을 얻거나 위험을 감당해야 한다."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-09T09:10:50.351Z"
+  "updatedAt": "2026-10-09T13:04:33.676Z"
 }
