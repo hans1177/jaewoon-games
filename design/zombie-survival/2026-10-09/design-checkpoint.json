@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::4bc3c96ef75d29056023d0dc98de87d3a06a66355e577943c904ff7fea6cb746:identity": {
+      "identity": "좀비 생존기은 플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임이다. 이 게임에서는 주체인 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다. 이 선택은 기존의 ACTION_SURVIVAL_ROGUELITE 시스템에서 새로운 인과법칙과 관계를 통해 재생되고, 성장은 새 행동·경로·조합 등에 의해 열린다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 150455,
+      "lastMs": 150455,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:14:50.218Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:12:19.666Z",
-  "updatedAt": "2026-10-09T12:12:19.705Z",
+  "updatedAt": "2026-10-09T12:14:50.218Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:14:50.218Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
