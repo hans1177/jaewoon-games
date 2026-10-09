@@ -80,25 +80,53 @@
         "worldChange": "The world changes by introducing new patterns and increasing the complexity of challenges, reflecting the progression of play and the evolution of the game's difficulty levels.",
         "nextEvent": "The next event is the continuation of the game's progression, where the player must adapt to new configurations and maintain their strategy against evolving puzzles."
       }
+    },
+    "local_authoring_parts::63c23f08f630cb3590aa7b1549a01ff7168666ce8adabb5805826cb7c019b124:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "Progression",
+          "kind": "GENRE",
+          "gameplayEffect": "Dynamic obstacle reconfiguration and goal clearance mechanics"
+        },
+        {
+          "name": "Risk Management",
+          "kind": "GENRE",
+          "gameplayEffect": "Strategic match-making and combo-building mechanisms"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "Board Game",
+          "gameplayEffect": "Clear goals, limited moves, obstacles, and visible puzzle constraints"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "Puzzle Mechanics",
+          "gameplayEffect": "Matchmaking, combo building, and state transformation"
+        }
+      ],
+      "cGenreInterlock": "Player initiates the central action of starting a puzzle game with clear goals, limited moves, and obstacles; achieves progress through strategic match-making and combo-building; transitions to new board configurations via reward acquisition and risk assessment.",
+      "cWorldAndGameplayEffect": "New patterns and increasing complexity of challenges reflect progression in play and evolution of difficulty levels. Player adapts to new configurations while maintaining strategy against evolving puzzles."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1033403,
-      "lastMs": 210196,
+      "totalMs": 1116149,
+      "lastMs": 82746,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:41:48.273Z"
+      "updatedAt": "2026-10-09T17:43:11.022Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:24:34.778Z",
-  "updatedAt": "2026-10-09T17:41:48.274Z",
+  "updatedAt": "2026-10-09T17:43:11.022Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1720,7 @@
     "c84933c4b5abd1e12bd2549b682b699bff7665793b571cc9e43fb14367f46d2b": true,
     "37b4da1226a761b0f9d6b13cb7e699817596b8d8c93ff80b585c2838a68946e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:41:48.274Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:43:11.022Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
