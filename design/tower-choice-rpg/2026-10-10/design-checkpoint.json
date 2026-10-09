@@ -484,21 +484,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2073006,
-      "lastMs": 102667,
+      "totalMs": 2174553,
+      "lastMs": 101547,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:52:51.259Z"
+      "updatedAt": "2026-10-09T22:54:32.819Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T22:52:51.270Z",
+  "updatedAt": "2026-10-09T22:54:32.821Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2237,6 +2237,13 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::bcc5d85de5af943c2f49e4e523820ddcf795a5507fb9dee1bce4864f250a1fd0:signatureSystems:0": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
     ]
   },
   "sliceRepairAttempts": {
@@ -2244,7 +2251,8 @@
     "designer_draft_slices::identity-core": 2,
     "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:1": 1,
     "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:2": 1,
-    "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:3": 1
+    "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:3": 1,
+    "local_authoring_parts::bcc5d85de5af943c2f49e4e523820ddcf795a5507fb9dee1bce4864f250a1fd0:signatureSystems:0": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2345,10 +2353,10 @@
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:52:51.261Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:54:32.819Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
