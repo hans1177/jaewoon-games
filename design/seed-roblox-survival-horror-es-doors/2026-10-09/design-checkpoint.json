@@ -488,25 +488,28 @@
     },
     "local_authoring_parts::9f8a816d27473d10075d17b0d608a8fc0bb55ec3e15337b9fb6dcd08b8d05581:toSystem": {
       "toSystem": "PUZZLE_WORLD_RULE_SET_B"
+    },
+    "local_authoring_parts::9f8a816d27473d10075d17b0d608a8fc0bb55ec3e15337b9fb6dcd08b8d05581:trigger": {
+      "trigger": "선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1787415,
-      "lastMs": 87152,
+      "totalMs": 1878782,
+      "lastMs": 91367,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:28:48.276Z"
+      "updatedAt": "2026-10-09T12:30:19.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:28:48.276Z",
+  "updatedAt": "2026-10-09T12:30:19.645Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2917,7 +2920,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:28:48.276Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:30:19.645Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
