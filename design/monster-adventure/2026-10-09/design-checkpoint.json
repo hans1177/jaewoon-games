@@ -70,21 +70,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 716731,
-      "lastMs": 103160,
+      "totalMs": 817246,
+      "lastMs": 100515,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:19:26.641Z"
+      "updatedAt": "2026-10-09T15:21:07.157Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:07:29.878Z",
-  "updatedAt": "2026-10-09T15:19:26.641Z",
+  "updatedAt": "2026-10-09T15:21:07.158Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1645,11 +1645,24 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::47fcb618838503bfd4a52a6e868d6c8bc64c06a57f0cf712e5b5fbe29ee99570:signatureSystems:2": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_0",
+          "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::47fcb618838503bfd4a52a6e868d6c8bc64c06a57f0cf712e5b5fbe29ee99570:signatureSystems:2": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:19:26.641Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T15:21:07.157Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
