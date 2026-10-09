@@ -443,6 +443,7 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
  assert.match(source,/if foundationPlayer and foundationSeen\.CHARACTER_READY then/);
  assert.match(source,/foundationCheckpoint\("GROUND_CONTACT", foundationPlayer, \{groundY = contact\.Position\.Y/);
  assert.match(source,/speed > 0\.1 and displacement\.Magnitude > 0\.5/);
+ assert.match(source,/if foundationPlayer and foundationSeen\.GROUND_CONTACT then/);
  assert.match(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED", foundationPlayer, \{displacement = displacement\.Magnitude\}/);
  assert.match(source,/rootPart\.Anchored = false/);
  assert.match(source,/humanoid\.PlatformStand = false/);
@@ -452,5 +453,7 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
  assert.match(source,/store:UpdateAsync\("player:" \.\. player\.UserId/);
  assert.doesNotMatch(source,/foundationCheckpoint\("GROUND_CONTACT",nil/);
  assert.doesNotMatch(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED",nil/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("CAMERA_READY"/);
+ assert.doesNotMatch(source,/foundationCheckpoint\("INPUT_READY"/);
  assert.doesNotMatch(source,/foundationCheckpoint\("CORE_LOOP_READY"/);
 });
