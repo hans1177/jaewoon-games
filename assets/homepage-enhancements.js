@@ -154,15 +154,17 @@ async function bindAvailableUnityWebSurfaces(catalog){
     try{return await fetch(url,{...options,signal:controller.signal});}
     finally{clearTimeout(timer);}
   };
+  const available=new Map();
   const candidates=catalog.games.filter(game=>{
     const id=gameIdOf(game),unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
     return Boolean(id)&&projectPath===`unity-games/${id}`;
   });
-  const available=new Map();
   await Promise.all(candidates.map(async game=>{
     const id=gameIdOf(game),href=`/web-games/${id}/`,stamp=Date.now();
     try{
+      const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
+      if(!indexResponse.ok||!/createUnityInstance\s*\(/.test(await indexResponse.text()))return;
       const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
       if(!manifestResponse.ok)return;
       const manifest=await manifestResponse.json(),groups=manifest?.requiredGroups||{};
@@ -173,11 +175,14 @@ async function bindAvailableUnityWebSurfaces(catalog){
         return response.ok?response.json():null;
       }));
       const [gameplay,independent,regression,readiness]=evidence;
-      if(![gameplay,independent,regression].every(item=>item?.pass===true&&item?.spatialGameplay?.pass===true)
+      const valid3d=row=>row?.pass===true&&row?.spatialGameplay?.pass===true
+        &&row?.spatialGameplay?.requiredDimension==='3D'&&row?.visualQa?.nativeUnityMesh?.pass===true;
+      if(![gameplay,independent,regression].every(valid3d)
+        ||gameplay?.mobile?.pass!==true
         ||readiness?.pass!==true||readiness?.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness?.gameId!==id)return;
-      const probes=await Promise.all(['loader','data','framework','wasm'].map(async key=>{
-        const ref=String(groups[key][0]||'');
-        if(!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+      const refs=[...new Set(['loader','data','framework','wasm'].flatMap(key=>groups[key]))];
+      if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))return;
+      const probes=await Promise.all(refs.map(async ref=>{
         const response=await probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null);
         return response?.ok===true;
       }));
@@ -221,7 +226,7 @@ function mergeGame(row){
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image:mediaImageHref(media?.cover)||marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image:mediaImageHref(media?.cover)||marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:row?.homepageDesignSource&&row?.description?row.description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
