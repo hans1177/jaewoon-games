@@ -210,6 +210,11 @@ if(mode==='result'){
       // 유니티 메시/삼각형의 실제 브라우저 측정 없이 이전 2D 결과를 재사용하지 않는다.
       const native3dVerified=qa?.spatialGameplay?.pass===true
         &&qa?.spatialGameplay?.requiredDimension==='3D'
+         &&qa?.spatialGameplay?.depthPass===true
+         &&qa?.spatialGameplay?.perspectiveCamera===true
+         &&Number(qa?.spatialGameplay?.gameplayActors3d)>=1
+         &&Number(qa?.spatialGameplay?.worldMeshes3d)>=2
+         &&qa?.spatialGameplay?.spriteGameplayActors===0
         &&Number(qa?.spatialGameplay?.observedMeshCount)>0
         &&Number(qa?.spatialGameplay?.observedTriangles)>0
         &&qa?.visualQa?.nativeUnityMesh?.pass===true;
