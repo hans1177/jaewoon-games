@@ -47,25 +47,38 @@
       "name": "Board State Transition System",
       "purpose": "Player's initial board setup and state evolution through puzzle-solving.",
       "playerChoice": "Set a clear goal, limited moves, obstacles, or a visible puzzle constraint on the board."
+    },
+    "local_authoring_parts::62d8875b320b7d3ab7d1fe52d5c8b0d893c4c67823a7080d10660620bedf338c:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_OVER"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "게임 내 상태 전환 메커니즘을 정의하여 플레이어 선택에 따른 월드 상태 변환을 관리합니다.",
+      "playerChoice": "보드 상태를 새로운 패턴 또는 장애물로 교체하여 게임을 진행하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 380423,
-      "lastMs": 28185,
+      "totalMs": 409111,
+      "lastMs": 28688,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:50:43.157Z"
+      "updatedAt": "2026-10-09T15:51:11.846Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:44:22.707Z",
-  "updatedAt": "2026-10-09T15:50:43.157Z",
+  "updatedAt": "2026-10-09T15:51:11.846Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1550,7 +1563,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:50:43.157Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:51:11.846Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
