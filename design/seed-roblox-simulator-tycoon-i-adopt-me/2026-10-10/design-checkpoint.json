@@ -80,25 +80,53 @@
         "worldChange": "World state changes as player implements adaptive strategies",
         "nextEvent": "New game mechanics emerge from evolved defensive strategies"
       }
+    },
+    "local_authoring_parts::1e785ea16fd4dff79e9dd953593ba311235bf91b1e4b156553be5ee2922358be:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "Adaptation",
+          "kind": "GENRE",
+          "gameplayEffect": "Player's strategic evolution through enemy type adaptation"
+        },
+        {
+          "name": "Economic System",
+          "kind": "GENRE",
+          "gameplayEffect": "Resource allocation and economic strategy implementation"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "Defense Evolution",
+          "gameplayEffect": "Strategic progression through adaptive defense mechanisms"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "Economics & Resource Management",
+          "gameplayEffect": "Resource allocation and economic system integration"
+        }
+      ],
+      "cGenreInterlock": "Enemy type adaptation → Resource allocation → Defensive strategy evolution",
+      "cWorldAndGameplayEffect": "Player's actions directly influence world state changes, resource availability, and defensive strategy evolution across multiple gameplay phases and scenarios."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 899259,
-      "lastMs": 63341,
+      "totalMs": 1093062,
+      "lastMs": 193803,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:08:47.141Z"
+      "updatedAt": "2026-10-09T18:12:00.948Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:53:47.848Z",
-  "updatedAt": "2026-10-09T18:08:47.142Z",
+  "updatedAt": "2026-10-09T18:12:00.948Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1808,7 +1836,7 @@
     "465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e": true,
     "781fc60926591f2fc5355640421baf6175a705be225803085ac38b733ce72190": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:08:47.142Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:12:00.948Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
