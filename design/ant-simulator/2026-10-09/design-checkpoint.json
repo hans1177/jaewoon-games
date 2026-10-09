@@ -610,25 +610,45 @@
         "adjusted_entry_exit_strategy"
       ],
       "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION"
+    },
+    "local_authoring_parts::ed0b8f5a683030c7976ddcf35d91e08038e3effc57af2ce4a88ccd04529f2758:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+      "trigger": "world_state_transformation_trigger",
+      "stateChange": "new_world_state_transition"
+    },
+    "local_authoring_parts::e17ec00d81071da846d3023defb89f47cc30697d076f58f93cb45a37c1e4fe24:systemInterconnections:0": {
+      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
+      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION",
+      "toSystem": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+      "trigger": "world_state_transformation_trigger",
+      "stateChange": "new_world_state_transition"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 764080,
-      "lastMs": 129146,
+      "totalMs": 777591,
+      "lastMs": 13511,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:35:19.185Z"
+      "updatedAt": "2026-10-09T14:35:32.697Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:35:19.185Z",
+  "updatedAt": "2026-10-09T14:35:32.699Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2375,7 +2395,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:35:19.185Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:35:32.699Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
