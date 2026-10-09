@@ -1540,25 +1540,51 @@
       "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
       "trigger": "worldState→targetGoal",
       "stateChange": "worldState → targetGoal"
+    },
+    "local_authoring_parts::bea810dbc106e54a5be9033418b7f06caf88750d4ad755e3cbe4e4bf71361f4a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "worldState",
+      "toId": "targetGoal",
+      "stateKeys": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "fromSystem": "OPEN_WORLD_ADAPTATION_SYSTEM_A_B_C_D_E_L_V_E_DELVE"
+    },
+    "local_authoring_parts::bea810dbc106e54a5be9033418b7f06caf88750d4ad755e3cbe4e4bf71361f4a:toSystem,trigger,stateChange": {
+      "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
+      "trigger": "worldState→targetGoal",
+      "stateChange": "worldState → targetGoal"
+    },
+    "local_authoring_parts::821a3a2cd29d9541751d5ed701ce6b3530d8a7adb6235a3d533538be1f2a0026:systemInterconnections:2": {
+      "fromId": "worldState",
+      "toId": "targetGoal",
+      "stateKeys": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "fromSystem": "OPEN_WORLD_ADAPTATION_SYSTEM_A_B_C_D_E_L_V_E_DELVE",
+      "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
+      "trigger": "worldState→targetGoal",
+      "stateChange": "worldState → targetGoal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 95,
-      "successes": 95,
+      "calls": 97,
+      "successes": 97,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3470568,
-      "lastMs": 12156,
+      "totalMs": 3503972,
+      "lastMs": 13072,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:01:28.268Z"
+      "updatedAt": "2026-10-09T05:02:01.678Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:48:01.443Z",
-  "updatedAt": "2026-10-09T05:01:28.271Z",
+  "updatedAt": "2026-10-09T05:02:01.680Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3762,7 +3788,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:01:28.271Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:02:01.679Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
