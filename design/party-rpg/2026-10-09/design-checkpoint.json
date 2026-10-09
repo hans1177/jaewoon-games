@@ -1428,25 +1428,42 @@
     },
     "local_authoring_parts::98ec96e89f1372d7473d91487e568edfb4040a4f61589af6938767b2cebc1e47:trigger": {
       "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환"
+    },
+    "local_authoring_parts::98ec96e89f1372d7473d91487e568edfb4040a4f61589af6938767b2cebc1e47:stateChange": {
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
+    },
+    "local_authoring_parts::f9d3f821423fe63b1886fa7665c8a46eb469f36e50664e6519541565628fe351:systemInterconnections:3": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "{\"from\": \"START_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임 시작 후 목표 설정 및 초기 상태 전환",
+        "playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use\n",
+        "fromSystem\": \"START_GAME\", \"toSystem\": \"BOARD_STATE\", \"trigger\": \"게임 시작 후 목표 설정및",
+        "stateChange\": \"게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야"
+      ],
+      "fromSystem": "START_GAME",
+      "toSystem": "BOARD_STATE",
+      "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환",
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 155,
-      "successes": 155,
+      "calls": 156,
+      "successes": 156,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12032575,
-      "lastMs": 31868,
+      "totalMs": 12066859,
+      "lastMs": 34284,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:34:19.091Z"
+      "updatedAt": "2026-10-09T06:34:53.377Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:34:19.091Z",
+  "updatedAt": "2026-10-09T06:34:53.379Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3714,7 +3731,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:34:19.091Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:34:53.379Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
