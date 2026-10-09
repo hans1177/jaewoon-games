@@ -77,25 +77,38 @@
       "name": "엘도리아 연대기 시그니처 체계 3: 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾼 STORY_COMPLETE_RPG 게임입니다.",
       "purpose": "선택의 결과가 월드 상태를 바꾸며, 이 과정에서 플레이어는 새로운 경로와 위험, 보상, 자원을 경험하게 된다.",
       "playerChoice": "선택의 결과가 다음 세계 상태를 바꾸는 반복 가능한 핸들링을 수행하며, 이 과정에서는 상황별로 다양한 조건이 적용된다."
+    },
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:3": {
+      "id": "ELDORIA_CORE_SIGNATURE_4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "STORY_PROGRESS_STATUS"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION_STATUS"
+      ],
+      "name": "엘도리아 연대기 시그니처 체계 4: 발견, 숙련, 재방문에 따른 내용 확장 및 플레이어 참여 증대 기반의 복합적 게임 경험",
+      "purpose": "플레이어가 세계 속에서 탐험, 인물 만나며 이야기 진척시키는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다.",
+      "playerChoice": "사전 준비 없이 단순한 탐험이나 전투로 시작하여, 상황별 다양한 위험, 보상, 자원, 경로를 제공하는 복합적인 플레이 경험을 구축합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 493142,
-      "lastMs": 59349,
+      "totalMs": 760607,
+      "lastMs": 76759,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:51:35.215Z"
+      "updatedAt": "2026-10-09T15:56:02.682Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:43:21.699Z",
-  "updatedAt": "2026-10-09T15:51:35.215Z",
+  "updatedAt": "2026-10-09T15:56:02.684Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1835,11 +1848,36 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "ELDORIA_CORE_SIGNATURE_1",
+          "ELDORIA_CORE_SIGNATURE_2",
+          "ELDORIA_CORE_SIGNATURE_3",
+          "ELDORIA_CORE_SIGNATURE_4"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "ELDORIA_CORE_SIGNATURE_1",
+          "ELDORIA_CORE_SIGNATURE_2",
+          "ELDORIA_CORE_SIGNATURE_3",
+          "ELDORIA_CORE_SIGNATURE_4"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:4": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:51:35.215Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T15:56:02.683Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
