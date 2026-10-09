@@ -536,7 +536,7 @@ export function extractDesignContext(record={}){
     name:clean(system?.name),
     purpose:clean(system?.purpose),
     playerChoice:clean(system?.playerChoice)
-  })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
+  })).filter(x=>x.name||x.purpose||x.playerChoice);
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
@@ -546,11 +546,11 @@ export function extractDesignContext(record={}){
     spatialLayout:asObject(d?.spatialLayout),
     spatialDimension:clean(d?.spatialLayout?.dimension||d?.spatialDimension),
     coreFun:clean(d?.coreFun),
-    coreLoop:uniq(d?.coreLoop).slice(0,10),
+    coreLoop:uniq(d?.coreLoop),
     signatureSystems:systems,
-    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({...row,fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,24),
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({...row,fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem||row.fromId||row.toId),
     progressionEconomyBalance:asObject(d?.progressionEconomyBalance),
-    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})),
     failureRetryRisk:asObject(d?.failureRetryRisk),
     platformFitPlan:asObject(d?.platformFitPlan),
     webCanonicalDesign:projection.webCanonicalDesign,
@@ -565,7 +565,7 @@ export function extractDesignContext(record={}){
     narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,8),
     referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,8),
     designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
-    implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
+    implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
