@@ -65,6 +65,16 @@ test('all-games reset workflow binds expected reset set to current DESIGN_ONLY c
 });
 
 
+test('only main pushes or explicit dispatch can run a writable design reset',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.match(workflow,/  push:\n    branches: \[main\]/);
+  assert.match(workflow,/  pull_request:\n    branches: \[main\]/);
+  assert.match(workflow,/^permissions:\n  contents: read/m);
+  assert.match(workflow,/  reset-to-design:\n    if: github\.event_name == 'workflow_dispatch' \|\| \(github\.event_name == 'push'/);
+  assert.match(workflow,/    permissions:\n      contents: write\n      actions: write/);
+  assert.match(workflow,/    if: github\.event_name == 'pull_request'/);
+});
+
 test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
   const copy=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');
@@ -107,13 +117,15 @@ test('all-games reset preserves active developed games and existing seed save me
   try{
     const catalog={games:[
       {id:'design-game',name:'Design',productionClass:'DESIGN_ONLY'},
-      {id:'developed-game',name:'Developed',productionClass:'DEVELOPMENT_CONFIRMED'}
+      {id:'developed-game',name:'Developed',productionClass:'DEVELOPMENT_CONFIRMED'},
+      {id:'reinstated-game',name:'Reinstated',productionClass:'DEVELOPMENT_CONFIRMED'}
     ]};
     const target={gameId:'design-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',saveSchemaVersion:7,checkpoint:{wave:5}};
     const developed={gameId:'developed-game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',development:{stage:'F4'},saveSchemaVersion:9,checkpoint:{wave:19}};
+    const reinstated={gameId:'reinstated-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',pausedAt:'2026-10-09',checkpoint:{wave:11}};
     const removed={gameId:'removed-game',status:'ACTIVE',productionClass:'DESIGN_ONLY'};
     fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
-    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({version:2,seeds:[target,developed,removed]}));
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({version:2,seeds:[target,developed,reinstated,removed]}));
     const result=runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T00:00:00.000Z'});
     assert.equal(result.count,1);
     const updated=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
@@ -123,6 +135,7 @@ test('all-games reset preserves active developed games and existing seed save me
     assert.equal(find('design-game').saveSchemaVersion,7);
     assert.deepEqual(find('design-game').checkpoint,{wave:5});
     assert.deepEqual(find('developed-game'),developed,'active developed game and F0-F9 stage must not be touched');
+    assert.deepEqual(find('reinstated-game'),{gameId:'reinstated-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',checkpoint:{wave:11}},'obsolete pause must clear without changing saved state');
     assert.equal(find('removed-game').status,'PAUSED','only noncatalog state may be paused');
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')),catalog);
   }finally{fs.rmSync(root,{recursive:true,force:true});}

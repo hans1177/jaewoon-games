@@ -3,6 +3,7 @@ name: Owner All Games Design Reset
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'game-catalog.json'
       - 'tools/company-game-seed-contract.mjs'

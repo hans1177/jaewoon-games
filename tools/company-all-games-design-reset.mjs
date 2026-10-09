@@ -318,7 +318,16 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
     else{state.seeds.push(next);existingByGame.set(id,next);created++;}
   }
   for(const seed of state.seeds){
-    const id=clean(seed?.gameId);if(!id||catalogIds.has(id))continue;
+    const id=clean(seed?.gameId);
+    if(!id)continue;
+    if(catalogIds.has(id)){
+      // 카탈로그에 복귀한 활성 게임의 오래된 일시정지 표시만 정리하고 게임 상태는 보존한다.
+      if(clean(seed.status).toUpperCase()==='ACTIVE'&&clean(seed.pausedReason)==='NOT_IN_CANONICAL_GAME_CATALOG'){
+        delete seed.pausedReason;
+        delete seed.pausedAt;
+      }
+      continue;
+    }
     if(clean(seed.status).toUpperCase()==='ACTIVE'){seed.status='PAUSED';seed.pausedReason='NOT_IN_CANONICAL_GAME_CATALOG';seed.pausedAt=timestamp;paused++;}
   }
   state.version=Math.max(2,Number(state.version)||0);
