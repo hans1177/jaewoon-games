@@ -4165,6 +4165,133 @@ test('semantic diff hard gate rejects explicit unrelated system mutation even wh
   assert.match(result.violations.join('|'),/UNRELATED_SYSTEM:ECONOMY/);
 });
 
+test('semantic diff identifies an unrelated function mutation next to an allowed responsibility',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),[
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }'
+  ].join('\n'));
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'function awardCoins(){ return gold; }',replace:'function awardCoins(){ return gold+50; }'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.mode,'HARD_ENFORCE');
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unapprovedSymbols,['index.html:awardCoins']);
+  assert.match(result.violations.join('|'),/UNRELATED_SYMBOL:index\.html:awardCoins/);
+});
+
+test('semantic diff rejects a mixed authorized and unrelated function replacement',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before=[
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }'
+  ].join('\n');
+  write(path.join(sourceRoot,'index.html'),before);
+  const after=before.replace('pointerState=e;','pointerState=normalizePointer(e);')
+    .replace('return gold;','return gold+50;');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:after}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.ok(result.symbolMutationRows[0].changedSymbols.includes('handlePointer'));
+  assert.ok(result.unapprovedSymbols.includes('index.html:awardCoins'));
+});
+
+test('semantic diff does not mistake unchanged economy code for an economy mutation',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before=[
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }'
+  ].join('\n');
+  write(path.join(sourceRoot,'index.html'),before);
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:before.replace('pointerState=e;','pointerState=normalizePointer(e);')}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.pass,true,JSON.stringify(result.violations));
+  assert.deepEqual(result.touchedSystems,['INPUT']);
+  assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer']);
+});
+
+test('semantic diff validates Luau function ownership rather than an adjacent marker',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'roblox-games/demo');
+  write(path.join(sourceRoot,'server/Game.server.luau'),[
+    'local function movePlayer(input)',
+    '  return input.X',
+    'end',
+    'local function grantGold(player)',
+    '  return 50',
+    'end'
+  ].join('\n'));
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'server/Game.server.luau',find:'  return 50',replace:'  return 60'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['movePlayer'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['input'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unapprovedSymbols,['server/Game.server.luau:grantGold']);
+});
+
+test('semantic diff validates Unity C# methods without depending on language keywords in source',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'unity-games/demo');
+  write(path.join(sourceRoot,'Assets/Scripts/GameCore.cs'),[
+    'internal class CombatCore {',
+    '  void HandleMovement() { playerPosition += 1; }',
+    '  int GrantReward() { return 10; }',
+    '}'
+  ].join('\n'));
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'return 10;',replace:'return 100;'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['HandleMovement'],
+      allowedDependentSymbolsOrSystems:[],ownedState:['playerPosition'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unapprovedSymbols,['Assets/Scripts/GameCore.cs:GrantReward']);
+});
+
+test('coding retry consumes the exact unrelated function violation instead of repeating a generic patch',()=>{
+  const prompt=[
+    'Engine: web',
+    'Goal: repair handlePointer',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    error:new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYMBOL:index.html:awardCoins'),
+    responsibleFiles:['index.html'],attempt:2
+  });
+  assert.match(retry,/OFF-TARGET FUNCTIONS REJECTED: index\.html:awardCoins/);
+  assert.match(retry,/Do not edit their declarations or bodies/);
+  assert.match(retry,/ORIGINAL writable source/);
+});
+
 test('semantic diff hard gate protects existing save keys from silent removal',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
