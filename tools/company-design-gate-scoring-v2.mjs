@@ -119,7 +119,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!affected.some(field=>selected.has(field)))return;
     reasons.push({...rejectionReason({code,axis,evidence,requiredAction}),fields:affected});
   };
-  const proseFields=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
+  const proseFields=['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
   const enumKeys=new Set(['name','label','role','phase','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
   const identifierKeys=new Set(['id','fromId','toId','from','to','ruleId','ruleIds','stateInputs','stateOutputs','stateKeys','key','ownerId','abilityId','humanId','humanAbilityId','infectedAbilityId','regionId','stateKey','actorId','targetId','classId','assetId','rangeKey','costKey','cooldownKey','reachableBy','nextPhase']);
   const scan=(value,path,root,identifier=false)=>{
@@ -145,6 +145,20 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
+  // 소재 융합 문법은 단어 라벨만 아니라 실제 양방향 시스템 상태와 플레이 증거가 있어야 한다.
+  if(Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||selected.has('creativeGrammar')){
+    const grammar=design.creativeGrammar,axes=[grammar?.a,grammar?.b];
+    if(!grammar||!textReady(grammar.mainIdentity,15)||axes.some(axis=>!axis||!textReady(axis.system,2)||!textReady(axis.material,2)||!textReady(axis.materialDomain,2)||!textReady(axis.stateChange,20))||!textReady(grammar.abCausality,35)||!textReady(grammar.finalGameIdentity,18)){
+      reject('DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},'MAIN 게임 정체성 및 A/B 각각의 시스템+소재와 양방향 원인·상태 교환을 다시 설계한다.');
+    }
+    const c=list(grammar?.cThemes);
+    if(c.length!==2||!c.some(row=>row?.kind==='GENRE')||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
+      reject('DESIGN_C_TWO_TOPICS_ONE_GENRE_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C는 정확히 두 창작 소재를 융합하고 그중 최소 하나는 장르여야 한다. 이름·장식만이 아닌 A/B의 실제 선택과 세계 규칙에 연결한다.');
+    }
+    if(list(grammar?.delveDiscoveries).length<4||list(grammar?.delveDiscoveries).some(row=>!textReady(row?.clue,10)||!textReady(row?.discovery,10)||!textReady(row?.newChoice,15))||!textReady(grammar?.delveGrowthRule,25)){
+      reject('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},'초기 파고들기 네 사례 각각 단서·발견·새 선택을 갖추고 이후 숫자 상한 없는 발전 규칙을 설계한다.');
+    }
+  }
   // 정식 설계의 MAIN/A/B/c/@는 태그만 붙여서는 안 되고 각각 고유 규칙과 상태 입출력이 있어야 한다.
   if(selected.has('signatureSystems')){
     const systems=list(design.signatureSystems);
@@ -420,7 +434,19 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const carriedSubElements=subElementNames.filter(name=>designText.includes(name));
   const carriedDelveElements=delveNames.filter(name=>designText.includes(name));
   const emergentGenreCarried=!seedGrammar||!emergentGenreName||designText.includes(emergentGenreName);
-  const systemFusionCarryOk=!seedGrammar||(mainCarried&&carriedMajorAxes.length>=Math.min(2,majorAxisNames.length)&&carriedSubElements.length>=Math.min(1,subElementNames.length)&&carriedDelveElements.length>=Math.min(1,delveNames.length)&&emergentGenreCarried);
+  const creative=design.creativeGrammar||{};
+  const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
+  const seedC=seedGrammar?.gameplaySystemFusion?.themeFusion?.themes||[];
+  const creativityCarried=!seedV5||(
+    textReady(creative.mainIdentity,15)
+    &&[0,1].every((index)=>{const key=index?'b':'a',axis=creative[key]||{},seedAxis=list(fusion.majorAxes)[index]||{};
+      return textReady(axis.system,2)&&textReady(axis.material,2)&&textReady(axis.stateChange,20)
+        &&clean(axis.material).includes(clean(seedAxis.sourceMaterial));})
+    &&list(creative.cThemes).length===2&&list(creative.cThemes).some(row=>row?.kind==='GENRE')
+    &&seedC.every(row=>list(creative.cThemes).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.kind)===clean(row?.kind)))
+    &&textReady(creative.abCausality,35)&&textReady(creative.cWorldAndGameplayEffect,30)
+    &&list(creative.delveDiscoveries).length>=4&&textReady(creative.delveGrowthRule,25));
+  const systemFusionCarryOk=!seedGrammar||(mainCarried&&carriedMajorAxes.length>=Math.min(2,majorAxisNames.length)&&carriedSubElements.length>=Math.min(1,subElementNames.length)&&carriedDelveElements.length>=Math.min(1,delveNames.length)&&emergentGenreCarried&&creativityCarried);
   const grammarCarryOk=!seedGrammar||(carriedGrammarIds.length>=grammarIdMinimum&&(primaryVerbCarried||worldRuleCarried)&&systemFusionCarryOk);
 
   const ideaBasic=textReady(design.identity,60)&&textReady(design.playerFantasy,40)&&textReady(design.coreFun,40)&&materialContractOk;
@@ -506,7 +532,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(seedGrammar&&!grammarCarryOk){
     hardFailures.push('NOVEL_GRAMMAR_DILUTED');
-    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v4의 emergentGenre와 MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ 구조를 기존 설계 필드에 다시 연결한다. MAIN은 중심 행동, A/B는 대축, c는 서브요소, @는 파고들기 요소로 구분하고 causalDNA가 이 관계를 실제 상태 변화로 바꾸게 한다.'}));
+    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v5 MAIN×A×B×C+@ 구조로 게임 설계를 전면 재작성한다. MAIN은 정체성, A/B는 각각 시스템과 창작 소재, C는 장르 최소 하나를 포함하는 두 주제, @는 제한 없이 확장되는 발견과 숙련이다.'}));
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
@@ -532,7 +558,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
-    grammarCarryEvidence:seedGrammar?{formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
+    grammarCarryEvidence:seedGrammar?{formula:seedV5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',creativityCarried,requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
   };
 }
 
