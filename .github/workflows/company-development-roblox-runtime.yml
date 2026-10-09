@@ -117,7 +117,7 @@ jobs:
                 .filter(r=>Number.isFinite(Number(r.id)))
                 .sort((a,b)=>Number(a.id)-Number(b.id));
               // An active same-revision plan owns the work. New queued ingress must not make it abandon progress.
-              const winner=candidates.find(r=>String(r.status||'').toLowerCase()==='in_progress')||candidates[0];
+              const winner=candidates.find(r=>String(r.status||'').toLowerCase()==='in_progress')||candidates[candidates.length-1];
               process.stdout.write(winner?String(winner.id):'');
             });
           ")"
