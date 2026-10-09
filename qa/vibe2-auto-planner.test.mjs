@@ -92,9 +92,61 @@ function writeStudioDesign(root,gameId,overrides={}){
     identity:`${gameId} 고유 플레이 정체성`,
     coreFun:'적의 위협을 읽고 핵심 행동을 선택해 실제 전투 상태를 바꾸는 재미',
     coreLoop:['위협과 목표를 읽고 행동을 선택한다','실제 입력으로 적·월드·자원 상태를 바꾼다','결과와 보상으로 다음 목표와 전략을 갱신한다'],
+    // 최신 MAIN × A × B × C + @ 필수 설계가 없는 과거 fixture는 검증된 설계로 승인하지 않는다.
+    creativeGrammar:{
+      mainIdentity:`${gameId} 게임의 위협 관찰과 성장 선택을 연결하는 고유 핵심 플레이`,
+      a:{system:'ThreatRead',material:'적의 공격 신호',materialDomain:'전투와 전장 공간',stateChange:'적의 공격 예고를 관찰한 플레이어가 회피와 반격의 행동 상태를 바꾼다.'},
+      b:{system:'RewardRoute',material:'전투 후 획득 보상',materialDomain:'성장과 탐험 경로',stateChange:'전투의 성공과 실패가 보상 선택과 다음 목표 지역의 위험 상태를 바꾼다.'},
+      abCausality:'위협 관찰에 따른 전투 선택이 획득 보상을 달리 만들고, 그 보상이 다음 지역의 위협 강도와 대응 선택을 다시 바꾼다.',
+      abEvolution:{
+        aChangesB:'예고 공격을 정확히 회피하면 새로운 보상 경로가 열리고 다음 장비 선택이 달라진다.',
+        bChangesA:'장비 보상이 공격 대응 선택을 바꾸고 다음 적의 위협 신호를 읽는 전략을 달라지게 한다.',
+        lateGameChange:'후반에는 위협 관찰과 보상 전략의 연결이 다단계 지역 위험으로 확장되어 선택을 바꾼다.'
+      },
+      materialFusion:{
+        contrast:'즉각적인 전투 반응과 느리게 누적되는 성장 전략이 서로 다른 시간 감각을 만든다.',
+        causalBridge:'반격 성공 여부가 다음 강화 선택을 바꾸며 강화된 장비는 다시 전투 대응을 바꾼다.',
+        removalConsequence:'어느 한쪽 연결을 제거하면 플레이어가 다음 행동을 선택할 근거와 성장 의미가 사라진다.'
+      },
+      storyCausalChain:{
+        cause:'지역을 점령한 적의 위협이 현재 플레이어 이동과 행동 가능 범위를 좁힌다.',
+        characterConflict:'플레이어는 안전한 장비 수급과 고위험 지역 진입 사이에서 선택해야 한다.',
+        playerChoice:'지금 반격하거나 회피하여 다음 지역과 보상 경로의 접근 가능성을 결정한다.',
+        worldChange:'전투 결과가 지역의 위험 상태와 다음 목표를 변화시켜 새 선택을 만든다.',
+        nextEvent:'변화한 위험과 보상에 맞춰 다음 적이나 탐험 목적이 등장한다.'
+      },
+      cThemes:[
+        {name:'위협 지형',kind:'MATERIAL',gameplayEffect:'높낮이와 지형 장애물이 회피 방향과 반격 기회를 바꾼다.'},
+        {name:'탐험 선택',kind:'GENRE',gameplayEffect:'이동 경로 선택이 다음 전투 보상과 위험을 재배열한다.'}
+      ],
+      cGenres:[
+        {role:'PRIMARY',name:'Action RPG',gameplayEffect:'전투 관찰과 반격의 타이밍 선택이 승패를 결정한다.'},
+        {role:'SECONDARY',name:'Exploration',gameplayEffect:'지역 탐색과 경로 확보가 다음 전투의 진입 조건을 바꾼다.'}
+      ],
+      cGenreInterlock:'전투 승리로 탐험 경로를 열고, 탐험 선택이 새로운 전투 구도와 도구를 바꾸는 양방향 선택 구조다.',
+      cWorldAndGameplayEffect:'지형과 탐험 경로가 위협 신호의 가시성과 보상 선택을 동시에 바꾸며 세계의 새로운 진입 지점을 만든다.',
+      delveDiscoveries:[
+        {clue:'적의 공격 전 위치 신호',discovery:'회피 후 반격 가능한 범위',newChoice:'회피 방향과 장비 범위를 비교해 반격한다.'},
+        {clue:'새 지역의 지형 높이 차',discovery:'원거리 적의 시야 차단 지점',newChoice:'우회와 정면 돌입 중 다음 경로를 선택한다.'},
+        {clue:'전투 후 획득 자원 흔적',discovery:'장비 강화에 유리한 자원 경로',newChoice:'강화와 신규 지역 개방 중 우선순위를 정한다.'},
+        {clue:'뒤쪽 지역의 강한 적 흔적',discovery:'위협 유형에 따른 준비 전략',newChoice:'현재 장비로 진행하거나 보완 후 다시 도전한다.'}
+      ],
+      delveGrowthRule:'실제 전투·탐험 결과에서 생긴 다음 의문만 확장하며 고유한 발견과 선택의 인과 연결을 지속적으로 늘린다.',
+      finalGameIdentity:`${gameId} 전투 반격과 탐험·보상 선택이 서로 영향을 주는 고유한 세계`
+    },
     signatureSystems:[
-      {name:'combat-counterplay',purpose:'적 유형에 맞춘 실제 전투 선택',playerChoice:'공격·회피·배치 중 상황에 맞는 대응을 선택'},
-      {name:'progression-loop',purpose:'전투 결과가 다음 선택을 확장',playerChoice:'보상으로 다음 목표나 성장 경로를 고른다'}
+      {id:'core-counterplay',grammarRole:'MAIN',name:'combat-counterplay',purpose:'적 유형에 맞춘 실제 전투 선택',playerChoice:'공격·회피·배치 중 대응을 선택',stateInputs:['enemy_state'],stateOutputs:['combat_result']},
+      {id:'threat-read',grammarRole:'A',name:'threat-observation',purpose:'공격 예고와 사정거리를 읽는다',playerChoice:'관찰 후 회피 방향을 결정',stateInputs:['enemy_state'],stateOutputs:['defense_choice']},
+      {id:'reward-route',grammarRole:'B',name:'progression-loop',purpose:'전투 결과가 다음 선택을 확장',playerChoice:'보상으로 목표나 성장 경로를 선택',stateInputs:['combat_result'],stateOutputs:['reward_choice']},
+      {id:'terrain-interlock',grammarRole:'c',name:'terrain-exploration',purpose:'지형·탐험이 전투 조건을 바꾼다',playerChoice:'경로와 장애물 이용 선택',stateInputs:['reward_choice'],stateOutputs:['region_state']},
+      {id:'discovery-chain',grammarRole:'DELVE',name:'discovery-expansion',purpose:'발견으로 후속 선택을 확장한다',playerChoice:'위험을 확인하고 다음 단서를 탐색',stateInputs:['region_state'],stateOutputs:['next_objective']}
+    ],
+    systemInterconnections:[
+      {fromSystem:'core-counterplay',toSystem:'reward-route',trigger:'전투 결과',stateChange:'보상 경로 확정'},
+      {fromSystem:'threat-read',toSystem:'core-counterplay',trigger:'공격 예고',stateChange:'반격 가능 상황 전환'},
+      {fromSystem:'reward-route',toSystem:'terrain-interlock',trigger:'보상 선택',stateChange:'진입 지역 변화'},
+      {fromSystem:'terrain-interlock',toSystem:'discovery-chain',trigger:'경로 진입',stateChange:'지역 단서 변화'},
+      {fromSystem:'discovery-chain',toSystem:'threat-read',trigger:'새 적 발견',stateChange:'위협 관찰 재개'}
     ],
     progressionDirection:'핵심 행동의 성공 결과가 다음 목표·보상·해금·콘텐츠 선택으로 연결된다.',
     ...overrides
@@ -1061,7 +1113,7 @@ test('completed diagnostic package is never recreated after assessment and compl
   }
 });
 
-test('completed Unity Web package is not duplicated after completion and retains explicit expansion scopes',()=>{
+test('completed Unity Web package is not duplicated and remains source-scoped for minimum necessary repair',()=>{
   const root=tempRepo();
   fs.mkdirSync(path.join(root,'unity-games/demo/ProjectSettings'),{recursive:true});
   fs.writeFileSync(path.join(root,'unity-games/demo/ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
@@ -1070,12 +1122,18 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
+  const sourceScopedSingleTask=first.task.unityWebDevelopment===true
+    &&first.task.sourceRoot==='unity-games/demo'
+    &&first.task.responsibleFiles.length>0
+    &&first.task.responsibleFiles.every(file=>file.startsWith('unity-games/demo/'));
+  assert.equal(autoExpanded||parallelPackage||sourceScopedSingleTask,true);
   if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  }else if(parallelPackage){
+    assert.equal(first.packages[0].accepted,true);
   }else{
-    assert.equal(parallelPackage,true);
+    assert.equal(sourceScopedSingleTask,true,'a one-file native repair may not inflate into artificial packages');
     assert.equal(first.packages[0].accepted,true);
   }
   const done={...first.task,status:'verified',result:'PASS'};
@@ -4397,6 +4455,28 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+});
+
+test('owner scope keeps canonical Unity Web runnable while native Unity and legacy Web remain held',()=>{
+  const root=tempRepo(),gameId='scoped-unity-web';
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.mkdirSync(path.join(unityRoot,'Assets','Scripts'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Game.cs'),'public class Game {}\\n');
+  const webRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><title>Legacy archive</title>');
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']},
+    developmentAccess:{UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'}
+  }));
+  const catalog={games:[{id:gameId,name:'Scoped Unity Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',webPath:`/web-games/${gameId}/`,hasWebArchive:true,homepageWebPlayable:true}]};
+  const status={projects:[{gameId,ownerDecision:'PASS',target:'unity',projectPath:`unity-games/${gameId}`}]};
+  const projects=collectProjects(status,catalog,root,{items:[]});
+  assert.equal(projects.filter(row=>row.gameId===gameId&&row.engine==='unity'&&row.firstStageUnityWeb===true).length,1);
+  assert.equal(projects.some(row=>row.gameId===gameId&&row.engine==='unity'&&row.firstStageUnityWeb!==true),false);
+  assert.equal(projects.some(row=>row.gameId===gameId&&row.engine==='web'),false);
 });
 
 test('actual fantasy-survival routes future source development to canonical Unity Web 3D instead of legacy HTML',()=>{
