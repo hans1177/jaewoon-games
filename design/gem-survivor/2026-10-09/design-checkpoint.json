@@ -62,25 +62,38 @@
       "name": "실행 결과 시스템",
       "purpose": "MAIN의 결과가 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 다음 진행 선택을 결정합니다만, 이 과정에서 새로운 행동/대응법을 발전시킵니다."
+    },
+    "local_authoring_parts::32ff28de4670e4b6d923b9671d6d5886f41bac2a548987b470a7daf892644829:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "진입 가능한 시스템 변주",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 새로운 루프와 상태 변화를 만든다 전략적으로 협력 혹은 경쟁 결정하여 진입 가능한 여러 시스템과 루프를 형성하며, 이를 바탕으로 새로운 행동과 대응법을 개발한다 중간에 발생할 수 있는 다양한 상황 및 대가를 포함해 실제 플레이어가 실제로 수행해야 하는 선택을 제공한다 조건이 변경될 때마다 다른 선택과 결과를 생성하고, 이 과정에서 숙련된 플레이어는 자신의 전략적 판단을 통해 다양한 대안을 선택하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 410295,
-      "lastMs": 41573,
+      "totalMs": 477377,
+      "lastMs": 67082,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:54:28.596Z"
+      "updatedAt": "2026-10-09T14:55:35.680Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:47:38.208Z",
-  "updatedAt": "2026-10-09T14:54:28.596Z",
+  "updatedAt": "2026-10-09T14:55:35.680Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1790,7 +1803,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:54:28.596Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:55:35.680Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
