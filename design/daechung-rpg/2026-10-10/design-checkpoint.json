@@ -596,25 +596,38 @@
       "name": "초원 몬스터 10종 및 런 보스 융합",
       "purpose": "보스 동료 수집과 포탈 전투의 상태 연결 및 확장",
       "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 리더 레벨 자동 동기화됨"
+    },
+    "local_authoring_parts::cc714182e8ce4ab99077a19d6b3c7445580b6188d928cea94629e8921d405ce0:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "포탈 전투 선택"
+      ],
+      "stateOutputs": [
+        "Lv.60 만렙/숙련"
+      ],
+      "name": "포탈 전투 및 보스 격파의 중심적 역할",
+      "purpose": "포탈 전투 시작 후 보스 동료 수집, 파티 조합 확장, Lv.40 2차 완성형 생성까지의 순환적 상태 변화를 관리하며 최종적으로 초원 시드형 로그라이크 런의 정체성을 형성함.",
+      "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화, 별도 장비 노가다 없음."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2028079,
-      "lastMs": 38360,
+      "totalMs": 2044372,
+      "lastMs": 16293,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:55:29.262Z"
+      "updatedAt": "2026-10-09T22:55:45.563Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:15:42.496Z",
-  "updatedAt": "2026-10-09T22:55:29.269Z",
+  "updatedAt": "2026-10-09T22:55:45.563Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2495,10 +2508,10 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:55:29.264Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:55:45.563Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
