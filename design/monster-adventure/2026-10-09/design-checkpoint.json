@@ -525,25 +525,28 @@
       "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. This action initiates the core loop by transforming the world state through casual gameplay, unlocking progression opportunities via immediate feedback and small risk choices.",
       "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::fdea7dcf143e55900b6984274da391201f50d0c4b7547178052db4d303d128f4:fromId": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 37,
+      "calls": 38,
+      "successes": 38,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1634880,
-      "lastMs": 32435,
+      "totalMs": 1664891,
+      "lastMs": 30011,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:34:35.653Z"
+      "updatedAt": "2026-10-09T01:35:05.667Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:34:35.654Z",
+  "updatedAt": "2026-10-09T01:35:05.667Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2784,7 +2787,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:34:35.654Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:35:05.667Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
