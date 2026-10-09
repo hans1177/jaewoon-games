@@ -156,25 +156,181 @@
       "name": "역사·경제 혼합 시스템",
       "purpose": "플레이어의 탐험 행동과 선택 결과가 역사적 배경과 경제적 자원의 상호작용에 의해 실질적으로 변화함",
       "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+    },
+    "local_authoring_parts::7fc3fd34414eff0fa58b09604512bb9de98e877c021071ba7c7f070137fdb9c7:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 사건"
+      ],
+      "name": "역사-경제 혼합 탐험 시스템",
+      "purpose": "플레이어가 역사적 배경과 경제적 자원을 통한 인과 관계를 경험하며, 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 촉진함",
+      "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+    },
+    "local_authoring_parts::9224cd982adcde137a9765f499caf916829b84b63eda2a596dab360c70c16374:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경을 이해하며, 전투, 성장, 보상을 통한 인과 관계를 형성하는 주요 메커니즘",
+          "playerChoice": "타오르기, 스토리 진행, 정보 획득, 월드 상태 변경의 선택들 중 하나를 하는 실제 플레이어 행동 및 결과의 연결 구조를 구성함으로써 게임의 학문적 진입점과 인식 기반을 강화합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 전투, 성장, 보상을 통한 인과 관계에 참여하여 세계 규칙과 스토리 진행을 촉진하는 주제",
+          "playerChoice": "탐험 행동, 인물 만나기, 스토리 진행, 정보 획득, 월드 상태 변경"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+          "playerChoice": "탐험, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사·경제 혼합 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 역사적 배경과 경제적 자원의 상호작용에 의해 실질적으로 변화함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사-경제 혼합 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 경제적 자원을 통한 인과 관계를 경험하며, 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 촉진함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        }
+      ]
+    },
+    "local_authoring_parts::d50c00ffaa8817548a90ebcbb29a8ad6adbaef324d7ced3cdc203ff3324d1ad1:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "탐험 행동 -> 인물 만나기 -> 스토리 진행 -> 정보 획득 -> 월드 상태 변경",
+        "플레이어 선택 -> 세계 규칙 변형 -> 새로운 사건 생성 -> 루프 회복"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경을 이해하며, 전투, 성장, 보상을 통한 인과 관계를 형성하는 주요 메커니즘",
+          "playerChoice": "타오르기, 스토리 진행, 정보 획득, 월드 상태 변경의 선택들 중 하나를 하는 실제 플레이어 행동 및 결과의 연결 구조를 구성함으로써 게임의 학문적 진입점과 인식 기반을 강화합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 전투, 성장, 보상을 통한 인과 관계에 참여하여 세계 규칙과 스토리 진행을 촉진하는 주제",
+          "playerChoice": "탐험 행동, 인물 만나기, 스토리 진행, 정보 획득, 월드 상태 변경"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사적 탐험 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화함",
+          "playerChoice": "탐험, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사·경제 혼합 시스템",
+          "purpose": "플레이어의 탐험 행동과 선택 결과가 역사적 배경과 경제적 자원의 상호작용에 의해 실질적으로 변화함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 사건"
+          ],
+          "name": "역사-경제 혼합 탐험 시스템",
+          "purpose": "플레이어가 역사적 배경과 경제적 자원을 통한 인과 관계를 경험하며, 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 촉진함",
+          "playerChoice": "타오르기, 성장, 진입, 스토리 진행 등 실제 선택이 다음 사건의 세계 규칙과 인과 법칙에 연결됨"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 398393,
-      "lastMs": 36011,
+      "totalMs": 435199,
+      "lastMs": 36806,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:12:37.824Z"
+      "updatedAt": "2026-10-09T18:13:14.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:12:37.825Z",
+  "updatedAt": "2026-10-09T18:13:14.635Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1917,7 +2073,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:12:37.824Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:13:14.635Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
