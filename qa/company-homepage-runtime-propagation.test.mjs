@@ -57,8 +57,12 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   const clickOnly=base('control-only-prototype','DEVELOPMENT_CONFIRMED');
   clickOnly.ownerWebSourceState='WITHDRAWN_SIMPLE_PROTOTYPE';
   clickOnly.canonical.sources.web.state='WITHDRAWN_SIMPLE_PROTOTYPE';
-  const list=api.developmentRows({games:[dev,design,released,clickOnly]},{});
-  assert.deepEqual(Array.from(list,game=>game.id),['design-without-release','dev-without-release','released-without-build'],'game cards remain visible while gameplay QA is incomplete');
+  const owned=base('full-game-with-legacy-test','DEVELOPMENT_CONFIRMED');
+  owned.ownerExistingGame=true;
+  owned.canonical.lifecycle.ownerExistingGame=true;
+  owned.canonical.sources.web.state='WITHDRAWN_SIMPLE_PROTOTYPE';
+  const list=api.developmentRows({games:[dev,design,released,clickOnly,owned]},{});
+  assert.deepEqual(Array.from(list,game=>game.id),['design-without-release','dev-without-release','full-game-with-legacy-test','released-without-build'],'game cards remain visible while gameplay QA is incomplete');
   assert.equal(list.some(game=>game.id===clickOnly.id),false,'control-only prototype must not appear in the game catalog shelf');
   assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
