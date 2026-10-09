@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::67d975a8b029b01ebe902fcd6a14378027af688f1270f5b534dbb5ab51616620:identity": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 225486,
+      "lastMs": 225486,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:27:09.033Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:23:23.526Z",
-  "updatedAt": "2026-10-09T11:23:23.541Z",
+  "updatedAt": "2026-10-09T11:27:09.034Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2138,5 +2154,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:27:09.034Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
