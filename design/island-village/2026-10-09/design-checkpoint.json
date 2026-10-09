@@ -457,25 +457,28 @@
       "toSystem": "GATHER_RESOURCES",
       "trigger": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행",
       "stateChange": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행 시, 자원의 효율적 관리와 지역 개발 우선순위를 결정하여 상태 변화가 발생합니다."
+    },
+    "local_authoring_parts::9b4db5a42ccc8f5cf394880984992c3de63eae43b8a1abdc4c1e3d5e0770d290:fromId": {
+      "fromId": "GATHER_RESOURCES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1688171,
-      "lastMs": 91591,
+      "totalMs": 1775475,
+      "lastMs": 87304,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:18:58.000Z"
+      "updatedAt": "2026-10-09T12:20:25.307Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:18:58.002Z",
+  "updatedAt": "2026-10-09T12:20:25.307Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2998,7 +3001,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:18:58.002Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:20:25.307Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
