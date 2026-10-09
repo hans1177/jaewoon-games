@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:identity": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계를 바꾼다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'로 나타난다. 세계 규칙은 영토전쟁의 실제 플레이 공간에서 서로 영향을 주는 SINGLE_DEFENSE_STRATEGY 핵심 행동, 이동·경로·위치 선택과 목표 진행이 상호작용하는 구조로 구성된다. 성장은 수치 증가뿐만 아니라 새 행동·경로·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 224318,
+      "lastMs": 224318,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:24:13.489Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:20:29.151Z",
-  "updatedAt": "2026-10-09T11:20:29.165Z",
+  "updatedAt": "2026-10-09T11:24:13.489Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2033,5 +2049,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:24:13.489Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
