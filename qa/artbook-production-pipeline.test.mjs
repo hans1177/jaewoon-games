@@ -38,15 +38,21 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/PAID_API=NO/);
 });
 
-test('DEVELOPMENT_CONFIRMED delegates to the Unity Web floor then upper-platform runtime',()=>{
-  assert.match(source,/DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM/);
+test('DEVELOPMENT_CONFIRMED delegates independent Roblox and Unity Web development without bypassing 3D QA',()=>{
+  assert.match(source,/DEVELOPMENT_EXECUTION_MODE=ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT/);
   assert.match(source,/DEVELOPMENT_RUNTIME_DELEGATED=YES/);
   assert.match(source,/DEVELOPMENT_RUNTIME_OWNER=\.github\/workflows\/company-development-confirmed-runtime\.yml/);
   assert.match(source,/DEVELOPMENT_QUEUE_AUTHORITY=company-runtime:development-queue\.json/);
-  assert.match(source,/UNITY_WEB_UPPER_PLATFORM_FLOOR=REQUIRED_FOR_NEW_NATIVE_START/);
+  assert.match(source,/UNITY_WEB_UPPER_PLATFORM_FLOOR=INDEPENDENT_NO_ROBLOX_GATE/);
   assert.match(source,/DEVELOPMENT_ARTBOOK_PIPELINE_SOURCE_MUTATION=NO/);
   assert.doesNotMatch(source,/await run\('tools\/company-development-validation-cycle\.mjs'\)/);
   assert.doesNotMatch(source,/await run\('tools\/company-development-disposition-gate\.mjs'\)/);
+  const scope=directive.ownerActiveDevelopmentScope20261009;
+  assert.deepEqual(scope.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(scope.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
+  assert.equal(scope.robloxRequiresUnityWebReadiness,false);
+  assert.equal(scope.unityAndroidDevelopmentAllowed,false);
+  assert.equal(scope.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
 });
 
 
