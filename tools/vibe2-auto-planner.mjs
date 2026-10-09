@@ -3863,7 +3863,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       deferredSmallPackages.push({gameId:project.gameId,taskIds:packageTasks.map(task=>task.id),workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
       continue;
     }
-    const acceptedTasks=pkg.tasks;
+    // 기존 소유자 재개발은 작업 패키징 이후에도 무제한 인과 재시도 계약을 보존한다.
+    const acceptedTasks=project.ownerResumableBuildUp===true
+      ?pkg.tasks.map(task=>({...task,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
+      :pkg.tasks;
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
