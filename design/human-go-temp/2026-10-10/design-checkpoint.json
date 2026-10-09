@@ -569,25 +569,40 @@
       "name": "Adaptive Strategy System",
       "purpose": "Player builds unique skills and relationships with enemies, gaining new abilities and strategic insights from interactions",
       "playerChoice": "Strategic adaptation or retreat based on resource distribution"
+    },
+    "local_authoring_parts::9e51cb70736652f3b07fa33c673bc508fa75566b84eff121f4d94b72f8758a4a:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Player builds unique skills and relationships with enemies, gaining new ability",
+        "Character development influences decision-making in dynamic scenarios"
+      ],
+      "stateOutputs": [
+        "Player gains strategic insights from interactions",
+        "Environmental challenges trigger adaptive gameplay"
+      ],
+      "name": "Adaptive Gameplay System",
+      "purpose": "Influences player strategy selection in dynamic scenarios",
+      "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1680470,
-      "lastMs": 94038,
+      "totalMs": 1773795,
+      "lastMs": 93325,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:48:25.633Z"
+      "updatedAt": "2026-10-09T17:49:58.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:25.119Z",
-  "updatedAt": "2026-10-09T17:48:25.633Z",
+  "updatedAt": "2026-10-09T17:49:58.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2301,7 +2316,7 @@
     "03b26008f6a55b505867f805418255705b83c8c865f5009f5c9bac8b71e40070": true,
     "600483efdcf67bd180436a0b8183fd7914493db159f88200748ed37eb727695b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:48:25.633Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:49:58.960Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
