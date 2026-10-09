@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 148,
-  "lastSuccessfulModelCallAt": "2026-10-09T04:21:31.602Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 150,
+  "lastSuccessfulModelCallAt": "2026-10-09T04:23:04.014Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/territory-war/2026-10-09/design-seed.json",
     "contentDigest": "aa288a459ca8a04577d8cd422579d361da52b6607dafce00808f963cb8275120",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 116,
-      "successes": 113,
+      "calls": 117,
+      "successes": 114,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8659746,
-      "lastMs": 92802,
+      "totalMs": 8752148,
+      "lastMs": 92402,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:21:31.602Z"
+      "updatedAt": "2026-10-09T04:23:04.006Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T04:21:31.604Z"
+  "updatedAt": "2026-10-09T04:23:04.020Z"
 }
