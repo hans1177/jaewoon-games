@@ -844,7 +844,8 @@ export function buildDesignToPlatformCodingTrace({
     gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
-    ...name==='UNITY_WEB'?{minimumRenderedDimension:'3D',spatialDesignReady:spatialReady}: {},
+    minimumRenderedDimension:'3D',
+    ...(name==='UNITY_WEB'?{spatialDesignReady:spatialReady}:{}),
     inspectedInThisDirective:name===selected
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
