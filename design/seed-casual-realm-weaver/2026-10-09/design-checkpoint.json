@@ -48,25 +48,39 @@
       "name": "CASUAL_GAME_FLOW",
       "purpose": "Player's initial action and its consequence in a casual game environment.",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::1b6c121ed79c77fde8de4deea5f9b03e9a83f7b7958abb5bc32ef39086291578:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_INPUT",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "END_RESULT"
+      ],
+      "name": "CASUAL_GAME_FLOW_A",
+      "purpose": "MAIN × A × B × c의 상태 교환을 실제 시스템으로 연결하는 보조 인과법칙",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nFinish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nStart again with the same rules and state to continue the game flow."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 382134,
-      "lastMs": 36943,
+      "totalMs": 424243,
+      "lastMs": 42109,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:12:35.490Z"
+      "updatedAt": "2026-10-09T09:13:17.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:13.327Z",
-  "updatedAt": "2026-10-09T09:12:35.490Z",
+  "updatedAt": "2026-10-09T09:13:17.601Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1990,7 +2004,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:12:35.490Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:13:17.601Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
