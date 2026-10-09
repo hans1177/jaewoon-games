@@ -84,25 +84,40 @@
       "name": "CASUAL_GAME_FLOW_RECONFIGURATION_B",
       "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
       "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::00861821e6f5f3eace55b20cc2a5b2cbf8e205a651e87e16a2a29f838b57a925:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISPLAY",
+        "DISTANCE_MEASURE"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_3"
+      ],
+      "name": "CASUAL_GAME_FLOW_RECONFIGURATION_C",
+      "purpose": "보조 요소로 MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 데 활용되며, 플레이어가 성장 과정에서 새로운 콘텐츠와 관계를 발견하는 데 도움을 주는 역할을 수행합니다.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과에 따라 다음 상태 변화를 결정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 444641,
-      "lastMs": 36940,
+      "totalMs": 491122,
+      "lastMs": 46481,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:03:55.588Z"
+      "updatedAt": "2026-10-09T13:04:42.070Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:03:55.588Z",
+  "updatedAt": "2026-10-09T13:04:42.070Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2026,7 +2041,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:03:55.588Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:04:42.070Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
