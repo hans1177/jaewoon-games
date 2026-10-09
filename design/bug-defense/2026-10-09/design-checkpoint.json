@@ -79,25 +79,40 @@
       "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
       "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
       "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
+    },
+    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INSECT_WAVE_PATTERN",
+        "DEFENDER_LAYOUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_EFFECT",
+        "NEXT_DEFENSE_PLAN"
+      ],
+      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+      "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
+      "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 650490,
-      "lastMs": 152129,
+      "totalMs": 716464,
+      "lastMs": 65974,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:31:51.355Z"
+      "updatedAt": "2026-10-09T11:32:57.331Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T11:31:51.355Z",
+  "updatedAt": "2026-10-09T11:32:57.331Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2296,7 +2311,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:31:51.355Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:32:57.331Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
