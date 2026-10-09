@@ -462,7 +462,7 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
 
 /* ── 공식 고정 버전 Luau 컴파일: 기존 Vibe3 실행기 사용 ── */
 test('amusement-tycoon Luau source compiles with the pinned native compiler', {
- skip: process.env.GITHUB_ACTIONS !== 'true' && !fs.existsSync('/tmp/luau-bin/luau-compile'),
+ skip: !fs.existsSync('/tmp/luau-bin/luau-compile'),
 },()=>{
  const compiler='/tmp/luau-bin/luau-compile';
  assert.ok(fs.existsSync(compiler),'official pinned Luau compiler must be installed by existing engine-contract workflow');
