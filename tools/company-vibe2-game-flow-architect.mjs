@@ -195,7 +195,7 @@ function novelGrammarFromBaseline(baseline={}){
     expansionVectors:Object.freeze(uniq(grammar.expansionVectors||[]).slice(0,8)),
     irreducibilityTest:grammar.irreducibilityTest||null,
     culturalAbstractionRule:clean(grammar.culturalAbstractionRule),
-    rule:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ CREATES_THE_EMERGENT_COMPOSITE_GENRE',
+    rule:'MAIN × A × B × C + @; MAIN identity; A/B system + independent material; C two themes including GENRE; @ unbounded delve',
     categoryRole:'SEED_DISCOVERY_AND_ROUTING_HINT_ONLY_NOT_FINAL_GENRE',
     atRole:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'
   });
@@ -248,8 +248,10 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
       laterUpdatesMayAddSystemsWithoutRewritingValidatedCore:true,
       causalGrammarMustMutateAcrossExpansion:true,
       expansionShouldChangeHowTheCoreRuleBehavesNotOnlyAddObjects:true,
-      mainABcFormulaRequiredWhenNovelGrammarExists:true,
-      cIsSubElementCollectionNotMajorAxis:true,
+      mainABCFormulaRequiredWhenNovelGrammarExists:true,
+      aAndBEachNeedSystemAndCreativeMaterial:true,
+      cNeedsTwoThemesAndOneGenre:true,
+      subElementsAreNotCThemeSlot:true,
       atDelveLayerRequiredAndNotAGeneralSystemAxis:true,
       emergentGenreComesFromCombinedGrammarNotRoutingCategory:true,
       characterMonsterRegionStoryShouldExpressTheSameCausalWorldLawWhenApplicable:true,
@@ -535,9 +537,12 @@ export function evaluateGameFlowArchitecture(architecture={}){
     if(!clean(grammar.newPrimaryVerb)||!clean(grammar.brokenGenreAssumption)||!clean(grammar.worldRule))blockers.push('FLOW_NOVEL_GAME_GRAMMAR_REQUIRED');
     if((grammar.causalDNAs||[]).length<2||(grammar.causalFusion||[]).length<2)blockers.push('FLOW_CAUSAL_DNA_FUSION_REQUIRED');
     if(!clean(grammar.irreducibilityTest?.verdict))blockers.push('FLOW_GRAMMAR_IRREDUCIBILITY_REQUIRED');
-    if(grammar.gameplaySystemFusion?.formula!=='MAIN × A × B × c'||(grammar.gameplaySystemFusion?.majorAxes||[]).length!==2||(grammar.gameplaySystemFusion?.subElements||[]).length<2||(grammar.gameplaySystemFusion?.crossSystemRules||[]).length<4)blockers.push('FLOW_MAIN_A_B_c_SYSTEM_FUSION_REQUIRED');
+    if(grammar.gameplaySystemFusion?.formula!=='MAIN × A × B × C'||(grammar.gameplaySystemFusion?.majorAxes||[]).length!==2||(grammar.gameplaySystemFusion?.crossSystemRules||[]).length<4)blockers.push('FLOW_MAIN_A_B_C_SYSTEM_FUSION_REQUIRED');
+    if((grammar.gameplaySystemFusion?.majorAxes||[]).some(row=>!clean(row.systemFamily)||!clean(row.sourceMaterial)||!clean(row.sourceDomain)||!clean(row.materialRule)))blockers.push('FLOW_A_B_SYSTEM_AND_CREATIVE_SOURCE_REQUIRED');
+    const c=grammar.gameplaySystemFusion?.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
+    if(themes.length!==2||!themes.some(row=>row.kind==='GENRE')||themes.some(row=>!clean(row.name)||!clean(row.causalEffect))||!clean(c?.jointWorldRule)||!clean(c?.abGameplayEffect))blockers.push('FLOW_C_TWO_THEMES_ONE_GENRE_AND_CAUSAL_LINK_REQUIRED');
     if(grammar.delveLayer?.formulaSuffix!=='+ @'||grammar.delveLayer?.role!=='DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'||(grammar.delveLayer?.elements||[]).length<4)blockers.push('FLOW_AT_DELVE_LAYER_REQUIRED');
-    if(!clean(grammar.emergentGenre?.name)||grammar.emergentGenre?.grammarFormula!=='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @')blockers.push('FLOW_EMERGENT_COMPOSITE_GENRE_REQUIRED');
+    if(!clean(grammar.emergentGenre?.name)||grammar.emergentGenre?.grammarFormula!=='MAIN × A × B × C + @')blockers.push('FLOW_EMERGENT_COMPOSITE_GENRE_REQUIRED');
     if((grammar.expansionVectors||[]).length<4)blockers.push('FLOW_GRAMMAR_EXPANSION_VECTORS_REQUIRED');
   }
   const quality=architecture.qualityGrowthContract||{};
