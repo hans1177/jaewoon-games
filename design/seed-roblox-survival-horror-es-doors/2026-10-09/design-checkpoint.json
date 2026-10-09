@@ -914,25 +914,28 @@
     },
     "local_authoring_parts::5a5c3ffb42b5222d9a966dde2dfd0acfe26ed2ebe0bc48b87c233605fd0dedfc:toSystem": {
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM"
+    },
+    "local_authoring_parts::5a5c3ffb42b5222d9a966dde2dfd0acfe26ed2ebe0bc48b87c233605fd0dedfc:trigger": {
+      "trigger": "시스템은 BOARD_STATE 상태를 입력받아, NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 새로운 패턴을 확정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 94,
-      "successes": 94,
+      "calls": 95,
+      "successes": 95,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3129822,
-      "lastMs": 31115,
+      "totalMs": 3163401,
+      "lastMs": 33579,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:15:28.078Z"
+      "updatedAt": "2026-10-09T00:16:01.659Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:15:28.078Z",
+  "updatedAt": "2026-10-09T00:16:01.659Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3258,7 +3261,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:15:28.078Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:16:01.659Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
