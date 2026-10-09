@@ -36,25 +36,40 @@
         "ACTION: 다음 월드 상태에 따라 선택이 실행되며, 성장 요소가 추가됩니다.",
         "NEXT STEP: 새로운 선택 또는 위험-보상 패턴이 생성되어, 플레이어는 계속해서 선택을 하게 됩니다."
       ]
+    },
+    "local_authoring_parts::44bd450ead8b60dd642d0dd5757540cd7077004f0ed5e174a6fe382f9378f877:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RUN_RESULT",
+        "BUILD_STATUS"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "UPGRADES_CHOSEN"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 350651,
-      "lastMs": 56310,
+      "totalMs": 389104,
+      "lastMs": 38453,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:37:41.581Z"
+      "updatedAt": "2026-10-09T08:38:20.037Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:31:50.901Z",
-  "updatedAt": "2026-10-09T08:37:41.581Z",
+  "updatedAt": "2026-10-09T08:38:20.037Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2253,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:37:41.581Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:38:20.037Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
