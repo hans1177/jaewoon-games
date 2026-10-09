@@ -1589,25 +1589,28 @@
         "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
         "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
       ]
+    },
+    "local_authoring_parts::9fe538cd70b1fb108ac00aea919889967d5abd12105b701b867a45d700a46946:retryFlow": {
+      "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 177,
-      "successes": 177,
+      "calls": 178,
+      "successes": 178,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7514594,
-      "lastMs": 38031,
+      "totalMs": 7552203,
+      "lastMs": 37609,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:40:53.410Z"
+      "updatedAt": "2026-10-09T04:41:31.020Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T04:40:53.410Z",
+  "updatedAt": "2026-10-09T04:41:31.020Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3814,7 +3817,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:40:53.410Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:41:31.020Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
