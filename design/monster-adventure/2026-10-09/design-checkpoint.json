@@ -457,25 +457,31 @@
       "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::6f1542f66b71cc1fb5bb43f04a78148a60f39a6630c6b2a104c5c98e3452481b:fromId": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN"
+    },
+    "local_authoring_parts::6f1542f66b71cc1fb5bb43f04a78148a60f39a6630c6b2a104c5c98e3452481b:toId": {
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1203980,
-      "lastMs": 35658,
+      "totalMs": 1264206,
+      "lastMs": 30478,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:27:24.733Z"
+      "updatedAt": "2026-10-09T01:28:24.963Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:27:24.734Z",
+  "updatedAt": "2026-10-09T01:28:24.963Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2716,7 +2722,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:27:24.734Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:28:24.963Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
