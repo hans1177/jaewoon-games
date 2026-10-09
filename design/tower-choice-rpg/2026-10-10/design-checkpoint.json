@@ -104,25 +104,39 @@
         "Collect run rewards or upgrade build choices that affect future states → State of Strategic Build Evolution",
         "Combine upgrades into a stronger build, survive harder waves or a boss → New state emerges from the interaction of A's material domain and B's system mechanics"
       ]
+    },
+    "local_authoring_parts::4c7ac87ce06366b3a54e6b7ee7753fd88658ac2596c615975bcf99b0e664744a:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Run Progression",
+        "Strategic Build Evolution"
+      ],
+      "stateOutputs": [
+        "New State Emerges from Interaction of A's Material Domain and B's System Mechanï"
+      ],
+      "name": "Survival-Roguelite",
+      "purpose": "Player's actions directly impact the environment and resource availability",
+      "playerChoice": "Collect run rewards or upgrade build choices that affect future states"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 211408,
-      "lastMs": 35248,
+      "totalMs": 247487,
+      "lastMs": 36079,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:53:28.878Z"
+      "updatedAt": "2026-10-09T17:54:04.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:57.399Z",
-  "updatedAt": "2026-10-09T17:53:28.878Z",
+  "updatedAt": "2026-10-09T17:54:04.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1846,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:53:28.878Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:54:04.959Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
