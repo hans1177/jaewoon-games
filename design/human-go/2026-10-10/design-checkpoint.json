@@ -211,25 +211,42 @@
       "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
       "purpose": "Players navigate a small area to find a person, task, or item that can be collected or interacted with.",
       "playerChoice": "Choose whether to explore the space, engage with the figure, or use resources to gain advantage in the game."
+    },
+    "local_authoring_parts::12ef1f74e371c2f15c0a3da99428bdacb869738e4b7406a01c94ff4658a86a5b:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Initial Exploration",
+        "Social Engagement",
+        "Environmental Influence"
+      ],
+      "stateOutputs": [
+        "Simple Discovery",
+        "Dynamic Interaction",
+        "Complex Adaptation"
+      ],
+      "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
+      "purpose": "Player interaction with a limited environment that evolves through social engagement and environmental influence.",
+      "playerChoice": "The player chooses to engage with the figure or avoid it based on their current goals and the potential for discovery or danger."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 718391,
-      "lastMs": 106558,
+      "totalMs": 823601,
+      "lastMs": 105210,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:33:31.259Z"
+      "updatedAt": "2026-10-09T20:35:16.470Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T20:33:31.259Z",
+  "updatedAt": "2026-10-09T20:35:16.470Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1746,7 +1763,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:33:31.259Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:35:16.470Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
