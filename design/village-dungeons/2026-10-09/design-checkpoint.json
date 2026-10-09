@@ -36,25 +36,38 @@
         "ACTION: Player makes decision that alters world state, triggering new path/risks/rewards.\n",
         "NEXT SELECT: New gameplay option emerges based on player's mastery of system interactions."
       ]
+    },
+    "local_authoring_parts::db90b86aa91a21a02196321a286e39178bb43fb12293e24b5727446a9623177d:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "생태 인과법칙",
+      "purpose": "세계의 생태적 관계 및 저주가 플레이어 선택에 영향을 미친다.",
+      "playerChoice": "플레이어는 단순한 터치 또는 스ワイ프 입력을 통해 생태, 저주, 정치, 기억 중 하나의 세계 인과법칙을 적용하여 상태 변화를 유도할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 559418,
-      "lastMs": 80294,
+      "totalMs": 653864,
+      "lastMs": 94446,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:43:37.717Z"
+      "updatedAt": "2026-10-09T12:45:12.166Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:34:18.260Z",
-  "updatedAt": "2026-10-09T12:43:37.717Z",
+  "updatedAt": "2026-10-09T12:45:12.166Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2131,7 +2144,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:43:37.717Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:45:12.166Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
