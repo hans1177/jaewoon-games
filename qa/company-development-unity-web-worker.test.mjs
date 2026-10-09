@@ -49,6 +49,8 @@ test('complete Unity Web child evidence produces compatibility build evidence wi
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS',sourceCommit:'abc'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
+      spatialGameplay:{pass:true,requiredDimension:'3D',observedMeshCount:2,observedTriangles:120},
+      visualQa:{nativeUnityMesh:{pass:true}},
       boot:{pass:true},
       input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved:true},
       gameplay:{pass:true,gameplayStartObserved:true,coreActionObserved:true,progressObserved:true,safeReturnOrResetObserved:true},
