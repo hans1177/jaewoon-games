@@ -518,25 +518,51 @@
       "name": "포탈 전투 및 보스 격파 중심적 역할",
       "purpose": "포탈 전투 시작 후 보스 동료 영입, 파티 조합 확장, Lv.60 만렙/숙련 생성의 핵심 상태 변환",
       "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화"
+    },
+    "local_authoring_parts::fcf489fe148fc5f4332747a46c99b312115baa57a687ce6beadeb75d86270504:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "포탈 전투 선택"
+      ],
+      "stateOutputs": [
+        "Lv.60 만렙/숙련"
+      ],
+      "name": "보스 동료 수집 중심적 역할",
+      "purpose": "AI 동료를 통해 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 된다.",
+      "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
+    },
+    "local_authoring_parts::fcf489fe148fc5f4332747a46c99b312115baa57a687ce6beadeb75d86270504:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "포탈 전투 선택"
+      ],
+      "stateOutputs": [
+        "Lv.60 만렙/숙련"
+      ],
+      "name": "초원 몬스터 10종 및 런 보스 융합 중심적 역할",
+      "purpose": "포탈 전투와 보스 격파의 핵심적인 상태 변화를 결정하며, 초원 몬스터 10종과 런 보스의 체형, 전조, 사거리, 패링 가능 여부, 특수공격을 융합하여 실제 선택·규칙·사건을 변주하는 게임 세계관을 형성한다.",
+      "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1657762,
-      "lastMs": 102589,
+      "totalMs": 1871468,
+      "lastMs": 110369,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:43:20.308Z"
+      "updatedAt": "2026-10-09T20:46:54.018Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:15:42.496Z",
-  "updatedAt": "2026-10-09T20:43:20.308Z",
+  "updatedAt": "2026-10-09T20:46:54.025Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2316,7 +2342,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2417,10 +2443,10 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:43:20.308Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T20:46:54.020Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
