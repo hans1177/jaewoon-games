@@ -97,25 +97,33 @@
       },
       "playerFantasy": "플레이어는 진입 시점 및 첫 선택을 통해 세계의 직조를 시작하고, 이후 실질적 세계 변화와 인물 갈등을 통じ해 세계의 변화를 경험하게 된다. 중후반 두 시스템 간 연결은 플레이어의 선택에 따라 세계의 변화가 달라진다.",
       "coreFun": "직조의 기술과 관문, 진입 시점 및 첫 선택을 통해 세계의 변화를 보여준다. 플레이어의 선택과 실질적 세계 변화가 직접적으로 연결되어야 하며, 이는 게임 규칙과 일치해야 한다. 중후반 두 시스템 간 연결은 플레이어의 선택에 따라 세계의 변화가 달라진다."
+    },
+    "local_authoring_parts::baeb142b5e4c954f1414a60076067829054caa496baddf8d5e10c4a22da7ab03:coreLoop": {
+      "coreLoop": [
+        "플레이어의 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택",
+        "단순한 입력으로 진입 시점 및 첫 선택을 통해 세계의 직조 시작",
+        "실제 세계와 인물 갈등을 통じ해 세계 변화 경험",
+        "중후반 두 시스템 간 연결은 플레이어의 선택에 따라 세계 변화 달라짐"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 186007,
-      "lastMs": 186007,
+      "totalMs": 222235,
+      "lastMs": 36228,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:17:03.312Z"
+      "updatedAt": "2026-10-09T21:17:39.542Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:13:57.292Z",
-  "updatedAt": "2026-10-09T21:17:03.312Z",
+  "updatedAt": "2026-10-09T21:17:39.542Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1592,7 +1600,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:17:03.312Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:17:39.542Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
