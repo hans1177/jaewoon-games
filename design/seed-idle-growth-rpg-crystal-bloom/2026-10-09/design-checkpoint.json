@@ -36,25 +36,43 @@
         "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A)",
         "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
       ]
+    },
+    "local_authoring_parts::9f43a3ed52bda1e9764d39746437eeb6b2d6488aeeed67d183ca2c08ccffb83a:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "RISK",
+        "NEXT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_CORE_RULE",
+      "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프",
+      "playerChoice": "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions (MAIN). Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A). Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). c is a supplementary element that mod"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 334554,
-      "lastMs": 47697,
+      "totalMs": 379353,
+      "lastMs": 44799,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:48:23.170Z"
+      "updatedAt": "2026-10-09T15:49:07.971Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T15:48:23.170Z",
+  "updatedAt": "2026-10-09T15:49:07.971Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1764,7 +1782,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:48:23.170Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:49:07.971Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
