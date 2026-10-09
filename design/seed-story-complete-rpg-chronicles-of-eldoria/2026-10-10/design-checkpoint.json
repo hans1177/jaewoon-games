@@ -117,25 +117,38 @@
       "name": "역사적 탐험 시스템",
       "purpose": "플레이어가 역사적 배경을 이해하며, 전투, 성장, 보상을 통한 인과 관계를 형성하는 주요 메커니즘",
       "playerChoice": "타오르기, 스토리 진행, 정보 획득, 월드 상태 변경의 선택들 중 하나를 하는 실제 플레이어 행동 및 결과의 연결 구조를 구성함으로써 게임의 학문적 진입점과 인식 기반을 강화합니다."
+    },
+    "local_authoring_parts::7fc3fd34414eff0fa58b09604512bb9de98e877c021071ba7c7f070137fdb9c7:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 사건"
+      ],
+      "name": "역사적 탐험 시스템",
+      "purpose": "플레이어가 역사적 배경과 전투, 성장, 보상을 통한 인과 관계에 참여하여 세계 규칙과 스토리 진행을 촉진하는 주제",
+      "playerChoice": "탐험 행동, 인물 만나기, 스토리 진행, 정보 획득, 월드 상태 변경"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 291102,
-      "lastMs": 37911,
+      "totalMs": 326887,
+      "lastMs": 35785,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:10:50.528Z"
+      "updatedAt": "2026-10-09T18:11:26.315Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:10:50.528Z",
+  "updatedAt": "2026-10-09T18:11:26.316Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1878,7 +1891,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:10:50.528Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:11:26.315Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
