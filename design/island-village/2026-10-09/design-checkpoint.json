@@ -1223,25 +1223,34 @@
     },
     "local_authoring_parts::96a1c358bafe58aaf90f73385a1b5fb129b8b7ca01ceb908cadcfaa0c3474335:fromId": {
       "fromId": "RESOURCE_A"
+    },
+    "local_authoring_parts::96a1c358bafe58aaf90f73385a1b5fb129b8b7ca01ceb908cadcfaa0c3474335:toId": {
+      "toId": "VILLAGE_B"
+    },
+    "local_authoring_parts::96a1c358bafe58aaf90f73385a1b5fb129b8b7ca01ceb908cadcfaa0c3474335:stateKeys": {
+      "stateKeys": [
+        "resource_accumulation",
+        "infrastructure_upgrade"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 101,
-      "successes": 101,
+      "calls": 103,
+      "successes": 103,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6168892,
-      "lastMs": 90102,
+      "totalMs": 6351321,
+      "lastMs": 93522,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:44:25.680Z"
+      "updatedAt": "2026-10-09T02:47:28.114Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T02:44:25.680Z",
+  "updatedAt": "2026-10-09T02:47:28.115Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3642,7 +3651,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:44:25.680Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:47:28.114Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
