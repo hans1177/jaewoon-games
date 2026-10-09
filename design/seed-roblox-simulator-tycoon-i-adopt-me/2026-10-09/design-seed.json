@@ -11,99 +11,101 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "9ac0f18e74d3b91254a0bf93d6adf0bf649f382ebdbdd3540555b6a59fb908e5",
-  "engineDigest": "095ef19579f8737b9f588a24419948d2c32ca87934148e55fede6ceec471ddff",
-  "contentDigest": "6e9d8f56795f617bc83404db150c9f4537c5c0647331e81c8642a83e12468d1c",
+  "fingerprint": "a06e3c1ea814ac96cffc0334ef51f64b7d05addf11892c2f699aecb13323748a",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "7481445655003e061b586083b2ab534ae86244e641a6b8594a89a250e6b01191",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "Pocket Foundry - 단일 전략 게임, 플레이어 중심의 반복적 선택 및 위험/보상 시스템 타겟팅 게임입니다.\n\n플레이어는 매 wave에 맞춰 방어 구조를 재설계하는 중심 행동이며, 이 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도합니다.\n\n핵심 루프: 입력 → 선택 → 상태 변화 → 보상/위험 → 다음 선택\n\n시그니처 시스템:\n- MAIN: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\n- A: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.\n- B: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.\n- c: 변주된 방어 구조와 새로운 선택 기회 제공\n- @: 발견, 숙련, 재방문 깊이 표현\n\n기본 규칙:\n- 주요 인물은 자원과 전략 조합으로 대응하며, 상대의 방어 구조를 이해하고 반격할 수 있는 역할을 수행해야 함\n- 각 단계에서는 즉각적 결과가 발생하며, 플레이어는 다양한 선택 기회를 받고 진입/탈출 가능성을 확인해야 함\n- 게임은 모바일에서도 즉시 이해 가능한 간단한 규칙과 복잡한 전략 사이에서 균형 잡힌 설계를 유지함\n\n플레이어 역할:\n- 방어 구조 최적화 및 자원 관리에 대한 책임이 있으며, 이 과정에서 위험과 보상의 균형을 맞추는 데 중요한 영향을 미침\n- 매 wave마다 새로운 선택 기회를 얻으며, 이를 통해 심층적인 전략적 사고와 판단력을 키우게 됨\n- 게임 내에서 여러 유효한 해법과 조",
-    "playerFantasy": "플레이어는 매 wave에 맞춰 방어 구조를 재설계하는 중심 행동이며, 이 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도합니다.\n\n핵심 루프: 입력 → 선택 → 상태 변화 → 보상/위험 → 다음 선택\n\n시그니처 시스템:\n- MAIN: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\n- A: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.\n- B: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.\n- c: 변주된 방어 구조와 새로운 선택 기회 제공\n- @: 발견, 숙련, 재방문 깊이 표현",
-    "coreFun": "플레이어는 매 wave에 맞춰 방어 구조를 재설계하는 중심 행동이며, 이 과정에서 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도합니다.\n\n핵심 루프: 입력 → 선택 → 상태 변화 → 보상/위험 → 다음 선택\n\n시그니처 시스템:\n- MAIN: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\n- A: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.\n- B: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.\n- c: 변주된 방어 구조와 새로운 선택 기회 제공\n- @: 발견, 숙련, 재방문 깊이 표현",
+    "identity": "Pocket Foundry - 단일 전략 게임, 선택적 진입 및 반복 가능한 루프 기반 시뮬레이션 플랫폼, 모바일에서 즉시 이해되는 입력/피드백 중심의 세계 상태 변화 관리 시스템, 주요 행동: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route., 주요 선택: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases., 대축 A: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices., 대축 B: Main action with state change and risk/reward connection, c: 보조 요소로 사용 가능하며 상황별 변주가 이루어진다., @ 파고들기: 발견, 숙련, 재방문 깊이를 통해 콘텐츠 확장 및 조합 개발을 위한 인과 문법 구현, 시그니처 시스템: MAIN, A, B, C 각각 다른 기존 또는 신규 시스템으로 연결되어 실제 상태 교환을 증명한다. 게임 규칙은 공유 규칙에 따라 유지되며 원본 수치와 규칙은 보존된다. 게임은 단일 장르이며, 멀티 플레이 모드는 기존 COOP/COMPETITIVE/HYBRID 규칙을 따름니다. Unity WebGL 프로필에서는 2.5D 이상의 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획이 포함됩니다. 설계는 학문적 규칙과 관계를 중심으로 하여 진입부터 숙련까지 다양한 선택과 반복이 가능한 루프를 만든다. 주요 행동은 대표적인 선택으로 바뀌어 실제 플레이에서 즉시 이해되는 입력/피드백을 제공하며",
+    "playerFantasy": "Pocket Foundry은 단일 전략 게임, 선택적 진입 및 반복 가능한 루프 기반 시뮬레이션 플랫폼이다. 모바일에서 즉시 이해되는 입력/피드백 중심의 세계 상태 변화 관리 시스템으로, 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 주요 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'로 구성된다. 대축 A는 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'로, 대축 B는 MAIN action with state change and risk/reward connection으로, c는 보조 요소로 사용 가능하며 상황별 변주가 이루어진다. @ 파고들기는 발견, 숙련, 재방문 깊이를 통해 콘텐츠 확장 및 조합 개발을 위한 인과 문법 구현으로, 시그니처 시스템은 MAIN, A, B, C 각각 다른 기존 또는 신규 시스템으로 연결되어 실제 상태 교환을 증명한다. 게임 규칙은 공유 규칙에 따라 유지되며 원본 수치와 규칙은 보존된다. 게임은 단일 장르이며, 멀티 플레이 모드는 기존 COOP/COMPETITIVE/HYBRID 규칙을 따름니다. Unity WebGL 프로필에서는 2.5D 이상의 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증",
+    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 핵심 행동과 목표로 실제 월드/시스템 상태 변화를 연결하는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
     "coreLoop": [
-      "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-      "OUTPUT: Status change due to defensive adjustments and resource allocation."
+      "INPUT/SELECT -> STATE CHANGE -> REWARD/RISK/NEXT CHOICE",
+      "READ NEXT ENEMY WAVE AND PLACE TOWERS/OR DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE.",
+      "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES."
     ],
     "signatureSystems": [
       {
         "id": "SIGNATURE_SYSTEM_0",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "ENEMY_WAVE",
-          "RESOURCE_POOL"
+          "READ NEXT ENEMY WAVE",
+          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
         ],
         "stateOutputs": [
-          "DEFENSE_STRUCTURE_CHANGED",
-          "RESOURCE_ALLOCATED"
+          "EARN RESOURCES FROM DEFEATED ENEMIES",
+          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
         ],
-        "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
-        "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        "name": "SINGLE_DEFENSE_STRATEGY",
+        "purpose": "CONNECT MAIN ACTION WITH STATE CHANGE AND RISK/REWARD CONNECTION",
+        "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVES COMPOSITION, PROTECT OBJECTIVE, CLEAR STAGE/BOSSE TO UNLOCK HARDER DEFENCE CHOICES"
       },
       {
         "id": "SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
-          "ENEMY_WAVE",
-          "RESOURCE_POOL"
+          "READ NEXT ENEMY WAVE",
+          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
         ],
         "stateOutputs": [
-          "DEFENSE_STRUCTURE_CHANGED",
-          "RESOURCE_ALLOCATED"
+          "EARN RESOURCES FROM DEFEATED ENEMIES",
+          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
         ],
-        "name": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "purpose": "플레이어가 자원 수집 후 업그레이드 또는 전략 변경을 통해 상태 변화를 유도하는 주요 선택 기회.",
-        "playerChoice": "Earn resources from defeated enemies and allocate them to upgrades, new placements, or tactical adjustments."
+        "name": "SINGLE_DEFENSE_STRATEGY",
+        "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+        "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route before pressure increases."
       },
       {
         "id": "SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "ENEMY_WAVE",
-          "RESOURCE_POOL"
+          "READ NEXT ENEMY WAVE",
+          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
         ],
         "stateOutputs": [
-          "DEFENSE_STRUCTURE_CHANGED",
-          "RESOURCE_ALLOCATED"
+          "EARN RESOURCES FROM DEFEATED ENEMIES",
+          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
         ],
-        "name": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense",
-        "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 방어 전략을 재설계하며, 목적지 보호 및 스테이지를 클리어하여 더 어려운 방어 선택 기회를 열기 위한 중심 선택.",
-        "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
+        "name": "SINGLE_DEFENSE_STRATEGY",
+        "purpose": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES",
+        "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
       },
       {
         "id": "SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "ENEMY_WAVE",
-          "RESOURCE_POOL"
+          "READ NEXT ENEMY WAVE",
+          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
         ],
         "stateOutputs": [
-          "DEFENSE_STRUCTURE_CHANGED",
-          "NEW_STRATEGY_CHOICE"
+          "ADAPT DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION",
+          "PROTECT OBJECTIVE",
+          "CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
         ],
-        "name": "Expand defensive strategy and introduce new gameplay options",
-        "purpose": "플레이어가 방어 전략을 변주하며, 새로운 선택 기회와 게임 유형을 창출하는 중심 플레이.",
-        "playerChoice": "Expand the defense by introducing new strategies and gameplay options to enhance player engagement and depth."
+        "name": "ADAPTATION_AND_STRATEGY",
+        "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
+        "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
       },
       {
         "id": "SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "ENEMY_WAVE",
-          "RESOURCE_POOL"
+          "READ NEXT ENEMY WAVE",
+          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
         ],
         "stateOutputs": [
-          "DEFENSE_STRUCTURE_CHANGED",
-          "NEW_STRATEGY_CHOICE"
+          "DISCOVER NEW STRATEGIES AND COMBINATIONS",
+          "EXTEND CONTENT THROUGH EMERGENT SYNTAX",
+          "REFRESH AND REINTERPRET PREVIOUS DECISIONS"
         ],
-        "name": "Expand defensive strategy and introduce new gameplay options",
-        "purpose": "플레이어가 방어 전략을 변주하며, 새로운 선택 기회와 게임 유형을 창출하는 중심 플레이.",
-        "playerChoice": "Expand the defense by introducing new strategies and gameplay options to enhance player engagement and depth."
+        "name": "EMERGENCY_STRATEGY_EXPANSION",
+        "purpose": "Provides the player with new and evolving strategies, combinations, and interpretations of previous decisions through emergent grammar.",
+        "playerChoice": "The player chooses which new strategies to adopt, how to combine them, and what to interpret next in the game's dynamic and evolving landscape."
       }
     ],
-    "multiplayerMode": "HYBRID"
+    "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-08T19:21:27.725Z"
+  "updatedAt": "2026-10-09T09:38:23.771Z"
 }
