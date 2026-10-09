@@ -898,25 +898,44 @@
         "INFORMATION_DISCOVERY_STATE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE: 탐험 중 지역 변화 없음, 인물 상호작용 실패, 퀘스트 완료 실패 상태에서 월드 상태 전환 시스템에 입력됨, 새로운 정보 및 아이템 획득 후 월드 상태 전환 시스템에 출력됨"
+    },
+    "local_authoring_parts::eaca637d0060c375b540258c3b084ca3049e6167520685e6fe9d62df38f6ccc5:toSystem,trigger,stateChange": {
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE",
+      "stateChange": "FROM: EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE TO: LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::4ca35dafb1a51ab2cb3bb3b237e850fc898b357ccf3644d4d05c2d4945a53a50:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE: 탐험 중 지역 변화 없음, 인물 상호작용 실패, 퀘스트 완료 실패 상태에서 월드 상태 전환 시스템에 입력됨, 새로운 정보 및 아이템 획득 후 월드 상태 전환 시스템에 출력됨",
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE",
+      "stateChange": "FROM: EXPLORATION_STATE,CHARACTER_INTERACTION_STATE,QUEST_ACCEPTANCE_STATE,INFORMATION_DISCOVERY_STATE TO: LOCATION_CHANGE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 50,
+      "calls": 52,
+      "successes": 51,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4153110,
-      "lastMs": 70095,
+      "totalMs": 4217084,
+      "lastMs": 63974,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:12:29.409Z"
+      "updatedAt": "2026-10-09T00:13:33.384Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T00:12:29.409Z",
+  "updatedAt": "2026-10-09T00:13:33.385Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3294,7 +3313,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:12:29.409Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:13:33.385Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
