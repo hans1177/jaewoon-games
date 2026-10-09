@@ -332,7 +332,7 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
   if (artLevel >= 2) steps.push('분리 파츠를 재조합하고 지역종·변이종·보스 파생 디자인을 구성');
   if (artLevel >= 2) steps.push('Art Bible 기준으로 서로 다른 원본의 색·형태·재질·조명을 통일하고 raw asset-pack/kitbash 느낌을 제거');
   if (artLevel >= 2) steps.push('배경을 전경/중경/후경으로 구성하고 지역 랜드마크·set dressing·환경 스토리텔링·이동/전투 가독성을 확보');
-  if (needsArt) steps.push('기존 게임을 포함한 모든 최종 게임플레이 월드는 실제 3D 메시·입체 지형·깊이 있는 카메라·공간 오브젝트로 구성한다. 2D·2.5D·평면 메시와 패럴랙스만으로 최종 통과시키지 않는다. 캐릭터·몬스터·건물·무기·소품 공용 라이브러리도 실제 3D만 채택한다. UI·텍스처·오디오는 보조 2D 자원으로 허용하며 기존 게임 규칙과 저장 데이터는 보존한다.');
+  if (needsArt) steps.push('F0 및 유니티 웹 플로어 최초 생성부터 실제 3D 월드·캐릭터·카메라 소스를 요구한다. 기존 게임을 포함한 모든 최종 게임플레이 월드는 실제 3D 메시·입체 지형·깊이 있는 카메라·공간 오브젝트로 구성한다. 2D·2.5D·평면 메시와 패럴랙스만으로 최종 통과시키지 않는다. 캐릭터·몬스터·건물·무기·소품 공용 라이브러리도 실제 3D만 채택한다. UI·텍스처·오디오는 보조 2D 자원으로 허용하며 기존 게임 규칙과 저장 데이터는 보존한다.');
   if (animationLevel) steps.push(`분리 파츠 기반 ${states.join('/')} 애니메이션 구성`);
   if (animationLevel) steps.push('공격 시작/명중/종료 타이밍을 실제 판정과 동기화');
   if (animationLevel) steps.push('PRIMARY_MOTION + SECONDARY_MOTION + PROCEDURAL_RESPONSE를 겹쳐 가감속·회전보간·체중이동·상태 블렌딩·시선/피격 방향 반응을 캐릭터와 종별로 차별화');

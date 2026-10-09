@@ -36,6 +36,11 @@ if(mandatory3d?.status!=='OWNER_DIRECT_LOCKED'||mandatory3d?.finalGameplayDimens
   ||contract?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
   throw new Error('UNITY_WEB_NATIVE_3D_ONLY_POLICY_REQUIRED');
 
+const f0Spatial=policy?.development3dFromF0AndFloor20261009;
+if(f0Spatial?.status!=='ACTIVE_EXECUTABLE_CONTRACT'||f0Spatial?.appliesFrom!=='F0_SOURCE_PREFLIGHT_PASS'
+  ||f0Spatial?.unityWebF0Native3dSceneCameraAndMeshesRequired!==true)
+  throw new Error('UNITY_WEB_F0_NATIVE_3D_POLICY_REQUIRED');
+
 const required=[
   `${sourceRoot}/Assets`,
   `${sourceRoot}/Packages/manifest.json`,
@@ -65,6 +70,34 @@ for(const file of scriptFiles){
   if(forbidden2dComponents.test(gameplaySource))
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
 }
+
+// F0 소스 사전검증: 기존 Unity 원본의 실제 3D 카메라·지형 메시를 확인한다.
+// 런타임 PASS가 아니라 컴파일/실행 이전의 3D 필수 구조 검사다.
+const cleanSource=source=>source.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,'');
+const nativeScripts=scriptFiles.map(file=>cleanSource(fs.readFileSync(file,'utf8'))).join('\n');
+const serializedSceneFiles=[];
+const walkScene=dir=>{
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+    const full=path.join(dir,entry.name);
+    if(entry.isDirectory())walkScene(full);
+    else if(entry.isFile()&&/\.(?:unity|prefab)$/i.test(entry.name))
+      serializedSceneFiles.push(full);
+  }
+};
+walkScene(path.join(sourceRoot,'Assets'));
+const serializedScenes=serializedSceneFiles.map(file=>fs.readFileSync(file,'utf8')).join('\n');
+const banned2dScene=/(?:\b(?:Rigidbody2D|Collider2D|SpriteRenderer|TilemapRenderer|TilemapCollider2D|Tilemap)\b|---\s*!u!212\b)/i;
+if(banned2dScene.test(serializedScenes))
+  throw new Error('UNITY_WEB_F0_2D_SCENE_OR_PREFAB_FORBIDDEN');
+const f0Native3dMesh=/(?:GameObject\.CreatePrimitive\s*\(\s*PrimitiveType\.\w+\s*\)|AddComponent\s*<\s*(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer)\s*>\s*\(|\bMeshFilter\b[\s\S]{0,180}\b(?:sharedMesh|mesh)\s*=)/.test(nativeScripts)
+  ||/(?:---\s*!u!23\b[\s\S]{0,400}---\s*!u!33\b|---\s*!u!33\b[\s\S]{0,400}---\s*!u!23\b)/.test(serializedScenes);
+const f0Native3dCamera=/(?:\bCamera\.main\b|AddComponent\s*<\s*Camera\s*>\s*\(|GetComponent\s*<\s*Camera\s*>\s*\(|\bCamera\s+\w+\s*[=;])/.test(nativeScripts)
+  ||/---\s*!u!20\b/.test(serializedScenes);
+const f0Native3dDepth=/(?:\bnew\s+Vector3\s*\(|\bQuaternion\.(?:Euler|LookRotation)|\.transform\.(?:position|localPosition)\s*=)/.test(nativeScripts)
+  ||/(?:m_LocalPosition:|m_LocalRotation:)/.test(serializedScenes);
+if(!f0Native3dMesh||!f0Native3dCamera||!f0Native3dDepth)
+  throw new Error('UNITY_WEB_F0_NATIVE_3D_SOURCE_REPAIR_REQUIRED:mesh='+
+    Number(f0Native3dMesh)+':camera='+Number(f0Native3dCamera)+':depth='+Number(f0Native3dDepth));
 
 const editorRoot=path.join(sourceRoot,'Assets','Editor');
 const editorFiles=[];
@@ -112,6 +145,12 @@ const request={
   outputRoot:`web-games/${gameId}`,
   canonicalSource:true,
   requiredGameplayDimension:'3D',
+  f0Native3dSourcePreflight:{
+    required:true,sourceOnly:true,runtimeVerified:false,
+    mesh:true,camera:true,worldDepth:true,
+    verifiedAgainst:'CANONICAL_UNITY_SCRIPTS_AND_SCENE_ASSETS',
+    releaseAuthority:false
+  },
   threeDOnlyOwnerDirective:'OWNER_DIRECTIVE_2026-10-09',
   native3dRuntimeMeshQaRequired:true,
   existing2dOr2_5dSourceRequiresInPlace3dRebuild:true,
@@ -137,4 +176,5 @@ console.log(`UNITY_WEB_CSHARP_FILES=${scriptFiles.length}`);
 console.log(`UNITY_WEB_BUILD_METHOD=${buildMethod}`);
 console.log(`UNITY_WEB_PRIMITIVE_SIGNALS=${primitiveSignals.length}`);
 console.log('UNITY_WEB_3D_ONLY=ENFORCED');
+console.log('UNITY_WEB_F0_NATIVE_3D_SOURCE=PASS_SOURCE_ONLY_RUNTIME_UNVERIFIED');
 console.log('UNITY_WEB_REQUEST_STATUS=READY');

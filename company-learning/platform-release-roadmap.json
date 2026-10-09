@@ -1,5 +1,5 @@
 {
-  "version": 556,
+  "version": 558,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6010,7 +6010,9 @@
         ],
         "noNewDepartment": true,
         "reuseExistingRuntimeQaReleaseAndRecoveryPipelines": true
-      }
+      },
+      "f0Native3dSourcePreflightRequired": true,
+      "f0Native3dSourcePolicy": "company-learning/platform-release-roadmap.json#development3dFromF0AndFloor20261009"
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
@@ -15473,7 +15475,7 @@
       "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
-      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_NATIVE_3D_ONLY",
       "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
       "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
       "characterEnemyAndCoreObjectVisualIdentityRequired": true,
@@ -16075,7 +16077,7 @@
       },
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
       "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
-      "minimumFinalGameplayDimension": "2.5D",
+      "minimumFinalGameplayDimension": "3D",
       "flat2DFinalPresentationForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true
@@ -24181,7 +24183,10 @@
       "prototype2dFinalPassForbidden": true,
       "everyExistingUnityWebGameMustBeRedevelopedIn3d": true,
       "actual3dMeshRuntimeEvidenceRequired": true,
-      "assetLibrarySpatial3dOnly": true
+      "assetLibrarySpatial3dOnly": true,
+      "minimumDevelopmentGameplayDimension": "3D",
+      "unityFloorBootstrap3dSourceRequired": true,
+      "f0Native3dSourcePreflightRequired": true
     },
     "mobileInput": {
       "implementedInsideUnityProject": true,
@@ -25381,7 +25386,7 @@
             "GAME_SPECIFIC_CHARACTER_ENEMY_ENVIRONMENT_OR_EQUIPMENT_IDENTITY_VISIBLE",
             "PLACEHOLDER_DOMINATED_PRESENTATION_FORBIDDEN",
             "BASE_MOTION_ANIMATION_AND_VFX_PRESENT",
-            "MINIMUM_2_5D_OR_3D_SPATIAL_PRESENTATION"
+            "NATIVE_3D_SPATIAL_PRESENTATION_WITH_RUNTIME_MESH_EVIDENCE"
           ]
         },
         "webglBuild": {
@@ -28525,6 +28530,36 @@
     "ownerHeldUnityAndroidUnchanged": true,
     "robloxDevelopmentContinuesIndependently": true,
     "allEligibleGameWorkRequeuedThroughExistingCanonicalPipeline": true,
-    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true
+    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true,
+    "developmentFloorAndF0Native3dRequired": true,
+    "robloxNativeF0WorldSource3dRequired": true
+  },
+  "development3dFromF0AndFloor20261009": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-09",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "appliesFrom": "F0_SOURCE_PREFLIGHT_PASS",
+    "floorStartsAt": "UNITY_WEB_FLOOR_SOURCE_BOOTSTRAP",
+    "requiredAt": [
+      "ROBLOX_NATIVE_F0_SOURCE_PREFLIGHT",
+      "UNITY_WEB_FLOOR_BOOTSTRAP",
+      "UNITY_WEB_F0_SOURCE_PREFLIGHT"
+    ],
+    "minimumSourceGameplayDimension": "3D",
+    "robloxF0Native3dWorldGeometryRequired": true,
+    "robloxF0Native3dCharacterAndCameraRequired": true,
+    "unityFloorNative3dSceneCameraAndMeshesRequired": true,
+    "unityWebF0Native3dSceneCameraAndMeshesRequired": true,
+    "explicit2dOr2_5dFloorDesignRejected": true,
+    "flat2dOr2_5dSourceCannotPassF0": true,
+    "uiAudioAndTexturesMayRemain2dSupport": true,
+    "sourcePreflightIsNotRuntimeOrGraphicsReleasePass": true,
+    "primitive3dBootstrapIsSourceOnlyVisualDebtUntilGameSpecificModelsBound": true,
+    "realRuntime3dGeometryVerificationRequiredAfterBuild": true,
+    "preserveExistingGameLogicSaveBalanceEconomyNetworkAndProgression": true,
+    "existingCanonicalPipelineOnly": true,
+    "f0F9SequenceUnchanged": true,
+    "ownerHeldPlatformsUnchanged": true,
+    "failureAction": "REPAIR_REQUIRED_NOT_PASS"
   }
 }

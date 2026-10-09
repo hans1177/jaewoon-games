@@ -64,9 +64,9 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(spatial.flat2DFinalGameplayForbidden,true);
   assert.equal(spatial.uiOverlayMayRemain2D,true);
   assert.equal(spatial.runtimeEvidenceRequired,true);
-  assert.equal(c.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(c.minimumFinalGameplayDimension,'3D');
   assert.equal(c.flat2DFinalPresentationForbidden,true);
-  assert.equal(architecture.departmentTopology.graphics.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(architecture.departmentTopology.graphics.minimumFinalGameplayDimension,'3D');
   assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(architecture.departmentTopology.graphics.unlimitedEvidenceDrivenEvolutionGenerations,true);
@@ -646,4 +646,20 @@ test('canonical NPC production contract requires physical appearance and role di
   assert.equal(security.npcRoleProductionSecurity.protections.visualHeightWeightCannotMutateAuthoritativeGameplayScale,true);
   assert.equal(security.npcRoleProductionSecurity.protections.visualBodyMassCannotMutateCollisionOrHitbox,true);
   assert.equal(security.npcRoleProductionSecurity.protections.bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges,true);
+});
+
+test('native development and Unity Web floor require 3D already at F0 without changing locked flow',()=>{
+  const c=roadmap.development3dFromF0AndFloor20261009;
+  assert.equal(c.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(c.appliesFrom,'F0_SOURCE_PREFLIGHT_PASS');
+  assert.equal(c.floorStartsAt,'UNITY_WEB_FLOOR_SOURCE_BOOTSTRAP');
+  assert.equal(c.robloxF0Native3dWorldGeometryRequired,true);
+  assert.equal(c.unityFloorNative3dSceneCameraAndMeshesRequired,true);
+  assert.equal(c.unityWebF0Native3dSceneCameraAndMeshesRequired,true);
+  assert.equal(c.flat2dOr2_5dSourceCannotPassF0,true);
+  assert.equal(c.sourcePreflightIsNotRuntimeOrGraphicsReleasePass,true);
+  assert.equal(roadmap.unityWebFirstStage.graphicsPolicy.minimumDevelopmentGameplayDimension,'3D');
+  assert.equal(architecture.departmentTopology.graphics.f0AndUnityWebFloorNative3dAuthoringRequired,true);
+  assert.deepEqual(roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack.releaseGate.canonicalSequence,
+    roadmap.finalDevelopmentLock.sequenceLock.candidateOrderMustRemain);
 });

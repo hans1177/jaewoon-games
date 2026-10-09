@@ -1125,9 +1125,11 @@ jobs:
             }
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const productF0Current=!secondaryOwnerFocus
-              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=6
               &&item.robloxFoundationF0Evidence?.gameplayProductReadinessRequired===true
-              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true;
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.worldGeometry===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.characterAndCamera===true;
             const productF0RevalidationNeeded=!secondaryOwnerFocus
               &&item.robloxFoundationF0Passed===true
               &&!productF0Current;
@@ -1851,10 +1853,14 @@ jobs:
               &&result.f0Pass===true
               &&result.f0Evidence?.gameplayProductReadinessRequired===true
               &&result.f0Evidence?.gameplayProductReadiness?.pass===true
-              &&Number(result.f0Evidence?.version||0)>=4
+              &&result.f0Evidence?.native3dSourcePreflight?.worldGeometry===true
+              &&result.f0Evidence?.native3dSourcePreflight?.characterAndCamera===true
+              &&Number(result.f0Evidence?.version||0)>=6
               &&item.robloxFoundationF0Passed===true
-              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=6
               &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.worldGeometry===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.characterAndCamera===true
               &&item.robloxBuildOrPackagePassed===true
               &&item.robloxBuildPreflightPassed===true
               &&item.robloxBuildSourceRevision===result.sourceRevision
@@ -2137,9 +2143,11 @@ jobs:
             }
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const productF0Current=!secondaryOwnerFocus
-              &&Number(item.robloxFoundationF0Evidence?.version||0)>=4
+              &&Number(item.robloxFoundationF0Evidence?.version||0)>=6
               &&item.robloxFoundationF0Evidence?.gameplayProductReadinessRequired===true
-              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true;
+              &&item.robloxFoundationF0Evidence?.gameplayProductReadiness?.pass===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.worldGeometry===true
+              &&item.robloxFoundationF0Evidence?.native3dSourcePreflight?.characterAndCamera===true;
             const productF0RevalidationNeeded=!secondaryOwnerFocus
               &&item.robloxFoundationF0Passed===true
               &&!productF0Current;
