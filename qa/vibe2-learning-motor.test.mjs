@@ -61,7 +61,9 @@ test('Unity Web real 3D failure is routed to verified same-game coding repair le
     evidence:['blocker:READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED']
   };
   const fp=failureFingerprintForTask(task);
-  assert.match(fp,/UNITY_3D_SPATIAL/);
+  assert.match(fp,/READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED/);
+  const classified=failureFingerprintForTask({target:'unity',goal:'3d mesh missing',evidence:['UNITY_WEB_3D_ONLY_POLICY_REQUIRED']});
+  assert.match(classified,/UNITY_3D_SPATIAL/);
   const context=retrieveUnifiedLearning({task});
   assert.equal(context.failureFingerprint,fp);
   assert.match(learningGuidance(context),/unity-native-3d-repair/);
