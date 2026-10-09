@@ -555,25 +555,28 @@
     },
     "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:toSystem": {
       "toSystem": "BOARD_STATE_TRANSITION"
+    },
+    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:trigger": {
+      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1759309,
-      "lastMs": 88840,
+      "totalMs": 1850081,
+      "lastMs": 90772,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:19:06.101Z"
+      "updatedAt": "2026-10-09T11:20:36.874Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T11:19:06.101Z",
+  "updatedAt": "2026-10-09T11:20:36.874Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2874,7 +2877,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:19:06.101Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:20:36.874Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
