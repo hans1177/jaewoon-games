@@ -835,25 +835,39 @@
       "name": "체스 기반 전략적 판타지 게임 - DELVE",
       "purpose": "플레이어는 체스판 상태 변화를 통해 전략적 판단을 수행하고, 이에 따라 전장 목표를 설정하며, 다양한 시스템 도입으로 전략적 연결 확대하여 세계가 변형된다.",
       "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다. 전략적 선택은 상황별 위험/보상, 전장 조건, 전략적 연결 및 다음 선택의 가능성을 반영해야 한다."
+    },
+    "local_authoring_parts::e3b948a644887844b724d5c11f52784ea4d25dd73419f87e5f5efcaeb2120643:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "체스판 상태 변화"
+      ],
+      "stateOutputs": [
+        "전략적 판단",
+        "전장 관리"
+      ],
+      "name": "체스 기반 전략적 판타지 게임",
+      "purpose": "플레이어는 빠르게 정보를 읽고 전략적으로 선택하여 승패를 결정하는 경기로 구성된다.",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 16,
+      "calls": 19,
+      "successes": 17,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2056952,
-      "lastMs": 91861,
+      "totalMs": 2152915,
+      "lastMs": 95963,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:14:51.485Z"
+      "updatedAt": "2026-10-09T23:15:59.501Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T23:14:23.532Z",
+  "updatedAt": "2026-10-09T23:15:59.501Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2627,10 +2641,10 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:14:51.486Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:15:59.501Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
