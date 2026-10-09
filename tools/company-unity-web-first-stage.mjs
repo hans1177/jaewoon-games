@@ -25,6 +25,13 @@ if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_P
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
 if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
 
+// 메인: 중앙정책이 요구하는 Unity Web 3D 전용 빌드 계약을 실제 소스 진입점에서 강제한다.
+const mandatory3d=policy?.ownerUnityWeb3dOnly20261009;
+if(mandatory3d?.status!=='OWNER_DIRECT_LOCKED'||mandatory3d?.finalGameplayDimension!=='3D'
+  ||mandatory3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
+  ||contract?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
+  throw new Error('UNITY_WEB_NATIVE_3D_ONLY_POLICY_REQUIRED');
+
 const required=[
   `${sourceRoot}/Assets`,
   `${sourceRoot}/Packages/manifest.json`,
@@ -45,6 +52,15 @@ const walk=dir=>{
 };
 walk(scriptsRoot);
 if(scriptFiles.length===0)throw new Error('UNITY_WEB_CSHARP_SOURCE_REQUIRED');
+
+// Unity 월드의 2D 물리·스프라이트·타일맵은 신규/기존 게임 모두 허용하지 않는다.
+// UI 이미지와 텍스처는 3D 게임 화면을 대체하지 않는 한 계속 재사용할 수 있다.
+const forbidden2dComponents=/(?:\\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|TilemapRenderer|TilemapCollider2D)\\b)/;
+for(const file of scriptFiles){
+  const gameplaySource=fs.readFileSync(file,'utf8').replace(/\/\\*[\\s\\S]*?\\*\/|\/\/[^\\n]*/g,'');
+  if(forbidden2dComponents.test(gameplaySource))
+    throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
+}
 
 const editorRoot=path.join(sourceRoot,'Assets','Editor');
 const editorFiles=[];
@@ -91,6 +107,10 @@ const request={
   sourceCommit:sourceCommit||null,
   outputRoot:`web-games/${gameId}`,
   canonicalSource:true,
+  requiredGameplayDimension:'3D',
+  threeDOnlyOwnerDirective:'OWNER_DIRECTIVE_2026-10-09',
+  native3dRuntimeMeshQaRequired:true,
+  existing2dOr2_5dSourceRequiresInPlace3dRebuild:true,
   legacyWebFallbackAllowedDuringMigration:false,
   primitiveSignals,
   primitiveSignalsAreDebugReviewOnly:true,
@@ -112,4 +132,5 @@ console.log(`UNITY_WEB_REQUEST=${requestPath}`);
 console.log(`UNITY_WEB_CSHARP_FILES=${scriptFiles.length}`);
 console.log(`UNITY_WEB_BUILD_METHOD=${buildMethod}`);
 console.log(`UNITY_WEB_PRIMITIVE_SIGNALS=${primitiveSignals.length}`);
+console.log('UNITY_WEB_3D_ONLY=ENFORCED');
 console.log('UNITY_WEB_REQUEST_STATUS=READY');
