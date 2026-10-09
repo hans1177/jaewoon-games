@@ -34,25 +34,42 @@
         "색채의 연쇄 자체가 아닌, 플레이어가 실제 선택과 결과에 따라 월드 상태를 바꾸는 시스템이다.",
         "주체는 플레이어이며, 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이고, 대축 A/B는 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'와 'Clear the level goal to earn rewards or unlock the next stage, then face"
       ]
+    },
+    "local_authoring_parts::423ce087dfc2fafdaa541a21ac63678c406f76a907daa09c4e7d50e41e4af542:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "goal",
+        "moves",
+        "obstacles"
+      ],
+      "stateOutputs": [
+        "new_goal",
+        "new_moves",
+        "new_obstacles"
+      ],
+      "name": "색채의 연쇄 - 행위의 결과가 지연되어 행위자·관계·후대에 되돌아온다.",
+      "purpose": "플레이어가 선택하는 중심 행동이 미래의 월드 상태로 확산되며, 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과가 다음 월드 상태로 확산된다. 이는 플레이어가 실제 선택과 결과에 따라 월드 상태를 바꾸는 시스템이다. 주체는 플레이어이며, 중심 행동은 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이고, 대축 A/B는 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.'와 "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 346441,
-      "lastMs": 54914,
+      "totalMs": 398256,
+      "lastMs": 51815,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:58:44.250Z"
+      "updatedAt": "2026-10-09T08:59:36.067Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:52:57.606Z",
-  "updatedAt": "2026-10-09T08:58:44.250Z",
+  "updatedAt": "2026-10-09T08:59:36.067Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2106,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:58:44.250Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:59:36.067Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
