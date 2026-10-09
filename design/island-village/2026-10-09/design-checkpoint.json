@@ -66,25 +66,41 @@
       "name": "Village Expansion System II",
       "purpose": "Facilitates the expansion of village functions through player choices that influence settlement growth and resource management.",
       "playerChoice": "Select a focused set of island resources to improve a specific village function or add a new resident/activity, thereby setting the next village goal."
+    },
+    "local_authoring_parts::06e45c734c7e3958975d57c42041fafb986930d80fa93103eaa798931d86d067:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "resource_gathered",
+        "village_function_improved"
+      ],
+      "stateOutputs": [
+        "new_resident_enrolled",
+        "activity_added",
+        "village_goal_set"
+      ],
+      "name": "Village Expansion System III",
+      "purpose": "Player-driven expansion of village functions through resource gathering and state improvement.",
+      "playerChoice": "Select a focused set of resources to improve a specific village function or add a new resident/activity, then set the next village goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 248054,
-      "lastMs": 36880,
+      "totalMs": 284495,
+      "lastMs": 36441,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:53:15.216Z"
+      "updatedAt": "2026-10-09T14:53:51.658Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:49:07.139Z",
-  "updatedAt": "2026-10-09T14:53:15.216Z",
+  "updatedAt": "2026-10-09T14:53:51.658Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1685,7 +1701,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:53:15.216Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:53:51.658Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
