@@ -1,459 +1,21 @@
 {
   "version": 2,
-  "directiveId": "fantasy-survival-build-up-g2-f1c2b3793745",
-  "directiveFingerprint": "f1c2b3793745294f2d2cbf976c19ad5f680d3397769f712056cf1796c05d63b4",
-  "previousDirectiveFingerprint": "8346736483445299b98700e5b1671f162c7008abedd7e6a57bd8a5c6f0cfc74f",
-  "forbiddenRepeatFingerprint": "8346736483445299b98700e5b1671f162c7008abedd7e6a57bd8a5c6f0cfc74f",
+  "directiveId": "fantasy-survival-build-up-g2-0d142529658e",
+  "directiveFingerprint": "0d142529658e94e7b461d048b5170892ceea5d62e02d457c3e8d10ada302dea9",
+  "previousDirectiveFingerprint": "53855e8d6fef47e1115e82a228d3232555c0bd7260bcaa1bd89d851218023317",
+  "forbiddenRepeatFingerprint": "53855e8d6fef47e1115e82a228d3232555c0bd7260bcaa1bd89d851218023317",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
   "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "cancelled",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "WEB",
-  "sourceRoot": "web-games/fantasy-survival",
-  "sourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-  "designFingerprint": "4a2b6efe6cbb9319fde4fcd0e364fdf37ccf2ee7f5845348221c848989c1a2c2",
-  "identityReinforcement": {
-    "appliesToAllGenres": true,
-    "genre": "GAME_SPECIFIC",
-    "oneLineFantasy": "광활한 마력숲과 수정 지역, 화산 지대를 탐험하며 몰려오는 몬스터 무리를 헤쳐나가고, 비밀 연구소의 단서를 파헤치는 생존 마법사의 판타지.",
-    "representativeAction": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-    "representativeChoice": "플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다.",
-    "signatureWorldRule": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다.",
-    "signatureSystems": [
-      "기존 게임플레이 의미 보존",
-      "표현 품질 순차 개선"
-    ],
-    "growthIdentity": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.",
-    "threeSentenceTest": {
-      "whatGame": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
-      "whatDifferent": "현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.",
-      "whatGrowthUnlocks": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다."
-    },
-    "causalGrammarEvidence": {
-      "worldRules": [],
-      "causalInspirations": [],
-      "systemInterconnections": [
-        {
-          "fromSystem": "기존 월드/캐릭터 렌더",
-          "toSystem": "ASSET_ADAPTATION",
-          "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-          "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
-        },
-        {
-          "fromSystem": "기존 이동/공격 상태",
-          "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
-          "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
-        },
-        {
-          "fromSystem": "기존 전투/퀘스트 이벤트",
-          "toSystem": "VFX_AUDIO_CAMERA_POLISH",
-          "trigger": "기존 적중·피격·보상·스토리 이벤트",
-          "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
-        }
-      ],
-      "expansionPlan": [
-        {
-          "milestone": "ASSET_ADAPTATION",
-          "newGameplay": "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
-          "systemImpact": "원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다."
-        },
-        {
-          "milestone": "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "newGameplay": "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
-          "systemImpact": "기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다."
-        },
-        {
-          "milestone": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-          "newGameplay": "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.",
-          "systemImpact": "모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
-        }
-      ],
-      "integrityNotes": [],
-      "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @",
-      "existingGameGrammarMap": {
-        "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
-        "formula": "MAIN × A × B × c + @",
-        "main": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
-        "roleSystemIds": {
-          "MAIN": null,
-          "A": null,
-          "B": null,
-          "c": [],
-          "AT": []
-        },
-        "majorAxes": [
-          {
-            "key": "A",
-            "systemId": null,
-            "name": "기존 게임플레이 의미 보존",
-            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
-          },
-          {
-            "key": "B",
-            "systemId": null,
-            "name": "표현 품질 순차 개선",
-            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
-          }
-        ],
-        "cSubElements": [
-          "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-          "기존 이동 속도와 authoritative 공격 이벤트",
-          "기존 적중·피격·보상·스토리 이벤트"
-        ],
-        "delveAtEvidence": [
-          "ASSET_ADAPTATION",
-          "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
-          "LIVING_MOTION_AND_ANIMATION_FEEL",
-          "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
-          "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-          "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다."
-        ],
-        "sourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-        "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
-        "identityRewriteRequired": false,
-        "existingBalanceSaveEconomyAndAuthorityPreserved": true
-      },
-      "rule": "NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT",
-      "familiarHumanConflictShouldRemainReadable": true
-    },
-    "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
-    "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
-  },
-  "designToPlatformCodingTrace": {
-    "version": 1,
-    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
-    "gameId": "fantasy-survival",
-    "requestedPlatform": "WEB",
-    "activePlatform": "NOT_SELECTED_NATIVE_PLATFORM",
-    "designFingerprint": "4a2b6efe6cbb9319fde4fcd0e364fdf37ccf2ee7f5845348221c848989c1a2c2",
-    "sourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-    "multiplayerMode": "HYBRID",
-    "multiplayerRequired": true,
-    "minimumParticipants": 2,
-    "platformCodingPlans": [
-      {
-        "platform": "ROBLOX",
-        "canonicalGameSourceRoot": "roblox-games/fantasy-survival",
-        "sharedUnitySource": false,
-        "gameCodePlatformProfile": "ROBLOX",
-        "requiresSameServerTwoClientPlay": true,
-        "requiresNativeRuntimeResult": true,
-        "inspectedInThisDirective": false
-      },
-      {
-        "platform": "UNITY_WEB",
-        "canonicalGameSourceRoot": "unity-games/fantasy-survival",
-        "sharedUnitySource": true,
-        "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
-        "requiresNativeRuntimeResult": true,
-        "minimumRenderedDimension": "2.5D",
-        "spatialDesignReady": false,
-        "inspectedInThisDirective": false
-      },
-      {
-        "platform": "UNITY_APP",
-        "canonicalGameSourceRoot": "unity-games/fantasy-survival",
-        "sharedUnitySource": true,
-        "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
-        "requiresNativeRuntimeResult": true,
-        "inspectedInThisDirective": false
-      }
-    ],
-    "roleBindings": [
-      {
-        "role": "MAIN",
-        "grammarRole": "MAIN",
-        "systemId": null,
-        "systemIds": [],
-        "names": [],
-        "name": null,
-        "stateInputs": [],
-        "stateOutputs": [],
-        "connections": [],
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
-        "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
-        "executableBehaviorVerified": false,
-        "actualRuntimeVerified": false,
-        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
-      },
-      {
-        "role": "A",
-        "grammarRole": "A",
-        "systemId": null,
-        "systemIds": [],
-        "names": [],
-        "name": null,
-        "stateInputs": [],
-        "stateOutputs": [],
-        "connections": [],
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
-        "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
-        "executableBehaviorVerified": false,
-        "actualRuntimeVerified": false,
-        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
-      },
-      {
-        "role": "B",
-        "grammarRole": "B",
-        "systemId": null,
-        "systemIds": [],
-        "names": [],
-        "name": null,
-        "stateInputs": [],
-        "stateOutputs": [],
-        "connections": [],
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
-        "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
-        "executableBehaviorVerified": false,
-        "actualRuntimeVerified": false,
-        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
-      },
-      {
-        "role": "c",
-        "grammarRole": "c",
-        "systemId": null,
-        "systemIds": [],
-        "names": [],
-        "name": null,
-        "stateInputs": [],
-        "stateOutputs": [],
-        "connections": [],
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
-        "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
-        "executableBehaviorVerified": false,
-        "actualRuntimeVerified": false,
-        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
-      },
-      {
-        "role": "@",
-        "grammarRole": "DELVE",
-        "systemId": null,
-        "systemIds": [],
-        "names": [],
-        "name": null,
-        "stateInputs": [],
-        "stateOutputs": [],
-        "connections": [],
-        "suggestedExistingOwnerFiles": [],
-        "inspectedSymbols": [],
-        "designStatus": "DESIGN_REPAIR_REQUIRED",
-        "codingStatus": "PLATFORM_NOT_SELECTED",
-        "executableBehaviorVerified": false,
-        "actualRuntimeVerified": false,
-        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
-      }
-    ],
-    "observedGameCodeFiles": [],
-    "executableCodeCandidateFiles": [],
-    "gapReasons": [
-      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
-      "PLATFORM_SOURCE_NOT_SELECTED",
-      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
-      "DESIGN_ROLE_NOT_AUTHORED:A",
-      "DESIGN_ROLE_NOT_AUTHORED:B",
-      "DESIGN_ROLE_NOT_AUTHORED:c",
-      "DESIGN_ROLE_NOT_AUTHORED:@"
-    ],
-    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
-    "sourceImplementationPassed": false,
-    "actualTwoClientPassed": false,
-    "actualWebglRenderPassed": false,
-    "independentQaPassed": false,
-    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
-    "schemaAndMarkersAloneCannotPass": true,
-    "newPipeline": false,
-    "changesDevelopmentAdmission": false,
-    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
-  },
-  "designImplementationContext": {
-    "source": "LATEST_VERIFIED_DESIGN_FIELDS",
-    "coreFun": "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.",
-    "coreLoop": [
-      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
-    ],
-    "signatureSystems": [
-      {
-        "name": "기존 게임플레이 의미 보존",
-        "purpose": "현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.",
-        "playerChoice": "플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다."
-      },
-      {
-        "name": "표현 품질 순차 개선",
-        "purpose": "기존 책임 렌더·모션·전투 이벤트·오디오·카메라 흐름 안에서 에셋 적응부터 모바일 폴리시까지 순차 적용한다.",
-        "playerChoice": "새 능력이나 수치 선택을 추가하지 않고 기존 행동의 시각·청각 피드백만 더 명확하고 자연스럽게 만든다."
-      }
-    ],
-    "systemInterconnections": [
-      {
-        "fromSystem": "기존 월드/캐릭터 렌더",
-        "toSystem": "ASSET_ADAPTATION",
-        "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-        "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
-      },
-      {
-        "fromSystem": "기존 이동/공격 상태",
-        "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
-        "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
-        "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
-      },
-      {
-        "fromSystem": "기존 전투/퀘스트 이벤트",
-        "toSystem": "VFX_AUDIO_CAMERA_POLISH",
-        "trigger": "기존 적중·피격·보상·스토리 이벤트",
-        "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
-      }
-    ],
-    "progressionDirection": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.",
-    "progressionEconomyBalance": {
-      "progressionLoop": "기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.",
-      "resourceFlow": "기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.",
-      "balanceRules": "체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다."
-    },
-    "contentExpansionPlan": [
-      {
-        "milestone": "ASSET_ADAPTATION",
-        "newGameplay": "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
-        "systemImpact": "원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다."
-      },
-      {
-        "milestone": "LIVING_MOTION_AND_ANIMATION_FEEL",
-        "newGameplay": "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
-        "systemImpact": "기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다."
-      },
-      {
-        "milestone": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-        "newGameplay": "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.",
-        "systemImpact": "모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
-      }
-    ],
-    "failureRetryRisk": {
-      "failureStates": [
-        "기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다.",
-        "기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다."
-      ],
-      "retryFlow": "기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.",
-      "riskPressure": "기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.",
-      "recoveryRules": "기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다."
-    },
-    "platformFitPlan": {
-      "targetPlatform": "UNITY",
-      "inputModel": "기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.",
-      "performanceBudget": "가능한 경우 60fps를 목표로 하되 파티클·트레일·보조 모션은 단계적으로 축소 가능하게 하고 게임플레이 판정은 품질 스케일과 무관하게 유지한다.",
-      "sessionConstraints": "기존 세션과 진행 의미를 보존하며 설계 검증 기준 TARGET_SESSION_MINUTES=30을 유지한다. 표현 개선 때문에 세션 길이·진행 속도를 바꾸지 않는다."
-    },
-    "platformProfiles": {
-      "ROBLOX": {
-        "platform": "ROBLOX",
-        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
-        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
-        "multiplayerRuntime": "server-authoritative Roblox hybrid multiplayer with co-op and competitive state separated by mode",
-        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
-        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
-        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
-        "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
-        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
-        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
-      },
-      "UNITY": {
-        "platform": "UNITY",
-        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
-        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
-        "multiplayerRuntime": "authoritative hybrid app networking with explicit co-op and competitive session modes plus reconnect recovery",
-        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
-        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
-        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
-        "platformContentAdaptation": "Adapt \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.\" and its loop \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. → Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. → Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
-        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
-        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
-      }
-    },
-    "webCanonicalDesign": {
-      "role": "SHARED_DESIGN_WEB_APPLICATION",
-      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
-      "playerFlow": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-        "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다."
-      ],
-      "worldAndTraversal": "",
-      "systemsAndContent": "name: 기존 게임플레이 의미 보존; purpose: 현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.; playerChoice: 플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다. / name: 표현 품질 순차 개선; purpose: 기존 책임 렌더·모션·전투 이벤트·오디오·카메라 흐름 안에서 에셋 적응부터 모바일 폴리시까지 순차 적용한다.; playerChoice: 새 능력이나 수치 선택을 추가하지 않고 기존 행동의 시각·청각 피드백만 더 명확하고 자연스럽게 만든다.",
-      "combatAndInteraction": "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.",
-      "progressionAndEconomy": "progressionLoop: 기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.; resourceFlow: 기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.; balanceRules: 체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다.",
-      "sessionFailureRecovery": "failureStates: 기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다. / 기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다.; retryFlow: 기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.; riskPressure: 기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.; recoveryRules: 기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다.",
-      "uiMenuAndOnboarding": "hudPriorities: Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.; touchAndInput: Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.; readability: Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.; accessibility: Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits.",
-      "inputCameraAccessibility": "기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.",
-      "presentationAndAudio": "visualIdentity: 기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.; audioIdentity: 기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.; gameplayFeedbackSync: 기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다.",
-      "multiplayerPersistence": "HYBRID; 기존 seed에 확정된 멀티플레이 모드를 그대로 유지하며 이번 표현 파일럿에서 네트워크 규칙·플레이 모드를 추가·삭제·변경하지 않는다.",
-      "expansionSpace": "milestone: ASSET_ADAPTATION; newGameplay: 새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.; systemImpact: 원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다. / milestone: LIVING_MOTION_AND_ANIMATION_FEEL; newGameplay: 새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.; systemImpact: 기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다. / milestone: VFX_AUDIO_CAMERA_POLISH_MOBILE; newGameplay: 새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.; systemImpact: 모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
-    },
-    "platformExpansionPolicy": {
-      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
-      "sharedLargeFrame": [
-        "CORE_IDENTITY",
-        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
-        "WORLD_AND_PROGRESSION_DIRECTION",
-        "SAVE_PERSISTENCE_MEANING",
-        "MULTIPLAYER_INTENT"
-      ],
-      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
-      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
-      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
-      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
-    },
-    "visualDirection": "기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.",
-    "mobileUx": "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.",
-    "uxAccessibilityPlan": {
-      "hudPriorities": "Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.",
-      "touchAndInput": "Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.",
-      "readability": "Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.",
-      "accessibility": "Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits."
-    },
-    "artAudioDirection": {
-      "visualIdentity": "기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.",
-      "audioIdentity": "기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.",
-      "gameplayFeedbackSync": "기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다."
-    },
-    "selectedDesignPlan": {},
-    "contentVarietyPlan": {},
-    "narrativeDialoguePlan": {},
-    "implementationTraceability": [
-      {
-        "designElement": "ASSET_ADAPTATION",
-        "responsibleSystem": "기존 캐릭터·몬스터·월드 렌더 함수",
-        "validationEvidence": "동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다."
-      },
-      {
-        "designElement": "LIVING_MOTION_AND_ANIMATION_FEEL",
-        "responsibleSystem": "기존 이동·공격·피격 상태와 렌더 업데이트",
-        "validationEvidence": "idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다."
-      },
-      {
-        "designElement": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-        "responsibleSystem": "기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로",
-        "validationEvidence": "적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다."
-      }
-    ],
-    "stabilityPriorityPlan": {}
-  },
+  "sourceRoot": "unity-games/fantasy-survival",
+  "sourceTreeFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
+  "designFingerprint": "c0b9724dfa70595eed4f3dcdbad86f85b920f6ca09212771960ebf85447ddcc8",
   "gameIdentityAndNonNegotiables": {
     "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
     "coreFun": "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.",
@@ -487,290 +49,195 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=3",
-      "UI_MENU_FLOW_SPARSE"
+      "CURRENT_SOURCE_FILES=6",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
+      "GAME_FEEL_SPARSE",
+      "VFX_IMPLEMENTATION_SPARSE",
+      "AUDIO_IMPLEMENTATION_SPARSE",
+      "UI_MENU_FLOW_SPARSE",
+      "PERFORMANCE_BUDGET_SPARSE"
     ],
     "signals": {
-      "combat": 1491,
-      "progression": 1574,
-      "ai": 733,
-      "save": 429,
-      "multiplayer": 269,
-      "animation": 15,
-      "motionStates": 1871,
-      "gameFeel": 80,
-      "vfx": 107,
-      "camera": 53,
-      "audio": 327,
-      "audioDynamics": 18,
-      "ui": 399,
-      "uiFlow": 206,
-      "entryFlow": 15,
+      "combat": 14,
+      "progression": 28,
+      "ai": 18,
+      "save": 25,
+      "multiplayer": 0,
+      "animation": 2,
+      "motionStates": 19,
+      "gameFeel": 0,
+      "vfx": 0,
+      "camera": 8,
+      "audio": 0,
+      "audioDynamics": 0,
+      "ui": 5,
+      "uiFlow": 5,
+      "entryFlow": 4,
       "loadingFlow": 0,
-      "input": 35,
-      "map": 1684,
-      "landmark": 470,
-      "interaction": 167,
-      "inventory": 190,
-      "equipment": 206,
-      "settings": 47,
-      "feedback": 28,
-      "session": 138,
-      "content": 1503,
-      "choice": 196,
-      "connection": 7,
-      "performance": 64,
-      "lighting": 106,
-      "primitive": 1,
+      "input": 7,
+      "map": 14,
+      "landmark": 4,
+      "interaction": 4,
+      "inventory": 0,
+      "equipment": 10,
+      "settings": 12,
+      "feedback": 5,
+      "session": 11,
+      "content": 18,
+      "choice": 45,
+      "connection": 0,
+      "performance": 0,
+      "lighting": 6,
+      "primitive": 13,
       "todo": 0,
-      "errorRecovery": 56
+      "errorRecovery": 0
     },
     "topFiles": [
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "score": 4278
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "score": 90
       },
       {
-        "file": "web-games/fantasy-survival/tier.html",
-        "score": 29
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "score": 60
       },
       {
-        "file": "web-games/fantasy-survival/audio/lab-recorder.mp3",
+        "file": "unity-games/fantasy-survival/Assets/Art/unity-web-floor-domain.json",
+        "score": 2
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Animations/unity-web-floor-domain.json",
+        "score": 1
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Materials/unity-web-floor-domain.json",
+        "score": 0
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Prefabs/unity-web-floor-domain.json",
         "score": 0
       }
     ],
     "sourceAnchors": [
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1726,
-        "kind": "FUNCTION",
-        "symbol": "setRecorderOverlay",
-        "context": "function setRecorderOverlay(text,stateText='재생 중'){",
-        "score": 4058
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 142,
+        "kind": "METHOD",
+        "symbol": "LoadState",
+        "context": "private void LoadState()",
+        "score": 80
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5666,
-        "kind": "FUNCTION",
-        "symbol": "saveGame",
-        "context": "function saveGame(manual=true){",
-        "score": 818
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 16,
+        "kind": "METHOD",
+        "symbol": "BuildWeb",
+        "context": "public static void BuildWeb()",
+        "score": 72
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5721,
-        "kind": "FUNCTION",
-        "symbol": "startCompanionSwitchHold",
-        "context": "function startCompanionSwitchHold(e,wx,wy){",
-        "score": 666
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 33,
+        "kind": "METHOD",
+        "symbol": "Build",
+        "context": "public static void Build()",
+        "score": 72
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5682,
-        "kind": "FUNCTION",
-        "symbol": "loadPos",
-        "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "score": 450
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 150,
+        "kind": "METHOD",
+        "symbol": "LogState",
+        "context": "private void LogState()",
+        "score": 56
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5684,
-        "kind": "FUNCTION",
-        "symbol": "loadBuildList",
-        "context": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "score": 386
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 38,
+        "kind": "METHOD",
+        "symbol": "BuildWorld",
+        "context": "private void BuildWorld()",
+        "score": 48
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1432,
-        "kind": "FUNCTION",
-        "symbol": "renderInventory",
-        "context": "function renderInventory(){",
-        "score": 370
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 108,
+        "kind": "METHOD",
+        "symbol": "StartGameplay",
+        "context": "private void StartGameplay()",
+        "score": 48
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3291,
-        "kind": "FUNCTION",
-        "symbol": "templeTrapContains",
-        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "score": 370
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3294,
-        "kind": "FUNCTION",
-        "symbol": "updateTempleTrap",
-        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "score": 370
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3295,
-        "kind": "FUNCTION",
-        "symbol": "enterTempleLower",
-        "context": "function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.",
-        "score": 370
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3292,
-        "kind": "FUNCTION",
-        "symbol": "spawnTempleTrapLeech",
-        "context": "function spawnTempleTrapLeech(){const t=JUNGLE_TEMPLE_TRAP,e=spawnAt(creatures.giantleech,t.x+t.w/2+rand(-120,120),t.y+t.h/2+rand(-90,90),null);e.area='jungletemple-upper';e.noResp",
-        "score": 362
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3296,
-        "kind": "FUNCTION",
-        "symbol": "returnTempleLobby",
-        "context": "function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}",
-        "score": 362
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1107,
-        "kind": "FUNCTION",
-        "symbol": "normalizeCost",
-        "context": "function normalizeCost(c={}){",
-        "score": 346
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3293,
-        "kind": "FUNCTION",
-        "symbol": "hostTempleTrapSpawn",
-        "context": "function hostTempleTrapSpawn(payload){if(!multiIsHost()||!payload)return;const r=multiplayer.remote.get(String(payload.playerId||''));if(!r||r.area!=='jungletemple-upper'||!templeT",
-        "score": 346
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1365,
-        "kind": "FUNCTION",
-        "symbol": "tabState",
-        "context": "function tabState(){",
-        "score": 338
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1364,
-        "kind": "FUNCTION",
-        "symbol": "craftStationBuilt",
-        "context": "function craftStationBuilt(mode){return mode==='hand'||mode==='bench'&&!!state.bench||mode==='ironbench'&&!!state.ironBench||mode==='goldbench'&&!!state.goldBench||mode==='junglebe",
-        "score": 306
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 2797,
-        "kind": "FUNCTION",
-        "symbol": "finishPetEnemyKill",
-        "context": "function finishPetEnemyKill(e,ownerId=multiplayer.playerId){",
-        "score": 290
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3050,
-        "kind": "FUNCTION",
-        "symbol": "openSmelt",
-        "context": "function openSmelt(station='furnace'){if(!['furnace','toxicFurnace'].includes(station)||!state[station]||state.area!=='surface')return;if(!nearStructure(state[station],175)){showNo",
-        "score": 282
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3081,
-        "kind": "FUNCTION",
-        "symbol": "leaveUnderwater",
-        "context": "function leaveUnderwater(){",
-        "score": 274
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 2168,
-        "kind": "FUNCTION",
-        "symbol": "openMap",
-        "context": "function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.class",
-        "score": 258
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1123,
-        "kind": "FUNCTION",
-        "symbol": "recalcPlayerMaxHp",
-        "context": "function recalcPlayerMaxHp(){const p=state.player;p.maxHp=100+effectiveStat(p.armor,'maxHp')+effectiveStat(p.weapon,'maxHp');p.hp=Math.min(p.hp,p.maxHp)}",
-        "score": 250
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5657,
-        "kind": "FUNCTION",
-        "symbol": "syncRuntimeMeta",
-        "context": "function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y",
-        "score": 250
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 943,
-        "kind": "FUNCTION",
-        "symbol": "spawnAt",
-        "context": "function spawnAt(type,x,y,packId=null){const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwate",
-        "score": 242
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 2784,
-        "kind": "FUNCTION",
-        "symbol": "killPet",
-        "context": "function killPet(){",
-        "score": 242
-      },
-      {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3290,
-        "kind": "FUNCTION",
-        "symbol": "enterTempleUpper",
-        "context": "function enterTempleUpper(){state.area='jungletemple-upper';state.player.x=JUNGLE_TEMPLE_UPPER.return.x;state.player.y=JUNGLE_TEMPLE_UPPER.return.y-120;state.templeTrapSince=0;spaw",
-        "score": 242
-      },
-      {
-        "file": "web-games/fantasy-survival/tier.html",
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
         "line": 11,
-        "kind": "FUNCTION",
-        "symbol": "card",
-        "context": "function card(id){const e=enemyById.get(id),b=document.createElement(\"button\");b.type=\"button\";b.className=\"card\"+(selectedId===id?\" selected\":\"\");b.innerHTML=\"<strong>\"+esc(e.name",
-        "score": 178
+        "kind": "CLASS",
+        "symbol": "UnityWebFloorBuild",
+        "context": "public static class UnityWebFloorBuild",
+        "score": 36
       },
       {
-        "file": "web-games/fantasy-survival/tier.html",
-        "line": 10,
-        "kind": "FUNCTION",
-        "symbol": "load",
-        "context": "function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||\"null\");if(!x)return;const seen=new Set(),r={S:[],A:[],B:[],C:[],D:[],F:[]};for(const t of TIERS)for(const id of A",
-        "score": 162
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 84,
+        "kind": "METHOD",
+        "symbol": "Update",
+        "context": "private void Update()",
+        "score": 32
       },
       {
-        "file": "web-games/fantasy-survival/tier.html",
-        "line": 12,
-        "kind": "FUNCTION",
-        "symbol": "move",
-        "context": "function move(t){if(!selectedId)return;const id=selectedId;for(const x of TIERS)ranking[x]=ranking[x].filter(v=>v!==id);order=order.filter(v=>v!==id);if(t===\"U\")order.push(id);else",
-        "score": 154
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 135,
+        "kind": "METHOD",
+        "symbol": "SafeReturn",
+        "context": "private void SafeReturn()",
+        "score": 32
       },
       {
-        "file": "web-games/fantasy-survival/tier.html",
-        "line": 9,
-        "kind": "FUNCTION",
-        "symbol": "esc",
-        "context": "function esc(v){return String(v).replace(/[&<>\"']/g,c=>({\"&\":\"&amp;\",\"<\":\"&lt;\",\">\":\"&gt;\",'\"':\"&quot;\",\"'\":\"&#39;\"}[c]))}function mood(m){return m===\"aggressive\"?\"공격적\":m===\"boss\"?",
-        "score": 146
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 155,
+        "kind": "METHOD",
+        "symbol": "OnGUI",
+        "context": "private void OnGUI()",
+        "score": 32
       },
       {
-        "file": "web-games/fantasy-survival/tier.html",
-        "line": 13,
-        "kind": "FUNCTION",
-        "symbol": "render",
-        "context": "function render(){const ts=document.getElementById(\"tiers\");ts.innerHTML=\"\";for(const t of TIERS){const row=document.createElement(\"div\");row.className=\"tier\"+(ranking[t].length?\"\"",
-        "score": 130
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 3,
+        "kind": "CLASS",
+        "symbol": "UnityWebFloorGame",
+        "context": "public sealed class UnityWebFloorGame : MonoBehaviour",
+        "score": 28
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 54,
+        "kind": "METHOD",
+        "symbol": "EnsureScene",
+        "context": "private static void EnsureScene()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 22,
+        "kind": "METHOD",
+        "symbol": "Awake",
+        "context": "private void Awake()",
+        "score": 24
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 115,
+        "kind": "METHOD",
+        "symbol": "PerformAction",
+        "context": "private void PerformAction(bool mobile)",
+        "score": 24
+      },
+      {
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 7,
+        "kind": "STATE",
+        "symbol": "STATE:SURVIVAL",
+        "context": "private const string Mode = \"SURVIVAL\";",
+        "score": 18
       }
     ]
   },
@@ -778,9 +245,9 @@
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "cee9d7d2d5c4810bb8e9eab7ead2d68ee7a513ca6c6e6643001428cf9d928ac5",
-    "currentSourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-    "sourceChanged": true,
+    "previousSourceTreeFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
+    "currentSourceTreeFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -793,15 +260,6 @@
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
-  },
-  "multiplayerImplementation": {
-    "required": true,
-    "policyVersion": 1,
-    "developmentAdmissionGate": false,
-    "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
-    "otherGamesAndIndependentWorkContinue": true,
-    "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
   },
   "qualityGapMap": [
     {
@@ -931,13 +389,13 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
@@ -951,8 +409,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SESSION_FLOW",
@@ -976,18 +434,18 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "PASS",
-      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
+      "state": "NOT_APPLICABLE",
+      "reason": "approved design and current source do not require multiplayer"
     },
     {
       "domain": "INPUT",
@@ -1046,8 +504,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SPAWN_ENCOUNTER_DIRECTOR",
@@ -1056,8 +514,8 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "NOT_APPLICABLE",
+      "reason": "no NPC or social behavior signal in approved design"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1066,8 +524,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -1076,13 +534,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -1096,18 +554,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
     },
     {
       "domain": "PALETTE",
@@ -1131,8 +589,8 @@
     },
     {
       "domain": "VFX",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CAMERA",
@@ -1146,8 +604,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -1156,23 +614,23 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "allDomainImplementationDirectives": [
@@ -1226,7 +684,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타이깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 기존 게임플레이 의미 보존에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 기존 게임플레이 의미 보존에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1403,8 +861,8 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1412,8 +870,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1439,8 +897,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1484,8 +942,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1493,8 +951,8 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1502,12 +960,12 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
       "developmentDepth": 1,
-      "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
+      "directive": "현재 승인 설계상 approved design and current source do not require multiplayer. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
     },
     {
       "domain": "INPUT",
@@ -1610,8 +1068,8 @@
     },
     {
       "domain": "GAME_FEEL",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 기존 게임플레이 의미 보존에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1628,12 +1086,12 @@
     },
     {
       "domain": "NPC_SOCIAL_BEHAVIOR",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "NOT_APPLICABLE",
+      "priority": "NOT_APPLICABLE",
       "developmentDepth": 1,
-      "directive": "NPC가 적용되는 게임이면 idle 순환뿐 아니라 이동 목적, 상호작용 반응, 시간/지역/퀘스트 상태에 따른 행동 변화가 세계 역할과 연결되게 한다.",
+      "directive": "현재 승인 설계상 no NPC or social behavior signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
+      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
     },
     {
       "domain": "NARRATIVE_STORY",
@@ -1646,8 +1104,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1664,8 +1122,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1673,8 +1131,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1700,8 +1158,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1709,8 +1167,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1718,8 +1176,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1763,8 +1221,8 @@
     },
     {
       "domain": "VFX",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1790,8 +1248,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1808,8 +1266,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1817,8 +1275,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1826,8 +1284,8 @@
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1835,8 +1293,8 @@
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1845,16 +1303,106 @@
   ],
   "detectedGaps": [
     {
+      "domain": "INVENTORY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "INVENTORY_USABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SYSTEM_CONNECTION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "SAVE_COMPLETENESS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "RECONNECT_RECOVERY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
       "domain": "MENU_FLOW",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "GAME_FEEL",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "AUDIO_MUSIC_SFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "CHARACTER_VISUALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "ENEMY_VISUALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "ENVIRONMENT",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "TERRAIN",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "MATERIALS",
+      "state": "GAP",
+      "reason": "placeholder or primitive-heavy implementation remains"
+    },
+    {
+      "domain": "VFX",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "AUDIO_VISUAL_TIMING",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PERFORMANCE",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "PERFORMANCE_BUDGET",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "RUNTIME_STABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "ERROR_RECOVERY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"기존 게임플레이 의미 보존\", 현재 책임 소스는 web-games/fantasy-survival/index.html::setRecorderOverlay, web-games/fantasy-survival/index.html::saveGame, web-games/fantasy-survival/index.html::startCompanionSwitchHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::loadBuildList, web-games/fantasy-survival/index.html::renderInventory, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"기존 게임플레이 의미 보존\", 현재 책임 소스는 unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::Update이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 web-games/fantasy-survival/index.html::setRecorderOverlay, web-games/fantasy-survival/index.html::saveGame, web-games/fantasy-survival/index.html::startCompanionSwitchHold, web-games/fantasy-survival/index.html::loadPos, web-games/fantasy-survival/index.html::loadBuildList, web-games/fantasy-survival/index.html::renderInventory, web-games/fantasy-survival/index.html::templeTrapContains, web-games/fantasy-survival/index.html::updateTempleTrap에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::Update에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "기존 게임플레이 의미 보존를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "표현 품질 순차 개선가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -1873,9 +1421,7 @@
     "초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.",
     "콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.",
     "이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.",
-    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.",
-    "승인된 인과 문법이 있으면 새 지역·몬스터·NPC·아이템·세력은 같은 법칙을 복제하지 말고 서로 다른 방식으로 전달·왜곡·상속·분산·역전시켜 새 선택 구조를 만든다.",
-    "가벼운 D1 엽기/코믹 문법은 억지로 장대한 신화·정치 구조로 키우지 않는다. 단순한 농담 규칙이라도 실제 상태 변화와 후폭풍이 반복 가능하면 깊이 있는 정체성으로 인정한다."
+    "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
     "version": 2,
@@ -1894,8 +1440,6 @@
     ],
     "requestedPlatform": "WEB",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
-    "contentExpansionDeferredUntilRuntimeRepairPass": false,
-    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -1907,8 +1451,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 2458563,
-        "largestFileBytes": 1188079,
+        "sourceBytes": 16061,
+        "largestFileBytes": 7523,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1940,8 +1484,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "0 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "6 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1951,9 +1495,11 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -1990,23 +1536,39 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 170,
-        "gapDomains": []
+        "score": 211,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "VFX",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS",
+          "AUDIO_VISUAL_TIMING"
+        ]
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 66,
+        "gapDomains": [
+          "INVENTORY",
+          "INVENTORY_USABILITY",
+          "SYSTEM_CONNECTION"
+        ]
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 38,
+        "gapDomains": [
+          "GAME_FEEL",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "score": 24,
-        "gapDomains": []
-      },
-      {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 16,
-        "gapDomains": []
-      },
-      {
-        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 16,
-        "gapDomains": []
+        "gapDomains": [
+          "SYSTEM_CONNECTION"
+        ]
       },
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
@@ -2014,12 +1576,12 @@
         "gapDomains": []
       },
       {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 14,
         "gapDomains": []
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "theme": "QUEST_STORY_PROGRESSION_CHAIN",
         "score": 14,
         "gapDomains": []
       }
@@ -2100,8 +1662,8 @@
     "generation": 2,
     "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-    "priorSourceFingerprint": "cee9d7d2d5c4810bb8e9eab7ead2d68ee7a513ca6c6e6643001428cf9d928ac5",
+    "sourceFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
+    "priorSourceFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2121,7 +1683,7 @@
       "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
       "visualPurpose": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 플레이 판단과 기존 게임플레이 의미 보존가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "표현 품질 순차 개선와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE"
+      "placeholderDebt": "HIGH"
     },
     "domains": {
       "CHARACTER": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
@@ -2177,7 +1739,7 @@
       },
       {
         "track": "COMBAT_AND_PRIMARY_ACTION_FEEL",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       },
       {
         "track": "UI_HUD_AND_MENU",
@@ -2185,15 +1747,15 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "PRESENT"
+        "status": "NOT_APPLICABLE_UNTIL_GAME_HAS_INVENTORY"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       },
       {
         "track": "WORLD_VISUAL_COHESION",
@@ -2205,7 +1767,7 @@
       },
       {
         "track": "PERFORMANCE_AND_RUNTIME_STABILITY",
-        "status": "PRESENT"
+        "status": "WEAK_OR_MISSING"
       }
     ],
     "priorityOrder": [
@@ -2219,7 +1781,11 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [],
+    "weakestTracks": [
+      "COMBAT_AND_PRIMARY_ACTION_FEEL",
+      "AUDIO_MUSIC_AND_FEEDBACK",
+      "VFX_CAMERA_AND_IMPACT_SYNC"
+    ],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -2272,12 +1838,12 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 게임당 하나인 공통 설계 원본을 기준으로 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "FORTNITE_UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 게임당 하나인 공통 설계 원본을 기준으로 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNITY_WEB": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현한다. 실제 터치 입력, DOM/Canvas 프레임 변화, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 함께 검수한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 함께 검증한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
     "UNREAL": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UEFN": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.: 동일 공통 목표 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
@@ -2287,124 +1853,124 @@
     "responsibleFiles": [],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1726,
-        "kind": "FUNCTION",
-        "symbol": "setRecorderOverlay",
-        "currentBehavior": "function setRecorderOverlay(text,stateText='재생 중'){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setRecorderOverlay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 142,
+        "kind": "METHOD",
+        "symbol": "LoadState",
+        "currentBehavior": "private void LoadState()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5666,
-        "kind": "FUNCTION",
-        "symbol": "saveGame",
-        "currentBehavior": "function saveGame(manual=true){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 saveGame의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 16,
+        "kind": "METHOD",
+        "symbol": "BuildWeb",
+        "currentBehavior": "public static void BuildWeb()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5721,
-        "kind": "FUNCTION",
-        "symbol": "startCompanionSwitchHold",
-        "currentBehavior": "function startCompanionSwitchHold(e,wx,wy){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 33,
+        "kind": "METHOD",
+        "symbol": "Build",
+        "currentBehavior": "public static void Build()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5682,
-        "kind": "FUNCTION",
-        "symbol": "loadPos",
-        "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 150,
+        "kind": "METHOD",
+        "symbol": "LogState",
+        "currentBehavior": "private void LogState()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5684,
-        "kind": "FUNCTION",
-        "symbol": "loadBuildList",
-        "currentBehavior": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 38,
+        "kind": "METHOD",
+        "symbol": "BuildWorld",
+        "currentBehavior": "private void BuildWorld()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1432,
-        "kind": "FUNCTION",
-        "symbol": "renderInventory",
-        "currentBehavior": "function renderInventory(){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 renderInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 108,
+        "kind": "METHOD",
+        "symbol": "StartGameplay",
+        "currentBehavior": "private void StartGameplay()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3291,
-        "kind": "FUNCTION",
-        "symbol": "templeTrapContains",
-        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 11,
+        "kind": "CLASS",
+        "symbol": "UnityWebFloorBuild",
+        "currentBehavior": "public static class UnityWebFloorBuild",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3294,
-        "kind": "FUNCTION",
-        "symbol": "updateTempleTrap",
-        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 84,
+        "kind": "METHOD",
+        "symbol": "Update",
+        "currentBehavior": "private void Update()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "setRecorderOverlay",
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "symbol": "LoadState",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "saveGame",
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "symbol": "BuildWeb",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "startCompanionSwitchHold",
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "symbol": "Build",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "loadPos",
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "symbol": "LogState",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "loadBuildList",
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "symbol": "BuildWorld",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "renderInventory",
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "symbol": "StartGameplay",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "templeTrapContains",
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "symbol": "UnityWebFloorBuild",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "symbol": "updateTempleTrap",
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "symbol": "Update",
         "role": "SHARED_MODULE_OR_STATE",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -2435,10 +2001,10 @@
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
   "productionPlan": {
-    "version": 3,
+    "version": 2,
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
-    "platform": "WEB",
-    "executionSurface": "WEB",
+    "platform": "UNITY",
+    "executionSurface": "UNITY_WEB",
     "mode": "EXISTING_PLAY_PRESENTATION",
     "gameId": "fantasy-survival",
     "genreProfile": "SURVIVAL",
@@ -2457,7 +2023,6 @@
       "표현 품질 순차 개선"
     ],
     "progressionDirection": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.",
-    "depthAndReward": null,
     "ideas": [
       {
         "id": "SURVIVAL:PLAY_READABILITY",
@@ -2475,451 +2040,20 @@
     ],
     "implementationPackages": [
       {
-        "role": "GAMEPLAY_AND_PRESENTATION",
+        "role": "GAMEPLAY_STATE",
         "files": [
-          "web-games/fantasy-survival/index.html",
-          "web-games/fantasy-survival/tier.html"
+          "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+          "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs",
+          "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+          "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
-    "spatialBlueprintContract": {
-      "version": 1,
-      "required": false,
-      "dimension": "SOURCE_BOUND_REQUIRED",
-      "platform": "WEB",
-      "scope": "PRESERVE_LAYOUT_PRESENTATION_ONLY",
-      "designFingerprint": "4361d67f41690740f0bb6f03cddebbd2c44a15d62e561e139d8f6a2b14f027dd",
-      "macroSketch": {
-        "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
-        "genre": "",
-        "style": "기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.",
-        "artDirection": {
-          "visualIdentity": "기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.",
-          "audioIdentity": "기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.",
-          "gameplayFeedbackSync": "기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다."
-        },
-        "authoredLayout": {},
-        "coreRoute": [
-          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
-        ],
-        "systemConnections": [
-          {
-            "fromSystem": "기존 월드/캐릭터 렌더",
-            "toSystem": "ASSET_ADAPTATION",
-            "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-            "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
-          },
-          {
-            "fromSystem": "기존 이동/공격 상태",
-            "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
-            "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
-            "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
-          },
-          {
-            "fromSystem": "기존 전투/퀘스트 이벤트",
-            "toSystem": "VFX_AUDIO_CAMERA_POLISH",
-            "trigger": "기존 적중·피격·보상·스토리 이벤트",
-            "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
-          }
-        ],
-        "actorRoles": [
-          {
-            "name": "기존 게임플레이 의미 보존",
-            "purpose": "현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.",
-            "playerChoice": "플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다."
-          },
-          {
-            "name": "표현 품질 순차 개선",
-            "purpose": "기존 책임 렌더·모션·전투 이벤트·오디오·카메라 흐름 안에서 에셋 적응부터 모바일 폴리시까지 순차 적용한다.",
-            "playerChoice": "새 능력이나 수치 선택을 추가하지 않고 기존 행동의 시각·청각 피드백만 더 명확하고 자연스럽게 만든다."
-          }
-        ],
-        "menuAndConvenience": {
-          "hudPriorities": "Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.",
-          "touchAndInput": "Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.",
-          "readability": "Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.",
-          "accessibility": "Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits."
-        },
-        "mobileUx": "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.",
-        "sourceAnchors": [
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "setRecorderOverlay",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "saveGame",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "startCompanionSwitchHold",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "loadPos",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "loadBuildList",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "renderInventory",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "templeTrapContains",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "updateTempleTrap",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "enterTempleLower",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "spawnTempleTrapLeech",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "returnTempleLobby",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "normalizeCost",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "hostTempleTrapSpawn",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "tabState",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "craftStationBuilt",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "finishPetEnemyKill",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "openSmelt",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "leaveUnderwater",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "openMap",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "recalcPlayerMaxHp",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "syncRuntimeMeta",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "spawnAt",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "killPet",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/index.html",
-            "symbol": "enterTempleUpper",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/tier.html",
-            "symbol": "card",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/tier.html",
-            "symbol": "load",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/tier.html",
-            "symbol": "move",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/tier.html",
-            "symbol": "esc",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "web-games/fantasy-survival/tier.html",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          }
-        ],
-        "designTraceability": [
-          {
-            "designElement": "ASSET_ADAPTATION",
-            "responsibleSystem": "기존 캐릭터·몬스터·월드 렌더 함수",
-            "validationEvidence": "동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다."
-          },
-          {
-            "designElement": "LIVING_MOTION_AND_ANIMATION_FEEL",
-            "responsibleSystem": "기존 이동·공격·피격 상태와 렌더 업데이트",
-            "validationEvidence": "idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다."
-          },
-          {
-            "designElement": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
-            "responsibleSystem": "기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로",
-            "validationEvidence": "적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다."
-          }
-        ]
-      },
-      "sourceFiles": [
-        "web-games/fantasy-survival/index.html",
-        "web-games/fantasy-survival/tier.html"
-      ],
-      "authoringOrder": [
-        "MACRO_REGIONS",
-        "TRAVERSAL_AND_OBJECTIVES",
-        "OBJECT_VOLUMES_AND_SUPPORT",
-        "INTERACTION_AND_STATE_CONNECTIONS",
-        "NATIVE_SOURCE"
-      ],
-      "preserve": [
-        "EXISTING_OBJECT_IDS",
-        "EXISTING_TRANSFORMS_UNLESS_DESIGN_REQUIRES_CHANGE",
-        "SPAWN_COUNTS",
-        "BALANCE",
-        "SAVE",
-        "SERVER_AUTHORITY"
-      ],
-      "runtimeChecks": [
-        "EXACT_BUILD_SCENE_BINDINGS",
-        "ACTUAL_GROUND_AND_COLLIDERS",
-        "PLAYER_ROUTE_REPLAY",
-        "INTERACTION_STATE_CHANGE",
-        "CAMERA_OCCLUSION_AND_SIGHTLINES",
-        "MOBILE_VIEW_AND_PERFORMANCE",
-        "MENU_OPEN_BACK_CLOSE_STATE_PRESERVATION",
-        "TOUCH_SCROLL_AND_DISABLED_ACTION_GUARDS"
-      ],
-      "runtimeVerified": false
-    },
-    "interfaceBlueprintContract": {
-      "version": 1,
-      "required": true,
-      "designFingerprint": "eec46dfe5a32d139ca1dec7e55c518a3c46bca057212069d2c654c36727f167a",
-      "requirements": {
-        "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
-        "genre": "",
-        "coreLoop": [
-          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
-        ],
-        "systems": [
-          {
-            "fromSystem": "기존 월드/캐릭터 렌더",
-            "toSystem": "ASSET_ADAPTATION",
-            "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
-            "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
-          },
-          {
-            "fromSystem": "기존 이동/공격 상태",
-            "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
-            "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
-            "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
-          },
-          {
-            "fromSystem": "기존 전투/퀘스트 이벤트",
-            "toSystem": "VFX_AUDIO_CAMERA_POLISH",
-            "trigger": "기존 적중·피격·보상·스토리 이벤트",
-            "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
-          }
-        ],
-        "ux": {
-          "hudPriorities": "Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.",
-          "touchAndInput": "Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.",
-          "readability": "Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.",
-          "accessibility": "Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits."
-        },
-        "mobileUx": "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃."
-      },
-      "referencePatterns": [
-        {
-          "id": "BUILD_PRESETS",
-          "game": "Genshin Impact",
-          "sourceUrl": "https://genshin.hoyoverse.com/en/news/detail/156641",
-          "observedAt": "2026-10-07",
-          "principle": "Save and switch a player-selected equipment setup.",
-          "adaptation": "Compare changes before applying; preserve unavailable-item, combat and save restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "CONDITIONAL_LOOT_FILTER",
-          "game": "Diablo IV",
-          "sourceUrl": "https://news.blizzard.com/en-us/article/24267729/prepare-for-the-reckoning-lord-of-hatred-draws-near",
-          "observedAt": "2026-10-07",
-          "principle": "Reusable conditions reduce irrelevant loot information; filters can be shared.",
-          "adaptation": "Expose filter state and reset; filtering must not delete rewards or silently auto-sell.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "QUEST_CONTEXT_SHORTCUT",
-          "game": "Genshin Impact",
-          "sourceUrl": "https://genshin.hoyoverse.com/en/news/detail/157683",
-          "observedAt": "2026-10-07",
-          "principle": "A quest can offer the relevant time adjustment directly.",
-          "adaptation": "Deep-link to the existing permitted action and return to the same quest/filter/scroll position; never bypass quest prerequisites.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TRAVEL_FAVORITES",
-          "game": "No Man's Sky",
-          "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
-          "observedAt": "2026-10-07",
-          "principle": "Favorite destinations reduce repeated searching in travel menus.",
-          "adaptation": "Pin frequent destinations while preserving unlock, cost and travel restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "RECIPE_BATCH_WORKFLOW",
-          "game": "No Man's Sky",
-          "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
-          "observedAt": "2026-10-07",
-          "principle": "Recipe catalogue improvements and bulk food donation reduce repeated management.",
-          "adaptation": "Show required/missing ingredients and aggregate cost; exclude locked items and revalidate the whole batch before committing.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        }
-      ],
-      "sourceFiles": [
-        "web-games/fantasy-survival/index.html",
-        "web-games/fantasy-survival/tier.html"
-      ],
-      "selectionRule": "Choose one observed player friction owned by these files. Explain applicability from existing systems, compare alternatives and record rejected patterns; do not add every reference feature.",
-      "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
-      "schema": {
-        "version": 1,
-        "designFingerprint": "exact contract fingerprint",
-        "viewport": {
-          "width": 390,
-          "height": 844,
-          "safeTop": 0,
-          "safeBottom": 0
-        },
-        "entryId": "first screen",
-        "screens": [
-          {
-            "id": "existing screen id",
-            "role": "MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS",
-            "modal": false,
-            "scrollable": false,
-            "contentHeight": 844,
-            "controls": [
-              {
-                "id": "existing control id",
-                "action": "existing gameplay action",
-                "feedback": "observable feedback",
-                "enabledWhen": "existing state guard",
-                "rect": {
-                  "x": 0,
-                  "y": 0,
-                  "width": 44,
-                  "height": 44
-                },
-                "binding": {
-                  "path": "source file",
-                  "symbol": "event handler",
-                  "sourceEvidence": "exact event/handler source"
-                }
-              }
-            ]
-          }
-        ],
-        "transitions": [
-          {
-            "from": "screen id",
-            "controlId": "control id",
-            "to": "screen id",
-            "kind": "OPEN or BACK or CLOSE or ACTION",
-            "preservesState": true
-          }
-        ],
-        "playerTasks": [
-          {
-            "id": "frequent player intent",
-            "friction": "observed repeated work or information gap",
-            "patternId": "reference id or ORIGINAL",
-            "adaptation": "why this game needs it",
-            "from": "screen id",
-            "to": "completion screen",
-            "controlId": "completion action",
-            "maxNavigationSteps": 2,
-            "retainedContext": [
-              "selection",
-              "filter",
-              "scroll",
-              "draft"
-            ],
-            "failureRecovery": "existing safe recovery",
-            "runtimeCheck": "exact-build input sequence and observable result; compare before/after without invented measurements"
-          }
-        ]
-      },
-      "learningRule": "Reference descriptions and static plans are hypotheses. Reuse through existing verified experience only after exact-build gameplay evidence; retain failures and reject regressions. Recheck dated references before calling them current.",
-      "preserve": [
-        "SAVE",
-        "PROGRESSION",
-        "COMBAT_RETURN_RESTRICTIONS",
-        "DISABLED_ACTION_GUARDS",
-        "EXISTING_MENU_IDENTITIES"
-      ],
-      "runtimeVerified": false
-    },
+    "sourceTreeFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
-      "implementation": "EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS",
+      "implementation": "EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS",
       "required": [
         "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
         "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
@@ -2927,7 +2061,7 @@
         "MOBILE_TOUCH_AND_SCREEN_READABILITY",
         "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
       ],
-      "runtimeSurface": "ACTUAL_BROWSER_PLAY",
+      "runtimeSurface": "UNITY_WEBGL_ACTUAL_BROWSER_PLAY",
       "markerOnlyCompletionAllowed": false,
       "runtimeVerified": false
     },
@@ -2954,106 +2088,111 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "web-games/fantasy-survival/index.html",
-      "web-games/fantasy-survival/tier.html",
-      "web-games/fantasy-survival/audio/lab-recorder.mp3"
+      "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+      "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/fantasy-survival/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Prefabs/unity-web-floor-domain.json"
     ],
     "sourceAnchors": [
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1726,
-        "kind": "FUNCTION",
-        "symbol": "setRecorderOverlay",
-        "context": "function setRecorderOverlay(text,stateText='재생 중'){",
-        "score": 4058,
-        "currentBehavior": "function setRecorderOverlay(text,stateText='재생 중'){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 setRecorderOverlay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::setRecorderOverlay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 142,
+        "kind": "METHOD",
+        "symbol": "LoadState",
+        "context": "private void LoadState()",
+        "score": 80,
+        "currentBehavior": "private void LoadState()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LoadState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5666,
-        "kind": "FUNCTION",
-        "symbol": "saveGame",
-        "context": "function saveGame(manual=true){",
-        "score": 818,
-        "currentBehavior": "function saveGame(manual=true){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 saveGame의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::saveGame이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 16,
+        "kind": "METHOD",
+        "symbol": "BuildWeb",
+        "context": "public static void BuildWeb()",
+        "score": 72,
+        "currentBehavior": "public static void BuildWeb()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5721,
-        "kind": "FUNCTION",
-        "symbol": "startCompanionSwitchHold",
-        "context": "function startCompanionSwitchHold(e,wx,wy){",
-        "score": 666,
-        "currentBehavior": "function startCompanionSwitchHold(e,wx,wy){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 startCompanionSwitchHold의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::startCompanionSwitchHold이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 33,
+        "kind": "METHOD",
+        "symbol": "Build",
+        "context": "public static void Build()",
+        "score": 72,
+        "currentBehavior": "public static void Build()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::Build이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5682,
-        "kind": "FUNCTION",
-        "symbol": "loadPos",
-        "context": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "score": 450,
-        "currentBehavior": "const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(ob",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadPos의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::loadPos이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 150,
+        "kind": "METHOD",
+        "symbol": "LogState",
+        "context": "private void LogState()",
+        "score": 56,
+        "currentBehavior": "private void LogState()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::LogState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 5684,
-        "kind": "FUNCTION",
-        "symbol": "loadBuildList",
-        "context": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "score": 386,
-        "currentBehavior": "const loadBuildList=(arr,type)=>Array.isArray(arr)?arr.map((b,i)=>{const p=loadPos(b);if(!p)return null;return{...p,id:String(b.id||type+i),vertical:!!b.vertical,...(type==='door'?",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 loadBuildList의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::loadBuildList이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 38,
+        "kind": "METHOD",
+        "symbol": "BuildWorld",
+        "context": "private void BuildWorld()",
+        "score": 48,
+        "currentBehavior": "private void BuildWorld()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 1432,
-        "kind": "FUNCTION",
-        "symbol": "renderInventory",
-        "context": "function renderInventory(){",
-        "score": 370,
-        "currentBehavior": "function renderInventory(){",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 renderInventory의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::renderInventory이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 108,
+        "kind": "METHOD",
+        "symbol": "StartGameplay",
+        "context": "private void StartGameplay()",
+        "score": 48,
+        "currentBehavior": "private void StartGameplay()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3291,
-        "kind": "FUNCTION",
-        "symbol": "templeTrapContains",
-        "context": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "score": 370,
-        "currentBehavior": "function templeTrapContains(x,y){const t=JUNGLE_TEMPLE_TRAP;return x>=t.x&&x<=t.x+t.w&&y>=t.y&&y<=t.y+t.h}",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 templeTrapContains의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::templeTrapContains이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "line": 11,
+        "kind": "CLASS",
+        "symbol": "UnityWebFloorBuild",
+        "context": "public static class UnityWebFloorBuild",
+        "score": 36,
+        "currentBehavior": "public static class UnityWebFloorBuild",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "web-games/fantasy-survival/index.html",
-        "line": 3294,
-        "kind": "FUNCTION",
-        "symbol": "updateTempleTrap",
-        "context": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "score": 370,
-        "currentBehavior": "function updateTempleTrap(now){if(state.area!=='jungletemple-upper'||!templeTrapContains(state.player.x,state.player.y)){state.templeTrapSince=0;return}if(!state.templeTrapSince){s",
-        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 updateTempleTrap의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "web-games/fantasy-survival/index.html::updateTempleTrap이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "web-games/fantasy-survival/index.html에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+        "line": 84,
+        "kind": "METHOD",
+        "symbol": "Update",
+        "context": "private void Update()",
+        "score": 32,
+        "currentBehavior": "private void Update()",
+        "intendedBehavior": "USABILITY primary goal \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs::Update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -3064,16 +2203,25 @@
     "version": 1,
     "platform": "WEB",
     "categories": [
-      "UI"
+      "GRAPHICS",
+      "MAP",
+      "UI",
+      "GAMEPLAY",
+      "SAVE"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MOBILE_TOUCH_UI_QA"
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": false,
+    "securityRelevant": true,
     "openCloudWorldChecks": []
   },
   "preMutationDryRun": {
@@ -3082,24 +2230,38 @@
     "gameId": "fantasy-survival",
     "platform": "WEB",
     "plannedFiles": [
-      "web-games/fantasy-survival/index.html",
-      "web-games/fantasy-survival/tier.html",
-      "web-games/fantasy-survival/audio/lab-recorder.mp3"
+      "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+      "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs",
+      "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs",
+      "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
+      "unity-games/fantasy-survival/Assets/Art/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Animations/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Materials/unity-web-floor-domain.json",
+      "unity-games/fantasy-survival/Assets/Prefabs/unity-web-floor-domain.json"
     ],
     "impact": {
       "version": 1,
       "platform": "WEB",
       "categories": [
-        "UI"
+        "GRAPHICS",
+        "MAP",
+        "UI",
+        "GAMEPLAY",
+        "SAVE"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
-        "MOBILE_TOUCH_UI_QA"
+        "MAP_PROTECTED_ANCHOR_QA",
+        "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
+        "SAVE_LOAD_MIGRATION_QA",
+        "SECURITY_AUTHORITY_QA",
+        "VISUAL_BINDING_QA"
       ],
       "conditionalQa": [
         "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": false,
+      "securityRelevant": true,
       "openCloudWorldChecks": []
     },
     "protectedSemantics": [
@@ -3112,7 +2274,12 @@
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
-      "MOBILE_TOUCH_UI_QA"
+      "MAP_PROTECTED_ANCHOR_QA",
+      "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
+      "SAVE_LOAD_MIGRATION_QA",
+      "SECURITY_AUTHORITY_QA",
+      "VISUAL_BINDING_QA"
     ],
     "conditionalQa": [
       "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
@@ -3130,7 +2297,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "eb8946be5544b62abd0cdf0f1453d5ab802105432d28a624a785620a38c33e5c",
+      "sourceTreeFingerprint": "8a1ee49573b9a81d0d3a0f972ce20ce4a8c845830b51be6eb3d61fb37022c8f5",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -3166,14 +2333,6 @@
     "ROBLOX_EXPERIENCE_BUILD_UP_USES_EXTRA_NATIVE_STUDIO_ATTENTION",
     "AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP",
     "CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE",
-    "GAME_IDENTITY_THREE_SENTENCE_TEST_PRESERVED_OR_STRENGTHENED",
-    "REPRESENTATIVE_ACTION_CHOICE_SIGNATURE_WORLD_RULE_AND_GROWTH_IDENTITY_REVIEWED",
-    "GENRE_PRIMARY_ACTION_PRESERVED_WITHOUT_FORCED_RPG_SYSTEMS",
-    "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
-    "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
-    "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
-    "EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION",
-    "CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE",
     "EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP",
     "WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT"
   ],
@@ -3190,7 +2349,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -3242,10 +2401,19 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "MENU_FLOW"
+      "INVENTORY",
+      "INVENTORY_USABILITY",
+      "SYSTEM_CONNECTION",
+      "SAVE_COMPLETENESS",
+      "MENU_FLOW",
+      "PERFORMANCE_BUDGET",
+      "RUNTIME_STABILITY"
     ],
-    "notApplicable": [],
+    "notApplicable": [
+      "MULTIPLAYER_AND_SYNC",
+      "NPC_SOCIAL_BEHAVIOR"
+    ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-09T02:05:52.752Z"
+  "generatedAt": "2026-10-05T17:37:10.486Z"
 }
