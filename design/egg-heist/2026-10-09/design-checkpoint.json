@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::5e0d67854d58bae85200ecdfaac2ff17693288323de13197ff47092cb41624dd:identity": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 영향을 주는 시그니처 세계 규칙에 연결된다. 이 과정에서 단순한 탐험이 아닌, 성장과 위험의 균형을 맞추는 전략적 결정이 필요하다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 91077,
+      "lastMs": 91077,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:06:15.252Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:04:43.965Z",
-  "updatedAt": "2026-10-09T11:04:44.062Z",
+  "updatedAt": "2026-10-09T11:06:15.252Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1871,5 +1887,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:06:15.252Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
