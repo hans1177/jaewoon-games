@@ -257,25 +257,191 @@
           "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
         }
       ]
+    },
+    "local_authoring_parts::546ce550a3b09799536800c987e65e130c41c31265d0e60cc5c6bd6ba3236e10:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::a32aa557d6c81c7237388ebc4fc949cc844fa46aae8438954f81405758e158ac:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to drive village development",
+          "playerChoice": "Select resource types to build or improve village functions"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather, where to allocate them, and what function to build or improve next."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_B",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
+          "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 자원 활용을 위한 시스템",
+          "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계 규칙과 MAIN×A×B×c의 관계가 서로 영향을 주는 시그니처 상호작용을 통해, 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다. 이 게임은 단순 반복보다는 경로·위험·결과를 다르게 만든다.",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계 규칙과 MAIN×A×B×c의 관계가 서로 영향을 주는 시그니처 상호작용을 통해, 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreFun": "Gather a focused set of island resources.의 결과를 이용해 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계 규칙과 MAIN×A×B×c의 관계가 서로 영향을 주는 시그니처 상호작용을 통해, 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to drive village development",
+          "playerChoice": "Select resource types to build or improve village functions"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather, where to allocate them, and what function to build or improve next."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_B",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
+          "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 자원 활용을 위한 시스템",
+          "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 824176,
-      "lastMs": 99039,
+      "totalMs": 912224,
+      "lastMs": 88048,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:04:33.973Z"
+      "updatedAt": "2026-10-09T12:06:02.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:04:33.977Z",
+  "updatedAt": "2026-10-09T12:06:02.036Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2352,12 +2518,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:04:33.977Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:06:02.029Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/island-village/2026-10-09/design-seed.json",
+    "contentDigest": "a539aa549ab83a82a8fff270d9666a59fe1fe3c474bf1e626c8cd14e9225e524",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
