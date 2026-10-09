@@ -194,25 +194,42 @@
         "State changes are triggered by player choices, leading to progression through rewards or build combinations.",
         "Progression is influenced by both material modifications and environmental factors, requiring strategic decision-making."
       ]
+    },
+    "local_authoring_parts::9e6d28472cfbf8f39a176cddba08c8b8bdb557a85f6c460b6c0db57e282ea747:signatureSystems:0": {
+      "id": "50일의 핵심 재미와 시스템 연결",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player's action",
+        "Material change",
+        "Environmental constraint"
+      ],
+      "stateOutputs": [
+        "Progression state",
+        "New choice",
+        "Final identity"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player engages in real-time survival challenges with progression mechanics.",
+      "playerChoice": "Choose between multiple state transitions to progress through rewards or build combinations based on current situation and constraints."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 735092,
-      "lastMs": 59208,
+      "totalMs": 806494,
+      "lastMs": 71402,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:24:53.065Z"
+      "updatedAt": "2026-10-09T17:26:04.470Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:12:37.895Z",
-  "updatedAt": "2026-10-09T17:24:53.066Z",
+  "updatedAt": "2026-10-09T17:26:04.470Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1942,7 @@
   "localAuthoringSplits": {
     "89848f34cf0364201caad0dfc4c20dbed80ff6e5d6aeccda74e4bd5b3a8271df": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:24:53.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:26:04.470Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
