@@ -443,25 +443,39 @@
     },
     "local_authoring_parts::9532e331a1f7c35e45854a6030ae905d2cffdbeb116c711580fcb300167f7650:trigger": {
       "trigger": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행"
+    },
+    "local_authoring_parts::9532e331a1f7c35e45854a6030ae905d2cffdbeb116c711580fcb300167f7650:stateChange": {
+      "stateChange": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행 시, 자원의 효율적 관리와 지역 개발 우선순위를 결정하여 상태 변화가 발생합니다."
+    },
+    "local_authoring_parts::7973cd920f091f45bae3fc52b7ee50632a6f4c345c26629aab74a8b9d8b47418:systemInterconnections:0": {
+      "fromId": "GATHER_RESOURCES",
+      "toId": "GATHER_RESOURCES",
+      "stateKeys": [
+        "GATHER_RESOURCES"
+      ],
+      "fromSystem": "GATHER_RESOURCES",
+      "toSystem": "GATHER_RESOURCES",
+      "trigger": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행",
+      "stateChange": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행 시, 자원의 효율적 관리와 지역 개발 우선순위를 결정하여 상태 변화가 발생합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1596580,
-      "lastMs": 87994,
+      "totalMs": 1688171,
+      "lastMs": 91591,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:17:26.407Z"
+      "updatedAt": "2026-10-09T12:18:58.000Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:17:26.407Z",
+  "updatedAt": "2026-10-09T12:18:58.002Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2984,7 +2998,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:17:26.407Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:18:58.002Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
