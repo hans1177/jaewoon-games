@@ -27,25 +27,32 @@
       "identity": "엘도리아 연대기: 진입, 탐험, 선택, 성장, 재방문의 시스템적 연결을 통한 핵심 루프 구축 및 주체화된 플레이어 역할 정립에 대한 게임 정체성입니다. 이는 단순한 탐험이나 전투가 아닌, 세계 상태 변화와 다음 선택의 유연한 교환을 통해 실질적인 플레이 경험을 제공하는 것이 목적입니다. 중심 행동은 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'이며, 두 대축 A/B는 'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'와 'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.'으로 구성됩니다. 보조 요소 c는 'Discover hidden paths, unlock new stories, and forge deeper connections'를 담고 있습니다. 이는 플레이어가 지속적으로 참여하고 싶은 반복 가능한 루프를 형성합니다. 시그니처 시스템은 MAIN/A/B/c/DELVE(@) 각각이 실제 메커니즘의 역할을 수행하며, 기존 작품과의 밸런스·저장·보상·진행을 임의로 변경하지 않습니다. 게임 규칙은 입력→판정→상태 변화→대응→다음 선택 순서에 따라 구체화되어 있으며, 학문적 층위에서 게임 자체의 규칙과 관계를 정립합니다. 진입 단계에서는 플레이어가 세계 상태를 이해하고 다음 선택을 결정하는 과정이 이루어지며, 탐험과 성장은 동시에 진행되도록 설계되었습니다. 이는 단순한 전투나 정보 획",
       "playerFantasy": "엘도리아 연대기에서 플레이어는 '진입', '탐험', '선택', '성장', '재방문'이라는 시스템적 연결을 통한 핵심 루프 구축 및 주체화된 플레이어 역할 정립에 참여합니다. 이는 단순한 탐험이나 전투가 아닌, 세계 상태 변화와 다음 선택의 유연한 교환을 통해 실질적인 플레이 경험을 제공하는 것이 목적입니다. 중심 행동은 'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.'이며, 두 대축 A/B는 'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'와 'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.'으로 구성됩니다. 보조 요소 c는 'Discover hidden paths, unlock new stories, and forge deeper connections'를 담고 있습니다. 이는 플레이어가 지속적으로 참여하고 싶은 반복 가능한 루프를 형성합니다. 시그니처 시스템은 MAIN/A/B/c/DELVE(@) 각각이 실제 메커니즘의 역할을 수행하며, 기존 작품과의 밸런스·저장·보상·진행을 임의로 변경하지 않습니다. 게임 규칙은 입력→판정→상태 변화→대응→다음 선택 순서에 따라 구체화되어 있으며, 학문적 층위에서 게임",
       "coreFun": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+    },
+    "local_authoring_parts::84d53e5de0f10ab70830d6e32fc99b2a41b89d63c07ad00eb14863863ba92d3b:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "PROCESS: State change triggered by player action leads to new world state and next available choice.",
+        "OUTPUT: New world state and next available choice are determined based on player decision."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 349862,
-      "lastMs": 42775,
+      "totalMs": 402563,
+      "lastMs": 52701,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:14:43.413Z"
+      "updatedAt": "2026-10-09T13:15:36.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T13:08:53.524Z",
-  "updatedAt": "2026-10-09T13:14:43.414Z",
+  "updatedAt": "2026-10-09T13:15:36.117Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2284,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:14:43.414Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:15:36.117Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
