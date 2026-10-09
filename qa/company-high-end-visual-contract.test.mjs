@@ -7,7 +7,8 @@ import {createVibeHighEndVisualDirection,HIGH_END_VISUAL_TARGET_FRAMES} from '..
 import {MOTION_DIRECTOR_TARGET,MOTION_COMPOSITION_CHANNELS,MOTION_DNA_FIELDS,MOTION_LIBRARY_GRAPH_NODES} from '../assets/vibe-motion-director.js';
 import {STUDIO_ASSET_UNIVERSE_TARGET,STUDIO_ASSET_FAMILIES,CREATURE_BODY_PLANS,CREATURE_SPECIES,CLOTHING_LAYER_SLOTS,BIOME_FAMILIES,BUILDING_THEMES,CROSS_PLATFORM_3D_MASTER_GLB_CONTRACT} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeHighEndPresentationStack} from '../assets/vibe-presentation-director.js';
-import {auditVibeRuntimeVisualEvidence,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
+import {auditVibeRuntimeVisualEvidence,auditVibeWeb25D,HIGH_END_GOLDEN_SCENE_ROLES} from '../assets/vibe-visual-quality-gate.js';
+import {planAssetApplication} from '../assets/asset-selector.js';
 
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
@@ -58,13 +59,13 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
   const spatial=roadmap.livingMotionVisualQualityContract.minimumSpatialPresentation;
   assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
-  assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(spatial.minimumFinalGameplayDimension,'3D');
   assert.equal(spatial.flat2DFinalGameplayForbidden,true);
   assert.equal(spatial.uiOverlayMayRemain2D,true);
   assert.equal(spatial.runtimeEvidenceRequired,true);
-  assert.equal(c.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(c.minimumFinalGameplayDimension,'3D');
   assert.equal(c.flat2DFinalPresentationForbidden,true);
-  assert.equal(architecture.departmentTopology.graphics.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(architecture.departmentTopology.graphics.minimumFinalGameplayDimension,'3D');
   assert.ok(architecture.executionTopology.assetProduction.includes('RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION'));
   assert.equal(architecture.departmentTopology.graphics.usesExistingDepartment,true);
   assert.equal(architecture.departmentTopology.graphics.unlimitedEvidenceDrivenEvolutionGenerations,true);
@@ -322,10 +323,10 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
-  assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'3D');
   assert.equal(art.minimumSpatialPresentation.flat2DFinalGameplayForbidden,true);
   assert.equal(art.minimumSpatialPresentation.ui2DOverlayAllowed,true);
-  assert.equal(art.policy.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.policy.minimumFinalGameplayDimension,'3D');
   assert.ok(art.implementation.some(value=>/3D|2\.5D/.test(value)));
   assert.deepEqual([...art.animation.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
   assert.equal(art.animation.target,'STUDIO_GRADE_GAME_MOTION');
@@ -642,4 +643,47 @@ test('canonical NPC production contract requires physical appearance and role di
   assert.equal(security.npcRoleProductionSecurity.protections.visualHeightWeightCannotMutateAuthoritativeGameplayScale,true);
   assert.equal(security.npcRoleProductionSecurity.protections.visualBodyMassCannotMutateCollisionOrHitbox,true);
   assert.equal(security.npcRoleProductionSecurity.protections.bossAppearanceCannotAuthorizeBalancePhaseRewardOrDamageChanges,true);
+});
+
+test('owner 3D-only source and shared character-monster policy retains game identity',()=>{
+  const reuse=roadmap.assetProductionParallelContract.companyGraphicsLibrary24h.crossGenre3dActorReuse;
+  assert.equal(reuse.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.deepEqual(reuse.scope,['CHARACTER','CREATURE']);
+  assert.ok(reuse.genrePriority.includes('RPG'));
+  assert.ok(reuse.genrePriority.includes('SURVIVAL'));
+  assert.equal(reuse.colorOnlyIdentityForbidden,true);
+  assert.equal(reuse.minimumDistinctAxes,3);
+  assert.equal(reuse.requiredOneStructuralAndOneMotionAxis,true);
+  assert.equal(reuse.originalMasterImmutable,true);
+  const art=createVibeArtPipeline({request:'3D RPG 몬스터 재사용',target:'unity',quality:3});
+  assert.equal(art.animation.styleVariants.crossGenre3dActorReuse.shared3dMasterPreferred,true);
+  assert.equal(art.animation.styleVariants.crossGenre3dActorReuse.colorOnlyCloneForbidden,true);
+  assert.equal(art.policy.minimumFinalGameplayDimension,'3D');
+});
+
+test('asset selector excludes 2D actor masters and requires per-game RPG-survival variants',()=>{
+  const animation={verifiedAnimation:true,animations:['idle','walk']};
+  const manifest={assets:[
+    {id:'old-player',types:['character'],path:'/assets/player.png',...animation},
+    {id:'new-player',types:['character'],path:'/assets/player.glb',...animation,
+      consumerGameIds:['forest-rpg'],verifiedCompanyReusable:true,productionVerified:true},
+    {id:'old-world',types:['background'],path:'/assets/forest.webp'}
+  ]};
+  const plan=planAssetApplication({prompt:'3D 생존 캐릭터 게임',manifest,gameId:'island-survival',genre:'SURVIVAL'});
+  assert.deepEqual(plan.matched.filter(row=>row.type==='character').map(row=>row.id),['new-player']);
+  assert.ok(plan.legacy2DWorldAssetIds.includes('old-player'));
+  assert.ok(plan.legacy2DWorldAssetIds.includes('old-world'));
+  assert.equal(plan.requiredWorldDimension,'3D');
+  assert.equal(plan.gameSpecific3dVariants[0].productionAction,'AUTHOR_AND_QA_VARIANT_FROM_SHARED_3D_MASTER');
+  assert.equal(plan.ready,false);
+});
+
+test('static 2D/2.5D markers do not satisfy 3D audit',()=>{
+  const fake=auditVibeWeb25D({files:[{path:'web-games/fake/index.html',
+    text:'data-spatial-dimension="3d" isometric parallax depthSort rotateX transform-style: preserve-3d'}]});
+  assert.equal(fake.pass,false);
+  assert.equal(fake.minimumFinalGameplayDimension,'3D');
+  const three=auditVibeWeb25D({files:[{path:'web-games/real/world.js',
+    text:'const renderer=new THREE.WebGLRenderer(); const scene=new THREE.Scene(); const camera=new THREE.PerspectiveCamera(); const mesh=new THREE.Mesh(new THREE.BoxGeometry()); scene.add(mesh);'}]});
+  assert.equal(three.pass,true);
 });
