@@ -27,25 +27,471 @@
       "identity": "야생 생존 - 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다. 중심 행동: 선택, 대축: 위험/보상, 보조 요소: 자원, 발견/숙련/재방문: 진입/진행/위기 처리입니다. 주요 시스템: 월드 상태 변환, 보상/위험 추적, 전략 교환, 캐릭터 인식 및 반응, 루프 구현. 기능: 실시간 상호작용, 상태 변화, 결과 예측, 재도전 가능. 최종 장르: 생존, 오픈월드, 채집, 현실. 원본 규칙을 유지하고, 멀티플랫폼 적용이 필요할 경우 디자이너가 직접 확장합니다.",
       "playerFantasy": "야생 생존에서는 플레이어가 실제 야생 환경에서 살아남기 위한 선택과 행동을 직접 경험하며, 월드 상태와 자원을 관리해야 합니다. 이 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공하여, 플레이어는 현실적인 위험과 보상을 체감하면서 게임을 즐길 수 있습니다.",
       "coreFun": "야생 생존에서 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+    },
+    "local_authoring_parts::6498285d41bea0613aa7dcc70936f91fd7032d96548b4bb35b5f601450549e14:coreLoop": {
+      "coreLoop": [
+        "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다.",
+        "변화된 상태와 보상/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지고, 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다."
+      ]
+    },
+    "local_authoring_parts::959013db1054ae2229599f9bfe383704ccc1712768bacaf898684fb7d7a8df3d:signatureSystems:0": {
+      "id": "wild-survival_signature_systems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "world_state",
+        "player_input"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target",
+        "strategy_choice"
+      ],
+      "name": "월드 상태 변환 시스템",
+      "purpose": "야생 생존에서 플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+    },
+    "local_authoring_parts::959013db1054ae2229599f9bfe383704ccc1712768bacaf898684fb7d7a8df3d:signatureSystems:1": {
+      "id": "wild-survival_signature_systems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "world_state",
+        "player_input"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target",
+        "strategy_choice"
+      ],
+      "name": "월드 상태 변환 시스템",
+      "purpose": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 목표 및 전략이 결정됩니다.",
+      "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+    },
+    "local_authoring_parts::959013db1054ae2229599f9bfe383704ccc1712768bacaf898684fb7d7a8df3d:signatureSystems:2": {
+      "id": "wild-survival_signature_systems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "world_state",
+        "player_input"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target",
+        "strategy_choice"
+      ],
+      "name": "월드 상태 변환 시스템 (보조 요소)",
+      "purpose": "월드 상태와 플레이어 선택에 따라 새로운 월드 상태, 다음 타겟, 전략 선택을 생성 및 관리합니다.",
+      "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+    },
+    "local_authoring_parts::959013db1054ae2229599f9bfe383704ccc1712768bacaf898684fb7d7a8df3d:signatureSystems:3": {
+      "id": "wild-survival_signature_systems_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "world_state",
+        "player_input"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target",
+        "strategy_choice"
+      ],
+      "name": "월드 상태 변환 시스템 (보조 요소)",
+      "purpose": "월드 상태와 자원 관리 및 전략 교환을 위한 보조 시스템",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+    },
+    "local_authoring_parts::959013db1054ae2229599f9bfe383704ccc1712768bacaf898684fb7d7a8df3d:signatureSystems:4": {
+      "id": "wild-survival_signature_systems_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "world_state",
+        "player_input"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target",
+        "strategy_choice"
+      ],
+      "name": "월드 상태 변환 시스템 (발견/숙련/재방문)",
+      "purpose": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+      "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 발굴된 정보를 바탕으로 전략을 수정하여 게임 진행에 영향을 미칩니다."
+    },
+    "local_authoring_parts::6498285d41bea0613aa7dcc70936f91fd7032d96548b4bb35b5f601450549e14:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "야생 생존에서 플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 목표 및 전략이 결정됩니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 월드 상태, 다음 타겟, 전략 선택을 생성 및 관리합니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 자원 관리 및 전략 교환을 위한 보조 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (발견/숙련/재방문)",
+          "purpose": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 발굴된 정보를 바탕으로 전략을 수정하여 게임 진행에 영향을 미칩니다."
+        }
+      ]
+    },
+    "local_authoring_parts::2acd8eb491b773357a2042591ad1ec956d3836b1bdf40b7b13090798d614b4af:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다.",
+        "변화된 상태와 보상/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지고, 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "야생 생존에서 플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 목표 및 전략이 결정됩니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 월드 상태, 다음 타겟, 전략 선택을 생성 및 관리합니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 자원 관리 및 전략 교환을 위한 보조 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (발견/숙련/재방문)",
+          "purpose": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 발굴된 정보를 바탕으로 전략을 수정하여 게임 진행에 영향을 미칩니다."
+        }
+      ]
+    },
+    "local_authoring_parts::2acd8eb491b773357a2042591ad1ec956d3836b1bdf40b7b13090798d614b4af:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::99a5c263c0dde19711d4ccbcd02216388da2cf0a0a9c7ca4a93787e8f7e9b71f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다.",
+        "변화된 상태와 보상/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지고, 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "야생 생존에서 플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 목표 및 전략이 결정됩니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 월드 상태, 다음 타겟, 전략 선택을 생성 및 관리합니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 자원 관리 및 전략 교환을 위한 보조 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (발견/숙련/재방문)",
+          "purpose": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 발굴된 정보를 바탕으로 전략을 수정하여 게임 진행에 영향을 미칩니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "야생 생존 - 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다. 중심 행동: 선택, 대축: 위험/보상, 보조 요소: 자원, 발견/숙련/재방문: 진입/진행/위기 처리입니다. 주요 시스템: 월드 상태 변환, 보상/위험 추적, 전략 교환, 캐릭터 인식 및 반응, 루프 구현. 기능: 실시간 상호작용, 상태 변화, 결과 예측, 재도전 가능. 최종 장르: 생존, 오픈월드, 채집, 현실. 원본 규칙을 유지하고, 멀티플랫폼 적용이 필요할 경우 디자이너가 직접 확장합니다.",
+      "playerFantasy": "야생 생존에서는 플레이어가 실제 야생 환경에서 살아남기 위한 선택과 행동을 직접 경험하며, 월드 상태와 자원을 관리해야 합니다. 이 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공하여, 플레이어는 현실적인 위험과 보상을 체감하면서 게임을 즐길 수 있습니다.",
+      "coreFun": "야생 생존에서 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다.",
+      "coreLoop": [
+        "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+        "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다.",
+        "변화된 상태와 보상/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지고, 게임은 즉시 이해되는 입력/피드백/실패/재도전 흐름을 제공합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "wild-survival_signature_systems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "야생 생존에서 플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 목표 및 전략이 결정됩니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 플레이어 선택에 따라 새로운 월드 상태, 다음 타겟, 전략 선택을 생성 및 관리합니다.",
+          "playerChoice": "플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 과정에서는 실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (보조 요소)",
+          "purpose": "월드 상태와 자원 관리 및 전략 교환을 위한 보조 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 보상 또는 실패를 기반으로 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "wild-survival_signature_systems_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "world_state",
+            "player_input"
+          ],
+          "stateOutputs": [
+            "new_world_state",
+            "next_target",
+            "strategy_choice"
+          ],
+          "name": "월드 상태 변환 시스템 (발견/숙련/재방문)",
+          "purpose": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+          "playerChoice": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 발굴된 정보를 바탕으로 전략을 수정하여 게임 진행에 영향을 미칩니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 179425,
-      "lastMs": 27943,
+      "totalMs": 439094,
+      "lastMs": 38096,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:13:11.163Z"
+      "updatedAt": "2026-10-09T09:17:30.844Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:10:11.715Z",
-  "updatedAt": "2026-10-09T09:13:11.164Z",
+  "updatedAt": "2026-10-09T09:17:30.854Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2099,12 +2545,22 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:13:11.164Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:17:30.847Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/wild-survival/2026-10-09/design-seed.json",
+    "contentDigest": "08fdce2a7428f553103303812e9ea15635da0c4cf9c5e9f18a84881552742d8f",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
