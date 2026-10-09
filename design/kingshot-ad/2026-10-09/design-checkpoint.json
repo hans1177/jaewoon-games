@@ -1081,25 +1081,28 @@
       "toSystem": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
       "trigger": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다.",
       "stateChange": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::d79b705723215b4e2d1b81bebe0b301317ec861f7d68752e4a73b9d2acb19e16:fromId": {
+      "fromId": "systemInterconnections[3]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 98,
+      "calls": 99,
+      "successes": 99,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8317951,
-      "lastMs": 61675,
+      "totalMs": 8376812,
+      "lastMs": 58861,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:27:21.244Z"
+      "updatedAt": "2026-10-09T06:28:20.109Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T06:27:21.246Z",
+  "updatedAt": "2026-10-09T06:28:20.109Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3611,7 +3614,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:27:21.246Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:28:20.109Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
