@@ -49,25 +49,248 @@
       "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
       "purpose": "Establishes the ecological and strategic context of insect threats, linking them to player decisions and game progression.",
       "playerChoice": "Player chooses how to interpret and respond to incoming waves based on environmental factors such as terrain, enemy types, and resource availability."
+    },
+    "local_authoring_parts::276220c940fae1f65a03b1ffc1c9fea38191dafe4c78ffc38a51781b10e5fef5:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "DEFENDER_REARRANGEMENT_PLAN",
+        "RESOURCE_ALLOCATIONS",
+        "REGIONS_AFFECTED"
+      ],
+      "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+      "purpose": "Establishes the core relationship between incoming insect waves and regional defense strategies, incorporating ecological, strategic, and procedural elements.",
+      "playerChoice": "The player must strategically place or adjust defenders based on the threat pattern of the incoming wave, while allocating resources to maximize defensive effectiveness in key regions."
+    },
+    "local_authoring_parts::276220c940fae1f65a03b1ffc1c9fea38191dafe4c78ffc38a51781b10e5fef5:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "DEFENDER_REARRANGEMENT_PLAN",
+        "RESOURCE_ALLOCATIONS",
+        "REGIONS_AFFECTED"
+      ],
+      "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_B",
+      "purpose": "Establishes the ecological and strategic context for defending against insect waves, incorporating environmental variability and adaptive resource allocation.",
+      "playerChoice": "Player chooses how to allocate resources based on the threat pattern, influencing both immediate defense and long-term strategy development."
+    },
+    "local_authoring_parts::276220c940fae1f65a03b1ffc1c9fea38191dafe4c78ffc38a51781b10e5fef5:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "DEFENDER_REARRANGEMENT_PLAN",
+        "RESOURCE_ALLOCATIONS",
+        "REGIONS_AFFECTED"
+      ],
+      "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_C",
+      "purpose": "Establishes the ecological and strategic context for defensive decisions, linking to core loop and signature systems.",
+      "playerChoice": "Player chooses how to adapt defenses based on environmental threats and resource constraints, influencing regional dynamics and long-term strategy."
+    },
+    "local_authoring_parts::276220c940fae1f65a03b1ffc1c9fea38191dafe4c78ffc38a51781b10e5fef5:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "DEFENDER_REARRANGEMENT_PLAN",
+        "RESOURCE_ALLOCATIONS",
+        "REGIONS_AFFECTED"
+      ],
+      "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_DELVE",
+      "purpose": "Specifies the player's strategic choices and their impact on the game state.",
+      "playerChoice": "The player must strategically place or adjust defenders, allocating resources to counter the most threatening enemy types in real-time based on observed patterns and threats."
+    },
+    "local_authoring_parts::16f232c48e421f56365de125b7626135577ee4148d237556fae06780c1340770:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+          "purpose": "Establishes the ecological and strategic context of insect threats, linking them to player decisions and game progression.",
+          "playerChoice": "Player chooses how to interpret and respond to incoming waves based on environmental factors such as terrain, enemy types, and resource availability."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+          "purpose": "Establishes the core relationship between incoming insect waves and regional defense strategies, incorporating ecological, strategic, and procedural elements.",
+          "playerChoice": "The player must strategically place or adjust defenders based on the threat pattern of the incoming wave, while allocating resources to maximize defensive effectiveness in key regions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_B",
+          "purpose": "Establishes the ecological and strategic context for defending against insect waves, incorporating environmental variability and adaptive resource allocation.",
+          "playerChoice": "Player chooses how to allocate resources based on the threat pattern, influencing both immediate defense and long-term strategy development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_C",
+          "purpose": "Establishes the ecological and strategic context for defensive decisions, linking to core loop and signature systems.",
+          "playerChoice": "Player chooses how to adapt defenses based on environmental threats and resource constraints, influencing regional dynamics and long-term strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_DELVE",
+          "purpose": "Specifies the player's strategic choices and their impact on the game state.",
+          "playerChoice": "The player must strategically place or adjust defenders, allocating resources to counter the most threatening enemy types in real-time based on observed patterns and threats."
+        }
+      ]
+    },
+    "local_authoring_parts::ff9441ed19b948667006a29163587401edc0e6077e3fe632062a5606dff2b4f3:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "SELECT: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "OUTPUT: Status change reflecting increased defensive resilience, new strategic options, and altered regional dynamics."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+          "purpose": "Establishes the ecological and strategic context of insect threats, linking them to player decisions and game progression.",
+          "playerChoice": "Player chooses how to interpret and respond to incoming waves based on environmental factors such as terrain, enemy types, and resource availability."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+          "purpose": "Establishes the core relationship between incoming insect waves and regional defense strategies, incorporating ecological, strategic, and procedural elements.",
+          "playerChoice": "The player must strategically place or adjust defenders based on the threat pattern of the incoming wave, while allocating resources to maximize defensive effectiveness in key regions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_B",
+          "purpose": "Establishes the ecological and strategic context for defending against insect waves, incorporating environmental variability and adaptive resource allocation.",
+          "playerChoice": "Player chooses how to allocate resources based on the threat pattern, influencing both immediate defense and long-term strategy development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_C",
+          "purpose": "Establishes the ecological and strategic context for defensive decisions, linking to core loop and signature systems.",
+          "playerChoice": "Player chooses how to adapt defenses based on environmental threats and resource constraints, influencing regional dynamics and long-term strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INCOMING_INSECT_WAVE_PATTERN"
+          ],
+          "stateOutputs": [
+            "DEFENDER_REARRANGEMENT_PLAN",
+            "RESOURCE_ALLOCATIONS",
+            "REGIONS_AFFECTED"
+          ],
+          "name": "WAVES_AND_ENVIRONMENTS_SIGNATURE_DELVE",
+          "purpose": "Specifies the player's strategic choices and their impact on the game state.",
+          "playerChoice": "The player must strategically place or adjust defenders, allocating resources to counter the most threatening enemy types in real-time based on observed patterns and threats."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 415045,
-      "lastMs": 67322,
+      "totalMs": 688957,
+      "lastMs": 68961,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:50:30.931Z"
+      "updatedAt": "2026-10-09T08:55:04.850Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:43:35.755Z",
-  "updatedAt": "2026-10-09T08:50:30.931Z",
+  "updatedAt": "2026-10-09T08:55:04.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:50:30.931Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:55:04.853Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
