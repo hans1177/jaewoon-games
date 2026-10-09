@@ -448,7 +448,7 @@ test('Unity Web homepage requires actual deployed bundle, 3D browser play and in
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const probe=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(probe,/unity-web-deploy-manifest\.json\?ts=/);
-  assert.match(probe,/bundleComplete===true/);
+  assert.match(probe,/manifest\?\.bundleComplete!==true/);
   assert.match(probe,/unity-web-gameplay-validation\.json/);
   assert.match(probe,/unity-web-independent-qa\.json/);
   assert.match(probe,/unity-web-regression\.json/);
