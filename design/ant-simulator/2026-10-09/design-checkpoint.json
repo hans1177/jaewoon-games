@@ -726,25 +726,37 @@
       "toSystem": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
       "trigger": "world_state_revisitation_trigger",
       "stateChange": "new_world_state_revisitation"
+    },
+    "local_authoring_parts::72bbb29ac3fd95d7a766816099741808e84ac1a1450c5b2c824d987f38f733aa:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
+      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
+      "stateKeys": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 893054,
-      "lastMs": 14961,
+      "totalMs": 923776,
+      "lastMs": 30722,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:37:28.174Z"
+      "updatedAt": "2026-10-09T14:37:58.902Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:37:28.176Z",
+  "updatedAt": "2026-10-09T14:37:58.902Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2491,7 +2503,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:37:28.176Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:37:58.902Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
