@@ -20,7 +20,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     fs.mkdirSync(path.join(root,'Assets','Editor'),{recursive:true});
     fs.mkdirSync(path.join(root,'Packages'),{recursive:true});
     fs.mkdirSync(path.join(root,'ProjectSettings'),{recursive:true});
-    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),'using UnityEngine; public class Game:MonoBehaviour {}\n');
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),'using UnityEngine; public class Game:MonoBehaviour { void Start(){ var camera=Camera.main; var terrain=GameObject.CreatePrimitive(PrimitiveType.Cube); terrain.transform.position=new Vector3(0f,0f,3f); } }\n');
     fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
     fs.writeFileSync(path.join(root,'Packages','manifest.json'),'{}\n');
     fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
@@ -41,6 +41,17 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.postGateAction,'CONTINUE_INDEPENDENT_UNITY_WEB_DEVELOPMENT');
     assert.equal(req.requiredGameplayDimension,'3D');
     assert.equal(req.native3dRuntimeMeshQaRequired,true);
+    assert.equal(req.f0Native3dSourceRequired,true);
+    assert.equal(req.f0Native3dSourcePassed,true);
+    assert.deepEqual(req.f0Native3dSourceEvidence,{camera:true,spatialTransform:true,worldMesh:true});
+    assert.equal(req.f0StaticEvidenceIsNotRuntimeQa,true);
+    // F0에서는 2D 금지만 검사하는 것이 아니라 실제 Unity 3D 코드를 필수로 검사한다.
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
+      'using UnityEngine; public class Game:MonoBehaviour {}\\n');
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
+      'using UnityEngine; public class Game:MonoBehaviour { // Camera.main; GameObject.CreatePrimitive(PrimitiveType.Cube); new Vector3(1,2,3);\\n }');
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
     // 같은 원본 프로젝트에서 2D 물리를 추가하면 기존 빌드 진입점이 거부해야 한다.
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
       'using UnityEngine; public class Game:MonoBehaviour { Rigidbody2D body; }\\n');
@@ -61,7 +72,7 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
     fs.mkdirSync(path.join(root,'Assets','Editor'),{recursive:true});
     fs.mkdirSync(path.join(root,'Packages'),{recursive:true});
     fs.mkdirSync(path.join(root,'ProjectSettings'),{recursive:true});
-    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),'using UnityEngine; public class Game:MonoBehaviour {}\n');
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),'using UnityEngine; public class Game:MonoBehaviour { void Start(){ var camera=Camera.main; var terrain=GameObject.CreatePrimitive(PrimitiveType.Cube); terrain.transform.position=new Vector3(0f,0f,3f); } }\n');
     fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
     fs.writeFileSync(path.join(root,'Packages','manifest.json'),'{}\n');
     fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
