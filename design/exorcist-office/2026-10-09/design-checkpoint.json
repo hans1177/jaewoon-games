@@ -287,25 +287,211 @@
           "playerChoice": "새로운 콘텐츠, 경로, 숙련, 재방문, 재해석, 고급 운용을 통해 게임 경험의 깊이를 증대시키며, 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따른 조합 및 상황별 예외를 반영해야 합니다."
         }
       ]
+    },
+    "local_authoring_parts::680f6b093abd9b6b6307e7c1b1800b3e83844d998da9af1cfbd90ec6806e7db5:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::f41c5ebb6577c5ac60d3ad7c3aacbef8921fe6caca4616c8f5c7bccd04ef5da2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE",
+            "SESSION_DURATION"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_1",
+            "STATE_CHANGE_2",
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION",
+          "purpose": "Establishes the core gameplay loop through a causal chain of state transitions, ensuring that each step is both intuitive and mechanically grounded in the game's design.",
+          "playerChoice": "Select a simple input (tap/swipe) followed by a score, distance, or short session goal to initiate the flow and trigger a series of state changes that reflect the player's actions and goals within the game world."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_1",
+            "STATE_CHANGE_2"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_A",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_2",
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_B",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_C",
+          "purpose": "보조 요소로 MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 데 활용되며, 플레이어가 성장 과정에서 새로운 콘텐츠와 관계를 발견하는 데 도움을 주는 역할을 수행합니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과에 따라 다음 상태 변화를 결정합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_4"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_DELVE",
+          "purpose": "플레이어가 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석하여 새로운 콘텐츠와 경로를 탐색하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다.",
+          "playerChoice": "새로운 콘텐츠, 경로, 숙련, 재방문, 재해석, 고급 운용을 통해 게임 경험의 깊이를 증대시키며, 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따른 조합 및 상황별 예외를 반영해야 합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "퇴마 사무소: 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다.",
+      "playerFantasy": "퇴마 사무소에서 플레이어는 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다.",
+      "coreFun": "퇴마 사무소: 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE",
+            "SESSION_DURATION"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_1",
+            "STATE_CHANGE_2",
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION",
+          "purpose": "Establishes the core gameplay loop through a causal chain of state transitions, ensuring that each step is both intuitive and mechanically grounded in the game's design.",
+          "playerChoice": "Select a simple input (tap/swipe) followed by a score, distance, or short session goal to initiate the flow and trigger a series of state changes that reflect the player's actions and goals within the game world."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_1",
+            "STATE_CHANGE_2"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_A",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_2",
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_B",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_3"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_C",
+          "purpose": "보조 요소로 MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 데 활용되며, 플레이어가 성장 과정에서 새로운 콘텐츠와 관계를 발견하는 데 도움을 주는 역할을 수행합니다.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.의 결과에 따라 다음 상태 변화를 결정합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISPLAY",
+            "DISTANCE_MEASURE"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_4"
+          ],
+          "name": "CASUAL_GAME_FLOW_RECONFIGURATION_DELVE",
+          "purpose": "플레이어가 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석하여 새로운 콘텐츠와 경로를 탐색하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다.",
+          "playerChoice": "새로운 콘텐츠, 경로, 숙련, 재방문, 재해석, 고급 운용을 통해 게임 경험의 깊이를 증대시키며, 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따른 조합 및 상황별 예외를 반영해야 합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 745883,
-      "lastMs": 254761,
+      "totalMs": 835982,
+      "lastMs": 90099,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:08:56.834Z"
+      "updatedAt": "2026-10-09T13:10:26.937Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:08:56.837Z",
+  "updatedAt": "2026-10-09T13:10:26.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2225,12 +2411,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:08:56.837Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:10:26.940Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/exorcist-office/2026-10-09/design-seed.json",
+    "contentDigest": "db2590e46d3dfd5fc266cd4ddbec37e384c53698255e127bf2e501cdb2b7c8ac",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
