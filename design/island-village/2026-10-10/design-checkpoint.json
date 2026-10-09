@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::ce3a9b91b2666c379ed50b2c0db1bc51f5b37e7ff2c38ecfd0dba18cdae36f95:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "CORE_FUN_TO_LEARN",
+        "a": {
+          "system": "RESOURCE_MANAGEMENT",
+          "material": "ISLAND_RESOURCES",
+          "materialDomain": "VILLAGE_BUILDING",
+          "stateChange": "RESOURCE_ALLOCATED_TO_VILLAGE"
+        },
+        "b": {
+          "system": "GAMEPLAY_SYSTEM",
+          "material": "PLAYER_FANTASY",
+          "materialDomain": "PLAYER_ROLE",
+          "stateChange": "PLAYER_SELECTS_NEW_FUNCTION"
+        },
+        "abCausality": "RESOURCE_ALLOCATION_AND_PLAYER_CHOICE_INTERACTION",
+        "abEvolution": {
+          "aChangesB": "RESOURCE_REDUCTION_ON_FAILURE",
+          "bChangesA": "PLAYER_DETERMINED_BY_RESOURCE_LIMITATION",
+          "lateGameChange": "RESOURCE_CONSUMPTION_AND_PLAYERS_DIVERSE_SELECTION"
+        },
+        "materialFusion": {
+          "contrast": "RESOURCE_FLOW_AND_PLAYER_DECISION",
+          "causalBridge": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT",
+          "removalConsequence": "PLAYER_ROLE_CHANGE_ON_RESOURCE_SHORTAGE"
+        },
+        "storyCausalChain": {
+          "cause": "RESOURCE_LACK_IN_THE_BEGINNING",
+          "characterConflict": "PLAYER_RESPOND_WITH_AGGRESSIVE_ROLE_ASSIGNMENT",
+          "playerChoice": "PLAYER_CHOOSE_TO_EXPAND_VILLAGE_FUNCTIONS",
+          "worldChange": "VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION",
+          "nextEvent": "PLAYER_ANNOUNCES_NEW_VILLAGE_GOAL"
+        },
+        "cThemes": [
+          {
+            "name": "ECONOMIC_STABILITY",
+            "kind": "GENRE",
+            "gameplayEffect": "RESOURCE_MANAGEMENT"
+          },
+          {
+            "name": "SOCIAL_CONNECTIVITY",
+            "kind": "GENRE",
+            "gameplayEffect": "PLAYER_ROLE_ASSIGNMENT"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ECONOMICS",
+            "gameplayEffect": "RESOURCE_ALLOCATED_TO_VILLAGE"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "SOCIETY",
+            "gameplayEffect": "PLAYER_ROLE_CHANGE_ON_RESOURCE_SHORTAGE"
+          }
+        ],
+        "cGenreInterlock": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE",
+        "cWorldAndGameplayEffect": "RESOURCE_CONSUMPTION_AND_PLAYERS_DIVERSE_SELECTION",
+        "delveDiscoveries": [
+          {
+            "clue": "RESOURCES_HOARDING_BECAUSE_OF_LOW_RESOURCES",
+            "discovery": "PLAYER_CHOOSING_TO_EXPAND_VILLAGE_FUNCTIONS",
+            "newChoice": "PLAYER_SELECTS_ECONOMIC_STABILITY"
+          },
+          {
+            "clue": "PLAYERS_RESPOND_TO_RESOURCE_LACK_WITH_SOCIAL_ROLES",
+            "discovery": "PLAYER_ASSIGNS_SOCIAL_ROLES",
+            "newChoice": "PLAYER_CHOOSE_TO_ENHANCE_SOCIAL_CONNECTIONS"
+          },
+          {
+            "clue": "VILLAGE_GROWTH_IS_INCREMENTED_BY_PLAYER_INVESTMENTS",
+            "discovery": "PLAYER_ANNOUNCES_NEW_VILLAGE_GOAL",
+            "newChoice": "PLAYER_DETERMINES_NEXT_VILLAGE_FUNCTION"
+          },
+          {
+            "clue": "RESOURCE_ALLOCATION_IS_ADJUSTED_BASED_ON_PLAYERS'_DECISIONS",
+            "discovery": "PLAYER_REASSIGN_RESOURCES",
+            "newChoice": "PLAYER_MODIFIES_RESOURCE_FLOW"
+          }
+        ],
+        "delveGrowthRule": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT_AND_VILLAGE_GROWTH",
+        "finalGameIdentity": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE"
+      },
+      "playerFantasy": "주민은 자원을 조절하고 시설을 개선하는 데 참여하며, 새로운 역할과 기능을 선택해 마을의 성장에 영향을 미칩니다. 이는 단순한 플레이어 행동이 아니라 실제 사회적 관계와 경제적 결정을 반영합니다.",
+      "coreFun": "자원 분배를 통해 마을의 생존과 발전을 지원하고, 주민의 역할을 바탕으로 새로운 기능을 확정하며, 게임 내에서 중요한 상황 변화를 유도합니다. 이 과정에서는 자원의 효율적인 사용과 플레이어의 의사결정이 서로 연결되어 진실된 게임 경험을 제공합니다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 150323,
+      "lastMs": 150323,
+      "lastError": null,
+      "updatedAt": "2026-10-09T17:31:22.690Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:28:52.266Z",
-  "updatedAt": "2026-10-09T17:28:52.278Z",
+  "updatedAt": "2026-10-09T17:31:22.691Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1610,5 +1711,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T17:31:22.690Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
