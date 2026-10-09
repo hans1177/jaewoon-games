@@ -27,25 +27,33 @@
       "identity": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
       "playerFantasy": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임에서, 진입·선택·보상·위험·다음 선택의 순환적인 루프로 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다."
+    },
+    "local_authoring_parts::ce63796c2b0fc641e8b547c5f3456a1d4eab2551389152de04b90a5614d1e8ca:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT/OUTPUT/STATE",
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positions that Cover the Threatened Route.",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES.",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE, AND CLEAR THE STAGE OR BOSS TO UNLOCK HARDER DEFENSE CHOICES."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 110835,
-      "lastMs": 21936,
+      "totalMs": 130795,
+      "lastMs": 19960,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:31:13.094Z"
+      "updatedAt": "2026-10-09T14:31:33.056Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:31:13.095Z",
+  "updatedAt": "2026-10-09T14:31:33.056Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1751,7 +1759,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:31:13.095Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:31:33.056Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
