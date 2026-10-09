@@ -3,639 +3,39 @@
   "gameId": "dice-battle-board",
   "date": "2026-10-09",
   "seedId": "OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
-  "fingerprint": "82e5b687aa984f18ed4d1970a6a85218d4efa8b0ea9c400de2bdc162a683b388",
-  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
+  "fingerprint": "d8028ea437c61258c727cd6659ffabb300079ecf7a8637bff56c4437d478b7f8",
+  "policyDigest": "3bae97985d3734f0dd2be83c7447ba4928188d9e542be339dee50932cef38315",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {
     "local_authoring_parts::71f9271734c0f6b0112c9028f141ae9d485073f9e4324b007435d5034e8a6b0d:identity": {
-      "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::71f9271734c0f6b0112c9028f141ae9d485073f9e4324b007435d5034e8a6b0d:playerFantasy": {
-      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::f2579d5f8258d61d4f44155e5e23eec9187b571de7bd2d305746d03a5a49e109:identity,playerFantasy": {
-      "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::f2579d5f8258d61d4f44155e5e23eec9187b571de7bd2d305746d03a5a49e109:coreFun": {
-      "coreFun": "주사위 전투 보드는 플레이어가 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::5794d99813c57ecfaec83b8bf4162d4212c22c5b3954b5bb842e6eb86c3ef81e:identity,playerFantasy,coreFun": {
-      "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "coreFun": "주사위 전투 보드는 플레이어가 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::6d55c90444b5154a3ab6caa6a303aed1e68783beaee31735c948ffb828ed0744:coreLoop": {
-      "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-      ]
-    },
-    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:0": {
-      "id": "SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "LEVEL_START",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "stateOutputs": [
-        "NEXT_BOARD_PATTERN",
-        "REWARD_GAINED",
-        "NEW_LEVEL_COMPLETED"
-      ],
-      "name": "BOARD_STATE_TRANSITION",
-      "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
-    },
-    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:1": {
-      "id": "SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "stateOutputs": [
-        "NEXT_BOARD_PATTERN",
-        "REWARD_GAINED",
-        "NEW_LEVEL_COMPLETED"
-      ],
-      "name": "BOARD_STATE_TRANSITION",
-      "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-      "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
-    },
-    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:2": {
-      "id": "SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "stateOutputs": [
-        "NEXT_BOARD_PATTERN",
-        "REWARD_GAINED",
-        "NEW_LEVEL_COMPLETED"
-      ],
-      "name": "BOARD_STATE_TRANSITION_B",
-      "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-      "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
-    },
-    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:3": {
-      "id": "SIGNATURE_SYSTEM_3",
-      "grammarRole": "c",
-      "stateInputs": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "stateOutputs": [
-        "NEXT_BOARD_PATTERN",
-        "REWARD_GAINED",
-        "NEW_LEVEL_COMPLETED"
-      ],
-      "name": "BOARD_STATE_TRANSITION_C",
-      "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-      "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
-    },
-    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:4": {
-      "id": "SIGNATURE_SYSTEM_4",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "stateOutputs": [
-        "NEXT_BOARD_PATTERN",
-        "REWARD_GAINED",
-        "NEW_LEVEL_COMPLETED"
-      ],
-      "name": "BOARD_STATE_TRANSITION_DELVE",
-      "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-    },
-    "local_authoring_parts::6d55c90444b5154a3ab6caa6a303aed1e68783beaee31735c948ffb828ed0744:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "LEVEL_START",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_B",
-          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_C",
-          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_DELVE",
-          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-        }
-      ]
-    },
-    "local_authoring_parts::32b0a3e9000b45bca9d785a0958208e45f2f53c62aa85e8cc166a8f13ebae7d9:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "LEVEL_START",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_B",
-          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_C",
-          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_DELVE",
-          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-        }
-      ]
-    },
-    "local_authoring_parts::32b0a3e9000b45bca9d785a0958208e45f2f53c62aa85e8cc166a8f13ebae7d9:multiplayerMode": {
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::5794d99813c57ecfaec83b8bf4162d4212c22c5b3954b5bb842e6eb86c3ef81e:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "LEVEL_START",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_B",
-          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_C",
-          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_DELVE",
-          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "designer_draft_slices::identity-core": {
-      "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "coreFun": "주사위 전투 보드는 플레이어가 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-      "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "LEVEL_START",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION",
-          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_B",
-          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_C",
-          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "BOARD_PATTERN",
-            "MATCH_RESULT",
-            "GOAL_CLEAR"
-          ],
-          "stateOutputs": [
-            "NEXT_BOARD_PATTERN",
-            "REWARD_GAINED",
-            "NEW_LEVEL_COMPLETED"
-          ],
-          "name": "BOARD_STATE_TRANSITION_DELVE",
-          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:fromId": {
-      "fromId": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:toId": {
-      "toId": "LEVEL_START"
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:stateKeys": {
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ]
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:fromSystem": {
-      "fromSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:toSystem": {
-      "toSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:trigger": {
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::34fbb1e0155be9d72824708ba6327f47579b2cbdd23ffa6c796819fa19906016:stateChange": {
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::efb3c04a865e1a7669d16def468f832d37a11f70c53cd72c4ae04e960870eab2:systemInterconnections:0": {
-      "fromId": "BOARD_STATE_TRANSITION",
-      "toId": "LEVEL_START",
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "fromSystem": "BOARD_STATE_TRANSITION",
-      "toSystem": "BOARD_STATE_TRANSITION",
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:fromId": {
-      "fromId": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:toId": {
-      "toId": "LEVEL_START"
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:stateKeys": {
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ]
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:fromSystem": {
-      "fromSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:toSystem": {
-      "toSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:trigger": {
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:stateChange": {
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::efb3c04a865e1a7669d16def468f832d37a11f70c53cd72c4ae04e960870eab2:systemInterconnections:1": {
-      "fromId": "BOARD_STATE_TRANSITION",
-      "toId": "LEVEL_START",
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "fromSystem": "BOARD_STATE_TRANSITION",
-      "toSystem": "BOARD_STATE_TRANSITION",
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:fromId": {
-      "fromId": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:toId": {
-      "toId": "LEVEL_START"
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:stateKeys": {
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ]
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:fromSystem": {
-      "fromSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:toSystem": {
-      "toSystem": "BOARD_STATE_TRANSITION"
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:trigger": {
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::3f22d061916d88e40a6f520781addb4703228a277b372138520d7b3b72f68969:stateChange": {
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
-    },
-    "local_authoring_parts::efb3c04a865e1a7669d16def468f832d37a11f70c53cd72c4ae04e960870eab2:systemInterconnections:2": {
-      "fromId": "BOARD_STATE_TRANSITION",
-      "toId": "LEVEL_START",
-      "stateKeys": [
-        "BOARD_PATTERN",
-        "MATCH_RESULT",
-        "GOAL_CLEAR"
-      ],
-      "fromSystem": "BOARD_STATE_TRANSITION",
-      "toSystem": "BOARD_STATE_TRANSITION",
-      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
+      "identity": "주사위 전투 보드은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n플레이어는 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서 플레이어는 단순한 패턴 탐색보다는 진입/진출/성공/실패의 순환적인 구조와 함께 위험/보상의 균형을 유지하며 게임을 진행하게 된다.\n\n게임의 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 1,
+      "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2561090,
-      "lastMs": 89500,
+      "totalMs": 212127,
+      "lastMs": 212127,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:32:27.907Z"
+      "updatedAt": "2026-10-09T15:47:54.854Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T11:32:27.908Z",
+  "createdAt": "2026-10-09T15:44:22.707Z",
+  "updatedAt": "2026-10-09T15:47:54.854Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 121,
-    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "version": 122,
+    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
     "inventoryCount": 717,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -643,7 +43,7 @@
     "platforms": {
       "WEB": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -658,77 +58,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -795,34 +140,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -834,33 +151,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1104,30 +397,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1155,17 +428,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "ADAPT",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1196,17 +465,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1252,7 +517,7 @@
       },
       "UNITY": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1267,77 +532,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1404,34 +614,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1443,33 +625,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1713,30 +871,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1764,17 +902,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "ADAPT",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1805,17 +939,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1861,7 +991,7 @@
       },
       "ROBLOX": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1876,77 +1006,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -2013,34 +1088,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -2052,33 +1099,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -2322,30 +1345,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2373,17 +1376,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "USE",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2414,17 +1413,13 @@
           },
           {
             "family": "PROP",
-            "action": "USE",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2470,27 +1465,6 @@
       }
     },
     "assetFacts": {
-      "roblox-common-character-gear-travel-cloak": {
-        "family": "CHARACTER",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "back"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "BACK_GEAR",
-        "sourcePath": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 883.4,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
       "roblox-common-motion-start": {
         "family": "MOTION",
         "roleEvidence": {
@@ -2507,27 +1481,6 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-world-prop-animal-trough": {
-        "family": "PROP",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "feed"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "ANIMAL_TROUGH",
-        "sourcePath": "/assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 883.2,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -2558,389 +1511,12 @@
       }
     }
   },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "7754b0a74a0f7487e05d8391e69e7a181f423da80bde79c6c329e3d0f065be3b"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::systems-progression": [
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "BOARD_PATTERN_CHANGE"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "NEW_LEVEL_COMPLETED"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "CONTENT_EXPANSION_PLAN"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "UNLOCKED_BOARD_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "progressionEconomyBalance.progressionLoop",
-          "value": "COST_AND_COUNTERPLAY"
-        },
-        "requiredAction": "progressionEconomyBalance.progressionLoop의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "progressionEconomyBalance"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "progressionEconomyBalance.resourceFlow",
-          "value": "STATE_INPUT_TO_OUTPUT"
-        },
-        "requiredAction": "progressionEconomyBalance.resourceFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "progressionEconomyBalance"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].newGameplay",
-          "value": "BATCH_PREVIEW_AND_COMMIT"
-        },
-        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].systemImpact",
-          "value": "INTERRUPTION_AND_RETURN"
-        },
-        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[3].newGameplay",
-          "value": "EXACTLY_ONCE_REWARD_CLAIM"
-        },
-        "requiredAction": "contentExpansionPlan[3].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].newGameplay",
-          "value": "NEXT_OPEN_QUESTION"
-        },
-        "requiredAction": "contentExpansionPlan[4].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "BOARD_PATTERN_CHANGE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[2]",
-          "value": "NEW_LEVEL_COMPLETED"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.retryFlow",
-          "value": "STATE_INPUT_TO_OUTPUT"
-        },
-        "requiredAction": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.riskPressure",
-          "value": "BASELINE_RISK_PRESSURE"
-        },
-        "requiredAction": "failureRetryRisk.riskPressure의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.recoveryRules",
-          "value": "BASELINE_RECOVERY_RULES"
-        },
-        "requiredAction": "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "MAIN→B의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MAIN→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "MAIN→C의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MAIN→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "DELVE→A의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: DELVE→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
-        },
-        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::systems-progression": {
-      "progressionDirection": "SEQUENTIAL"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:32:27.908Z",
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T15:47:54.854Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null,
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "designerSeed": {
-    "file": "design/dice-battle-board/2026-10-09/design-seed.json",
-    "contentDigest": "292fbf2130ad7f26262faffea660e2169daac620c7905d25c4a3b082ebe5f4e3",
-    "authorModel": "ollama:qwen3:1.7b",
-    "status": "AUTHORED_CANDIDATE"
-  }
+  "lastError": null
 }
