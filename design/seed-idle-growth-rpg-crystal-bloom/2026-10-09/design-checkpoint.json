@@ -47,25 +47,38 @@
       "name": "IDLE_GROWTH_RESOURCE",
       "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
       "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
+    },
+    "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "IDLE_GROWTH_RESOURCE"
+      ],
+      "stateOutputs": [
+        "GROWTH_PROGRESS"
+      ],
+      "name": "IDLE_GROWTH_AWARD",
+      "purpose": "게임 내에서 선택 결과가 다음 상태로 전환하는 주요 인과축",
+      "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 377016,
-      "lastMs": 44040,
+      "totalMs": 415101,
+      "lastMs": 38085,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:11:21.123Z"
+      "updatedAt": "2026-10-09T12:11:59.210Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:11:21.123Z",
+  "updatedAt": "2026-10-09T12:11:59.210Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2297,7 +2310,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:11:21.123Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:11:59.210Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
