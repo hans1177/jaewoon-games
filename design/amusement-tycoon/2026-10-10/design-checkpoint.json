@@ -553,25 +553,38 @@
       "name": "게임 초기 설정",
       "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
       "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
+    },
+    "local_authoring_parts::5e380249f582b8a87171e1af276d1398c0328fd2d07059109e3798bda7402b94:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "세계 상태 변환"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "세계 상태 관리",
+      "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
+      "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1638936,
-      "lastMs": 99008,
+      "totalMs": 1737842,
+      "lastMs": 98906,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:49:17.307Z"
+      "updatedAt": "2026-10-09T18:50:56.215Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:49:17.307Z",
+  "updatedAt": "2026-10-09T18:50:56.215Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2052,7 +2065,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:49:17.307Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:50:56.215Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
