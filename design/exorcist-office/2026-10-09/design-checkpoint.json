@@ -474,25 +474,28 @@
       "toSystem": "CORE_FUN_02",
       "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
       "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::36b06a15cc5ceaa2a584a4955f8c019763c8112c7bf92c7f7d15aba9823c235b:fromId": {
+      "fromId": "CORE_FUN_04"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 26,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 800247,
-      "lastMs": 32939,
+      "totalMs": 831855,
+      "lastMs": 31608,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:03:33.696Z"
+      "updatedAt": "2026-10-09T16:04:05.307Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T16:03:33.698Z",
+  "updatedAt": "2026-10-09T16:04:05.307Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2140,7 +2143,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:03:33.698Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:04:05.307Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
