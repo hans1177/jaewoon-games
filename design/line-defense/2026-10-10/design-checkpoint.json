@@ -403,25 +403,100 @@
           "playerChoice": "주요 장르와 보조 장르 간의 상호작용을 통한 전략적 선택이 실제로 발생함으로써 게임 규칙이 변동됨을 나타낸다."
         }
       ]
+    },
+    "local_authoring_parts::b20d6818b651eb8426a60150e8dac109fedc7926258df433390cf93c2cd78896:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::75017f2f848c86f623410fc1658b51dc673d5b5dbe6302fb95da7291fc02f028:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택 -> 인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
+        "주요 시스템과 보조 시스템 간의 양방향 실제 상태 교환"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력/선택",
+            "플레이어 선택",
+            "주요 시스템"
+          ],
+          "stateOutputs": [
+            " 상태변화",
+            "보상/위험",
+            " 다음 사건"
+          ],
+          "name": "라인 디펜스",
+          "purpose": "주요 장르, 진행, 위험, 보상 모두 연동하는 반복 가능한 핵심 루프",
+          "playerChoice": "실제 게임에서 발생하는 선택 사항 명시: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력/선택",
+            "플레이어 선택"
+          ],
+          "stateOutputs": [
+            "새로운 압박 유형/지역 규칙",
+            "적 행동/목표 또는 시스템 연결"
+          ],
+          "name": "자동 전투",
+          "purpose": "보조 시스템에서 플레이어가 적 행동 패턴 및 위협 유형을 이해하여 새로운 게임 규칙 및 상태 변화를 생성",
+          "playerChoice": "실제 게임에서 발생하는 선택 사항 명시, 예: '새로운 압박 유형 도입' 또는 '적 행동 패턴 재설계' 등 실제 플레이에 반영됨"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력/선택",
+            "플레이어 선택"
+          ],
+          "stateOutputs": [
+            "새로운 압박 유형/지역 규칙",
+            "적 행동/목표 또는 시스템 연결"
+          ],
+          "name": "자동 전투",
+          "purpose": "보조 시스템에서 플레이어가 적 행동 패턴 및 위협 유형을 이해하여 새로운 압박 유형/지역 규칙/적 행동/목표 또는 시스템 연결을 생성",
+          "playerChoice": "실제 게임 내에서 적의 행동 패턴 및 위협 유형을 바탕으로 새로운 압박 유형/지역 규칙을 설계하는 선택 사항이 발생함으로써, 중후반 두 시스템 간의 관계 변화를 실현할 수 있음"
+        },
+        {
+          "id": "DELVE[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력/선택",
+            "플레이어 선택"
+          ],
+          "stateOutputs": [
+            "새로운 압박 유형/지역 규칙",
+            "적 행동/목표 또는 시스템 연결"
+          ],
+          "name": "골목 군단 대전의 인물 갈등 및 전략적 선택",
+          "purpose": "플레이어가 주요 장르와 보조 장르 간의 상호 작용을 통해 새로운 압박 유형을 생성하며, 이는 실제 세계 상태 변화에 영향을 미친다.",
+          "playerChoice": "주요 장르와 보조 장르 간의 상호작용을 통한 전략적 선택이 실제로 발생함으로써 게임 규칙이 변동됨을 나타낸다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1140196,
-      "lastMs": 102941,
+      "totalMs": 1226324,
+      "lastMs": 86128,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:42:27.491Z"
+      "updatedAt": "2026-10-09T21:43:53.622Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:23:27.262Z",
-  "updatedAt": "2026-10-09T21:42:27.493Z",
+  "updatedAt": "2026-10-09T21:43:53.634Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2123,15 +2198,152 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]",
+            "DELVE[3]"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "골목 군단 대전",
+      "creativeGrammar": {
+        "mainIdentity": "골목 군단 대전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+        "a": {
+          "system": "라인 디펜스",
+          "material": "모바일에서 즉시 이해되는 입력과 피드백",
+          "materialDomain": "주요 시스템 + 창작 소재",
+          "stateChange": "입력/선택 -> 상태변화 -> 보상/위험/다음 선택"
+        },
+        "b": {
+          "system": "자동 전투",
+          "material": "적 행동 패턴 및 위협 유형",
+          "materialDomain": "보조 시스템 + 창작 소재",
+          "stateChange": "새로운 압박 유형/지역 규칙/적 행동/목표 또는 시스템 연결"
+        },
+        "abCausality": "주요 시스템과 보조 시스템 간의 양방향 실제 상태 교환, 주요 장르와 보조 장르 간의 인과 변화",
+        "abEvolution": {
+          "aChangesB": "A→B 상태 교환을 통해 B가 A에 영향을 미치는 조건과 피드백",
+          "bChangesA": "B→A 상태 교환을 통해 A가 B에 영향을 미치는 조건과 피드백",
+          "lateGameChange": "중후반 두 시스템 간의 관계 변화가 실제로 일어나는 조건과 피드백"
+        },
+        "materialFusion": {
+          "contrast": "주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨",
+          "causalBridge": "인물·예술·역사 등 다양한 주제/소재를 사용하여 플레이어 선택과 세계 상태 변화를 연결함",
+          "removalConsequence": "보조 장르 제거 시 주요 장르의 플레이 사례가 바뀌는 구체적인 설명 제공"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 -> 인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
+          "characterConflict": "플레이어 역할 및 대사로 구성된 갈등 요소 포함",
+          "playerChoice": "실제 게임에서 발생하는 선택 사항 명시",
+          "worldChange": "게임 규칙과 상태 변화를 기술한 내용 포함",
+          "nextEvent": "다음 사건을 예측하고 설계한 내용 포함"
+        },
+        "cThemes": [
+          {
+            "name": "골목 군단",
+            "kind": "MATERIAL",
+            "gameplayEffect": "주요 장르, 진행, 위험, 보상 모두 연동"
+          },
+          {
+            "name": "전투",
+            "kind": "MATERIAL",
+            "gameplayEffect": "보조 장르, 실질적 인과 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "라인 디펜스",
+            "gameplayEffect": "주요 장르, 진행, 위험, 보상 연결"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "자동 전투",
+            "gameplayEffect": "보조 장르, 실질적 인과 변화"
+          }
+        ],
+        "cGenreInterlock": "주요 장르와 보조 장르 간의 상호 작용이 실제 플레이에 반영됨, 보조 장르 제거 시 주요 장르의 플레이 사례가 바뀌는 구체적인 설명 제공",
+        "cWorldAndGameplayEffect": "게임 규칙과 상태 변화를 기술한 내용 포함, 다음 사건을 예측하고 설계한 내용 포함",
+        "delveDiscoveries": [
+          {
+            "clue": "골목 군단 대전에서 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+            "discovery": "실제 선택으로 재정의된 핵심 루프",
+            "newChoice": "다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다"
+          },
+          {
+            "clue": "플레이어는 적 행동 패턴 및 위협 유형을 이해하여 새로운 압박 유형/지역 규칙/적 행동/목표 또는 시스템 연결을 열고, 중후반 두 시스템 간의 관계 변화를 실현함",
+            "discovery": "새로운 게임 규칙 및 상태 변화",
+            "newChoice": "중후반 두 시스템 간의 관계 변화가 실제로 일어나는 조건과 피드백"
+          },
+          {
+            "clue": "플레이어는 주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨, 보조 장르 제거 시 주요 장르의 플레이 사례가 바뀌는 구체적인 설명 제공",
+            "discovery": "주요 장르와 보조 장르 간의 인과 변화",
+            "newChoice": "주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨"
+          },
+          {
+            "clue": "골목 군단 대전에서 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+            "discovery": "실제 선택으로 재정의된 핵심 루프",
+            "newChoice": "다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다"
+          },
+          {
+            "clue": "플레이어는 적 행동 패턴 및 위협 유형을 이해하여 새로운 압박 유형/지역 규칙/적 행동/목표 또는 시스템 연결을 열고, 중후반 두 시스템 간의 관계 변화를 실현함",
+            "discovery": "새로운 게임 규칙 및 상태 변화",
+            "newChoice": "중후반 두 시스템 간의 관계 변화가 실제로 일어나는 조건과 피드백"
+          }
+        ],
+        "delveGrowthRule": "4개 이상 초기 사례 및 무제한 발전 규칙 포함",
+        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성, 주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
+      },
+      "playerFantasy": "플레이어는 게임 내에서 '골목 군단'이라는 주제로 다양한 전략적 선택을 하며, 이 과정에서 진입 방식, 위협 유형, 압박 형식 등 모든 요소가 실제 플레이에 반영된다. 이러한 선택은 진행, 위험, 보상을 연결해 반복 가능한 핵심 루프를 만든다.",
+      "coreFun": "{identity: 골목 군단 대전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핸드폰 라인 디펜스} {a: {system: 라인 디펜스, material: 모바일에서 즉시 이해되는 입력과 피드백, materialDomain: 주요 시스템 + 창작 소재, stateChange: 입력/선택 -> 상태변화 -> 보상/위험/다음 선택}} {b: {system: 자동 전투, material: 적 행동 패턴 및 위협 유형, materialDomain: 보조 시스템 + 창작 소재, stateChange: 새로운 압박 유형/지역 규칙/적 행동/목표 또는 시스템 연결}} {abCausality: 주요 시스템과 보조 시스템 간의 양방향 실제 상태 교환, 주요 장르와 보조 장르 간의 인과 변화} {abEvolution: {aChangesB: A→B 상태 교환을 통해 B가 A에 영향을 미치는 조건과 피드백, bChangesA: B→A 상태 교환을 통해 A가 B에 영향을 미치는 조건과 피드백, lateGameChange: 중후반 두 시스템 간의 관계 변화가 실제로 일어나는 조건과 피드백}} {materialFusion: {contrast: 주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨, causalBridge: 인물·예술·역사 등 다양한 주제/소재를 사용하여 플레이어 선택과 세계 상태 변화를 연결함, removalConsequence: 보조 장르 제거 시 주요 장르의 플레이 사례가 바뀌는 구체적인 설명 제공}} {storyCausalChain: {cause: 플레이어 선택 -> 인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건, characterConflict: 플레이어 역할 및 대사로 구성된 갈등 요소 포함, player",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택 -> 인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
+        "주요 시스템과 보조 시스템 간의 양방향 실제 상태 교환"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "b67afd9b59e0eadfdddd967165813c63277b1cb229832100bfefdd95acaa3a55": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:42:27.493Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T21:43:53.626Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
