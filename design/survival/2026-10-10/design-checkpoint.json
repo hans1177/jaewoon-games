@@ -80,25 +80,53 @@
         "worldChange": "게임 상태 변동과 플레이어 선택에 따른 세계 변화",
         "nextEvent": "다양한 플레이어 역할과 세계 변화가 발생하며, 무한하게 발전하는 발견·숙련 계층이 형성"
       }
+    },
+    "local_authoring_parts::ab3d70d445d0ad220763470dfa9b151b781e57a378bf2cd9ce75b08449ae7ef3:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "생존",
+          "kind": "GENRE",
+          "gameplayEffect": "실시간 전략적 선택, 자원 관리, 위협 회피"
+        },
+        {
+          "name": "제작",
+          "kind": "GENRE",
+          "gameplayEffect": "장비/설비 창출, 경험 획득, 보상 확보"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "실시간 생존, 빌드 생성, 경쟁 및 협력"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "MODULAR_STRATEGY",
+          "gameplayEffect": "전략 교환, 경로 변화, 대응법 조합"
+        }
+      ],
+      "cGenreInterlock": "생존 기록과 채집/제작 선택의 인과적 교환이 게임 상태와 플레이어 역할에 영향을 미친다. 주요 요소는 '생존'으로, 보조 요소는 '제작'으로 구성된다.",
+      "cWorldAndGameplayEffect": "생존 기록은 실시간 전략적 선택과 자원 관리를 통해 세계를 바꾸고, 제작은 장비/경험/보상을 통해 새로운 가능성 제공한다. 두 요소 간의 인과적 교환은 게임 정체성과 플레이어 역할에 연결되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1293964,
-      "lastMs": 284596,
+      "totalMs": 1403146,
+      "lastMs": 109182,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:10:00.037Z"
+      "updatedAt": "2026-10-09T20:11:49.221Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:48:25.925Z",
-  "updatedAt": "2026-10-09T20:10:00.038Z",
+  "updatedAt": "2026-10-09T20:11:49.221Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "412273fca46df0e7a0a38ff63a262e5f3b3312b3af4f71140902341465c70f9c": true,
     "a8052de121f4f324082a9d2e3c5f4a018c84f938a64c821ebd080628ab0c33d8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:10:00.038Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:11:49.221Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
