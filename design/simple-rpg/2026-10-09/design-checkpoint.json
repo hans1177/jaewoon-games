@@ -436,25 +436,28 @@
       "toSystem": "BOARD_TO_WEAPON",
       "trigger": "플레이어가 브레드 상태로 전환하여 무기 스택에 추가하는 시스템에서, 선택적 행동을 수행하여 다음 월드 상태로 이동합니다.",
       "stateChange": "플레이어가 브레드 상태를 선택하여 무기 스택에 추가하는 시스템에서, 선택적 행동을 수행하여 다음 월드 상태로 이동합니다."
+    },
+    "local_authoring_parts::abf483f89a0220b009fc5d14ae836349024ed9456d0753913486a00988d3d898:fromId": {
+      "fromId": "BOARD_TO_WEAPON"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2028127,
-      "lastMs": 94142,
+      "totalMs": 2116546,
+      "lastMs": 88419,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:07:24.574Z"
+      "updatedAt": "2026-10-09T13:08:52.997Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:33:36.381Z",
-  "updatedAt": "2026-10-09T13:07:24.576Z",
+  "updatedAt": "2026-10-09T13:08:52.997Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2848,7 +2851,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:07:24.576Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:08:52.997Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
