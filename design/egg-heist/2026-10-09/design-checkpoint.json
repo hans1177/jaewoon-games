@@ -89,25 +89,43 @@
       "name": "Egg Heist Signature System III",
       "purpose": "Player's strategic decision-making in the context of a comedic stealth escape game.",
       "playerChoice": "Selecting between creating an opening, stealing or moving the egg, and reacting to detection to achieve the reward and unlock new routes or challenges."
+    },
+    "local_authoring_parts::e97d677d84e64243b7add38dec499e895fa648760b0c3b690dc853ec64f28d26:signatureSystems:3": {
+      "id": "EGG-HEIST-SIGNATURE-4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "SCOUT",
+        "IDENTIFY",
+        "TARGET_EGG",
+        "PATROL_RISK"
+      ],
+      "stateOutputs": [
+        "CREATE_OPENING",
+        "STEAL_OR_MOVE",
+        "ESCAPE_WITH_REWARD"
+      ],
+      "name": "Egg Heist Signature System IV",
+      "purpose": "Player choice and state transition management in the signature system",
+      "playerChoice": "Choose between creating an opening, stealing or moving the egg, and escaping with a reward to unlock new routes or challenges"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 239191,
-      "lastMs": 40389,
+      "totalMs": 279445,
+      "lastMs": 40254,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:08:43.378Z"
+      "updatedAt": "2026-10-09T11:09:23.634Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:04:43.965Z",
-  "updatedAt": "2026-10-09T11:08:43.379Z",
+  "updatedAt": "2026-10-09T11:09:23.634Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1969,7 +1987,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:08:43.378Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:09:23.634Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
