@@ -34,25 +34,38 @@
         "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
         "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
       ]
+    },
+    "local_authoring_parts::0dda1f08773f6081ee11aaef06656cd199a9d038a76b899ff43c02b124027b69:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "TacticalBoardSystem",
+      "purpose": "Manages the dynamic state of the board and its evolution through tactical decisions.",
+      "playerChoice": "Select a move or ability that alters key spaces on the board and influences future strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296830,
-      "lastMs": 45655,
+      "totalMs": 360516,
+      "lastMs": 63686,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:16:29.226Z"
+      "updatedAt": "2026-10-09T14:17:32.914Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:16:29.226Z",
+  "updatedAt": "2026-10-09T14:17:32.914Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1705,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:16:29.226Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:17:32.914Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
