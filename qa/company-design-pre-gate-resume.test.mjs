@@ -603,8 +603,8 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
 test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
   const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
   const library={version:1,assets:[
-    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
-    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
+    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],path:'assets/library/web-character.glb',license:'project-original',internalAuditScore:900},
+    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',path:'assets/library/reference-environment.glb',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
     {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
   ]};
   const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
@@ -616,6 +616,7 @@ test('design library facts preserve compatibility and separate audit scores from
   const web=context.platforms.WEB.candidates.find(row=>row.assetId==='web-character');
   assert.equal(web.applicationMode,'USE_AS_IS');
   assert.equal(context.assetFacts[web.assetId].auditScore,900);assert.equal(context.assetFacts[web.assetId].productionVerified,false);assert.equal(context.assetFacts[web.assetId].runtimeState,'UNVERIFIED');
+  assert.equal(context.assetFacts[web.assetId].sourcePath,'assets/library/web-character.glb','spatial candidate needs a declared 3D source');
   assert.equal(context.platforms.ROBLOX.candidates.find(row=>row.assetId==='web-character').applicationMode,'NATIVE_REAUTHOR_BASE');
   assert.equal(context.assetFacts['reference-environment'].referenceOnly,true);
   assert.equal(context.platforms.WEB.candidates.find(row=>row.family==='CREATURE').action,'AUTHOR');
@@ -862,7 +863,10 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
 
 test('three-platform policy-only checkpoint migration matches original SHA and excludes other inputs',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_WEB']);
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.unityAndroidDevelopmentPaused,true);
+  assert.ok(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.ownerHeldTargets.includes('UNITY_ANDROID'));
+  assert.equal(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.existingExecutionBindings.UNITY_ANDROID,'UNITY','hold must not erase canonical engine routing');
   const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
   const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
   const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
