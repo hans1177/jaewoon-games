@@ -566,25 +566,38 @@
       "name": "세계 상태 관리",
       "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
       "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
+    },
+    "local_authoring_parts::5e380249f582b8a87171e1af276d1398c0328fd2d07059109e3798bda7402b94:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "세계 상태 변환"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "세계 상태 관리",
+      "purpose": "플레이어의 행동에 따른 세계 상태 변환 및 상태 전환",
+      "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등을 유도하여 선택의 중요성을 강조함으로써 게임 진행 동기를 부여함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1737842,
-      "lastMs": 98906,
+      "totalMs": 1839154,
+      "lastMs": 101312,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:50:56.215Z"
+      "updatedAt": "2026-10-09T18:52:37.528Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:50:56.215Z",
+  "updatedAt": "2026-10-09T18:52:37.528Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2065,7 +2078,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:50:56.215Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:52:37.528Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
