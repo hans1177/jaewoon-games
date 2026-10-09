@@ -34,25 +34,38 @@
         "MAIN의 결과가 A/B/c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
         "보조 요소 COMBO는 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다."
       ]
+    },
+    "local_authoring_parts::b8f70b07fc3292073787aeb63a513951d6e7c18a1409ed0de3f7f4a749b6241c:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_STATUS"
+      ],
+      "name": "START_GAME",
+      "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 248277,
-      "lastMs": 44046,
+      "totalMs": 291134,
+      "lastMs": 42857,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:51:22.944Z"
+      "updatedAt": "2026-10-09T11:52:05.803Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:51:22.944Z",
+  "updatedAt": "2026-10-09T11:52:05.803Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2102,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:51:22.944Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:52:05.803Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
