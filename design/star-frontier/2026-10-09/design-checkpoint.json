@@ -34,25 +34,38 @@
         "플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
         "이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 반복 가능한 루프를 가진다."
       ]
+    },
+    "local_authoring_parts::4f0a26028262cf3c4c80c2a1d7d06b79befd2a33c8e527d7b3f1ce4ab58254bb:signatureSystems:0": {
+      "id": "STAR-FRONTIER-MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "Plays as the core gameplay mechanic, where players take control of the initial state and transition to new states through strategic choices.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives.','inputSequence':['INPUT_START','SELECT_ACTION','OUTPUT_RESULT','STATE_TRANSITION'],'actionSequence':['ACTION_BEGIN','MOVE_SELECTION','RESULT_FEEDBACK','STATE_CHANGE'],'systemInterconnections':[{'role':'PRIMARY','name':'BOARD_PATTERN','purpose':'Determines the visual and procedural structure of each level','playerAction':'Define the 2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 334406,
-      "lastMs": 49071,
+      "totalMs": 384799,
+      "lastMs": 50393,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:42:37.336Z"
+      "updatedAt": "2026-10-09T14:43:27.731Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:37:02.904Z",
-  "updatedAt": "2026-10-09T14:42:37.336Z",
+  "updatedAt": "2026-10-09T14:43:27.731Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,7 +1655,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:42:37.336Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:43:27.731Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
