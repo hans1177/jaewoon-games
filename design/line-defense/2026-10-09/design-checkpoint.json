@@ -1229,25 +1229,42 @@
         "TOWER_PLACEMENT"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::effa396e476b0594ff4ca4de01ed33e968f6545e65e3b508c8385f5c91a645f3:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected and tower placement adjusted",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::1e3bcce5d0de091426142198bb37a011d83bf2ce3d41bac3fc6884da76de22ac:systemInterconnections:2": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected and tower placement adjusted",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 90,
-      "successes": 90,
+      "calls": 91,
+      "successes": 91,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5501461,
-      "lastMs": 48710,
+      "totalMs": 5549655,
+      "lastMs": 48194,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:59:41.556Z"
+      "updatedAt": "2026-10-09T03:00:29.753Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T02:59:41.557Z",
+  "updatedAt": "2026-10-09T03:00:29.755Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3588,7 +3605,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:59:41.556Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:00:29.755Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
