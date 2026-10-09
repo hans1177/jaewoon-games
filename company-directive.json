@@ -120,18 +120,18 @@
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
       "reworkOrRevalidationScoresNotShownAsCurrent": false,
       "scoreRequiresSchema15": false,
-      "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
-      "unityWebQaPassRequiredForHomepageLink": false,
-      "unityWebEvidenceFilesRequiredForHomepageLink": false,
+      "unityWebHomepageExposureGate": "UNITY_WEB_3D_QA_AND_COMPLETE_DEPLOYED_BUNDLE",
+      "unityWebQaPassRequiredForHomepageLink": true,
+      "unityWebEvidenceFilesRequiredForHomepageLink": true,
       "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
       "unityWebMayBeCardDirectLaunchFallback": true,
       "staleSharedRobloxTargetHomepageLinkForbidden": true,
-      "unityWebLegacyBuildCompatibility": true,
-      "playableWebCompanionButtonEnabled": true,
-      "playableWebCompanionButtonLabel": "웹 플레이",
-      "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
-      "playableWebCompanionRequiresPlayableAndArchive": true,
-      "playableWebCompanionRequiresExistingCanonicalIndex": true,
+      "unityWebLegacyBuildCompatibility": false,
+      "playableWebCompanionButtonEnabled": false,
+      "playableWebCompanionButtonLabel": "DISABLED",
+      "playableWebCompanionSource": "LEGACY_REFERENCE_ONLY",
+      "playableWebCompanionRequiresPlayableAndArchive": false,
+      "playableWebCompanionRequiresExistingCanonicalIndex": false,
       "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
       "mainCatalogMayNotOverrideFresherCompanyRuntime": true,
       "runtimeCatalogMirrorMode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
@@ -142,7 +142,10 @@
       "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
       "cardVisibilityRequiresRunnableTarget": true,
       "titleOnlyCardExposureForbidden": true,
-      "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true
+      "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
+      "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess",
+      "playableWebCompanionMayBeDirectLaunchFallback": false,
+      "unityWebOnlyGameCardVisibility": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -1643,5 +1646,10 @@
     "sameResponsibleFileWriteConflictSerializes": true,
     "saveAndBalancePreserved": true,
     "existingPipelineOnly": true
+  },
+  "ownerUnityWebHomepageOnly20261010": {
+    "authority": "OWNER_DIRECTIVE_2026-10-10",
+    "status": "OWNER_DIRECT_LOCKED",
+    "centralPolicyPath": "company-learning/platform-release-roadmap.json#ownerUnityWebHomepageOnly20261010"
   }
 }
