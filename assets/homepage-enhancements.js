@@ -148,11 +148,8 @@ function canonicalWebHref(row){
   return raw===expected?`/${expected}/`:'';
 }
 function playableWebHref(row){
-  const web=sourcesOf(row).web||{};
-  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','UNITY_WEB_BUNDLE_INCOMPLETE'].includes(web.state||row?.ownerWebSourceState))return'';
-  const playable=web.playable===true||row?.homepageWebPlayable===true;
-  const archive=web.archive===true||row?.hasWebArchive===true;
-  return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';
+  // 기존 HTML 게임은 저장 호환성 자료로만 보관하고 직접 플레이는 실제 Unity WebGL로 제한한다.
+  return '';
 }
 async function bindAvailableUnityWebSurfaces(catalog){
   if(!Array.isArray(catalog?.games))return catalog;
