@@ -36,25 +36,38 @@
         "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다.",
         "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다."
       ]
+    },
+    "local_authoring_parts::9f1fe05053f6ca514ffe334dc8a182289484a6cad69aa29676f5dfc010438238:signatureSystems:0": {
+      "id": "VAMPIRE_SURVIVORS",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ACTION_SURVIVAL_ROGUELITE"
+      ],
+      "stateOutputs": [
+        "ACTION_SURVIVAL_ROGUELITE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 300558,
-      "lastMs": 46112,
+      "totalMs": 338894,
+      "lastMs": 38336,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:00:56.325Z"
+      "updatedAt": "2026-10-09T13:01:34.663Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:55:55.739Z",
-  "updatedAt": "2026-10-09T13:00:56.326Z",
+  "updatedAt": "2026-10-09T13:01:34.663Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2253,7 +2266,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:00:56.326Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:01:34.663Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
