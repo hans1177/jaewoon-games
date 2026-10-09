@@ -1696,25 +1696,43 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2"
+    },
+    "local_authoring_parts::237cc6092a455c69ce407b96474cae1e8233f2d048353fb3fe072d6293f7ab17:toSystem,trigger,stateChange": {
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2",
+      "trigger": "SELECT_NEXT_WORLD_STATE",
+      "stateChange": "START_STATE → RUN_STATE"
+    },
+    "local_authoring_parts::c12a9228ff49f57736b2c77017e1c17610ddb69947337a9db09db338593c7a93:systemInterconnections:2": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2",
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2",
+      "trigger": "SELECT_NEXT_WORLD_STATE",
+      "stateChange": "START_STATE → RUN_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 107,
-      "successes": 104,
+      "calls": 108,
+      "successes": 105,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6901841,
-      "lastMs": 100819,
+      "totalMs": 7000939,
+      "lastMs": 99098,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:37:43.155Z"
+      "updatedAt": "2026-10-09T04:39:22.255Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T04:37:43.155Z",
+  "updatedAt": "2026-10-09T04:39:22.257Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3783,7 +3801,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:37:43.155Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:39:22.257Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
