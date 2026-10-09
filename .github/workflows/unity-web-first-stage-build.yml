@@ -552,7 +552,8 @@ jobs:
           const playable=checks.every(e=>e.playableBrowserTest===true
             &&e.boot?.pass===true&&e.input?.pass===true&&e.gameplay?.pass===true
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
-            &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
+            &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true
+            &&e.visualQa?.pass===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
           // 개발자 테스트도 실제 3D, 실조작, 모바일 및 저장 증거가 필수다.
           // 프레임 성능·최종 회귀 실패는 QA 실패로 남기되 테스트 접근을 막지는 않는다.
