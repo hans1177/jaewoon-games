@@ -415,25 +415,108 @@
           "playerChoice": "전투 진보에 따라 방어 구조와 자원 배분을 최적화하여 전략적 선택을 이끌며, 새로운 위협에 대응하는 방어 계획을 수립함으로써 게임 정체성을 형성함이 목표입니다。"
         }
       ]
+    },
+    "local_authoring_parts::de64bf8b73adaccf2f881bfacabe7a152f6bf464d77a9f73774c11dd19d7893a:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::e732c42f74390b8e301313e3752250029ab25574326c4058d5afad773efc88f4:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 적의 웨이브 정보 및 방어 전략 선택",
+        "상태변화: 방어 구성 변경 (적의 유형, 팀 구성, 방어 계획)",
+        "보상: 자원 수집 및 재배분 배포",
+        "위험: 방어 전략의 불안정성 또는 자원 부족 가능성",
+        "다음선택: 새로운 방어 전략 도입"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defensiveConfigurationInput",
+            "enemyWaveInfoInput",
+            "resourceAllocationInput"
+          ],
+          "stateOutputs": [
+            "adaptiveDefenseStrategyOutput",
+            "economicResourceManagementOutput",
+            "strategicPathChoiceOutput"
+          ],
+          "name": "천상의 보루 - 단일 디펜스 전략",
+          "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반의 전략적 선택 구현",
+          "playerChoice": "방어 구성 변경, 자원 배분, 전략적 선택 도입의 순차적인 실행 과정 형성 및 게임 정체성 확립에 영향을 미침니다만, 이는 플레이어의 진보 수준에 따라 변화합니다. 즉, 새로운 위협에 대응하여 방어 전략을 조절하고, 자원 관리를 숙련으로 최적화하며, 전투의 진보로 인해 방어 계획이 유연하게 재구성됩니다. 이러한 선택은 게임의 핵심 요소로서 지속적으로 발전합니다. 결국, 모든 축을 인과적으로 결합한 새 정체성이 형성되며, 이는 플레이어가 실제 경험하는 게임의 정체성입니다."
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defensiveConfigurationInput",
+            "enemyWaveInfoInput",
+            "resourceAllocationInput"
+          ],
+          "stateOutputs": [
+            "adaptiveDefenseStrategyOutput",
+            "economicResourceManagementOutput",
+            "strategicPathChoiceOutput"
+          ],
+          "name": "천상의 보루 - 단일 디펜스 전략",
+          "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반的战略路径 선택",
+          "playerChoice": "방어 구성 변경, 자원 배분 결정, 전략적 선택 실행 중인 실제 플레이 행동들로 이루어진 게임 과정입니다."
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defensiveConfigurationInput",
+            "enemyWaveInfoInput",
+            "resourceAllocationInput"
+          ],
+          "stateOutputs": [
+            "adaptiveDefenseStrategyOutput",
+            "economicResourceManagementOutput",
+            "strategicPathChoiceOutput"
+          ],
+          "name": "천상의 보루 - 단일 디펜스 전략",
+          "purpose": "Player's adaptive decision-making shapes the evolving defensive system",
+          "playerChoice": "Strategic placement of defenses and resource management based on enemy adaptability and economic constraints"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defensiveConfigurationInput",
+            "enemyWaveInfoInput",
+            "resourceAllocationInput"
+          ],
+          "stateOutputs": [
+            "adaptiveDefenseStrategyOutput",
+            "economicResourceManagementOutput",
+            "strategicPathChoiceOutput"
+          ],
+          "name": "천상의 보루 - 단일 디펜스 전략",
+          "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반的战略 선택 결정",
+          "playerChoice": "전투 진보에 따라 방어 구조와 자원 배분을 최적화하여 전략적 선택을 이끌며, 새로운 위협에 대응하는 방어 계획을 수립함으로써 게임 정체성을 형성함이 목표입니다。"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1119325,
-      "lastMs": 107534,
+      "totalMs": 1207590,
+      "lastMs": 88265,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:55:17.200Z"
+      "updatedAt": "2026-10-09T20:56:45.469Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:36:37.837Z",
-  "updatedAt": "2026-10-09T20:55:17.203Z",
+  "updatedAt": "2026-10-09T20:56:45.479Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2135,17 +2218,150 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {
-    "local_authoring_parts::e9c4e737d37c320a1a9d3aa02eb559b3bff08e57dd9e56b425af390e21ac660c:signatureSystems:3": 1
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "slicePartialResults": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems_0",
+            "signatureSystems_1",
+            "signatureSystems_2",
+            "signatureSystems_3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::e9c4e737d37c320a1a9d3aa02eb559b3bff08e57dd9e56b425af390e21ac660c:signatureSystems:3": 1,
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "천상의 보루 - 단일 디펜스 전략",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "디펜스 시스템",
+          "material": "enemy type, wave composition, defensive strategy",
+          "materialDomain": "전투 지역, 방어 계획",
+          "stateChange": "defensive configuration changes based on enemy behavior"
+        },
+        "b": {
+          "system": "경제 시스템",
+          "material": "resource gain from defeated enemies",
+          "materialDomain": "재료 수집 및 사용",
+          "stateChange": "economic resource allocation before pressure increase"
+        },
+        "abCausality": "defensive adaptation → economic resource management → strategic path choice",
+        "abEvolution": {
+          "aChangesB": "defensive strategy adapts to new enemy types",
+          "bChangesA": "economy reallocates resources for new defensive placements",
+          "lateGameChange": "adaptive defense becomes a core gameplay mechanic"
+        },
+        "materialFusion": {
+          "contrast": "enemy adaptability vs. player mastery",
+          "causalBridge": "player's adaptive choices influence future defensive strategies",
+          "removalConsequence": "loss of traditional defensive patterns in favor of dynamic adaptation"
+        },
+        "storyCausalChain": {
+          "cause": "player's initial defensive setup",
+          "characterConflict": "increasing enemy complexity and player skill growth",
+          "playerChoice": "strategic placement of defenses and resource management",
+          "worldChange": "new enemy wave composition and evolving battlefield dynamics",
+          "nextEvent": "dynamic defensive configuration that reflects player mastery"
+        },
+        "cThemes": [
+          {
+            "name": "전투",
+            "kind": "MATERIAL",
+            "gameplayEffect": "defensive positioning"
+          },
+          {
+            "name": "경제",
+            "kind": "MATERIAL",
+            "gameplayEffect": "resource allocation"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "디펜스 시스템",
+            "gameplayEffect": "adaptive strategy"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "경제 관리",
+            "gameplayEffect": "resource optimization"
+          }
+        ],
+        "cGenreInterlock": "defensive system → economic resource management → strategic path choice",
+        "cWorldAndGameplayEffect": "player adaptive choices influence future defensive strategies",
+        "delveDiscoveries": [
+          {
+            "clue": "enemy adaptability",
+            "discovery": "player learns to adjust defense based on new threats",
+            "newChoice": "dynamic defensive configuration"
+          },
+          {
+            "clue": "economic resource management",
+            "discovery": "player optimizes resources for long-term survival",
+            "newChoice": "strategic placement of defenses"
+          },
+          {
+            "clue": "adaptive defense as core mechanic",
+            "discovery": "player's mastery becomes the defining gameplay element",
+            "newChoice": "adaptive defense is a permanent game feature"
+          },
+          {
+            "clue": "new enemy wave composition",
+            "discovery": "player must reconfigure defenses against evolving threats",
+            "newChoice": "reconfigurable defensive layout"
+          }
+        ],
+        "delveGrowthRule": "player's adaptive decisions shape the evolution of the defensive system",
+        "finalGameIdentity": "Player's adaptive decision-making shapes the evolving defensive system"
+      },
+      "playerFantasy": "천상의 보루에서 플레이어는 전투의 진보에 따라 방어 시스템을 유연하게 재구성하며, 자원 관리의 숙련도로 전략적 선택을 이끌며, 새로운 위협과 적의 변형에 맞서 최종적으로 게임 정체성이 형성되는 과정을 경험한다.",
+      "coreFun": "{\"identity\": \"천상의 보루 - 단일 디펜스 전략\",\n\"creativeGrammar\": {\"mainIdentity\": \"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\",\n\"a\": {\"system\": \"디펜스 시스템\", \"material\": \"enemy type, wave composition, defensive strategy\", \"stateChange\": \"defensive configuration changes based on enemy behavior\"},\n\"b\": {\"system\": \"경제 시스템\", \"material\": \"resource gain from defeated enemies\", \"stateChange\": \"economic resource allocation before pressure increase\"},\n\"abCausality\": \"defensive adaptation → economic resource management → strategic path choice\"},\n\"abEvolution\": {\"aChangesB\": \"defensive strategy adapts to new enemy types\", \"bChangesA\": \"economy reallocates resources for new defensive placements\", \"lateGameChange\": \"adaptive defense becomes a core gameplay mechanic\"},\n\"materialFusion\": {\"contrast\": \"enemy adaptability vs. player mastery\", \"causalBR",
+      "coreLoop": [
+        "입력: 적의 웨이브 정보 및 방어 전략 선택",
+        "상태변화: 방어 구성 변경 (적의 유형, 팀 구성, 방어 계획)",
+        "보상: 자원 수집 및 재배분 배포",
+        "위험: 방어 전략의 불안정성 또는 자원 부족 가능성",
+        "다음선택: 새로운 방어 전략 도입"
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
   "localAuthoringSplits": {
     "c4b34af08c2ba5a42eff6076fae1b5cfca91de052dd165fed5a07fedc0b712ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:55:17.203Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T20:56:45.472Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
