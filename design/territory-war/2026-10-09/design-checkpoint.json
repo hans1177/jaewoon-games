@@ -34,25 +34,40 @@
         "Commit units or resources to attack, reinforce or expand economy.",
         "Resolve the territorial change and adapt the next plan to the new front line."
       ]
+    },
+    "local_authoring_parts::ed76525342231a02211217ee152fa73be3f0298d85184c50c62d0a4f6dbd9722:signatureSystems:0": {
+      "id": "territory-war",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentBorderPressure"
+      ],
+      "stateOutputs": [
+        "territoryObjective",
+        "unitsOrResourcesToCommit",
+        "territorialChangeResolution"
+      ],
+      "name": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "purpose": "플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계를 바꾼다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'로 나타난다.",
+      "playerChoice": "영토전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계를 바꾼다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'로 나타난다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 354203,
-      "lastMs": 39646,
+      "totalMs": 469666,
+      "lastMs": 115463,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:26:23.381Z"
+      "updatedAt": "2026-10-09T11:28:18.846Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:20:29.151Z",
-  "updatedAt": "2026-10-09T11:26:23.381Z",
+  "updatedAt": "2026-10-09T11:28:18.846Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2076,7 +2091,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:26:23.381Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:28:18.846Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
