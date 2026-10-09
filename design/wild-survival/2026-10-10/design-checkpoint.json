@@ -769,25 +769,34 @@
       "toSystem": "wild-survival-systems[1]",
       "trigger": "wild-survival-player-choice",
       "stateChange": "wild-survival-world-state-change"
+    },
+    "local_authoring_parts::0e8ceb904ce38f7e489a5df05c95dda225f8e25fe7db3e0dc3f7f97755811ebc:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival-player-choice",
+      "toId": "wild-survival-world-state-change",
+      "stateKeys": [
+        "player_choice",
+        "world_state_change"
+      ],
+      "fromSystem": "wild-survival-systems[3]_core_loop_delve_player_choice_system_id_1234567890abcdef01234567890abcdeffgklmnpqrstuvwxzyzabcfdeghiijklmnopqrstuvwxyza1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1385838,
-      "lastMs": 15679,
+      "totalMs": 1426968,
+      "lastMs": 41130,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:55:31.297Z"
+      "updatedAt": "2026-10-09T18:56:12.430Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:25.391Z",
-  "updatedAt": "2026-10-09T18:55:31.299Z",
+  "updatedAt": "2026-10-09T18:56:12.430Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2537,7 +2546,7 @@
   "localAuthoringSplits": {
     "2644f98555f7b27ee294f05839bbc5b91d649cbf739752a7066f586c20e25705": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:55:31.299Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:56:12.430Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
