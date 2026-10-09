@@ -48,25 +48,39 @@
       "name": "ENVIRONMENTAL_RISK_ASSESSMENT",
       "purpose": "Evaluate environmental hazards and resource availability to guide exploration decisions.",
       "playerChoice": "Assess terrain risks, identify critical resources, and determine optimal paths for survival progression."
+    },
+    "local_authoring_parts::a43f46bf36757773f6632db7f519265e143166e456626dab85b2f59d765a71fb:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "FOREST_ECO_SYSTEM"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_RESOURCES",
+        "GROUP_DYNAMICS"
+      ],
+      "name": "ENVIRONMENTAL_RISK_ASSESSMENT_2",
+      "purpose": "Assess environmental risks and determine optimal paths for resource gathering.",
+      "playerChoice": "Choose optimal paths and strategies based on risk assessment and available resources."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 209366,
-      "lastMs": 33109,
+      "totalMs": 242767,
+      "lastMs": 33401,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:21:00.796Z"
+      "updatedAt": "2026-10-09T08:21:34.199Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:31.411Z",
-  "updatedAt": "2026-10-09T08:21:00.796Z",
+  "updatedAt": "2026-10-09T08:21:34.199Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2294,7 +2308,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:21:00.796Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:21:34.199Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
