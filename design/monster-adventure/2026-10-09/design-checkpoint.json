@@ -898,25 +898,34 @@
       "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "stateChange": "Transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
+    },
+    "local_authoring_parts::9f6121029eeb145545fd48494a8dc1d11a534829e56b350d4ffad9a60dee35de:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "fromSystem": "MONSTER_ADVENTURE_CORE_FUN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 71,
-      "successes": 71,
+      "calls": 72,
+      "successes": 72,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3731407,
-      "lastMs": 82417,
+      "totalMs": 3812214,
+      "lastMs": 80807,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:26:54.337Z"
+      "updatedAt": "2026-10-09T03:28:15.148Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T03:26:54.339Z",
+  "updatedAt": "2026-10-09T03:28:15.148Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3150,7 +3159,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:26:54.339Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:28:15.148Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
