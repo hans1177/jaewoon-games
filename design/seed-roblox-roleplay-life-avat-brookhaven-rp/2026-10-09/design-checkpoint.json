@@ -1499,25 +1499,32 @@
     },
     "local_authoring_parts::9a2fa68549e80753a956093be4528129ac15075aa42e535e126cad36660e9ee8:toId": {
       "toId": "systemInterconnections[0].trigger"
+    },
+    "local_authoring_parts::9a2fa68549e80753a956093be4528129ac15075aa42e535e126cad36660e9ee8:stateKeys": {
+      "stateKeys": [
+        "FIGHT_THROUGH_ELEVATING_HORDE",
+        "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+        "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 154,
-      "successes": 154,
+      "calls": 155,
+      "successes": 155,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10576661,
-      "lastMs": 89372,
+      "totalMs": 10668827,
+      "lastMs": 92166,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:07:14.602Z"
+      "updatedAt": "2026-10-09T07:08:46.770Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T07:07:14.602Z",
+  "updatedAt": "2026-10-09T07:08:46.770Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3951,7 +3958,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:07:14.602Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:08:46.770Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
