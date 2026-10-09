@@ -451,25 +451,42 @@
     },
     "local_authoring_parts::4764280cf57db6565d3da7aca7d2999078f33cf1e1ec5932c4b948ddef23e068:trigger": {
       "trigger": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다."
+    },
+    "local_authoring_parts::4764280cf57db6565d3da7aca7d2999078f33cf1e1ec5932c4b948ddef23e068:stateChange": {
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다."
+    },
+    "local_authoring_parts::6206f8c45963143cc18d091f365a3b6ee1e244e003414ea07f7e006fe0de566f:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_0",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION",
+        "WORLD_STATUS_CHANGE",
+        "GROWTH_OPPORTUNITY"
+      ],
+      "fromSystem": "PUZZLE_WORLD_RULE_SET",
+      "toSystem": "PUZZLE_WORLD_RULE_SET",
+      "trigger": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다.",
+      "stateChange": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1259790,
-      "lastMs": 90081,
+      "totalMs": 1349758,
+      "lastMs": 89968,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:20:00.644Z"
+      "updatedAt": "2026-10-09T12:21:30.613Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:20:00.644Z",
+  "updatedAt": "2026-10-09T12:21:30.614Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2880,7 +2897,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:20:00.644Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:21:30.614Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
