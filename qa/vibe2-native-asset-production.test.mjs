@@ -929,7 +929,7 @@ test('detail and measured motion repair reach the production work order and use 
 
 test('navigation sketch preserves actual route topology and expands functional detail layers deterministically',()=>{
   const sketch={nodes:[{id:'entry',role:'spawn'},{id:'market',role:'landmark'},{id:'exit',role:'transition'}],edges:[{from:'entry',to:'market'},{from:'market',to:'exit',oneWay:true}],districts:[{id:'market-block',anchorNodeId:'market',function:'MARKET'}]};
-  const assets=[{id:'shop',family:'BUILDING',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];
+  const assets=[{id:'shop',family:'BUILDING',path:'assets/test/shop.glb',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];
   const a=createVibeMapDetailReconstruction({sketch,assets,seed:'same',styleFamily:'DARK_FANTASY'});
   assert.equal(a.status,'DETAIL_AUTHORING_PLAN');assert.equal(a.topology.edges[1].oneWay,true);
   assert.equal(a.regions[0].layers.length,6);assert.equal(a.regions[0].layers[1].assetId,'shop');
@@ -938,6 +938,37 @@ test('navigation sketch preserves actual route topology and expands functional d
   const bad=createVibeMapDetailReconstruction({sketch:{...sketch,edges:[{from:'entry',to:'market'}]}});
   assert.equal(bad.status,'MAP_INTERPRETATION_REQUIRED');assert.deepEqual(bad.regions,[]);
   const empty=createVibeMapDetailReconstruction();assert.equal(empty.topology,null);
+});
+
+test('3D world planning preserves original routes and rejects flat or unsafe world assets',()=>{
+  const sketch={
+    nodes:[{id:'entry',role:'spawn',elevationMeters:0},{id:'bridge',role:'landmark',elevationMeters:3},{id:'gate',role:'transition',elevationMeters:3}],
+    edges:[{from:'entry',to:'bridge'},{from:'bridge',to:'gate',oneWay:true}],
+    verticalLinks:[{from:'entry',to:'bridge'}],
+    districts:[{id:'bridge-zone',anchorNodeId:'bridge',function:'DUNGEON',landmark:'inverted-castle'}]
+  };
+  const asset={id:'stone-bridge',family:'BUILDING',path:'assets/bridge.glb',sourceHash:'a',mapDetailRoles:['STRUCTURE'],districtFunctions:['DUNGEON']};
+  const plan=createVibeMapDetailReconstruction({sketch,assets:[asset],seed:'demo'});
+  assert.equal(plan.status,'DETAIL_AUTHORING_PLAN');
+  assert.equal(plan.topology.edges[1].oneWay,true);
+  assert.equal(plan.regions[0].layers.length,6);
+  assert.equal(plan.regions[0].layers[1].assetId,'stone-bridge');
+  assert.equal(plan.regions[0].spatialComposition.worldLayers.length,3);
+  assert.equal(plan.regions[0].spatialComposition.landmarkIdentity,'inverted-castle');
+  assert.equal(plan.routeGeometry.length,sketch.edges.length);
+  assert.equal(plan.routeGeometry.every(row=>row.extraRouteOrShortcutAdded===false&&row.runtimeVerified===false),true);
+  assert.ok(plan.productionChain.author.includes('CURVED_ROUTE_MODULES_MATCHING_EXISTING_TOPOLOGY'));
+  assert.equal(plan.worldDepthEvidence.runtimeVerified,false);
+  assert.equal(plan.sourceMutationPerformed,false);
+  assert.deepEqual(plan,createVibeMapDetailReconstruction({sketch,assets:[asset],seed:'demo'}));
+  const flat=createVibeMapDetailReconstruction({sketch,assets:[{...asset,path:'assets/bridge.png'}]});
+  assert.equal(flat.regions[0].layers[1].assetId,null);
+  const blocked=createVibeMapDetailReconstruction({sketch,assets:[{...asset,quarantined:true}]});
+  assert.equal(blocked.regions[0].layers[1].assetId,null);
+  const invalid=createVibeMapDetailReconstruction({sketch:{...sketch,verticalLinks:[{from:'entry',to:'gate'}]}});
+  assert.equal(invalid.status,'MAP_INTERPRETATION_REQUIRED');
+  assert.equal(invalid.routeGeometry.length,0);
+  assert.ok(invalid.issues.some(row=>row.startsWith('VERTICAL_LINK_REQUIRES_EXISTING_EDGE_AND_MEASURED_HEIGHT:')));
 });
 
 test('source GLB inventory uses real binary structure and leaves absent morphs or rigging for authoring',()=>{
