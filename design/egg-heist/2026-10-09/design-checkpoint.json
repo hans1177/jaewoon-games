@@ -77,25 +77,39 @@
       "name": "Egg Heist Signature System III",
       "purpose": "Player's core action and strategic choice that drives the game's emergent gameplay and progression.",
       "playerChoice": "Strategic decision to either scout, select, or initiate a move that leads to state change and subsequent gameplay development."
+    },
+    "local_authoring_parts::bad13b0f8731661aa930eff44b3ada0c9fcedd85cb46106de844e97b460320c5:signatureSystems:3": {
+      "id": "EGG-HEIST-SIGNATURE-4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "SCOUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Egg Heist Signature System IV",
+      "purpose": "플레이어가 단순 반복에서 새로운 행동 조합, 경로, 관계, 발견, 대응법을 생성하는 데 사용되는 시스템.",
+      "playerChoice": "새로운 경로 선택 및 위험/결과의 재구성, 월드 상태와의 상호작용, 성장에 따른 새로운 플레이 가능성 확보."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 648855,
-      "lastMs": 97546,
+      "totalMs": 748213,
+      "lastMs": 99358,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:27:53.157Z"
+      "updatedAt": "2026-10-09T08:29:32.516Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:04.269Z",
-  "updatedAt": "2026-10-09T08:27:53.158Z",
+  "updatedAt": "2026-10-09T08:29:32.516Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1971,8 +1985,8 @@
     "local_authoring_parts::bad13b0f8731661aa930eff44b3ada0c9fcedd85cb46106de844e97b460320c5:signatureSystems:3": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:27:53.157Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:c",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-09T08:29:32.516Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
