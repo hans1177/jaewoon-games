@@ -482,25 +482,42 @@
         "player_input"
       ],
       "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::6e1c276f10080b846b37cddba4ac20f75e02aa4e60752e20231422cdc3d6fde4:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+      "stateChange": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 타겟 및 전략이 결정됨"
+    },
+    "local_authoring_parts::3edbf8394d99ef20b2b52329bb34713e61fe38a6584dbff0494cb98c13d7d579:systemInterconnections:0": {
+      "fromId": "wild-survival_signature_systems_0",
+      "toId": "wild-survival_signature_systems_1",
+      "stateKeys": [
+        "world_state",
+        "player_input"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+      "stateChange": "월드 상태와 플레이어 선택에 따라 새로운 상태가 생성되고, 다음 타겟 및 전략이 결정됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 805763,
-      "lastMs": 139096,
+      "totalMs": 827882,
+      "lastMs": 22119,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:23:37.530Z"
+      "updatedAt": "2026-10-09T09:23:59.650Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:10:11.715Z",
-  "updatedAt": "2026-10-09T09:23:37.530Z",
+  "updatedAt": "2026-10-09T09:23:59.652Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2704,7 +2721,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:23:37.530Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:23:59.652Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
