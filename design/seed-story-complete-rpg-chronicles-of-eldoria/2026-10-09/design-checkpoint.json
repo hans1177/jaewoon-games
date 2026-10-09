@@ -1517,25 +1517,28 @@
     },
     "local_authoring_parts::4b7140b595b447e94e2ddf7dd2857027f7ce60be9ccd5d1d32d87d332f138c43:toSystem": {
       "toSystem": "LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::4b7140b595b447e94e2ddf7dd2857027f7ce60be9ccd5d1d32d87d332f138c43:trigger": {
+      "trigger": "SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE: 플레이어가 탐험 중에 EXPLORATION_STATE, CHARACTER_INTERACTION_STATE, QUEST_ACCEPTANCE_STATE, INFORMATION_DISCOVERY_STATE 상태를 경험하면, 이들의 결과가 LOCATION_CHANGE_STATE로 전환되며, 새로운 정보와 아이템을 획득하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 100,
-      "successes": 99,
+      "calls": 101,
+      "successes": 100,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 8160359,
-      "lastMs": 89403,
+      "totalMs": 8254614,
+      "lastMs": 94255,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:27:51.142Z"
+      "updatedAt": "2026-10-09T04:29:25.399Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T04:27:51.142Z",
+  "updatedAt": "2026-10-09T04:29:25.399Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3998,7 +4001,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:27:51.142Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:29:25.399Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
