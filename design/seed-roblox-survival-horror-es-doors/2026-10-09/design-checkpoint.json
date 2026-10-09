@@ -34,25 +34,38 @@
         "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
         "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하며, 플레이어의 선택이 월드 상태와 다음 선택에 직접 영향을 미친다."
       ]
+    },
+    "local_authoring_parts::d5280e4e7915b2d98a518cb0396c044cb06dda982e8c5205103e43db5f7c684a:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "BOARD_RECONFIGURATION",
+      "purpose": "플레이어의 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 핵심 인과법칙",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 233485,
-      "lastMs": 42370,
+      "totalMs": 267594,
+      "lastMs": 34109,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:38:52.467Z"
+      "updatedAt": "2026-10-09T15:39:26.577Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:34:58.766Z",
-  "updatedAt": "2026-10-09T15:38:52.467Z",
+  "updatedAt": "2026-10-09T15:39:26.577Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,7 +1655,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:38:52.467Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:39:26.577Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
