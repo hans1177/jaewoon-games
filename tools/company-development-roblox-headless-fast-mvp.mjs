@@ -9,6 +9,9 @@ const COMMIT=/^[0-9a-f]{40}$/i;
 const SHA=/^sha256:[0-9a-f]{64}$/i;
 const HEX64=/^[0-9a-f]{64}$/i;
 const upper=v=>clean(v).toUpperCase();
+// F0는 실제 플레이 판정이 아닌 정확한 소스의 네이티브 3D 시작 조건만 확인한다.
+const spatialPolicy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'))
+  ?.development3dFromF0AndFloor20261009;
 function show(repoRoot,revision,file){return execFileSync('git',['-C',path.resolve(repoRoot),'show',revision+':'+file],{encoding:'utf8',maxBuffer:16*1024*1024});}
 function parsePlayMode(config){const m=config.match(/\bPlayMode\s*=\s*["']([^"']+)["']/i);return upper(m?.[1]||'');}
 function saveEnabled(config){return /\bSaveEnabled\s*=\s*true\b/i.test(config);}
@@ -17,6 +20,9 @@ function multiplayerRequired(config){if(/\bMultiplayerRequired\s*=\s*true\b/i.te
 export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0,nativeLanguageCompilePassed=false,nativeCompilerVersion='',buildUpAssetSourceUsageFingerprint='',assetSelectionFingerprint='',assetLibraryVersion=0,config='',server='',client='',project='',baseline={}}={}){
   const checks={};
   const combined=server+'\n'+client;
+  // 주석 속 3D 문구와 출처 없는 F0 표시를 실제 월드 코드로 세지 않는다.
+  const nativeWorldSource=server.replace(/--\[\[[\s\S]*?\]\]|--[^\n]*/g,'');
+  const nativeClientSource=client.replace(/--\[\[[\s\S]*?\]\]|--[^\n]*/g,'');
   const duplicateLocalFunction=/local\s+function\s+([A-Za-z_][A-Za-z0-9_]*)[^\n]*local\s+function\s+\1\b/.test(server);
   const gameplayProductReadinessRequired=Boolean(baseline&&typeof baseline==='object'&&Object.keys(baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline).length);
   const gameplayProductReadiness=evaluateRobloxGameplayProductReadiness({gameId,baseline,config,server,client,project});
@@ -32,6 +38,13 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.assetSelectionFingerprint=!expectedAssetSelectionFingerprint||(HEX64.test(expectedAssetSelectionFingerprint)&&observedAssetSelectionFingerprint===expectedAssetSelectionFingerprint);
   checks.assetLibraryVersion=expectedAssetLibraryVersion<=0||observedAssetLibraryVersion===expectedAssetLibraryVersion;
   checks.projectContract=/"\$className"\s*:\s*"DataModel"/.test(project)&&/"\$path"\s*:\s*"server"/.test(project)&&/"\$path"\s*:\s*"client"/.test(project);
+  checks.native3dF0Policy=spatialPolicy?.status==='ACTIVE_EXECUTABLE_CONTRACT'
+    &&spatialPolicy?.appliesFrom==='F0_SOURCE_PREFLIGHT_PASS'
+    &&spatialPolicy?.robloxF0Native3dWorldGeometryRequired===true;
+  checks.native3dWorldSource=/(?:Instance\.new\s*\(\s*["'](?:Part|MeshPart|WedgePart|CornerWedgePart|UnionOperation)["']\s*\)|(?:MeshPart|SpecialMesh)\b)/.test(nativeWorldSource)
+    &&/(?:\bVector3\.new\s*\(|\bCFrame\.(?:new|Angles|lookAt)\s*\(|\.(?:Size|CFrame|Position)\s*=)/.test(nativeWorldSource);
+  checks.native3dCharacterCamera=/\bHumanoidRootPart\b/.test(nativeWorldSource)
+    &&/\bCameraSubject\b/.test(nativeClientSource);
   checks.robloxPolicy=/PolicySource\s*=\s*["']company-learning\/platform-release-roadmap\.json["']/i.test(config)&&/Platform\s*=\s*["']ROBLOX["']/i.test(config);
   checks.duplicateDeclarationGuard=!duplicateLocalFunction;
   checks.sourceStartupMarkers=/Players\.PlayerAdded:Connect/.test(server)&&/ScreenGui/.test(client);
@@ -50,10 +63,10 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
   checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
   checks.gameplayProductReadiness=!gameplayProductReadinessRequired||gameplayProductReadiness.pass===true;
-  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.groundContactNotSynthetic&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
+  checks.f0SourceIntegrity=checks.nativeLanguageCompilePassed&&checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.duplicateDeclarationGuard&&checks.sourceStartupMarkers&&checks.foundationSentinelContract&&checks.characterPhysicsGuard&&checks.groundContactNotSynthetic&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards&&checks.native3dF0Policy&&checks.native3dWorldSource&&checks.native3dCharacterCamera;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
   return Object.freeze({
-    version:5,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
+    version:6,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',checkedAt:new Date().toISOString(),
     sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),
     buildUpAssetSourceUsageFingerprint:expectedBuildUpAssetFingerprint||null,
     assetSelectionFingerprint:expectedAssetSelectionFingerprint||null,
@@ -64,6 +77,9 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
     playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,
     sourcePreflightPassed:pass,f0SourceIntegrityPassed:checks.f0SourceIntegrity,
     sourceStartupMarkersPassed:checks.sourceStartupMarkers,
+    native3dSourcePreflight:Object.freeze({required:true,sourceOnly:true,runtimeVerified:false,
+      worldGeometry:checks.native3dWorldSource,characterAndCamera:checks.native3dCharacterCamera,
+      primitiveGeometryIsNotFinalGraphicsPass:true}),
     gameStartPassed:false,serverBootPassed:false,worldFoundationPassed:false,characterFoundationPassed:false,physicsAndMovementPassed:false,runtimeFoundationPassed:false,
     actualRuntimeEvidence:false,internalReleaseReady:false,
     serverClientBoundaryPreflightPassed:checks.serverClientBoundary,remoteSecurityPreflightPassed:checks.remoteSecurity,mobileControlUiPreflightPassed:checks.mobileFirst,
@@ -79,6 +95,6 @@ export function inspectHeadlessExactRevision({repoRoot='.',gameId='',sourcePath=
   return inspectHeadlessSourceTexts({gameId,sourcePath,sourceRevision,artifactIdentity,rebuiltArtifactIdentity,artifactRunId,nativeLanguageCompilePassed,nativeCompilerVersion,buildUpAssetSourceUsageFingerprint,assetSelectionFingerprint,assetLibraryVersion,baseline,config:show(repoRoot,sourceRevision,root+'/shared/GameConfig.luau'),server:show(repoRoot,sourceRevision,root+'/server/Game.server.luau'),client:show(repoRoot,sourceRevision,root+'/client/Game.client.luau'),project:show(repoRoot,sourceRevision,root+'/default.project.json')});
 }
 function args(argv){const o={};for(let i=0;i<argv.length;i++){const x=argv[i];if(!x.startsWith('--'))continue;const [k,v]=x.slice(2).split('=',2);o[k]=v??argv[++i];}return o;}
-function main(){const a=args(process.argv.slice(2));const baseline=a.baseline?JSON.parse(fs.readFileSync(a.baseline,'utf8')):{};const result=inspectHeadlessExactRevision({repoRoot:a['repo-root']||'.',gameId:a['game-id'],sourcePath:a['source-path'],sourceRevision:a['source-revision'],artifactIdentity:a['artifact-identity'],rebuiltArtifactIdentity:a['rebuilt-artifact-identity'],artifactRunId:Number(a['artifact-run-id']),nativeLanguageCompilePassed:clean(a['native-language-compile-passed']).toLowerCase()==='true',nativeCompilerVersion:a['native-compiler-version'],buildUpAssetSourceUsageFingerprint:a['build-up-asset-fingerprint'],assetSelectionFingerprint:a['asset-selection-fingerprint'],assetLibraryVersion:Number(a['asset-library-version']||0),baseline});if(!a.output)throw new Error('output required');fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');console.log('ROBLOX_FOUNDATION_F0_SOURCE_PREFLIGHT='+(result.pass?'PASS':'BLOCKED')+':'+result.gameId);if(!result.pass){console.log('ROBLOX_FOUNDATION_F0_BLOCKERS='+result.blockers.join(','));process.exitCode=2;}}
+function main(){const a=args(process.argv.slice(2));const baseline=a.baseline?JSON.parse(fs.readFileSync(a.baseline,'utf8')):{};const result=inspectHeadlessExactRevision({repoRoot:a['repo-root']||'.',gameId:a['game-id'],sourcePath:a['source-path'],sourceRevision:a['source-revision'],artifactIdentity:a['artifact-identity'],rebuiltArtifactIdentity:a['rebuilt-artifact-identity'],artifactRunId:Number(a['artifact-run-id']),nativeLanguageCompilePassed:clean(a['native-language-compile-passed']).toLowerCase()==='true',nativeCompilerVersion:a['native-compiler-version'],buildUpAssetSourceUsageFingerprint:a['build-up-asset-fingerprint'],assetSelectionFingerprint:a['asset-selection-fingerprint'],assetLibraryVersion:Number(a['asset-library-version']||0),baseline});if(!a.output)throw new Error('output required');fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');console.log('ROBLOX_F0_NATIVE_3D_SOURCE='+(result.checks.native3dWorldSource&&result.checks.native3dCharacterCamera?'SOURCE_CONFIRMED_RUNTIME_UNVERIFIED':'REPAIR_REQUIRED')+':'+result.gameId);console.log('ROBLOX_FOUNDATION_F0_SOURCE_PREFLIGHT='+(result.pass?'PASS':'BLOCKED')+':'+result.gameId);if(!result.pass){console.log('ROBLOX_FOUNDATION_F0_BLOCKERS='+result.blockers.join(','));process.exitCode=2;}}
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(isMain){try{main();}catch(e){console.error(e.stack||e);process.exitCode=1;}}
