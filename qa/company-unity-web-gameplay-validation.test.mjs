@@ -209,7 +209,7 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
   assert.match(visual,/validMeshes == 2 && triangles > 0/);
   assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
   assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
-  assert.match(source,/nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified/);
+  assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
   assert.match(source,/nativeMeshMissing;/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
 });
@@ -336,4 +336,13 @@ test('actual Unity browser touch visits character, inventory and shop with synch
   assert.match(source,/nativePlayerStateObserved:true/);
   assert.match(source,/visitedPages\.push\('WORLD'\)/);
   assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
+});
+
+
+test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한다',()=>{
+  assert.match(source,/UNITY_WEB_3D_ONLY_POLICY_REQUIRED/);
+  assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
+  assert.match(source,/requiredForAllUnityWebGames:true/);
+  assert.match(source,/observedTriangles:nativeMeshVerified\?nativeMeshProof\.triangles:0/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
 });
