@@ -2847,7 +2847,18 @@ export const INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT=Object.freeze({
 });
 
 export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
-  version:3,
+  version:4,
+  crossGenre3dActorReuse:Object.freeze({
+    families:Object.freeze(['CHARACTER','CREATURE']),
+    preferredGenres:Object.freeze(['RPG','SURVIVAL','ACTION_RPG','ADVENTURE']),
+    shared3dMasterPreferred:true,
+    minimumDistinctAxes:3,
+    structuralAxes:Object.freeze(['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','BODY_PARTS']),
+    motionAxes:Object.freeze(['STANCE_GAIT','SIGNATURE_MOTION']),
+    colorOnlyDifferenceForbidden:true,
+    nativePerGameRuntimeComparisonRequired:true,
+    unchangedGameplaySaveAndNetworkAuthority:true
+  }),
   lowScoreUseAllowed:true,
   scoreIsNotUsageGate:true,
   studioRequiredForUse:false,
@@ -2912,6 +2923,27 @@ export const INTERNAL_ASSET_REUSE_POLICY=Object.freeze({
   })
 });
 
+// 공용 3D 원본을 재활용하고 게임별 외형·모션의 실제 차이가 검증되기 전 복제를 차단한다.
+function crossGameActorVisualIdentity(asset,gameDna={},usage={},family=''){
+  const gameId=text(gameDna.gameId||gameDna.id);
+  const consumers=currentAssetConsumerGameIds(asset);
+  const required=Boolean(gameId&&INTERNAL_ASSET_REUSE_POLICY.crossGenre3dActorReuse.families.includes(family)
+    &&consumers.some(id=>id!==gameId));
+  const evidence=usage.gameIdentityEvidence||{};
+  const axes=uniq(evidence.distinctAxes).map(upper);
+  const rule=INTERNAL_ASSET_REUSE_POLICY.crossGenre3dActorReuse;
+  const structural=axes.some(axis=>rule.structuralAxes.includes(axis));
+  const motion=axes.some(axis=>rule.motionAxes.includes(axis));
+  const verified=required&&text(evidence.gameId)===gameId&&text(evidence.assetId)===text(asset.id)
+    &&evidence.runtimeBeforeAfterPass===true&&evidence.nativePlatformPass===true
+    &&axes.length>=rule.minimumDistinctAxes&&structural&&motion;
+  return Object.freeze({required,verified,gameId:gameId||null,
+    sourceConsumerGameIds:freezeList(consumers),
+    measuredDistinctAxes:freezeList(axes),
+    runtimeComparisonRequired:required&&!verified,
+    colorOnlyNotSufficient:true});
+}
+
 function internalLicenseForbidden(value=''){
   const license=upper(value);
   if(!license)return false;
@@ -2932,6 +2964,7 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
   const platformCompatible=!targetPlatform||!row.platform||row.platform===targetPlatform||row.platform==='SHARED_REFERENCE';
   const familyCompatible=!family||row.family===family;
   const roleCompatible=!requestedSubfamily||row.subfamily===requestedSubfamily||row.tags.includes(requestedSubfamily);
+  const crossGameIdentity=crossGameActorVisualIdentity(asset,gameDna,usage,family);
   const hardBlockers=[];
   if(asset?.internalUseForbidden===true)hardBlockers.push('EXPLICIT_INTERNAL_USE_FORBIDDEN');
   if(usage?.securityBlocked===true||asset?.securityBlocked===true)hardBlockers.push('SECURITY_BLOCKED');
@@ -2982,6 +3015,12 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     adaptationReasons.push('GAME_THEME_ADAPT_REQUIRED');
   }
 
+  if(crossGameIdentity.required&&!crossGameIdentity.verified){
+    if(mode==='USE_AS_IS'||mode==='LIGHT_THEME_ADAPT')
+      mode=canRecombine?'RECOMBINE_PARTS':canStyleAdapt?'STYLE_ADAPT':'KEEP_CURRENT_AND_ITERATE';
+    adaptationReasons.push('CROSS_GAME_STRUCTURAL_AND_MOTION_VARIANT_REQUIRED');
+    adaptationPenalty+=60;
+  }
   const reuseBonus=(asset?.companyCommonBase===true||upper(asset?.reuseScope)==='COMPANY_ROBLOX_COMMON_BASE')?18:0;
   const versatilityBonus=Math.min(40,adaptationAxes.length*4);
   const usageConfidenceBonus=(usage.runtimePass===true?20:0)
@@ -2998,7 +3037,8 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     0,INTERNAL_ASSET_AUDIT_MAX
   )*10)/10;
   const usable=hardBlockers.length===0&&familyCompatible&&(roleCompatible||canRecombine);
-  const directBindingReady=usable&&platformCompatible&&conceptQa.pass&&roleCompatible;
+  const directBindingReady=usable&&platformCompatible&&conceptQa.pass&&roleCompatible
+    &&(!crossGameIdentity.required||crossGameIdentity.verified);
   const adaptationReady=usable&&!directBindingReady&&mode!=='KEEP_CURRENT_AND_ITERATE';
 
   return Object.freeze({
@@ -3026,6 +3066,8 @@ export function evaluateInternalAssetReuse({asset={},gameDna={},requirement={},u
     observedFailurePenalty,
     usageConfidenceBonus,
     adaptationReasons:freezeList(adaptationReasons),
+    crossGameIdentity,
+    requiresGameSpecific3dVariant:crossGameIdentity.required&&!crossGameIdentity.verified,
     hardBlockers:freezeList(hardBlockers),
     lowScoreUseAllowed:true,
     scoreIsNotUsageGate:true,
@@ -3061,7 +3103,7 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     replacementRecommended,
     replacementAction:locked?'KEEP_LOCKED':
       !best?'NO_USABLE_INTERNAL_ASSET':
-      !current?'USE_SELECTED':
+      !current?(best.reuse.directBindingReady?'USE_SELECTED':'ADAPT_THEN_BIND'):
       replacementRecommended?(best.reuse.directBindingReady?'REPLACE_NOW':'ADAPT_THEN_REPLACE'):
       'KEEP_CURRENT_AND_ITERATE',
     studioRequired:false,
@@ -3073,7 +3115,9 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
       effectiveQuality:row.reuse.effectiveQuality,
       mode:row.reuse.mode,
       directBindingReady:row.reuse.directBindingReady,
-      adaptationReady:row.reuse.adaptationReady
+      adaptationReady:row.reuse.adaptationReady,
+      requiresGameSpecific3dVariant:row.reuse.requiresGameSpecific3dVariant,
+      gameSpecificVisualIdentityVerified:row.reuse.crossGameIdentity?.verified===true
     })))
   });
 }
@@ -4770,6 +4814,8 @@ export function scoreStudioAssetCandidate({asset={},gameDna={},usage={},requirem
     directBindingReady:reuse.directBindingReady,
     adaptationReady:reuse.adaptationReady,
     adaptationAxes:reuse.adaptationAxes,
+    requiresGameSpecific3dVariant:reuse.requiresGameSpecific3dVariant,
+    gameSpecificVisualIdentityVerified:reuse.crossGameIdentity?.verified===true,
     companyCommonBase,
     commonBasePreferenceApplied:companyCommonBase,
     qualityScoreBlocksBinding:false,
@@ -4844,6 +4890,8 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       directBindingReady:scored?.directBindingReady===true,
       adaptationReady:scored?.adaptationReady===true,
       adaptationAxes:scored?.adaptationAxes||Object.freeze([]),
+      requiresGameSpecific3dVariant:scored?.requiresGameSpecific3dVariant===true,
+      gameSpecificVisualIdentityVerified:scored?.gameSpecificVisualIdentityVerified===true,
       lowQualityFallback:Boolean(picked&&Number(scored?.internalAuditScore||0)<INTERNAL_ASSET_AUDIT_PASS),
       qualityScoreBlocksBinding:false,
       internalAuditScoreBlocksBinding:false,
@@ -4872,7 +4920,9 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     }));
   }
   const complete=snapshotMatches&&selections.every(row=>!row.required||!row.unresolved);
-  const bindingReady=complete&&selections.every(row=>!row.required||(row.sourceFiles.length>0&&row.sourceFilesPresent!==false));
+  const bindingReady=complete&&selections.every(row=>!row.required||(row.sourceFiles.length>0
+    &&row.sourceFilesPresent!==false
+    &&(!row.requiresGameSpecific3dVariant||row.gameSpecificVisualIdentityVerified)));
   return Object.freeze({
     selections:Object.freeze(selections),
     unresolved:Object.freeze(selections.filter(row=>row.required&&row.unresolved)),
@@ -4887,7 +4937,10 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
       libraryVersion:row.libraryVersion,librarySnapshotId:row.librarySnapshotId,applicationMode:row.applicationMode,
       usageContract:row.usageContract
     })):[]),
-    bindingAction:!snapshotMatches?'RESELECT_CURRENT_LIBRARY_SNAPSHOT':bindingReady?'APPLY_THROUGH_EXISTING_SOURCE_WORKER':'RESOLVE_REQUIRED_ASSETS_BEFORE_BINDING',
+    bindingAction:!snapshotMatches?'RESELECT_CURRENT_LIBRARY_SNAPSHOT':bindingReady?'APPLY_THROUGH_EXISTING_SOURCE_WORKER'
+      :selections.some(row=>row.requiresGameSpecific3dVariant&&!row.gameSpecificVisualIdentityVerified)
+        ?'AUTHOR_VERIFY_DISTINCT_3D_VARIANT_IN_EXISTING_GRAPHICS_PIPELINE'
+        :'RESOLVE_REQUIRED_ASSETS_BEFORE_BINDING',
     searchStats:Object.freeze({assetCount:assets.length,familyBucketCount:byFamily.size,atomBucketCount:byAtom.size,candidateVisits,normalizationVisits:index.normalizationVisits,indexReused:Boolean(registryIndex)}),
     bindingBatchIsRuntimeProof:false,
     lowQualityFallbackCount:selections.filter(row=>row.lowQualityFallback).length,
@@ -4902,6 +4955,7 @@ export function buildStudioAssetLoadout({requirements=[],assets=[],gameDna={},us
     automaticReplacementNativeRuntimeRequired:false,
     manualOrLockedChoiceWins:true,
     priorAssetHistoryPreserved:true,
+    crossGenre3dActorReuse:INTERNAL_ASSET_REUSE_POLICY.crossGenre3dActorReuse,
     noEmptySlotDuringReplacement:true,
     consumerStageAccess:'ALL_EXISTING_FLOW_STAGES',
     allSelectedAssetsComposableAcrossExistingFlowStages:true,
