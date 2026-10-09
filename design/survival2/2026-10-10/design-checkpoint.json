@@ -595,25 +595,40 @@
       "name": "Forest Resource Dynamics",
       "purpose": "Model ecological adaptation through resource distribution and group readiness",
       "playerChoice": "Prioritize one member over another for survival based on resource availability and environmental risk assessment"
+    },
+    "local_authoring_parts::936053b5dd00e34f7afc7381b330a3d92460399a1e13071b68174d30d607ab7f:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Interdependent goal achievement"
+      ],
+      "name": "Forest Resource Dynamics",
+      "purpose": "Establish the ecological and strategic foundation for resource acquisition, risk assessment, and shelter progression.",
+      "playerChoice": "Select a resource to collect, evaluate environmental risks, and decide on shelter strategy based on available resources and group readiness."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1633105,
-      "lastMs": 20717,
+      "totalMs": 1655120,
+      "lastMs": 22015,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:00:28.051Z"
+      "updatedAt": "2026-10-09T23:00:50.067Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T23:00:28.051Z",
+  "updatedAt": "2026-10-09T23:00:50.067Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2452,7 +2467,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:00:28.051Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:00:50.067Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
