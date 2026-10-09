@@ -95,25 +95,117 @@
         "delveGrowthRule": "PLAYER_ACTION_IS_THE_PRIMARY_CAUSE_AND_CONSEQUENCE",
         "finalGameIdentity": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME"
       }
+    },
+    "local_authoring_parts::1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad:playerFantasy,coreFun": {
+      "playerFantasy": "퇴마 사무소는 플레이어가 직접 선택하는 단순한 입력(단 한 손 가볍게 터치 또는 스ワイ프)에서 시작하여, 즉시 이해 가능한 피드백과 보상을 제공하며, 작은 위험/선택을 포함해 반복적인 핵심 루프를 형성합니다. 이 게임은 모바일 플랫폼에 최적화되어 있으며, 사용자가 간단하게 시작할 수 있는 기본 행동과 대응법을 통해 진입 단계부터 진행됩니다.",
+      "coreFun": "{\"identity\": \"START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"a\": {\"system\": \"ACTION_SEQUENCE\", \"material\": \"SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS\", \"stateChange\": \"INPUT_TO_STATE_CHANGE\"},\n \"b\": {\"system\": \"DECISION_FLOW\", \"material\": \"READABILITY_AND_PLAYABILITY\", \"stateChange\": \"PLAYER_ACTION_TO_DECISION_FLOW\"},\n \"abCausality\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"abEvolution\": {\"aChangesB\": \"YES, REWARD_AND_RISK_CHANGED\", \"bChangesA\": \"YES, INPUT_AND_MENU_TRANSITIONS_CHANGED\", \"lateGameChange\": \"YES, NEW_ACTION_AND_ROUTE_OPTION_ADDED\"},\n \"material"
+    },
+    "local_authoring_parts::3f9d4ea239bf018aba928e9b0dc12515a43e427dc5b387a2f5b7f5ea4e77df27:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "퇴마 사무소 - 진입 단계",
+      "creativeGrammar": {
+        "mainIdentity": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+        "a": {
+          "system": "ACTION_SEQUENCE",
+          "material": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS",
+          "materialDomain": "MOBILE_GAMEPLAY",
+          "stateChange": "INPUT_TO_STATE_CHANGE"
+        },
+        "b": {
+          "system": "DECISION_FLOW",
+          "material": "READABILITY_AND_PLAYABILITY",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "PLAYER_ACTION_TO_DECISION_FLOW"
+        },
+        "abCausality": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+        "abEvolution": {
+          "aChangesB": "YES, REWARD_AND_RISK_CHANGED",
+          "bChangesA": "YES, INPUT_AND_MENU_TRANSITIONS_CHANGED",
+          "lateGameChange": "YES, NEW_ACTION_AND_ROUTE_OPTION_ADDED"
+        },
+        "materialFusion": {
+          "contrast": "SIMPLE_INPUT_AND_REWARD_WITH_SMALL_RISK",
+          "causalBridge": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+          "removalConsequence": "NO, PLAYER_ACTION_IS_THE_PRIMARY_CAUSE"
+        },
+        "storyCausalChain": {
+          "cause": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "characterConflict": "PLAYER_ACTION_TO_DECISION_FLOW",
+          "playerChoice": "INPUT_AND_MENU_TRANSITION",
+          "worldChange": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+          "nextEvent": "NEW_ACTION_AND_ROUTE_OPTION_ADDED"
+        },
+        "cThemes": [
+          {
+            "name": "ACTION_SEQUENCE",
+            "kind": "GENRE",
+            "gameplayEffect": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS"
+          },
+          {
+            "name": "DECISION_FLOW",
+            "kind": "GENRE",
+            "gameplayEffect": "READABILITY_AND_PLAYABILITY"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "MOBILE_GAMEPLAY",
+            "gameplayEffect": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "GAMEPLAY",
+            "gameplayEffect": "READABILITY_AND_PLAYABILITY"
+          }
+        ],
+        "cGenreInterlock": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK_CHANGED_IN_LATE_GAME",
+        "cWorldAndGameplayEffect": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK_CHANGED_IN_LATE_GAME",
+        "delveDiscoveries": [
+          {
+            "clue": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+            "discovery": "PLAYER_ACTION_IS_THE_PRIMARY_CAUSE",
+            "newChoice": "INPUT_AND_MENU_TRANSITION"
+          },
+          {
+            "clue": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+            "discovery": "NEW_ACTION_AND_ROUTE_OPTION_ADDED",
+            "newChoice": "ACTION_SEQUENCE_AND_DECISION_FLOW"
+          },
+          {
+            "clue": "REWARD_AND_RISK_CHANGED",
+            "discovery": "CONNECTION_OF_PLAYER_ACTION_TO_WORLD_STATE_CHANGED",
+            "newChoice": "DECISION_FLOW_AND_REWARD_RISK"
+          },
+          {
+            "clue": "INPUT_AND_MENU_TRANSITION_CHANGED",
+            "discovery": "CONNECTION_OF_PLAYER_ACTION_TO_WORLD_STATE_CHANGED",
+            "newChoice": "ACTION_SEQUENCE_AND_DECISION_FLOW"
+          }
+        ],
+        "delveGrowthRule": "PLAYER_ACTION_IS_THE_PRIMARY_CAUSE_AND_CONSEQUENCE",
+        "finalGameIdentity": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME"
+      },
+      "playerFantasy": "퇴마 사무소는 플레이어가 직접 선택하는 단순한 입력(단 한 손 가볍게 터치 또는 스ワイ프)에서 시작하여, 즉시 이해 가능한 피드백과 보상을 제공하며, 작은 위험/선택을 포함해 반복적인 핵심 루프를 형성합니다. 이 게임은 모바일 플랫폼에 최적화되어 있으며, 사용자가 간단하게 시작할 수 있는 기본 행동과 대응법을 통해 진입 단계부터 진행됩니다.",
+      "coreFun": "{\"identity\": \"START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"a\": {\"system\": \"ACTION_SEQUENCE\", \"material\": \"SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS\", \"stateChange\": \"INPUT_TO_STATE_CHANGE\"},\n \"b\": {\"system\": \"DECISION_FLOW\", \"material\": \"READABILITY_AND_PLAYABILITY\", \"stateChange\": \"PLAYER_ACTION_TO_DECISION_FLOW\"},\n \"abCausality\": \"INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK\",\n \"abEvolution\": {\"aChangesB\": \"YES, REWARD_AND_RISK_CHANGED\", \"bChangesA\": \"YES, INPUT_AND_MENU_TRANSITIONS_CHANGED\", \"lateGameChange\": \"YES, NEW_ACTION_AND_ROUTE_OPTION_ADDED\"},\n \"material"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 366819,
-      "lastMs": 126870,
+      "totalMs": 410496,
+      "lastMs": 43677,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:02:55.257Z"
+      "updatedAt": "2026-10-09T21:03:38.935Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:56:48.393Z",
-  "updatedAt": "2026-10-09T21:02:55.258Z",
+  "updatedAt": "2026-10-09T21:03:38.936Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1593,7 +1685,7 @@
   "localAuthoringSplits": {
     "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:02:55.257Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:03:38.936Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
