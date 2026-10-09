@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::22d04b79ecdf6cd9d9c634a822e9326e4fc569046e9a519204af952535822eac:identity": {
+      "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 단계에서 즉시 실행 가능한 기본 입력(단축 터치 또는 스ワイ프)과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 기존의 간단한 반복 구조를 뒤집어 새로운 인과 법칙과 시스템 연결을 확립하는 핵심 재미를 제공한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 80390,
+      "lastMs": 80390,
+      "lastError": null,
+      "updatedAt": "2026-10-09T15:51:33.785Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:50:13.341Z",
+  "updatedAt": "2026-10-09T15:51:33.785Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1486,5 +1502,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T15:51:33.785Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
