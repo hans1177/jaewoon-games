@@ -1199,25 +1199,43 @@
         "new_board_pattern"
       ],
       "fromSystem": "CORE_LOOP_DESIGN"
+    },
+    "local_authoring_parts::ed78924d2ba82d07f41c1c2ee28cc40dc173f4e8a691438e7042388d9c597d46:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "coreFun → signatureSystems[0]",
+      "stateChange": "goal_clearance is output by coreFun, and new_board_pattern is input to signatureSystems[0]"
+    },
+    "local_authoring_parts::9bc8c7d6507ba3515dc3f1c653da5c0387a0aa0f00cae5b02091d583670c3bc1:systemInterconnections:0": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "goal_clearance",
+        "reward_acquisition",
+        "new_board_pattern"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "coreFun → signatureSystems[0]",
+      "stateChange": "goal_clearance is output by coreFun, and new_board_pattern is input to signatureSystems[0]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 16,
+      "calls": 20,
+      "successes": 17,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2492108,
-      "lastMs": 60665,
+      "totalMs": 2552320,
+      "lastMs": 60212,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:06:07.048Z"
+      "updatedAt": "2026-10-09T18:07:07.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:24:34.778Z",
-  "updatedAt": "2026-10-09T18:06:07.048Z",
+  "updatedAt": "2026-10-09T18:07:07.263Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2957,7 +2975,7 @@
     "37b4da1226a761b0f9d6b13cb7e699817596b8d8c93ff80b585c2838a68946e5": true,
     "0c18e7ff994e846afd46c8a03e7a4fd973549c4a0c259ba7483a51edf50d499f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:06:07.048Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:07:07.263Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
