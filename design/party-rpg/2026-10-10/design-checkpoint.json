@@ -196,25 +196,38 @@
         "게임 규칙, 저장 의미, 진행 등 실제 세계 상태 변화를 증명한다",
         "다음 사건은 게임 자체의 구조적 변화나 새로운 선택으로 이어진다"
       ]
+    },
+    "local_authoring_parts::1235c0fdf819ffb7f5e4a25ce68ea3f67eec3d5800c64e3f99553a7608e0972d:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "nextEvent"
+      ],
+      "name": "역사적 플레이어 선택 시스템",
+      "purpose": "플레이어 선택이 실제 세계 상태 변화에 영향을 미친다",
+      "playerChoice": "실제 세계 상태 변화와 다음 사건의 연결을 명시한다입니다. 역사적 맥락에서 선택의 결과가 게임 자체의 구조적 변화나 새로운 선택로 이어집니다. 전쟁, 정치, 예술, 과학 등 다양한 주제를 통해 역사를 재구성하는 방식으로 진행됩니다. 비용, 위험, 보상을 통합하여 플레이어의 행동이 세계의 진화에 기여합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 738672,
-      "lastMs": 104277,
+      "totalMs": 849251,
+      "lastMs": 110579,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:07:58.417Z"
+      "updatedAt": "2026-10-09T18:09:48.998Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:39.718Z",
-  "updatedAt": "2026-10-09T18:07:58.417Z",
+  "updatedAt": "2026-10-09T18:09:48.998Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1702,7 +1715,7 @@
   "localAuthoringSplits": {
     "039287594990547210c04370fa32555b19ac660ac03b2a0fdf44593a3e2222f4": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:07:58.417Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:09:48.998Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
