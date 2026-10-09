@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 즉시 시작할 수 있는 단순한 입력(1 손 tap or swipe)과 명확한 점수/거리/세션 목표를 통해, 선택 결과가 다음 월드 상태로 연결되는 CASUAL 게임에서 숙련되어가는 과정에 참여해야 하며, 이는 진입부터 깊은 세계 깊이·가림·조명 등 모든 요소를 포함하는 모바일 게임 중심의 플레이어 역할이다.",
       "coreFun": "START_INPUT_AND_SCORE_DISTANCE_OR_SESSION_GOAL -> WORLD_STATE_CHANGE_AND_COST_REWARD -> REPEATABLE_PLAY_LOOP_WITHIN_GAMEPLAY_SYSTEM, WHERE THE CORE FUN IS PROVEN THROUGH MAIN/A/B/C SYSTEMS THAT ARE INHERENTLY INTERDEPENDENT. THIS CORE FUN IS A VERIFIED PLAY PROMISE THAT CAN BE TRACED BACK TO THE ORIGINAL DESIGN REFERENCE. IT INCLUDES THE KEY ELEMENTS OF THE GAME: STARTING INPUT, SCORED DISTANCE OR SESSION GOAL, AND THE RESULTANT WORLD STATE CHANGE WITH COST, REWARD, AND NEXT SELECT OPTION. THESE ELEMENTS ARE PROVEN BY THE MAIN/A/B/C SYSTEMS THAT ARE INHERENTLY INTERDEPENDENT."
+    },
+    "local_authoring_parts::3803321000863f30e07061ca910a8d2d8d0b8c6aeeede7da61516070717316a3:coreLoop": {
+      "coreLoop": [
+        "입력(1 손 tap or swipe) -> 점수/거리/세션 목표 설정 -> 월드 상태 변화 및 비용/위험/보상 연결",
+        "선택 결과 -> 반복 가능한 루프 생성 -> 다음 월드 상태로 선택 결과가 연결됨",
+        "플레이어 선택 -> 실제 세계 상태 변화 및 다음 사건 연결"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201431,
-      "lastMs": 201431,
+      "totalMs": 236585,
+      "lastMs": 35154,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:38:56.833Z"
+      "updatedAt": "2026-10-09T17:39:31.997Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:35:35.348Z",
-  "updatedAt": "2026-10-09T17:38:56.833Z",
+  "updatedAt": "2026-10-09T17:39:31.997Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1679,7 +1686,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:38:56.833Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:39:31.997Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
