@@ -88,25 +88,183 @@
       "name": "재방문 재해석 시스템",
       "purpose": "플레이어가 과거 공간·상대·관계로 돌아간 후 새로운 통로·사건·상호작용·위험·보상을 열어 진입 가능한 여러 시스템과 루프를 형성하는 보조 요소",
       "playerChoice": "재방문 재해석을 통해 새로운 콘텐츠와 경로를 개발하여 플레이의 깊이를 증진시키기 위해 선택함"
+    },
+    "local_authoring_parts::32ff28de4670e4b6d923b9671d6d5886f41bac2a548987b470a7daf892644829:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "name": "재방문 재해석 시스템",
+      "purpose": "플레이어가 과거의 선택, 상태 및 결과에 기반하여 새로운 행동·대응법을 발전시키는 데 사용된다.",
+      "playerChoice": "기존 선택을 재해석하거나 새로운 전략을 제안하는 방식으로 진행되며, 이는 게임의 진입 가능한 여러 시스템과 루프와 연결되어야 한다."
+    },
+    "local_authoring_parts::50d00e0b0f33da97ca6e37bb48e4a1e4a8746a162c3c23bec16d8006a62f3e89:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "SURVIVAL_STATE"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE"
+          ],
+          "name": "생존 전투 시스템",
+          "purpose": "플레이어가 실시간 생존 전투에 참여하는 중심 행동 및 상태 교환 메커니즘",
+          "playerChoice": "적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택합니다만, 이 선택이 다음 상태로 연결됩니다만, 주체의 선택이 실제 월드 상태 변화와 직접적으로 관련되어야 합니다. 즉, 플레이어의 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 것이 필수적인 조건입니다. 게임의 핵심 재미는 '생존'이라는 원형에서 시작하여, 다양한 선택과 결과로 인해 진입 가능한 여러 시스템과 루프를 형성하며, 이를 바탕으로 새로운 행동과 대응법을 개발합니다. 이 시스템은 단순한 수집과 전투를 중심으로 한 실시간 생존 게임의 핵심 구조를 구성하고 있습니다. 각 선택은 위험/보상/다음 선택의 연결을 통해 상태 변화를 유도하며, 이 과정은 플레이어의 심리적 성장과 상호작용을 반영하는 방식으로진"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "실행 결과 시스템",
+          "purpose": "MAIN의 결과가 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 다음 진행 선택을 결정합니다만, 이 과정에서 새로운 행동/대응법을 발전시킵니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "진입 가능한 시스템 변주",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 새로운 루프와 상태 변화를 만든다 전략적으로 협력 혹은 경쟁 결정하여 진입 가능한 여러 시스템과 루프를 형성하며, 이를 바탕으로 새로운 행동과 대응법을 개발한다 중간에 발생할 수 있는 다양한 상황 및 대가를 포함해 실제 플레이어가 실제로 수행해야 하는 선택을 제공한다 조건이 변경될 때마다 다른 선택과 결과를 생성하고, 이 과정에서 숙련된 플레이어는 자신의 전략적 판단을 통해 다양한 대안을 선택하게 된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "재방문 재해석 시스템",
+          "purpose": "플레이어가 과거 공간·상대·관계로 돌아간 후 새로운 통로·사건·상호작용·위험·보상을 열어 진입 가능한 여러 시스템과 루프를 형성하는 보조 요소",
+          "playerChoice": "재방문 재해석을 통해 새로운 콘텐츠와 경로를 개발하여 플레이의 깊이를 증진시키기 위해 선택함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "재방문 재해석 시스템",
+          "purpose": "플레이어가 과거의 선택, 상태 및 결과에 기반하여 새로운 행동·대응법을 발전시키는 데 사용된다.",
+          "playerChoice": "기존 선택을 재해석하거나 새로운 전략을 제안하는 방식으로 진행되며, 이는 게임의 진입 가능한 여러 시스템과 루프와 연결되어야 한다."
+        }
+      ]
+    },
+    "local_authoring_parts::827009bed32b4952b2b7620490af1ff3dd158c78fcb74d503c1db8e8a204d1ab:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 적군에 맞서며 실시간 생존 전투 시작",
+        "SELECT: 수집 또는 업그레이드 선택, 팀/개인 협력/경쟁 결정",
+        "OUTPUT: 상태 변화(생존력 증가, 자원 소모 등)",
+        "STATE CHANGE: 위험/보상/다음 선택 연결",
+        "ACTION: 새로운 행동/대응법 발전"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "SURVIVAL_STATE"
+          ],
+          "stateOutputs": [
+            "ACTION_SURVIVAL_ROGUELITE"
+          ],
+          "name": "생존 전투 시스템",
+          "purpose": "플레이어가 실시간 생존 전투에 참여하는 중심 행동 및 상태 교환 메커니즘",
+          "playerChoice": "적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택합니다만, 이 선택이 다음 상태로 연결됩니다만, 주체의 선택이 실제 월드 상태 변화와 직접적으로 관련되어야 합니다. 즉, 플레이어의 선택이 ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 것이 필수적인 조건입니다. 게임의 핵심 재미는 '생존'이라는 원형에서 시작하여, 다양한 선택과 결과로 인해 진입 가능한 여러 시스템과 루프를 형성하며, 이를 바탕으로 새로운 행동과 대응법을 개발합니다. 이 시스템은 단순한 수집과 전투를 중심으로 한 실시간 생존 게임의 핵심 구조를 구성하고 있습니다. 각 선택은 위험/보상/다음 선택의 연결을 통해 상태 변화를 유도하며, 이 과정은 플레이어의 심리적 성장과 상호작용을 반영하는 방식으로진"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "실행 결과 시스템",
+          "purpose": "MAIN의 결과가 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 다음 진행 선택을 결정합니다만, 이 과정에서 새로운 행동/대응법을 발전시킵니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "진입 가능한 시스템 변주",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과를 기반으로 새로운 루프와 상태 변화를 만든다 전략적으로 협력 혹은 경쟁 결정하여 진입 가능한 여러 시스템과 루프를 형성하며, 이를 바탕으로 새로운 행동과 대응법을 개발한다 중간에 발생할 수 있는 다양한 상황 및 대가를 포함해 실제 플레이어가 실제로 수행해야 하는 선택을 제공한다 조건이 변경될 때마다 다른 선택과 결과를 생성하고, 이 과정에서 숙련된 플레이어는 자신의 전략적 판단을 통해 다양한 대안을 선택하게 된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "재방문 재해석 시스템",
+          "purpose": "플레이어가 과거 공간·상대·관계로 돌아간 후 새로운 통로·사건·상호작용·위험·보상을 열어 진입 가능한 여러 시스템과 루프를 형성하는 보조 요소",
+          "playerChoice": "재방문 재해석을 통해 새로운 콘텐츠와 경로를 개발하여 플레이의 깊이를 증진시키기 위해 선택함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "재방문 재해석 시스템",
+          "purpose": "플레이어가 과거의 선택, 상태 및 결과에 기반하여 새로운 행동·대응법을 발전시키는 데 사용된다.",
+          "playerChoice": "기존 선택을 재해석하거나 새로운 전략을 제안하는 방식으로 진행되며, 이는 게임의 진입 가능한 여러 시스템과 루프와 연결되어야 한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 528665,
-      "lastMs": 51288,
+      "totalMs": 577749,
+      "lastMs": 49084,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:56:26.969Z"
+      "updatedAt": "2026-10-09T14:57:16.055Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:47:38.208Z",
-  "updatedAt": "2026-10-09T14:56:26.969Z",
+  "updatedAt": "2026-10-09T14:57:16.058Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1816,7 +1974,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:56:26.969Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:57:16.058Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
