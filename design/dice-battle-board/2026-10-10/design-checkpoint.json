@@ -532,25 +532,32 @@
       },
       "playerFantasy": "게임 내에서 주사위로 결정되는 이벤트 및 결과는 플레이어의 선택에 따라 변하며, 전략적 판단은 RPG 요소를 반영하여 게임의 복잡성과 재미를 증대시키는 데 기여합니다.",
       "coreFun": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화는 게임의 진입 단계를 구성하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성함으로써 게임의 구조와 재미를 강화합니다."
+    },
+    "local_authoring_parts::23a9c4cd744d70e39dc67d580d413ea62da26089fe7ac5278fe30649291e6e8d:coreLoop": {
+      "coreLoop": [
+        "입력: 보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택 및 상태 변화",
+        "선택: 보드에 첫 번째 목표 설정, 한 방씩 이동하며 새로운 장애물 또는 문제 해결",
+        "보상/위험: 새로운 상태로 전환하여 플레이어가 경험하는 실제 세계 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1536762,
-      "lastMs": 96659,
+      "totalMs": 1621259,
+      "lastMs": 84497,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:30:34.887Z"
+      "updatedAt": "2026-10-09T21:31:59.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:04:58.089Z",
-  "updatedAt": "2026-10-09T21:30:34.889Z",
+  "updatedAt": "2026-10-09T21:31:59.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2144,7 +2151,7 @@
     "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true,
     "02c84d48073200c40ac89cf8adc15cd4bcca11ee719bb3a52560db5fd7b136ff": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:30:34.888Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:31:59.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
