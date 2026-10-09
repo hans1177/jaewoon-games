@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T16:00:00.330Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T16:01:27.813Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/crystal-defense/2026-10-09/design-seed.json",
+    "contentDigest": "01bf19ce0fa331ff41f91fa62287d7783e4d14f247048802e9254a7c629311a6",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1074431,
-      "lastMs": 97665,
+      "totalMs": 1161910,
+      "lastMs": 87479,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:00:00.328Z"
+      "updatedAt": "2026-10-09T16:01:27.810Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T16:00:00.331Z"
+  "updatedAt": "2026-10-09T16:01:27.820Z"
 }
