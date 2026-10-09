@@ -645,25 +645,113 @@
       "stateKeys": [
         "systemInterconnections[4].trigger"
       ]
+    },
+    "local_authoring_parts::5d6e89ced5319326b09fb33f96cdc475f1854b834167ecac137c09c1dbe0dc97:fromSystem": {
+      "fromSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::5d6e89ced5319326b09fb33f96cdc475f1854b834167ecac137c09c1dbe0dc97:toSystem": {
+      "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::5d6e89ced5319326b09fb33f96cdc475f1854b834167ecac137c09c1dbe0dc97:trigger": {
+      "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::5d6e89ced5319326b09fb33f96cdc475f1854b834167ecac137c09c1dbe0dc97:stateChange": {
+      "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::7c36af8083137e532eecbf1be054042a43b26275d66b522c2e417da5cb4f17f7:systemInterconnections:4": {
+      "fromId": "systemInterconnections[4].trigger",
+      "toId": "systemInterconnections[4].trigger",
+      "stateKeys": [
+        "systemInterconnections[4].trigger"
+      ],
+      "fromSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::beda4dfba52dc36b2b013e12c08e80e6c1ede73e872dbfb10b779c4238edff04:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "systemInterconnections[0].trigger",
+          "toId": "systemInterconnections[0].trigger",
+          "stateKeys": [
+            "systemInterconnections[0].trigger"
+          ],
+          "fromSystem": "systemInterconnections[0].trigger",
+          "toSystem": "systemInterconnections[0].trigger",
+          "trigger": "임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다. 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "stateChange": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        },
+        {
+          "fromId": "systemInterconnections[1].trigger",
+          "toId": "systemInterconnections[1].trigger",
+          "stateKeys": [
+            "systemInterconnections[1].trigger"
+          ],
+          "fromSystem": "systemInterconnections[1].trigger",
+          "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        },
+        {
+          "fromId": "systemInterconnections[2].trigger",
+          "toId": "systemInterconnections[2].trigger",
+          "stateKeys": [
+            "systemInterconnections[2].trigger"
+          ],
+          "fromSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        },
+        {
+          "fromId": "systemInterconnections[3].trigger",
+          "toId": "systemInterconnections[3].trigger",
+          "stateKeys": [
+            "systemInterconnections[3].trigger"
+          ],
+          "fromSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        },
+        {
+          "fromId": "systemInterconnections[4].trigger",
+          "toId": "systemInterconnections[4].trigger",
+          "stateKeys": [
+            "systemInterconnections[4].trigger"
+          ],
+          "fromSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "toSystem": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "trigger": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "stateChange": "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::348f6a0b2c59e7a8d2443a7587ec789f482965d68d59dd4bf0aa2b95b486e81b:milestone": {
+      "milestone": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인."
+    },
+    "local_authoring_parts::348f6a0b2c59e7a8d2443a7587ec789f482965d68d59dd4bf0aa2b95b486e81b:newGameplay": {
+      "newGameplay": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 44,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3667249,
-      "lastMs": 70667,
+      "totalMs": 4173616,
+      "lastMs": 89689,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:04:18.582Z"
+      "updatedAt": "2026-10-09T00:12:44.962Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T00:04:18.582Z",
+  "updatedAt": "2026-10-09T00:12:44.962Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3391,7 +3479,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:04:18.582Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:12:44.962Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
