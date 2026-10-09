@@ -102,25 +102,225 @@
       "name": "BOARD_STATE_TRANSITION_C",
       "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
       "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
+    },
+    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_PATTERN",
+        "MATCH_RESULT",
+        "GOAL_CLEAR"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN",
+        "REWARD_GAINED",
+        "NEW_LEVEL_COMPLETED"
+      ],
+      "name": "BOARD_STATE_TRANSITION_DELVE",
+      "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
+      "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+    },
+    "local_authoring_parts::6d55c90444b5154a3ab6caa6a303aed1e68783beaee31735c948ffb828ed0744:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_START",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION",
+          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION",
+          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
+          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_B",
+          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
+          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_C",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
+          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_DELVE",
+          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
+          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+        }
+      ]
+    },
+    "local_authoring_parts::32b0a3e9000b45bca9d785a0958208e45f2f53c62aa85e8cc166a8f13ebae7d9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "LEVEL_START",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION",
+          "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION",
+          "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
+          "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_B",
+          "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
+          "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_C",
+          "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
+          "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_PATTERN",
+            "MATCH_RESULT",
+            "GOAL_CLEAR"
+          ],
+          "stateOutputs": [
+            "NEXT_BOARD_PATTERN",
+            "REWARD_GAINED",
+            "NEW_LEVEL_COMPLETED"
+          ],
+          "name": "BOARD_STATE_TRANSITION_DELVE",
+          "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
+          "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 422646,
-      "lastMs": 37660,
+      "totalMs": 473059,
+      "lastMs": 50413,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:56:49.393Z"
+      "updatedAt": "2026-10-09T10:57:39.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T10:56:49.393Z",
+  "updatedAt": "2026-10-09T10:57:39.811Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2052,7 +2252,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:56:49.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:57:39.811Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
