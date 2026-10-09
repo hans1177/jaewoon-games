@@ -97,25 +97,32 @@
       },
       "playerFantasy": "A player's journey through a dynamic world of puzzles, risks, and rewards. Every decision shapes the environment, leading to new challenges and opportunities. The game evolves as players adapt their strategies, facing escalating difficulties and discovering new ways to overcome them.",
       "coreFun": "Player-driven progression through a living board game system. Players select actions that influence the environment, leading to new puzzles or risks. Each move leads to a new configuration of challenges and opportunities, forcing players to adapt their strategies and make strategic decisions based on the evolving world state. The game continues to evolve as players navigate through increasingly complex scenarios, balancing multiple factors to achieve their goals while managing increasing complexity."
+    },
+    "local_authoring_parts::aeb6c1ba44c4f6c0704dbd887f7f343bd5cd33e139eda29de2af144af51b2d5b:coreLoop": {
+      "coreLoop": [
+        "Input/Selection → State Change → Reward/Risk/Next Choice",
+        "Player's Decision → Environmental Shift → Adaptive Strategy Adjustment",
+        "Discovery Loop: Puzzle → Risk → Reward → New Challenge"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 151167,
-      "lastMs": 151167,
+      "totalMs": 227310,
+      "lastMs": 76143,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:59:03.340Z"
+      "updatedAt": "2026-10-09T21:00:19.485Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:56:32.142Z",
-  "updatedAt": "2026-10-09T20:59:03.340Z",
+  "updatedAt": "2026-10-09T21:00:19.485Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1705,7 +1712,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:59:03.340Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:00:19.485Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
