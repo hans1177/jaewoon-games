@@ -54,21 +54,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 271373,
-      "lastMs": 34325,
+      "totalMs": 301257,
+      "lastMs": 29884,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:39:27.856Z"
+      "updatedAt": "2026-10-09T08:39:57.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:56.457Z",
-  "updatedAt": "2026-10-09T08:39:27.856Z",
+  "updatedAt": "2026-10-09T08:39:57.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -620,11 +620,23 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::08b37ff4c6a38c324a495efe8893d782a1ade36939149d20adf8a744547e8ad5:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "COZY_CHIBI_KINGDOM_WORLD_V8"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::08b37ff4c6a38c324a495efe8893d782a1ade36939149d20adf8a744547e8ad5:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:39:27.856Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T08:39:57.741Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
