@@ -34,25 +34,40 @@
         "SELECT: 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
         "OUTPUT: 즉각적인 피드백과 위험/보상 관계에 참여하며 게임의 핵심 루프를 형성한다."
       ]
+    },
+    "local_authoring_parts::d262f8f52e527b0c62eda1e9a80821365deb4c79b5ed68d5c57cf64343b47d04:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE",
+        "GROWTH_OPPORTUNITY"
+      ],
+      "name": "PUZZLE_WORLD_RULE_SET",
+      "purpose": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 304137,
-      "lastMs": 42612,
+      "totalMs": 340316,
+      "lastMs": 36179,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:04:04.956Z"
+      "updatedAt": "2026-10-09T12:04:41.136Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:04:04.956Z",
+  "updatedAt": "2026-10-09T12:04:41.136Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2104,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:04:04.956Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:04:41.136Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
