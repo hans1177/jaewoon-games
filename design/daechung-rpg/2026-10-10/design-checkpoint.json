@@ -583,25 +583,38 @@
       "name": "보스 동료 수집 및 파티 조합 확장",
       "purpose": "AI 동료를 통해 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 되도록 설계",
       "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티를 구성하며, 동료는 리더 레벨에 자동 동기화되어 별도 장비 노가다가 없다"
+    },
+    "local_authoring_parts::d784c425751c5837892671b051a0142d8248c961e84c95f3aabffff4c468edea:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "포탈 전투 선택"
+      ],
+      "stateOutputs": [
+        "Lv.60 만렙/숙련"
+      ],
+      "name": "초원 몬스터 10종 및 런 보스 융합",
+      "purpose": "보스 동료 수집과 포탈 전투의 상태 연결 및 확장",
+      "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 리더 레벨 자동 동기화됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1989719,
-      "lastMs": 39514,
+      "totalMs": 2028079,
+      "lastMs": 38360,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:54:50.900Z"
+      "updatedAt": "2026-10-09T22:55:29.262Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:15:42.496Z",
-  "updatedAt": "2026-10-09T22:54:50.901Z",
+  "updatedAt": "2026-10-09T22:55:29.269Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2381,7 +2394,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2482,10 +2495,10 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:54:50.900Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T22:55:29.264Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
