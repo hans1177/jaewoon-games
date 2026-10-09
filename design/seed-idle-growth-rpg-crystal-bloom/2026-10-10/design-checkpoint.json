@@ -1022,25 +1022,28 @@
         "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
         "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
       ]
+    },
+    "local_authoring_parts::b61a1259337d0d5f3a8d9e03c653efdf711708af77ce208a43e28cf989bb7cae:retryFlow": {
+      "retryFlow": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생함을 확인하여 재진입 유도"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 62,
-      "successes": 61,
+      "calls": 63,
+      "successes": 62,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4427145,
-      "lastMs": 62761,
+      "totalMs": 4487878,
+      "lastMs": 60733,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:41:53.607Z"
+      "updatedAt": "2026-10-09T23:42:54.341Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T23:41:53.607Z",
+  "updatedAt": "2026-10-09T23:42:54.341Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3089,7 +3092,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:41:53.607Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:42:54.341Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
