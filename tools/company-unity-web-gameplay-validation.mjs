@@ -373,7 +373,7 @@ try{
   };
   const nativeMeshProof={
     inspected:nativeMeshMetric('inspected'),validMeshes:nativeMeshMetric('validMeshes'),
-    triangles:nativeMeshMetric('triangles'),materialPass:nativeMeshMetric('materialPass'),
+    triangles:nativeMeshMetric('triangles'),volumetricMeshes:nativeMeshMetric('volumetricMeshes'),materialPass:nativeMeshMetric('materialPass'),
     texturePass:nativeMeshMetric('texturePass')
   };
   // 메시 존재만으로는 2.5D를 배제할 수 없다. Unity에서 카메라·3축 깊이·게임플레이 모델을 실측한다.
@@ -401,6 +401,8 @@ try{
     &&Number.isSafeInteger(nativeMeshProof.inspected)&&nativeMeshProof.inspected>0
     &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
     &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
+    &&Number.isSafeInteger(nativeMeshProof.volumetricMeshes)&&nativeMeshProof.volumetricMeshes>0
+    &&nativeMeshProof.volumetricMeshes<=nativeMeshProof.validMeshes
     &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
   const nativeMeshMissing=!nativeMeshVerified;
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
@@ -477,6 +479,8 @@ try{
       requiredForAllUnityWebGames:true,
       observedMeshCount:nativeMeshVerified?nativeMeshProof.validMeshes:0,
       observedTriangles:nativeMeshVerified?nativeMeshProof.triangles:0,
+      observedVolumetricMeshes:nativeMeshVerified?nativeMeshProof.volumetricMeshes:0,
+      planarOnlyMeshesCannotPass:true,
       legacy2dOr2_5dRequires3dRebuild:!nativeMeshVerified,
     },
     visualQa:{
