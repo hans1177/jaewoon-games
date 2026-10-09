@@ -1202,25 +1202,41 @@
         "world_state"
       ],
       "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::17816618cae5555f2bf74e76d31f1e0d210c9c1d49ac2a3db6620601179e4f17:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 (주체)에서 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+      "stateChange": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환되며, 플레이어는 현재 상황을 이해하고 재방문에 따른 새로운 목표와 전략 선택을 유도함."
+    },
+    "local_authoring_parts::946261730a993e510ab39c09a093c361c3919508de5678ed92ccf5187d939153:systemInterconnections:3": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태 변환 시스템 (주체)에서 실질적 입력 및 선택을 처리하며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환된다.",
+      "stateChange": "실제 입력 및 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변환되며, 플레이어는 현재 상황을 이해하고 재방문에 따른 새로운 목표와 전략 선택을 유도함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 78,
-      "successes": 78,
+      "calls": 79,
+      "successes": 79,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3440664,
-      "lastMs": 37981,
+      "totalMs": 3470192,
+      "lastMs": 29528,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:09:47.357Z"
+      "updatedAt": "2026-10-09T03:10:16.887Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T03:09:47.357Z",
+  "updatedAt": "2026-10-09T03:10:16.889Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3423,7 +3439,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:09:47.357Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:10:16.889Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
