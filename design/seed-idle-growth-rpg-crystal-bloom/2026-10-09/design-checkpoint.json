@@ -27,25 +27,32 @@
       "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다.",
       "playerFantasy": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다.",
       "coreFun": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다."
+    },
+    "local_authoring_parts::03c0f2b05cd8f095ed12b17a91e714d20c152d1df0e7783b7e743638490f4bad:coreLoop": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 287486,
-      "lastMs": 39705,
+      "totalMs": 332976,
+      "lastMs": 45490,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:09:51.588Z"
+      "updatedAt": "2026-10-09T12:10:37.081Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:09:51.589Z",
+  "updatedAt": "2026-10-09T12:10:37.081Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2284,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:09:51.589Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:10:37.081Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
