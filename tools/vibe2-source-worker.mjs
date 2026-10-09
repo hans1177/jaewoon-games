@@ -4045,14 +4045,42 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles:[];
   const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles:[];
   const hardGate=confidence==='HIGH'&&developmentMode==='PRESERVE_PATCH'&&primaryTargets.length>0&&allowFullRewrite!==true&&bootstrap!==true&&newFiles.length===0&&replaceFiles.length===0;
-  // 변경되지 않은 주변 코드의 키워드로 정상 후보를 오분류하지 않는다.
+  // 여러 함수가 한 편집에 포함되어도 실제 변경된 토큰 주변만 분석한다.
+  // 변경 없는 중간 함수의 재화/전투 키워드는 변경 예산으로 계산하지 않는다.
   const touchedSystems=unique(edits.flatMap(edit=>{
     const before=String(edit.find??''),after=String(edit.replace??'');
-    let prefix=0,suffix=0;
-    while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
-    while(suffix<before.length-prefix&&suffix<after.length-prefix
-      &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
-    return semanticSystemsForText(before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix));
+    const changedWindow=()=>{
+      let prefix=0,suffix=0;
+      while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
+      while(suffix<before.length-prefix&&suffix<after.length-prefix
+        &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
+      return before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix);
+    };
+    const tokenize=text=>text.match(/[A-Za-z_$][\w$]*|\d+(?:\.\d+)?|[^\s]/g)||[];
+    const original=tokenize(before),replacement=tokenize(after);
+    if(!original.length||!replacement.length||original.length*replacement.length>40000){
+      return semanticSystemsForText(changedWindow());
+    }
+    const n=original.length,m=replacement.length;
+    const dp=Array.from({length:n+1},()=>new Uint16Array(m+1));
+    for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--){
+      dp[i][j]=original[i]===replacement[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+    }
+    const changed=[];
+    let i=0,j=0;
+    while(i<n||j<m){
+      if(i<n&&j<m&&original[i]===replacement[j]){i++;j++;continue;}
+      const fromI=i,fromJ=j;
+      while(i<n||j<m){
+        if(i<n&&j<m&&original[i]===replacement[j])break;
+        if(i<n&&(j>=m||dp[i+1][j]>=dp[i][j+1]))i++;
+        else j++;
+      }
+      // 숫자/연산자 변경도 gold, damage 같은 상태 소유자 이름과 묶어서 판별한다.
+      changed.push(original.slice(Math.max(0,fromI-3),Math.min(n,i+3)).join(' '));
+      changed.push(replacement.slice(Math.max(0,fromJ-3),Math.min(m,j+3)).join(' '));
+    }
+    return semanticSystemsForText(changed.join('\n'));
   }));
   const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
   const editScopeRows=edits.map(edit=>{
@@ -4113,7 +4141,29 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
           return ![...existing,...proposed].some(owner=>allowedSymbols.has(owner.name)
             &&owner.start<row.start&&owner.end>=row.end);
         });
-        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols});
+        // 허용된 함수 몸체만 가리고 원본과 후보의 나머지 소스를 대조한다.
+        // 같은 파일의 다른 전역 상태·실행문을 고치는 후보는 책임 함수명이 근처에 있어도 거부한다.
+        const nonOwnedSource=(text,functions)=>{
+          const ownerFunctions=functions.filter(row=>allowedSymbols.has(row.name))
+            .sort((a,b)=>a.start-b.start||b.end-a.end);
+          const outerOwners=[];
+          for(const row of ownerFunctions){
+            if(!outerOwners.some(owner=>owner.start<=row.start&&owner.end>=row.end))outerOwners.push(row);
+          }
+          let remaining=text;
+          for(const row of outerOwners.sort((a,b)=>b.start-a.start)){
+            remaining=remaining.slice(0,row.start)+'\u001fOWNED_FUNCTION:'+row.name+'\u001e'+remaining.slice(row.end);
+          }
+          // 읽기 전용 상태와 구분해 명시적으로 소유한 단일 상태 선언·대입만 허용한다.
+          for(const name of ownedState){
+            if(!/^[A-Za-z_$][\w$]*$/.test(name))continue;
+            const declaration=new RegExp('(^|\\n)[ \\t]*(?:(?:public|private|protected|internal|static|readonly|const|let|var|local)\\s+)*(?:[A-Za-z_][\\w<>\\[\\]?]*\\s+)?'+regexEscape(name)+'\\s*=\\s*[^;\\n]*;?[ \\t]*(?=\\n|$)','g');
+            remaining=remaining.replace(declaration,(_,prefix)=>prefix+'\u001fOWNED_STATE:'+name+'\u001e');
+          }
+          return remaining;
+        };
+        const unownedSourceMutation=nonOwnedSource(before,existing)!==nonOwnedSource(after,proposed);
+        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols,unownedSourceMutation});
       }catch{
         // 소스 검사 자체가 실패한 경우에도 함수 범위를 추측해 PASS로 만들지 않는다.
       }
@@ -4124,6 +4174,7 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     if(inspected?.changedSymbols.length&&!inspected.unrelatedSymbols.length)row.touchesAllowedMarker=true;
   }
   const unapprovedSymbols=unique(symbolMutationRows.flatMap(row=>row.unrelatedSymbols.map(name=>row.path+':'+name)));
+  const unownedSourcePaths=unique(symbolMutationRows.filter(row=>row.unownedSourceMutation).map(row=>row.path));
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
   const saveKeyViolations=[];
@@ -4139,12 +4190,13 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
   if(hardGate&&unapprovedSymbols.length)violations.push('UNRELATED_SYMBOL:'+unapprovedSymbols.join(','));
+  if(hardGate&&unownedSourcePaths.length)violations.push('UNOWNED_SOURCE_MUTATION:'+unownedSourcePaths.join(','));
   if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
   if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
     version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
-    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,unownedSourcePaths,
     protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
     saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
@@ -4666,6 +4718,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     ?unique((reason.match(/UNRELATED_SYMBOL:([^|\n]+)/i)?.[1]||'').split(',')
       .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
     :[];
+  const unownedSourcePaths=semanticDiffViolation
+    ?unique((reason.match(/UNOWNED_SOURCE_MUTATION:([^|\n]+)/i)?.[1]||'').split(',')
+      .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
+    :[];
   const unityBootstrapPairFailure=/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(reason);
   const systemCausalTestRequired=/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(reason);
   const systemSyntaxInvalid=/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(reason);
@@ -4842,6 +4898,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         retryBase.includes('[PRE-SUBMIT SELF REVIEW BEGIN]')?'':preSubmitSelfReviewBlockFromPrompt(rawPrompt),
         repeatedFailureShift,
         unapprovedSymbols.length?'OFF-TARGET FUNCTIONS REJECTED: '+unapprovedSymbols.join(', ')+'. Do not edit their declarations or bodies. Rebuild against ORIGINAL writable source; edit only primary or explicitly permitted dependent functions.':'',
+        unownedSourcePaths.length?'UNOWNED SOURCE SCOPE REJECTED: '+unownedSourcePaths.join(', ')+'. Do not add or change executable code outside the primary and explicitly permitted dependent functions; a standalone state binding is permitted only when explicitly owned by the edit contract.':'',
         oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
