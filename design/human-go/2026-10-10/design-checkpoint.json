@@ -581,25 +581,39 @@
       "name": "생활 탐험 진화 시스템 - 재방문 및 고급 운용",
       "purpose": "플레이어가 이미 발견한 인물, 작업 또는 콘텐츠에 대해 새로운 선택을 하며, 이를 바탕으로 세계 상태 변화와 진화 과정을 이끌어낸다.",
       "playerChoice": "재방문 → 재해석 → 고급 운용 → 정체성 형성 전략의 실행 및 다음 경험 확대를 위한 선택 사례 제공 중인 숙련된 활동을 의미함으로써 실제 세계 상태 변화로 반영됨니다."
+    },
+    "local_authoring_parts::ff45dd40bd32aaa158009cb99d57c83a1a8180eeb8a448c6d275e6f11b1c4436:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "playerAction",
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newPossibility"
+      ],
+      "name": "생활 탐험 진화 시스템 - 재방문 및 고급 운용",
+      "purpose": "숙련된 활동 -> 新しい 가능성이 실제로 달라지는 경험 반복",
+      "playerChoice": "재방문 → 재해석 → 고급 운용 → 새로운 정체성 형성 중간 단계의 선택과 실행 전략 결정 및 실행 계획 제안 및 구조적 변환 및 이전 상태와의 연결 및 다음 사건 예측 및 게임 진행 방향 설정 및 실제 세계 상태 변화 기반의 발전 과정 및 인식 확대 및 플레이어 행동에 따른 상호작용 및 결과 및 다음 선택 생성 및 진화 과정의 층위별 조절 및 감염 전 조건 포함 및 실질적 인과 변화 적용 및 복잡한 용어 및 기능 개수 및 끝없는 반복 및 수치 증가 대신 깊이로 대체 및 단서 존재 및 규칙 일관성 유지 및 보상은 발견과 이해와 숙련에 맞게 약속됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1826002,
-      "lastMs": 104481,
+      "totalMs": 1939929,
+      "lastMs": 113927,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:09:35.471Z"
+      "updatedAt": "2026-10-09T18:11:29.399Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T18:09:35.471Z",
+  "updatedAt": "2026-10-09T18:11:29.399Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2117,7 +2131,7 @@
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:09:35.471Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:11:29.399Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
