@@ -222,13 +222,13 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   if(selected.has('platformProfiles')){
     // 기존 중앙 공간 연출 계약을 설계 게이트에서도 적용한다. 이 기록은 실제 WebGL 실행 PASS가 아니다.
     const spatial=profiles.UNITY?.unityWebSpatialPresentation;
-    const dimensions=['2.5D','3D'];
+    const dimensions=['3D'];
     const fields=['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'];
     const missing=fields.filter(field=>!textReady(spatial?.[field],32));
     if(!dimensions.includes(spatial?.dimension)||missing.length){
       reject('DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED','PLATFORM_FIT_DESIGN',['platformProfiles'],
         {dimension:spatial?.dimension||'MISSING',missing},
-        'Unity WebGL 게임은 최소 2.5D(또는 3D) 실제 공간 그래픽을 설계한다. 세계 깊이·카메라/가림·조명/재질·모바일 브라우저 플레이와 전후 비교 검증을 각각 구체화한다. 평면 2D 카드·스프라이트·태그만으로 통과할 수 없다. 2D HUD는 가능하다.');
+        'Unity WebGL 게임은 실제 3D 공간 그래픽을 설계한다. 세계 깊이·카메라/가림·조명/재질·모바일 브라우저 플레이와 전후 비교 검증을 각각 구체화한다. 평면 2D 카드·스프라이트·태그만으로 통과할 수 없다. 2D HUD는 가능하다.');
     }
   }
   for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
