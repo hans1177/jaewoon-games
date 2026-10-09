@@ -1,5 +1,47 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-61w2ab",
+      "worker": "vibe2",
+      "taskId": "cozy-island-unity-web-base-implementation-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
+        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs",
+        "assets/roblox/world-ghosts/native/spider/spider.glb",
+        "assets/roblox/world-ghosts/native/spider/spider.png",
+        "assets/roblox/world-ghosts/native/spider/evidence.json",
+        "assets/generated/unity/cozy-island/background/asset.glb",
+        "assets/generated/unity/cozy-island/background/master.glb",
+        "assets/generated/unity/cozy-island/background/preview.png",
+        "assets/generated/unity/cozy-island/background/preview-master.png",
+        "assets/generated/unity/cozy-island/background/application.json",
+        "assets/generated/unity/cozy-island/background/evidence.json",
+        "assets/generated/unity/cozy-island/item/asset.glb",
+        "assets/generated/unity/cozy-island/item/master.glb",
+        "assets/generated/unity/cozy-island/item/preview.png",
+        "assets/generated/unity/cozy-island/item/preview-master.png",
+        "assets/generated/unity/cozy-island/item/application.json",
+        "assets/generated/unity/cozy-island/item/evidence.json",
+        "assets/generated/unity/cozy-island/prop/asset.glb",
+        "assets/generated/unity/cozy-island/prop/master.glb",
+        "assets/generated/unity/cozy-island/prop/preview.png",
+        "assets/generated/unity/cozy-island/prop/preview-master.png",
+        "assets/generated/unity/cozy-island/prop/application.json",
+        "assets/generated/unity/cozy-island/prop/evidence.json"
+      ],
+      "baseSha": "ab874a3ef38a2660bc0417d19bbad33919a382fc",
+      "runId": "37864381281",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-09T01:18:43.136Z",
+      "expiresAt": "2026-10-09T02:03:43.136Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
