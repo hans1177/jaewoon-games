@@ -212,7 +212,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
     // 플레이 등록은 기존 공식 Unity WebGL 빌드·실제 브라우저 3회·3D/모바일/저장 QA로만 한다.
     const archivePresent=valid;
     let verifiedRoot='',verifiedHref='';
-    const project=''+unityProjectRoot.replace(/\\/+$/,'')+'/'+id;
+    const project=''+unityProjectRoot.replace(/\/+$/,'')+'/'+id;
     const scriptsRoot=project+'/Assets/Scripts';
     let nativeCsharp=false;
     try{
@@ -232,7 +232,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
           const htmlFile=candidate+'/'+entryFile;
           if(!filesystem.existsSync(htmlFile)||filesystem.statSync(htmlFile).size<minBytes)continue;
           const html=filesystem.readFileSync(htmlFile,'utf8');
-          if(!/createUnityInstance\\s*\\(/.test(html)||!/\\.loader\\.js/.test(html))continue;
+          if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
           const manifest=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-deploy-manifest.json','utf8'));
           const build=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-build.json','utf8'));
           const readiness=JSON.parse(filesystem.readFileSync(candidate+'/upper-platform-development-readiness.json','utf8'));
@@ -249,7 +249,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
           if(!['loader','data','framework','wasm'].every(key=>
             Array.isArray(groups[key])&&groups[key].length>0
             &&groups[key].some(ref=>{
-              if(typeof ref!=='string'||!/^Build\\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+              if(typeof ref!=='string'||!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
               try{return filesystem.statSync(candidate+'/'+ref).isFile()&&filesystem.statSync(candidate+'/'+ref).size>0;}catch{return false;}
             })))continue;
           if(build.engine!=='UNITY_WEB'||build.gameId!==id||build.canonicalSourceRoot!=='unity-games/'+id
