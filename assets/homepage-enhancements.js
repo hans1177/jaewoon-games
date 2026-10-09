@@ -204,11 +204,12 @@ async function bindAvailableUnityWebSurfaces(catalog){
           &&Number(row?.spatialGameplay?.gameplayActors3d)>=1&&row?.spatialGameplay?.spriteGameplayActors===0
           &&row?.visualQa?.nativeUnityMesh?.pass===true;
         if(![gameplay,independent,regression].every(ownerPlayable3d))continue;
-        if(build?.engine!=='UNITY_WEB'||build?.gameId!==id||build?.ownerBrowserTestEligible!==true)continue;
+        if(build?.engine!=='UNITY_WEB'||build?.gameId!==id||build?.bootSmoke!=='PASS')continue;
         const ready=readiness?.pass===true&&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY'
           &&readiness?.gameId===id&&[gameplay,independent,regression].every(e=>e.pass===true&&e.performance?.pass===true);
         const preview=testOnly&&readiness?.pass===false&&readiness?.state==='REPAIR_REQUIRED'
-          &&readiness?.gameId===id&&build?.actualBrowserPlay==='PLAYABLE_TEST_ONLY';
+          &&readiness?.gameId===id&&build?.ownerBrowserTestEligible===true
+          &&['PASS','PLAYABLE_TEST_ONLY'].includes(build?.actualBrowserPlay);
         if(testOnly?!preview:!ready)continue;
         const refs=[...new Set(['loader','data','framework','wasm'].flatMap(key=>groups[key]))];
         if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
