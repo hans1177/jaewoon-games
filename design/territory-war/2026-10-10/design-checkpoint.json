@@ -513,21 +513,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1374697,
-      "lastMs": 102460,
+      "totalMs": 1478901,
+      "lastMs": 104204,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:39:04.431Z"
+      "updatedAt": "2026-10-09T20:40:48.636Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T20:39:04.431Z",
+  "updatedAt": "2026-10-09T20:40:48.637Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2091,11 +2091,21 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::25a8f2cccccb6b8f837e574120f4f1f2d6cd7d28f9804fa97c1e032e2ecba4c5:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "identity-core"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::2874d366d46805cf234d953cab76997151d7fa45c6aa3a0d8a9a2cf859ea592c:signatureSystems:1": 1,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "local_authoring_parts::25a8f2cccccb6b8f837e574120f4f1f2d6cd7d28f9804fa97c1e032e2ecba4c5:signatureSystems:1": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2196,10 +2206,10 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:39:04.431Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T20:40:48.636Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
