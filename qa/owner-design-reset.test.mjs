@@ -73,6 +73,7 @@ test('only main pushes or explicit dispatch can run a writable design reset',()=
   assert.match(workflow,/  reset-to-design:\n    if: github\.event_name == 'workflow_dispatch' \|\| \(github\.event_name == 'push'/);
   assert.match(workflow,/    permissions:\n      contents: write\n      actions: write/);
   assert.match(workflow,/    if: github\.event_name == 'pull_request'/);
+  assert.equal((workflow.match(/node tools\/company-shared-context\.mjs --output=\/tmp\/owner-reset-shared-context\.json/g)||[]).length,2,'PR and official reset must both enforce current central policy before writing');
 });
 
 test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
