@@ -454,25 +454,41 @@
         "BOARD_STATE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::a3532794b25e092ededb29a62fa72abf7a1d71f25740929fdd32de20c2bad1d8:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "BOARD_STATE_CHANGE",
+      "stateChange": "GAME_STATUS_UPDATE"
+    },
+    "local_authoring_parts::215fae53945b5b9e1bffe6dcba6104b4f76c27fef3774475916dc41e2495a09d:systemInterconnections:2": {
+      "fromId": "START_GAME",
+      "toId": "MATCH_GAME",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "BOARD_STATE_CHANGE",
+      "stateChange": "GAME_STATUS_UPDATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1054882,
-      "lastMs": 58854,
+      "totalMs": 1113907,
+      "lastMs": 59025,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:04:49.587Z"
+      "updatedAt": "2026-10-09T12:05:48.614Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T12:04:49.587Z",
+  "updatedAt": "2026-10-09T12:05:48.615Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2710,7 +2726,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:04:49.587Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:05:48.615Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
