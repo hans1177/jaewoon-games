@@ -419,25 +419,42 @@
       "name": "휴먼 GO! - 진입 단서, 숙련, 발전",
       "purpose": "Adaptive Combat, Survival Wave, Boss Conquest, Multi-Stage Engagement, Dynamic Difficulty Scaling",
       "playerChoice": "Survival Threshold Adjustment -> Multi-Stage Engagement -> Dynamic Difficulty Scaling\",\"playerFantasy\":\"진입 단서로 시작해 숙련과 발전을 통해 게임 정체성을 형성하는 반복 가능한 핵심 루프를 제공하며, 입력 후 즉각적인 상태 변화와 피드백을 경험하면서 위험/보상의 균형을 유지하여 성장 가능성이 실제로 달라지는 플레이어 경험을 반복\""
+    },
+    "local_authoring_parts::36b21ab42f649072a2f455b57cd46c92fe62466d77bd1e49fe075f607c1f2635:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Survival Threshold Adjustment",
+        "Multi-Stage Engagement",
+        "Dynamic Difficulty Scaling"
+      ],
+      "stateOutputs": [
+        "Boss Conquest",
+        "Progression Choice",
+        "New Gameplay Layer"
+      ],
+      "name": "휴먼 GO! - 진입 단서, 숙련, 발전",
+      "purpose": "구체적인 플레이 사례와 상태 변화를 통해 게임 정체성을 형성하는 반복 가능한 핵심 루프 제공",
+      "playerChoice": "Build Composition -> Resource Allocation -> Tactical Positioning"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 714845,
-      "lastMs": 110559,
+      "totalMs": 816029,
+      "lastMs": 101184,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:38:44.255Z"
+      "updatedAt": "2026-10-09T22:40:25.440Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:11:00.791Z",
-  "updatedAt": "2026-10-09T22:38:44.255Z",
+  "updatedAt": "2026-10-09T22:40:25.440Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2274,7 +2291,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:38:44.255Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:40:25.440Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
