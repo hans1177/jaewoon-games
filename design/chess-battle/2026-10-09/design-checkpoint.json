@@ -73,25 +73,38 @@
       "name": "TacticalBoardSystem_2",
       "purpose": "기존 시그니처 세계 규칙에 기반하여 새로운 전략적 상태 변환 메커니즘을 추가",
       "playerChoice": "플레이어가 현재 월드 상태를 바탕으로 다음 전략·경로·성장 가능성을 결정하는 선택 과정을 구현함으로써, 게임의 진입 방식 및 루프 구조를 재설계합니다。"
+    },
+    "local_authoring_parts::0dda1f08773f6081ee11aaef06656cd199a9d038a76b899ff43c02b124027b69:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "TacticalBoardSystem_3",
+      "purpose": "기존 시그니처 세계 규칙을 기반하여 새로운 루프와 진입 방식을 설계하는 보조 요소",
+      "playerChoice": "플레이어가 전략적 상태 변환에 대한 선택을 하며, 이 선택의 결과로 다음 월드 상태를 생성함으로써 게임 진행을 촉진한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 493642,
-      "lastMs": 69111,
+      "totalMs": 561470,
+      "lastMs": 67828,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:19:46.044Z"
+      "updatedAt": "2026-10-09T14:20:53.873Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:19:46.044Z",
+  "updatedAt": "2026-10-09T14:20:53.873Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1731,7 +1744,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:19:46.044Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:20:53.873Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
