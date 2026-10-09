@@ -55,9 +55,9 @@ if(scriptFiles.length===0)throw new Error('UNITY_WEB_CSHARP_SOURCE_REQUIRED');
 
 // Unity 월드의 2D 물리·스프라이트·타일맵은 신규/기존 게임 모두 허용하지 않는다.
 // UI 이미지와 텍스처는 3D 게임 화면을 대체하지 않는 한 계속 재사용할 수 있다.
-const forbidden2dComponents=/(?:\\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|TilemapRenderer|TilemapCollider2D)\\b)/;
+const forbidden2dComponents=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|TilemapRenderer|TilemapCollider2D)\b/;
 for(const file of scriptFiles){
-  const gameplaySource=fs.readFileSync(file,'utf8').replace(/\/\\*[\\s\\S]*?\\*\/|\/\/[^\\n]*/g,'');
+  const gameplaySource=fs.readFileSync(file,'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,'');
   if(forbidden2dComponents.test(gameplaySource))
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
 }
