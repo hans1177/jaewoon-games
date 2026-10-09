@@ -1444,25 +1444,43 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG"
+    },
+    "local_authoring_parts::7fdebc5037392150f86c73e2e38501f175689c6cd94807bad543efd97cc20b16:toSystem,trigger,stateChange": {
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE → RUN_STATE: 플레이어의 선택 결과가 다음 월드 상태를 바꾸며, 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::1aa968260bc3bc5243b315743e22eff19a3972661ea7cd28e3ac7898d14c3673:systemInterconnections:3": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE → RUN_STATE: 플레이어의 선택 결과가 다음 월드 상태를 바꾸며, 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 89,
-      "successes": 86,
+      "calls": 90,
+      "successes": 87,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5894381,
-      "lastMs": 42550,
+      "totalMs": 5942110,
+      "lastMs": 47729,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:44:25.699Z"
+      "updatedAt": "2026-10-09T02:45:13.435Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T02:44:25.699Z",
+  "updatedAt": "2026-10-09T02:45:13.437Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3531,7 +3549,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:44:25.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:45:13.437Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
