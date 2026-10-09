@@ -605,8 +605,8 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
 test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
   const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
   const library={version:1,assets:[
-    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
-    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
+    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',path:'assets/test/player.glb',internalAuditScore:900},
+    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',path:'assets/test/school.glb',referenceVisualAudit:{referenceUseOnly:true}},
     {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
   ]};
   const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
@@ -862,9 +862,10 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
 });
 
-test('three-platform policy-only checkpoint migration matches original SHA and excludes other inputs',()=>{
+test('historical platform-policy-only checkpoint migration preserves original SHA and rejects changed inputs',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
   const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
   const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
