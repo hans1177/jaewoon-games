@@ -28,25 +28,77 @@
         "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
       },
       "abCausality": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨"
+    },
+    "local_authoring_parts::e829f567bef30ab17c9af4742c22f1a0095591385cbac1d6b244a52f6133fb25:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "플레이어 선택 → 세계 상태 변환 → 보상/위험/다음 선택",
+        "bChangesA": "세계 상태 변환 → 플레이어 선택 → 보상/위험/다음 선택",
+        "lateGameChange": "게임 종료 시 보상 및 진입 후 재방문 기회 제공"
+      },
+      "materialFusion": {
+        "contrast": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환",
+        "causalBridge": "선택 -> 상태변화 -> 보상/위험/다음 선택의 순차적 연결",
+        "removalConsequence": "보상 피드백 포함하여 선택에 대한 즉각적인 반응 제공"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 입력 시스템의 사용으로 인한 세계 상태 변화",
+        "characterConflict": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등",
+        "playerChoice": "플레이어 선택을 통해 실질적 세계 상태 변화를 유도하는 결정",
+        "worldChange": "세계 상태 변화로 인해 다음 월드 상태와 새로운 선택 가능성을 생성",
+        "nextEvent": "새로운 선택이 이루어지면 다음 사건이 발생하며 게임은 계속 진행됨"
+      }
+    },
+    "local_authoring_parts::6dcd75220fa510a322522a4dd8c46ccf7d935221562d9e550c47398d2469e069:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+      "a": {
+        "system": "플레이어 입력 시스템",
+        "material": "즉시 시작 가능한 단순한 터치/스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+        "materialDomain": "게임 초기 설정",
+        "stateChange": "입력 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "b": {
+        "system": "세계 상태 관리 시스템",
+        "material": "플레이어의 행동에 따른 세계 상태 변환",
+        "materialDomain": "게임 내 환경 변화",
+        "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "abCausality": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+      "abEvolution": {
+        "aChangesB": "플레이어 선택 → 세계 상태 변환 → 보상/위험/다음 선택",
+        "bChangesA": "세계 상태 변환 → 플레이어 선택 → 보상/위험/다음 선택",
+        "lateGameChange": "게임 종료 시 보상 및 진입 후 재방문 기회 제공"
+      },
+      "materialFusion": {
+        "contrast": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환",
+        "causalBridge": "선택 -> 상태변화 -> 보상/위험/다음 선택의 순차적 연결",
+        "removalConsequence": "보상 피드백 포함하여 선택에 대한 즉각적인 반응 제공"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 입력 시스템의 사용으로 인한 세계 상태 변화",
+        "characterConflict": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등",
+        "playerChoice": "플레이어 선택을 통해 실질적 세계 상태 변화를 유도하는 결정",
+        "worldChange": "세계 상태 변화로 인해 다음 월드 상태와 새로운 선택 가능성을 생성",
+        "nextEvent": "새로운 선택이 이루어지면 다음 사건이 발생하며 게임은 계속 진행됨"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 947836,
-      "lastMs": 111258,
+      "totalMs": 1065604,
+      "lastMs": 117768,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:37:46.188Z"
+      "updatedAt": "2026-10-09T18:39:43.957Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:37:46.188Z",
+  "updatedAt": "2026-10-09T18:39:43.958Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1527,7 +1579,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:37:46.188Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:39:43.958Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
