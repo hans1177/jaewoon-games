@@ -983,6 +983,13 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(sweep,/robloxBuildProfileFromBaseline/);
   assert.match(sweep,/const designProfile=designContext\?\.record\?robloxBuildProfileFromBaseline\(designContext\.record\):null/);
   assert.doesNotMatch(sweep,/robloxDesignProfileFromBaseline/);
+  assert.match(sweep,/runtimeBaseline\?\{record:runtimeBaseline\}/);
+  assert.match(sweep,/ROBLOX_SWEEP_RUNTIME_DESIGN_BASELINE_UNAVAILABLE/);
+  assert.match(sweep,/PRESERVED_NEWER_NATIVE_BINDING/);
+  assert.match(sweep,/!requestedGameSet\.has\(gameId\)/);
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
+  assert.match(workflow,/origin\/company-runtime:development-queue\.json/);
+  assert.equal((workflow.match(/--runtime-ref=origin\/company-runtime/g)||[]).length,2);
 });
 
 test('verified learning sweep supports exact per-game and exact batched scope without per-game dispatch fanout',()=>{
@@ -1093,4 +1100,96 @@ test('foundation repair grounds managed spawn before player binding and corrects
   assert.match(bootstrap,/FoundationSpawnGrounded/);
   assert.match(bootstrap,/const currentManaged=\/NativeFoundationGroundingVersion\//);
   assert.match(bootstrap,/if\(!legacyManaged&&!currentManaged\)return body/);
+});
+
+
+test('Roblox verified learning sweep rebinds exact runtime design and config without downgrading a newer native client',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-runtime-learning-sweep-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    const initialBaseline={
+      ...baseline,
+      content:{...baseline.content,robloxBuildProfile:{...robloxBuildProfileFromBaseline(baseline),version:4,genre:'Simulation',subgenre:'Workshop Simulator'}}
+    };
+    const runtimeBaseline={
+      ...initialBaseline,gameId,
+      content:{...initialBaseline.content,robloxBuildProfile:{...initialBaseline.content.robloxBuildProfile,subgenre:'Factory Simulator'}}
+    };
+    const revisedRow={
+      ...verifiedExternalRow,
+      distilledApplicationPrinciples:verifiedExternalRow.distilledApplicationPrinciples.map(x=>x+'; verifiedCurrent=source-lineage')
+    };
+    const revisedPlaybooks={
+      ...verifiedPlaybooks,
+      taskTypes:Object.fromEntries(Object.entries(verifiedPlaybooks.taskTypes).map(([kind,task])=>[
+        kind,{...task,reuse:[revisedRow]}
+      ]))
+    };
+    const compiled=compileRobloxSource({
+      gameId,gameName:'Pocket Foundry',baseline:initialBaseline,artbook:{},
+      playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary
+    });
+    for(const folder of ['shared','server','client'])fs.mkdirSync(path.join(root,folder),{recursive:true});
+    const configFile=path.join(root,'shared','GameConfig.luau');
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const serverFile=path.join(root,'server','Game.server.luau');
+    fs.writeFileSync(configFile,compiled.result.sharedConfig);
+    fs.writeFileSync(serverFile,compiled.result.serverCode);
+    const clientBefore=compiled.result.clientCode.replace(
+      /(VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*)6\b/,'$17'
+    );
+    const nativePattern=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/;
+    assert.match(clientBefore,/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*7\b/);
+    const nativeBefore=clientBefore.match(nativePattern)?.[0];
+    assert.ok(nativeBefore);
+    fs.writeFileSync(clientFile,clientBefore);
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const baselinePath='design/'+gameId+'/2026-09-12/design-revised.json';
+    const baselineFile=path.join(tmp,baselinePath);
+    fs.mkdirSync(path.dirname(baselineFile),{recursive:true});
+    fs.writeFileSync(baselineFile,JSON.stringify(runtimeBaseline,null,2)+'\n');
+    const queueFile=path.join(tmp,'development-queue.json');
+    fs.writeFileSync(queueFile,JSON.stringify({items:[{
+      gameId,status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',designBaselineSource:baselinePath
+    }]},null,2)+'\n');
+    const playbookFile=path.join(tmp,'verified-playbooks.json');
+    fs.writeFileSync(playbookFile,JSON.stringify(revisedPlaybooks,null,2)+'\n');
+    initGitRepo(tmp);
+    // The exact baseline remains readable from the canonical runtime Git ref,
+    // even when the main worktree does not contain the design directory.
+    fs.rmSync(path.join(tmp,'design'),{recursive:true,force:true});
+    const reportFile=path.join(tmp,'learning-report.json');
+    const args=[
+      path.resolve('tools/company-roblox-verified-learning-sweep.mjs'),
+      '--root='+path.join(tmp,'roblox-games'),
+      '--game-id='+gameId,
+      '--runtime-ref=HEAD',
+      '--runtime-queue='+queueFile,
+      '--playbooks='+playbookFile,
+      '--report='+reportFile
+    ];
+    execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
+    const report=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    assert.equal(report.scannedGameCount,1);
+    assert.equal(report.results[0].runtimeDesignBaselineSource,baselinePath);
+    assert.equal(report.results[0].designProfile.subgenre,'Factory Simulator');
+    assert.equal(report.results[0].newerNativeBindingPreserved,true);
+    const expected=createRobloxVibe3LearningContext({
+      gameId,profile:robloxBuildProfileFromBaseline(runtimeBaseline),playbooks:revisedPlaybooks
+    });
+    assert.match(fs.readFileSync(configFile,'utf8'),
+      new RegExp('MemoryFingerprint\\s*=\\s*"'+expected.verifiedExternalLearningFingerprint+'"'));
+    assert.match(fs.readFileSync(configFile,'utf8'),
+      new RegExp('SemanticMappingFingerprint\\s*=\\s*"'+expected.semanticMappingFingerprint+'"'));
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    // Unscoped maintenance cannot rewrite the newer client native block.
+    execFileSync(process.execPath,args.filter(arg=>!arg.startsWith('--game-id=')),{cwd:tmp,stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
 });
