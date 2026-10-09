@@ -1139,25 +1139,28 @@
     },
     "local_authoring_parts::b626a6d40638719505db9a814b02a92e9a32f7094dc4e0bdcc3cd0b0fe4ff728:toSystem": {
       "toSystem": "기존 마력숲 생존기 세계관 및 게임 규칙 복사"
+    },
+    "local_authoring_parts::b626a6d40638719505db9a814b02a92e9a32f7094dc4e0bdcc3cd0b0fe4ff728:trigger": {
+      "trigger": "플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존 단순 반복을 벗어나 새로운 행동 패턴을 개발해야 한다. 이 과정에서 진입 조건 설정, 상황별 대응 및 재방문 가능 여부 결정을 수행하며, 카메라와 모바일 폴리시 상태 변화를 실시간으로 관찰하고 조절해야 함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 57,
+      "calls": 59,
+      "successes": 58,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5025847,
-      "lastMs": 88200,
+      "totalMs": 5122274,
+      "lastMs": 96427,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:39:26.139Z"
+      "updatedAt": "2026-10-09T01:41:02.567Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:39:26.139Z",
+  "updatedAt": "2026-10-09T01:41:02.567Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3587,7 +3590,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:39:26.139Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:41:02.567Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
