@@ -803,25 +803,42 @@
         "SCORE_DISTANCE_SHORT_SESSION"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_AND_PROGRESSION_ECONOMY_BALANCE_SYSTEM_INTERCONNECTIONS_V4_0_2_3_5_7_9_11_13_15_17_19_21_23_25_27_29_31_33_35_37_39_41_43_45_47_49_51_53_55_57_59_61_63_65_67_69_71"
+    },
+    "local_authoring_parts::0cae4b58d8db865e3eb117c20b7e460e081c7532554fbb882898110c9565b5ec:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_AND_PROGRESSION_ECONOMY_BALANCE_SYSTEM_INTERCONNECTIONS_V4_0_2_3_5_7_9_11_13_15_17_19_21_23_25_27_29_31_33_35_37_39_41_43_45_47_49_51_53_55_57_59_61_63_65_67_69_71",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
+    },
+    "local_authoring_parts::d8951d646039ad75a46c9c30cb55926b9aaa3274a5eb97252394289f3c0218d1:systemInterconnections:4": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_AND_PROGRESSION_ECONOMY_BALANCE_SYSTEM_INTERCONNECTIONS_V4_0_2_3_5_7_9_11_13_15_17_19_21_23_25_27_29_31_33_35_37_39_41_43_45_47_49_51_53_55_57_59_61_63_65_67_69_71",
+      "toSystem": "CORE_LOOP_DESIGN_AND_PROGRESSION_ECONOMY_BALANCE_SYSTEM_INTERCONNECTIONS_V4_0_2_3_5_7_9_11_13_15_17_19_21_23_25_27_29_31_33_35_37_39_41_43_45_47_49_51_53_55_57_59_61_63_65_67_69_71",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 64,
-      "successes": 64,
+      "calls": 65,
+      "successes": 65,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3135547,
-      "lastMs": 103167,
+      "totalMs": 3239536,
+      "lastMs": 103989,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:16:58.454Z"
+      "updatedAt": "2026-10-09T03:18:42.444Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T03:16:58.454Z",
+  "updatedAt": "2026-10-09T03:18:42.452Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2968,9 +2985,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2985,9 +3002,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3016,7 +3033,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": 3,
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2,
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3055,10 +3072,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:16:58.454Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T03:18:42.447Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
