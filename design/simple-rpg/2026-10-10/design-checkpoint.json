@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 매 레벨에서 명확한 목표를 설정해 시작하며, 제한된 이동, 장애물, 또는 공개적인 풍경 요소로 구성된 문제 해결 과정에 참여해야 한다. 선택 결과가 다음 월드 상태로 전환하는 인과적 관계를 통해 게임의 진보 가능성이 강화된다.",
       "coreFun": "게임 시스템 실행(예: 패턴 매칭)은 세계 상태 변화에 즉각적으로 영향을 미친다. 플레이어는 선택의 결과와 세계 상태 변화 사이의 인과적 연관성을 경험하게 되며, 이를 바탕으로 새로운 사건이나 상황을 생성하여 게임의 깊이와 발전성을 증진시킨다."
+    },
+    "local_authoring_parts::96d851212e1d8a99c31b9a7f725d1889fd4b14941d91b82baaf64684f9b4aada:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 명확한 목표를 설정하여 시작하는 행동",
+        "SELECT: 게임 시스템 실행(예: 패턴 매칭)",
+        "OUTPUT: 다음 월드 상태로 전환하며, 이는 인과적 관계 및 진보 가능성 강화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1362490,
-      "lastMs": 78033,
+      "totalMs": 1415720,
+      "lastMs": 53230,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:00:41.131Z"
+      "updatedAt": "2026-10-09T19:01:34.364Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:37:58.564Z",
-  "updatedAt": "2026-10-09T19:00:41.133Z",
+  "updatedAt": "2026-10-09T19:01:34.364Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2144,7 +2151,7 @@
     "ac14098384a9115fce6edb895cff9dc61f49ffe33adfaf236e4444f6aa936ecd": true,
     "3bc7ac55d3d4bb2c86a88ecd3bfe47b205fcb89d300f071c9d9935402906fb08": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:00:41.133Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:01:34.364Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
