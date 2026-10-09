@@ -34,25 +34,38 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::a77e11d736a2295851bb887992ea14d579d1563bda3b27feecd2e447708d6271:signatureSystems:0": {
+      "id": "CAT-STEP-SIGNATURESYSTEM-1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_LEVEL_STATE"
+      ],
+      "name": "World Rule Transition System",
+      "purpose": "Main action rule that connects player choices to next level state changes",
+      "playerChoice": "Start a board or grid level with clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT) → Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve the current objective. (SELECT) → State change: LEVEL_STATE → NEXT_LEVEL_STATE (OUTPUT)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 238410,
-      "lastMs": 35120,
+      "totalMs": 273564,
+      "lastMs": 35154,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:26:39.298Z"
+      "updatedAt": "2026-10-09T08:27:14.453Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:22:40.843Z",
-  "updatedAt": "2026-10-09T08:26:39.298Z",
+  "updatedAt": "2026-10-09T08:27:14.453Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2102,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:26:39.298Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:27:14.453Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
