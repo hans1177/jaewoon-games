@@ -594,25 +594,43 @@
         "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0', "
+    },
+    "local_authoring_parts::5ad1194c20b33a29221ca8abae81ebc9f50a6a7bec2cac095e968c180d8dabbc:toSystem,trigger,stateChange": {
+      "toSystem": "DEFENSIVE_ADAPTATION_REINFLECTION",
+      "trigger": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+      "stateChange": "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+    },
+    "local_authoring_parts::d7c65ee7cb8c62746963826ac979b1b255e8c19a827d425312083e6f8b4c69da:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "DEFENSIVE_ADAPTATION_REINFLECTION",
+      "stateKeys": [
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0', ",
+      "toSystem": "DEFENSIVE_ADAPTATION_REINFLECTION",
+      "trigger": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+      "stateChange": "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 828016,
-      "lastMs": 34646,
+      "totalMs": 860014,
+      "lastMs": 31998,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:43:10.311Z"
+      "updatedAt": "2026-10-09T14:43:42.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:43:10.311Z",
+  "updatedAt": "2026-10-09T14:43:42.315Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2328,9 +2346,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2345,9 +2363,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2362,9 +2380,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2379,9 +2397,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2396,9 +2414,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→DEFENSIVE_ADAPTATION_REINFLECTION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2425,7 +2443,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2463,10 +2481,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:43:10.311Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T14:43:42.312Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
