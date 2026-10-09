@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 106,
-  "lastSuccessfulModelCallAt": "2026-10-09T04:46:15.266Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 108,
+  "lastSuccessfulModelCallAt": "2026-10-09T04:47:50.102Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/monster-adventure/2026-10-09/design-seed.json",
     "contentDigest": "ac907bccc8b5f39d3606b589d4c042284675814019c7d4c2fe6f561bd69e8cea",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 84,
-      "successes": 84,
+      "calls": 85,
+      "successes": 85,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4907010,
-      "lastMs": 94002,
+      "totalMs": 5001840,
+      "lastMs": 94830,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:46:15.266Z"
+      "updatedAt": "2026-10-09T04:47:50.098Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T04:46:15.267Z"
+  "updatedAt": "2026-10-09T04:47:50.110Z"
 }
