@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8:identity": {
       "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다."
+    },
+    "local_authoring_parts::0cbd764978ecf5887adb349d9eceb2ae3d1ed6eb8ab99cbd2e516c1d0eb7bbb5:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.",
+      "a": {
+        "system": "공명 연결",
+        "material": "배치 조합",
+        "materialDomain": "방어 성능",
+        "stateChange": "성능 변환 기반의 플레이어 선택 및 상태 변화"
+      },
+      "b": {
+        "system": "업그레이드 경로",
+        "material": "플레이어 선택",
+        "materialDomain": "전략적 자원 활용",
+        "stateChange": "선택에 따른 자원 재분배 및 진입 시점 변경"
+      },
+      "abCausality": "양방향 실제 상태 교환(성능 변환 → 선택 변화, 선택 변화 → 성능 재변화)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 690906,
-      "lastMs": 90784,
+      "totalMs": 794148,
+      "lastMs": 103242,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:16:56.894Z"
+      "updatedAt": "2026-10-09T18:18:40.138Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:25.966Z",
-  "updatedAt": "2026-10-09T18:16:56.894Z",
+  "updatedAt": "2026-10-09T18:18:40.138Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1736,7 +1752,7 @@
     "de3a2567b5b3fd56b4cf08b531052b7041f29bdd1150c9c0d56b0b94a44a8dd4": true,
     "12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:16:56.894Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:18:40.138Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
