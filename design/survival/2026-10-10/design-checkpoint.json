@@ -211,21 +211,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 841083,
-      "lastMs": 87985,
+      "totalMs": 926951,
+      "lastMs": 85868,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:40:27.766Z"
+      "updatedAt": "2026-10-09T17:41:53.636Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:26:26.652Z",
-  "updatedAt": "2026-10-09T17:40:27.766Z",
+  "updatedAt": "2026-10-09T17:41:53.638Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1932,14 +1932,33 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::d7fbe75b5d911b3995b4070b3aa700282a4d0bbee682846a54e565ad0b98f28a:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::d7fbe75b5d911b3995b4070b3aa700282a4d0bbee682846a54e565ad0b98f28a:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "20ed2848148c97cab2167c82e7c3422767efd6f54f47be5a6a9d1dea6b677869": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:40:27.766Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T17:41:53.636Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
