@@ -1163,25 +1163,31 @@
       "toSystem": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
       "trigger": "FIGHT_THROUGH_ELEVATING_HORDE",
       "stateChange": "Increased difficulty state generated, new game states created, and progression opportunities established."
+    },
+    "local_authoring_parts::a3c000d0e518f83bf40375bb7679fac46fb495bc39976e13b5471439c5e8c021:fromId": {
+      "fromId": "systemInterconnections[0].trigger"
+    },
+    "local_authoring_parts::a3c000d0e518f83bf40375bb7679fac46fb495bc39976e13b5471439c5e8c021:toId": {
+      "toId": "systemInterconnections[0].trigger"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 107,
-      "successes": 107,
+      "calls": 109,
+      "successes": 109,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6891752,
-      "lastMs": 34853,
+      "totalMs": 7022207,
+      "lastMs": 65875,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:25:54.563Z"
+      "updatedAt": "2026-10-09T04:30:33.629Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T04:28:23.168Z",
+  "updatedAt": "2026-10-09T04:30:33.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3615,10 +3621,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:25:54.566Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:30:33.629Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
