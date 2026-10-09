@@ -1410,25 +1410,28 @@
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM_02",
       "trigger": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
       "stateChange": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::e3d1a1bf12bea7dbfeb4c457744c429397f467b22a7a5d6be17355a7d05ab289:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 155,
-      "successes": 155,
+      "calls": 156,
+      "successes": 156,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6048872,
-      "lastMs": 90995,
+      "totalMs": 6137548,
+      "lastMs": 88676,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:03:52.316Z"
+      "updatedAt": "2026-10-09T03:05:20.997Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T03:03:52.319Z",
+  "updatedAt": "2026-10-09T03:05:20.997Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3635,7 +3638,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:03:52.319Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:05:20.997Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
