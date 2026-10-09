@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::a4724fb3f73840ece87311a96728c9c2450ccc925a3e24b5725e9f6bbfcfd362:identity": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다. 이 게임은 기존의 단순한 방어 전략을 근본적으로 변형하여, 플레이어가 다양한 상황에 대응할 수 있는 복잡한 시스템을 설계하고 있다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 286071,
+      "lastMs": 286071,
+      "lastError": null,
+      "updatedAt": "2026-10-09T15:28:09.555Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:23:23.460Z",
-  "updatedAt": "2026-10-09T15:23:23.477Z",
+  "updatedAt": "2026-10-09T15:28:09.555Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1715,5 +1731,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T15:28:09.555Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
