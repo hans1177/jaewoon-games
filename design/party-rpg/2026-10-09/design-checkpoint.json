@@ -963,25 +963,28 @@
     },
     "local_authoring_parts::a65c005747e14a6d2c320e940b6c7b4c9fefdd7a535fd904063f018d88c24041:toSystem": {
       "toSystem": "BOARD_STATE"
+    },
+    "local_authoring_parts::a65c005747e14a6d2c320e940b6c7b4c9fefdd7a535fd904063f018d88c24041:trigger": {
+      "trigger": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 92,
-      "successes": 92,
+      "calls": 93,
+      "successes": 93,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6860209,
-      "lastMs": 86987,
+      "totalMs": 6954111,
+      "lastMs": 93902,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:36:01.626Z"
+      "updatedAt": "2026-10-09T02:37:35.530Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T02:36:01.626Z",
+  "updatedAt": "2026-10-09T02:37:35.530Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3249,7 +3252,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:36:01.626Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:37:35.530Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
