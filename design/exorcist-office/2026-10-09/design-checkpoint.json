@@ -1827,25 +1827,40 @@
     },
     "local_authoring_parts::42e8ef50ce87a2729268961bb248b97853ca08a985b296cc17f86866dcb88c6c:trigger": {
       "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다."
+    },
+    "local_authoring_parts::42e8ef50ce87a2729268961bb248b97853ca08a985b296cc17f86866dcb88c6c:stateChange": {
+      "stateChange": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다."
+    },
+    "local_authoring_parts::b2e1066bdef6c92d2a47b981d6ffecb89fb017bb5c596a3789d04ccc6c578a86:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1].trigger",
+      "toId": "systemInterconnections[1].trigger",
+      "stateKeys": [
+        "START_STATE",
+        "RUN_STATE"
+      ],
+      "fromSystem": "START_STATE → RUN_STATE",
+      "toSystem": "START_STATE → RUN_STATE",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 125,
-      "successes": 122,
+      "calls": 126,
+      "successes": 123,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8675579,
-      "lastMs": 100720,
+      "totalMs": 8775567,
+      "lastMs": 99988,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:07:16.948Z"
+      "updatedAt": "2026-10-09T05:08:56.938Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T05:07:16.948Z",
+  "updatedAt": "2026-10-09T05:08:56.940Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3999,7 +4014,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:07:16.948Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:08:56.940Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
