@@ -27,25 +27,32 @@
       "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "playerFantasy": "세계의 직조자는 시작부터 단순한 한 손 tap/swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이어가 선택 결과를 다음 월드 상태로 바꾸는 CASUAL 게임이다. 이 선택은 캐주얼의 핵심 행동과 목표와 실제 월드/시스템 상태 변화에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "coreFun": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::4f6c67ade578bcdb7742f29237dd6f8b4b905acf39fbd7ce393b0e25000cdb41:coreLoop": {
+      "coreLoop": [
+        "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nSELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nOUTPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry,",
+        "INPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nSELECT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nOUTPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or rer",
+        "INPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nSELECT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nOUTPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, "
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 282008,
-      "lastMs": 42016,
+      "totalMs": 345191,
+      "lastMs": 63183,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:10:55.359Z"
+      "updatedAt": "2026-10-09T09:11:58.545Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:13.327Z",
-  "updatedAt": "2026-10-09T09:10:55.360Z",
+  "updatedAt": "2026-10-09T09:11:58.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1969,7 +1976,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:10:55.360Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:11:58.545Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
