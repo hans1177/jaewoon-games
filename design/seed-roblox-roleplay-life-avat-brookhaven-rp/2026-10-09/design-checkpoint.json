@@ -1023,25 +1023,35 @@
       "toSystem": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되",
       "trigger": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인.",
       "stateChange": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인."
+    },
+    "local_authoring_parts::db3087ece0b5176a58a3b87a75b3ea1d46e613857bf09b0131adfdb353c0ea89:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "FIGHT_THROUGH_ELEVATING_HORDE",
+        "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+        "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+      ],
+      "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 97,
-      "successes": 97,
+      "calls": 98,
+      "successes": 98,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6541711,
-      "lastMs": 37834,
+      "totalMs": 6576266,
+      "lastMs": 34555,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:20:04.490Z"
+      "updatedAt": "2026-10-09T03:20:39.056Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T03:20:04.499Z",
+  "updatedAt": "2026-10-09T03:20:39.056Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3390,10 +3400,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:20:04.494Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:20:39.056Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
