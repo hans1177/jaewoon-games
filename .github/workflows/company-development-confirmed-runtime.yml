@@ -50,9 +50,9 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 5
     concurrency:
-      # Admission is read-only; run-scoped groups avoid GitHub replacing pending batch wakes.
-      # The existing oldest-active-batch scan still dedupes the actual planning action.
-      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
+      # Coalesce only unscoped same-revision batch gate jobs. Exact-game gate jobs remain independent.
+      # This is job-scoped: native per-game execution is never serialized by a coordinator wake.
+      group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
@@ -235,9 +235,11 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
+          const ownerExcludedGameIds=new Set(roadmap?.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
+            !ownerExcludedGameIds.has(item.gameId)&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
@@ -298,6 +300,7 @@ jobs:
               console.log('UNITY_WEB_VERIFIED_INDEPENDENT='+item.gameId);
             }
           }
+          console.log('DEVELOPMENT_OWNER_EXCLUDED_GAME_IDS='+(Array.from(ownerExcludedGameIds).join(',')||'NONE'));
           console.log('UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');

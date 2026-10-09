@@ -202,8 +202,11 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       const html=filesystem.readFileSync(indexFile,'utf8');
       const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
       const scripts=[...html.matchAll(/<script\b[^>]*src=["']([^"']+)["']/gi)].map(match=>match[1].split(/[?#]/)[0]);
+      // Multiple unrelated genre modes behind the same fixed click controls are a validation shell, not real game play.
+      const clickOnlyGenreShell=/\bconst\s+scopes\s*=\s*Array\.isArray\(C\.validationScopes\)/.test(html)
+        &&(html.match(/\bfunction\s+render(?:Survival|Defense|Puzzle|Realm|Idle|Story)\s*\(/g)||[]).length>=3;
       if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
-      else if(list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))||list(quality.withdrawnImplementationMarkers).some(marker=>html.includes(marker))||quality.withdrawnEntrySha256?.[id]===crypto.createHash('sha256').update(html.trim()).digest('hex')){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
+      else if(clickOnlyGenreShell||list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))||list(quality.withdrawnImplementationMarkers).some(marker=>html.includes(marker))||quality.withdrawnEntrySha256?.[id]===crypto.createHash('sha256').update(html.trim()).digest('hex')){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
     }
     if(valid){
       const html=filesystem.readFileSync(indexFile,'utf8');

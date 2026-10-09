@@ -217,6 +217,31 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
+// Regression: a shared click-only genre control shell is not a playable game even if its HTML is long.
+{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'click-only-web-'));
+  try{
+    const id='click-only-genre-shell';
+    const dir=path.join(root,id);
+    fs.mkdirSync(dir,{recursive:true});
+    const shell='<!doctype html><title>버튼형 가짜 게임</title><script>window.GAME_CONFIG={};window.GAME_CONFIG.validationScopes=[];const C=window.GAME_CONFIG;const scopes=Array.isArray(C.validationScopes)?C.validationScopes.slice(0,5):[];function renderSurvival(){}function renderDefense(){}function renderPuzzle(){}</script>';
+    fs.writeFileSync(path.join(dir,'index.html'),shell+' '.repeat(600));
+    const catalogFixture={games:[{id,webPath:'/web-games/'+id+'/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:[]}};
+    const outcome=ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    assert(outcome.disabled.includes(id));
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false);
+    assert.equal(catalogFixture.games[0].hasWebArchive,false);
+    assert.equal(catalogFixture.games[0].ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
+    fs.writeFileSync(path.join(dir,'index.html'),shell.replace('<script>','<canvas></canvas><script>'));
+    ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'a decorative canvas must not turn a click-only shell into a game');
+    const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
+    fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
+    ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'game-specific world source may reenter without deleting native project');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+
 {
   const source=fs.readFileSync('_worker.js','utf8');
   const edge=await import('data:text/javascript;base64,'+Buffer.from(source+'\nexport {mergeRuntimeCatalog};').toString('base64'));
@@ -242,6 +267,13 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   assert.equal(vm.runInContext("hasInternalRelease({id:'native-test',unityBuildVerified:true})",context),false);
   assert.equal(vm.runInContext("internalReleaseLinks({id:'native-test',unityBuildUrl:'https://example.test/unverified.apk'}).unity",context),'');
   assert.equal(vm.runInContext("playableWebHref({id:'old',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/old/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'})",context),'');
+  const visible=vm.runInContext(`developmentRows({games:[
+    {id:'click-only',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/click-only/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'},
+    {id:'no-build',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'},
+    {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
+    {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
+  ]},{testBuilds:[]}).map(gameIdOf)`,context);
+  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'publication classification must not hide real playable builds or expose click-only shells');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
