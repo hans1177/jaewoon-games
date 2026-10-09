@@ -94,25 +94,203 @@
       "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
       "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
       "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
+    },
+    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INSECT_WAVE_PATTERN",
+        "DEFENDER_LAYOUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_EFFECT",
+        "NEXT_DEFENSE_PLAN"
+      ],
+      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+      "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
+      "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
+    },
+    "local_authoring_parts::5e49786e6530a3cf95ae03987fb469a4f6b29e6112232daa21a405d61c17209b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
+          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
+          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
+          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
+          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
+          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
+        }
+      ]
+    },
+    "local_authoring_parts::590626fd797884e5f3e08e7849fe42c0e067b04c5de435c47b5c4b35e0c99445:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
+        "STATE CHANGE → REWARD",
+        "REWAD"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
+          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
+          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
+          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
+          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_EFFECT",
+            "NEXT_DEFENSE_PLAN"
+          ],
+          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
+          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 716464,
-      "lastMs": 65974,
+      "totalMs": 782567,
+      "lastMs": 66103,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:32:57.331Z"
+      "updatedAt": "2026-10-09T11:34:03.436Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T11:32:57.331Z",
+  "updatedAt": "2026-10-09T11:34:03.439Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2311,7 +2489,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:32:57.331Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:34:03.439Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
