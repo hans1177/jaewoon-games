@@ -532,25 +532,37 @@
       },
       "playerFantasy": "플레이어는 작은 섬에서 직접 나무와 식량을 모으고, 주민을 고용하여 자동화를 통해 생산성 향상을 이루며, 병사들을 모집해 전투력을 강화하는 과정에서, 5개의 서로 다른 자원 거점을 점령하며, 협력적인 방식으로 강력한 기지로 확장할 수 있는 역할을 수행해야 한다. 이 과정에서는 인물의 역할을 통해 예술적 소품으로 역할을 식별하고, 다양한 장르와 시스템을 통합적으로 활용하여 게임의 진화가 이루어진다.",
       "coreFun": "INPUT: '나무 및 식량 직접 채집' → SELECT: '다음 자원 거점 선택' → OUTPUT: '보이는 자동전투와 점령 보상' → STATE CHANGE: '자원 거점 선택' → REWARD: '협동 지원으로 강한 거점 공략' → NEXT EVENT: '협동 지원으로 강한 거점 확장'"
+    },
+    "local_authoring_parts::64bdbc5b25f9c9bf498f63bdd986a89d096a4ddae5f6cc497520270e4c5be7f7:coreLoop": {
+      "coreLoop": [
+        "INPUT: '나무 및 식량 직접 채집' → SELECT: '다음 자원 거점 선택' → OUTPUT: '보이는 자동전투와 점령 보상' → STATE CHANGE: '자원 거점 선택' → REWARD: '협동 지원로 강한 거점 공략' → NEXT EVENT: '협동 지원으로 강한 거점 확장'],",
+        "signatureSystems",
+        "COOP",
+        "직접 채집 <-> 주민 자동화",
+        "인물/예술 <-> 자원 거점 확보",
+        "협동 지원로 강한 거점 공략 -> 협동 지원로 강한 거점 확장",
+        "5개 서로 다른 적과 보상을 가진 5개 거점을 순차적으로 점령하며, 병력과 전투력을 합산하여 강화하는 과정에서 인물의 역할을 통해 예술적 소품으로 역할을 식별하고, 다양한 장르와 시스템을 통합적으로 활용하여 게임의 진화가 이루어진다",
+        "협동 지원 게임의 중심 행동은 '협동 지원로 강한 거점 공략'이며, A/B 시스템은 '직접 채집 <-> 주민 자동화', '주민 고용 <-> 병영 강화'로 구성된다. 메인 장르(ROLE=PRIMARY)이 '협동 지원 게임', 보조 장르(ROLE=SECONDARY)가 '자원 거점 확보'로 설정되어 있으며, cThemes에 인물·예술 등 다양한 주제/소재가 포함되며, 각각 다른 메인 및 보조 장르로 분류된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1178244,
-      "lastMs": 118676,
+      "totalMs": 1336721,
+      "lastMs": 158477,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:27:11.179Z"
+      "updatedAt": "2026-10-09T17:29:49.659Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:07:32.737Z",
-  "updatedAt": "2026-10-09T17:27:11.180Z",
+  "updatedAt": "2026-10-09T17:29:49.659Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1964,7 +1976,7 @@
     "e8df166333f3847595a0c47cae7984b1d70ae5bf3ca41b1cdd0380008fe4f10b": true,
     "984307432df21cc9fa083075c9bf0d8802739226c685109d1498f04260e7075f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:27:11.180Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:29:49.659Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
