@@ -1445,6 +1445,28 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   });
   assert.equal((wrongSource.designedGameVolume.activeItem||wrongSource.designedGameVolume.deferredItem).ref,volume.activeItem.ref);
 
+  const siblingOwner='roblox-games/volume-scope/client/Other.client.luau';
+  const siblingScope=buildGameSpecificBuildUpDirective({
+    gameId:'volume-scope',platform:'ROBLOX',designRecord:approved,
+    sourceObservation:{...obs,sourceTreeFingerprint:'e'.repeat(64)},
+    responsibleFiles:[siblingOwner],
+    previousDirective:restored,previousDirectiveOutcome:'verified',
+    runtimeEvidence:{
+      runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
+      contentUnitVerification:{
+        ref:restored.designedGameVolume.activeItem.ref,directiveId:restored.directiveId,
+        gameId:'volume-scope',platform:'ROBLOX',sourceTreeFingerprint:'e'.repeat(64),
+        sourceFile:owner,sourceDeltaVerified:true,nativeRuntimeObserved:true,nativeRuntimePassed:true,
+        independentQaPassed:true,playerActionStateResultPassed:true,saveReconnectRegressionPassed:true,
+        runtimeRunId:'37936660265',evidenceArtifactId:'sha256:'+'9'.repeat(64)
+      }
+    }
+  });
+  assert.equal(siblingScope.designedGameVolume.scopedAdvancementObserved,false,
+    'sibling source candidates must not expand the current worker responsible-file authority');
+  assert.equal((siblingScope.designedGameVolume.activeItem||siblingScope.designedGameVolume.deferredItem).ref,
+    volume.activeItem.ref);
+ 
   const malformedProof=create(restored,'verified','e'.repeat(64),{
     runtimeObserved:true,runtimePassed:true,independentQaPassed:true,regressionPassed:true,
     contentUnitVerification:{
