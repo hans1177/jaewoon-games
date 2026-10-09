@@ -207,7 +207,14 @@ if(mode==='result'){
         &&qaMarkers.some(marker=>marker.includes(' CORE_FUN ')&&marker.includes('status=PASS'))
         &&qa?.gameplay?.progressObserved===true
         &&qa?.gameplay?.coreActionObserved===true;
+      // 유니티 메시/삼각형의 실제 브라우저 측정 없이 이전 2D 결과를 재사용하지 않는다.
+      const native3dVerified=qa?.spatialGameplay?.pass===true
+        &&qa?.spatialGameplay?.requiredDimension==='3D'
+        &&Number(qa?.spatialGameplay?.observedMeshCount)>0
+        &&Number(qa?.spatialGameplay?.observedTriangles)>0
+        &&qa?.visualQa?.nativeUnityMesh?.pass===true;
       const gate={
+        native3d:native3dVerified,
         boot:build?.bootSmoke==='PASS'&&qa?.boot?.pass===true,
         input:qa?.input?.pass===true&&realMobileEvidence,
         gameplay:qa?.gameplay?.pass===true&&qa?.gameplay?.gameplayStartObserved===true&&qa?.gameplay?.safeReturnOrResetObserved===true,
@@ -230,6 +237,7 @@ if(mode==='result'){
           gameId,
           pass:true,
           gate,
+          spatialGameplay:qa.spatialGameplay,
           canonicalSourceRoot:sourceRoot,
           buildOutputRoot:`web-games/${gameId}`,
           sourceCommit:build?.sourceCommit||null,
