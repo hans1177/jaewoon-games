@@ -488,25 +488,41 @@
     },
     "local_authoring_parts::6b699dafe87649fb0f561839428ff9c93f43ec906271d1e73ba8b230904a0b83:trigger": {
       "trigger": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::6b699dafe87649fb0f561839428ff9c93f43ec906271d1e73ba8b230904a0b83:stateChange": {
+      "stateChange": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::8da560931ed9839034b25cce96d544dd2cc73124493bb5471e43338581b053bc:systemInterconnections:1": {
+      "fromId": "V1_02",
+      "toId": "V1_02",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb",
+      "trigger": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
+      "stateChange": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1367576,
-      "lastMs": 48656,
+      "totalMs": 1416590,
+      "lastMs": 49014,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:43:43.847Z"
+      "updatedAt": "2026-10-09T08:44:32.863Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:43:43.847Z",
+  "updatedAt": "2026-10-09T08:44:32.864Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3072,7 +3088,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:43:43.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:44:32.864Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
