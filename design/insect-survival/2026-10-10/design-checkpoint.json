@@ -321,25 +321,106 @@
           "playerChoice": "selecting between resource gathering or combat"
         }
       ]
+    },
+    "local_authoring_parts::95be194467f7da2bad8bc44a2f61930c0d1969a8cc1e4aa473dc17ae0c6ad2f4:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9916481dccaa6d5351dc446c1dd0d7d13cab8cb29fd084a49a099e3ff13ea175:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택",
+        "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택.",
+        "각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "to enable player agency in a small-scale ecological system through adaptive decision-making",
+          "playerChoice": "choose between gathering resources or engaging in combat based on environmental context and risk assessment"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "Define the core gameplay mechanics and causal relationships in a survival game focused on ecological adaptation and strategic decision-making.",
+          "playerChoice": "Selecting between gathering resources or engaging in combat based on environmental pressures and adaptive strategies."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "combat strategy, risk evaluation, adaptive behavior",
+          "purpose": "to evaluate environmental risks and make strategic decisions based on ecological feedback",
+          "playerChoice": "selecting between resource gathering or combat to maximize survival progression through adaptive strategies in a dynamic environment with evolving threats and ecological consequences"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "environmental impact → combat strategy → survival progression",
+          "purpose": "player's initial exploration of the habitat",
+          "playerChoice": "selecting between resource gathering or combat"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 324427,
-      "lastMs": 34449,
+      "totalMs": 355868,
+      "lastMs": 31441,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:58:38.964Z"
+      "updatedAt": "2026-10-09T20:59:10.409Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T20:58:38.967Z",
+  "updatedAt": "2026-10-09T20:59:10.417Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2008,12 +2089,144 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:58:38.967Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "MAIN",
+            "A",
+            "B",
+            "DELVE"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+        "a": {
+          "system": "ecology",
+          "material": "food, material, insect threats",
+          "materialDomain": "environmental interaction",
+          "stateChange": "identify and gather resources"
+        },
+        "b": {
+          "system": "combat",
+          "material": "dangerous habitat",
+          "materialDomain": "threat assessment",
+          "stateChange": "evaluate risk and make strategic decisions"
+        },
+        "abCausality": "environmental impact → combat strategy → survival progression",
+        "abEvolution": {
+          "aChangesB": "resource gathering increases in complexity",
+          "bChangesA": "risk evaluation becomes more nuanced with environmental context",
+          "lateGameChange": "adaptive strategies emerge based on ecological feedback"
+        },
+        "materialFusion": {
+          "contrast": "original ecosystem mechanics are preserved but reinterpreted through a survival lens",
+          "causalBridge": "every choice impacts the next state via ecological consequence",
+          "removalConsequence": "loss of natural resources triggers adaptive responses"
+        },
+        "storyCausalChain": {
+          "cause": "player's initial exploration of the habitat",
+          "characterConflict": "the environment itself presents new challenges",
+          "playerChoice": "selecting between resource gathering or combat",
+          "worldChange": "new ecological pressures emerge from player choices",
+          "nextEvent": "increased difficulty in maintaining survival due to evolving threats"
+        },
+        "cThemes": [
+          {
+            "name": "ecological adaptation",
+            "kind": "GENRE",
+            "gameplayEffect": "survival progression"
+          },
+          {
+            "name": "adaptive behavior",
+            "kind": "GENRE",
+            "gameplayEffect": "strategic decision making"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "environmental survival",
+            "gameplayEffect": "resource management and threat assessment"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "combat strategy",
+            "gameplayEffect": "risk evaluation and adaptive tactics"
+          }
+        ],
+        "cGenreInterlock": "environmental mechanics influence combat strategies, which in turn shape survival progression through adaptive behaviors.",
+        "cWorldAndGameplayEffect": "every choice alters the next state via ecological consequence, creating a dynamic survival loop.",
+        "delveDiscoveries": [
+          {
+            "clue": "initial exploration of the habitat",
+            "discovery": "identifying food sources and assessing risks",
+            "newChoice": "choose between gathering resources or engaging in combat"
+          },
+          {
+            "clue": "evolving environmental pressures",
+            "discovery": "adaptation becomes more complex",
+            "newChoice": "selecting strategic options based on new threats"
+          },
+          {
+            "clue": "player's evolving mastery",
+            "discovery": "increased difficulty in maintaining survival",
+            "newChoice": "making decisions that reflect deeper understanding of the ecosystem"
+          },
+          {
+            "clue": "adaptive behavior patterns",
+            "discovery": "strategies become more nuanced",
+            "newChoice": "choosing actions that align with ecological feedback"
+          }
+        ],
+        "delveGrowthRule": "each discovery introduces a new causal link between player choices and world states, expanding the survival loop dynamically.",
+        "finalGameIdentity": "a fully integrated survival game where every action impacts the next state through ecological consequences."
+      },
+      "playerFantasy": "플레이어는 작은 세계에서 살아남는 생존 게임의 중심이 되며, 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 경험을 선호한다. 플레이어는 단순한 수집이나 전투를 넘어, 환경의 변화에 따라 적응하고 진화하는 생존 전략을 숙련하며, 새로운 상황에서 실질적인 선택과 위험을 직접 체험하게 된다.",
+      "coreFun": "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택. 각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다. 이러한 과정은 플레이어의 숙련과 성장에 기여하며, 다양한 상황에서 유연한 전략을 적용할 수 있도록 설계된다.",
+      "coreLoop": [
+        "입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택",
+        "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택.",
+        "각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T20:59:10.412Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
