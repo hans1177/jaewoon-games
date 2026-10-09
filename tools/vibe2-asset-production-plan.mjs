@@ -2468,12 +2468,19 @@ const COMPANY_CATEGORY_TYPES=freeze({
   ENVIRONMENT:freeze(['background','prop']),
   VFX:freeze(['effect']),
   UI:freeze(['ui']),
-  WEAPON:freeze(['item'])
+  WEAPON:freeze(['item']),
+  BUILDING:freeze(['background','prop']),
+  PROP:freeze(['prop','item','background']),
+  MATERIAL:freeze(['background','effect']),
+  SKILL:freeze(['effect','item']),
+  AUDIO:freeze(['audio'])
 });
 
 function verifiedCompanyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase())||asset?.crossPlatformMasterSource===true)
+    // 공용 등록 자산 전체를 평가하고 공간 오브젝트는 실제 3D 원본이 있을 때만 배포 후보로 둔다.
+    .filter(asset=>!internalAssetHardBlockReason(asset))
+    .filter(asset=>clean(asset?.id)&&Boolean(clean(asset?.path)||clean(asset?.masterGlb)||(asset?.nativeArtifacts||[]).length))
     .map(asset=>({
       ...asset,
       id:clean(asset.id),
@@ -2481,7 +2488,7 @@ function verifiedCompanyManifestAssets(registry={}){
       types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
       tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
       platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
-      downloaded:true,
+      downloaded:asset?.downloaded!==false,
       companyVerified:asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()),
       crossPlatformMasterSource:asset?.crossPlatformMasterSource===true,
       source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
@@ -2490,9 +2497,10 @@ function verifiedCompanyManifestAssets(registry={}){
 }
 
 function mergeManifestWithCompanyLibrary(manifest={},registry={}){
-  const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
-  const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
-  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  // 외부 매니페스트는 연구 및 내부 라이브러리 수급 단계에만 사용한다.
+  // 게임 후보는 회사 내부 등록자산에서만 구성한다.
+  const byId=new Map();
+  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,asset);
   return {...manifest,assets:[...byId.values()]};
 }
 
@@ -2512,6 +2520,10 @@ function assetTargetCompatible(asset={},target=''){
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
   const masterGlb=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath).replaceAll('\\\\','/');
   if(asset?.crossPlatformMasterSource===true&&/\.glb$/i.test(masterGlb))return ['roblox','unity','web'].includes(resolvedTarget);
+  const spatialFiles=[assetPath,masterGlb,...(asset?.nativeArtifacts||[]),...(asset?.fileRoles?.models||[])];
+  // 플랫폼별 네이티브 재제작을 전제로 공용 3D 모델은 게임/장르/원본 플랫폼과 무관하게 후보로 둔다.
+  if(asset?.companyCommonBase===true&&spatialFiles.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
+    return ['roblox','unity','web'].includes(resolvedTarget);
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
@@ -2538,7 +2550,7 @@ function assetTargetCompatible(asset={},target=''){
 function matchedForType(selector={},type='',manifest={},target='',repoRoot=process.cwd()){
   const assets=Array.isArray(manifest?.assets)?manifest.assets:[];
   const byId=new Map(assets.map(asset=>[clean(asset?.id),asset]));
-  const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type));
+  const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type)&&byId.has(clean(row.id)));
   const selectedIds=new Set(selectedRows.map(row=>clean(row.id)).filter(Boolean));
   const licenseBlocked=asset=>{
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
@@ -2629,7 +2641,7 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
   const authoringBases=assets
     .filter(asset=>!selectedIds.has(clean(asset.id)))
     .filter(asset=>declaredFor(asset).includes(clean(type).toLowerCase()))
-    .filter(asset=>!licenseBlocked(asset))
+    .filter(asset=>!licenseBlocked(asset)&&!internalAssetHardBlockReason(asset))
     .filter(asset=>assetTargetCompatible(asset,target))
     .filter(asset=>asset?.crossPlatformMasterSource===true||(asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase())))
     .map(asset=>normalize(asset,true));
@@ -2654,7 +2666,7 @@ const UNIVERSAL_ASSET_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL',
   'MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
-// 공용 자산 순서: 패키지명이나 최초 소비 게임이 아닌 자산군→세부군→명칭→고유 ID.
+// 원본 위치는 변경하지 않고 자산군·세부군·이름·고유 ID 순으로 선택 후보만 정렬한다.
 function compareStandardLibraryAssets(left={},right={}){
   const rank=row=>{
     const index=UNIVERSAL_ASSET_FAMILIES.indexOf(clean(row?.family||row?.category).toUpperCase());
@@ -2688,6 +2700,13 @@ function internalAssetHardBlockReason(asset={}){
   if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
   if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
   if(!license||/UNKNOWN|UNVERIFIED|출처 불명/.test(license))return'LICENSE_METADATA_MISSING';
+  const family=clean(asset?.family||asset?.category).toUpperCase();
+  if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
+    const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
+      ...(asset?.nativeArtifacts||[]),...(asset?.sourceFiles||[]),...(asset?.fileRoles?.models||[])];
+    if(!models.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
+      return'SPATIAL_3D_SOURCE_REQUIRED';
+  }
   return'';
 }
 function internalAssetPlatformApplicationMode(asset={},target=''){
@@ -2784,6 +2803,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     allTwelveFamiliesEvaluated:UNIVERSAL_ASSET_FAMILIES.every(family=>Object.hasOwn(familyCandidates,family)),
     noArtificialAssetCountCap:true,
     noArtificialFamilyCountCap:true,
+    internalRegisteredAssetsOnly:true,
+    spatialFamiliesRequire3dGeometrySource:true,
+    crossGameAndGenreReuseUnrestricted:true,
+    crossPlatformReuseRequiresNativeReauthoring:true,
     auditScoreIsUsageGate:false,
     lowScoreCompatibleAssetUseAllowed:true,
     baseMaterialAtomCount,
@@ -5223,7 +5246,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
     plan.target==='roblox'&&Number(plan.summary?.discoveredSameGameRobloxAssets||0)>0?`현재 Roblox 게임 소스에서 기존 Asset ID ${plan.summary.discoveredSameGameRobloxAssets}개를 발견했다. REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET는 현재 게임 바인딩을 보존하는 후보지만 SOURCE_BOUND_UNVERIFIED 상태에서는 호환되는 VERIFIED_COMPANY_ASSET보다 우선하지 않고 회사 공용 VERIFIED로도 승격하지 않는다.`:'',
-    '선택 순서: 현재 게임 품질·분위기·호환성 비교가 먼저다. 회사 소유 또는 다른 게임 검증 이력만으로 선택하지 않는다. 우리 자산과 무료 제공 조건·사용 권한이 확인된 외부 후보를 함께 비교하고, 품질 기준을 통과한 동급 후보끼리만 회사/기존 게임 → 저장소 → 외부 순으로 재사용한다. 우리 자산이 기준 미달이면 적합한 외부 후보를 우선하고, 둘 다 부족할 때만 리타겟/클린업 또는 새 제작한다. 참조용 이미지를 완성된 네이티브 자산으로 취급하지 않는다. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
+    '선택 순서: company-asset-library.json에 등록되고 권리·보안 검증을 통과한 내부 자산만 게임에 직접 사용한다. 캐릭터·몬스터·지형·건물·무기·소품 등 공간 개체는 실제 3D 모델 원본이 있는 자산만 최종 후보로 선택한다. 2D·2.5D 그림이나 스프라이트를 최종 3D 게임 개체로 인정하지 않는다. RPG·생존·디펜스 등 게임 장르나 이전 소비 게임에 따른 공용 사용 제한을 두지 않는다. 컨셉이 맞으면 다른 플랫폼의 내부 3D 원본도 네이티브 재제작·파츠·재질·비율·실루엣·모션 변형 후 적용한다. 외부 에셋은 기존 내부 라이브러리 수급·검증 단계에서만 참고하고, 미등록 상태로 게임에 직접 연결하지 않는다. 적합한 내부 자산이 없으면 기존 GRAPHICS_PRODUCTION 제작 루프에서 3D 자산을 등록한 뒤 선택한다. 전투·경제·저장·진행도는 바꾸지 않는다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
     'PNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.',
