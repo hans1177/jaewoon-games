@@ -76,25 +76,39 @@
       "name": "VILLAGE_GROWTH_STRATEGY_ENGINE",
       "purpose": "Manage the strategic progression of village development and resource allocation.",
       "playerChoice": "Select a new resident, activity, or area to unlock and determine the next goal based on current resources and goals."
+    },
+    "local_authoring_parts::8eb8d0425c433e2051c3ce64758dd9517175cda34c8733a70197f9103c402fc9:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "UNLOCK_RESIDENT",
+        "CHOOSE_NEXT_GOAL"
+      ],
+      "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
+      "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
+      "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 610109,
-      "lastMs": 96231,
+      "totalMs": 707774,
+      "lastMs": 97665,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:07:42.805Z"
+      "updatedAt": "2026-10-09T09:09:20.472Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:57:32.662Z",
-  "updatedAt": "2026-10-09T09:07:42.805Z",
+  "updatedAt": "2026-10-09T09:09:20.472Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2175,7 +2189,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:07:42.805Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:09:20.472Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
