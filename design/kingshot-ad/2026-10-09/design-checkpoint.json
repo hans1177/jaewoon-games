@@ -302,25 +302,221 @@
           "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다 또는 새로운 자원을 확보하여 방어 시스템을 업그레이드하거나 재설계함으로써 더 복잡한 상황에서 효과적으로 대응합니다."
         }
       ]
+    },
+    "local_authoring_parts::7cf0ca662a202fa9dfecfcd50180d880a2d508b9d46b6b8ce91573f54b7b62a4:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::361cd5ea71cbd013062f43ef8233ab42d30c3e89233d9fb555d936435180627c:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CORE",
+          "purpose": "플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임의 핵심 시스템입니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다, 동시에 자원을 수집해 방어 시스템을 업그레이드하거나 재설계합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION_B",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+          "purpose": "플레이어가 다양한 방어 전략을 탐색하며 새로운 게임 요소와 콘텐츠를 발견하는 보조 요소입니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 재설계하거나, 자원을 통해 새로운 장비나 구조를 생성하여 더 복잡한 방어 시스템을 구성합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+          "purpose": "플레이어가 다양한 방어 전략과 자원 배분에 대한 발견, 숙련, 재방문을 통해 게임의 심층적인 이해와 진보를 촉진하는 역할을 수행합니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다 또는 새로운 자원을 확보하여 방어 시스템을 업그레이드하거나 재설계함으로써 더 복잡한 상황에서 효과적으로 대응합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "킹샷 광고풍은 플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다. 이 게임은 기존의 단순한 방어 전략을 근본적으로 변형하여, 플레이어가 다양한 상황에 대응할 수 있는 복잡한 시스템을 설계하고 있다.",
+      "playerFantasy": "플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다.",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이며, 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다.",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CORE",
+          "purpose": "플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임의 핵심 시스템입니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다, 동시에 자원을 수집해 방어 시스템을 업그레이드하거나 재설계합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION_B",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+          "purpose": "플레이어가 다양한 방어 전략을 탐색하며 새로운 게임 요소와 콘텐츠를 발견하는 보조 요소입니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 재설계하거나, 자원을 통해 새로운 장비나 구조를 생성하여 더 복잡한 방어 시스템을 구성합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENEMY_WAVE",
+            "TOWER_PLACEMENT",
+            "RESOURCE_POOL"
+          ],
+          "stateOutputs": [
+            "DEFENSE_UPGRADE",
+            "NEW_DEFENCE_LAYOUT",
+            "PRESSURE_DROP"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+          "purpose": "플레이어가 다양한 방어 전략과 자원 배분에 대한 발견, 숙련, 재방문을 통해 게임의 심층적인 이해와 진보를 촉진하는 역할을 수행합니다.",
+          "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다 또는 새로운 자원을 확보하여 방어 시스템을 업그레이드하거나 재설계함으로써 더 복잡한 상황에서 효과적으로 대응합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 722348,
-      "lastMs": 66135,
+      "totalMs": 846069,
+      "lastMs": 123721,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:35:25.849Z"
+      "updatedAt": "2026-10-09T15:37:29.575Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:23:23.460Z",
-  "updatedAt": "2026-10-09T15:35:25.852Z",
+  "updatedAt": "2026-10-09T15:37:29.588Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2022,12 +2218,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:35:25.852Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:37:29.579Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/kingshot-ad/2026-10-09/design-seed.json",
+    "contentDigest": "04a0a54829ec8c9e10eda97228e1d22795b1752e95e538d254bc2c98dc602c94",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

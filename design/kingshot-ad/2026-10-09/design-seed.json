@@ -11,20 +11,20 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "d1b56932182894d214499d4581b7166414bce43b6db6c0acff1539cfad1efae1",
+  "fingerprint": "e80ca83c2ac004322fd992d82d4134818b1b9302e630ff0b4ef71f95ec2ef9e0",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "4230e75e873cf30b48c64ecd3b264407b9ff93df77f73c7430a4fad854f3982f",
+  "contentDigest": "04a0a54829ec8c9e10eda97228e1d22795b1752e95e538d254bc2c98dc602c94",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "킹샷 광고풍은 플레이어가 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
-    "playerFantasy": "플레이어는 매 게임 시작 시 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 게임의 핵심 재미는 진입 즉각적인 위험-보상 관계와 반복 가능한 전략적 선택에서 비롯된다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
-    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 연결되는 SINGLE_DEFENSE_STRATEGY 게임이다. 주요 인물은 전투 중에 팀 내부의 정체성과 대외의 신뢰도를 유지하는 데 초점을 맞춘다. 세계 규칙은 단순한 방어 전술부터 지속적으로 복잡화되어, 플레이어가 성장하면서 새로운 행동 조합과 경로를 열어간다.",
+    "identity": "킹샷 광고풍은 플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다. 이 게임은 기존의 단순한 방어 전략을 근본적으로 변형하여, 플레이어가 다양한 상황에 대응할 수 있는 복잡한 시스템을 설계하고 있다.",
+    "playerFantasy": "플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이다. 이 게임에서는 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다.",
+    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임이며, 주요 행동은 '적군을 파괴하여 자원을 수집해 방어 시스템을 업그레이드하거나 재설계'로, 선택은 '타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다'이며, 시그니처 세계 규칙은 '전투에서 승리하면 자원을 얻고, 실패하면 자원을 잃는다'라는 구조로 연결된다.",
     "coreLoop": [
-      "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "STATE CHANGE: The game state shifts to a new defensive configuration, increasing pressure and resource availability.",
-      "OUTPUT: Player gains resources, which are used for upgrades, placements, or tactical changes before pressure increases."
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     ],
     "signatureSystems": [
       {
@@ -32,78 +32,88 @@
         "grammarRole": "MAIN",
         "stateInputs": [
           "ENEMY_WAVE",
-          "TOWER_PLACEMENT"
-        ],
-        "stateOutputs": [
-          "DEFENSE_CONFIGURATION",
+          "TOWER_PLACEMENT",
           "RESOURCE_POOL"
         ],
-        "name": "WAVES_AND_DEFENSE",
-        "purpose": "Player's action of reading the next enemy wave and placing towers or defenders on lanes/positions that cover the threatened route results in a new defensive configuration, increasing pressure and resource availability.",
-        "playerChoice": "Read the next enemy wave and place towers or defenders on lanes/positions that cover the threatened route to gain resources for upgrades, placements, or tactical changes before pressure increases."
+        "stateOutputs": [
+          "DEFENSE_UPGRADE",
+          "NEW_DEFENCE_LAYOUT",
+          "PRESSURE_DROP"
+        ],
+        "name": "SINGLE_DEFENSE_STRATEGY_CORE",
+        "purpose": "플레이어가 매번 새로운 방식으로 적군을 희생시키며 전략적으로 타겟 지역을 보호하는 단일 방어 게임의 핵심 시스템입니다.",
+        "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다, 동시에 자원을 수집해 방어 시스템을 업그레이드하거나 재설계합니다."
       },
       {
         "id": "SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
           "ENEMY_WAVE",
-          "TOWER_PLACEMENT"
-        ],
-        "stateOutputs": [
-          "DEFENSE_CONFIGURATION",
+          "TOWER_PLACEMENT",
           "RESOURCE_POOL"
         ],
-        "name": "ADAPTATION_AND_STRATEGY",
-        "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+        "stateOutputs": [
+          "DEFENSE_UPGRADE",
+          "NEW_DEFENCE_LAYOUT",
+          "PRESSURE_DROP"
+        ],
+        "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION",
+        "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
         "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       },
       {
         "id": "SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "ENEMY_TYPE",
-          "TOWER_CAPACITY"
+          "ENEMY_WAVE",
+          "TOWER_PLACEMENT",
+          "RESOURCE_POOL"
         ],
         "stateOutputs": [
-          "DEFENSE_STRATEGY",
-          "RESOURCE_ALLOCATIONS"
+          "DEFENSE_UPGRADE",
+          "NEW_DEFENCE_LAYOUT",
+          "PRESSURE_DROP"
         ],
-        "name": "ADAPTATION_AND_STRATEGIC_REFLECTION",
-        "purpose": "Player adapts defense to enemy types and wave composition, protecting the objective, and clearing stages/bosses to unlock harder defense choices.",
+        "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION_B",
+        "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
         "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       },
       {
         "id": "SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "ENEMY_TYPE",
-          "TOWER_CAPACITY"
+          "ENEMY_WAVE",
+          "TOWER_PLACEMENT",
+          "RESOURCE_POOL"
         ],
         "stateOutputs": [
-          "DEFENSE_STRATEGY",
-          "RESOURCE_ALLOCATIONS"
+          "DEFENSE_UPGRADE",
+          "NEW_DEFENCE_LAYOUT",
+          "PRESSURE_DROP"
         ],
-        "name": "ADAPTATION_AND_REFLECTION",
-        "purpose": "Player adapts the defense strategy based on enemy type and tower capacity, reflecting on previous choices to refine future decisions.",
-        "playerChoice": "Adapt the defense strategy by considering enemy types and tower capacities, refining past decisions to improve future strategies and resource allocation before pressure increases."
+        "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+        "purpose": "플레이어가 다양한 방어 전략을 탐색하며 새로운 게임 요소와 콘텐츠를 발견하는 보조 요소입니다.",
+        "playerChoice": "타겟 지역의 방어 전략을 재설계하거나, 자원을 통해 새로운 장비나 구조를 생성하여 더 복잡한 방어 시스템을 구성합니다."
       },
       {
         "id": "SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "ENEMY_TYPE",
-          "TOWER_CAPACITY"
+          "ENEMY_WAVE",
+          "TOWER_PLACEMENT",
+          "RESOURCE_POOL"
         ],
         "stateOutputs": [
-          "DEFENSE_STRATEGY",
-          "RESOURCE_ALLOCATIONS"
+          "DEFENSE_UPGRADE",
+          "NEW_DEFENCE_LAYOUT",
+          "PRESSURE_DROP"
         ],
-        "name": "ADAPTATION_AND_REFLECTION_EXPANSION",
-        "purpose": "Expand the defense strategy and resource allocation through reflection and adaptation",
-        "playerChoice": "Reflect on past strategies, adapt to new enemy types, and refine resource allocations before pressure increases"
+        "name": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+        "purpose": "플레이어가 다양한 방어 전략과 자원 배분에 대한 발견, 숙련, 재방문을 통해 게임의 심층적인 이해와 진보를 촉진하는 역할을 수행합니다.",
+        "playerChoice": "타겟 지역의 방어 전략을 바꾸거나 빈도를 증가시킨다 또는 새로운 자원을 확보하여 방어 시스템을 업그레이드하거나 재설계함으로써 더 복잡한 상황에서 효과적으로 대응합니다."
       }
     ],
-    "multiplayerMode": "COOP"
+    "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-09T06:22:07.915Z"
+  "updatedAt": "2026-10-09T15:37:29.588Z"
 }
