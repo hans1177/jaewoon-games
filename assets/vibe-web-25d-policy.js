@@ -1,37 +1,35 @@
-// Vibe2 Web 2.5D mandatory implementation policy
-// Every Web game must ship as a projected 2.5D world, not a flat top-down scene.
+// 파일명: assets/vibe-web-25d-policy.js
+// 역할: 기존 호출·내보내기 이름은 유지하고 최종 웹 게임은 실제 3D 제작만 허용한다.
 export const VIBE_WEB_25D_POLICY=Object.freeze({
-  version:1,
+  version:2,
   mandatory:true,
-  projection:'dimetric/isometric',
+  minimumFinalGameplayDimension:'3D',
   worldCoordinates:'x,y,z',
   required:Object.freeze([
-    'world-to-screen projection',
-    'screen-to-world inverse mapping for pointer/touch when needed',
-    'depth sort by projected foot position / x+y',
-    'elevation or z offset',
-    'ground/contact shadows for actors and tall props',
-    'bottom-center sprite anchoring',
-    'camera follow in projected space',
-    'viewport culling',
-    'mobile touch controls',
-    'real coherent image assets'
+    'real WebGL 3D renderer and scene',
+    'native world geometry and mesh binding',
+    'native 3D perspective or orthographic camera',
+    'world-space depth lighting and occlusion',
+    'character and creature 3D rigged source when applicable',
+    'mobile touch input and measured frame stability',
+    'actual native runtime 3D mesh evidence'
   ]),
   forbidden:Object.freeze([
-    'flat top-down release rendering',
-    'DOM z-index used as world-depth substitute',
-    'geometric placeholder characters/enemies/props',
-    'emoji used as gameplay art'
+    '2D sprite-only gameplay world',
+    '2.5D isometric or parallax-only final gameplay',
+    'CSS perspective or DOM depth as 3D substitute',
+    'dimension data attribute or text marker as runtime evidence',
+    'color-only duplicate character and monster',
+    'emoji or geometric placeholder primary actors as final assets'
   ]),
-  referenceMath:Object.freeze({
-    screenX:'(worldX-worldY)*tileWidth/2',
-    screenY:'(worldX+worldY)*tileHeight/2-worldZ*heightScale',
-    depth:'worldX+worldY'
-  }),
+  gameSpecificCrossGenreActorVariantsRequired:true,
+  uiTexturesAndAudioCanRemain2D:true,
+  legacy2DAnd2_5DGameRebuildTo3DRequired:true,
+  preserveGameplaySaveProgressionBalanceAndNetwork:true,
   releaseGate:'assertVibeWebRelease'
 });
 export function requireVibeWeb25D(target='web'){
-  if(String(target).toLowerCase()==='web') return VIBE_WEB_25D_POLICY;
+  if(String(target).toLowerCase()==='web')return VIBE_WEB_25D_POLICY;
   return null;
 }
 if(typeof window!=='undefined')window.VIBE_WEB_25D_POLICY=VIBE_WEB_25D_POLICY;
