@@ -65,25 +65,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
       "purpose": "Player choice and progression in survival run with enemy pressure",
       "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
+    },
+    "local_authoring_parts::a2ea789384d881deffa2afaaea2e28d3011f7b575239fb04ebe2b978c7af3832:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "NextProgressionChoice"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+      "purpose": "Establishes the causal relationship between player choices and subsequent progression in the game.",
+      "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 689888,
-      "lastMs": 96259,
+      "totalMs": 788914,
+      "lastMs": 99026,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:01:06.947Z"
+      "updatedAt": "2026-10-09T16:02:45.974Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T16:01:06.947Z",
+  "updatedAt": "2026-10-09T16:02:45.974Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1793,7 +1808,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T16:01:06.947Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:02:45.974Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
