@@ -80,25 +80,53 @@
         "worldChange": "State of the world changes based on player's decisions",
         "nextEvent": "Conversion of run results into new progression choices"
       }
+    },
+    "local_authoring_parts::ea1233cd3d42fb34fa6d79e00e7d56ca995ae2d70217c88d43427ce7c87e5fbc:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "현실",
+          "kind": "MATERIAL",
+          "gameplayEffect": "게임 세계의 실제 환경과 현실적인 경험"
+        },
+        {
+          "name": "건축",
+          "kind": "MATERIAL",
+          "gameplayEffect": "물리적 공간과 구조의 재구성 및 진화"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "모바일 기반의 실시간 생존 루틴과 전략적 선택"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG, STARTUP, MOBILE PLAY",
+          "gameplayEffect": "플레이어의 성장과 자산 관리에 대한 플레이어 중심 설계"
+        }
+      ],
+      "cGenreInterlock": "현실 건축가의 시스템이 주제와 장르를 통해 서로 영향을 미치며, 주제는 게임의 핵심 갈등과 위험을 정의하고, 장르는 그 선택과 A/B 시스템에 인과 변화를 줄 수 있다.",
+      "cWorldAndGameplayEffect": "게임 세계는 실제 환경에서 발생하는 위험과 보상으로 구성되며, 플레이어의 선택은 상태 변화와 다음 선택에 직접적인 영향을 준다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1070805,
-      "lastMs": 106098,
+      "totalMs": 1188612,
+      "lastMs": 117807,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:50:42.359Z"
+      "updatedAt": "2026-10-09T18:52:40.169Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T18:50:42.361Z",
+  "updatedAt": "2026-10-09T18:52:40.169Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1965,7 +1993,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:50:42.361Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:52:40.169Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
