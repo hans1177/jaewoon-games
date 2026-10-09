@@ -27,25 +27,32 @@
       "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "휴먼 GO에서는 플레이어가 단순한 탐험을 하기보다, 사람들의 행동과 관계에 대한 이해와 성장 과정을 통해 새로운 경험을 수집하며, 그 자체로 가치 있는 콘텐츠를 창출하는 데 집중된다. 이 게임은 플레이어가 주체로서, 작은 공간에서 중요한 인물이나 기회를 발견해 나아가는 과정을 거쳐, 자신의 역할과 사회적 관계를 재구성하는 방식으로 진행되며, 이러한 절차의 결과가 다음 선택과 세계 상태에 영향을 미친다.",
       "coreFun": "플레이어는 단순한 탐험을 하기보다, 사람들의 행동과 관계에 대한 이해와 성장 과程을 통해 새로운 경험을 수집하며, 그 자체로 가치 있는 콘텐츠를 창출하는 데 집중된다. 이 게임은 플레이어가 주체로서, 작은 공간에서 중요한 인물이나 기회를 발견해 나아가는 과정을 거쳐, 자신의 역할과 사회적 관계를 재구성하는 방식으로 진행되며, 이러한 절차의 결과가 다음 선택과 세계 상태에 영향을 미친다."
+    },
+    "local_authoring_parts::8e7cd49abb08890bbea2d6c0f1fadd73450fe2a2d0f680c84ff03f61e2ba513c:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 작은 공간에서 중요한 인물이나 기회를 발견해 나아감",
+        "SELECT: 단순한 탐험보다 이해와 성장 과程을 통해 새로운 경험을 수집",
+        "OUTPUT: 자신의 역할과 사회적 관계를 재구성하는 방식으로 진행하며 다음 선택과 세계 상태에 영향을 미침"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 185925,
-      "lastMs": 31994,
+      "totalMs": 217081,
+      "lastMs": 31156,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:34:58.824Z"
+      "updatedAt": "2026-10-09T08:35:29.984Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:31:52.852Z",
-  "updatedAt": "2026-10-09T08:34:58.826Z",
+  "updatedAt": "2026-10-09T08:35:29.984Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1973,7 +1980,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:34:58.825Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:35:29.984Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
