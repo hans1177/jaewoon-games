@@ -208,25 +208,39 @@
       "name": "생존 진입 시스템",
       "purpose": "선택적 진입, 성장 가능성, 심리적 영향 제공",
       "playerChoice": "주요 행동(생존) 기반의 선택 및 진입 방식 결정"
+    },
+    "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "RESULT"
+      ],
+      "name": "생존 진입 시스템",
+      "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 주요 행동 및 전술을 정의합니다.",
+      "playerChoice": "주요 행동인 '생존' 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1010307,
-      "lastMs": 106482,
+      "totalMs": 1121745,
+      "lastMs": 111438,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:31:37.552Z"
+      "updatedAt": "2026-10-09T18:33:28.992Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:14:47.214Z",
-  "updatedAt": "2026-10-09T18:31:37.553Z",
+  "updatedAt": "2026-10-09T18:33:28.993Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1951,8 +1965,8 @@
   "localAuthoringSplits": {
     "5b1c35ed59e786a73d9f4b30700e88e8d49e4deb1f9ec003b20cce05b9c17bd6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:31:37.552Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T18:33:28.992Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
