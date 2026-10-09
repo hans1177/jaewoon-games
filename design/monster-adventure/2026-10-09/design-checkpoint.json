@@ -571,25 +571,40 @@
     },
     "local_authoring_parts::6533a984cbd545db83b5589dd2b64e72904b5e35a7d9cc75adabcf28bdb74779:trigger": {
       "trigger": "플레이어가 START_INPUT 상태에서 시스템이 RUN_STATUS 상태로 전환하는 과정은 플레이어의 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 주체 행동과 목표가 실제 월드/시스템 상태 변화를 결정하는 시그니처 상호작용을 통해 이루어진다."
+    },
+    "local_authoring_parts::6533a984cbd545db83b5589dd2b64e72904b5e35a7d9cc75adabcf28bdb74779:stateChange": {
+      "stateChange": "플레이어가 START_INPUT 상태에서 시스템이 RUN_STATUS 상태로 전환하는 과정은 플레이어의 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 주체 행동과 목표가 실제 월드/시스템 상태 변화를 결정하는 시그니처 상호작용을 통해 이루어진다."
+    },
+    "local_authoring_parts::483c8ebb886580d49a5973c113c302102e28c271a7795a3072e284c4d7f2bec8:systemInterconnections:2": {
+      "fromId": "START_INPUT -> RUN_STATUS",
+      "toId": "RUN_STATUS",
+      "stateKeys": [
+        "START_INPUT",
+        "RUN_STATUS"
+      ],
+      "fromSystem": "OPENING_PHASE",
+      "toSystem": "OPENING_PHASE",
+      "trigger": "플레이어가 START_INPUT 상태에서 시스템이 RUN_STATUS 상태로 전환하는 과정은 플레이어의 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 주체 행동과 목표가 실제 월드/시스템 상태 변화를 결정하는 시그니처 상호작용을 통해 이루어진다.",
+      "stateChange": "플레이어가 START_INPUT 상태에서 시스템이 RUN_STATUS 상태로 전환하는 과정은 플레이어의 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 주체 행동과 목표가 실제 월드/시스템 상태 변화를 결정하는 시그니처 상호작용을 통해 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2289311,
-      "lastMs": 62281,
+      "totalMs": 2352006,
+      "lastMs": 62695,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:56:11.991Z"
+      "updatedAt": "2026-10-09T09:57:14.687Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:18:02.096Z",
-  "updatedAt": "2026-10-09T09:56:11.991Z",
+  "updatedAt": "2026-10-09T09:57:14.689Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2930,7 +2945,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:56:11.991Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:57:14.689Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
