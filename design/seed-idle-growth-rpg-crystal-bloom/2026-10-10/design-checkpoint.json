@@ -532,25 +532,33 @@
       },
       "playerFantasy": "플레이어는 자신의 욕망과 두려움 사이에서 새로운 세계 규칙에 맞서 싸워야 한다. 이 과정에서는 자원을 생성하며, 그 결과로 보상을 얻거나 위험을 감당해야 하며, 선택을 통해 게임의 진척과 발전을 촉진받는다.",
       "coreFun": "플레이어가 지속적으로 진행 가능한 자원을 생성하고 상태를 변화시키는 데 중점을 둔 심리적 구조를 기반으로 한 행동과 선택이 반복된다. 이는 플레이어의 욕망과 두려움이 새 세계 규칙에 충돌하는 모습을 바탕으로 이루어져 있으며, 이를 통해 다양한 보상과 위험이 제공되도록 설계되어 있다."
+    },
+    "local_authoring_parts::cc8aed59a5e922baa0acd29904fac359b95acf10cc29b8f6cde798239486994e:coreLoop": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 욕망과 두려움 충돌 시 새로운 행동·경로·관계·발견·대응법 생성",
+        "지속적으로 진행 가능한 자원 생성 및 상태 변화 유도",
+        "플레이어 선택에 따른 세계 상태 변화 증명"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1418814,
-      "lastMs": 105790,
+      "totalMs": 1517056,
+      "lastMs": 98242,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:31:31.451Z"
+      "updatedAt": "2026-10-09T18:33:09.696Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:07:52.598Z",
-  "updatedAt": "2026-10-09T18:31:31.452Z",
+  "updatedAt": "2026-10-09T18:33:09.696Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2272,7 @@
     "fa73b7fccfc66d6333937e0cf9f6b5606644d25cffbebee91d49a0aa02cdfac7": true,
     "757b6ea0caceeb29166c1c903a94f03ba2682147e5cde383f0841458286fa680": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:31:31.452Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:33:09.696Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
