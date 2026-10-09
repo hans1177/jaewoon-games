@@ -686,13 +686,16 @@ const MUSIC_THEMES={
  battle1:{bpm:152,mode:'minor',root:146.83,progression:[0,5,3,6,0,3,4,5],riff:[0,2,4,5,4,2,3,1,0,3,5,6,5,3,2,4],style:'battle1'},
  battle2:{bpm:146,mode:'minor',root:123.47,progression:[0,6,4,5,0,3,6,5],riff:[0,4,2,5,4,2,1,3,0,3,5,4,2,5,3,1],style:'battle2'},
  battle3:{bpm:138,mode:'minor',root:98,progression:[0,1,5,6,0,3,1,5],riff:[0,2,3,1,4,2,5,3,0,3,2,5,4,2,1,3],style:'battle3'},
+ // 4·5티어 강적 전용 오프라인 대체 음악.
+ strong:{bpm:164,mode:'minor',root:110,progression:[0,5,2,6,0,3,4,5],riff:[0,4,6,2,5,3,1,4,0,2,5,4,6,3,2,1],style:'strong'},
  boss:{bpm:132,mode:'minor',root:73.42,progression:[0,5,6,4,0,3,1,5],riff:[0,4,5,3,4,2,1,3,0,5,6,4,5,3,2,4],style:'boss'}
 };
-// 전투곡 네 종류: 모두 CC0. 정식 음원을 우선 재생하고 기존 합성 음악을 오프라인 대체곡으로 유지한다.
+// 전투곡 모두 CC0. 휴먼 고의 중복 노래를 바꾸고 강적 전용 음원을 더한다.
 const COMBAT_MUSIC_URLS={
- battle1:'https://opengameart.org/sites/default/files/jrpg_battle_loop.mp3', // HydroGene
+ battle1:'https://opengameart.org/sites/default/files/battleThemeB.mp3', // cynicmusic · CC0 · 기존 휴먼 고 중복곡 교체
  battle2:'https://opengameart.org/sites/default/files/Battle.mp3', // Wolfgang_
  battle3:'https://opengameart.org/sites/default/files/raiders_march_-_loop.mp3', // Bobjt
+ strong:'https://opengameart.org/sites/default/files/battleThemeA.mp3', // cynicmusic · CC0 · 강적 전용곡
  boss:'https://opengameart.org/sites/default/files/CleytonRX%20-%20Battle%20RPG%20Theme_1.mp3' // Cleyton Kauffman
 };
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,combatUntil:0,previewUntil:0,combatWasPlaying:false,combatBlocked:false,warmupUntil:0,startPending:false,combatAudio:null,combatKey:null,combatFailed:false};
@@ -775,23 +778,40 @@ function playerCombatActive(){
  })
 }
 function desiredMusicTheme(){
- const p=state.player;
- // 보스가 맵에 존재한다는 이유만으로 전투곡을 계속 재생하지 않는다.
- const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss)&&dist(e.x,e.y,p.x,p.y)<Math.max(260,Math.min(720,e.type.detect||430)));
+ const p=state.player,now=performance.now();
+ // 보스곡이 우선. 밀림 호랑이와 예티 우두머리, 신전 수호자도 보스로 취급.
+ const boss=state.enemies.some(e=>{
+  const t=e.type;
+  return e.hp>0&&e.area===state.area&&(t.boss||t.labBoss||t.tigerLeader||t.yetiBoss||t.templeGuardian)
+   &&dist(e.x,e.y,p.x,p.y)<Math.max(260,Math.min(720,t.detect||430))
+ });
  if(boss){music.battleActive=false;music.battleTheme=null;return'boss'}
  if(music.previewUntil>Date.now())return'battle1';
- // 공격 직후 유예시간도 살아 있는 전투 대상이 근처에 있을 때만 유효하다.
+ // 기존 전투 종료 조건 보존. 적이 죽거나 멀어지면 탐험곡으로 복귀.
  const nearbyThreat=state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120));
  if(!nearbyThreat)music.combatUntil=0;
- const battle=playerCombatActive()||(nearbyThreat&&performance.now()<(music.combatUntil||0));
- if(battle){if(!music.battleActive){music.battleActive=true;music.battleTheme=pickBattleTheme()}return music.battleTheme||'battle2'}
+ const battle=playerCombatActive()||(nearbyThreat&&now<(music.combatUntil||0));
+ if(battle){
+  // 4·5티어 중 모래 정령·아나콘다·초거대 거머리·보스·소환물 제외.
+  const strong=state.enemies.some(e=>{
+   const t=e.type;
+   if(e.hp<=0||e.area!==state.area||t.mood==='harmless'||t.summoned||t.sporeShieldOrb
+    ||t.boss||t.labBoss||t.tigerLeader||t.yetiBoss||t.templeGuardian
+    ||t.id==='sandSpirit'||t.id==='anaconda'||t.id==='giantleech'||creatureTier(t.id)<4)return false;
+   const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,t.detect||430));
+   return d<range&&(e.hostile||e.enemyTarget||state.pet.targetId===e.netId||now<(music.combatUntil||0));
+  });
+  if(strong){music.battleActive=true;music.battleTheme='strong';return'strong'}
+  if(!music.battleActive||music.battleTheme==='strong'){music.battleActive=true;music.battleTheme=pickBattleTheme()}
+  return music.battleTheme||'battle2'
+ }
  music.battleActive=false;music.battleTheme=null;
  if(state.area==='storylab1'||state.area==='storylab2')return'underground';
  if(state.area==='questcave')return'questcave';
  if(state.area==='underground')return'underground';
  if(state.area==='underwater'){
-   if(pointInRect(p.x,p.y,DEEP_CORAL_FOREST))return'deepcoral';
-   return'underwater'
+  if(pointInRect(p.x,p.y,DEEP_CORAL_FOREST))return'deepcoral';
+  return'underwater'
  }
  return regionAt(p.x,p.y)
 }
@@ -870,6 +890,17 @@ function scheduleBandBeat(key,t,beat,at){
    if(b===0||b===2||bar%2===1)smoothVoice(scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,1),at,beatDur*.74,.025,'sawtooth',1950,.015);
    if(b===3&&bar%4===3)for(let step=0;step<2;step++)noiseBrush(at+step*beatDur*.48,beatDur*.20,.018,1750);
    break;
+  case'strong':
+   // 정식 음원 로딩 실패 시에도 일반 전투와 다른 강적 전용 리프 재생.
+   if(b===0){padVoice(root,at,beatDur*3.9,.029,1200);padVoice(root*1.5,at,beatDur*3.9,.012,1500)}
+   if(b===0||b===2)lowDrum(at,b===0?115:83,b===0?.15:.11,beatDur*.37);
+   if(b===1||b===3)noiseBrush(at,beatDur*.19,.029,2100);
+   smoothVoice(root*.5,at,beatDur*.51,.031,'sawtooth',980,.013);
+   for(let step=0;step<3;step++){
+    const atNote=at+step*beatDur/3,note=scaleFreq(t.root,ch+t.riff[(beat*3+step)%t.riff.length],minor,1);
+    smoothVoice(note,atNote,beatDur*.26,.023,'sawtooth',2700,.011);
+   }
+   break;
   case'boss':
    // 보스: 합창풍 코드·브라스 팡파르·전쟁 북·마디 끝 필인.
    if(b===0){
@@ -911,7 +942,7 @@ function syncCombatMusic(key){
   audio.addEventListener('playing',()=>{
    if(music.combatAudio!==audio)return;
    music.combatFailed=false;music.combatBlocked=false;
-   if(info)info.textContent='새 전투곡 재생 중 · '+(key==='boss'?'보스전':key==='battle1'?'전투 1':key==='battle2'?'전투 2':'전투 3');
+   if(info)info.textContent='새 전투곡 재생 중 · '+(key==='boss'?'보스전':key==='strong'?'강력한 적':key==='battle1'?'전투 1':key==='battle2'?'전투 2':'전투 3');
   });
   audio.addEventListener('error',()=>{
    if(music.combatAudio!==audio)return;
