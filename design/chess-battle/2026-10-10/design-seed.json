@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "gameId": "chess-battle",
+  "date": "2026-10-10",
+  "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "4f07b85c776aa4a077d3a7a8f1cd0ea34441ce488cae7537fd01bd89159566f6",
+  "engineDigest": "82009f805d07dbc37fef4617083aa8c5a90af5bb1042521a1f511131cb58898c",
+  "contentDigest": "b9b9103eade0336159d3ee3b8c7603713986b9201500c63c7d9455f3940a826a",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다.",
+    "creativeGrammar": {
+      "mainIdentity": "전략적 전투 방식의 시뮬레이션",
+      "a": {
+        "system": "전투 기반 메커니즘",
+        "material": "말별 전투 능력, 전장 목표",
+        "materialDomain": "전략적 전투",
+        "stateChange": "전략적 전투 상태 변환 및 목표 설정"
+      },
+      "b": {
+        "system": "게임 내 캐릭터 역할",
+        "material": "플레이어 대사와 행동",
+        "materialDomain": "캐릭터 인물",
+        "stateChange": "캐릭터 선택 및 상호작용 결과 생성이 포함됨"
+      },
+      "abCausality": "전투 상태 변환 → 플레이어 선택 → 캐릭터 인물 변화 → 다음 전투 단계 결정",
+      "abEvolution": {
+        "aChangesB": "전략적 전투 상태 변경 → 캐릭터 선택 → 인물 변화 → 다음 전투 결정",
+        "bChangesA": "캐릭터 선택 → 전투 상태 변경 → 인물 변화 → 다음 전투 결정",
+        "lateGameChange": "전투 상태 변화에 따른 인물 변화 반영 후 최종 전투 결정"
+      },
+      "materialFusion": {
+        "contrast": "전투 상태 ↔ 캐릭터 선택 ↔ 인물 변화 ↔ 다음 전투 결정",
+        "causalBridge": "전투 상태 변화는 캐릭터 선택과 인물 변화를 통해 이어지는 실제 상태 교환이 발생한다",
+        "removalConsequence": "캐릭터 선택은 전투 상태 변화와 인물 변화의 합성으로 이루어진다"
+      },
+      "storyCausalChain": {
+        "cause": "전투 상태 변화가 일어남을 알리는 플레이어 행동",
+        "characterConflict": "플레이어 선택과 캐릭터 인물 갈등 존재",
+        "playerChoice": "플레이어 선택이 실질적으로 영향을 주는 상황",
+        "worldChange": "전투 상태 변화 및 캐릭터 인물 변화로 인해 새로운 게임 상태 생성",
+        "nextEvent": "플레이어 선택에 기반한 다음 전투 단계 결정"
+      },
+      "cThemes": [
+        {
+          "name": "전략적 전투 방식",
+          "kind": "GENRE",
+          "gameplayEffect": "전략적 전투 상태 변환 및 목표 설정"
+        },
+        {
+          "name": "캐릭터 인물 관리",
+          "kind": "GENRE",
+          "gameplayEffect": "캐릭터 선택 및 상호작용 결과 생성"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략·보드게임",
+          "gameplayEffect": "전략적 전투 상태 변환 및 목표 설정"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "캐릭터 역할 중심 전술 배틀",
+          "gameplayEffect": "캐릭터 선택 및 상호작용 결과 생성"
+        }
+      ],
+      "cGenreInterlock": "전략적 전투 상태 변화와 캐릭터 선택은 서로 다른 시스템으로서 상호작용하며, 캐릭터 선택의 변화가 전략적 전투 상태 변화를 통해 이어진다.",
+      "cWorldAndGameplayEffect": "전략적 전투 상태 변화는 플레이어 행동을 통해 캐릭터 인물을 변경하고, 그 변화는 다음 전투 단계 결정에 영향을 미친다. 캐릭터 선택은 전투 상태 변화와 인물 변화의 합성으로 이루어진다.",
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어 선택이 캐릭터 인물 변화에 영향을 주는 사례",
+          "discovery": "플레이어 선택 → 캐릭터 인물 변화 → 다음 전투 단계 결정",
+          "newChoice": "캐릭터 선택과 전투 상태 변화의 조합 사용"
+        },
+        {
+          "clue": "전략적 전투 상태 변화가 캐릭터 인물 관리에 영향을 줄 수 있는 사례",
+          "discovery": "전략적 전투 상태 변화 → 캐릭터 선택 → 인물 변화 → 다음 전투 단계 결정",
+          "newChoice": "전략적 전투 상태 변화 및 캐릭터 선택의 조합 사용"
+        },
+        {
+          "clue": "전투 상태 변화와 캐릭터 선택 갈등이 발생할 수 있는 사례",
+          "discovery": "전투 상태 변화 → 캐릭터 선택 → 인물 변화 → 다음 전투 단계 결정",
+          "newChoice": "전투 상태 변화와 캐릭터 선택의 상호작용 결과 생성"
+        },
+        {
+          "clue": "전략적 전투 상태 변화가 캐릭터 인물 변화를 통해 새로운 게임 상태로 이어지는 사례",
+          "discovery": "전략적 전투 상태 변화 → 캐릭터 선택 → 인물 변화 → 다음 전투 단계 결정",
+          "newChoice": "전략적 전투 상태 변화와 캐릭터 선택의 합성 사용"
+        }
+      ],
+      "delveGrowthRule": "플레이어 선택은 전략적 전투 상태 변화와 캐릭터 인물 변화의 합성을 통한 실질적인 영향을 주는 것이어야 하며, 캐릭터 선택은 전투 상태 변화와 인물 변화의 합성을 통한 실질적인 영향을 주야 한다.",
+      "finalGameIdentity": "전략·보드게임과 캐릭터 역할 중심 전술 배틀의 조합으로 이루어진 새 정체성"
+    },
+    "playerFantasy": "플레이어는 전투 상태 변화에 따라 캐릭터 인물을 선택하고, 그 선택은 전략적 전투 상태 변화와 함께 다음 전투 단계 결정에 영향을 미친다. 캐릭터 인물은 전투 상태 변화에 따라 상호작용하며, 그 변화는 플레이어 행동에 기반하여 새로운 게임 상태로 이어지도록 설계된다.",
+    "coreFun": "입력/선택 -> 전략적 전투 상태 변환 및 목표 설정 -> 보상/위험/다음 선택의 연결이 포함된 최소 3개의 실제 플레이 단계를 통해 구현한다. 각 단계에서 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과가 명시되고, 정체성 문장과 같은 플레이 약속이 증명되어야 하며, 전체 항목 공통: 임시 식별자·같은 문장 반복으로 내용을 채우지 않는다.",
+    "coreLoop": [
+      "입력/선택 -> 전략적 전투 상태 변환 및 목표 설정 -> 보상/위험/다음 선택",
+      "캐릭터 선택 → 전투 상태 변화 → 인물 변화 → 다음 전투 결정",
+      "전투 상태 변화 → 캐릭터 선택 → 인물 변화 → 다음 전투 단계 결정"
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "strategyState",
+          "characterChoice"
+        ],
+        "stateOutputs": [
+          "nextBattleStep"
+        ],
+        "name": "전략적 전투 상태 변환 및 목표 설정",
+        "purpose": "플레이어 선택에 기반하여 전략적 전투 상태와 목표를 결정하는 게임 내 캐릭터 인물 관리 시스템",
+        "playerChoice": "플레이어가 캐릭터 인물을 선택하며, 이 선택은 전략적 전투 상태의 변화와 함께 다음 전투 단계를 결정하게 된다함으로써 전술 배틀 방식의 시뮬레이션을 구현한다음, 캐릭터 인물은 전투 상태 변화에 따라 상호작용하며, 그 변화는 플레이어 행동에 기반하여 새로운 게임 상태로 이어진다."
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "strategyState",
+          "characterChoice"
+        ],
+        "stateOutputs": [
+          "nextBattleStep"
+        ],
+        "name": "전략적 전투 상태 변환 및 목표 설정",
+        "purpose": "플레이어 선택에 기반하여 전략적 전투 상태를 변경하고, 그 결과로 다음 전투 단계를 결정하는 데 사용됨",
+        "playerChoice": "플레이어가 캐릭터 인물을 선택하며, 이 선택은 전략적 전투 상태의 변화와 함께 다음 전투 단계 결정에 영향을 미친다"
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "strategyState",
+          "characterChoice"
+        ],
+        "stateOutputs": [
+          "nextBattleStep"
+        ],
+        "name": "캐릭터 선택 및 상호작용 결과 생성",
+        "purpose": "플레이어 선택에 기반하여 캐릭터 인물의 상태 변화와 다음 전투 단계 결정을 생성하는 플레이 약속",
+        "playerChoice": "캐릭터 선택이 실질적으로 영향을 주는 상황에서, 전략적 전투 상태 변화와 함께 새로운 게임 상태로 이어지는 방식으로 진행됨"
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "strategyState",
+          "characterChoice"
+        ],
+        "stateOutputs": [
+          "nextBattleStep"
+        ],
+        "name": "전투 상태 변화 및 인물 선택의 합성 사용",
+        "purpose": "플레이어 선택과 전략적 전투 상태 변화가 서로 다른 시스템에서 상호작용하며, 그 결과는 다음 전투 단계 결정에 영향을 미친다.",
+        "playerChoice": "캐릭터 선택과 전투 상태 변화의 조합 사용으로 인해 새로운 게임 상태 생성이 가능하다고 명시됨."
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "strategyState",
+          "characterChoice"
+        ],
+        "stateOutputs": [
+          "nextBattleStep"
+        ],
+        "name": "전투 상태 변화 및 인물 선택의 합성 사용",
+        "purpose": "전략적 전투 상태 변화에 따라 캐릭터 인물을 선택하고, 그 선택은 다음 전투 단계 결정에 영향을 미친다.",
+        "playerChoice": "캐릭터 선택과 전투 상태 변화의 조합 사용으로 인물 변화가 발생하며, 이는 새로운 게임 상태로 이어진다."
+      }
+    ],
+    "multiplayerMode": "COMPETITIVE"
+  },
+  "updatedAt": "2026-10-09T17:30:13.033Z"
+}

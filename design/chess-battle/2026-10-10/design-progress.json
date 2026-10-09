@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 9,
-  "lastSuccessfulModelCallAt": "2026-10-09T17:28:44.965Z",
+  "cachedTaskCount": 12,
+  "lastSuccessfulModelCallAt": "2026-10-09T17:30:13.025Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/chess-battle/2026-10-10/design-seed.json",
+    "contentDigest": "b9b9103eade0336159d3ee3b8c7603713986b9201500c63c7d9455f3940a826a",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 837897,
-      "lastMs": 99914,
+      "totalMs": 925953,
+      "lastMs": 88056,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:28:44.962Z"
+      "updatedAt": "2026-10-09T17:30:13.022Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T17:28:44.965Z"
+  "updatedAt": "2026-10-09T17:30:13.034Z"
 }
