@@ -493,6 +493,62 @@ test('all game development scans the full internal registry and removes family a
   }
 });
 
+test('midnight hundred source entries stay shared for every game without bypassing real 3D source checks',()=>{
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const standard=library.internalAssetStandard.sharedOrganization;
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  assert.equal(standard.version,2);
+  assert.deepEqual(standard.familyOrder,families);
+  assert.deepEqual(standard.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
+  assert.equal(standard.gameExclusivePacks,false);
+  assert.equal(standard.originalGameNamedPacksAreSourceLineageOnly,true);
+  const monsters=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
+  assert.equal(monsters.length,100);
+  assert.equal(new Set(monsters.map(row=>row.skinId)).size,100);
+  assert.ok(monsters.every(row=>row.companyCommonBase===true&&row.gameExclusive===false&&row.reuseScope==='COMPANY_COMMON_BASE'));
+  assert.ok(monsters.every(row=>row.productionVerified!==true),'roster registration is not runtime verification');
+  const ids=new Set(monsters.map(row=>row.id));
+  for(const target of ['roblox','unity','web']){
+    const planA=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
+    const planB=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
+    assert.deepEqual(planA.libraryOrder,families);
+    assert.deepEqual(planA.librarySortKeys,standard.sortKeys);
+    assert.equal(planA.allCompatibleGamesEligible,true);
+    assert.equal(planA.sourcePackIdIsLineageOnly,true);
+    assert.equal(planA.evaluatedAssetCount,library.assets.length);
+    const seenA=planA.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    const seenB=planB.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    assert.equal(seenA.length,100,target+': all 100 source entries remain discoverable');
+    assert.deepEqual(seenA,seenB,target+': pack name must not restrict discovery by game');
+    assert.ok(seenA.every(row=>row.hardBlockReason===null||row.hardBlockReason==='SPATIAL_3D_SOURCE_REQUIRED'));
+    assert.ok(seenA.every(row=>row.eligibleForRoleEvaluation===!Boolean(row.hardBlockReason)));
+  }
+  // 실제 존재하는 원본 GLB를 제공한 경우에만 게임 선택 후보로 진입한다. 이것은 런타임 PASS가 아니다.
+  const bride=monsters.find(row=>row.skinId==='gwisin-bride');
+  assert.ok(bride);
+  assert.ok(fs.existsSync('assets/roblox/world-ghosts/native/mesh/bride.glb'));
+  const with3d={...bride,nativeArtifacts:['assets/roblox/world-ghosts/native/mesh/bride.glb']};
+  for(const target of ['roblox','unity','web']){
+    const registry={version:library.version,assets:[with3d]};
+    const a=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'horror-escape-room'});
+    const b=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'survival'});
+    assert.equal(a.familyCandidates.CREATURE.length,1);
+    assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
+    assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
+    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
+  }
+  const fixture={version:1,assets:[
+    {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
+    {id:'u',family:'UI',title:'가',license:'CC0',platform:'ROBLOX'},
+    {id:'a',family:'CREATURE',subfamily:'A',title:'나',license:'CC0',platform:'ROBLOX',path:'a.glb'},
+    {id:'c',family:'CHARACTER',title:'다',license:'CC0',platform:'ROBLOX',path:'c.glb'},
+    {id:'b',family:'CREATURE',subfamily:'A',title:'가',license:'CC0',platform:'ROBLOX',path:'b.glb'}
+  ]};
+  const sorted=buildAllGameDynamicLibraryBindingPlan({companyRegistry:fixture,target:'roblox',gameId:'any-existing-game'});
+  assert.deepEqual(sorted.evaluatedAssets.map(row=>row.assetId),['c','b','a','z','u']);
+});
+
 test('full library scan preserves low quality assets but rejects unsafe corrupt or forbidden assets',()=>{
   const assets=[
     {id:'low-quality',category:'UI',license:'CC0',internalAuditScore:0},
@@ -524,7 +580,7 @@ test('all game spatial families reject flat 2D assets but allow unlimited cross-
   ];
   for(const target of ['roblox','unity','web']){
     const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:9,assets},target,gameId:'any-genre'});
-    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['shared-creature','another-creature']);
+    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['another-creature','shared-creature']);
     assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),['building-part']);
     assert.deepEqual(plan.familyCandidates.UI.map(asset=>asset.assetId),['ui-icon']);
     assert.equal(plan.hardBlockedAssetCount,1);

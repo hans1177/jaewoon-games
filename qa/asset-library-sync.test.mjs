@@ -109,6 +109,19 @@ test('asset homepage automatically publishes new entries, preserves selection, e
 });
 
 
+test('all-assets view follows canonical family order and keeps every original object',()=>{
+  const script=fs.readFileSync('assets/asset-library.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const order=registry.internalAssetStandard.sharedOrganization.familyOrder;
+  assert.deepEqual(order,['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+  assert.match(script,/sort\(\(a,b\)=>\{const families=/);
+  assert.match(script,/rank\(a\)-rank\(b\)/);
+  assert.match(script,/asset\?\.subfamily/);
+  assert.match(script,/a\.id\.localeCompare\(b\.id,'en'\)/);
+  assert.equal(registry.assets.filter(asset=>asset.packId==='roblox-world-ghost-skins-v1'&&asset.skinId).length,100);
+  assert.ok(registry.assets.every(asset=>asset.gameExclusive===false));
+});
+
 test('asset registry signature is cached across 304 refreshes',()=>{
  const script=fs.readFileSync('assets/asset-library.js','utf8');
  assert.match(script,/registryViewSignature=''/);
