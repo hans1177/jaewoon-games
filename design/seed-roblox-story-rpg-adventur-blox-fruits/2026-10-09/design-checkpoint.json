@@ -27,25 +27,32 @@
       "identity": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 이 게임은 성장이 아닌 단순 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
       "playerFantasy": "플레이어는 시작 시점에서 게임 내 세계 상태를 바꾸는 중심 행동을 수행하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석할 수 있다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
       "coreFun": "Shardbound Odyssey은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 이 게임은 성장이 아닌 단순 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다. 주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다."
+    },
+    "local_authoring_parts::43f884128947a00762213cce04a3d407dd553dd7df3f5f9629beecf2cac35260:coreLoop": {
+      "coreLoop": [
+        "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.",
+        "주체는 플레이어이며, 세계 상태와 다음 선택은 실제 월드/시스템 상태 변화로 연결되어야 한다.",
+        "선택 시 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 101525,
-      "lastMs": 15727,
+      "totalMs": 119793,
+      "lastMs": 18268,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:08:40.028Z"
+      "updatedAt": "2026-10-09T09:08:58.298Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:58.445Z",
-  "updatedAt": "2026-10-09T09:08:40.029Z",
+  "updatedAt": "2026-10-09T09:08:58.298Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:08:40.029Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:08:58.298Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
