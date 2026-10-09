@@ -1877,25 +1877,50 @@
     },
     "local_authoring_parts::bad1ff6cb1f25fe65eeb29c68ed2808554d53e096578b55767588c29b0ca5ab7:riskPressure": {
       "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+    },
+    "local_authoring_parts::bad1ff6cb1f25fe65eeb29c68ed2808554d53e096578b55767588c29b0ca5ab7:recoveryRules": {
+      "recoveryRules": "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+    },
+    "local_authoring_parts::611553fe2c80a090642755ab709b5f588232ff407f6bac0e5effea47a75bfeac:failureRetryRisk": {
+      "failureStates": [
+        "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다.",
+        "선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+      ],
+      "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+      "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+      "recoveryRules": "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+    },
+    "local_authoring_parts::08d9ddb58832812f1650335e9e5266ca00cf5705973c9c3fc8fbd8875e3649a4:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다.",
+          "선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+        ],
+        "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+        "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+        "recoveryRules": "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 219,
-      "successes": 219,
+      "calls": 220,
+      "successes": 220,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9408836,
-      "lastMs": 57719,
+      "totalMs": 9463794,
+      "lastMs": 54958,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:10:08.167Z"
+      "updatedAt": "2026-10-09T07:11:03.128Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T07:10:08.167Z",
+  "updatedAt": "2026-10-09T07:11:03.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3935,23 +3960,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.recoveryRules",
-          "value": "RETRY_WITH_DIFFERENT_PROGRESSION_DIRECTION_OR_CONTENT_EXPANSION"
-        },
-        "requiredAction": "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3993,9 +4001,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4010,9 +4018,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4027,9 +4035,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4056,7 +4064,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 9
+    "designer_draft_slices::systems-progression": 10
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4082,13 +4090,23 @@
           "newGameplay": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
           "systemImpact": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
         }
-      ]
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다.",
+          "선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+        ],
+        "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+        "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다.",
+        "recoveryRules": "시스템은 사용자의 선택에 따라 새로운 레벨 목적지를 설정하고, 이전 상태와 새 상태 사이의 전환 과정을 통해 게임 세계를 변형합니다. 선택 후에는 기존의 수치와 보상이 유지되며, 새로운 경로나 조합이 추가되어 게임의 재방문 및 재해석을 가능하게 합니다."
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:10:08.167Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T07:11:03.137Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
