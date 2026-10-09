@@ -69,8 +69,12 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/MAIN × A × B × C/);
   assert.match(source,/themeFusion:C_FUSION_SCHEMA/);
   assert.match(source,/genreInterlock/);
-  const forbiddenCAsThirdMechanicalAxis=["connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
-  for(const token of forbiddenCAsThirdMechanicalAxis)assert.equal(source.includes(token),false);
+  // C는 게임의 세 번째 시스템 축이 아니라 소재·장르 층이다. @의 인과 연결 대상으로는 허용한다.
+  const axisSchema=source.slice(source.indexOf('const SYSTEM_AXIS_SCHEMA='),source.indexOf('const SUB_ELEMENT_SCHEMA='));
+  assert.match(axisSchema,/key:\{type:'string',enum:\['A','B'\]\}/);
+  assert.match(source,/majorAxes:\{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA\}/);
+  assert.match(source,/connectsTo:.*enum:\['MAIN','A','B','C','c'\]/);
+  assert.equal(source.includes("enum:['A','B','C']"),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
   const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
