@@ -1238,21 +1238,6 @@ jobs:
               // Continue into the existing exact-version runtime sentinel; do not grant F1 here.
               console.log('ROBLOX_FIRST_FRAME_HEADLESS_WORLD_UNOBSERVED_RUNTIME_SENTINEL_REQUIRED='+item.gameId+':version='+Number(candidate.versionNumber));
             }
-            if(engineProbe?.imageEvidence?.imageContentPassed!==true){
-              item.robloxRuntimeFoundationPassed=false;
-              item.robloxRuntimePassed=false;
-              item.robloxIndependentQaPassed=false;
-              item.robloxRegressionPassed=false;
-              item.robloxCloudImageEvidence=engineProbe?.imageEvidence||null;
-              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-              item.robloxFailureSignature='ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED';
-              item.routingBlockers=['roblox-cloud-image-content-unverified'];
-              item.updatedAt=stamp;changed=true;pending++;
-              console.log('ROBLOX_CLOUD_IMAGE_RETRY_REQUIRED='+item.gameId);
-              continue;
-            }
-
             let sentinel;
             try{
               sentinel=await fetchRobloxRuntimeFoundationEvidence({
@@ -1267,7 +1252,8 @@ jobs:
                   engineProbe?.engineExecuted===true
                   &&engineProbe?.exactPlace===true
                   &&engineProbe?.exactVersion===true
-                  &&engineProbe?.serverBootObserved===true;
+                  &&engineProbe?.serverBootObserved===true
+                  &&engineProbe?.imageEvidence?.imageContentPassed===true;
                 item.robloxRuntimeRetryCount=attempts;
                 item.robloxRuntimeLastObservationAttemptAt=stamp;
                 item.robloxRuntimeFoundationPassed=false;
@@ -1373,6 +1359,23 @@ jobs:
                 continue;
               }
               throw error;
+            }
+
+            // Read the exact server sentinel before thumbnail gating; never use images as F1 runtime proof.
+            // Image content still blocks independent QA and any release acceptance.
+            if(engineProbe?.imageEvidence?.imageContentPassed!==true){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=false;
+              item.robloxRegressionPassed=false;
+              item.robloxCloudImageEvidence=engineProbe?.imageEvidence||null;
+              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED';
+              item.routingBlockers=['roblox-cloud-image-content-unverified'];
+              item.updatedAt=stamp;changed=true;pending++;
+              console.log('ROBLOX_CLOUD_IMAGE_RETRY_REQUIRED='+item.gameId);
+              continue;
             }
 
             const result=validateRobloxRuntimeFoundationEvidence({
