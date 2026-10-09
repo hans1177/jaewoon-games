@@ -21,7 +21,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/amusement-tycoon",
+        "sourcePath": "unity-games/amusement-tycoon",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -81,7 +81,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/bug-defense",
+        "sourcePath": "unity-games/bug-defense",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -184,8 +184,8 @@
     },
     {
       "gameId": "horror-escape-room",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -206,9 +206,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -229,7 +233,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
     },
     {
       "gameId": "line-defense",
@@ -239,7 +243,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/line-defense",
+        "sourcePath": "unity-games/line-defense",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -294,7 +298,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/village-dungeons",
+        "sourcePath": "unity-games/village-dungeons",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -343,8 +347,8 @@
     },
     {
       "gameId": "cozy-island",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PROJECT_PHASE": "RELEASE_PROMOTION",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
@@ -365,9 +369,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -388,7 +396,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PROMOTE_EXACT_VERIFIED_RELEASE"
     },
     {
       "gameId": "fantasy-survival",
@@ -449,7 +457,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/monster-adventure",
+        "sourcePath": "unity-games/monster-adventure",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -739,7 +747,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/seed-single-defense-strat-celestial-bastion",
+        "sourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -853,7 +861,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/survival",
+        "sourcePath": "unity-games/survival",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
