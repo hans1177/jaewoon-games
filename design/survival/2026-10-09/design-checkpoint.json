@@ -19,25 +19,40 @@
     "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:identity,playerFantasy": {
       "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "나의 생존기는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다. 이 과정에서는 성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다."
+    },
+    "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:coreFun": {
+      "coreFun": "플레이어는 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다. 이 과정에서는 성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다."
+    },
+    "local_authoring_parts::5635cf3c492e5d3d5487a48e87a883fa3e983a544128859890a8870b787cc5b8:identity,playerFantasy,coreFun": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "나의 생존기는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다. 이 과정에서는 성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다.",
+      "coreFun": "플레이어는 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다. 이 과정에서는 성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다."
+    },
+    "local_authoring_parts::c24504f7eb9f7185c8de754abf02c8c3408f130d22571741f339246a01d81e53:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어가 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다.",
+        "성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 75561,
-      "lastMs": 13263,
+      "totalMs": 102325,
+      "lastMs": 15673,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:53:27.594Z"
+      "updatedAt": "2026-10-09T14:53:54.364Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:52:12.002Z",
-  "updatedAt": "2026-10-09T14:53:27.596Z",
+  "updatedAt": "2026-10-09T14:53:54.364Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1747,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:53:27.596Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:53:54.364Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
