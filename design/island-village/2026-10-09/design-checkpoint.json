@@ -497,25 +497,28 @@
       "toSystem": "ISLAND_RESOURCE_MANAGER_B",
       "trigger": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행 시, 자원의 효율적 관리와 지역 개발 우선순위를 결정하여 상태 변화가 발생합니다.",
       "stateChange": "자원 수집 후, 주민 선택 및 지역 확장 전략 실행 시, 자원의 효율적 관리와 지역 개발 우선순위를 결정하여 상태 변화가 발생합니다."
+    },
+    "local_authoring_parts::20415d61bff8b9c262413f664cafde59cf921dac68d5870cee5509f8315ea11f:fromId": {
+      "fromId": "GATHER_RESOURCES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2320511,
-      "lastMs": 94325,
+      "totalMs": 2410624,
+      "lastMs": 90113,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:29:30.352Z"
+      "updatedAt": "2026-10-09T12:31:00.468Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:29:30.354Z",
+  "updatedAt": "2026-10-09T12:31:00.468Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3038,7 +3041,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:29:30.354Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:31:00.468Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
