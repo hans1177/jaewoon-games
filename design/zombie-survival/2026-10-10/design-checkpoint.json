@@ -583,21 +583,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 17,
+      "calls": 19,
+      "successes": 18,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2036126,
-      "lastMs": 24880,
+      "totalMs": 2064821,
+      "lastMs": 28695,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:58:07.133Z"
+      "updatedAt": "2026-10-09T22:58:35.829Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T22:58:07.133Z",
+  "updatedAt": "2026-10-09T22:58:35.830Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2336,10 +2336,27 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "signatureSystems_0"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "signatureSystems_0"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3
+    "designer_draft_slices::identity-core": 3,
+    "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:1": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2440,10 +2457,10 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:58:07.133Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T22:58:35.829Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
