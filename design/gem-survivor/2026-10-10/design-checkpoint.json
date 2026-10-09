@@ -440,25 +440,117 @@
         "delveGrowthRule": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다. 이는 보석 생존전의 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임의 특징이다.",
         "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한 고유한 식별자."
       }
+    },
+    "local_authoring_parts::69d2f7a48bf76da14e13c8f875083ffc9887d0932eda7acdf9554d9c95adfdfa:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다. 이는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미 확보 및 시스템 연결 강화에 기반하며, 플레이어 선택에 따른 상태 변화와 보상 제공을 포함한다.",
+      "coreFun": "진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화, 양방향 실제 상태 교환 발생, 실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와 RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간 유사성, 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의"
+    },
+    "local_authoring_parts::0b7404fcf36c929701f798a40d364429ed9697c30722ed763330255464f75eb2:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "보석 생존전은 플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임이다. 플레이어는 Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 주체로, 세계 상태와 다음 선택을 바꾼다. 대표 행동은 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.이며, 이 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용을 생성한다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임은 ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다.",
+      "creativeGrammar": {
+        "mainIdentity": "보석 생존전은 플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "materialDomain": "RPG,생존,액션,수집",
+          "stateChange": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "모바일에서도 즉시 이해되는 입력과 피드백",
+          "materialDomain": "실시간 진행 및 위험 조절",
+          "stateChange": "즉각적 보상 및 선택에 따른 상태 변화"
+        },
+        "abCausality": "양방향 실제 상태 교환은 진입 후 반복 선택과 보상 기반의 상호작용에서 일어난다.",
+        "abEvolution": {
+          "aChangesB": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+          "bChangesA": "즉각적 보상 및 선택에 따른 상태 변화로 인해 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+          "lateGameChange": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다."
+        },
+        "materialFusion": {
+          "contrast": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "causalBridge": "실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와, RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간의 유사성",
+          "removalConsequence": "기존의 주제/장르/시스템은 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 피하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+        },
+        "storyCausalChain": {
+          "cause": "플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임",
+          "characterConflict": "플레이어의 행동과 세계 상태 변화 사이의 갈등",
+          "playerChoice": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+          "worldChange": "실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+          "nextEvent": "플레이어의 선택이 다음 사건에 영향을 미치며, 이는 주제/장르/시스템의 인과적 연결을 강화하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+        },
+        "cThemes": [
+          {
+            "name": "보석 생존전",
+            "kind": "GENRE",
+            "gameplayEffect": "ACTION_SURVIVAL_ROGUELITE"
+          },
+          {
+            "name": "실시간 진행 및 위험 조절",
+            "kind": "MATERIAL",
+            "gameplayEffect": "진행·위험·보상 연결 루프 생성"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "핵심 재미 확보 및 시스템 연결 강화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "RPG",
+            "gameplayEffect": "플레이어 선택에 따른 상태 변화와 보상 제공"
+          }
+        ],
+        "cGenreInterlock": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생.",
+        "cWorldAndGameplayEffect": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+        "delveDiscoveries": [
+          {
+            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+            "discovery": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+            "newChoice": "진행·위험·보상 연결 루프 생성"
+          },
+          {
+            "clue": "ACTION_SURVIVAL_ROGUELITE의 핵심 재미 확보 및 시스템 연결 강화",
+            "discovery": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생.",
+            "newChoice": "즉각적 보상 및 선택에 따른 상태 변화"
+          },
+          {
+            "clue": "RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간 유사성",
+            "discovery": "실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와, RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간의 유사성.",
+            "newChoice": "진행·위험·보상 연결 루프 생성"
+          },
+          {
+            "clue": "기존 주제/장르/시스템은 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 피하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다.",
+            "discovery": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생.",
+            "newChoice": "즉각적 보상 및 선택에 따른 상태 변화"
+          }
+        ],
+        "delveGrowthRule": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다. 이는 보석 생존전의 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임의 특징이다.",
+        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한 고유한 식별자."
+      },
+      "playerFantasy": "플레이어는 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다. 이는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미 확보 및 시스템 연결 강화에 기반하며, 플레이어 선택에 따른 상태 변화와 보상 제공을 포함한다.",
+      "coreFun": "진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화, 양방향 실제 상태 교환 발생, 실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와 RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간 유사성, 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1393843,
-      "lastMs": 152860,
+      "totalMs": 1503440,
+      "lastMs": 109597,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:38:03.320Z"
+      "updatedAt": "2026-10-09T17:39:52.924Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:49.445Z",
-  "updatedAt": "2026-10-09T17:38:03.325Z",
+  "updatedAt": "2026-10-09T17:39:52.926Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2172,7 +2264,7 @@
     "69d2f7a48bf76da14e13c8f875083ffc9887d0932eda7acdf9554d9c95adfdfa": true,
     "70adc167046cdeb77006a3f5903f6e2d6469af161d45c65df1e002968984b5cd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:38:03.325Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:39:52.926Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
