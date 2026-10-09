@@ -194,25 +194,40 @@
         "State Change: Resource discovery → Risk evaluation → Shelter selection",
         "Reward: Improved cooperation leads to more efficient resource sharing and interdependent goal achievement."
       ]
+    },
+    "local_authoring_parts::6d92114ad0e5013e1a7499c3f14f543db45c9c95e42405f1b508478c4d142c0b:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resourceDiscovery",
+        "environmentalRiskEvaluation"
+      ],
+      "stateOutputs": [
+        "shelterSelection",
+        "groupCoordination"
+      ],
+      "name": "Forest Adaptation System",
+      "purpose": "Enables players to dynamically adjust their survival strategies based on environmental conditions and group dynamics.",
+      "playerChoice": "Prioritize resource acquisition, evaluate risk, and select shelter strategy in response to ecological changes and cooperative needs."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 750519,
-      "lastMs": 59071,
+      "totalMs": 820770,
+      "lastMs": 70251,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:06:24.616Z"
+      "updatedAt": "2026-10-09T21:07:34.869Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T21:06:24.616Z",
+  "updatedAt": "2026-10-09T21:07:34.869Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1936,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:06:24.616Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:07:34.869Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
