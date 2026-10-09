@@ -257,8 +257,12 @@ test('missing design is admitted as a brief without invented mechanics or gramma
     assert.equal(result.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
     const intake=fs.readFileSync('tools/company-all-games-design-reset.mjs','utf8');
     const body=intake.match(/function upgradeCanonicalNovelGrammarSeed\(seed,game,timestamp\)\{([\s\S]*?)\n\}/)[1];
-    const upgrade=new Function('seed','game','timestamp',body);
-    assert.equal(upgrade(result.seed,{},'now'),false,'brief must not reach automatic grammar generation');
+    // The isolated function's original caller supplies clean(); mirror that dependency in this test.
+    const upgrade=new Function('seed','game','timestamp','clean',body);
+    const clean=value=>String(value??'').trim();
+    assert.equal(upgrade(result.seed,{},'now',clean),false,'brief must not reach automatic grammar generation');
+    assert.equal(upgrade({...result.seed,designInputMode:'DESIGNER_SELF_SEED'}, {},'now',clean),false,
+      'designer-authored game intake must not be replaced by synthetic grammar');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
