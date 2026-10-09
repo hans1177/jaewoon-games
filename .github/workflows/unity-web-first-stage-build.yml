@@ -361,6 +361,50 @@ jobs:
           mkdir -p "$out"
           cp -R "$src"/. "$out"/
 
+          # 실제 Unity WebGL 페이지 안의 모바일 화면 점유·전체화면 제어
+          python3 - "$out/index.html" <<'PY'
+          import pathlib, re, sys
+          entry=pathlib.Path(sys.argv[1])
+          html=entry.read_text(encoding='utf-8')
+          if 'createUnityInstance' not in html:
+              raise SystemExit('Unity WebGL runtime entry missing')
+          viewport='<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">'
+          vp=r'<meta[^>]*name\s*=\s*["\x27]viewport["\x27][^>]*>'
+          if re.search(vp,html,re.I):
+              html=re.sub(vp,lambda match:viewport,html,count=1,flags=re.I)
+          else:
+              html=html.replace('</head>',viewport+'\n</head>',1)
+          style="""<style id="jaewoon-unity-web-screen">
+          html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none}
+          #unity-container{width:100%!important;height:100%!important;min-height:100dvh;position:fixed!important;inset:0!important}
+          #unity-canvas{width:100%!important;height:100%!important;display:block;touch-action:none}
+          #jaewoon-fullscreen{position:fixed;z-index:2147483000;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));padding:10px 14px;background:#182438de;color:#fff;border:1px solid #ffffff66;border-radius:10px;font:600 14px sans-serif;touch-action:manipulation;cursor:pointer}
+          </style>"""
+          control="""<button id="jaewoon-fullscreen" type="button" aria-label="전체화면 전환">전체화면</button>
+          <script>
+          (()=>{const button=document.getElementById('jaewoon-fullscreen');
+            button.addEventListener('pointerdown',event=>event.stopPropagation());
+            button.addEventListener('click',event=>{
+              event.stopPropagation();
+              if(document.fullscreenElement){document.exitFullscreen?.();return;}
+              const root=document.documentElement;
+              const enter=root.requestFullscreen||root.webkitRequestFullscreen;
+              if(!enter)return;
+              try{const result=enter.call(root);if(result?.catch)result.catch(()=>{});}catch{}
+            });
+            const update=()=>{button.textContent=document.fullscreenElement?'전체화면 종료':'전체화면';};
+            document.addEventListener('fullscreenchange',update);
+            document.addEventListener('webkitfullscreenchange',update);
+          })();
+          </script>"""
+          if '</head>' not in html or '</body>' not in html:
+              raise SystemExit('Unity WebGL entry HTML incomplete')
+          html=html.replace('</head>',style+'\n</head>',1)
+          html=html.replace('</body>',control+'\n</body>',1)
+          entry.write_text(html,encoding='utf-8')
+          print('UNITY_WEB_FULLSCREEN_BUTTON=READY')
+          PY
+
           # Cloudflare Pages serves each static asset only up to 25 MiB.
           # Fail before publication instead of exposing a homepage link to an undeployable bundle.
           python3 - "$out" "$GAME_ID" <<'PY'
@@ -675,7 +719,7 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
-        if: (steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)) || (steps.readiness.outputs.pass == 'false' && steps.request.outputs.game_id == 'daechung-rpg' && github.event_name == 'push')
+        if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -695,15 +739,9 @@ jobs:
             git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
           done
           candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
-          # Preserve the existing playable HTML archive while publishing the real Unity WebGL test.
+          # 동일 게임 주소에는 실제 Unity WebGL QA가 통과한 빌드만 게시한다.
           runtime_dir="web-games/$GAME_ID"
-          if [ "$GAME_ID" = "daechung-rpg" ]; then
-            runtime_dir="web-games/$GAME_ID/unity"
-          fi
-          if [ "$READINESS_PASS" != "true" ] && [ "$GAME_ID" != "daechung-rpg" ]; then
-            echo 'UNITY_WEB_UNVERIFIED_PUBLIC_TEST_SCOPE_INVALID' >&2
-            exit 1
-          fi
+          test "$READINESS_PASS" = "true"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -725,14 +763,10 @@ jobs:
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
           git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
-          if [ "$runtime_dir" = "web-games/$GAME_ID" ]; then
-            rm -rf "$runtime_dir"
-          else
-            test -s "web-games/$GAME_ID/index.html"
-            rm -rf "$runtime_dir"
-          fi
+          rm -rf "$runtime_dir"
           mkdir -p "$runtime_dir"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "$runtime_dir"/
+          test -s "$runtime_dir/index.html"
           test -d "$runtime_dir/Build"
           test -s "$runtime_dir/unity-web-deploy-manifest.json"
           test -s "$runtime_dir/unity-web-gameplay-validation.json"
@@ -769,7 +803,7 @@ jobs:
           git push --force-with-lease origin HEAD:"$branch"
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
             --title "build: publish $GAME_ID $publication_label" \
-            --body "Real Unity WebGL browser-test bundle from workflow run $GITHUB_RUN_ID. Game: $GAME_ID; runtime path: $runtime_dir; source: $SOURCE_COMMIT. Browser boot, real gameplay, browser touch, save/restore and independent QA/regression evidence are required. UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS. If false, this is a PLAYABLE_TEST_ONLY public test with QA REPAIR_REQUIRED (including performance when applicable), NOT a native release. Legacy web gameplay at /web-games/$GAME_ID/ is preserved for the Daechung RPG.")"
+            --body "Real Unity WebGL browser-test bundle from workflow run $GITHUB_RUN_ID. Game: $GAME_ID; runtime path: $runtime_dir; source: $SOURCE_COMMIT. Browser boot, real gameplay, browser touch, save/restore and independent QA/regression evidence are required. UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS. If false, this is a PLAYABLE_TEST_ONLY public test with QA REPAIR_REQUIRED (including performance when applicable), NOT a native release. Only verified Unity WebGL replaces the stable /web-games/$GAME_ID/ link; old source remains in Git history.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo "UNITY_WEB_REVIEWED_PROMOTION_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
