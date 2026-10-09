@@ -47,25 +47,38 @@
       "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "purpose": "Plays as the central action, initiating gameplay by setting up a structured challenge that players must solve through strategic choices.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (This is the core action: the player's primary choice in the game.)','input/selection -> state change -> reward/pain/next selection: INPUT/SELECT/OUTPUT/STATE'}"
+    },
+    "local_authoring_parts::78c683a33bc7d6ad91559f3ae6214ea309d2e9e60a842408fec964f8f527ab74:signatureSystems:1": {
+      "id": "CORE-02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "END_LEVEL_STATE"
+      ],
+      "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 340752,
-      "lastMs": 36986,
+      "totalMs": 369979,
+      "lastMs": 29227,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:54:43.838Z"
+      "updatedAt": "2026-10-09T08:55:13.067Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:49:03.059Z",
-  "updatedAt": "2026-10-09T08:54:43.838Z",
+  "updatedAt": "2026-10-09T08:55:13.067Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2115,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:54:43.838Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:55:13.067Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
