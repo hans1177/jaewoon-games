@@ -3858,5 +3858,6 @@ test('Roblox village-dungeons emits combat VFX only for server-authorized hits, 
   assert.match(remoteConsumer,/if eventName ~= "MULTIPLAYER_SYNC"/);
   assert.match(remoteConsumer,/participantCount = math.max\(1, math.floor\(tonumber\(snapshot.ParticipantCount\) or 1\)\)/);
   assert.doesNotMatch(remoteConsumer,/remote:FireServer\(/,'no new client damage or dodge authority');
-  assert.equal((server.match(/Instance\.new\("RemoteEvent"\)/g)||[]).length,1,'reuse existing authoritative RemoteEvent only');
+  assert.equal((server.match(/Instance\.new\("RemoteEvent"\)/g)||[]).length,2,
+    'reuse the original action and foundation RemoteEvents; do not create a new combat remote');
 });
