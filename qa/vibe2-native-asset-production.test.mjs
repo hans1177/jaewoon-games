@@ -3744,3 +3744,67 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('Unity 3D 마력숲은 기존 공격/피해 판정에서만 관절 모션과 타격 VFX를 실행하고 원본 규칙을 보존한다',()=>{
+  const root=path.resolve(import.meta.dirname,'..');
+  const source=fs.readFileSync(path.join(root,'unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+  const method=(first,last)=>{
+    const a=source.indexOf(first);
+    assert.ok(a>=0,first+' missing');
+    const b=source.indexOf(last,a+first.length);
+    assert.ok(b>a,last+' missing');
+    return source.slice(a,b);
+  };
+  const author=method('private static Animation AuthorCombatClips(','private void BuildCombatContactVfx()');
+  const hit=method('private void HurtMonster(','private void UpdateHomingSpells(');
+  const monster=method('private void UpdateMonsters(','private void HurtMonster(');
+  const attack=method('private void Attack()','private void Update()');
+  const death=method('private void PlayCombatDeathVisual(','private void FollowCamera(');
+  const contact=method('private void EmitConfirmedContact(','private void PlayCombatDeathVisual(');
+  assert.match(author,/new AnimationClip\{legacy=true,wrapMode=WrapMode.Once\}/);
+  assert.match(author,/animation\.AddClip\(attack,"attack"\)/);
+  assert.match(author,/animation\.AddClip\(hurt,"hurt"\)/);
+  assert.match(author,/animation\.AddClip\(death,"death"\)/);
+  assert.match(author,/animation\.AddClip\(dodge,"dodge"\)/);
+  assert.match(author,/SetCurve\(visualPart,typeof\(Transform\),"localPosition\./);
+  assert.doesNotMatch(author,/HumanoidRootPart|root\.transform\.position|AddComponent<Collider>|Physics\.|currentHp|attackCooldown|damage=/);
+  assert.match(source,/playerCombatAnimation=AuthorCombatClips\(character,"RightArm"\)/);
+  assert.match(source,/if\(actionPart!=null\)AuthorCombatClips\(root,actionPart\)/);
+  assert.match(source,/playerWeaponTrail=character\.transform\.Find\("RightArm"\)\.gameObject\.AddComponent<TrailRenderer>\(\)/);
+  assert.match(attack,/if\(playerCombatAnimation!=null\)playerCombatAnimation\.Play\("attack"\)/);
+  assert.match(attack,/if\(playerWeaponTrail!=null && weapon!=null\)/);
+  assert.ok(attack.indexOf('playerCombatAnimation.Play("attack")')<attack.indexOf('if(target==null)'),'miss swing exists, but no fake contact');
+  assert.match(attack,/if\(target==null\)\{info="공격 범위에 몬스터가 없어\.";return;\}/);
+  assert.match(attack,/HurtMonster\(target,damage\)/);
+  assert.match(source,/HurtMonster\(target,spell\.damage\)/);
+  assert.match(hit,/float previousHp=target\.hp;\s*target\.hp=Mathf\.Max\(0f,target\.hp-Mathf\.Max\(0f,damage\)\)/);
+  assert.match(hit,/if\(target\.hp<previousHp && target\.obj!=null\)/);
+  assert.ok(hit.indexOf('target.hp=Mathf.Max')<hit.indexOf('EmitConfirmedContact('),'VFX must follow actual authoritative HP decrease');
+  assert.match(hit,/if\(target\.hp<=0f\)PlayCombatDeathVisual\(target\.obj\)/);
+  assert.match(monster,/m\.nextAttack=Time\.time\+\(m\.ally\?2f:1f\)/);
+  assert.match(monster,/if\(opponent!=null\)HurtMonster\(opponent,m\.spec\.damage\)/);
+  assert.match(monster,/currentHp=Mathf\.Max\(0f,currentHp-m\.spec\.damage\)/);
+  assert.match(death,/collider\.enabled=false/);
+  assert.match(death,/Destroy\(collider\)/);
+  assert.match(death,/Destroy\(visual,\.35f\)/);
+  assert.match(contact,/combatContactParticles\.Emit\(emit,fatal\?10:5\)/);
+  assert.match(source,/main\.maxParticles=48/);
+  assert.doesNotMatch(source,/\.Play\("dodge"\)/,'no gameplay dodge contract; fake visual evasion is forbidden');
+  for(const invariant of [
+    'private const string SavePrefix = "fantasy_survival_webfloor_";',
+    'private const string CreativeSaveKey = SavePrefix + "creative_v1";',
+    'float cooldown=sand?1.1f:mummy?1.5f:orb? .9f:',
+    'id=="sunstone-dagger"? .35f:',
+    'int damage=weapon!=null?Mathf.Max(5,weapon.power):5;',
+    'if(m.hp<=0f||m.ally||m.obj==null)continue;',
+    'float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:',
+    'if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;',
+  ]) assert.ok(source.includes(invariant),'gameplay/save invariant changed: '+invariant);
+  const roblox=fs.readFileSync(path.join(root,'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'),'utf8');
+  assert.match(roblox,/PersistentUploadRequiredForProduction", true/);
+  assert.match(roblox,/RuntimeVerificationState", "PENDING_STUDIO"/);
+  const nativeClips=fs.readdirSync(path.join(root,'unity-games/fantasy-survival/Assets/Animations'))
+    .filter(name=>/\.(?:anim|fbx)$/i.test(name));
+  assert.equal(nativeClips.length,0,'this source-level test must not be mistaken for imported native rig/clip QA');
+});
