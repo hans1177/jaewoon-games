@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::1dc67e4681c665ff3b60b3b127da1f1d6ef1aaafdd33666cba2e99e1a939e424:identity": {
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다."
+    },
+    "local_authoring_parts::1dc67e4681c665ff3b60b3b127da1f1d6ef1aaafdd33666cba2e99e1a939e424:playerFantasy": {
+      "playerFantasy": "천상의 보루에서 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다."
+    },
+    "local_authoring_parts::84e0f18bb4f09c22cb13af6112bd67e8d74aee632b9daced36623a2744c68c94:identity,playerFantasy": {
+      "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다.",
+      "playerFantasy": "천상의 보루에서 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 144633,
-      "lastMs": 144633,
+      "totalMs": 174233,
+      "lastMs": 29600,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:04:52.399Z"
+      "updatedAt": "2026-10-09T09:05:22.000Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:02:27.675Z",
-  "updatedAt": "2026-10-09T09:04:52.399Z",
+  "updatedAt": "2026-10-09T09:05:22.001Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2225,7 +2232,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:04:52.399Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:05:22.001Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
