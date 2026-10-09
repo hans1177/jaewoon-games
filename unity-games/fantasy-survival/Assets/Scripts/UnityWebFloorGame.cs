@@ -545,30 +545,105 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     }
 
     // 메인 · 기존 몬스터 정보를 3D로 표현
+    // 그래픽 · 기존 몬스터 식별자를 유지하면서 동물·곤충·인형·정령마다 3D 실루엣을 다르게 구성한다.
     private Monster SpawnMonster(Species spec, Vector3 position, bool isOwned)
     {
-        if (spec == null || monsters.Count >= 150) return null;
-        Monster m = new Monster { runtimeId = nextId++, spec = spec, hp = Mathf.Max(1,spec.hp), creative = isOwned, attackPlayer = false };
-        GameObject root = new GameObject("Monster_" + spec.id);
+        if(spec==null || monsters.Count>=150)return null;
+        Monster monster=new Monster{runtimeId=nextId++,spec=spec,hp=Mathf.Max(1,spec.hp),creative=isOwned,attackPlayer=false};
+        GameObject root=new GameObject("Monster_"+spec.id);
         root.transform.SetParent(worldRoot.transform);
-        root.transform.position = new Vector3(Mathf.Clamp(position.x,-38f,38f),0,Mathf.Clamp(position.z,-38f,38f));
-        int silhouette = Mathf.Abs(spec.id.GetHashCode()) % 5;
-        Color tone = Color.HSVToRGB((Mathf.Abs(spec.id.GetHashCode() % 1000))/1000f,.45f,.75f);
-        PrimitiveType bodyShape = silhouette==0?PrimitiveType.Capsule:silhouette==1?PrimitiveType.Cube:silhouette==2?PrimitiveType.Cylinder:PrimitiveType.Sphere;
-        float size = Mathf.Clamp(Mathf.Sqrt(spec.hp)/10f,.6f,2.6f);
-        GameObject body = CreatePart(root.transform,bodyShape,"Body",new Vector3(0,size*.55f,0),new Vector3(size,Mathf.Max(.55f,size),size*.9f),tone,true);
-        monsterColliders[body.GetComponent<Collider>()] = m;
-        if (silhouette == 3 || silhouette == 4)
+        root.transform.position=new Vector3(Mathf.Clamp(position.x,-38f,38f),0f,Mathf.Clamp(position.z,-38f,38f));
+        string name=spec.id.ToLowerInvariant();
+        bool spider=name.Contains("spider"),scorpion=name.Contains("scorpion"),insect=spider||scorpion||name.Contains("mantis")||name.Contains("bee");
+        bool serpent=name.Contains("snake")||name.Contains("anaconda")||name.Contains("leech");
+        bool fish=name.Contains("fish")||name.Contains("shark")||name.Contains("squid")||name.Contains("angler");
+        bool bird=name.Contains("bird")||name.Contains("pheasant")||name.Contains("heron");
+        bool fourLeg=name.Contains("wolf")||name.Contains("hound")||name.Contains("fox")||name.Contains("bear")||name.Contains("boar")||name.Contains("stag")||name.Contains("deer")||name.Contains("goat")||name.Contains("ibex")||name.Contains("tiger")||name.Contains("croc")||name.Contains("buffalo")||name.Contains("hare");
+        bool humanoid=name.Contains("goblin")||name.Contains("primitive")||name.Contains("mummy")||name.Contains("gorilla")||name.Contains("yeti");
+        bool spirit=name.Contains("spirit")||name.Contains("golem")||name.Contains("guardian")||name.Contains("sovereign");
+        bool plant=name.Contains("spore")||name.Contains("mushroom")||name.Contains("mycelium");
+        bool flying=name.Contains("bat")||name.Contains("fairy")||bird||name.Contains("bee");
+        uint hash=2166136261u;
+        unchecked{foreach(char ch in name){hash^=ch;hash*=16777619u;}}
+        Color baseColor=Color.HSVToRGB((hash%360u)/360f,.36f,.72f);
+        if(name.Contains("crystal"))baseColor=new Color(.50f,.45f,.83f);
+        else if(name.Contains("fire")||name.Contains("lava"))baseColor=new Color(.83f,.33f,.22f);
+        else if(name.Contains("snow")||name.Contains("frost")||name.Contains("ice")||name.Contains("polar"))baseColor=new Color(.77f,.87f,.96f);
+        else if(name.Contains("swamp")||name.Contains("toxic"))baseColor=new Color(.32f,.57f,.38f);
+        else if(name.Contains("shadow"))baseColor=new Color(.27f,.31f,.43f);
+        else if(name.Contains("sand")||name.Contains("desert")||name.Contains("mummy"))baseColor=new Color(.70f,.52f,.30f);
+        float scale=Mathf.Clamp(Mathf.Sqrt(Mathf.Max(1f,spec.hp))/12f,.65f,2.65f);
+        if(spec.mood=="harmless")scale=Mathf.Min(scale,1.35f);
+        PrimitiveType shape=(humanoid||spirit)?PrimitiveType.Capsule:(plant?PrimitiveType.Cylinder:PrimitiveType.Sphere);
+        if(insect)shape=PrimitiveType.Capsule;
+        GameObject body=CreatePart(root.transform,shape,"Body",new Vector3(0f,scale*.70f,0f),
+            new Vector3(scale*(serpent?1.65f:fish?1.55f:fourLeg?1.3f:.95f),scale*(serpent?.37f:fourLeg?.72f:1.25f),scale*(serpent?.53f:1f)),baseColor,true);
+        Collider hitbox=body.GetComponent<Collider>();
+        if(hitbox!=null)monsterColliders[hitbox]=monster;
+        if(fourLeg || insect)
         {
-            CreatePart(root.transform,PrimitiveType.Cube,"Crest",new Vector3(0,size*1.12f,0),new Vector3(size*.3f,size*.4f,size*.9f),tone*.75f,false);
+            for(int side=-1;side<=1;side+=2)
+            for(int row=0;row<2;row++)
+            {
+                GameObject leg=CreatePart(root.transform,PrimitiveType.Capsule,"Leg_"+side+"_"+row,
+                    new Vector3(side*scale*.39f,scale*.26f,(row==0?-.30f:.31f)*scale),
+                    new Vector3(scale*.16f,scale*.52f,scale*.16f),baseColor*.78f,false);
+                if(insect)leg.transform.localRotation=Quaternion.Euler(0f,0f,side*27f);
+            }
+            if(insect)
+            {
+                CreatePart(root.transform,PrimitiveType.Sphere,"Antennae",new Vector3(0f,scale*1.33f,scale*.20f),
+                    new Vector3(scale*.42f,scale*.18f,scale*.24f),baseColor*1.12f,false);
+                if(scorpion)CreatePart(root.transform,PrimitiveType.Capsule,"Stinger",
+                    new Vector3(0f,scale*1.02f,-scale*.76f),new Vector3(scale*.17f,scale*.85f,scale*.18f),baseColor*.68f,false);
+            }
         }
-        else if (silhouette == 1 || silhouette == 2)
+        else if(humanoid)
         {
-            CreatePart(root.transform,PrimitiveType.Sphere,"Head",new Vector3(0,size*1.1f,size*.38f),Vector3.one*size*.55f,tone*.9f,false);
+            CreatePart(root.transform,PrimitiveType.Sphere,"Head",new Vector3(0f,scale*1.67f,scale*.06f),
+                Vector3.one*scale*.57f,baseColor*1.12f,false);
+            for(int side=-1;side<=1;side+=2)
+                CreatePart(root.transform,PrimitiveType.Capsule,"Arm_"+side,new Vector3(side*scale*.65f,scale*.83f,0f),
+                    new Vector3(scale*.26f,scale*.90f,scale*.28f),baseColor*.78f,false);
         }
-        m.obj=root;
-        monsters.Add(m);
-        return m;
+        else if(spirit || plant)
+        {
+            CreatePart(root.transform,PrimitiveType.Sphere,plant?"SporeCrown":"Core",
+                new Vector3(0f,scale*1.63f,0f),new Vector3(scale*1.30f,scale*.60f,scale*1.05f),
+                plant?new Color(.52f,.31f,.61f):baseColor*1.20f,false);
+        }
+        else if(serpent || fish)
+        {
+            CreatePart(root.transform,PrimitiveType.Capsule,"Tail",new Vector3(0f,scale*.54f,-scale*.84f),
+                new Vector3(scale*.25f,scale*.28f,scale*.83f),baseColor*.73f,false);
+            CreatePart(root.transform,PrimitiveType.Sphere,"Face",new Vector3(0f,scale*.78f,scale*.73f),
+                Vector3.one*scale*.54f,baseColor*1.13f,false);
+        }
+        if(flying)
+        {
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject wing=CreatePart(root.transform,PrimitiveType.Cube,"Wing_"+side,
+                    new Vector3(side*scale*.78f,scale*1.01f,0f),new Vector3(scale*1.26f,scale*.10f,scale*.49f),
+                    baseColor*1.17f,false);
+                wing.transform.localRotation=Quaternion.Euler(0f,0f,side*15f);
+            }
+        }
+        if(fourLeg)
+        {
+            CreatePart(root.transform,PrimitiveType.Sphere,"Snout",
+                new Vector3(0f,scale*.93f,scale*.65f),new Vector3(scale*.55f,scale*.34f,scale*.37f),
+                baseColor*1.12f,false);
+        }
+        if(spec.mood=="boss" || name.Contains("leader"))
+        {
+            CreatePart(root.transform,PrimitiveType.Cylinder,"Crown",
+                new Vector3(0f,scale*1.82f,0f),new Vector3(scale*.43f,scale*.15f,scale*.43f),
+                new Color(.89f,.67f,.22f),false);
+        }
+        monster.obj=root;
+        monsters.Add(monster);
+        return monster;
     }
 
     private SpawnBlock PlaceBlock(Vector3 at)
