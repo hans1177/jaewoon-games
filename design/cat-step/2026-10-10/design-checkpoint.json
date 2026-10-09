@@ -539,25 +539,41 @@
         "플레이어가 특정 조건을 만족하여 보드 게임 기반의 선택을 하게 되고, 이 선택은 전략적 상호작용으로 변환됨",
         "중후반 두 시스템 간 실제 상태 교환이 실제로 일어나며, 이는 플레이어의 선택에 따라 세계가 변화하는 과정이다"
       ]
+    },
+    "local_authoring_parts::b7ae41b411e3c36cd4965da83dede93b3125b616c69da635a26831db60e804a1:signatureSystems:0": {
+      "id": "coreLoop_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력",
+        "선택",
+        "상태 변화",
+        "보상/위험"
+      ],
+      "stateOutputs": [
+        " 다음 선택"
+      ],
+      "name": "단계별 목표 해결 루프",
+      "purpose": "플레이어가 특정 조건을 만족하여 보드 게임 기반의 선택을 하게 되고, 이 선택은 전략적 상호작용으로 변환됨",
+      "playerChoice": "플레이어는 선택을 통해 세계를 변화시키고, 이는 주요 행동, 대표 선택, 시그니처 세계 규칙과 직접적으로 연관되어야 합니다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1589548,
-      "lastMs": 93776,
+      "totalMs": 1668925,
+      "lastMs": 79377,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:27:57.765Z"
+      "updatedAt": "2026-10-09T20:29:17.145Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:01:27.854Z",
-  "updatedAt": "2026-10-09T20:27:57.767Z",
+  "updatedAt": "2026-10-09T20:29:17.145Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2161,8 +2177,8 @@
     "162bf8034b6d5f91d7ab9018c7feb60bc1bba4a0b287ab44d2fb152c5dcfdd70": true,
     "31b7e9783497ce37cfc0caa8eccb4ec3e083e6cbeddb0776d7322841b2c47af6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:27:57.765Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-09T20:29:17.145Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
