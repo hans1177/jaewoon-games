@@ -502,25 +502,34 @@
       "toSystem": "IDLE_GROWTH_RPG",
       "trigger": "IDLE_GROWTH_RESOURCE",
       "stateChange": "GROWTH_PROGRESS"
+    },
+    "local_authoring_parts::e2e6128d7c76dca98fa042e3d6b5caf0815901e9918a6c9ab32b4c84a246d05d:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "IDLE_GROWTH_RESOURCE",
+      "toId": "GROWTH_PROGRESS",
+      "stateKeys": [
+        "IDLE_GROWTH_RESOURCE",
+        "GROWTH_PROGRESS"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1645709,
-      "lastMs": 95294,
+      "totalMs": 1742498,
+      "lastMs": 96789,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:32:29.863Z"
+      "updatedAt": "2026-10-09T12:34:06.655Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:32:29.865Z",
+  "updatedAt": "2026-10-09T12:34:06.655Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2898,7 +2907,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:32:29.865Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:34:06.655Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
