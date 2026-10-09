@@ -64,9 +64,16 @@ const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
 const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
 const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
-// 기존 카탈로그가 식별한 단순 버튼 조작 시제품·비게임 화면만 홈페이지에서 제외한다.
-const isHomepageGame=row=>activeLifecycle(row)&&!['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE'].includes(String(sourcesOf(row).web?.state||row?.ownerWebSourceState||'').toUpperCase());
-const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
+// 웹 시제품 판정은 플레이 링크만 막는다. 정식 게임 ID와 개발 기록이 있으면 카드는 유지한다.
+const isHomepageGame=row=>{
+  if(!activeLifecycle(row))return false;
+  const webState=String(sourcesOf(row).web?.state||row?.ownerWebSourceState||'').toUpperCase();
+  if(webState==='NON_GAME_SURFACE')return false;
+  if(webState!=='WITHDRAWN_SIMPLE_PROTOTYPE')return true;
+  const sources=sourcesOf(row);
+  return lifecycleOf(row).ownerExistingGame===true||row?.ownerExistingGame===true
+    ||Boolean(sources.unity?.projectPath||sources.roblox?.projectPath);
+};const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
 const catalogOrderOf=row=>{const raw=canonicalOf(row).catalogOrder??row?.catalogOrder;const n=Number(raw);return Number.isFinite(n)&&n>0?n:Number.MAX_SAFE_INTEGER;};
