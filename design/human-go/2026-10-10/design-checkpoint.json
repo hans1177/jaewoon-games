@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 단순히 탐험하는 것이 아니라, 사회적 관계와 환경의 복잡성에 맞서 싸우며 진입할 수 있는 공간에서 자신의 목적과 선택을 숙련하며 살아간다. 그는 주변의 인물들과 갈등을 해결하면서도, 자신이 가지고 있는 능력과 자원을 효과적으로 활용해 새로운 기회를 창출해야 한다.",
       "coreFun": "플레이어는 처음에는 한 좌석이나 작은 활동 영역 내에서 특정한 목표를 설정하고, 이를 위해 다양한 선택을 하여 결과가 나타나는 과정을 경험하게 된다. 이 과정에서는 플레이어의 행동이 상태 변화로 전환되면서, 새로운 경로와 대응 방식을 개척하고, 게임의 전체적인 구조와 동기 부여를 형성한다."
+    },
+    "local_authoring_parts::07cc0d0f80efdb42b484cebd0ab0505aac1db7f93119dc6494dc11f6d20f9ac9:coreLoop": {
+      "coreLoop": [
+        "Input/Choice → State Change → Reward/Risk/Next Choice",
+        "Initial Exploration → Social Engagement → Environmental Influence",
+        "Simple Discovery → Dynamic Interaction → Complex Adaptation"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 545040,
-      "lastMs": 76638,
+      "totalMs": 611833,
+      "lastMs": 66793,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:30:37.903Z"
+      "updatedAt": "2026-10-09T20:31:44.699Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T20:30:37.905Z",
+  "updatedAt": "2026-10-09T20:31:44.699Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1722,7 +1729,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:30:37.905Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:31:44.699Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
