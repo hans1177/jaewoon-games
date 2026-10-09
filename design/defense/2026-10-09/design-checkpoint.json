@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::2bd7d58fcc7c4348a3caec070c29c8ed5042dd1013f6183fbd566921fe63b6fd:identity": {
       "identity": "숲길 디펜스는 플레이어가 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택하여 공격자를 막아내는 단일 전략 게임이다. 이 게임에서는 주체인 플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'라는 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다."
+    },
+    "local_authoring_parts::2bd7d58fcc7c4348a3caec070c29c8ed5042dd1013f6183fbd566921fe63b6fd:playerFantasy": {
+      "playerFantasy": "플레이어는 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택해 공격자를 막아내는 단일 전략 게임에서 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다."
+    },
+    "local_authoring_parts::11f123c3cd8ed0a9062ae364f70a8c5cf1de38e13b9d628a0a57411aecbda756:identity,playerFantasy": {
+      "identity": "숲길 디펜스는 플레이어가 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택하여 공격자를 막아내는 단일 전략 게임이다. 이 게임에서는 주체인 플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'라는 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다.",
+      "playerFantasy": "플레이어는 매 wave에 맞서 팀원들과 함께 타워를 설치하거나 방어 위치를 선택해 공격자를 막아내는 단일 전략 게임에서 중심 행동을 수행하며, 이 과정에서 승리로 인해 자원을 수집하여 다음 선택을 변경할 수 있다. 이러한 선택은 월드 상태와 관계 규칙에 따라 계속적으로 변형되어 진입 및 재방문의 루프를 형성한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 171528,
-      "lastMs": 171528,
+      "totalMs": 216383,
+      "lastMs": 44855,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:24:30.884Z"
+      "updatedAt": "2026-10-09T12:25:15.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:21:39.332Z",
-  "updatedAt": "2026-10-09T12:24:30.884Z",
+  "updatedAt": "2026-10-09T12:25:15.743Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2225,7 +2232,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:24:30.884Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:25:15.743Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
