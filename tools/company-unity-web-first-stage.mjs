@@ -65,7 +65,9 @@ if(scriptFiles.length===0)throw new Error('UNITY_WEB_CSHARP_SOURCE_REQUIRED');
 // UI 이미지와 텍스처는 3D 게임 화면을 대체하지 않는 한 계속 재사용할 수 있다.
 const forbidden2dComponents=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|Tilemap|TilemapRenderer|TilemapCollider2D|SpriteShapeRenderer)\b/u;
 for(const file of scriptFiles){
-  const gameplaySource=fs.readFileSync(file,'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,'');
+  // 문자열(URL 포함)과 주석을 식별자 검사에서 제외하되, 실제 C# 컴포넌트 선언은 검사한다.
+  const gameplaySource=fs.readFileSync(file,'utf8')
+    .replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
   if(forbidden2dComponents.test(gameplaySource))
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
 }
