@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::5e0d67854d58bae85200ecdfaac2ff17693288323de13197ff47092cb41624dd:identity": {
       "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::5e0d67854d58bae85200ecdfaac2ff17693288323de13197ff47092cb41624dd:playerFantasy": {
+      "playerFantasy": "알 도둑 대작전에서 플레이어는 Scout a small area and identify the target egg and patrol risk.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::6e597593cd267ae70eada5bec38c219838c4fc2b21a231eec4474ea2feb8690c:identity,playerFantasy": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "playerFantasy": "알 도둑 대작전에서 플레이어는 Scout a small area and identify the target egg and patrol risk.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 222222,
-      "lastMs": 222222,
+      "totalMs": 249923,
+      "lastMs": 27701,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:20:46.512Z"
+      "updatedAt": "2026-10-09T08:21:14.214Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:04.269Z",
-  "updatedAt": "2026-10-09T08:20:46.512Z",
+  "updatedAt": "2026-10-09T08:21:14.216Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1892,7 +1899,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:20:46.512Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:21:14.216Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
