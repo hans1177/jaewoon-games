@@ -104,25 +104,40 @@
         "입력: 전투 주제 변경 → 상태변화: 방어 행동 반복 및 결과 변동 → 보상: 새로운 전투 장면 경험 및 방어 효과 재설계",
         "입력: 배치 위치 및 전투 주제의 관계 변화 → 상태변化: 방어 성능 재설계 → 보상: 실제 세계 상태 변화와 다음 선택 유도"
       ]
+    },
+    "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "배치 위치 선택",
+        "전투 주제 변경"
+      ],
+      "stateOutputs": [
+        "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+        "전투 장면 경험 및 방어 효과 재설계"
+      ],
+      "name": "레이아웃 기반 플래그십",
+      "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템 구축",
+      "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과 재설계 및 실제 세계 상태 변화 유도"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 267911,
-      "lastMs": 42463,
+      "totalMs": 308330,
+      "lastMs": 40419,
       "lastError": null,
-      "updatedAt": "2026-10-09T19:42:43.818Z"
+      "updatedAt": "2026-10-09T19:43:24.239Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-09T19:42:43.818Z",
+  "updatedAt": "2026-10-09T19:43:24.239Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1824,7 +1839,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T19:42:43.818Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:43:24.239Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
