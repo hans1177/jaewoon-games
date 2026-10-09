@@ -95,25 +95,117 @@
         "delveGrowthRule": "each discovery adds a new layer of strategic complexity",
         "finalGameIdentity": "a layered system where each choice affects both immediate combat outcomes and long-term strategic development"
       }
+    },
+    "local_authoring_parts::d6fb53f4630387d6fe0034451232f24cf3dcc64ed771dd2502f7173fe1b544c2:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 매 단계에서 전략적 자원 배분을 결정하며, 즉각적인 이익과 장기적 안정 사이에 균형을 맞추어야 한다. 이 선택은 팀 내 갈등 관리, 적대적 전투 기술 발전, 그리고 새로운 방어 메커니즘 도입 등 다양한 영역에서 영향을 미친다.",
+      "coreFun": "매 차례의 자원 확보는 방어 전략의 변화를 유도하며, 이를 통해 플레이어는 미래의 방어 능력을 최대화할 수 있다. 이러한 과정은 자원 손실, 전략적 재조정, 및 새로운 방어 전술의 도입을 포함하여 게임 전체의 동작을 형성한다."
+    },
+    "local_authoring_parts::c022fd57c922a24180bca8471f55771566cedc7a4ce102b309aa4472930f12bc:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "킹샷 광고풍의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "resource management + strategic placement",
+          "material": "enemy defeat resources",
+          "materialDomain": "economic system",
+          "stateChange": "resources increase -> defense strategy change"
+        },
+        "b": {
+          "system": "adaptive defense mechanics",
+          "material": "enemy type/weapon composition",
+          "materialDomain": "combat dynamics",
+          "stateChange": "defense strategy adapts to new threat"
+        },
+        "abCausality": "resources → defense strategy → combat outcome",
+        "abEvolution": {
+          "aChangesB": "increase resource cost for better defense",
+          "bChangesA": "add adaptive counterplay based on enemy type",
+          "lateGameChange": "defensive strategy becomes a dynamic game of survival and innovation"
+        },
+        "materialFusion": {
+          "contrast": "original vs. evolved defensive tactics",
+          "causalBridge": "resource allocation determines both offensive and defensive strategies",
+          "removalConsequence": "original battle outcomes become conditional based on resource availability"
+        },
+        "storyCausalChain": {
+          "cause": "player choice of resource allocation",
+          "characterConflict": "balance between immediate gain and long-term strategy",
+          "playerChoice": "choose resource investment that maximizes future defensive effectiveness",
+          "worldChange": "battle results depend on player's strategic decision-making",
+          "nextEvent": "new defensive tactic is introduced based on current resources"
+        },
+        "cThemes": [
+          {
+            "name": "Survival Strategy",
+            "kind": "MATERIAL",
+            "gameplayEffect": "dynamic resource management system"
+          },
+          {
+            "name": "Adaptive Combat",
+            "kind": "MATERIAL",
+            "gameplayEffect": "real-time tactical adjustments"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Strategic Defense System",
+            "gameplayEffect": "core gameplay loop"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Dynamic Resource Allocation",
+            "gameplayEffect": "conditional combat outcome"
+          }
+        ],
+        "cGenreInterlock": "strategic defense → adaptive combat → dynamic resource allocation",
+        "cWorldAndGameplayEffect": "combat outcome depends on resource allocation decisions",
+        "delveDiscoveries": [
+          {
+            "clue": "resource cost determines both offensive and defensive strategies",
+            "discovery": "player must balance short-term gains with long-term sustainability",
+            "newChoice": "invest in a new defensive tactic that balances immediate gain and future stability"
+          },
+          {
+            "clue": "adaptive combat becomes a game of survival and innovation",
+            "discovery": "defensive strategy evolves into a dynamic process of adaptation",
+            "newChoice": "develop a new defensive mechanism based on current resources"
+          },
+          {
+            "clue": "battle results depend on strategic decision-making",
+            "discovery": "player's choices shape the course of battle",
+            "newChoice": "choose a new defensive tactic that maximizes future effectiveness"
+          },
+          {
+            "clue": "dynamic resource allocation introduces new gameplay elements",
+            "discovery": "resources become conditional factors in combat outcomes",
+            "newChoice": "adjust resource investment to optimize future defensive capabilities"
+          }
+        ],
+        "delveGrowthRule": "each discovery adds a new layer of strategic complexity",
+        "finalGameIdentity": "a layered system where each choice affects both immediate combat outcomes and long-term strategic development"
+      },
+      "playerFantasy": "플레이어는 매 단계에서 전략적 자원 배분을 결정하며, 즉각적인 이익과 장기적 안정 사이에 균형을 맞추어야 한다. 이 선택은 팀 내 갈등 관리, 적대적 전투 기술 발전, 그리고 새로운 방어 메커니즘 도입 등 다양한 영역에서 영향을 미친다.",
+      "coreFun": "매 차례의 자원 확보는 방어 전략의 변화를 유도하며, 이를 통해 플레이어는 미래의 방어 능력을 최대화할 수 있다. 이러한 과정은 자원 손실, 전략적 재조정, 및 새로운 방어 전술의 도입을 포함하여 게임 전체의 동작을 형성한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 582125,
-      "lastMs": 282068,
+      "totalMs": 765279,
+      "lastMs": 183154,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:44:14.078Z"
+      "updatedAt": "2026-10-09T18:47:17.233Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:34:31.815Z",
-  "updatedAt": "2026-10-09T18:44:14.078Z",
+  "updatedAt": "2026-10-09T18:47:17.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1822,7 +1914,7 @@
   "localAuthoringSplits": {
     "d6fb53f4630387d6fe0034451232f24cf3dcc64ed771dd2502f7173fe1b544c2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:44:14.078Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:47:17.235Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
