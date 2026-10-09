@@ -43,7 +43,7 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
       version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
       unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
       criteria:{
-        design:{pass:true},code:{pass:true},graphics:{pass:true},webglBuild:{pass:true},
+        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
       }
     });
