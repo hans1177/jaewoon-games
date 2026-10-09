@@ -536,7 +536,7 @@ export function extractDesignContext(record={}){
     name:clean(system?.name),
     purpose:clean(system?.purpose),
     playerChoice:clean(system?.playerChoice)
-  })).filter(x=>x.name||x.purpose||x.playerChoice);
+  })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
     playerFantasy:clean(d?.playerFantasy),
@@ -546,11 +546,11 @@ export function extractDesignContext(record={}){
     spatialLayout:asObject(d?.spatialLayout),
     spatialDimension:clean(d?.spatialLayout?.dimension||d?.spatialDimension),
     coreFun:clean(d?.coreFun),
-    coreLoop:uniq(d?.coreLoop),
+    coreLoop:uniq(d?.coreLoop).slice(0,10),
     signatureSystems:systems,
-    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({...row,fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem||row.fromId||row.toId),
+    systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({...row,fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem||row.fromId||row.toId).slice(0,24),
     progressionEconomyBalance:asObject(d?.progressionEconomyBalance),
-    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
     failureRetryRisk:asObject(d?.failureRetryRisk),
     platformFitPlan:asObject(d?.platformFitPlan),
     webCanonicalDesign:projection.webCanonicalDesign,
@@ -565,7 +565,7 @@ export function extractDesignContext(record={}){
     narrativeWorldRules:uniq(d?.narrativeDialoguePlan?.worldRules).slice(0,8),
     referenceCausalInspirations:(Array.isArray(d?.referenceHomagePlan?.inspirations)?d.referenceHomagePlan.inspirations:[]).map(row=>({titleOrTradition:clean(row?.titleOrTradition),rightsBasis:clean(row?.rightsBasis),borrowedTechnique:clean(row?.borrowedTechnique),transformation:clean(row?.transformation)})).slice(0,8),
     designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
-    implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]),
+    implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
     preservationContract:asObject(d?.preservationContract),
     progressionDirection:clean(d?.progressionDirection),
@@ -578,7 +578,7 @@ export function extractDesignContext(record={}){
 // 정적 이름 일치만으로 실제 구현·플랫폼 런타임 완료를 판정하지 않는다.
 function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false,
   previousDirective=null,previousEffectiveness={},depthInfo={},runtimeEvidence={},focus='',
-  platform='COMMON',gameId='',designFingerprint=''}={}){
+  platform='COMMON',gameId='',designFingerprint='',responsibleFiles=[]}={}){
   const items=[],seen=new Set();
   const preservationOnly=clean(design?.preservationContract?.mode).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   const anchors=Array.isArray(source?.sourceAnchors)?source.sourceAnchors:[];
@@ -722,13 +722,17 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false,
   const previousDeferredRef=clean(oldVolume?.deferredItem?.ref);
   // 설계가 변경됐을 때 과거 항목의 검증 상태를 신설 항목으로 넘기지 않는다.
   const sameDesign=Boolean(previousDirective&&clean(designFingerprint)
-    &&clean(previousDirective.designFingerprint)===clean(designFingerprint));
+    &&clean(oldVolume.authoredDesignFingerprint)===clean(designFingerprint));
   const retainedRef=sameDesign?(previousActiveRef||previousDeferredRef):'';
   const retainedIndex=orderedItems.findIndex(row=>row.ref===retainedRef);
   const evidence=runtimeEvidence?.contentUnitVerification||{};
   const exactSourceFile=posix(evidence.sourceFile);
-  const observedFiles=uniq([...(source?.topFiles||[]).map(row=>row.file)]);
-  const matchedOwner=Boolean(exactSourceFile&&observedFiles.includes(exactSourceFile));
+  const observedFiles=uniq([...(source?.topFiles||[]).map(row=>row.file)]).map(posix);
+  const allowedFiles=uniq(responsibleFiles).map(posix);
+  const selectedOwner=orderedItems[retainedIndex];
+  const matchedOwner=Boolean(exactSourceFile&&observedFiles.includes(exactSourceFile)
+    &&allowedFiles.includes(exactSourceFile)
+    &&(!selectedOwner?.sourceCandidates?.length||selectedOwner.sourceCandidates.some(row=>posix(row.file)===exactSourceFile)));
   // 파이프라인이 독립 QA 결과와 실행 아티팩트를 특정 설계 항목에 묶어 전달할 때만 다음 항목 선택.
   // 이것은 항목 선택 게이트이며 구현/런타임 PASS 기록기가 아니다.
   const exactPlayEvidence=Boolean(previousActiveRef&&sameDesign
@@ -737,7 +741,9 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false,
     &&clean(evidence.gameId)===clean(gameId)
     &&clean(evidence.platform).toUpperCase()===clean(platform).toUpperCase()
     &&clean(evidence.sourceTreeFingerprint)===clean(source?.sourceTreeFingerprint)
-    &&matchedOwner&&clean(evidence.runtimeRunId)&&clean(evidence.evidenceArtifactId)
+    &&matchedOwner&&/^[1-9]\d{4,}$/.test(clean(evidence.runtimeRunId))
+    &&/^sha256:[0-9a-f]{64}$/i.test(clean(evidence.evidenceArtifactId))
+    &&runtimeEvidence?.independentQaPassed===true&&runtimeEvidence?.regressionPassed===true
     &&evidence.sourceDeltaVerified===true
     &&evidence.nativeRuntimeObserved===true&&evidence.nativeRuntimePassed===true
     &&evidence.independentQaPassed===true&&evidence.playerActionStateResultPassed===true
@@ -762,6 +768,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false,
   return Object.freeze({
     version:1,selectionVersion:2,boundary:'EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY',
     sourceTreeFingerprint:clean(source?.sourceTreeFingerprint)||null,
+    authoredDesignFingerprint:clean(designFingerprint)||null,
     mode,activeItem,deferredItem,nextItemSelection,
     selectionRequiresExactPlayerEvidence:true,scopedAdvancementObserved:exactPlayEvidence,
     authoredItemCount:items.length,authoredCounts:Object.freeze(authoredCounts),
@@ -1945,7 +1952,7 @@ export function buildGameSpecificBuildUpDirective({
       contentExpansionPlan:Array.isArray(authoredDesign.contentExpansionPlan)?authoredDesign.contentExpansionPlan:design.contentExpansionPlan,
       implementationTraceability:Array.isArray(authoredDesign.implementationTraceability)?authoredDesign.implementationTraceability:design.implementationTraceability
     },source,safeDesignlessMode,previousDirective,previousEffectiveness,depthInfo,runtimeEvidence,
-    focus,platform,gameId:id,designFingerprint:sha(JSON.stringify(design))
+    focus,platform,gameId:id,designFingerprint:sha(JSON.stringify(authoredDesign)),responsibleFiles:topFiles
   });
   const robloxNativeExecution=Object.freeze({
     version:1,
