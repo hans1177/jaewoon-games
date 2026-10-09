@@ -681,25 +681,28 @@
     },
     "local_authoring_parts::988023ece098cc99b797485375d61efafc9362413558ce1f3965e6592d5aa186:toSystem": {
       "toSystem": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
+    },
+    "local_authoring_parts::988023ece098cc99b797485375d61efafc9362413558ce1f3965e6592d5aa186:trigger": {
+      "trigger": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 32,
+      "calls": 34,
+      "successes": 33,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2401366,
-      "lastMs": 54361,
+      "totalMs": 2457184,
+      "lastMs": 55818,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:51:10.475Z"
+      "updatedAt": "2026-10-09T09:52:06.294Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:09.017Z",
-  "updatedAt": "2026-10-09T09:51:10.475Z",
+  "updatedAt": "2026-10-09T09:52:06.294Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2946,7 +2949,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:51:10.475Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:52:06.294Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
