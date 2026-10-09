@@ -28,25 +28,77 @@
         "stateChange": "choose upgrades, perks, weapons, or skills that change the current build"
       },
       "abCausality": "양방향 실제 상태 교환: Fight through an escalating horde -> Collect run rewards or experience"
+    },
+    "local_authoring_parts::df30341f247260f3424665a50ca6938768e6f1437e8b9700dfe854768eb10bd7:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "Collect run rewards or experience",
+        "bChangesA": "Fight through an escalating horde",
+        "lateGameChange": "Convert the run result into the next progression choice"
+      },
+      "materialFusion": {
+        "contrast": "ACTION_SURVIVAL_ROGUELITE",
+        "causalBridge": "real-time survival run -> upgrade choices",
+        "removalConsequence": "Eliminate outdated build combinations"
+      },
+      "storyCausalChain": {
+        "cause": "Player chooses to fight through a horde",
+        "characterConflict": "Enemy pressure and resource scarcity",
+        "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build",
+        "worldChange": "State of the world changes based on player's decisions",
+        "nextEvent": "Conversion of run results into new progression choices"
+      }
+    },
+    "local_authoring_parts::4f076dead1e8cc38dae9e7785c538d346be3a5931402b3a3a69132b4969a8f7e:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "현실 건축가을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+      "a": {
+        "system": "Fight through an escalating horde",
+        "material": "real-time survival run",
+        "materialDomain": "ACTION_SURVIVAL_ROGUELITE",
+        "stateChange": "positioning around enemy pressure"
+      },
+      "b": {
+        "system": "Collect run rewards or experience",
+        "material": "upgrade choices",
+        "materialDomain": "RPG, STARTUP, MOBILE PLAY",
+        "stateChange": "choose upgrades, perks, weapons, or skills that change the current build"
+      },
+      "abCausality": "양방향 실제 상태 교환: Fight through an escalating horde -> Collect run rewards or experience",
+      "abEvolution": {
+        "aChangesB": "Collect run rewards or experience",
+        "bChangesA": "Fight through an escalating horde",
+        "lateGameChange": "Convert the run result into the next progression choice"
+      },
+      "materialFusion": {
+        "contrast": "ACTION_SURVIVAL_ROGUELITE",
+        "causalBridge": "real-time survival run -> upgrade choices",
+        "removalConsequence": "Eliminate outdated build combinations"
+      },
+      "storyCausalChain": {
+        "cause": "Player chooses to fight through a horde",
+        "characterConflict": "Enemy pressure and resource scarcity",
+        "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build",
+        "worldChange": "State of the world changes based on player's decisions",
+        "nextEvent": "Conversion of run results into new progression choices"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 964707,
-      "lastMs": 107170,
+      "totalMs": 1070805,
+      "lastMs": 106098,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:48:56.260Z"
+      "updatedAt": "2026-10-09T18:50:42.359Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T18:48:56.260Z",
+  "updatedAt": "2026-10-09T18:50:42.361Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1913,7 +1965,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:48:56.260Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:50:42.361Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
