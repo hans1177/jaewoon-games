@@ -1595,25 +1595,50 @@
     },
     "local_authoring_parts::9fe538cd70b1fb108ac00aea919889967d5abd12105b701b867a45d700a46946:riskPressure": {
       "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다."
+    },
+    "local_authoring_parts::9fe538cd70b1fb108ac00aea919889967d5abd12105b701b867a45d700a46946:recoveryRules": {
+      "recoveryRules": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다."
+    },
+    "local_authoring_parts::27a7e83b5b0a0210e44104bc00b9dd743908c8a5a47ab52e6ec1fda70f505264:failureRetryRisk": {
+      "failureStates": [
+        "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+        "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+        "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+      ],
+      "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다.",
+      "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다.",
+      "recoveryRules": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다."
+    },
+    "local_authoring_parts::cf5d5221ca3e15a7ee3e49663ad9a9eb06fa3420467ea1a16092d3bf94b35962:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다."
+        ],
+        "retryFlow": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다.",
+        "riskPressure": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다.",
+        "recoveryRules": "게임 플레이어가 현재 판 상태를 선택하면, 시스템은 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서 사용자가 선택한 판 상태는 시스템 내부의 상태 변수로 저장되고, 이후에는 해당 상태를 기반으로 새로운 판 패턴을 생성하여 게임을 계속 진행하게 됩니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 179,
-      "successes": 179,
+      "calls": 180,
+      "successes": 180,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7591706,
-      "lastMs": 39503,
+      "totalMs": 7630672,
+      "lastMs": 38966,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:42:10.525Z"
+      "updatedAt": "2026-10-09T04:42:49.493Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T04:42:10.525Z",
+  "updatedAt": "2026-10-09T04:42:49.502Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3653,33 +3678,15 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_REPEATED_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CONTENT_EXPANSION_PLAN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "LEVEL_GOAL_STATE"
+          "name": "failureRetryRisk"
         },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[2]",
-          "value": "NEXT_BOARD_PATTERN_STATE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[2]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3728,9 +3735,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3745,9 +3752,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3762,9 +3769,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3791,7 +3798,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 7
+    "designer_draft_slices::systems-progression": 8
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3820,10 +3827,10 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:42:10.525Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T04:42:49.498Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
