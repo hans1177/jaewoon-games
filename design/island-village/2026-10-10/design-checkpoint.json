@@ -104,25 +104,40 @@
         "Players decide how to use their collected resources, balancing immediate benefits with long-term strategic value.",
         "The village grows through resource collection and area expansion, introducing new challenges and opportunities for exploration and strategy."
       ]
+    },
+    "local_authoring_parts::2a376cc1ae5ce5cf66665ee5beab0700733fb2f202c77c72f4f4bd09cce62c95:signatureSystems:0": {
+      "id": "resource_collection",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resources_collected",
+        "area_expanded"
+      ],
+      "stateOutputs": [
+        "village_growth",
+        "new_goals_unlocked"
+      ],
+      "name": "Resource Collection",
+      "purpose": "Players collect island resources, which triggers building and unlocks new goals, creating a causal chain between resource gathering and village growth.",
+      "playerChoice": "Players decide how to use their collected resources, balancing immediate benefits with long-term strategic value."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 209607,
-      "lastMs": 33448,
+      "totalMs": 244876,
+      "lastMs": 35269,
       "lastError": null,
-      "updatedAt": "2026-10-09T19:47:17.413Z"
+      "updatedAt": "2026-10-09T19:47:52.684Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:43:47.705Z",
-  "updatedAt": "2026-10-09T19:47:17.413Z",
+  "updatedAt": "2026-10-09T19:47:52.684Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1723,7 +1738,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T19:47:17.413Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:47:52.684Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
