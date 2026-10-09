@@ -193,6 +193,36 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!rolesReady||!statesReady)reject(ownerV5?'DESIGN_MAIN_A_B_DELVE_REQUIRED':'DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
       {counts,systemCount:systems.length,statesReady},
       ownerV5?'MAIN/A/B 각각 하나와 @ 발견·숙련을 실제 규칙 및 상태 입출력으로 작성한다. C의 두 소재·메인 및 보조 장르의 효과는 creativeGrammar에서 따로 인과 검증한다. 기존 c 보조 시스템은 필수가 아니다.':'메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+    // 버전 5에서 A/B 상태 교환 자체가 불가능하면 연결 조각을 작성하기 전에 이 시스템부터 수리한다.
+    // 존재하지 않는 coreFun 의사 ID, 새 자원, 보상 또는 저장키를 만들지 않는다.
+    if(ownerV5&&rolesReady&&statesReady){
+      const candidates=new Map(systems.map(row=>[row.id,[]]));
+      for(const from of systems)for(const to of systems){
+        if(from.id===to.id)continue;
+        if(list(from.stateOutputs).some(key=>list(to.stateInputs).includes(key)))
+          candidates.get(from.id).push(to.id);
+      }
+      const canReach=(from,to)=>{
+        const pending=[from],visited=new Set();
+        while(pending.length){
+          const id=pending.shift();
+          if(id===to)return true;
+          if(visited.has(id))continue;
+          visited.add(id);
+          pending.push(...(candidates.get(id)||[]));
+        }
+        return false;
+      };
+      const main=systems.find(row=>row.grammarRole==='MAIN')?.id;
+      const a=systems.find(row=>row.grammarRole==='A')?.id;
+      const b=systems.find(row=>row.grammarRole==='B')?.id;
+      const unconnected=systems.filter(row=>!canReach(main,row.id)&&!canReach(row.id,main)).map(row=>row.grammarRole);
+      if(!canReach(a,b)||!canReach(b,a)||unconnected.length){
+        reject('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE','SYSTEM_INTERCONNECTION_DESIGN',['signatureSystems'],
+          {aToB:canReach(a,b),bToA:canReach(b,a),unconnected,ruleIds:ids},
+          'MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.');
+      }
+    }
     // 메인: ID만 달리 붙인 복제 규칙도 실제 MAIN/A/B/c/@ 완성으로 인정하지 않는다.
     for(let i=0;i<systems.length;i++)for(let j=i+1;j<systems.length;j++){
       const left=systems[i],right=systems[j];
@@ -268,7 +298,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!connected||!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main))){
       reject('DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED','SYSTEM_INTERCONNECTION_DESIGN',['systemInterconnections'],
         {edgeCount:edges.length,connected},
-        '기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
+        Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5
+          ?'기존 규칙의 실제 상태 입출력으로 MAIN/A/B/@를 연결하고 C 소재와 주·보조 장르가 A/B 선택에 영향을 주는 인과를 증명한다. 기존 c 시스템이 없으면 만들지 않는다. 임시 보상·가짜 상태를 추가하지 않는다.'
+          :'기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
     }
   }
   const detailed=requirements.required&&(requirePlayableContract||seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'||design.designIntegrityPlan?.authoringVersion===2||list(design.signatureSystems).some(row=>row.grammarRole));
@@ -436,7 +468,20 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
-  const seedGrammar=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4&&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'?seed.GAMEPLAY_SKETCH.novelGameGrammar:null;
+  // 파일명: company-design-gate-scoring-v2.mjs / 메인: 검증 전 자동접수 V5는 복사할 설계 원본이 아니다.
+  const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
+  const intakeFusion=seed?.GAMEPLAY_SKETCH?.novelGameGrammar?.gameplaySystemFusion;
+  const intakeThemes=intakeFusion?.themeFusion?.themes;
+  const intakeGenres=intakeFusion?.themeFusion?.genres;
+  const intakeAxes=intakeFusion?.majorAxes;
+  const pendingIntakeV5=seedV5&&seed?.novelGrammarBackfill?.authoringPending===true
+    &&(!Array.isArray(intakeAxes)||intakeAxes.length!==2
+      ||intakeAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
+      ||!Array.isArray(intakeThemes)||intakeThemes.length!==2
+      ||!Array.isArray(intakeGenres)||intakeGenres.length!==2);
+  const seedGrammar=!pendingIntakeV5&&Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4
+    &&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'
+    ?seed.GAMEPLAY_SKETCH.novelGameGrammar:null;
   const designText=JSON.stringify(design);
   const grammarIds=distinct(list(seedGrammar?.causalDNAs).map(row=>clean(row?.id)));
   const carriedGrammarIds=grammarIds.filter(id=>id&&designText.includes(id));
@@ -457,7 +502,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const carriedDelveElements=delveNames.filter(name=>designText.includes(name));
   const emergentGenreCarried=!seedGrammar||!emergentGenreName||designText.includes(emergentGenreName);
   const creative=design.creativeGrammar||{};
-  const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
   const seedC=seedGrammar?.gameplaySystemFusion?.themeFusion?.themes||[];
   const seedGenres=seedGrammar?.gameplaySystemFusion?.themeFusion?.genres||[];
   const creativityCarried=!seedV5||(
@@ -595,6 +639,8 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
     grammarCarryEvidence:seedGrammar?{formula:seedV5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',creativityCarried,requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
+    pendingSeedGrammarNotAuthored:pendingIntakeV5,
+    pendingSeedStillRequiresCreativeDesign:pendingIntakeV5,
   };
 }
 

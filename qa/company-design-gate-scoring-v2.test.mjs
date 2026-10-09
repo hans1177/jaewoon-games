@@ -180,12 +180,71 @@ const repeatedCTheme=structuredClone(authoredV5);
 repeatedCTheme.content.creativeGrammar.cThemes[1].name='철학';
 assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedCTheme,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
 // V5에는 더 이상 소문자 c 보조 시스템을 강제하지 않는다. C 소재·장르 검증은 별도로 유지한다.
+// 아직 시스템 간에 공통 입출력 키가 없는 V5는 연결 조각 작성 전에 되돌려 수리한다.
+const v5HandoffSeed={GAMEPLAY_SKETCH:{version:5}};
+const noSharedStateRules=['MAIN','A','B','DELVE'].map((grammarRole,index)=>({
+  id:'RULE_'+index,grammarRole,name:'Rule '+index,
+  purpose:'Player choices must affect a connected approved system.',
+  playerChoice:'Choose an action based on current world state.',
+  stateInputs:['ResourceBefore'],stateOutputs:['ResourceAfter']
+}));
+const noHandoffReview=validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']});
+assert.ok(noHandoffReview.some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+const sharedStateRules=noSharedStateRules.map(row=>({...row,stateInputs:['SharedWorldState'],stateOutputs:['SharedWorldState']}));
+assert.equal(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:sharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+const oneWayRules=sharedStateRules.map(row=>({...row}));
+oneWayRules[1]={...oneWayRules[1],stateInputs:['AInput'],stateOutputs:['AOutput']};
+assert.ok(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:oneWayRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+assert.equal(validateDesignAuthoringContent({seed:{GAMEPLAY_SKETCH:{version:4}},design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+
 const withoutLegacyC=structuredClone(authoredV5);
 withoutLegacyC.content.signatureSystems=withoutLegacyC.content.signatureSystems.filter(row=>row.grammarRole!=='c');
 const withoutLegacyCScore=scoreDesignGateV2({seed:v5Seed,designRecord:withoutLegacyC,cycleStatus,robloxGenreProfile:profile});
 assert.equal(withoutLegacyCScore.hardFailures.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'),false);
 const legacyCRequired=scoreDesignGateV2({seed:grammarSeed,designRecord:{...grammarDesign,content:{...grammarDesign.content,signatureSystems:withoutLegacyC.content.signatureSystems}},cycleStatus,robloxGenreProfile:profile});
 assert.ok(legacyCRequired.hardFailures.includes('DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+
+
+const placeholderV5=structuredClone(v5Seed);
+placeholderV5.novelGrammarBackfill={version:5,source:'CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009',authoringPending:true};
+const placeholderGrammar=placeholderV5.GAMEPLAY_SKETCH.novelGameGrammar;
+placeholderGrammar.newPrimaryVerb='AUTO_INTAKE_NOT_AUTHORED';
+placeholderGrammar.worldRule='AUTO_INTAKE_NOT_AUTHORED_WORLD_RULE';
+placeholderGrammar.causalDNAs[0].id='AUTO_INTAKE_NOT_AUTHORED_DNA';
+placeholderGrammar.emergentGenre.name='AUTO_INTAKE_NOT_AUTHORED_GENRE';
+placeholderGrammar.gameplaySystemFusion.main.name='AUTO_INTAKE_NOT_AUTHORED_MAIN';
+placeholderGrammar.gameplaySystemFusion.majorAxes[0].name='AUTO_INTAKE_NOT_AUTHORED_A';
+placeholderGrammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='';
+placeholderGrammar.gameplaySystemFusion.majorAxes[1].name='AUTO_INTAKE_NOT_AUTHORED_B';
+placeholderGrammar.gameplaySystemFusion.majorAxes[1].sourceMaterial='';
+placeholderGrammar.gameplaySystemFusion.themeFusion={themes:[],genres:[],genreInterlock:'',jointWorldRule:'',abGameplayEffect:''};
+const pendingV5Review=scoreDesignGateV2({seed:placeholderV5,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(pendingV5Review.pendingSeedGrammarNotAuthored,true);
+assert.equal(pendingV5Review.pendingSeedStillRequiresCreativeDesign,true);
+assert.equal(pendingV5Review.grammarCarryEvidence,null);
+assert.equal(pendingV5Review.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'),false);
+assert.equal(pendingV5Review.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'),false);
+const pendingMalformed=structuredClone(authoredV5);
+pendingMalformed.content.creativeGrammar.cGenres.pop();
+assert.ok(scoreDesignGateV2({seed:placeholderV5,designRecord:pendingMalformed,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+const flaggedButAuthored=structuredClone(v5Seed);
+flaggedButAuthored.novelGrammarBackfill=structuredClone(placeholderV5.novelGrammarBackfill);
+for(const [index,axis] of flaggedButAuthored.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes.entries()){
+  axis.systemFamily=index?'PUZZLE_STATE':'NPC_INTERACTION';
+  axis.sourceDomain=index?'PHILOSOPHY':'THEATRE';
+  axis.materialRule=index?'증언 신뢰도가 공간 퍼즐의 접근 조건을 바꾼다.':'희극적 오해가 증언 전달과 대화의 다음 선택 비용을 바꾼다.';
+}
+const authoredCarry=scoreDesignGateV2({seed:flaggedButAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(authoredCarry.pendingSeedGrammarNotAuthored,false);
+assert.ok(authoredCarry.grammarCarryEvidence,'a complete V5 source keeps the authored-seed carry contract');
+const unmarkedPlaceholder=structuredClone(placeholderV5);
+unmarkedPlaceholder.novelGrammarBackfill.authoringPending=false;
+assert.ok(scoreDesignGateV2({seed:unmarkedPlaceholder,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
 
 const noSurprise=structuredClone(authoredV5);
 delete noSurprise.content.creativeGrammar.materialFusion;

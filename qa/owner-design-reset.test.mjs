@@ -144,7 +144,8 @@ test('all-games reset preserves active developed games and existing seed save me
 
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
+  assert.match(workflow,/const activeResetSeeds=active\.filter/);
+  assert.match(workflow,/designEvolutionDueFor\(seed\)/);
   assert.doesNotMatch(workflow,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
   assert.match(workflow,/materializeOwnerDesignResetSeeds/);
   assert.match(workflow,/ensureOwnerDesignResetSeed/);
@@ -195,8 +196,10 @@ test('design runtime keeps PASS as checkpoint and schedules recurring design hea
 test('design runtime binds design intelligence into engine digest and static QA',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/tools\/vibe2-design-intelligence\.mjs/);
-  assert.match(workflow,/node --check tools\/vibe2-design-intelligence\.mjs/);
-  assert.match(workflow,/node --test qa\/vibe2-design-intelligence\.test\.mjs/);
+  const begin=workflow.indexOf('const engineFiles=['),end=workflow.indexOf('const engineDigest=',begin);
+  assert.ok(begin>=0&&end>begin,'design intelligence must be included in the current designer engine digest');
+  assert.match(workflow.slice(begin,end),/tools\/vibe2-design-intelligence\.mjs/);
+  assert.match(workflow,/'qa\/vibe2-design-intelligence\.test\.mjs'/);
 });
 
 
@@ -261,16 +264,31 @@ test('owner brief cannot read a different game or escape the original design dir
 
 test('already developed games can re-enter the same designer from an owner brief',()=>{
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-  const line=cycle.split('\n').find(row=>row.includes('DESIGN_ONLY_CLASS_REQUIRED'));
-  assert.ok(line);
-  const predicate=line.slice(line.indexOf('if(')+3,line.indexOf(')throw new Error'));
-  const blocked=new Function('catalogGame','seed','clean','return '+predicate);
-  const clean=v=>String(v??'').trim();
-  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},clean),false);
-  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{},clean),true);
+  const begin=cycle.indexOf('function resolveDesignerSeedInput(');
+  const end=cycle.indexOf('const gameId=clean(process.env.',begin);
+  assert.ok(begin>=0&&end>begin,'owner request must use the same designer intake');
+  const body=cycle.slice(begin,end);
+  assert.doesNotMatch(body,/DESIGN_ONLY_CLASS_REQUIRED/);
+  const owner={
+    gameId:'developed-game',seedId:'OWNER-DEVELOPED',status:'ACTIVE',
+    productionClass:'DESIGN_ONLY',designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
+    OWNER_LATEST_DESIGN_REQUEST:'Preserve the game and write its design'
+  };
+  const resolver=new Function('clean','activeSeedForGame','ownerDesignResetSeedForGame','makeAutoMissingDesignSeed',
+    'latestUsableDesign','validateGameSeed','path',body+'\nreturn resolveDesignerSeedInput;')(
+      v=>String(v??'').trim(),()=>null,()=>owner,()=>{throw Error('owner request must remain the source');},
+      ()=>null,()=>({pass:true,errors:[]}),path
+    );
+  const state={seeds:[]};
+  const catalog={games:[{id:'developed-game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]};
+  const result=resolver({state,gameId:'developed-game',catalog});
+  assert.equal(result.created,true);
+  assert.equal(result.seed,owner);
+  assert.equal(state.seeds[0],owner);
+  assert.equal(owner.seedAuthoring.writer,'GAME_DESIGNER_AI');
+  assert.equal(owner.designInputMode,'OWNER_BRIEF_AND_ORIGINAL_ONLY');
   assert.match(cycle,/OWNER_ORIGINAL_DESIGN_INPUT=/);
 });
-
 
 test('design workflow invokes the actual designer for developed games instead of class routing',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
