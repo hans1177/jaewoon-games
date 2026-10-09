@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::939b48231a002e9614e00a353d23e73524171b852dc1454b83caed4f738bcaa0:identity": {
       "identity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+    },
+    "local_authoring_parts::095308fdd2bfdebe3be608ebc319a214d35955c20eda81363a8c6bb93c96dba2:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "a": {
+        "system": "ACTION_SYSTEM",
+        "material": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT_TO_STATE_CHANGE"
+      },
+      "b": {
+        "system": "RESULT_SYSTEM",
+        "material": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "STATE_CHANGE_TO_RESULT"
+      },
+      "abCausality": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 822804,
-      "lastMs": 222671,
+      "totalMs": 873637,
+      "lastMs": 50833,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:48:28.611Z"
+      "updatedAt": "2026-10-09T18:49:19.446Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:34:45.785Z",
-  "updatedAt": "2026-10-09T18:48:28.611Z",
+  "updatedAt": "2026-10-09T18:49:19.446Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1664,7 +1680,7 @@
     "9e5e1a36f886f185af3ca1f5a6f348364005328acec5a42a0eb6d9dbd09f843a": true,
     "939b48231a002e9614e00a353d23e73524171b852dc1454b83caed4f738bcaa0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:48:28.611Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:49:19.446Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
