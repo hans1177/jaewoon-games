@@ -207,25 +207,40 @@
       "name": "Resource Management & Strategic Placement",
       "purpose": "Player's initial action: Read next enemy wave",
       "playerChoice": "Adapt defense, gain resources, upgrade placements"
+    },
+    "local_authoring_parts::197982592540b3f580f2e15b33bf4bce4994d98ffb70df41c502201f74723b6d:signatureSystems:1": {
+      "id": "line-defense-signature-systems-1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Enemy Types",
+        "Wave Composition"
+      ],
+      "stateOutputs": [
+        "Defense Adaptation",
+        "New Strategic Options"
+      ],
+      "name": "Adaptive Defense Strategy",
+      "purpose": "Dynamic defense strategy based on enemy types and wave composition",
+      "playerChoice": "Customized defensive placements, tactical changes, new strategic configurations"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 880141,
-      "lastMs": 63484,
+      "totalMs": 944095,
+      "lastMs": 63954,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:27:24.633Z"
+      "updatedAt": "2026-10-09T18:28:28.589Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:12:44.451Z",
-  "updatedAt": "2026-10-09T18:27:24.633Z",
+  "updatedAt": "2026-10-09T18:28:28.589Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1934,7 +1949,7 @@
   "localAuthoringSplits": {
     "bee2550e641d5f4297320ff3aedaf7f9cfc81aa9be6355f3c8421bea5f5cc2e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:27:24.633Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:28:28.589Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
