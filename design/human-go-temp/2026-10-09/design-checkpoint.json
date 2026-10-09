@@ -509,25 +509,28 @@
     },
     "local_authoring_parts::a813996f01806fb9bd1a78e2394630934137d85f36442c8ac1267d8b7f43af01:toSystem": {
       "toSystem": "NEXT_PROGRESSION_CHOICE"
+    },
+    "local_authoring_parts::a813996f01806fb9bd1a78e2394630934137d85f36442c8ac1267d8b7f43af01:trigger": {
+      "trigger": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임에서, HumanCount, MonsterCount, EliminatedCount 상태값을 바탕으로 NextProgressionChoice 상태변화를 유도하여, 플레이어의 전략적 선택과 상황적 반응을 기반으로 새롭"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2361893,
-      "lastMs": 88799,
+      "totalMs": 2459063,
+      "lastMs": 97170,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:28:58.996Z"
+      "updatedAt": "2026-10-09T16:30:36.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T16:28:58.996Z",
+  "updatedAt": "2026-10-09T16:30:36.167Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2399,7 +2402,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:28:58.996Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:30:36.167Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
