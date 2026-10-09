@@ -896,25 +896,42 @@
         "TOWER_PLACEMENT"
       ],
       "fromSystem": "WAVES_AND_DEFENSE"
+    },
+    "local_authoring_parts::393868a2825d4e1bac4d8c8cdacc8cce5cd27d565515bf8525ee3a2d84a20e60:toSystem,trigger,stateChange": {
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::16ff234e9a603c1d6516c443aa0ba6c372b41eddd18614012e8a63393defdb39:systemInterconnections:4": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRATEGY",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE",
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 69,
+      "calls": 70,
+      "successes": 70,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5905812,
-      "lastMs": 90822,
+      "totalMs": 5994477,
+      "lastMs": 88665,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:01:07.256Z"
+      "updatedAt": "2026-10-09T05:02:35.923Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T05:01:07.256Z",
+  "updatedAt": "2026-10-09T05:02:35.930Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3112,6 +3129,193 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "ENEMY_WAVE_INPUT"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "DEFENSE_CONFIGURATION_CREATED"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].trigger",
+          "value": "ENEMY_WAVE_INPUT"
+        },
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "DEFENSE_CONFIGURATION_CREATED"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].trigger",
+          "value": "ENEMY_WAVE_INPUT"
+        },
+        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "DEFENSE_CONFIGURATION_CREATED"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].trigger",
+          "value": "ENEMY_WAVE_INPUT"
+        },
+        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "DEFENSE_CONFIGURATION_CREATED"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "ENEMY_WAVE_INPUT"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "DEFENSE_CONFIGURATION_CREATED"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3173,23 +3377,6 @@
           "detail": "ENEMY_WAVE→DEFENSE_STRATEGY의 출력과 입력 상태가 연결되지 않는다"
         },
         "requiredAction": "systemInterconnections: ENEMY_WAVE→DEFENSE_STRATEGY의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3218,7 +3405,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:2": 4,
     "local_authoring_parts::f8c87cc847fe218a2a2d331750b4bc2f7020a51533151a0ce3f493ee241bac7b:signatureSystems:3": 1,
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3256,10 +3443,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:01:07.256Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T05:02:35.926Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
