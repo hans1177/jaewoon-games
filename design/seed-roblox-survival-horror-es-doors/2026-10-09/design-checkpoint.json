@@ -27,25 +27,32 @@
       "identity": "Last Lantern은 사용자가 직접 업로드한 웹게임으로, 기존 게임의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "playerFantasy": "플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "coreFun": "플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::307c7cb1f75343f3e90a4b6fe36e36b515704f6423ac9c5c88e8e52d880738d2:coreLoop": {
+      "coreLoop": [
+        "플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.",
+        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하며, 플레이어의 선택이 월드 상태와 다음 선택에 직접 영향을 미친다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 191115,
-      "lastMs": 26244,
+      "totalMs": 233485,
+      "lastMs": 42370,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:38:10.095Z"
+      "updatedAt": "2026-10-09T15:38:52.467Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:34:58.766Z",
-  "updatedAt": "2026-10-09T15:38:10.096Z",
+  "updatedAt": "2026-10-09T15:38:52.467Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1635,7 +1642,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:38:10.096Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:38:52.467Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
