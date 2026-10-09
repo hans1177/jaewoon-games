@@ -572,25 +572,34 @@
         "riskPressure": "High risk of losing strategic advantage if initial decisions are not well-informed or if adaptation is insufficiently tested.",
         "recoveryRules": "Player uses historical data and adaptive learning to refine future strategies, ensuring continuity and improvement over time."
       }
+    },
+    "local_authoring_parts::4be2038c35f6e8b3296276fb02d0b62f04b491eac032c1ef18f5a45656e32caf:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "territory-war-signature-systems-0",
+      "toId": "territory-war-signature-systems-1",
+      "stateKeys": [
+        "border_pressure",
+        "units_deployed"
+      ],
+      "fromSystem": "MAIN/A/B/c/@/territory-war-signature-systems-0/territory-war-signature-systems-1/territory-war-signature-systems-0/stateInputs/border_pressure/territory_war_signatures_0_border_p"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1374645,
-      "lastMs": 90757,
+      "totalMs": 1442935,
+      "lastMs": 68290,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T08:44:02.711Z"
+      "updatedAt": "2026-10-09T08:45:11.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:44:02.825Z",
+  "updatedAt": "2026-10-09T08:45:11.117Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2760,10 +2769,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:44:02.713Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:45:11.117Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
