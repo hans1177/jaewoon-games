@@ -97,6 +97,9 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     const id=clean(game?.id);if(!id)continue;
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
     // 최신 중앙 설계의 실제 내용에서만 짧은 홈페이지 소개를 갱신한다.
+    // 원본 게임 설명과 canonical identity는 변경하지 않는다. 홈페이지 전용 최신 설계 요약만 갱신한다.
+    delete game.homepageDesignSummary;
+    delete game.homepageDesignSource;
     const design=designBaselines[id];
     const designPath=clean(queue?.designBaselineSource||queue?.minimumDesignContract?.source);
     if(design?.source===designPath&&design?.value?.gameId===id){
@@ -104,8 +107,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       const raw=clean(content.homepageDescription||content.shortSummary||content.identity||content.coreFun).replace(/\s+/g,' ');
       const sentence=raw.match(/^(.{20,125}?[.!?。])(?:\s|$)/)?.[1]||raw;
       const summary=sentence.length>112?sentence.slice(0,110).replace(/\s+\S*$/,'')+'…':sentence;
-      if(summary){game.description=summary;game.homepageDesignSource=designPath;}
-      // 카탈로그 identity 설명은 보존하며 홈페이지 렌더러가 검증된 최신 설계를 우선 표시한다.
+      if(summary){game.homepageDesignSummary=summary;game.homepageDesignSource=designPath;}
     }
     const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
     const score=developmentHomepageScore(queue);
