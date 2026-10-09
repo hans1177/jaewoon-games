@@ -27,25 +27,34 @@
       "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 연결되는 ACTION_SURVIVAL_ROGUELITE 게임의 씨앗이다. 이 게임은 단순 반복보다는 경쟁, 위험, 성공/실패 등 다양한 상태 변화와 인과법칙에 의해 구성된다. 주체는 휴먼 GO!에서의 플레이어이며, 세계 상태와 다음 선택을 바꾼다. 핵심 재미는 시스템 내에서의 반복적 선택과 그 결과의 영향, 그리고 상황별로 다른 경로 및 조건이 적용되며, 이는 모두 모바일에서도 즉시 이해할 수 있는 입력과 피드백으로 구성되어 있다.",
       "playerFantasy": "휴먼 GO!에서는 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 연결되는 ACTION_SURVIVAL_ROGUELITE 게임의 씨앗이다. 이 게임은 단순 반복보다는 경쟁, 위험, 성공/실패 등 다양한 상태 변화와 인과법칙에 의해 구성된다. 주체는 휴먼 GO!에서의 플레이어이며, 세계 상태와 다음 선택을 바꾼다. 핵심 재미는 시스템 내에서의 반복적 선택과 그 결과의 영향, 그리고 상황별로 다른 경로 및 조건이 적용되며, 이는 모두 모바일에서도 즉시 이해할 수 있는 입력과 피드백으로 구성되어 있다.",
       "coreFun": "플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 연결되는 ACTION_SURVIVAL_ROGUELITE 게임의 씨앗이다. 이 게임은 단순 반복보다는 경쟁, 위험, 성공/실패 등 다양한 상태 변화와 인과법칙에 의해 구성된다. 주체는 휴먼 GO!에서의 플레이어이며, 세계 상태와 다음 선택을 바꾼다. 핵심 재미는 시스템 내에서의 반복적 선택과 그 결과의 영향, 그리고 상황별로 다른 경로 및 조건이 적용되며, 이는 모두 모바일에서도 즉시 이해할 수 있는 입력과 피드백으로 구성되어 있다."
+    },
+    "local_authoring_parts::4c93853f44a65cb9d99f0c7d5b01e5cface562b602ea2cf6dadee3561a51fb3c:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 ACTION_SURVIVAL_ROGUELITE 게임의 씨앗이다.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "STATE CHANGE: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "NEXT SELECT: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 307438,
-      "lastMs": 50698,
+      "totalMs": 369795,
+      "lastMs": 62357,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:26:52.530Z"
+      "updatedAt": "2026-10-09T12:27:54.890Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:21:45.064Z",
-  "updatedAt": "2026-10-09T12:26:52.531Z",
+  "updatedAt": "2026-10-09T12:27:54.890Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:26:52.531Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:27:54.890Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
