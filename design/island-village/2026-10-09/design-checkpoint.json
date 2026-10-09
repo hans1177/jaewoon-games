@@ -34,25 +34,39 @@
         "Unlock a new resident, activity or area and choose the next village goal.",
         "Repeat the process to grow the village and unlock new possibilities."
       ]
+    },
+    "local_authoring_parts::8eb8d0425c433e2051c3ce64758dd9517175cda34c8733a70197f9103c402fc9:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "UNLOCK_RESIDENT",
+        "CHOOSE_NEXT_GOAL"
+      ],
+      "name": "ISLAND_RESOURCE_MANAGER",
+      "purpose": "Manage and allocate island resources to build or improve village functions",
+      "playerChoice": "Select which resource to gather and how to use it for village development"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 322474,
-      "lastMs": 35083,
+      "totalMs": 417408,
+      "lastMs": 94934,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:02:55.163Z"
+      "updatedAt": "2026-10-09T09:04:30.099Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:57:32.662Z",
-  "updatedAt": "2026-10-09T09:02:55.163Z",
+  "updatedAt": "2026-10-09T09:04:30.099Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2133,7 +2147,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:02:55.163Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:04:30.099Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
