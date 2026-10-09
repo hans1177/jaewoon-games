@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
@@ -253,9 +254,32 @@ test('post-package Roblox preflight dispatch dedupes against fetched current mai
   const block=runtime.slice(start,end<0?undefined:end);
   assert.ok(block.includes('current_main="$(git rev-parse origin/main)"'));
   assert.ok(block.includes('runs?per_page=100&head_sha=$current_main'));
-  assert.ok(block.includes("CURRENT_MAIN_SHA=\"$current_main\" node <<'NODE' > /tmp/roblox-continuation-active-ids"));
+  const header = "CURRENT_MAIN_SHA=\"$current_main\" node <<'NODE' > /tmp/roblox-continuation-active-ids";
+  assert.ok(block.includes(header));
   assert.ok(block.includes("const currentSha=String(process.env.CURRENT_MAIN_SHA||'').trim()"));
   assert.ok(!block.includes("const currentSha=String(process.env.GITHUB_SHA||'').trim()"));
   assert.ok(block.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$current_main'));
   assert.ok(block.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo'));
+  const scriptStart=block.indexOf(header)+header.length+1;
+  const scriptEnd=block.indexOf('\n          NODE',scriptStart);
+  assert.ok(scriptEnd>scriptStart);
+  const script=block.slice(scriptStart,scriptEnd);
+  const fresh='b'.repeat(40),stale='a'.repeat(40);
+  const runs=[
+    {display_title:'Roblox shared preflight · daechung-rpg',head_sha:fresh,status:'pending'},
+    {display_title:'Roblox shared preflight · daechung-rpg',head_sha:stale,status:'in_progress'},
+    {display_title:'Roblox shared preflight · fantasy-survival',head_sha:fresh,status:'queued'},
+    {display_title:'Roblox shared preflight · monster-adventure',head_sha:fresh,status:'completed'},
+    {display_title:'Unrelated · seed-casual-realm-weaver',head_sha:fresh,status:'in_progress'}
+  ];
+  const printed=[];
+  runInNewContext(script,{
+    require:name=>{
+      assert.equal(name,'fs');
+      return {readFileSync:()=>JSON.stringify({workflow_runs:runs})};
+    },
+    process:{env:{CURRENT_MAIN_SHA:fresh,GITHUB_SHA:stale}},
+    console:{log:gameId=>printed.push(gameId)}
+  });
+  assert.deepEqual(printed,['daechung-rpg','fantasy-survival']);
 });
