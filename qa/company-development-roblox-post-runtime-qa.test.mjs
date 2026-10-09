@@ -433,3 +433,20 @@ test('runtime QA dispatches every F9-ready game independently while deduping exa
   assert.match(block,/while read -r id/);
   assert.doesNotMatch(block,/ROBLOX_F9_SCAN_DISPATCHED=/);
 });
+
+/* ── 공식 Open Cloud 최초 실행 실패 증거: 기존 단계와 배포 게이트를 유지 ── */
+test('exact private candidate first-frame diagnostics retain server simulation state without faking runtime PASS',()=>{
+  assert.match(workflow,/item\.robloxFirstFrameGroundingEvidence=\{/);
+  for(const fact of [
+    'sourceRevision,','artifactIdentity,',"placeId:String(candidate.placeId||'')",
+    'candidateVersionNumber:Number(candidate.versionNumber||0)',
+    'simulationRunningAfter:engineProbe.serverBootEvidence?.simulationRunningAfter===true',
+    'serverContextExecuted:engineProbe.serverContextExecuted===true'
+  ])assert.ok(workflow.includes(fact),'missing exact first-frame causal evidence: '+fact);
+  assert.ok(workflow.includes("item.robloxRuntimeFoundationPassed=false;"));
+  assert.ok(workflow.includes("item.robloxRuntimePassed=false;"));
+  assert.ok(workflow.includes("item.robloxIndependentQaPassed=false;"));
+  assert.ok(workflow.includes("item.robloxRegressionPassed=false;"));
+  assert.ok(workflow.includes("item.robloxFailureSignature=groundingObserved?'ROBLOX_FIRST_FRAME_GROUNDING_FAILED':'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'"));
+  assert.ok(workflow.includes('item.canonicalState=\'TARGET_PLATFORM_REPAIR_REQUIRED\''));
+});

@@ -1210,7 +1210,20 @@ jobs:
               item.robloxRuntimePassed=false;
               item.robloxIndependentQaPassed=false;
               item.robloxRegressionPassed=false;
-              item.robloxFirstFrameGroundingEvidence=engineProbe.worldEvidence;
+              // Persist only exact candidate-bound structured facts; no raw script, rendered image, or invented PASS.
+              item.robloxFirstFrameGroundingEvidence={
+                ...(engineProbe.worldEvidence||{}),
+                sourceRevision,
+                artifactIdentity,
+                placeId:String(candidate.placeId||''),
+                candidateVersionNumber:Number(candidate.versionNumber||0),
+                serverBootObserved:engineProbe.serverBootObserved===true,
+                serverContextExecuted:engineProbe.serverContextExecuted===true,
+                simulationRunningAfter:engineProbe.serverBootEvidence?.simulationRunningAfter===true,
+                simulationStartSucceeded:engineProbe.serverBootEvidence?.simulationStartSucceeded===true,
+                observedAt:stamp,
+                authority:'roblox-open-cloud-exact-first-frame-observation'
+              };
               item.currentStep=groundingObserved?'TARGET_PLATFORM_TECHNICAL_VALIDATION':'TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';

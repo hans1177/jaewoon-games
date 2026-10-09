@@ -108,6 +108,12 @@ function developmentFloorRecoveryCase(task={},playbook={}) {
   if(playbook.applied!==true)return null;
   const signature=failureSignature(task)||'';
   const cases={
+    ROBLOX_BUILD_PREFLIGHT_BLOCKED:{
+      stage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+      hypotheses:['CONCURRENT_PLATFORM_MODE_ADMISSION_MISMATCH','EXACT_SOURCE_PACKAGE_OR_SHARED_MODEL_PREFLIGHT_FAILURE'],
+      next:'Verify selectedPlatform, canonical dual-platform execution mode and explicit ROBLOX/UNITY targets against exact built source/artifact evidence. Retry only the existing preflight stage after the responsible contract repair.',
+      preserve:'Do not reset verified F0 or runtime checkpoints for the same immutable source/artifact, and do not treat an invalid preflight as PASS.'
+    },
     ROBLOX_F0_SOURCE_PREFLIGHT_FAILED:{
       stage:'F0_SOURCE_PREFLIGHT',
       hypotheses:['PACKAGE_SOURCE_REVISION_OR_ARTIFACT_MISMATCH','EXACT_LUAU_OR_ROJO_PREFLIGHT_FAILURE'],
@@ -126,6 +132,20 @@ function developmentFloorRecoveryCase(task={},playbook={}) {
       next:'Compare HTTP status, scope, place and version with last immutable candidate. Retry transient external probe only with real server evidence.',
       preserve:'Keep exact package and private candidate when still bound; transient failures do not invalidate unrelated F0.'
     },
+    ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED:{
+      stage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      hypotheses:['EXACT_OPEN_CLOUD_TASK_WORLD_INITIALIZATION_NOT_OBSERVED','PUBLISHED_PRIVATE_PLACE_BOOTSTRAP_OR_SCRIPT_BINDING_MISMATCH'],
+      next:'For the exact private place version compare Open Cloud runtimeWorldReady, basePartCount and spawnCount against the bound package. Check real server initialization before editing gameplay. If no gameplay world ran, repeat only the existing authorized runtime observation; never invent a playable spawn.',
+      preserve:'Preserve exact F0 and candidate identity; unobserved world boot is not a runtime PASS and is not proof of game-source failure.',
+      sourceRepairRequiresVerifiedCause:true
+    },
+    ROBLOX_FIRST_FRAME_GROUNDING_FAILED:{
+      stage:'TARGET_PLATFORM_RUNTIME_FOUNDATION',
+      hypotheses:['VERIFIED_SPAWN_UNSUPPORTED_OR_FLOATING_RELATIVE_TO_COLLIDABLE_GROUND','EXACT_RUNTIME_RAYCAST_SUPPORT_GEOMETRY_MISMATCH'],
+      next:'Compare the same exact place/version unsupportedSpawns, floatingSpawns and spawn transforms. Repair only proven responsible world geometry or engine-observation code, then rerun the exact F0 to runtime sequence.',
+      preserve:'Keep unrelated verified source checkpoints, but source geometry changes must invalidate the changed package and candidate evidence.',
+      sourceRepairRequiresVerifiedCause:true
+    },
     'roblox-package-asset-binding-failed':{
       stage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',
       hypotheses:['ASSET_FAMILY_NOT_ACTUALLY_REFERENCED_BY_GAMEPLAY','PACKAGE_MANIFEST_AND_RUNTIME_BINDING_DRIFT'],
@@ -139,6 +159,7 @@ function developmentFloorRecoveryCase(task={},playbook={}) {
     signature,stage:selected.stage,hypotheses:selected.hypotheses,
     next:selected.next,preserve:selected.preserve,
     representativeCanaryRequiredForSharedSignature:true,
+    sourceRepairRequiresVerifiedCause:selected.sourceRepairRequiresVerifiedCause===true,
     independentVerificationRequired:true,
     reattemptFailedStrategyOnlyWithNewEvidence:true,
     verifiedSuccessPromotionOnly:true

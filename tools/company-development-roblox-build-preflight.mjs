@@ -29,7 +29,8 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
     upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
     ||upper(item.platformExecutionMode)==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'
   )&&Array.isArray(item.concurrentTargetPlatforms)
-    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX');
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX')
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='UNITY');
   const robloxLaneEligible=directRoblox||concurrentRoblox;
   const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);
   const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);

@@ -46,8 +46,22 @@ function developmentFloorSnapshot(developmentQueue={}) {
     if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED'||clean(item.status).toUpperCase()==='DISABLED')continue;
     const gameId=clean(item.gameId),revision=clean(item.robloxSourceCommit),artifact=clean(item.robloxBuildArtifactIdentity);
     const f0=item.robloxFoundationF0Evidence||{},candidate=item.robloxRuntimeCandidateEvidence||{};
-    const buildExact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildPreflightPassed===true
-      &&revision!==''&&artifact.startsWith('sha256:')&&clean(item.robloxBuildSourceRevision)===revision;
+    const preflight=item.robloxBuildPreflightEvidence||{};
+    const exactPackage=item.robloxBuildOrPackagePassed===true
+      &&/^[0-9a-f]{40}$/i.test(revision)
+      &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
+      &&clean(item.robloxBuildSourceRevision)===revision;
+    const preflightBlockers=uniq([
+      ...(Array.isArray(preflight.blockers)?preflight.blockers:[]),
+      ...(Array.isArray(preflight.facts?.blockers)?preflight.facts.blockers:[])
+    ]);
+    const preflightExact=clean(preflight.sourceRevision||preflight.facts?.build?.sourceRevision)===revision
+      &&clean(preflight.artifactIdentity||preflight.facts?.build?.artifactIdentity)===artifact;
+    const historicalDualMode=clean(item.platformExecutionMode)==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'
+      &&Array.isArray(item.concurrentTargetPlatforms)
+      &&item.concurrentTargetPlatforms.some(x=>clean(x)==='ROBLOX')
+      &&item.concurrentTargetPlatforms.some(x=>clean(x)==='UNITY');
+    const buildExact=exactPackage&&item.robloxBuildPreflightPassed===true;
     const f0Exact=buildExact&&item.robloxFoundationF0Passed===true
       &&clean(f0.sourceRevision)===revision&&clean(f0.artifactIdentity)===artifact
       &&Number(f0.artifactRunId||0)>0;
@@ -67,8 +81,35 @@ function developmentFloorSnapshot(developmentQueue={}) {
     const qualityBlocked=f0Exact&&item.robloxQualityBuildUpRequired===true
       &&clean(item.robloxQualityBuildUpSourceRevision)===revision;
     const signature=clean(item.robloxFailureSignature);
+    // Only the exact previously-published private candidate may supply first-frame evidence.
+    const firstFrame=item.robloxFirstFrameGroundingEvidence||{};
+    const firstFrameEvidenceExact=(!clean(firstFrame.sourceRevision)||clean(firstFrame.sourceRevision)===revision)
+      &&(!clean(firstFrame.artifactIdentity)||clean(firstFrame.artifactIdentity)===artifact)
+      &&(!clean(firstFrame.placeId)||clean(firstFrame.placeId)===clean(candidate.placeId))
+      &&(!Number(firstFrame.candidateVersionNumber||0)||Number(firstFrame.candidateVersionNumber)===Number(candidate.versionNumber));
+    const firstFrameObservation=candidateExact&&firstFrameEvidenceExact
+      &&firstFrame.observed===true&&firstFrame.sameLuauExecutionSession===true?{
+      observed:true,
+      runtimeWorldReady:firstFrame.runtimeWorldReady===true,
+      groundingObserved:firstFrame.spawnGroundingObserved===true,
+      serverContextExecuted:typeof firstFrame.serverContextExecuted==='boolean'?firstFrame.serverContextExecuted:null,
+      simulationRunningAfter:typeof firstFrame.simulationRunningAfter==='boolean'?firstFrame.simulationRunningAfter:null,
+      simulationStartSucceeded:typeof firstFrame.simulationStartSucceeded==='boolean'?firstFrame.simulationStartSucceeded:null,
+      basePartCount:Math.max(0,Number(firstFrame.basePartCount)||0),
+      spawnCount:Math.max(0,Number(firstFrame.spawnCount)||0),
+      unsupportedSpawns:Math.max(0,Number(firstFrame.unsupportedSpawns)||0),
+      floatingSpawns:Math.max(0,Number(firstFrame.floatingSpawns)||0),
+      renderedScreenshotClaimed:false
+    }:null;
     let stage,classification,repair;
-    if(!buildExact){
+    if(exactPackage&&item.robloxBuildPreflightPassed!==true){
+      stage='VIBE_SHARED_MODEL_BUILD_PREFLIGHT';
+      classification=historicalDualMode&&preflightExact&&preflightBlockers.includes('roblox-platform-required')
+        ?'DUAL_PLATFORM_PREFLIGHT_MODE_MISMATCH':'SHARED_MODEL_PREFLIGHT_NOT_VERIFIED';
+      repair=classification==='DUAL_PLATFORM_PREFLIGHT_MODE_MISMATCH'
+        ?'RETRY_EXISTING_CANONICAL_PREFLIGHT_WITH_EXACT_DUAL_PLATFORM_IDENTITY'
+        :'REPAIR_EXACT_SHARED_PREFLIGHT_BLOCKER';
+    }else if(!buildExact){
       stage='TARGET_PLATFORM_BUILD_OR_PACKAGE';
       classification=/asset.binding/i.test(signature)?'SOURCE_ASSET_BINDING':'BUILD_OR_SOURCE_IDENTITY_INVALID';
       repair='REPAIR_EXACT_SOURCE_PACKAGE_THEN_REVALIDATE_F0';
@@ -88,6 +129,21 @@ function developmentFloorSnapshot(developmentQueue={}) {
       stage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
       classification='EXTERNAL_RUNTIME_TRANSIENT';
       repair='RETRY_SAME_CANDIDATE_ENGINE_PROBE_WITH_REAL_EVIDENCE';
+    }else if(signature==='ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'){
+      stage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+      if(firstFrameObservation&&!firstFrameObservation.runtimeWorldReady&&firstFrameObservation.spawnCount===0){
+        classification=firstFrameObservation.simulationRunningAfter===false
+          ?'EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING'
+          :'EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED';
+        repair='TRACE_EXACT_PLACE_VERSION_AND_SERVER_WORLD_INITIALIZATION_BEFORE_SOURCE_MUTATION';
+      }else{
+        classification='FIRST_FRAME_SPAWN_GROUNDING_EVIDENCE_INCOMPLETE';
+        repair='RECHECK_EXISTING_EXACT_RUNTIME_FOUNDATION_OBSERVATION';
+      }
+    }else if(signature==='ROBLOX_FIRST_FRAME_GROUNDING_FAILED'){
+      stage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+      classification='EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED';
+      repair='REPAIR_PROVEN_SPAWN_SUPPORT_AND_COLLISION_IN_RESPONSIBLE_SOURCE';
     }else{
       stage=clean(item.robloxFailureStage)||'F1_F9_PLATFORM_VERIFICATION';
       classification='RUNTIME_OR_QA_EVIDENCE_REQUIRED';
@@ -102,6 +158,8 @@ function developmentFloorSnapshot(developmentQueue={}) {
       gameId,platform:'ROBLOX',stage,failureSignature:signature||null,classification,repair,
       exactBuildCheckpoint:buildExact,exactF0Checkpoint:f0Exact,exactCandidateCheckpoint:candidateExact,
       invalidEvidenceCause,qualitySourceRepairRequired:qualityBlocked,
+      exactPackageCheckpoint:exactPackage,preflightBlockers,preflightEvidenceExact:preflightExact,
+      firstFrameObservation,
       unityF9Reported,unityF9EvidenceIdentityBound:unityF9Bound,
       unityF9IndependentRuntimeReviewRequired:true,
       automaticPassClaim:false
@@ -110,7 +168,9 @@ function developmentFloorSnapshot(developmentQueue={}) {
   const cohorts=new Map();
   for(const row of rows){
     if(!row.failureSignature)continue;
-    const key=[row.platform,row.stage,row.failureSignature].join('|');
+    const key=[row.platform,row.stage,row.failureSignature,
+      row.failureSignature.startsWith('ROBLOX_FIRST_FRAME_')?row.classification:null
+    ].filter(Boolean).join('|');
     if(!cohorts.has(key))cohorts.set(key,[]);
     cohorts.get(key).push(row.gameId);
   }
@@ -122,8 +182,12 @@ function developmentFloorSnapshot(developmentQueue={}) {
     total:rows.length,exactF0Count:rows.filter(x=>x.exactF0Checkpoint).length,
     f0RepairCount:rows.filter(x=>!x.exactF0Checkpoint).length,
     pendingCandidateCount:rows.filter(x=>x.classification==='F0_PASSED_CANDIDATE_NOT_PUBLISHED').length,
+    dualPlatformPreflightMismatchCount:rows.filter(x=>x.classification==='DUAL_PLATFORM_PREFLIGHT_MODE_MISMATCH').length,
     qualityBlockedCount:rows.filter(x=>x.qualitySourceRepairRequired).length,
     exactCandidateCount:rows.filter(x=>x.exactCandidateCheckpoint).length,
+    firstFrameWorldBootstrapUnobservedCount:rows.filter(x=>['EXACT_PRIVATE_CANDIDATE_WORLD_BOOTSTRAP_UNOBSERVED','EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING'].includes(x.classification)).length,
+    firstFrameServerSimulationNotRunningCount:rows.filter(x=>x.classification==='EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING').length,
+    firstFrameGroundingFailedCount:rows.filter(x=>x.classification==='EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED').length,
     unityF9ReportedCount:rows.filter(x=>x.unityF9Reported).length,
     unityF9IdentityBoundCount:rows.filter(x=>x.unityF9EvidenceIdentityBound).length,
     rows,commonFailureCohorts
@@ -238,8 +302,11 @@ export function analyzeSystemAiBottlenecks({
   const actions=[];
   if(stale.length)actions.push('RECLAIM_STALE_RESERVATIONS');
   if(development.commonFailureCohorts.length)actions.push('DEVELOPMENT_FLOOR_COMMON_FAILURE_CANARY');
+  if(development.dualPlatformPreflightMismatchCount)actions.push('RETRY_EXACT_DUAL_PLATFORM_PREFLIGHT_AFTER_RESPONSIBLE_FIX');
   if(development.pendingCandidateCount)actions.push('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF');
   if(development.qualityBlockedCount)actions.push('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF');
+  if(development.firstFrameWorldBootstrapUnobservedCount)actions.push('TRACE_EXACT_PRIVATE_RUNTIME_WORLD_BOOTSTRAP');
+  if(development.firstFrameGroundingFailedCount)actions.push('REPAIR_VERIFIED_SPAWN_GROUNDING');
   if(commonFailureCohorts.length)actions.push('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE');
   if(recommendedBatch>0)actions.push('REFILL_FREE_SYSTEM_AI_CAPACITY');
   if(caretakerHotspots.length)actions.push('PRIORITIZE_PER_GAME_CARETAKER_BACKLOG');
@@ -325,9 +392,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
   console.log('SYSTEM_AI_DEVELOPMENT_FLOOR_GAMES='+result.development.total);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_EXACT='+result.development.exactF0Count);
+  console.log('SYSTEM_AI_DEVELOPMENT_DUAL_PLATFORM_PREFLIGHT_MISMATCH='+result.development.dualPlatformPreflightMismatchCount);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_REPAIR_REQUIRED='+result.development.f0RepairCount);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_CANDIDATE_HANDOFF_PENDING='+result.development.pendingCandidateCount);
   console.log('SYSTEM_AI_DEVELOPMENT_QUALITY_GATE_BLOCKED='+result.development.qualityBlockedCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_WORLD_BOOTSTRAP_UNOBSERVED='+result.development.firstFrameWorldBootstrapUnobservedCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_SERVER_SIMULATION_NOT_RUNNING='+result.development.firstFrameServerSimulationNotRunningCount);
+  console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_GROUNDING_FAILED='+result.development.firstFrameGroundingFailedCount);
   console.log('SYSTEM_AI_DEVELOPMENT_SHARED_FAILURE_COHORTS='+result.development.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
