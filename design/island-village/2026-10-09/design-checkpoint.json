@@ -90,25 +90,358 @@
       "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
       "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
       "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
+    },
+    "local_authoring_parts::8eb8d0425c433e2051c3ce64758dd9517175cda34c8733a70197f9103c402fc9:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "UNLOCK_RESIDENT",
+        "CHOOSE_NEXT_GOAL"
+      ],
+      "name": "VILLAGE_GROWTH_CATALYST",
+      "purpose": "Facilitates the progression of village growth by enabling the unlocking of new residents, activities, or areas and guiding the selection of next goals.",
+      "playerChoice": "Select a resource to unlock a new resident/area and choose the next village goal."
+    },
+    "local_authoring_parts::e1ddb7b4b53927159122003412cded5cad30e42299908a7acb5cb167c9d12a5d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to build or improve village functions",
+          "playerChoice": "Select which resource to gather and how to use it for village development"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_PLAN_MANAGER",
+          "purpose": "Manage the progression of resources to village functions and track growth milestones.",
+          "playerChoice": "Select which resource to gather, which function to build/improve, and what next goal to unlock."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_STRATEGY_ENGINE",
+          "purpose": "Manage the strategic progression of village development and resource allocation.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and determine the next goal based on current resources and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
+          "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_CATALYST",
+          "purpose": "Facilitates the progression of village growth by enabling the unlocking of new residents, activities, or areas and guiding the selection of next goals.",
+          "playerChoice": "Select a resource to unlock a new resident/area and choose the next village goal."
+        }
+      ]
+    },
+    "local_authoring_parts::95def33be0d7a610ff39f7b2b2d65a19c5ca971c407bea2780654f2ec8268535:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal.",
+        "Repeat the process to grow the village and unlock new possibilities."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to build or improve village functions",
+          "playerChoice": "Select which resource to gather and how to use it for village development"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_PLAN_MANAGER",
+          "purpose": "Manage the progression of resources to village functions and track growth milestones.",
+          "playerChoice": "Select which resource to gather, which function to build/improve, and what next goal to unlock."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_STRATEGY_ENGINE",
+          "purpose": "Manage the strategic progression of village development and resource allocation.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and determine the next goal based on current resources and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
+          "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_CATALYST",
+          "purpose": "Facilitates the progression of village growth by enabling the unlocking of new residents, activities, or areas and guiding the selection of next goals.",
+          "playerChoice": "Select a resource to unlock a new resident/area and choose the next village goal."
+        }
+      ]
+    },
+    "local_authoring_parts::95def33be0d7a610ff39f7b2b2d65a19c5ca971c407bea2780654f2ec8268535:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::a32aa557d6c81c7237388ebc4fc949cc844fa46aae8438954f81405758e158ac:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal.",
+        "Repeat the process to grow the village and unlock new possibilities."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to build or improve village functions",
+          "playerChoice": "Select which resource to gather and how to use it for village development"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_PLAN_MANAGER",
+          "purpose": "Manage the progression of resources to village functions and track growth milestones.",
+          "playerChoice": "Select which resource to gather, which function to build/improve, and what next goal to unlock."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_STRATEGY_ENGINE",
+          "purpose": "Manage the strategic progression of village development and resource allocation.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and determine the next goal based on current resources and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
+          "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_CATALYST",
+          "purpose": "Facilitates the progression of village growth by enabling the unlocking of new residents, activities, or areas and guiding the selection of next goals.",
+          "playerChoice": "Select a resource to unlock a new resident/area and choose the next village goal."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreFun": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "coreLoop": [
+        "Gather a focused set of island resources. -> Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal.",
+        "Repeat the process to grow the village and unlock new possibilities."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to build or improve village functions",
+          "playerChoice": "Select which resource to gather and how to use it for village development"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_PLAN_MANAGER",
+          "purpose": "Manage the progression of resources to village functions and track growth milestones.",
+          "playerChoice": "Select which resource to gather, which function to build/improve, and what next goal to unlock."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_STRATEGY_ENGINE",
+          "purpose": "Manage the strategic progression of village development and resource allocation.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and determine the next goal based on current resources and goals."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_EXPANSION_ENGINE",
+          "purpose": "Facilitates the expansion of village growth through strategic planning and resource management.",
+          "playerChoice": "Select a new resident, activity, or area to unlock and set the next goal for village development."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "UNLOCK_RESIDENT",
+            "CHOOSE_NEXT_GOAL"
+          ],
+          "name": "VILLAGE_GROWTH_CATALYST",
+          "purpose": "Facilitates the progression of village growth by enabling the unlocking of new residents, activities, or areas and guiding the selection of next goals.",
+          "playerChoice": "Select a resource to unlock a new resident/area and choose the next village goal."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 707774,
-      "lastMs": 97665,
+      "totalMs": 896246,
+      "lastMs": 89578,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:09:20.472Z"
+      "updatedAt": "2026-10-09T09:12:28.948Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:57:32.662Z",
-  "updatedAt": "2026-10-09T09:09:20.472Z",
+  "updatedAt": "2026-10-09T09:12:28.962Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2185,12 +2518,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:09:20.472Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:12:28.951Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/island-village/2026-10-09/design-seed.json",
+    "contentDigest": "2c14b3246f5a771d891ea198c60b4bef588094508c9cd05f3719b3086ecfc5fe",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
