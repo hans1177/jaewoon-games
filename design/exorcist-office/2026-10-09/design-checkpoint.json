@@ -34,25 +34,43 @@
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ]
+    },
+    "local_authoring_parts::00861821e6f5f3eace55b20cc2a5b2cbf8e205a651e87e16a2a29f838b57a925:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISPLAY",
+        "DISTANCE_MEASURE",
+        "SESSION_DURATION"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_1",
+        "STATE_CHANGE_2",
+        "STATE_CHANGE_3"
+      ],
+      "name": "CASUAL_GAME_FLOW_RECONFIGURATION",
+      "purpose": "Establishes the core gameplay loop through a causal chain of state transitions, ensuring that each step is both intuitive and mechanically grounded in the game's design.",
+      "playerChoice": "Select a simple input (tap/swipe) followed by a score, distance, or short session goal to initiate the flow and trigger a series of state changes that reflect the player's actions and goals within the game world."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 331286,
-      "lastMs": 43536,
+      "totalMs": 373419,
+      "lastMs": 42133,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:02:02.226Z"
+      "updatedAt": "2026-10-09T13:02:44.361Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:02:02.226Z",
+  "updatedAt": "2026-10-09T13:02:44.361Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1994,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:02:02.226Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:02:44.361Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
