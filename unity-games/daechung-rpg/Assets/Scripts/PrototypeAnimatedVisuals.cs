@@ -379,15 +379,15 @@ namespace JaewoonGames.DaechungRpg
             }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            // 실제 생성된 MeshFilter, 삼각형, 재질과 Texture2D를 검사한다.
-            // 등록 경로와 로그 문자열만으로 네이티브 그래픽 통과를 만들지 않는다.
+            // 메인: 기존 2D/2.5D 바닥·길만으로 3D를 주장하지 않고 실제 입체 메시를 요구한다.
+            // 레거시 스프라이트는 3D 대체본 검증 전까지 보존하되 입체 메시로 세지 않는다.
             if (Application.absoluteURL.Contains("qa=1"))
             {
-                int inspected = 0, validMeshes = 0, triangles = 0;
+                int inspected = 0, validMeshes = 0, triangles = 0, volumetricMeshes = 0;
                 bool materialsValid = true;
-                foreach (var renderer in new[] { _depthGround, _depthPath })
+                foreach (var renderer in FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
                 {
-                    if (renderer == null) { materialsValid = false; continue; }
+                    if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
                     inspected++;
                     var filter = renderer.GetComponent<MeshFilter>();
                     var mesh = filter != null ? filter.sharedMesh : null;
@@ -399,15 +399,23 @@ namespace JaewoonGames.DaechungRpg
                         if (mesh.GetTopology(subMesh) == MeshTopology.Triangles)
                             validTriangles += (int)(mesh.GetIndexCount(subMesh) / 3);
                     }
-                    if (validTriangles > 0) { validMeshes++; triangles += validTriangles; }
+                    if (validTriangles > 0)
+                    {
+                        validMeshes++;
+                        triangles += validTriangles;
+                        // 평면은 한 축의 두께가 없으므로 입체 캐릭터·몬스터·환경으로 인정하지 않는다.
+                        var bounds = mesh.bounds.size;
+                        if (bounds.x > 0.02f && bounds.y > 0.02f && bounds.z > 0.02f)
+                            volumetricMeshes++;
+                    }
                     materialsValid &= renderer.sharedMaterial != null
                         && renderer.sharedMaterial.shader != null && renderer.sharedMaterial.shader.isSupported;
                 }
                 var backdropTexture = _backdrop != null && _backdrop.sprite != null ? _backdrop.sprite.texture : null;
                 bool textureDecoded = backdropTexture != null && backdropTexture.width > 0 && backdropTexture.height > 0;
-                bool geometryPass = inspected == 2 && validMeshes == 2 && triangles > 0
-                    && materialsValid && textureDecoded;
-                Debug.Log($"JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER inspected={inspected} validMeshes={validMeshes} triangles={triangles} materialPass={(materialsValid ? 1 : 0)} texturePass={(textureDecoded ? 1 : 0)} status={(geometryPass ? "PASS" : "REPAIR_REQUIRED")}");
+                bool geometryPass = inspected >= 2 && validMeshes == inspected && triangles > 0
+                    && volumetricMeshes > 0 && materialsValid && textureDecoded;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER inspected={inspected} validMeshes={validMeshes} triangles={triangles} volumetricMeshes={volumetricMeshes} materialPass={(materialsValid ? 1 : 0)} texturePass={(textureDecoded ? 1 : 0)} status={(geometryPass ? "PASS" : "REPAIR_REQUIRED")}");
             }
 #endif
         }

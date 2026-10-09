@@ -42,6 +42,21 @@ test('art pipeline uses verified asset acquisition before primitive fallback and
   assert.equal(plan.policy.markerOnlyPresentationPassForbidden,true);
 });
 
+test('existing games and shared spatial assets require actual native 3D rather than 2.5D',()=>{
+  for(const target of ['unity','web','roblox']){
+    const plan=createVibeArtPipeline({request:'기존 게임 캐릭터와 세계 3D 재개발',target,quality:2});
+    assert.equal(plan.minimumSpatialPresentation.minimumFinalGameplayDimension,'3D');
+    assert.equal(plan.minimumSpatialPresentation.twoPointFiveDFinalPassForbidden,true);
+    assert.equal(plan.minimumSpatialPresentation.allSpatialGameplayLibraryAssets3dOnly,true);
+    assert.equal(plan.minimumSpatialPresentation.realNativeMeshRuntimeProofRequired,true);
+    assert.equal(plan.minimumSpatialPresentation.existing2DAction,'MANDATORY_IN_PLACE_NATIVE_3D_REDEVELOPMENT');
+    assert.equal(plan.policy.minimumFinalGameplayDimension,'3D');
+    assert.ok(plan.implementation.some(item=>item.includes('3D')));
+    assert.ok(plan.qa.some(item=>item.includes('실제 3D 메시')));
+    assert.ok(plan.steps.some(item=>item.includes('기존 게임을 포함한 모든 최종 게임플레이 월드')));
+  }
+});
+
 test('asset acquisition prefers existing verified company assets and keeps primitive fallback prototype-only',()=>{
   const company=[{id:'verified-cartoon-rig'}];
   const plan=createVibeAssetAcquisitionPlan({companyAssets:company,repositoryAssets:[{id:'repo'}],stage:'INTERNAL_PLAYTEST'});
