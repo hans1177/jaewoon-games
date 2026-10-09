@@ -695,24 +695,27 @@ const COMBAT_MUSIC_URLS={
  battle3:'https://opengameart.org/sites/default/files/raiders_march_-_loop.mp3', // Bobjt
  boss:'https://opengameart.org/sites/default/files/CleytonRX%20-%20Battle%20RPG%20Theme_1.mp3' // Cleyton Kauffman
 };
-const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false,combatAudio:null,combatKey:null,combatFailed:false};
+const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,combatUntil:0,warmupUntil:0,startPending:false,combatAudio:null,combatKey:null,combatFailed:false};
 function initMusicNoiseDeferred(){
  if(!music.ctx||music.noise||music.noiseInitPending)return;music.noiseInitPending=true;
  const build=()=>{music.noiseInitPending=false;if(!music.ctx||music.noise)return;const len=Math.max(1,Math.floor(music.ctx.sampleRate*.12)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf};
  if('requestIdleCallback'in window)requestIdleCallback(build,{timeout:700});else setTimeout(build,250)
 }
 function ensureMusicStarted(){
- if(!music.enabled||music.startPending)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
- music.startPending=true;
- const boot=()=>{
-  music.startPending=false;if(!music.enabled)return;
-  if(!music.ctx){music.ctx=new AC({latencyHint:'playback'});music.master=music.ctx.createGain();music.master.gain.value=music.volume;music.master.connect(music.ctx.destination)}
+ // 모바일 터치 이벤트에서 즉시 오디오 권한을 확보한다.
+ if(!music.enabled)return;
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ try{
+  if(!music.ctx){music.ctx=new AC({latencyHint:'interactive'});music.master=music.ctx.createGain();music.master.gain.value=music.volume;music.master.connect(music.ctx.destination)}
   if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});
-  music.started=true;music.warmupUntil=performance.now()+1800;
-  if(!music.nextAt){music.nextAt=music.ctx.currentTime+.18;music.trackStart=music.ctx.currentTime+.18}
-  initMusicNoiseDeferred()
- };
- if('requestIdleCallback'in window)requestIdleCallback(boot,{timeout:500});else setTimeout(boot,220)
+  music.started=true;
+  if(!music.nextAt){music.nextAt=music.ctx.currentTime+.12;music.trackStart=music.nextAt}
+  initMusicNoiseDeferred();
+  if(music.combatAudio&&music.combatFailed&&!music.combatAudio.error&&music.combatAudio.paused){
+   const retry=music.combatAudio.play();
+   if(retry&&retry.then)retry.then(()=>{music.combatFailed=false}).catch(()=>{});
+  }
+ }catch(e){music.started=false}
 }
 function scaleFreq(root,degree,minor=false,oct=0){const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)}
 function smoothVoice(freq,at,dur,gain=.035,wave='sine',filterHz=1600,attack=.06){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();o.type=wave;o.frequency.setValueAtTime(freq,at);f.type='lowpass';f.frequency.value=filterHz;f.Q.value=.5;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+Math.min(attack,dur*.35));g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.04)}
@@ -769,7 +772,7 @@ function playerCombatActive(){
 function desiredMusicTheme(){
  const p=state.player,boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
  if(boss){music.battleActive=false;music.battleTheme=null;return'boss'}
- const battle=playerCombatActive();
+ const battle=playerCombatActive()||performance.now()<(music.combatUntil||0);
  if(battle){if(!music.battleActive){music.battleActive=true;music.battleTheme=pickBattleTheme()}return music.battleTheme||'battle2'}
  music.battleActive=false;music.battleTheme=null;
  if(state.area==='storylab1'||state.area==='storylab2')return'underground';
@@ -3030,6 +3033,11 @@ function firePlayerArrow(now,p,w,arrow){
 }
 function attack(){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ // 공격 시 사용자 터치 중 새 전투곡을 시작하고 잠시 유지한다.
+ if(state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120))){
+  music.combatUntil=now+8000;
+  if(music.enabled){ensureMusicStarted();syncCombatMusic(desiredMusicTheme())}
+ }
  playGameSfx('playerAttack');
  const armor=item(p.armor);
  if(armor?.guardProc&&Math.random()<armor.guardProc){p.guardUntil=now+(armor.guardDuration||10000);showNotice('늪 골렘 방어 · 10초간 받는 피해 50% 감소')}
@@ -5856,7 +5864,7 @@ canvas.addEventListener('pointermove',e=>{
  if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
  if(!state.blueprint)return;moveBlueprint(e.clientX+state.camera.x,e.clientY+state.camera.y)
 });
-const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);stick.addEventListener('lostpointercapture',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{if(!resettingGameSave)saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);stick.addEventListener('lostpointercapture',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{capture:true});window.addEventListener('keydown',ensureMusicStarted,{capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{if(!resettingGameSave)saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}initWorld();loadGame();applyOwnerInventoryGift();markExplored();discoverRegion();resize();updateHud();requestAnimationFrame(loop);const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('가방이 생겼어 · 동쪽 철 협곡에서 철을 찾아봐');
 })();
 </script>
