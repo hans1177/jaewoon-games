@@ -34,25 +34,40 @@
         "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
         "보조 요소 c는 MAIN/A/B의 관계를 상황별로 변주하며, 발견·숙련·재방문 @의 깊이를 구분하여 게임의 루프를 확대한다."
       ]
+    },
+    "local_authoring_parts::5d2a784172c2a69793923b7f243defd0fa4daa002b85e018d1a7af70192b77b1:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAY_OPTION"
+      ],
+      "name": "PUZZLE_CORE_RULE_SET",
+      "purpose": "PLAYERS_ACT_AS_GAME_ENGINE_TO_DRIVE_REPLAYABILITY_AND_COMPLEXITY",
+      "playerChoice": "START_WITH_CLEAR_GOAL, CHOOSE_MOVES, REACH_OBJECTIVE, EARN_REWARD, FACE_NEW_CHALLENGE, CONTINUE_THE_LOOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 391021,
-      "lastMs": 60951,
+      "totalMs": 429372,
+      "lastMs": 38351,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:57:23.168Z"
+      "updatedAt": "2026-10-09T14:58:01.521Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:50:52.121Z",
-  "updatedAt": "2026-10-09T14:57:23.168Z",
+  "updatedAt": "2026-10-09T14:58:01.521Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,7 +1657,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:57:23.168Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:58:01.521Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
