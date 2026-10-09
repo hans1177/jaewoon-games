@@ -1362,25 +1362,43 @@
     },
     "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:ruleId": {
       "ruleId": "ACTION_SURVIVAL_ROGUELITE_1"
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:trigger": {
+      "trigger": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정"
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:range": {
+      "range": 100
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:rangeUnit": {
+      "rangeUnit": "개미 종족 선택"
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:resource": {
+      "resource": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핸들링"
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:cost": {
+      "cost": 100
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:cooldownSeconds": {
+      "cooldownSeconds": 5
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 25,
+      "calls": 33,
+      "successes": 31,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1980892,
-      "lastMs": 4544,
+      "totalMs": 2009262,
+      "lastMs": 3826,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:14:48.734Z"
+      "updatedAt": "2026-10-09T23:15:17.114Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:14:48.734Z",
+  "updatedAt": "2026-10-09T23:15:17.114Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3152,7 +3170,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:14:48.734Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:15:17.114Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
