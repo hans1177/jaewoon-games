@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "gameId": "human-go",
+  "date": "2026-10-10",
+  "seedId": "OWNER-FULL-REBUILD-HUMAN-GO-20260916",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "09c00a6a5a49ee5f27ea5074446965313ee2ec49747c1c161eeba8cacd910fac",
+  "engineDigest": "82009f805d07dbc37fef4617083aa8c5a90af5bb1042521a1f511131cb58898c",
+  "contentDigest": "5d676d5b97fdc219899856f7951f7b41e74bdf5cb7fed835922ce133cce8ba07",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 휴먼 GO에서 Explore a compact activity space and discover a person, task or collectible opportunity.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 게임은 주제가 중심이며, A/B/c/@와 세계 인과법칙에 따라 다양한 상태 변화와 진화를 통해 새로운 정체성을 형성한다.",
+    "creativeGrammar": {
+      "mainIdentity": "휴먼 GO - 생활 탐험 게임",
+      "a": {
+        "system": "게임 시스템 + 축",
+        "material": "사회적 관계, 발견, 성장",
+        "materialDomain": "문화, 사회, 인물",
+        "stateChange": "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택"
+      },
+      "b": {
+        "system": "다른 시스템 + 축",
+        "material": "기존 메커니즘, 진화, 새로운 가능성",
+        "materialDomain": "기술, 예술, 역사",
+        "stateChange": "플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건"
+      },
+      "abCausality": "양방향 실제 상태 교환 (발견 → 숙련 → 재방문 → 재해석 → 고급 운용)",
+      "abEvolution": {
+        "aChangesB": "게임 시스템 + 축 -> 기존 메커니즘, 진화, 새로운 가능성",
+        "bChangesA": "다른 시스템 + 축 -> 게임 시스템 + 축의 실제 상태 교환",
+        "lateGameChange": "발견 → 숙련 → 재방문 → 재해석 → 고급 운용"
+      },
+      "materialFusion": {
+        "contrast": "사회적 관계, 발견, 성장 vs 기존 메커니즘, 진화, 새로운 가능성",
+        "causalBridge": "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택",
+        "removalConsequence": "기존 메커니즘 제거 후 새로운 가능성 확보 및 진화 진행"
+      },
+      "storyCausalChain": {
+        "cause": "사람들의 행동과 관계를 수집·발现·성장 대상으로 삼는 가벼운 생활 탐험 게임",
+        "characterConflict": "플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
+        "playerChoice": "숙련된 활동 -> 新しい 가능성이 실제로 달라지는 경험 반복",
+        "worldChange": "발견 -> 숙련 -> 재방문 -> 재해석 -> 고급 운용",
+        "nextEvent": "재해석을 바탕으로 고급 운용이 이루어지며, 이는 새로운 정체성을 형성한다."
+      },
+      "cThemes": [
+        {
+          "name": "사회적 관계",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 다른 플레이어와의 관계를 수집하며, 이는 게임 내에서 중요한 진화 요소로 작용"
+        },
+        {
+          "name": "발견",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어는 새로운 인물, 작업이나 콘텐츠를 발견하여 게임 진행에 영향을 미친다"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "생활 탐험",
+          "gameplayEffect": "게임 자체가 주제를 중심으로 하며, 플레이어가 사회적 관계와 발견을 통해 세계를 탐험하는 방식이 적용된다"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "진화 및 가능성",
+          "gameplayEffect": "기존 메커니즘과 새로운 가능성을 결합해 게임의 진화 과정을 구현하고, 이를 바탕으로 정체성이 형성된다"
+        }
+      ],
+      "cGenreInterlock": "사회적 관계 → 발现在 → 성장 → 진화 → 가능성 확보",
+      "cWorldAndGameplayEffect": "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택; 이는 기존 메커니즘과 새로운 가능성 사이에서 양방향 실제 상태 교환을 보여준다",
+      "delveDiscoveries": [
+        {
+          "clue": "사람들의 행동과 관계를 수집·발现·성장 대상으로 삼는 가벼운 생활 탐험 게임",
+          "discovery": "플레이어는 휴먼 GO에서 Explore a compact activity space and discover a person, task or collectible opportunity.",
+          "newChoice": "숙련된 활동 -> 새로운 가능성이 실제로 달라지는 경험 반복"
+        },
+        {
+          "clue": "사회적 관계, 발견, 성장의 층위가 있는 진화 시스템",
+          "discovery": "플레이어가 다른 플레이어와의 관계를 수집하며, 이는 게임 내에서 중요한 진화 요소로 작용",
+          "newChoice": "재방문 → 재해석 → 고급 운용"
+        },
+        {
+          "clue": "기존 메커니즘과 새로운 가능성의 결합",
+          "discovery": "기존 메커니즘 제거 후 새로운 가능성 확보 및 진화 진행",
+          "newChoice": "진화 과정을 통해 정체성이 형성된다"
+        },
+        {
+          "clue": "게임 자체가 주제를 중심으로 하며 사회적 관계와 발견을 바탕으로 세계를 탐험하는 방식",
+          "discovery": "플레이어는 새로운 인물, 작업이나 콘텐츠를 발견하여 게임 진행에 영향을 미친다",
+          "newChoice": "새로운 가능성을 실제 세계 상태 변화로 반영"
+        }
+      ],
+      "delveGrowthRule": "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택; 이는 기존 메커니즘과 새로운 가능성 사이에서 양방향 실제 상태 교환을 보여준다",
+      "finalGameIdentity": "사람들의 행동과 관계를 수집·발现·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다. 플레이어는 휴먼 GO에서 Explore a compact activity space and discover a person, task or collectible opportunity.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 게임은 주제가 중심이며, A/B/c/@와 세계 인과법칙에 따라 다양한 상태 변화와 진화를 통해 새로운 정체성을 형성한다."
+    },
+    "playerFantasy": "플레이어는 휴먼 GO에서 탐험하는 공간 내에서 다른 플레이어와의 관계를 수집하며, 이를 바탕으로 새로운 활동이나 콘텐츠를 발견하여 게임 진행에 영향을 미친다.",
+    "coreFun": "플레이어는 휴먼 GO에서 작은 활동 공간 내에서 인물, 작업 또는 콘텐츠를 발견하여 그 결과로 다음 전략 및 경로가 달라지는 경험을 반복하게 된다. 이 과정에서는 사회적 관계와 발견이 중요한 역할을 하며, 이러한 상태 변화는 게임의 진화에 기여한다.",
+    "coreLoop": [
+      "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+      "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택",
+      "숙련된 활동 -> 새로운 가능성이 실제로 달라지는 경험 반복"
+    ],
+    "signatureSystems": [
+      {
+        "id": "signatureSystems[0]",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "playerAction",
+          "worldState"
+        ],
+        "stateOutputs": [
+          "newPossibility"
+        ],
+        "name": "생활 탐험 진화 시스템",
+        "purpose": "사람들의 행동과 관계를 수집·발现·성장 대상으로 삼는 가벼운 생활 탐험 게임에서 플레이어가 실제 세계 상태 변화에 따라 새로운 가능성 확보 및 진화 진행",
+        "playerChoice": "숙련된 활동 -> 新しい 가능성이 실제로 달라지는 경험 반복의 전략 선택 및 경로 결정 중인 주요 선택지와 구체적 실행 방식 정립 및 이전 설계안과 일관된 진화 과정 제시 및 기존 메커니즘과의 양방향 실제 상태 교환 적용 및 재해석, 재방문, 고급 운용 등 다양한 진화 단계 포함됨으로서 최종 정체성을 형성함을 목표로 함"
+      },
+      {
+        "id": "signatureSystems[1]",
+        "grammarRole": "A",
+        "stateInputs": [
+          "playerAction",
+          "worldState"
+        ],
+        "stateOutputs": [
+          "newPossibility"
+        ],
+        "name": "생활 탐험 진화 시스템",
+        "purpose": "플레이어가 다른 플레이어와의 관계를 수집하며, 이는 게임 내에서 중요한 진화 요소로 작용",
+        "playerChoice": "숙련된 활동 -> 새로운 가능성이 실제로 달라지는 경험 반복"
+      },
+      {
+        "id": "signatureSystems[2]",
+        "grammarRole": "B",
+        "stateInputs": [
+          "playerAction",
+          "worldState"
+        ],
+        "stateOutputs": [
+          "newPossibility"
+        ],
+        "name": "생활 탐험 진화 시스템 - 재방문 및 고급 운용",
+        "purpose": "플레이어가 이미 발견한 인물, 작업 또는 콘텐츠에 대해 새로운 선택을 하며, 이를 바탕으로 세계 상태 변화와 진화 과정을 이끌어낸다.",
+        "playerChoice": "재방문 → 재해석 → 고급 운용 → 정체성 형성 전략의 실행 및 다음 경험 확대를 위한 선택 사례 제공 중인 숙련된 활동을 의미함으로써 실제 세계 상태 변화로 반영됨니다."
+      },
+      {
+        "id": "signatureSystems[3]",
+        "grammarRole": "c",
+        "stateInputs": [
+          "playerAction",
+          "worldState"
+        ],
+        "stateOutputs": [
+          "newPossibility"
+        ],
+        "name": "생활 탐험 진화 시스템 - 재방문 및 고급 운용",
+        "purpose": "숙련된 활동 -> 新しい 가능성이 실제로 달라지는 경험 반복",
+        "playerChoice": "재방문 → 재해석 → 고급 운용 → 새로운 정체성 형성 중간 단계의 선택과 실행 전략 결정 및 실행 계획 제안 및 구조적 변환 및 이전 상태와의 연결 및 다음 사건 예측 및 게임 진행 방향 설정 및 실제 세계 상태 변화 기반의 발전 과정 및 인식 확대 및 플레이어 행동에 따른 상호작용 및 결과 및 다음 선택 생성 및 진화 과정의 층위별 조절 및 감염 전 조건 포함 및 실질적 인과 변화 적용 및 복잡한 용어 및 기능 개수 및 끝없는 반복 및 수치 증가 대신 깊이로 대체 및 단서 존재 및 규칙 일관성 유지 및 보상은 발견과 이해와 숙련에 맞게 약속됨"
+      },
+      {
+        "id": "signatureSystems[4]",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "playerAction",
+          "worldState"
+        ],
+        "stateOutputs": [
+          "newPossibility"
+        ],
+        "name": "생활 탐험 진화 시스템 - 재방문 및 고급 운용",
+        "purpose": "플레이어가 기존 메커니즘과 새로운 가능성 사이에서 양방향 실제 상태 교환을 통해 정체성을 형성하는 과정",
+        "playerChoice": "재방문 → 재해석 → 고급 운용"
+      }
+    ],
+    "multiplayerMode": "COOP"
+  },
+  "updatedAt": "2026-10-09T18:14:36.682Z"
+}
