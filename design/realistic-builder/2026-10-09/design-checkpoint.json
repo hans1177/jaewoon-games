@@ -53,21 +53,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 420741,
-      "lastMs": 36305,
+      "totalMs": 658922,
+      "lastMs": 238181,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:20:00.333Z"
+      "updatedAt": "2026-10-09T11:23:58.516Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:12:59.563Z",
-  "updatedAt": "2026-10-09T11:20:00.333Z",
+  "updatedAt": "2026-10-09T11:23:58.518Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2416,11 +2416,23 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::9d40a5418befda61cd2b010f868094103483ebf85a7e3540ac50a5bf8d73e8c3:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "ACTION_SURVIVAL_ROGUELITE"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::9d40a5418befda61cd2b010f868094103483ebf85a7e3540ac50a5bf8d73e8c3:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:20:00.333Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T11:23:58.516Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
