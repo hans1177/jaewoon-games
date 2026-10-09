@@ -903,25 +903,53 @@
         "resourceFlow": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다. 이 과정에서는 플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다.",
         "balanceRules": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다. 이 과정에서는 플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
       }
+    },
+    "local_authoring_parts::759499fd07497be430f4862fa22ae49aba9efbd155db6b5ab1ca0e09e84eb04e:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변환에 연결되어 있으며, 시스터 상호작용을 통해 반복 가능한 핵심 루프를만",
+          "newGameplay": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "systemImpact": "보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+        },
+        {
+          "milestone": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+          "newGameplay": "플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다.",
+          "systemImpact": "선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핸들링 과정을 구축한다."
+        },
+        {
+          "milestone": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle.",
+          "newGameplay": "플레이어는 보상/위험을 통한 다음 선택을 통해 루프를 계속적으로 확장시킨다.",
+          "systemImpact": "주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 통해 게임의 진척을 강화한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+        ],
+        "retryFlow": "플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다. 이 과정에서는 보상/위험을 통한 다음 선택을 통해 루프를 계속적으로 확장시킨다.",
+        "riskPressure": "선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핸들링 과정을 구축한다.",
+        "recoveryRules": "플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 23,
+      "calls": 27,
+      "successes": 24,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2169038,
-      "lastMs": 65696,
+      "totalMs": 2346811,
+      "lastMs": 177773,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:37:47.269Z"
+      "updatedAt": "2026-10-09T09:40:45.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:01:38.141Z",
-  "updatedAt": "2026-10-09T09:37:47.274Z",
+  "updatedAt": "2026-10-09T09:40:45.054Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3150,15 +3178,328 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "1d0278d488afb196f2db225d9580f258fa8bdcaab40ef4e1b7cffd06d0349e79"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:37:47.274Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "INPUT_SELECT_OUTPUT"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "RESULT_ACTION_NEXT_SELECTION"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].trigger",
+          "value": "INPUT_SELECT_OUTPUT"
+        },
+        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "RESULT_ACTION_NEXT_SELECTION"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].trigger",
+          "value": "INPUT_SELECT_OUTPUT"
+        },
+        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "RESULT_ACTION_NEXT_SELECTION"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].trigger",
+          "value": "INPUT_SELECT_OUTPUT"
+        },
+        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "RESULT_ACTION_NEXT_SELECTION"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].trigger",
+          "value": "INPUT_SELECT_OUTPUT"
+        },
+        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "RESULT_ACTION_NEXT_SELECTION"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "방치 성장 RPG에서 플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핵심 루프를 만든다. 이 루프는 입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순서로 구성되며, 플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핵심 루프를 만든다. 이 루프는 입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순서로 구성되며, 플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다.",
+        "resourceFlow": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다. 이 과정에서는 플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다.",
+        "balanceRules": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다. 이 과정에서는 플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변환에 연결되어 있으며, 시스터 상호작용을 통해 반복 가능한 핵심 루프를만",
+          "newGameplay": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "systemImpact": "보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+        },
+        {
+          "milestone": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+          "newGameplay": "플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다.",
+          "systemImpact": "선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핸들링 과정을 구축한다."
+        },
+        {
+          "milestone": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle.",
+          "newGameplay": "플레이어는 보상/위험을 통한 다음 선택을 통해 루프를 계속적으로 확장시킨다.",
+          "systemImpact": "주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 통해 게임의 진척을 강화한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+        ],
+        "retryFlow": "플레이어는 매번 새로운 경로와 재방문을 통해 게임의 진척을 촉진한다. 이 과정에서는 보상/위험을 통한 다음 선택을 통해 루프를 계속적으로 확장시킨다.",
+        "riskPressure": "선택 결과가 다음 상태 변환에 연결되어 있으며, 시스템 상호작용을 통해 반복 가능한 핸들링 과정을 구축한다.",
+        "recoveryRules": "플레이어는 보상을 획득하고, 성장 리소스를 생성하며, 팀워크나 개인적 성취감을 느낄 수 있는 방식으로 진행된다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T09:40:45.050Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
