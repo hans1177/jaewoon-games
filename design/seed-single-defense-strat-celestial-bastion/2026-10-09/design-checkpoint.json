@@ -502,25 +502,28 @@
     },
     "local_authoring_parts::3ccea2bd78e6c0f5d40ef1382ef4fe6880b42f5ffa7bf989791d9236a8e729a3:toSystem": {
       "toSystem": "ENEMY_WAVE_READING_SYSTEM"
+    },
+    "local_authoring_parts::3ccea2bd78e6c0f5d40ef1382ef4fe6880b42f5ffa7bf989791d9236a8e729a3:trigger": {
+      "trigger": "Enemy wave is read and the result is processed to generate resources, which are then used for strategic upgrades or new placements before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2004922,
-      "lastMs": 59904,
+      "totalMs": 2066686,
+      "lastMs": 61764,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:14:31.253Z"
+      "updatedAt": "2026-10-09T13:15:33.018Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:41:06.097Z",
-  "updatedAt": "2026-10-09T13:14:31.253Z",
+  "updatedAt": "2026-10-09T13:15:33.018Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3035,7 +3038,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:14:31.253Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:15:33.018Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
