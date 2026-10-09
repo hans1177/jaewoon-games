@@ -608,25 +608,28 @@
     },
     "local_authoring_parts::292416b4bf1765fe929d5c43600b1b4c6e86de50822b01a213e4aa8e355c262f:toSystem": {
       "toSystem": "worldRuleSystem4"
+    },
+    "local_authoring_parts::292416b4bf1765fe929d5c43600b1b4c6e86de50822b01a213e4aa8e355c262f:trigger": {
+      "trigger": "플레이어가 주변의 적·아이템·NPC와 선택에 따라 새로운 행동·관계·보상을 생성하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2532849,
-      "lastMs": 68433,
+      "totalMs": 2622460,
+      "lastMs": 89611,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:07:50.415Z"
+      "updatedAt": "2026-10-09T04:11:18.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T02:25:37.455Z",
-  "updatedAt": "2026-10-09T04:09:48.660Z",
+  "updatedAt": "2026-10-09T04:11:18.275Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3097,7 +3100,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:07:50.415Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:11:18.275Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
