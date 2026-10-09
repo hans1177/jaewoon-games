@@ -843,25 +843,43 @@
         "OUTPUT"
       ],
       "fromSystem": "CORE_LOOP_DESIGN"
+    },
+    "local_authoring_parts::69b1fb5f3bd3c8bd9281cb8b8fa1a62bd4cb73af58d84f6790125d99bfd5bb37:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "INPUT",
+      "stateChange": "SYSTEM_INTERCONNECTION"
+    },
+    "local_authoring_parts::5f9997275bce79a933e4996eda86908859866b1feb28bba5eccc878bf866a8ca:systemInterconnections:0": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN",
+      "toSystem": "CORE_LOOP_DESIGN",
+      "trigger": "INPUT",
+      "stateChange": "SYSTEM_INTERCONNECTION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 25,
+      "calls": 29,
+      "successes": 26,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2916671,
-      "lastMs": 91255,
+      "totalMs": 3005082,
+      "lastMs": 88411,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T00:09:58.513Z"
+      "updatedAt": "2026-10-09T00:11:26.925Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T00:09:58.513Z",
+  "updatedAt": "2026-10-09T00:11:26.927Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3206,7 +3224,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:09:58.513Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:11:26.927Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
