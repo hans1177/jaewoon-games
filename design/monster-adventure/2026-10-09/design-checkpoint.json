@@ -579,25 +579,98 @@
     },
     "local_authoring_parts::e3efc93b1563ce44afc5c6e5a80fb7d7b77984118d23611669b1b6eab1d23c90:trigger": {
       "trigger": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::e3efc93b1563ce44afc5c6e5a80fb7d7b77984118d23611669b1b6eab1d23c90:stateChange": {
+      "stateChange": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::f7dd765c312803572b08c4ca0c831d959cc92a5090aa5020649fff4085098469:systemInterconnections:4": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "END_WORLD_STATE"
+      ],
+      "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+      "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "trigger": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
+      "stateChange": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::f80360b85ccc8a4ed5ee6dc74450354ea4ea429cc7925178bbfd536c132fedf3:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+          "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "END_WORLD_STATE"
+          ],
+          "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+          "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+          "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "END_WORLD_STATE"
+          ],
+          "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+          "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+          "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "END_WORLD_STATE"
+          ],
+          "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+          "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. This action initiates the core loop by transforming the world state through casual gameplay, unlocking progression opportunities via immediate feedback and small risk choices.",
+          "stateChange": "MONSTER_ADVENTURE_CORE_FUN → MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "fromId": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명",
+          "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "END_WORLD_STATE"
+          ],
+          "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+          "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. This action initiates the core loop by transforming the world state through casual gameplay, unlocking progression opportunities via immediate feedback and small risk choices.",
+          "stateChange": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "fromId": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명",
+          "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "END_WORLD_STATE"
+          ],
+          "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+          "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "trigger": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
+          "stateChange": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 50,
-      "successes": 50,
+      "calls": 51,
+      "successes": 51,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2027554,
-      "lastMs": 32392,
+      "totalMs": 2059643,
+      "lastMs": 32089,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:41:08.346Z"
+      "updatedAt": "2026-10-09T01:41:40.436Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:41:08.346Z",
+  "updatedAt": "2026-10-09T01:41:40.439Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2838,7 +2911,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:41:08.346Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:41:40.439Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
