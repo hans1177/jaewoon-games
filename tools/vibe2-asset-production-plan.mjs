@@ -3695,7 +3695,7 @@ export function buildVibeAssetProductionPlan({
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
-  const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
+  const duelCombatRequested=Boolean(task.combatTraditions?.length)||/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수|사무라이|samurai|발도|iaido|무협|murim|wuxia|경공|장풍|닌자|ninja|판타지.*(?:모션|전투|스킬)|fantasy.*(?:motion|combat|skill))/i.test(request);
   const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
   const requestedWildlifeSpecies=/멧돼지|boar/i.test(request)?'BOAR'
     :/사슴|deer/i.test(request)?'DEER'
@@ -3746,6 +3746,15 @@ export function buildVibeAssetProductionPlan({
     :/주짓수|jiu.?jitsu/i.test(request)?'JIU_JITSU_GRAPPLING'
     :/mma/i.test(request)?'MMA_HYBRID'
     :requestedWeaponFamily==='UNARMED'?'MMA_HYBRID':null;
+  // 메인: 유파는 기존 그래픽 제작 경로에서 선택하며 게임 로직을 수정하지 않는다.
+  const requestedCombatTraditions=freezeList(unique([
+    ...(Array.isArray(task.combatTraditions)?task.combatTraditions:task.combatTraditions?[task.combatTraditions]:[]),
+    ...(/사무라이|samurai|발도|iaido/i.test(request)?['SAMURAI']:[]),
+    ...(/무협|murim|wuxia|경공|장풍/i.test(request)?['WUXIA']:[]),
+    ...(/판타지|fantasy|마력|마법|spellblade/i.test(request)?['FANTASY']:[]),
+    ...(/닌자|ninja|shinobi/i.test(request)?['NINJA']:[]),
+    ...(/기사|knight|paladin/i.test(request)?['KNIGHT']:[])
+  ].map(value=>clean(value).toUpperCase()).filter(Boolean)));
   const requestedCombatRole=/피니셔|finisher/i.test(request)?'FINISHER'
     :/패링|parry|카운터|counter/i.test(request)?'PARRY_OR_COUNTER'
     :/회피|dodge|구르기|roll/i.test(request)?'DODGE'
@@ -4732,10 +4741,15 @@ export function buildVibeAssetProductionPlan({
         requestedWeaponFamily,
         requestedMartialStyle,
         requestedCombatRole,
+        requestedCombatTraditions,
         authoringPreview:duelCombatRequested?freeze(createDuelCombatAuthoringRecipe({
           weaponFamily:requestedWeaponFamily||'UNARMED',
           martialStyle:requestedMartialStyle||'MMA_HYBRID',
           role:requestedCombatRole,
+          combatTraditions:requestedCombatTraditions,
+          terrainMaterial:task.terrainMaterial||'UNSPECIFIED',
+          effectMaterial:task.effectMaterial||'PHYSICAL',
+          artisticIntent:task.artisticIntent||'',
           platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY'
         })):null,
         target:clean(companyRegistry?.duelCombatMotion?.target)||null,
