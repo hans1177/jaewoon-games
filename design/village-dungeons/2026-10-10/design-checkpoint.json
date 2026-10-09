@@ -449,25 +449,38 @@
       "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
       "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프로, 실질적 인과 변화를 통해 경제적 트레이드오프에 기반하여 시작되는 게임 진행 방향을 제작",
       "playerChoice": "새로운 전략/경로/성장 가능성이 실제로 달라지는 경험을 선택함으로써 중후반 두 시스템의 관계 변화가 발생하며, 이는 실제 세계 상태 변화에 따라 재설계됨"
+    },
+    "local_authoring_parts::7fbdff75d9ef99358f68bd9870736aac568e8831b54d8d58805c8c35573f479a:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "입력(손 tap/swipe)"
+      ],
+      "stateOutputs": [
+        "첫 성공, 첫 위험/선택"
+      ],
+      "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
+      "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프의 실질적 인과 변화를 유도하며, A→B, B→A의 양방향 상태 교환을 구현",
+      "playerChoice": "실제 세계 상태 변화에 따라 새로운 전략/경로/성장 가능성이 발생하며, 이는 기존 시스템과 인과적으로 연계됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1316214,
-      "lastMs": 103488,
+      "totalMs": 1417777,
+      "lastMs": 101563,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:23:02.243Z"
+      "updatedAt": "2026-10-09T21:24:43.807Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-09T21:23:02.243Z",
+  "updatedAt": "2026-10-09T21:24:43.807Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2230,7 +2243,7 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:23:02.243Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:24:43.807Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
