@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1:identity": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\n\n플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.로 실제 행동을 수행하며, 이 과정에서 자원 목표 또는 거점 개선을 명확히 완료하게 된다.\n\n대표적인 대표 행동은 'Resource Risk Decision'이며, 이는 주요 플레이 약속인 '시그니처 세계 규칙'과 직접 연결되어야 한다.\n\n주요 상태변화는 'Shelter Progression'으로, 이는 학문적 규칙 및 관찰 가능한 상태변화를 포함해야 하며, 즉각적 결과와 함께 정체성 문장과 같은 플레이 약속을 증명해야 한다.\n\n게임 규칙은 MAIN=기본 게임 주제/정체성, A/B=게임 시스템+해당 축 창작 소재, cGenres= 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣고, @=발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙에 따라 설계된다.\n\nMAIN에는 소재만 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600185,
-      "lastMs": 300101,
+      "totalMs": 861938,
+      "lastMs": 261753,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:02:24.769Z"
+      "updatedAt": "2026-10-09T18:06:46.524Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:24.564Z",
-  "updatedAt": "2026-10-09T18:02:24.769Z",
+  "updatedAt": "2026-10-09T18:06:46.525Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1735,5 +1739,9 @@
   "localAuthoringSplits": {
     "858d89ae2d06831456fac8eb64ddc860e0275d112d9bedcd74e1c812120b5ea1": true,
     "06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T18:06:46.525Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
