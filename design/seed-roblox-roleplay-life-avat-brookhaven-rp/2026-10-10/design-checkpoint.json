@@ -28,25 +28,77 @@
         "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
       },
       "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization."
+    },
+    "local_authoring_parts::e9df9e23a50a9e268cd40c9e972adc622df9d6813338302d5820e6844a3426b1:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "Progression path is altered based on player's current build and available resources.",
+        "bChangesA": "Build customization is modified to match the new progression direction.",
+        "lateGameChange": "Player's final decision creates a new causal loop between progression and build, influencing future encounters."
+      },
+      "materialFusion": {
+        "contrast": "Survival mechanics are contrasted with resource management through dynamic progression.",
+        "causalBridge": "Player's choices create a bridge between survival challenges and strategic planning.",
+        "removalConsequence": "Removing a secondary genre removes the corresponding progression path and build modification."
+      },
+      "storyCausalChain": {
+        "cause": "Player initiates a survival run with limited resources and risk assessment.",
+        "characterConflict": "The character faces escalating threats that require adaptive strategies.",
+        "playerChoice": "The player chooses to customize their build for future encounters.",
+        "worldChange": "The world state shifts to reflect the new progression path and modified build.",
+        "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
+      }
+    },
+    "local_authoring_parts::b6fe26561ddda9938623fbbae5dcdcd90a76b8af723309c100e22ac8bf3d055c:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Survival, Resource Management, Risk Assessment",
+        "materialDomain": "Real-Time",
+        "stateChange": "Player's action leads to state change of resource allocation and risk assessment."
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Progression, Build Customization, Strategic Planning",
+        "materialDomain": "Dynamic Progression",
+        "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
+      },
+      "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+      "abEvolution": {
+        "aChangesB": "Progression path is altered based on player's current build and available resources.",
+        "bChangesA": "Build customization is modified to match the new progression direction.",
+        "lateGameChange": "Player's final decision creates a new causal loop between progression and build, influencing future encounters."
+      },
+      "materialFusion": {
+        "contrast": "Survival mechanics are contrasted with resource management through dynamic progression.",
+        "causalBridge": "Player's choices create a bridge between survival challenges and strategic planning.",
+        "removalConsequence": "Removing a secondary genre removes the corresponding progression path and build modification."
+      },
+      "storyCausalChain": {
+        "cause": "Player initiates a survival run with limited resources and risk assessment.",
+        "characterConflict": "The character faces escalating threats that require adaptive strategies.",
+        "playerChoice": "The player chooses to customize their build for future encounters.",
+        "worldChange": "The world state shifts to reflect the new progression path and modified build.",
+        "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 869587,
-      "lastMs": 46643,
+      "totalMs": 920215,
+      "lastMs": 50628,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:06:54.939Z"
+      "updatedAt": "2026-10-09T18:07:45.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:06:54.939Z",
+  "updatedAt": "2026-10-09T18:07:45.569Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +1812,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:06:54.939Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:07:45.569Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
