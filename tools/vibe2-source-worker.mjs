@@ -2372,6 +2372,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     ...(volume.version===1?[`contentVolume=authored:${Number(volume.authoredItemCount||0)} sourceNamedCandidates:${Number(volume.namedSourceCandidateCount||0)} sourceReview:${Number(volume.sourceReviewRequiredCount||0)} runtimeVerified:${Number(volume.runtimeVerifiedCount||0)} status:DESIGN_SOURCE_AND_RUNTIME_UNVERIFIED`]:[]),
     ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} linkedRules:${(chosenVolume.linkedRuleIds||[]).map(clean).join(',')||'NONE'} sourceOwner:${clean(chosenVolume.designResponsibleSystem)||'REVIEW_ACTUAL_SOURCE_OWNER'} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
     ...volumeSpecs,
+    ...(chosenVolume?[`volumeRequiredBehavior=${(chosenVolume.requiredBehavior||[]).map(clean).filter(Boolean).join(' | ')}; status=NATIVE_PLAY_QA_REQUIRED; designOnlyPass=FORBIDDEN`]:[]),
     `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
@@ -2409,7 +2410,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2445,7 +2446,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','contentCompletionAcceptance=',
+    'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
