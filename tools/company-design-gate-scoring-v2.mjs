@@ -163,6 +163,19 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       reject('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
         'C에는 다른 두 장르가 필수다. 메인 장르가 중심 플레이를 만들고 보조 장르가 실제 규칙·선택·위험을 바꾸는 인과 관계를 작성한다.');
     }
+    const surprise=grammar?.materialFusion||{},story=grammar?.storyCausalChain||{},evolution=grammar?.abEvolution||{};
+    if(!['contrast','causalBridge','removalConsequence'].every(field=>textReady(surprise[field],25))){
+      reject('DESIGN_MATERIAL_FUSION_SURPRISE_UNPROVEN','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
+        'A/B 개별 소재의 차이와 실제 인과 다리, 소재 하나를 제거하면 사라지는 플레이를 명시해야 한다.');
+    }
+    if(!['cause','characterConflict','playerChoice','worldChange','nextEvent'].every(field=>textReady(story[field],20))){
+      reject('DESIGN_STORY_CAUSAL_CHAIN_MISSING','SYSTEM_INTERCONNECTION_DESIGN',['creativeGrammar'],{},
+        '스토리의 원인→인물 욕망·갈등→실제 선택→세계 상태 변화→다음 사건을 게임 시스템과 연결한다.');
+    }
+    if(!['aChangesB','bChangesA','lateGameChange'].every(field=>textReady(evolution[field],25))){
+      reject('DESIGN_A_B_MUTUAL_EVOLUTION_MISSING','SYSTEM_INTERCONNECTION_DESIGN',['creativeGrammar'],{},
+        'A가 B를 바꾸고 B가 A를 되돌려 바꾸며 후반 관계 자체가 진화하는 실제 선택을 적는다.');
+    }
     if(list(grammar?.delveDiscoveries).length<4||list(grammar?.delveDiscoveries).some(row=>!textReady(row?.clue,10)||!textReady(row?.discovery,10)||!textReady(row?.newChoice,15))||!textReady(grammar?.delveGrowthRule,25)){
       reject('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},'초기 파고들기 네 사례 각각 단서·발견·새 선택을 갖추고 이후 숫자 상한 없는 발전 규칙을 설계한다.');
     }
@@ -459,6 +472,9 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     &&seedC.every(row=>list(creative.cThemes).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.kind)===clean(row?.kind)))
     &&seedGenres.every(row=>list(creative.cGenres).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.role)===clean(row?.role)))
     &&textReady(creative.abCausality,35)&&textReady(creative.cWorldAndGameplayEffect,30)
+    &&['contrast','causalBridge','removalConsequence'].every(field=>textReady(creative.materialFusion?.[field],25))
+    &&['cause','characterConflict','playerChoice','worldChange','nextEvent'].every(field=>textReady(creative.storyCausalChain?.[field],20))
+    &&['aChangesB','bChangesA','lateGameChange'].every(field=>textReady(creative.abEvolution?.[field],25))
     &&list(creative.delveDiscoveries).length>=4&&textReady(creative.delveGrowthRule,25));
   const systemFusionCarryOk=!seedGrammar||(mainCarried&&carriedMajorAxes.length>=Math.min(2,majorAxisNames.length)&&carriedSubElements.length>=Math.min(1,subElementNames.length)&&carriedDelveElements.length>=Math.min(1,delveNames.length)&&emergentGenreCarried&&creativityCarried);
   const grammarCarryOk=!seedGrammar||(carriedGrammarIds.length>=grammarIdMinimum&&(primaryVerbCarried||worldRuleCarried)&&systemFusionCarryOk);
