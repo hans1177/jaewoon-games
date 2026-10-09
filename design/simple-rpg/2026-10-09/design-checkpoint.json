@@ -88,25 +88,184 @@
       "name": "BOARD_PATTERN_EDITOR",
       "purpose": "EXPLORATION",
       "playerChoice": "DISCOVERY"
+    },
+    "local_authoring_parts::d4de089bc7c0202fd1c8d2aaf19b052bce68d82aa2db75ff0cfd750ca05e135e:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+      ],
+      "stateOutputs": [
+        "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK"
+      ],
+      "name": "BOARD_PATTERN_EDITOR",
+      "purpose": "ENHANCE PLAYER EXPERIENCE THROUGH EMERGENT CONTENT EXPANSION",
+      "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
+    },
+    "local_authoring_parts::8b054722b5c33c884be6f3c19edbc1dfb1ec8610a2ddeddf64df4b83105d247d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "관리 및 수정하는 게임 내 맵의 기능",
+          "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD P"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
+          "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "게임 내에서 월드 패턴의 생성 및 관리",
+          "playerChoice": "보드 패턴의 새로운 구성이나 조합을 선택하여 게임 진행에 영향을 미칩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK",
+            ">// NOTE: "
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "EXPLORATION",
+          "playerChoice": "DISCOVERY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "ENHANCE PLAYER EXPERIENCE THROUGH EMERGENT CONTENT EXPANSION",
+          "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
+        }
+      ]
+    },
+    "local_authoring_parts::3f8a406a0c0fd958c379a6e1c59e26f3842d036b57733f4e1011cf45eba47076:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR ANOTHER VISIBLE PUZZLE CONSTRAINT.",
+        "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD FEEDBACK TO SOLVE THE CURRENT OBJECTIVE.",
+        "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD PATTERNS OR OBSTRUCTION COMBINATIONS."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "관리 및 수정하는 게임 내 맵의 기능",
+          "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD P"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
+          "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "게임 내에서 월드 패턴의 생성 및 관리",
+          "playerChoice": "보드 패턴의 새로운 구성이나 조합을 선택하여 게임 진행에 영향을 미칩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK",
+            ">// NOTE: "
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "EXPLORATION",
+          "playerChoice": "DISCOVERY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "ENHANCE PLAYER EXPERIENCE THROUGH EMERGENT CONTENT EXPANSION",
+          "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 697311,
-      "lastMs": 66479,
+      "totalMs": 766259,
+      "lastMs": 68948,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:45:52.890Z"
+      "updatedAt": "2026-10-09T08:47:01.839Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:45:52.890Z",
+  "updatedAt": "2026-10-09T08:47:01.841Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2143,7 +2302,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:45:52.890Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:47:01.841Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
