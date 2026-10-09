@@ -34,25 +34,38 @@
         "인물 역할 선호 -> 감염 스킬 선택 -> 정화 능력 사용 -> 몬스터 전환",
         "감염 공격 선택 -> 인간 제거 -> 인물 재생 -> 라운드 종료"
       ]
+    },
+    "local_authoring_parts::5f760ea6fc272a00e698fd7b3dfebfbfa0269b833d76c8d93b403532e5bc3a67:signatureSystems:0": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT/OUTPUT/STATE"
+      ],
+      "stateOutputs": [
+        "MONSTER_CONVERSION"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터가 인간을 전환하는 명시적 감염 공격",
+      "playerChoice": "인물의 감염 스킬 선택 또는 몬스터 전환 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 237674,
-      "lastMs": 34674,
+      "totalMs": 269383,
+      "lastMs": 31709,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:20:33.253Z"
+      "updatedAt": "2026-10-09T06:21:04.963Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T06:16:35.561Z",
-  "updatedAt": "2026-10-09T06:20:33.253Z",
+  "updatedAt": "2026-10-09T06:21:04.963Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -769,7 +782,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T06:20:33.253Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:21:04.963Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
