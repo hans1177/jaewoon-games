@@ -27,25 +27,33 @@
       "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다. 게임은 단순한 웨이브 디펜스가 아니라, 플레이어가 '현재 웨이브의 공격 패턴'을 읽고 '크리스트 데미지 배치'에 최적화하는 선택을 하는 중심 행동이다. 이 선택 결과는 다음 월드 상태와 접근 가능성을 실제로 바꾼다. 주체는 플레이어이며, 대표 행동은 '크리스트 데미지 배치 위치 선택', 대표 선택은 '위치 선택/조합/업그레이드 우선순위 변경', 시그니처 세계 규칙은 '공격 패턴 → 배치 결정 → 월드 상태 변화'로 구성된다. 게임 규칙은 MAIN×A×B×c의 관계를 통해 구현하며, 각각의 역할은 기존 시스템의 실제 메커니즘으로 연결되어야 한다.",
       "playerFantasy": "플레이어는 현재 웨이브의 공격 패턴을 읽고 '크리스트 데미지 배치'에 최적화하는 선택을 하는 중심 행동이다. 이 선택 결과는 다음 월드 상태와 접근 가능성을 실제로 바꾼다. 주체는 플레이어이며, 대표 행동은 '크리스트 데미지 배치 위치 선택', 대표 선택은 '위치 선택/조합/업그레이드 우선순위 변경', 시그니처 세계 규칙은 '공격 패턴 → 배치 결정 → 월드 상태 변화'로 구성된다.",
       "coreFun": "플레이어가 현재 웨이브의 공격 패턴을 읽고 크리스트 데미지 배치 위치에 최적화하는 선택을 하는 중심 행동이다. 이 선택 결과는 다음 월드 상태와 접근 가능성을 실제로 바꾼다. 주체는 플레이어이며, 대표 행동은 '크리스트 데미지 배치 위치 선택', 대표 선택은 '위치 선택/조합/업그레이드 우선순위 변경', 시그니처 세계 규칙은 '공격 패턴 → 배치 결정 → 월드 상태 변화'로 구성된다."
+    },
+    "local_authoring_parts::f0a019b89db22a96c693a834238387f54757bc585bcaf280b3cd492902462693:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 현재 웨이브의 공격 패턴을 읽고, 크리스트 데미지 배치 위치에 최적화하는 선택",
+        "SELECT: '위치 선택/조합/업그레이드 우선순위 변경'",
+        "OUTPUT: 다음 월드 상태와 접근 가능성이 실제 바뀌는 선택 결과",
+        "STATE CHANGE: 공격 패턴 → 배치 결정 → 월드 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 113742,
-      "lastMs": 18530,
+      "totalMs": 133754,
+      "lastMs": 20012,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:47:40.916Z"
+      "updatedAt": "2026-10-09T11:48:00.930Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:45:47.159Z",
-  "updatedAt": "2026-10-09T11:47:40.917Z",
+  "updatedAt": "2026-10-09T11:48:00.930Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:47:40.917Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:48:00.930Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
