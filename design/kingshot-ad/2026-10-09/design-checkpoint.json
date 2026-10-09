@@ -68,25 +68,42 @@
       "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::488ef64191e0ffa3a2c87a8b766d8fc15cf282d3163021cdc9231e437f2ca825:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT",
+        "RESOURCE_POOL"
+      ],
+      "stateOutputs": [
+        "DEFENSE_UPGRADE",
+        "NEW_DEFENCE_LAYOUT",
+        "PRESSURE_DROP"
+      ],
+      "name": "SINGLE_DEFENSE_STRATEGY_ADAPTATION_B",
+      "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 551232,
-      "lastMs": 44309,
+      "totalMs": 600307,
+      "lastMs": 49075,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:32:34.728Z"
+      "updatedAt": "2026-10-09T15:33:23.805Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:23:23.460Z",
-  "updatedAt": "2026-10-09T15:32:34.728Z",
+  "updatedAt": "2026-10-09T15:33:23.805Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1792,7 +1809,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:32:34.728Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:33:23.805Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
