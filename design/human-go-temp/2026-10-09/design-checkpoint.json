@@ -50,25 +50,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
       "purpose": "Player-driven progression through escalating survival challenges with contextual actions and reward-based decision-making",
       "playerChoice": "Choose upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice via contextual actions and reward systems"
+    },
+    "local_authoring_parts::a2ea789384d881deffa2afaaea2e28d3011f7b575239fb04ebe2b978c7af3832:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "NextProgressionChoice"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+      "purpose": "Player choice and progression in survival run with enemy pressure",
+      "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 593629,
-      "lastMs": 98253,
+      "totalMs": 689888,
+      "lastMs": 96259,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:59:30.686Z"
+      "updatedAt": "2026-10-09T16:01:06.947Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T15:59:30.686Z",
+  "updatedAt": "2026-10-09T16:01:06.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1778,7 +1793,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:59:30.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:01:06.947Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
