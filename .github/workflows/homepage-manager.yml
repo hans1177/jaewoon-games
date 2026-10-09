@@ -208,6 +208,7 @@ jobs:
             fi
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
+            import {execFileSync} from 'node:child_process';
             import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
             import { ingestOwnerWebGameIds, validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
             const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
@@ -219,7 +220,17 @@ jobs:
             mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
             ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
             syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
-            applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+            // 검증된 게임별 최신 설계 원본을 기존 company-runtime에서 읽어 카드 한 줄 소개에 반영한다.
+            const designBaselines={};
+            for(const item of developmentQueue.items||[]){
+              const gameId=String(item.gameId||''),source=String(item.designBaselineSource||item.minimumDesignContract?.source||'');
+              if(!/^[a-z0-9-]+$/.test(gameId)||!/^design\/[a-z0-9-]+\/[a-zA-Z0-9._-]+\/design-revised\.json$/.test(source))continue;
+              try{
+                const value=JSON.parse(execFileSync('git',['show',`origin/company-runtime:${source}`],{encoding:'utf8',maxBuffer:1024*1024}));
+                if(value.gameId===gameId)designBaselines[gameId]={source,value};
+              }catch(error){console.log('HOMEPAGE_DESIGN_SUMMARY_MISSING='+gameId);}
+            }
+            applyHomepageRuntimeInfo({catalog,developmentQueue,seedState,designBaselines});
             const validation=validateNormalizedCatalog(catalog);
             if(!validation.pass)throw new Error('HOMEPAGE_RUNTIME_CATALOG_RECONCILE_FAILED:'+validation.errors.join(','));
             fs.writeFileSync('/tmp/homepage-runtime/game-catalog.json',JSON.stringify(catalog,null,2)+'\n');

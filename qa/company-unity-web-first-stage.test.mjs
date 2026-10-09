@@ -238,28 +238,54 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
     assert.ok(repair.includes(`      ${permission}\n`),`repair caller must grant callee permission: ${permission}`);
   }
 });
+test('기존 HTML 게임과 저장 데이터는 검증 없는 Unity 정식 주소 덮어쓰기 전에 차단한다',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const publish=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'));
+  const originFetch=publish.indexOf('git fetch --no-tags origin main');
+  const migrationGate=publish.indexOf('UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_TEST_ROUTE_ONLY');
+  const deleteRuntime=publish.indexOf('rm -rf "$runtime_dir"');
+  assert(originFetch>=0&&migrationGate>originFetch&&deleteRuntime>migrationGate,
+    '검증 전에 현재 정식 게임 디렉터리를 삭제해서는 안 된다');
+  assert.match(publish,/if \[ "\$READINESS_PASS" = 'true' \] && git cat-file -e "origin\/main:web-games\/\$GAME_ID\/index\.html"/);
+  const grepLine=publish.split(String.fromCharCode(10)).find(line=>line.includes("grep -Eq 'createUnityInstance"));
+  assert(grepLine,'expected native Unity index detection');
+  assert.equal([...grepLine].filter(char=>char.charCodeAt(0)===92).length,1,'grep ERE requires exactly one escape before literal parenthesis');
+  assert.match(publish,/build\.legacyRootPreservedForSave=true/);
+  assert.match(publish,/legacy_save_pending=true/);
+  assert.match(publish,/UNITY_WEB_LEGACY_SAVE_REPAIR_REQUIRED=YES/);
+  assert.match(publish,/exit 42/);
+  assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
+  assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
+});
 
-test('owner-directed Daechung public WebGL test does not mislabel graphics or multiplayer as ready',()=>{
+test('a playable native-3D owner build receives a separate test URL while final QA still guards the stable URL',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
-  const publish=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
-  const repair=workflow.indexOf('      - name: Mark Unity Web floor repair requirement');
-  const section=workflow.slice(publish,repair);
-  assert.ok(publish>=0&&repair>publish,'publish browser test before marking upper-platform repair');
-  assert.ok(section.includes("steps.readiness.outputs.pass == 'false'"));
-  assert.ok(section.includes("steps.request.outputs.game_id == 'daechung-rpg'"));
-  assert.ok(section.includes('runtime_dir="web-games/$GAME_ID/unity"'));
-  assert.ok(section.includes('test -s "web-games/$GAME_ID/index.html"'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-gameplay-validation.json"'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-independent-qa.json"'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-regression.json"'));
-  assert.ok(section.includes('UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS'));
-  assert.ok(section.includes('if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = \'true\' ]; then'));
-  assert.ok(workflow.includes("if: steps.readiness.outputs.pass != 'true'"));
-  assert.match(homepage,/for\(const href of \[/);
-  assert.ok(homepage.includes('/unity/'));
-  assert.match(homepage,/complete=probes\.every\(response=>response\?\.ok===true\)/);
-  assert.match(headers,/\/web-games\/\*\/unity\/Build\/\*\.wasm\.gz/);
+  const publish=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'));
+  assert.match(publish,/if: steps\.evidence\.outputs\.owner_test_eligible == 'true'/);
+  assert.match(publish,/test "\$OWNER_TEST_ELIGIBLE" = "true"/);
+  assert.match(publish,/runtime_dir="web-games\/\$GAME_ID"/);
+  assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
+  assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
+  assert.doesNotMatch(publish,/test "\$READINESS_PASS" = "true"/);
+  assert.match(publish,/test -s "\$runtime_dir\/index\.html"/);
+  assert.match(publish,/test -s "\$runtime_dir\/unity-web-gameplay-validation\.json"/);
+  assert.match(publish,/test -s "\$runtime_dir\/unity-web-independent-qa\.json"/);
+  assert.match(publish,/test -s "\$runtime_dir\/unity-web-regression\.json"/);
+  assert.match(workflow,/ownerBrowserTestEligible:true/);
+  assert.match(workflow,/&&e\.visualQa\?\.pass===true/);
+  assert.match(homepage,/&&row\?\.visualQa\?\.pass===true/);
+  assert.match(workflow,/UNITY_WEB_OWNER_TEST_REQUIRES_REAL_3D_GAMEPLAY/);
+  assert.match(workflow,/const verified3d=checks\.every/);
+  assert.match(workflow,/const gatePass=checks\.every/);
+  assert.match(workflow,/owner_test_eligible=true/);
+  assert.match(workflow,/UNITY_WEB_FULLSCREEN_BUTTON=READY/);
+  assert.match(workflow,/requestFullscreen/);
+  assert.match(workflow,/overscroll-behavior:none/);
+  assert.match(workflow,/touch-action:none/);
+  assert.match(homepage,/unity-web-deploy-manifest\.json/);
+  assert.match(homepage,/Unity Web · 테스트/);
+  assert.doesNotMatch(homepage,/bundleGroupsFromUnityIndex/);
   assert.match(headers,/Content-Encoding: gzip/);
 });

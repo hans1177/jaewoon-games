@@ -135,67 +135,24 @@ assert.equal(ingestPolicy.root,'web-games');
 assert.equal(ingestPolicy.requiredEntryFile,'index.html');
 assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD');
 assert.equal(ingestPolicy.reconcileExistingCatalogGamesEveryStatusSync,true);
-assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,true);
+assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,false);
 assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard,true);
 
 {
-  // 기존 HTML만으로는 홈페이지 등록 불가. C# 원본과 공식 Unity 빌드·브라우저 QA가 모두 필요하다.
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-web-ingest-'));
   try{
-    const gameId='owner-upload';
-    const webRoot=path.join(root,'web-games');
-    const unityRoot=path.join(root,'unity-games');
-    const dir=path.join(webRoot,gameId);
-    const project=path.join(unityRoot,gameId);
+    const dir=path.join(root,'owner-upload');
     fs.mkdirSync(dir,{recursive:true});
     fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><title>Owner Upload Game</title><main>'+('x'.repeat(700))+'</main>');
-    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=1;');
-    const temp={games:[],permanentRemovalPolicy:{ids:[]}};
-    const options={filesystem:fs,rootDir:webRoot,unityProjectRoot:unityRoot};
-    const first=ingestOwnerWebGameIds(temp,[gameId],options);
+    const temp={games:[{id:'owner-upload',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/owner-upload/'}],permanentRemovalPolicy:{ids:[]}};
+    const first=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
     assert.deepEqual(first.added,[]);
-    assert.equal(temp.games.length,0,'HTML upload cannot create a homepage game');
-    assert.equal(fs.existsSync(path.join(dir,'index.html')),true,'legacy rules and source must remain intact');
-
-    const runtime=path.join(dir,'unity');
-    const buildDir=path.join(runtime,'Build');
-    const scripts=path.join(project,'Assets','Scripts');
-    fs.mkdirSync(buildDir,{recursive:true});
-    fs.mkdirSync(scripts,{recursive:true});
-    fs.mkdirSync(path.join(project,'ProjectSettings'),{recursive:true});
-    fs.writeFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 2022.3.60f1');
-    fs.writeFileSync(path.join(scripts,'Gameplay.cs'),'public class Gameplay {}');
-    fs.writeFileSync(path.join(runtime,'index.html'),'<script>createUnityInstance(canvas,config);</script><script src="Build/game.loader.js"></script>'+' '.repeat(700));
-    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(buildDir,file),'test');
-    const manifest={engine:'UNITY_WEB',gameId,bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/'+gameId,sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/game.loader.js'],data:['Build/game.data'],framework:['Build/game.framework.js'],wasm:['Build/game.wasm']}};
-    const build={engine:'UNITY_WEB',gameId,canonicalSourceRoot:'unity-games/'+gameId,bootSmoke:'PASS',actualBrowserPlay:'PASS',independentQa:'PASS',regression:'PASS',upperPlatformGateCandidate:true,sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256};
-    const readiness={gameId,state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,criteria:{graphics:{native3dVerified:true},qa:{pass:true,multiplayerPass:true}}};
-    const qa={engine:'UNITY_WEB',gameId,pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:24,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'}}};
-    const write=(name,value)=>fs.writeFileSync(path.join(runtime,name),JSON.stringify(value));
-    write('unity-web-deploy-manifest.json',manifest);
-    write('unity-web-build.json',build);
-    write('upper-platform-development-readiness.json',readiness);
-    for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])write(name,qa);
-    const confirmed=ingestOwnerWebGameIds(temp,[gameId],options);
-    assert.deepEqual(confirmed.added,[gameId]);
-    assert.equal(temp.games[0].webPath,'/web-games/owner-upload/unity/');
-    assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFIED');
-    assert.equal(temp.games[0].homepageWebPlayable,true);
-    assert.equal(temp.games[0].ownerWebEntryFile,'web-games/owner-upload/unity/index.html');
-    const storedRevision=temp.games[0].ownerWebSourceRevision;
-    write('unity-web-independent-qa.json',{...qa,mobile:{...qa.mobile,realGameTouchHandlerObserved:false}});
-    const blocked=ingestOwnerWebGameIds(temp,[gameId],options);
-    assert(blocked.disabled.includes(gameId),'missing real mobile touch must remove play access');
+    assert.deepEqual(first.disabled,['owner-upload']);
     assert.equal(temp.games[0].homepageWebPlayable,false);
-    assert.equal(temp.games[0].hasWebArchive,true);
-    assert.equal(fs.existsSync(path.join(dir,'game.js')),true,'legacy game source preserved');
-    write('unity-web-independent-qa.json',qa);
-    ingestOwnerWebGameIds(temp,[gameId],options);
-    assert.equal(temp.games[0].homepageWebPlayable,true);
-    fs.writeFileSync(path.join(runtime,'Build','game.data'),'updated-bundle-test');
-    ingestOwnerWebGameIds(temp,[gameId],options);
-    assert.notEqual(temp.games[0].ownerWebSourceRevision,storedRevision);
-    assert.equal(temp.games[0].webDevelopmentResetRequired,true);
+    assert.equal(temp.games[0].hasWebArchive,true,'keep legacy reference without exposing it');
+    assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFICATION_REQUIRED',
+      'legacy HTML remains an archive and cannot claim verified Unity WebGL playability');
+    assert.equal(temp.games[0].webPath,'/web-games/owner-upload/');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -227,25 +184,35 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     write('simple-shell','<title>Approved Web Bootstrap</title><button>Win</button>');
     write('counter-shell','<title>카운터</title><script src="/web-games/_shared/vibe2-final.js?v=1"></script>');
     write('vibe-maker','<title>게임 제작기</title>');
-    const temp={games:[{id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},{id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:['removed']}};
+    const temp={games:[
+      {id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},
+      {id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true},
+      {id:'unity-only-index',webPath:'/web-games/unity-only-index/',homepageWebPlayable:false,hasWebArchive:false}
+    ],permanentRemovalPolicy:{ids:['removed']}};
     write('removed','<title>이전 삭제 게임</title>');
     const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.deepEqual(result.added,[],'unregistered HTML game cannot be published');
+    assert.deepEqual(result.added,[],'HTML files alone may not auto-register games');
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
-    assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed'].includes(x.id)));
-    write('unity-only-index','<title>Unity Web Player</title><script>var buildUrl="Build"; var loaderUrl=buildUrl+"/game.loader.js";var config={dataUrl:buildUrl+"/game.data",frameworkUrl:buildUrl+"/game.framework.js",codeUrl:buildUrl+"/game.wasm"};</script>');
+    assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed','owner-unregistered'].includes(x.id)));
+    write('unity-only-index','<title>Unity Web Player</title><script>createUnityInstance(document.getElementById("unity-canvas"),{});</script>');
+    const unity=path.join(root,'unity-only-index');
+    const group={loader:['Build/game.loader.js'],data:['Build/game.data'],framework:['Build/game.framework.js'],wasm:['Build/game.wasm']};
+    fs.mkdirSync(path.join(unity,'Build'));
+    for(const files of Object.values(group))for(const file of files)fs.writeFileSync(path.join(unity,file),'bundle-fixture');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert(!temp.games.some(x=>x.id==='unity-only-index'),'Unity HTML without its actual bundle is not runnable');
-    fs.mkdirSync(path.join(root,'unity-only-index','Build'));
-    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(root,'unity-only-index','Build',file),'bundle-fixture');
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,false,'bundle alone cannot bypass QA');
+    fs.writeFileSync(path.join(unity,'unity-web-deploy-manifest.json'),JSON.stringify({engine:'UNITY_WEB',gameId:'unity-only-index',bundleComplete:true,requiredGroups:group}));
+    const qa={pass:true,spatialGameplay:{pass:true,requiredDimension:'3D'},visualQa:{nativeUnityMesh:{pass:true}},mobile:{pass:true}};
+    for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])fs.writeFileSync(path.join(unity,name),JSON.stringify(qa));
+    fs.writeFileSync(path.join(unity,'upper-platform-development-readiness.json'),JSON.stringify({gameId:'unity-only-index',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true}));
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert(!temp.games.some(x=>x.id==='unity-only-index'),'bundle alone without canonical C# and browser QA cannot pass');
-    write('simple-shell','<title>다시 구현한 게임</title><canvas></canvas>');
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,true);
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').ownerWebSourceState,'UNITY_WEB_VERIFIED');
+    write('simple-shell','<title>이전 일반 웹</title><canvas id="game"></canvas><script>function move(){};</script>');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false,'game-specific JS stays archived until Unity 3D replacement passes');
-    assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,0);
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -270,7 +237,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
     fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
-    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy playable HTML cannot reenter without Unity C# and 3D browser QA');
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy HTML cannot reenter without a verified Unity WebGL build');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -299,13 +266,20 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   assert.equal(vm.runInContext("hasInternalRelease({id:'native-test',unityBuildVerified:true})",context),false);
   assert.equal(vm.runInContext("internalReleaseLinks({id:'native-test',unityBuildUrl:'https://example.test/unverified.apk'}).unity",context),'');
   assert.equal(vm.runInContext("playableWebHref({id:'old',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/old/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'})",context),'');
+  vm.runInContext('platformExposure={unityWebEnabled:true,games:[]}',context);
   const visible=vm.runInContext(`developmentRows({games:[
     {id:'click-only',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/click-only/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'},
     {id:'no-build',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'},
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
-    {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
+    {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'},
+    {id:'verified-unity',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',unityWebAvailable:true,unityWebTestUrl:'/web-games/verified-unity/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),[],'unverified HTML games must never appear in homepage play shelves');
+  assert.deepEqual([...visible].sort(),['design-playable','dev-playable','no-build','verified-unity'],
+    'real game cards stay visible before QA, but click-only control shells stay excluded');
+  assert.equal(vm.runInContext("internalReleaseLinks({id:'no-build'}).unityWeb",context),'',
+    'visible game card must not create a non-existent Unity Web link');
+  assert.equal(vm.runInContext("internalReleaseLinks({id:'verified-unity',unityWebAvailable:true,unityWebTestUrl:'/web-games/verified-unity/'}).unityWeb",context),'/web-games/verified-unity/',
+    'verified Unity Web game keeps its playable link');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 

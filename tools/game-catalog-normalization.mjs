@@ -1,3 +1,4 @@
+// 파일명: tools/game-catalog-normalization.mjs
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -283,6 +284,11 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
         }catch{}
       }
     }
+    // 별도 테스트 빌드는 검증된 원본을 참고하되 기존 공개 주소 및 저장 데이터를 유지한다.
+    if(verifiedRoot===dir+'/unity'){
+      verifiedRoot='';
+      sourceState='UNITY_WEB_TEST_ROUTE_SEPARATE';
+    }
     valid=Boolean(verifiedRoot);
     if(valid)sourceState='UNITY_WEB_VERIFIED';
     else if(sourceState==='CURRENT_OWNER_BASELINE')
@@ -305,7 +311,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       existing.webPath=canonicalPath;
       existing.hasWebArchive=true;
       existing.homepageWebPlayable=true;
-      existing.homepageDisplayMode='WEB_PUBLISHED';
+      existing.homepageDisplayMode='UNITY_WEB_PUBLISHED';
       existing.ownerDirectWebUpload=true;
       existing.ownerWebSourceState='UNITY_WEB_VERIFIED';
       existing.ownerWebSourceRevision=fingerprint;
@@ -314,29 +320,8 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       updated.push(id);
       continue;
     }
-    const game={
-      id,
-      name:ownerWebTitle(filesystem,indexFile,id),
-      description:'사용자 직접 업로드 웹게임',
-      genre:[],
-      image:'',
-      webPath:canonicalPath,
-      hasWebArchive:true,
-      homepageWebPlayable:true,
-      homepageOfficialCard:false,
-      homepageTestCandidate:false,
-      homepageDisplayMode:'WEB_PUBLISHED',
-      lifecycleState:'ACTIVE',
-      productionClass:'DESIGN_ONLY',
-      productionClassSource:'OWNER_WEB_DIRECT_UPLOAD',
-      homepageCategory:'design-only',
-      ownerDirectWebUpload:true,
-      ownerWebSourceState:'UNITY_WEB_VERIFIED',
-      ownerWebSourceRevision:fingerprint,
-      ownerWebEntryFile:verifiedHref.slice(1)+entryFile,
-      webDevelopmentResetRequired:false
-    };
-    catalog.games.push(game);byId.set(id,game);added.push(id);
+    // 새로운 정식 게임은 기존 개발 카탈로그에서 등록한다. 파일 단독 등록은 금지한다.
+    ignored.push(id);
   }
   return{catalog,added,updated,disabled,ignored};
 }
