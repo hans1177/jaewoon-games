@@ -1098,25 +1098,33 @@
       "toSystem": "wild-survival_signature_systems_1",
       "trigger": "월드 상태 변환 시스템 실행",
       "stateChange": "현재 월드 상태에 대한 실질적 입력 및 선택이 이루어지며, 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 월드 상태가 변환됨"
+    },
+    "local_authoring_parts::6f97961a66f427a21e5a05a29f4367e43209d74681b85e0f2e535e69e3758029:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 69,
+      "calls": 70,
+      "successes": 70,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2994596,
-      "lastMs": 22109,
+      "totalMs": 3031483,
+      "lastMs": 36887,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:02:21.219Z"
+      "updatedAt": "2026-10-09T03:02:58.142Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T03:02:21.221Z",
+  "updatedAt": "2026-10-09T03:02:58.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3319,7 +3327,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:02:21.220Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:02:58.142Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
