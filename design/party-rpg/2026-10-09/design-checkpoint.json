@@ -398,25 +398,33 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::0585df746744a6f5f1443d9531c5b3f1bad1254f74dfb74dce84a8c080cd8a0b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_GAME",
+      "toId": "MATCH_GAME",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 762017,
-      "lastMs": 281691,
+      "totalMs": 821233,
+      "lastMs": 59216,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:59:56.708Z"
+      "updatedAt": "2026-10-09T12:00:55.929Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:59:56.711Z",
+  "updatedAt": "2026-10-09T12:00:55.929Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2654,10 +2662,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:59:56.708Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:00:55.929Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
