@@ -4045,14 +4045,42 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles:[];
   const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles:[];
   const hardGate=confidence==='HIGH'&&developmentMode==='PRESERVE_PATCH'&&primaryTargets.length>0&&allowFullRewrite!==true&&bootstrap!==true&&newFiles.length===0&&replaceFiles.length===0;
-  // 변경되지 않은 주변 코드의 키워드로 정상 후보를 오분류하지 않는다.
+  // 여러 함수가 한 편집에 포함되어도 실제 변경된 토큰 주변만 분석한다.
+  // 변경 없는 중간 함수의 재화/전투 키워드는 변경 예산으로 계산하지 않는다.
   const touchedSystems=unique(edits.flatMap(edit=>{
     const before=String(edit.find??''),after=String(edit.replace??'');
-    let prefix=0,suffix=0;
-    while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
-    while(suffix<before.length-prefix&&suffix<after.length-prefix
-      &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
-    return semanticSystemsForText(before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix));
+    const changedWindow=()=>{
+      let prefix=0,suffix=0;
+      while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
+      while(suffix<before.length-prefix&&suffix<after.length-prefix
+        &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
+      return before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix);
+    };
+    const tokenize=text=>text.match(/[A-Za-z_$][\w$]*|\d+(?:\.\d+)?|[^\s]/g)||[];
+    const original=tokenize(before),replacement=tokenize(after);
+    if(!original.length||!replacement.length||original.length*replacement.length>40000){
+      return semanticSystemsForText(changedWindow());
+    }
+    const n=original.length,m=replacement.length;
+    const dp=Array.from({length:n+1},()=>new Uint16Array(m+1));
+    for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--){
+      dp[i][j]=original[i]===replacement[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+    }
+    const changed=[];
+    let i=0,j=0;
+    while(i<n||j<m){
+      if(i<n&&j<m&&original[i]===replacement[j]){i++;j++;continue;}
+      const fromI=i,fromJ=j;
+      while(i<n||j<m){
+        if(i<n&&j<m&&original[i]===replacement[j])break;
+        if(i<n&&(j>=m||dp[i+1][j]>=dp[i][j+1]))i++;
+        else j++;
+      }
+      // 숫자/연산자 변경도 gold, damage 같은 상태 소유자 이름과 묶어서 판별한다.
+      changed.push(original.slice(Math.max(0,fromI-3),Math.min(n,i+3)).join(' '));
+      changed.push(replacement.slice(Math.max(0,fromJ-3),Math.min(m,j+3)).join(' '));
+    }
+    return semanticSystemsForText(changed.join('\n'));
   }));
   const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
   const editScopeRows=edits.map(edit=>{
