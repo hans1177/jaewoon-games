@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 현실 건축가에서 진입하여, 희망적인 위험과 실질적 보상을 동시에 경험하는 데 집중된다. 이는 단순한 생존 루틴이 아닌, 전략적 선택과 자산 관리의 복합적인 과정이다.",
       "coreFun": "플레이어는 매번 새로운 상태 변화에 따라 즉각적인 보상이나 위험을 받으며, 이를 바탕으로 다음 선택을 결정해야 한다. 이러한 반복 가능한 루프는 게임 세계의 실제 환경과 현실적인 경험을 재구성하며, 플레이어의 성장과 자산 관리를 통해 시스템의 핵심 재미를 구현한다."
+    },
+    "local_authoring_parts::b8a41eec0a4ebefbe6a70ae5f98af4b4ac3a665ec7543b7595b7274522694ffd:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태 변화 -> 보상/위험/다음 선택",
+        "반복되는 대표 선택: Collect run rewards or experience, Combine upgrades",
+        "관찰 가능한 상태 변화 및 즉각적 결과"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1411182,
-      "lastMs": 103230,
+      "totalMs": 1504736,
+      "lastMs": 93554,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:56:22.749Z"
+      "updatedAt": "2026-10-09T18:57:56.307Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T18:56:22.751Z",
+  "updatedAt": "2026-10-09T18:57:56.308Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2417,7 +2424,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:56:22.751Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:57:56.307Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
