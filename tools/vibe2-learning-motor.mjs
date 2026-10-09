@@ -153,7 +153,7 @@ const DOMAIN_PATTERNS=freeze({
   ROBLOX_TOUCH_INPUT:/roblox.*touch|touch.*roblox|contextactionservice|userinputservice|touchstarted|touchended|virtual.?thumbstick|ROBLOX_TOUCH_INPUT/i,
   ROBLOX_CHARACTER_STATE:/roblox.*character|characteradded|characterremoving|humanoidrootpart|loadcharacter|respawn|ROBLOX_CHARACTER_RESPAWN_STATE/i,
   ROBLOX_UI_STATE:/roblox.*(?:ui|gui)|screengui|guibutton|textbutton|imagebutton|activated|ROBLOX_UI_STATE/i,
-  UNITY_RUNTIME:/\bunity\b|unity.?runtime|gameobject|monobehaviour|scene.?manager|prefab|scriptable.?object/i,
+  UNITY_RUNTIME:/\bunity\b|unity.?runtime|unity.?webgl|native.?3d|gameobject|monobehaviour|scene.?manager|prefab|scriptable.?object|meshfilter|meshrenderer|skinnedmeshrenderer|3d.?scene|3d.?mesh/i,
   UNITY_PHYSICS:/unity.*physics|rigidbody|collider|character.?controller|fixedupdate/i,
   UNITY_NETCODE:/unity.*netcode|netcode.?for.?gameobjects|networkobject|networkbehaviour|clientrpc|serverrpc/i,
   UEFN_RUNTIME:/uefn|fortnite.?uefn|unreal.?editor.?for.?fortnite|creative.?device/i,
@@ -590,6 +590,8 @@ const CODE_PATTERN_MASTERY=Object.freeze({
   ORCHESTRATION_RECOVERY:['RECOVERY','DEBUGGING'],
   MACHINE_STATE_RECOVERY:['RECOVERY','DEBUGGING','STATE_MACHINE'],
   RUNTIME_OBSERVATION_RECOVERY:['RECOVERY','DEBUGGING'],
+  UNITY_3D_SPATIAL_INTEGRITY:['UNITY_RUNTIME','ASSET_ADAPTATION','ENVIRONMENT_COMPOSITION'],
+  UNITY_3D_CAUSAL_REPAIR:['UNITY_RUNTIME','DEBUGGING','RECOVERY'],
   SECURITY_PERIMETER:['SECURITY','DEBUGGING'],
   SECRET_PROTECTION:['SECURITY'],
   SUPPLY_CHAIN_SECURITY:['SECURITY','DEBUGGING'],
@@ -1102,6 +1104,7 @@ const FAILURE_FINGERPRINT_CLASSES=Object.freeze([
   ['MALFORMED_OUTPUT',/malformed|invalid.?json|parse.?fail|schema.?invalid/i],
   ['MOBILE_INPUT',/mobile|touch|pointer|swipe|drag|virtual.?stick|input/i],
   ['SAVE_RESTORE',/save|load|restore|persist|storage|checkpoint|datastore/i],
+  ['UNITY_3D_SPATIAL',/UNITY_WEB_(?:2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D|QA_VISUAL_RUNTIME_REPAIR_REQUIRED|3D_ONLY_POLICY_REQUIRED|NATIVE_3D_ONLY_POLICY_REQUIRED)|READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED|NATIVE_3D_MESH|MESH_INTEGRITY|SPATIAL_3D|3d.?mesh.?missing|2\.5d.?rebuild/i],
   ['COMBAT',/combat|attack|damage|weapon|skill|enemy|boss/i],
   ['PLACEMENT',/placement|place.?tower|deploy|grid|slot/i],
   ['STATE_FLOW',/state.?machine|state|phase|softlock|terminal|win|lose|objective/i],
@@ -1342,6 +1345,8 @@ export function learningGuidance(context={}){
   const exactAssetMotionPriority=(context.priority||[]).includes('EXACT_ASSET_AND_MOTION_VERIFIED');
   const lines=['[VIBE VERIFIED LEARNING MOTOR]',exactAssetMotionPriority?'우선순위=exact-asset+motion > same-game+same-failure > Roblox target이면 verified Open Cloud runtime > same-failure > same-game > same-engine > system-match > general. Studio-local 또는 캐시된 로컬 증거는 cloud production runtime PASS를 대신하지 않는다.':'우선순위=same-game+same-failure > Roblox target이면 verified Open Cloud runtime > same-failure > same-game > same-engine > system-match > general. Studio-local 또는 캐시된 로컬 증거는 cloud production runtime PASS를 대신하지 않는다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
+  if(clean(context.failureFingerprint).includes('UNITY_3D_SPATIAL'))
+    lines.push('- unity-native-3d-repair: prefer verified same-game real-MeshFilter mesh/triangle/material causality; reject 2D/2.5D final surfaces and synthetic PASS. Verify WebGL gameplay/mobile/save regression before positive learning.');
   if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
   for(const row of context.experience||[]){
