@@ -107,25 +107,237 @@
       "name": "IDLE_GROWTH_RPG_C_SIGNATURE",
       "purpose": "보조 요소로 MAIN/A/B의 선택 결과와 세계 상태 변화를 변주하며, 발견·숙련·재방문 깊이를 드러낸다.",
       "playerChoice": "Discover hidden patterns in the world state and reconfigure the game's progression direction through adaptive choices that reflect the player's evolving mastery of the system."
+    },
+    "local_authoring_parts::f47c68718d4fafdb7d3381c2336ebc5dd3a829e6b7de74411b3a9383b54f1442:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "ACTION",
+        "NEXT_SELECTION"
+      ],
+      "name": "IDLE_GROWTH_RPG_DELVE_SIGNATURE",
+      "purpose": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+      "playerChoice": "Discover hidden paths, master new mechanics, and revisit old content with fresh perspective or strategy. This is the core of the game's progression system and must be tied to the main loop through causal rules and state transitions that are consistent with the original design principles and numeric values."
+    },
+    "local_authoring_parts::97d12f1b2a2e4e8b11989b42ef6001b5dc8ba6bb613abad976d31ac2ca23a163:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+          "purpose": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변화와 새로운 선택의 가능성을 만들어간다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_A_SIGNATURE",
+          "purpose": "Main axis of system interaction, connecting player choice to state transition and next selection.",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_B_SIGNATURE",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_C_SIGNATURE",
+          "purpose": "보조 요소로 MAIN/A/B의 선택 결과와 세계 상태 변화를 변주하며, 발견·숙련·재방문 깊이를 드러낸다.",
+          "playerChoice": "Discover hidden patterns in the world state and reconfigure the game's progression direction through adaptive choices that reflect the player's evolving mastery of the system."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_DELVE_SIGNATURE",
+          "purpose": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "playerChoice": "Discover hidden paths, master new mechanics, and revisit old content with fresh perspective or strategy. This is the core of the game's progression system and must be tied to the main loop through causal rules and state transitions that are consistent with the original design principles and numeric values."
+        }
+      ]
+    },
+    "local_authoring_parts::e10a793e0d797ba27faf668515e510758b0b2fea4eb1fb75d35a306f64ff9b70:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택",
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_LOOP",
+          "purpose": "플레이어가 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변화와 새로운 선택의 가능성을 만들어간다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_A_SIGNATURE",
+          "purpose": "Main axis of system interaction, connecting player choice to state transition and next selection.",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_B_SIGNATURE",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_C_SIGNATURE",
+          "purpose": "보조 요소로 MAIN/A/B의 선택 결과와 세계 상태 변화를 변주하며, 발견·숙련·재방문 깊이를 드러낸다.",
+          "playerChoice": "Discover hidden patterns in the world state and reconfigure the game's progression direction through adaptive choices that reflect the player's evolving mastery of the system."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "ACTION",
+            "NEXT_SELECTION"
+          ],
+          "name": "IDLE_GROWTH_RPG_DELVE_SIGNATURE",
+          "purpose": "게임 내에서 발견, 숙련, 재방문 등의 깊이를 나타내며, 주체로 진입하는 중심 행동과 선택의 새로운 가능성 및 경로를 열어준다.",
+          "playerChoice": "Discover hidden paths, master new mechanics, and revisit old content with fresh perspective or strategy. This is the core of the game's progression system and must be tied to the main loop through causal rules and state transitions that are consistent with the original design principles and numeric values."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 471784,
-      "lastMs": 57353,
+      "totalMs": 540541,
+      "lastMs": 68757,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:09:29.959Z"
+      "updatedAt": "2026-10-09T09:10:38.718Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:01:38.141Z",
-  "updatedAt": "2026-10-09T09:09:29.959Z",
+  "updatedAt": "2026-10-09T09:10:38.721Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2357,7 +2569,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:09:29.959Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:10:38.721Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
