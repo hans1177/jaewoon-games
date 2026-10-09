@@ -563,25 +563,44 @@
         "목표"
       ],
       "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
+    },
+    "local_authoring_parts::ac97581ee98826b94d29b51f93009bc297170fd51914bb07df9fe7fc99c7143d:toSystem,trigger,stateChange": {
+      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
+      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
+    },
+    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:0": {
+      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
+      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "월드 상태",
+        "자원",
+        "위험",
+        "목표"
+      ],
+      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
+      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
+      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 808375,
-      "lastMs": 129870,
+      "totalMs": 832601,
+      "lastMs": 24226,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:56:59.022Z"
+      "updatedAt": "2026-10-09T12:57:23.249Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T12:56:59.022Z",
+  "updatedAt": "2026-10-09T12:57:23.250Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2785,7 +2804,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:56:59.022Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:57:23.250Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
