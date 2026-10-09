@@ -67,6 +67,48 @@ test('shared preflight admits canonical Roblox Unity concurrent lane without cha
   assert.equal(item.targetPlatform,'UNITY');
 });
 
+test('Unity-Web-first dual platform runtime preflight repairs the observed platform-only blocker without weakening F0 evidence',()=>{
+  const item={
+    gameId:'legacy-dual',productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxSourceBootstrapPassedAt:'2026-10-08T00:00:00Z',
+    robloxSourceCommit:'a'.repeat(40),
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64)
+  };
+  const result=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(result.pass,true,result.blockers.join(','));
+  assert.equal(result.concurrentRoblox,true);
+  assert.equal(result.directRoblox,false);
+  assert.deepEqual(result.blockers,[]);
+  const missingUnity=inspectRobloxBuildPreflight({item:{...item,concurrentTargetPlatforms:['ROBLOX']},directive});
+  assert.equal(missingUnity.pass,false);
+  assert.ok(missingUnity.blockers.includes('roblox-platform-required'));
+  const missingRoblox=inspectRobloxBuildPreflight({item:{...item,concurrentTargetPlatforms:['UNITY']},directive});
+  assert.equal(missingRoblox.pass,false);
+  const unknownMode=inspectRobloxBuildPreflight({item:{...item,platformExecutionMode:'UNVERIFIED_PENDING'},directive});
+  assert.equal(unknownMode.pass,false);
+  const staleBuild=inspectRobloxBuildPreflight({item:{...item,robloxBuildSourceRevision:'c'.repeat(40)},directive});
+  assert.equal(staleBuild.pass,false);
+  assert.ok(staleBuild.blockers.includes('source-revision-mismatch'));
+  const nonConfirmed=inspectRobloxBuildPreflight({item:{...item,productionClass:'DESIGN_ONLY'},directive});
+  assert.equal(nonConfirmed.pass,false);
+  assert.ok(nonConfirmed.blockers.includes('confirmed-production-class-required'));
+});
+
+test('Roblox preflight continuation revisits only explicit verified dual platform admission after legacy failure',()=>{
+  assert.ok(preflight.includes("toUpperCase()==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'"));
+  assert.ok(preflight.includes("toUpperCase()==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'"));
+  assert.ok(preflight.includes("toUpperCase()==='UNITY'"));
+  assert.ok(preflight.includes("priorBlockers.every(blocker=>blocker==='roblox-platform-required')"));
+  assert.ok(preflight.includes('ROBLOX_PREFLIGHT_SUPERSEDED_PLATFORM_BLOCKER_RETRY='));
+  assert.ok(preflight.includes("if(!exactBuild||preflightPassed)continue;"));
+  assert.ok(preflight.includes("if(preflightFailedValue&&!stalePreflightFailure)continue;"));
+});
+
 test('continuation planner recognizes canonical concurrent Roblox lane before owner-focus fallback',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   assert.match(workflow,/platformExecutionMode\|\|''\)\.toUpperCase\(\)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'/);
