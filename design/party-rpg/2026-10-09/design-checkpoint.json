@@ -1002,25 +1002,40 @@
     },
     "local_authoring_parts::4d9a2b4788e1f7e544a5da85e17255c5da99975bd0df0ba0f6bc8ba7c733cc70:trigger": {
       "trigger": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::4d9a2b4788e1f7e544a5da85e17255c5da99975bd0df0ba0f6bc8ba7c733cc70:stateChange": {
+      "stateChange": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::7bbcd7f533b41a5eb9e49e65baa6a1c31b91c5fb4c87b81d225da0c922aec723:systemInterconnections:3": {
+      "fromId": "systemInterconnections[3]",
+      "toId": "NEW_BOARD_STATE",
+      "stateKeys": [
+        "{\"from\": \"BOARD_STATE\", \"to\": \"NEW_BOARD_STATE\"}",
+        "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\"}"
+      ],
+      "fromSystem": "BOARD_STATE",
+      "toSystem": "BOARD_STATE",
+      "trigger": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.",
+      "stateChange": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 100,
-      "successes": 100,
+      "calls": 101,
+      "successes": 101,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7581869,
-      "lastMs": 93996,
+      "totalMs": 7675667,
+      "lastMs": 93798,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:48:03.305Z"
+      "updatedAt": "2026-10-09T02:49:37.105Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T02:48:03.305Z",
+  "updatedAt": "2026-10-09T02:49:37.107Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3288,7 +3303,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:48:03.305Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:49:37.107Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
