@@ -321,25 +321,106 @@
           "playerChoice": "Build Composition, Resource Allocation, Tactical Positioning"
         }
       ]
+    },
+    "local_authoring_parts::4ef3e738a2e161ebff431db69b654f948be552b0e80eb475637be6d425d1380e:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::333492560cc3bd061845600fd4bac16ba354c0436845b0c9d32c7a90d1e29d99:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while boxing",
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills",
+            "Combine upgrades into a stronger build, survive harder waves or a boss"
+          ],
+          "stateOutputs": [
+            "Survival Threshold Shift",
+            "Multi-Stage Engagement",
+            "Dynamic Difficulty Scaling"
+          ],
+          "name": "Adaptive Combat",
+          "purpose": "Real-Time Engagement",
+          "playerChoice": "Tactical Positioning, Resource Allocation, Adaptive Combat"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Survival Threshold Adjustment",
+            "Multi-Stage Engagement",
+            "Dynamic Difficulty Scaling"
+          ],
+          "stateOutputs": [
+            "Adaptive Combat",
+            "Survival Wave",
+            "Boss Conquest"
+          ],
+          "name": "Adaptive Build",
+          "purpose": "Enables player-driven progression through multi-stage engagement and dynamic difficulty scaling.",
+          "playerChoice": "Build Composition -> Resource Allocation -> Tactical Positioning"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Survival Threshold Adjustment",
+            "Multi-Stage Engagement",
+            "Dynamic Difficulty Scaling"
+          ],
+          "stateOutputs": [
+            "Adaptive Combat",
+            "Survival Wave",
+            "Boss Conquest"
+          ],
+          "name": "Adaptive Build",
+          "purpose": "Facilitates progression through multi-stage engagement and dynamic difficulty scaling.",
+          "playerChoice": "Survival Threshold Adjustment → Multi-Stage Engagement → Boss Conquest"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Survival Threshold Adjustment",
+            "Multi-Stage Engagement",
+            "Dynamic Difficulty Scaling"
+          ],
+          "stateOutputs": [
+            "Adaptive Combat",
+            "Survival Wave",
+            "Boss Conquest"
+          ],
+          "name": "Adaptive Build",
+          "purpose": "Facilitates progression through multi-stage engagement and dynamic difficulty scaling",
+          "playerChoice": "Build Composition, Resource Allocation, Tactical Positioning"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 515030,
-      "lastMs": 98474,
+      "totalMs": 604286,
+      "lastMs": 89256,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:35:24.421Z"
+      "updatedAt": "2026-10-09T22:36:53.681Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:11:00.791Z",
-  "updatedAt": "2026-10-09T22:35:24.424Z",
+  "updatedAt": "2026-10-09T22:36:53.694Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2045,14 +2126,141 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {
-    "local_authoring_parts::0b98b41a5b0a48e30f17048b4f6aa30b1607c301da2c9fcf16dce00503809f92:signatureSystems:2": 2
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T22:35:24.424Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [],
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]",
+            "signatureSystems[3]"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::0b98b41a5b0a48e30f17048b4f6aa30b1607c301da2c9fcf16dce00503809f92:signatureSystems:2": 2,
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "휴먼 GO! - 진입 단서, 숙련, 발전",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival/Action/RogueLike",
+          "material": "Enemy Pressure, Resource Management, Adaptive Strategy",
+          "materialDomain": "Real-Time",
+          "stateChange": "Positioning, Resource Allocation, Risk Assessment"
+        },
+        "b": {
+          "system": "Build/Upgrade/Progression",
+          "material": "Upgrades, Perks, Skill Sets",
+          "materialDomain": "Dynamic",
+          "stateChange": "Build Composition, Experience Gain, Progression Choice"
+        },
+        "abCausality": "Adaptive Build -> Survival Wave -> Boss Conquest -> Next Progression",
+        "abEvolution": {
+          "aChangesB": "New Enemy Behavior -> New Resource Type -> New Strategy Layer",
+          "bChangesA": "New Upgrade Set -> New Perk Combination -> New Skill Synergy",
+          "lateGameChange": "Multi-System Integration -> High-Stakes Decision -> Terminal Outcome"
+        },
+        "materialFusion": {
+          "contrast": "Enemy Pressure vs. Resource Scarcity",
+          "causalBridge": "Resource Management -> Strategic Positioning -> Adaptive Combat",
+          "removalConsequence": "Survival Threshold Shift -> Multi-Stage Engagement -> Dynamic Difficulty Scaling"
+        },
+        "storyCausalChain": {
+          "cause": "Player Input -> State Change -> Reward / Risk -> Next Selection",
+          "characterConflict": "Enemy Pressure vs. Player Adaptation",
+          "playerChoice": "Build Composition -> Resource Allocation -> Tactical Positioning",
+          "worldChange": "Survival Threshold Adjustment -> Multi-Stage Engagement -> Dynamic Difficulty Scaling",
+          "nextEvent": "Boss Conquest -> Progression Choice -> New Gameplay Layer"
+        },
+        "cThemes": [
+          {
+            "name": "Adaptive Combat",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Dynamic Difficulty Scaling"
+          },
+          {
+            "name": "Strategic Positioning",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Tactical Decision Making"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival/Action/RogueLike",
+            "gameplayEffect": "Real-Time Engagement"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Build/Upgrade/Progression",
+            "gameplayEffect": "Dynamic Strategy Layers"
+          }
+        ],
+        "cGenreInterlock": "Adaptive Build -> Survival Wave -> Boss Conquest -> Next Progression",
+        "cWorldAndGameplayEffect": "Survival Threshold Shift -> Multi-Stage Engagement -> Dynamic Difficulty Scaling",
+        "delveDiscoveries": [
+          {
+            "clue": "Enemy Behavior Change",
+            "discovery": "New Enemy Pattern, Resource Type, Strategic Layer",
+            "newChoice": "Adaptive Combat, Resource Management, Tactical Positioning"
+          },
+          {
+            "clue": "Upgrades and Perks",
+            "discovery": "New Upgrade Set, Perk Combination, Skill Synergy",
+            "newChoice": "Build Composition, Experience Gain, Progression Choice"
+          },
+          {
+            "clue": "Multi-System Integration",
+            "discovery": "Multi-Stage Engagement, High-Stakes Decision, Terminal Outcome",
+            "newChoice": "Boss Conquest, Progression Choice, New Gameplay Layer"
+          },
+          {
+            "clue": "Player Adaptation",
+            "discovery": "Tactical Positioning, Resource Allocation, Adaptive Combat",
+            "newChoice": "Survival Threshold Adjustment, Multi-Stage Engagement, Dynamic Difficulty Scaling"
+          }
+        ],
+        "delveGrowthRule": "Adaptive Combat -> Survival Wave -> Boss Conquest -> Next Progression",
+        "finalGameIdentity": "Adaptive Combat, Survival Wave, Boss Conquest, Multi-Stage Engagement, Dynamic Difficulty Scaling"
+      },
+      "playerFantasy": "휴먼 GO!은 진입 단서로 시작해 숙련과 발전을 통해 게임 정체성을 형성하는 반복 가능한 핵심 루프를 제공한다. 플레이어는 입력 후 즉각적인 상태 변화와 피드백을 경험하며, 위험/보상의 균형을 유지하면서 성장 가능성이 실제로 달라지는 경험을 반복한다.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T22:36:53.684Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
