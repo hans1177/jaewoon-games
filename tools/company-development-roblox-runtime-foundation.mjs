@@ -351,11 +351,12 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true")',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
     'local RunService=game:GetService("RunService")',
+    // Official Open Cloud Luau tasks are non-simulating. RunService:Run() requires Plugin security.
+    // Preserve explicit diagnostics, but never attempt to start a real game simulation here.
     'local simulationRunningBefore=RunService:IsRunning()',
-    'local simulationStartAttempted=not simulationRunningBefore',
-    'local simulationStartSucceeded=simulationRunningBefore',
+    'local simulationStartAttempted=false',
+    'local simulationStartSucceeded=false',
     'local simulationStartError=""',
-    'if simulationStartAttempted then local ok,err=pcall(function() RunService:Run() end); simulationStartSucceeded=ok; if not ok then simulationStartError=tostring(err) end end',
     'local simulationRunning=RunService:IsRunning()',
     'local startupWaitStarted=os.clock()',
     'local startupWaitDeadline=startupWaitStarted+8',
@@ -508,6 +509,7 @@ export async function probeRobloxOpenCloudEngine({
     scriptExecuted:serverContextExecuted,
     headlessServerExecution:true,
     livePlayerSimulationClaimed:false,
+    simulationStartSupported:false,
     simulationRunningBefore,
     simulationStartAttempted,
     simulationStartSucceeded,
