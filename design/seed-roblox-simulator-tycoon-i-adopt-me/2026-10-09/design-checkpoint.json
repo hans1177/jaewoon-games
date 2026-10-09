@@ -95,25 +95,208 @@
       "name": "ADAPTATION_AND_STRATEGY",
       "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
       "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
+    },
+    "local_authoring_parts::2ba61f873446267cc818e5c8d777daa4abd644cc5f7dd712973df974d61841d8:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "READ NEXT ENEMY WAVE",
+        "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+      ],
+      "stateOutputs": [
+        "DISCOVER NEW STRATEGIES AND COMBINATIONS",
+        "EXTEND CONTENT THROUGH EMERGENT SYNTAX",
+        "REFRESH AND REINTERPRET PREVIOUS DECISIONS"
+      ],
+      "name": "EMERGENCY_STRATEGY_EXPANSION",
+      "purpose": "Provides the player with new and evolving strategies, combinations, and interpretations of previous decisions through emergent grammar.",
+      "playerChoice": "The player chooses which new strategies to adopt, how to combine them, and what to interpret next in the game's dynamic and evolving landscape."
+    },
+    "local_authoring_parts::b15214cbeef435e695ef9ae7132d7e2551581aab287497d7513f0018dba72313:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "CONNECT MAIN ACTION WITH STATE CHANGE AND RISK/REWARD CONNECTION",
+          "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVES COMPOSITION, PROTECT OBJECTIVE, CLEAR STAGE/BOSSE TO UNLOCK HARDER DEFENCE CHOICES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES",
+          "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "ADAPT DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION",
+            "PROTECT OBJECTIVE",
+            "CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+          ],
+          "name": "ADAPTATION_AND_STRATEGY",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
+          "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW STRATEGIES AND COMBINATIONS",
+            "EXTEND CONTENT THROUGH EMERGENT SYNTAX",
+            "REFRESH AND REINTERPRET PREVIOUS DECISIONS"
+          ],
+          "name": "EMERGENCY_STRATEGY_EXPANSION",
+          "purpose": "Provides the player with new and evolving strategies, combinations, and interpretations of previous decisions through emergent grammar.",
+          "playerChoice": "The player chooses which new strategies to adopt, how to combine them, and what to interpret next in the game's dynamic and evolving landscape."
+        }
+      ]
+    },
+    "local_authoring_parts::b4c1a02c755093dfcbd8ebd997ca97e0b81b4d3c19e7f7e6789c2845d3a333f6:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISK/NEXT CHOICE",
+        "READ NEXT ENEMY WAVE AND PLACE TOWERS/OR DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE.",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "CONNECT MAIN ACTION WITH STATE CHANGE AND RISK/REWARD CONNECTION",
+          "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVES COMPOSITION, PROTECT OBJECTIVE, CLEAR STAGE/BOSSE TO UNLOCK HARDER DEFENCE CHOICES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
+          "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "EARN RESOURCES FROM DEFEATED ENEMIES",
+            "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES",
+          "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "ADAPT DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION",
+            "PROTECT OBJECTIVE",
+            "CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+          ],
+          "name": "ADAPTATION_AND_STRATEGY",
+          "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
+          "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ NEXT ENEMY WAVE",
+            "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW STRATEGIES AND COMBINATIONS",
+            "EXTEND CONTENT THROUGH EMERGENT SYNTAX",
+            "REFRESH AND REINTERPRET PREVIOUS DECISIONS"
+          ],
+          "name": "EMERGENCY_STRATEGY_EXPANSION",
+          "purpose": "Provides the player with new and evolving strategies, combinations, and interpretations of previous decisions through emergent grammar.",
+          "playerChoice": "The player chooses which new strategies to adopt, how to combine them, and what to interpret next in the game's dynamic and evolving landscape."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 991139,
-      "lastMs": 80565,
+      "totalMs": 1071702,
+      "lastMs": 80563,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:36:16.260Z"
+      "updatedAt": "2026-10-09T09:37:36.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:19:44.888Z",
-  "updatedAt": "2026-10-09T09:36:16.260Z",
+  "updatedAt": "2026-10-09T09:37:36.828Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2310,7 +2493,7 @@
     "local_authoring_parts::2ba61f873446267cc818e5c8d777daa4abd644cc5f7dd712973df974d61841d8:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:36:16.260Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:37:36.828Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
