@@ -150,7 +150,8 @@ assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard
     assert.deepEqual(first.disabled,['owner-upload']);
     assert.equal(temp.games[0].homepageWebPlayable,false);
     assert.equal(temp.games[0].hasWebArchive,true,'keep legacy reference without exposing it');
-    assert.equal(temp.games[0].ownerWebSourceState,'LEGACY_WEB_REFERENCE_ONLY');
+    assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFICATION_REQUIRED',
+      'legacy HTML remains an archive and cannot claim verified Unity WebGL playability');
     assert.equal(temp.games[0].webPath,'/web-games/owner-upload/');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
