@@ -233,25 +233,155 @@
       "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
       "purpose": "To represent the player's decision to choose an escape route, which impacts both immediate survival conditions and future strategic planning.",
       "playerChoice": "The player decides whether to scout or move the egg based on current threat level and available resources in the environment."
+    },
+    "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:3": {
+      "id": "coreLoop_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "player_choice_of_escape_route"
+      ],
+      "stateOutputs": [
+        "survival_outcomes_and_strategic_options"
+      ],
+      "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+      "purpose": "Establishes the causal relationship between player decision-making and game outcome",
+      "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources"
+    },
+    "local_authoring_parts::6b1c954b24953314924dda30917825e9e140543cd44f6f46c8185c8d410c5b8c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To model the causal relationship between player decisions and game mechanics, emphasizing how choices impact both short-term survival and long-term strategy.",
+          "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources in the initial phase, with subsequent choices evolving based on environmental feedback and adaptive pathfinding."
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To model the causal relationship between player decision-making and game state changes, emphasizing adaptive strategy deployment in dynamic environments.",
+          "playerChoice": "Player selects an escape route based on current threat level and available resources"
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To represent the player's decision to choose an escape route, which impacts both immediate survival conditions and future strategic planning.",
+          "playerChoice": "The player decides whether to scout or move the egg based on current threat level and available resources in the environment."
+        },
+        {
+          "id": "coreLoop_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "Establishes the causal relationship between player decision-making and game outcome",
+          "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources"
+        }
+      ]
+    },
+    "local_authoring_parts::f56d90d49735cf8d94355ca88dcd9ba5ebe784d6241f868a3a864655bc98406d:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "{\"identity\": \"Player's choice of escape route affects both immediate survival outcomes and long-term strategic options\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"Scout a small area and identify the target egg and patrol risk\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"Stealth\\\",\\n \\\"material\\\": \"Risk-reward escape mechanism with dynamic terrain交互\\\",\\n",
+        "stateChange\": \"Player gains awareness of environmental hazards, triggers initial decision to scout or move the egg\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"Escape Mechanics\\\",\\n \\\"material\\\": \"Variable route system with adaptive pathfinding\\\",\\n \\\"materialDomain\\\": \"Strategy, Navigation, Resource Allocation\\\",\\n \\\"stateChange\\\": \"Player selects an",
+        "escape route based on current threat level and available resources\\\"\n },\\n \\\"abCausality\\\": \"Player's choice of route affects both immediate survival outcomes and long-term strategic options\\\"\n },\\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"If player chooses low-risk scouting, B evolves to include high-stakes evasion strategies\\\",\\n \\\"bChanges"
+      ],
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To model the causal relationship between player decisions and game mechanics, emphasizing how choices impact both short-term survival and long-term strategy.",
+          "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources in the initial phase, with subsequent choices evolving based on environmental feedback and adaptive pathfinding."
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To model the causal relationship between player decision-making and game state changes, emphasizing adaptive strategy deployment in dynamic environments.",
+          "playerChoice": "Player selects an escape route based on current threat level and available resources"
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "To represent the player's decision to choose an escape route, which impacts both immediate survival conditions and future strategic planning.",
+          "playerChoice": "The player decides whether to scout or move the egg based on current threat level and available resources in the environment."
+        },
+        {
+          "id": "coreLoop_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "player_choice_of_escape_route"
+          ],
+          "stateOutputs": [
+            "survival_outcomes_and_strategic_options"
+          ],
+          "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+          "purpose": "Establishes the causal relationship between player decision-making and game outcome",
+          "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1281411,
-      "lastMs": 96154,
+      "totalMs": 1377322,
+      "lastMs": 95911,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:51:19.186Z"
+      "updatedAt": "2026-10-09T22:52:55.098Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:52:17.910Z",
-  "updatedAt": "2026-10-09T22:51:19.186Z",
+  "updatedAt": "2026-10-09T22:52:55.101Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1696,18 +1826,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "coreLoop_0",
-          "coreLoop_1"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:2": 2
   },
@@ -1715,7 +1834,7 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:51:19.186Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:52:55.101Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
