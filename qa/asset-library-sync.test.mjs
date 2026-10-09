@@ -65,6 +65,37 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  offline=true;await intervals[0]();await settle();assert.match(e('syncStatus').textContent,/이전 목록/);assert.equal(e('environmentCount').textContent,1);
  const count=requests.length;document.hidden=true;await intervals[0]();assert.equal(requests.length,count);
  offline=false;document.hidden=false;listeners.visibilitychange();await settle();assert.match(e('syncStatus').textContent,/자동 동기화 연결됨/);
+ // 실제 등록 경로·게임·플랫폼·검증 상태 검색은 외부 이미지를 읽거나 파일을 이동하지 않는다.
+ e('allTab').listeners.click();await settle();
+ assert.ok(e('folderFilter').options.some(option=>option.value==='assets'));
+ assert.ok(e('folderFilter').options.some(option=>option.value==='외부 경로'));
+ e('folderFilter').value='assets';e('folderFilter').listeners.change();
+ assert.equal(e('assetList').children.length,3);
+ e('platformFilter').value='ROBLOX';e('platformFilter').listeners.change();
+ assert.equal(e('assetList').children.length,1);
+ e('verificationFilter').value='unverified';e('verificationFilter').listeners.change();
+ assert.equal(e('assetList').children[0].dataset.id,'ui-a');
+ e('assetSearch').value='/assets/ui.svg';e('assetSearch').listeners.input();
+ assert.equal(e('assetList').children.length,1);
+ e('folderFilter').value='';e('folderFilter').listeners.change();
+ e('platformFilter').value='';e('platformFilter').listeners.change();
+ e('verificationFilter').value='';e('verificationFilter').listeners.change();
+ e('assetSearch').value='';e('assetSearch').listeners.input();
+ // 같은 실제 경로를 참조하는 두 등록 항목은 삭제 없이 비교 후보로만 표시한다.
+ registryRevision=3;
+ registry.assets.push({id:'ui-b',title:'별도 등록 UI',category:'UI',platform:'ROBLOX',path:'/assets/ui.svg',sourceRevision:'v2'});
+ await intervals[0]();await settle();
+ e('sourceFilter').value='shared';e('sourceFilter').listeners.change();
+ assert.equal(e('assetList').children.length,2);
+ assert.deepEqual(e('assetList').children.map(item=>item.dataset.id).sort(),['ui-a','ui-b']);
+ const second=e('assetList').children.find(item=>item.dataset.id==='ui-b');
+ await second.listeners.click();await settle();
+ assert.match(e('selectedInfo').textContent,/원본 경로: \/assets\/ui.svg/);
+ assert.match(e('selectedInfo').textContent,/동일 경로 등록 2개/);
+ assert.match(e('selectedInfo').textContent,/실제 중복 여부는 별도 확인 필요/);
+ assert.match(e('selectedInfo').textContent,/등록 버전: v2/);
+ e('sourceFilter').value='unique';e('sourceFilter').listeners.change();
+ assert.ok(e('assetList').children.every(item=>!['ui-a','ui-b'].includes(item.dataset.id)));
 });
 
 
