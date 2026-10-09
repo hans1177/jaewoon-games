@@ -34,25 +34,39 @@
         "플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다.",
         "세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다."
       ]
+    },
+    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:0": {
+      "id": "CORE-01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "PLACE_TOWERS_DEFENDERS"
+      ],
+      "stateOutputs": [
+        "CHANGED_WORLD_STATE"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 172485,
-      "lastMs": 27792,
+      "totalMs": 193697,
+      "lastMs": 21212,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:44:04.244Z"
+      "updatedAt": "2026-10-09T11:44:25.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:44:04.244Z",
+  "updatedAt": "2026-10-09T11:44:25.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2261,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:44:04.244Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:44:25.457Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
