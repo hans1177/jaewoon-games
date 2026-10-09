@@ -804,25 +804,47 @@
     },
     "local_authoring_parts::4202efb5a90726ed6544bc84d142b60c12c7a58821095b378545505180dcb632:trigger": {
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::4202efb5a90726ed6544bc84d142b60c12c7a58821095b378545505180dcb632:stateChange": {
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::5f102ab0c58d242a30992b2eda7677292f2e7c5cd00bec21a968a8181e1fbb7f:systemInterconnections:1": {
+      "fromId": "SIGNATURE_SYSTEM_01",
+      "toId": "SIGNATURE_SYSTEM_01",
+      "stateKeys": [
+        "LEVEL_GOAL_STATE",
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_01",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::e61be11a0f8afc607bccbe27520ed566a39056ecf710c047aef2e57368e89123:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_01"
+    },
+    "local_authoring_parts::e61be11a0f8afc607bccbe27520ed566a39056ecf710c047aef2e57368e89123:toId": {
+      "toId": "SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 74,
-      "successes": 74,
+      "calls": 77,
+      "successes": 77,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2486244,
-      "lastMs": 34203,
+      "totalMs": 2583060,
+      "lastMs": 31359,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:04:44.451Z"
+      "updatedAt": "2026-10-09T00:06:21.280Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:04:44.451Z",
+  "updatedAt": "2026-10-09T00:06:21.280Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3148,7 +3170,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:04:44.451Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:06:21.280Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
