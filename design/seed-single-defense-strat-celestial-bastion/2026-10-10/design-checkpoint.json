@@ -539,25 +539,53 @@
         "State Change: Resources acquired and spent, defense strategy updated.",
         "Reward: New play option formation."
       ]
+    },
+    "local_authoring_parts::32eef99c126f0cdf41a87bd0bb88fa84daf7148888badc979635d0a8d914bc9f:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resources_acquired_and_spent",
+        "defense_strategy_updated"
+      ],
+      "stateOutputs": [
+        "new_play_option_formed"
+      ],
+      "name": "RESOURCE_MANAGEMENT",
+      "purpose": "Manage enemy resources through strategic placement and spending",
+      "playerChoice": "Choose to acquire and spend resources based on enemy type and wave composition to adapt defense strategy and form new play options"
+    },
+    "local_authoring_parts::32eef99c126f0cdf41a87bd0bb88fa84daf7148888badc979635d0a8d914bc9f:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemy_type_change",
+        "defense_strategy_update"
+      ],
+      "stateOutputs": [
+        "resource_spending_pattern_change"
+      ],
+      "name": "DEFENSE_STRATEGY",
+      "purpose": "EnemyTypeChange → DefenseStrategyUpdate",
+      "playerChoice": "DefenseStrategyUpdate → ResourceSpendingPatternChange"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1565078,
-      "lastMs": 94423,
+      "totalMs": 1760670,
+      "lastMs": 97723,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:47:45.353Z"
+      "updatedAt": "2026-10-09T18:51:00.949Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:40.225Z",
-  "updatedAt": "2026-10-09T18:47:45.353Z",
+  "updatedAt": "2026-10-09T18:51:00.949Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2267,7 +2295,7 @@
     "282e07c4f86efbe0d3307ad28126c011786c503d2f3ffea4b364808e760ff761": true,
     "82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:47:45.353Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:51:00.949Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
