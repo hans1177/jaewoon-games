@@ -492,25 +492,42 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::de302f1dcacbdf74298e83469d29ed7d73c4c8d046f3f5f74de304e1dbc02d68:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "activitySpace",
+        "figure",
+        "item"
+      ],
+      "stateOutputs": [
+        "hiddenRoom",
+        "invisibility",
+        "dynamicEnvironment"
+      ],
+      "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
+      "purpose": "Player interaction with an environment that evolves through social engagement and resource management.",
+      "playerChoice": "Engage with the figure or avoid it based on current goals and environmental conditions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1125761,
-      "lastMs": 90690,
+      "totalMs": 1229368,
+      "lastMs": 103607,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:40:18.636Z"
+      "updatedAt": "2026-10-09T20:42:02.256Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T20:40:18.647Z",
+  "updatedAt": "2026-10-09T20:42:02.256Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,10 +2174,10 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:40:18.640Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:42:02.256Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
