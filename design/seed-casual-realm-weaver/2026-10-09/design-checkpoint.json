@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::7b248a398fb62c62b975f0d157a33dc71c60315577877b2b86b30dcd93f552a7:identity": {
+      "identity": "세계의 직조자은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어는 시작 단계에서 즉시 실행 가능한 간단한 입력(1 손 가립 또는 스ワイ프)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 플레이하며, 이 선택이 세계 상태와 다음 선택에 직접 영향을 미친다.\n\n이 게임에서는 대표 행동인 'Start'과 선택인 'Play a brief run...'가 서로 다른 월드 상태로 전환되며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 플레이 경험을 제공한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 88575,
+      "lastMs": 88575,
+      "lastError": null,
+      "updatedAt": "2026-10-09T14:20:16.625Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:18:48.035Z",
-  "updatedAt": "2026-10-09T14:18:48.046Z",
+  "updatedAt": "2026-10-09T14:20:16.625Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1486,5 +1502,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T14:20:16.625Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
