@@ -734,7 +734,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
   });
 }
 
-// 단일 디자이너 원본의 MAIN/A/B/c/@를 실제 플랫폼 소스에 연결한다.
+// 단일 디자이너 원본의 MAIN/A/B/C/@를 실제 플랫폼 소스에 연결한다. 과거 c는 존재할 때만 보존한다.
 // 파일/함수 발견은 '구현 완료' 증거가 아니며 BUILD_UP/독립 런타임 QA의 책임을 바꾸지 않는다.
 export function buildDesignToPlatformCodingTrace({
   gameId='',design={},platform='COMMON',sourceRoot='',sourceObservation={},
@@ -758,7 +758,21 @@ export function buildDesignToPlatformCodingTrace({
     'NOT_SELECTED_NATIVE_PLATFORM';
   const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
   const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
-  const roles=['MAIN','A','B','c','DELVE'];
+  // V5의 C는 두 소재·두 장르의 인과 계약이다. 원본에 없는 예전 c 기계축을 요구하지 않는다.
+  const creativeGrammar=design.creativeGrammar&&typeof design.creativeGrammar==='object'&&!Array.isArray(design.creativeGrammar)?design.creativeGrammar:null;
+  const hasCreativeGrammar=Boolean(creativeGrammar&&Object.keys(creativeGrammar).length);
+  const cThemes=Array.isArray(creativeGrammar?.cThemes)?creativeGrammar.cThemes:[];
+  const cGenres=Array.isArray(creativeGrammar?.cGenres)?creativeGrammar.cGenres:[];
+  const sourcedAB=['a','b'].every(key=>clean(creativeGrammar?.[key]?.system)&&clean(creativeGrammar?.[key]?.material)
+    &&clean(creativeGrammar?.[key]?.materialDomain)&&clean(creativeGrammar?.[key]?.stateChange));
+  const creativeCReady=hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
+    &&cThemes.length===2&&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cGenres.length===2&&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect);
+  const includeLegacyC=!hasCreativeGrammar||designRoles.some(row=>row?.grammarRole==='c');
+  const roles=['MAIN','A','B',...(includeLegacyC?['c']:[]),'DELVE'];
   const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
   const mode=clean(design.multiplayerMode).toUpperCase();
   const modeReady=['COOP','COMPETITIVE','HYBRID'].includes(mode);
@@ -845,7 +859,8 @@ export function buildDesignToPlatformCodingTrace({
     });
   });
   const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
-    &&bindings.every(row=>row.designStatus==='AUTHORED');
+    &&bindings.every(row=>row.designStatus==='AUTHORED')
+    &&(!hasCreativeGrammar||creativeCReady);
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
   const spatialReady=clean(unityDepth.dimension)==='3D'
@@ -863,7 +878,8 @@ export function buildDesignToPlatformCodingTrace({
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
   const gapReasons=[
-    ...(!authoredRolesComplete?['DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(!authoredRolesComplete?[hasCreativeGrammar?'DESIGN_MAIN_A_B_C_AT_INCOMPLETE':'DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(hasCreativeGrammar&&!creativeCReady?['DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING']:[]),
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
@@ -878,6 +894,13 @@ export function buildDesignToPlatformCodingTrace({
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
+    creativeCBinding:hasCreativeGrammar?Object.freeze({
+      themes:Object.freeze(cThemes.map(row=>Object.freeze({name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genreInterlock:clean(creativeGrammar?.cGenreInterlock),
+      abGameplayEffect:clean(creativeGrammar?.cWorldAndGameplayEffect),
+      designAuthored:Boolean(creativeCReady),runtimeVerified:false
+    }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
     executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
     gapReasons:Object.freeze(uniq(gapReasons)),
@@ -1635,7 +1658,7 @@ function buildAutonomousContentExpansion({
 
 function platformDirectives({identity,goal}){
   const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
   const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
