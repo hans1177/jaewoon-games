@@ -735,25 +735,28 @@
       "stateKeys": [
         "{\"fromId\": \"systemInterconnections[0].trigger\", \"toId\": \"systemInterconnections["
       ]
+    },
+    "local_authoring_parts::f51b89a7bbae29088c0653ff7d5ba9e7d00825ca5934db512da117c5da32c194:fromSystem": {
+      "fromSystem": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서 입력 단서를 제공함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 17,
+      "calls": 20,
+      "successes": 18,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2315155,
-      "lastMs": 91192,
+      "totalMs": 2406012,
+      "lastMs": 90857,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T16:21:23.822Z"
+      "updatedAt": "2026-10-09T16:22:54.681Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T16:21:23.822Z",
+  "updatedAt": "2026-10-09T16:22:54.681Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2779,7 +2782,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:21:23.822Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:22:54.681Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
