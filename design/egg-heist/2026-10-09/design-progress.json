@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 29,
-  "lastSuccessfulModelCallAt": "2026-10-09T15:47:00.966Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 31,
+  "lastSuccessfulModelCallAt": "2026-10-09T15:48:33.385Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/egg-heist/2026-10-09/design-seed.json",
     "contentDigest": "30e8a001df9cfe8bb2b1be6bfa4de2f18247ba346e29be557fc6ed7d1b4aae65",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2074200,
-      "lastMs": 93051,
+      "totalMs": 2166615,
+      "lastMs": 92415,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:47:00.966Z"
+      "updatedAt": "2026-10-09T15:48:33.382Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T15:47:00.967Z"
+  "updatedAt": "2026-10-09T15:48:33.390Z"
 }
