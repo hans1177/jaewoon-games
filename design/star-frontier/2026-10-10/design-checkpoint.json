@@ -102,25 +102,32 @@
       },
       "playerFantasy": "플레이어는 각각의 선택을 통해 세계 상태 변화와 인과적 연관성을 가진다. 이는 보드 전략과 액션 대응 사이의 상호작용이며, 이는 실제 세계의 변화와 인과적으로 연결된다.",
       "coreFun": "플레이어의 선택은 A/B 상태 교환을 통해 상호작용하며, 이는 실제 세계의 변화와 인과적으로 연결된다. 이는 기존 규칙과 인과적으로 일치해야 한다."
+    },
+    "local_authoring_parts::848c7916d2b2e4cc798f1b3fec71ae4ebba275de27a0d9b8f5b29e8103fbdc71:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 → 세계 상태 변화 → 보상/위험/다음 선택",
+        "플레이어 선택에 따른 실제 세계의 변화가 인과적으로 연결되어야 하며, 이는 기존 규칙과 일치해야 한다.",
+        "A/B 상태 교환은 플레이어의 선택과 실제 세계의 변화 사이에서 양방향으로 연결되고, 이는 기존 규칙과 인과적 연관성이 있어야 한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 222561,
-      "lastMs": 222561,
+      "totalMs": 260300,
+      "lastMs": 37739,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:13:01.772Z"
+      "updatedAt": "2026-10-09T21:13:39.513Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:09:19.145Z",
-  "updatedAt": "2026-10-09T21:13:01.772Z",
+  "updatedAt": "2026-10-09T21:13:39.513Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1605,7 +1612,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:13:01.772Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:13:39.513Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
