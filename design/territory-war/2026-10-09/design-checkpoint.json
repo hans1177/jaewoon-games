@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:identity": {
       "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력 읽고 영토 목표 선택, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다."
+    },
+    "local_authoring_parts::6c3434e4f35d3d49190a553bdc8581fe5630be0b642fb097cd7d99e28fab3157:playerFantasy": {
+      "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다."
+    },
+    "local_authoring_parts::01d5265f011d688d68e72aa4a4cc5e8e3ed3ae56543436c4dab70a6cb537170e:identity,playerFantasy": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력 읽고 영토 목표 선택, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+      "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 165547,
-      "lastMs": 165547,
+      "totalMs": 200460,
+      "lastMs": 34913,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:23:53.563Z"
+      "updatedAt": "2026-10-09T08:24:28.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:23:53.563Z",
+  "updatedAt": "2026-10-09T08:24:28.479Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2054,7 +2061,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:23:53.563Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:24:28.479Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
