@@ -1779,25 +1779,53 @@
         "OUTPUT"
       ],
       "fromSystem": "STAGE_GATE_SCORING_V2"
+    },
+    "local_authoring_parts::6b79fa778e441a58c270ca19bdd5d8a001afdc54eaf964473148769e1d2bc361:toSystem,trigger,stateChange": {
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
+    },
+    "local_authoring_parts::1c6f3dc76bc33e58b21838f414eadcee3108b0983c783ff482095e2d3a0d231f:systemInterconnections:2": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2",
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
+    },
+    "local_authoring_parts::229d6b919508f14e603c954c2078abd00cbbae8fb96a0f82985c366b8c50f10a:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 117,
-      "successes": 114,
+      "calls": 119,
+      "successes": 116,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10536194,
-      "lastMs": 93249,
+      "totalMs": 10720967,
+      "lastMs": 94414,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:47:51.068Z"
+      "updatedAt": "2026-10-09T06:50:55.847Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T06:47:51.069Z",
+  "updatedAt": "2026-10-09T06:50:55.847Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4142,7 +4170,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:47:51.068Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:50:55.847Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
