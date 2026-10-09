@@ -2353,7 +2353,15 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};runtime=UNVERIFIED`,
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
-    'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
+    ...(codingTrace?.creativeCBinding?[`designCodeCreativeC=${JSON.stringify({
+      designAuthored:codingTrace.creativeCBinding.designAuthored===true,
+      themes:(codingTrace.creativeCBinding.themes||[]).map(row=>clean(row.name)).slice(0,2),
+      genres:(codingTrace.creativeCBinding.genres||[]).map(row=>({role:clean(row.role),name:clean(row.name)})).slice(0,2),
+      interlock:boundedPromptText(clean(codingTrace.creativeCBinding.genreInterlock),220),
+      abEffect:boundedPromptText(clean(codingTrace.creativeCBinding.abGameplayEffect),220),
+      runtimeVerified:false
+    })}`]:[]),
+    'designCodeVerification=MAIN/A/B/C/@ must follow the authored rule IDs and creative C themes, PRIMARY and SECONDARY genres, with their causal effects on the existing gameplay state dependencies. Legacy c is optional in V5, required only for actual legacy-role designs. Inspect executable owner functions, preserve save/balance and authority, verify gameplay action/state/result/reconnect and independent platform QA. No design or source marker may claim implementation PASS.',
     'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must use real native 3D meshes and depth; flat 2D or 2.5D cannot be a final PASS; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
@@ -2407,11 +2415,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2447,7 +2455,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2459,9 +2467,9 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(line===begin||line===end){essential.push(line);continue;}
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
-    // 각 디자이너 역할은 고유하다. 1개만 남기면 A/B/c/@ 구현 연결이 사라진다.
+    // 모든 작성된 역할은 고유하다. 하나만 남기면 A/B/C/@의 인과·구현 연결이 사라진다.
     if(prefix==='designCodeRole='||prefix==='volumeSpec='){
-      // KEEP EVERY MAIN/A/B/c/@ ROLE in the concise contract.
+      // KEEP EVERY AUTHORED MAIN/A/B/C/@ ROLE and optional legacy c in the concise contract.
     }else if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
       essentialAnchors+=1;
