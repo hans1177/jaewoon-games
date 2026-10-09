@@ -508,25 +508,45 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::b196e4d7a9d99b2fb8841c10b5a661d5a017e700ac68d7eabd4be5a11bd4f2e8:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "개미 종족 선택",
+        "월드 상태",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "stateOutputs": [
+        "장르 핵심 행동 결정",
+        "월드 상태 변환",
+        "보상/위험 발생",
+        " 다음 목표 결정"
+      ],
+      "name": "개미 시뮬레이터 기본 규칙",
+      "purpose": "플레이어의 현재 상황과 목표 추론 후 장르 핵심 행동을 선택하여 월드 상태, 자원, 위험, 진행 상태를 변환하며 보상/위험을 통해 다음 목표 결정하는 반복 가능한 게임 루프 구조를 정립",
+      "playerChoice": "실제 입력으로 월드 상태와 보상/위험 조정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 942590,
-      "lastMs": 32020,
+      "totalMs": 1017318,
+      "lastMs": 74728,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:55:52.587Z"
+      "updatedAt": "2026-10-09T20:57:07.325Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T20:55:52.595Z",
+  "updatedAt": "2026-10-09T20:57:07.325Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,10 +2282,10 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:55:52.589Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:57:07.325Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
