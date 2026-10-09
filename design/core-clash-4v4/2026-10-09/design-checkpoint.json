@@ -1418,25 +1418,40 @@
     },
     "local_authoring_parts::277d6f71197b1fbce065c07f60f500bad79838a230df5d5123ea183d3374871e:trigger": {
       "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::277d6f71197b1fbce065c07f60f500bad79838a230df5d5123ea183d3374871e:stateChange": {
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::0bda76f89ed798bf4ff5aac199126aa971401605163bd1d676408a882e5a0055:systemInterconnections:4": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "fromId",
+        "toId"
+      ],
+      "fromSystem": "CORE-4V4-SIGNATURE-1",
+      "toSystem": "CORE-4V4-SIGNATURE-2",
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 91,
-      "successes": 88,
+      "calls": 92,
+      "successes": 89,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8245579,
-      "lastMs": 95926,
+      "totalMs": 8340082,
+      "lastMs": 94503,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:58:02.921Z"
+      "updatedAt": "2026-10-09T04:59:37.425Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T04:58:02.921Z",
+  "updatedAt": "2026-10-09T04:59:37.434Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3638,91 +3653,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "FROM_INPUT_TO_SELECT"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "FROM_INPUT_TO_SELECT"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "FROM_INPUT_TO_SELECT"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "FROM_INPUT_TO_SELECT"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "FROM_INPUT_TO_SELECT"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3827,7 +3757,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 4
+    "designer_draft_slices::systems-progression": 5
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3866,10 +3796,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:58:02.921Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T04:59:37.429Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
