@@ -578,25 +578,155 @@
       "name": "전략적 판단 및 전장 관리 시스템",
       "purpose": "전략적 판단과 전장 관리를 통해 새로운 전술 경로를 창출함",
       "playerChoice": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형됨"
+    },
+    "local_authoring_parts::d6e08329c00eed40b72a02bdbedd0560555fd184b92000e2b8d85c7b23b4188d:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "체스판 상태 변화"
+      ],
+      "stateOutputs": [
+        "새로운 전략 경로 개발"
+      ],
+      "name": "전략적 판단 및 전장 관리 시스템",
+      "purpose": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
+    },
+    "local_authoring_parts::ab1672a85eb86866404ced245ffb5f6988ee2a95877c0389bb3c9278482e22ae:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "게임 정체성에 기반하여 전략적 판단과 전장 관리를 통합하는 주요 시스템",
+          "playerChoice": "체스판 상태 변화를 통해 전략적 판단 수행, 전장 위치 선정 및 정보 접근을 바탕으로 실제 선택을 내림으로써 세계를 변형함으로써 인과적 연관성이 강화됨으로서 플레이어에게 명확한 판타지를 제공함으로써 게임 진행이 가능하게 됨니다। 이 과정에서 AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 새로운 전술 경로가 생성되며, 이를 바탕으로 다음 선택의 가능성 확률이 결정됩니다。"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "게임 정체성의 대표 행동 수행, 전략적 선택 및 세계 변화 유도",
+          "playerChoice": "체스판 상태 변화에 기반하여 전략적 판단을 하며, AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계가 변형됨으로써 플레이어에게 명확한 판타지를 제공함으로써 인과적 연관성이 강화됨"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "전략적 판단과 전장 관리를 통해 새로운 전술 경로를 창출함",
+          "playerChoice": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형",
+          "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
+        }
+      ]
+    },
+    "local_authoring_parts::cd1645b0acfc90a6971fa250014cd5e25b7f5ef05782a89130ffdbf0861ce68f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 체스판 상태 변화",
+        "PROCESSE: 전략적 판단 및 전장 관리",
+        "OUTPUT: 새로운 전략 경로 개발"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "게임 정체성에 기반하여 전략적 판단과 전장 관리를 통합하는 주요 시스템",
+          "playerChoice": "체스판 상태 변화를 통해 전략적 판단 수행, 전장 위치 선정 및 정보 접근을 바탕으로 실제 선택을 내림으로써 세계를 변형함으로써 인과적 연관성이 강화됨으로서 플레이어에게 명확한 판타지를 제공함으로써 게임 진행이 가능하게 됨니다। 이 과정에서 AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 새로운 전술 경로가 생성되며, 이를 바탕으로 다음 선택의 가능성 확률이 결정됩니다。"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "게임 정체성의 대표 행동 수행, 전략적 선택 및 세계 변화 유도",
+          "playerChoice": "체스판 상태 변화에 기반하여 전략적 판단을 하며, AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계가 변형됨으로써 플레이어에게 명확한 판타지를 제공함으로써 인과적 연관성이 강화됨"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "전략적 판단과 전장 관리를 통해 새로운 전술 경로를 창출함",
+          "playerChoice": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "체스판 상태 변화"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 개발"
+          ],
+          "name": "전략적 판단 및 전장 관리 시스템",
+          "purpose": "AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계 변형",
+          "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1576946,
-      "lastMs": 71062,
+      "totalMs": 1647429,
+      "lastMs": 70483,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:06:51.446Z"
+      "updatedAt": "2026-10-09T20:08:01.931Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T20:06:51.446Z",
+  "updatedAt": "2026-10-09T20:08:01.934Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2370,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:06:51.446Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:08:01.934Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
