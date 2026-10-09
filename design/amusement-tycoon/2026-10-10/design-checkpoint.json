@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95:identity": {
       "identity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::e829f567bef30ab17c9af4742c22f1a0095591385cbac1d6b244a52f6133fb25:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+      "a": {
+        "system": "플레이어 입력 시스템",
+        "material": "즉시 시작 가능한 단순한 터치/스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+        "materialDomain": "게임 초기 설정",
+        "stateChange": "입력 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "b": {
+        "system": "세계 상태 관리 시스템",
+        "material": "플레이어의 행동에 따른 세계 상태 변환",
+        "materialDomain": "게임 내 환경 변화",
+        "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "abCausality": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 836578,
-      "lastMs": 236386,
+      "totalMs": 947836,
+      "lastMs": 111258,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:35:54.927Z"
+      "updatedAt": "2026-10-09T18:37:46.188Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:35:54.927Z",
+  "updatedAt": "2026-10-09T18:37:46.188Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1511,7 +1527,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:35:54.927Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:37:46.188Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
