@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
       "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)"
+    },
+    "local_authoring_parts::d406a51ad995f5c704658d13ce7fd9c5f3045accaf5bb478a918f290b92724a5:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "Player receives score, unlocks progress, re-tries game",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        }
+      ],
+      "delveGrowthRule": "Input/Selection → State Change → Outcome/Risk → Next Selection (Quick Retry) is an emergent genre that grows through multiple routes and risks in a mobile context.",
+      "finalGameIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. Finish or fail, receive a score, unlock a progression benefit, and retry quickly."
+    },
+    "local_authoring_parts::60642479a4d41be301144f13ce889060778130c4dc65ce05a97a56454181e062:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "Start",
+          "kind": "GENRE",
+          "gameplayEffect": "Player gains score, collects rewards, makes a decision"
+        },
+        {
+          "name": "Run",
+          "kind": "GENRE",
+          "gameplayEffect": "Player receives score, unlocks progress, re-tries game"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "CASUAL",
+          "gameplayEffect": "Emergent genre with simple one-thumb input and clear scoring system"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "SIMULATION",
+          "gameplayEffect": "Progression through multiple routes and risks in a mobile context"
+        }
+      ],
+      "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
+      "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "Player receives score, unlocks progress, re-tries game",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        }
+      ],
+      "delveGrowthRule": "Input/Selection → State Change → Outcome/Risk → Next Selection (Quick Retry) is an emergent genre that grows through multiple routes and risks in a mobile context.",
+      "finalGameIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. Finish or fail, receive a score, unlock a progression benefit, and retry quickly."
+    },
+    "local_authoring_parts::1fb3b18793ca72a5d8febd976bfac96a445bd1b6fe411abe7b3d5cb3f84a2326:creativeGrammar": {
+      "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "a": {
+        "system": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "material": "Readable feedback, rewards, and small risks",
+        "materialDomain": "Feedback & Rewards",
+        "stateChange": "Player gains score, collects rewards, makes a decision"
+      },
+      "b": {
+        "system": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+        "material": "Score, progression benefits, quick retries",
+        "materialDomain": "Progression & Replays",
+        "stateChange": "Player receives score, unlocks progress, re-tries game"
+      },
+      "abCausality": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+      "abEvolution": {
+        "aChangesB": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "bChangesA": "Score -> Progression Benefit -> Quick Retry",
+        "lateGameChange": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+      },
+      "materialFusion": {
+        "contrast": "Input/Selection -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "causalBridge": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "removalConsequence": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+      },
+      "storyCausalChain": {
+        "cause": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "characterConflict": "Player gains score, collects rewards, makes a decision",
+        "playerChoice": "Score, progression benefits, quick retries",
+        "worldChange": "Player receives score, unlocks progress, re-tries game",
+        "nextEvent": "Player gains score, collects rewards, makes a decision"
+      },
+      "cThemes": [
+        {
+          "name": "Start",
+          "kind": "GENRE",
+          "gameplayEffect": "Player gains score, collects rewards, makes a decision"
+        },
+        {
+          "name": "Run",
+          "kind": "GENRE",
+          "gameplayEffect": "Player receives score, unlocks progress, re-tries game"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "CASUAL",
+          "gameplayEffect": "Emergent genre with simple one-thumb input and clear scoring system"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "SIMULATION",
+          "gameplayEffect": "Progression through multiple routes and risks in a mobile context"
+        }
+      ],
+      "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
+      "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "Player receives score, unlocks progress, re-tries game",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        },
+        {
+          "clue": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "discovery": "Player gains score, collects rewards, makes a decision",
+          "newChoice": "Score, progression benefits, quick retries"
+        }
+      ],
+      "delveGrowthRule": "Input/Selection → State Change → Outcome/Risk → Next Selection (Quick Retry) is an emergent genre that grows through multiple routes and risks in a mobile context.",
+      "finalGameIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. Finish or fail, receive a score, unlock a progression benefit, and retry quickly."
+    },
+    "local_authoring_parts::d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "a": {
+          "system": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "material": "Readable feedback, rewards, and small risks",
+          "materialDomain": "Feedback & Rewards",
+          "stateChange": "Player gains score, collects rewards, makes a decision"
+        },
+        "b": {
+          "system": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+          "material": "Score, progression benefits, quick retries",
+          "materialDomain": "Progression & Replays",
+          "stateChange": "Player receives score, unlocks progress, re-tries game"
+        },
+        "abCausality": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "abEvolution": {
+          "aChangesB": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "bChangesA": "Score -> Progression Benefit -> Quick Retry",
+          "lateGameChange": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+        },
+        "materialFusion": {
+          "contrast": "Input/Selection -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "causalBridge": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "removalConsequence": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+        },
+        "storyCausalChain": {
+          "cause": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "characterConflict": "Player gains score, collects rewards, makes a decision",
+          "playerChoice": "Score, progression benefits, quick retries",
+          "worldChange": "Player receives score, unlocks progress, re-tries game",
+          "nextEvent": "Player gains score, collects rewards, makes a decision"
+        },
+        "cThemes": [
+          {
+            "name": "Start",
+            "kind": "GENRE",
+            "gameplayEffect": "Player gains score, collects rewards, makes a decision"
+          },
+          {
+            "name": "Run",
+            "kind": "GENRE",
+            "gameplayEffect": "Player receives score, unlocks progress, re-tries game"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "CASUAL",
+            "gameplayEffect": "Emergent genre with simple one-thumb input and clear scoring system"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "SIMULATION",
+            "gameplayEffect": "Progression through multiple routes and risks in a mobile context"
+          }
+        ],
+        "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
+        "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "delveDiscoveries": [
+          {
+            "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+            "discovery": "Player receives score, unlocks progress, re-tries game",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          }
+        ],
+        "delveGrowthRule": "Input/Selection → State Change → Outcome/Risk → Next Selection (Quick Retry) is an emergent genre that grows through multiple routes and risks in a mobile context.",
+        "finalGameIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. Finish or fail, receive a score, unlock a progression benefit, and retry quickly."
+      }
+    },
+    "local_authoring_parts::7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70:identity,creativeGrammar": {
+      "identity": "퇴마 사무소을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어가 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다.",
+      "creativeGrammar": {
+        "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "a": {
+          "system": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "material": "Readable feedback, rewards, and small risks",
+          "materialDomain": "Feedback & Rewards",
+          "stateChange": "Player gains score, collects rewards, makes a decision"
+        },
+        "b": {
+          "system": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+          "material": "Score, progression benefits, quick retries",
+          "materialDomain": "Progression & Replays",
+          "stateChange": "Player receives score, unlocks progress, re-tries game"
+        },
+        "abCausality": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "abEvolution": {
+          "aChangesB": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "bChangesA": "Score -> Progression Benefit -> Quick Retry",
+          "lateGameChange": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+        },
+        "materialFusion": {
+          "contrast": "Input/Selection -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "causalBridge": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+          "removalConsequence": "Player gains score, collects rewards, makes a decision → Player receives score, unlocks progress, re-tries game"
+        },
+        "storyCausalChain": {
+          "cause": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "characterConflict": "Player gains score, collects rewards, makes a decision",
+          "playerChoice": "Score, progression benefits, quick retries",
+          "worldChange": "Player receives score, unlocks progress, re-tries game",
+          "nextEvent": "Player gains score, collects rewards, makes a decision"
+        },
+        "cThemes": [
+          {
+            "name": "Start",
+            "kind": "GENRE",
+            "gameplayEffect": "Player gains score, collects rewards, makes a decision"
+          },
+          {
+            "name": "Run",
+            "kind": "GENRE",
+            "gameplayEffect": "Player receives score, unlocks progress, re-tries game"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "CASUAL",
+            "gameplayEffect": "Emergent genre with simple one-thumb input and clear scoring system"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "SIMULATION",
+            "gameplayEffect": "Progression through multiple routes and risks in a mobile context"
+          }
+        ],
+        "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
+        "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+        "delveDiscoveries": [
+          {
+            "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+            "discovery": "Player receives score, unlocks progress, re-tries game",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          },
+          {
+            "clue": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)",
+            "discovery": "Player gains score, collects rewards, makes a decision",
+            "newChoice": "Score, progression benefits, quick retries"
+          }
+        ],
+        "delveGrowthRule": "Input/Selection → State Change → Outcome/Risk → Next Selection (Quick Retry) is an emergent genre that grows through multiple routes and risks in a mobile context.",
+        "finalGameIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. Finish or fail, receive a score, unlock a progression benefit, and retry quickly."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1089715,
-      "lastMs": 105060,
+      "totalMs": 1208363,
+      "lastMs": 118648,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:59:34.808Z"
+      "updatedAt": "2026-10-09T18:01:33.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:41:25.065Z",
-  "updatedAt": "2026-10-09T17:59:34.808Z",
+  "updatedAt": "2026-10-09T18:01:33.463Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1607,7 +1939,7 @@
     "7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70": true,
     "d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:59:34.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:01:33.463Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
