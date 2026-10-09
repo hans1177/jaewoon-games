@@ -654,25 +654,48 @@
     },
     "local_authoring_parts::2b8829b77ce599bf9a5ac4230047392f6c3e432a1b2ddfa9e88bc1d8cd744a49:riskPressure": {
       "riskPressure": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다."
+    },
+    "local_authoring_parts::2b8829b77ce599bf9a5ac4230047392f6c3e432a1b2ddfa9e88bc1d8cd744a49:recoveryRules": {
+      "recoveryRules": "{\"riskPressure\": \"플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.\"}"
+    },
+    "local_authoring_parts::3e2d951e4ea74ec3f618e719f6da884ebe688fc2b95aa85ba1c8135f4647cbc3:failureRetryRisk": {
+      "failureStates": [
+        "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다.",
+        "플레이어가 선택 시 발생하는 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다."
+      ],
+      "retryFlow": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+      "riskPressure": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+      "recoveryRules": "{\"riskPressure\": \"플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.\"}"
+    },
+    "local_authoring_parts::04e9ba5e9fa5a823ae6d8c6cebdbd2c0871bfa97f66675ea9092d7c69fc906a6:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다.",
+          "플레이어가 선택 시 발생하는 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다."
+        ],
+        "retryFlow": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+        "riskPressure": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+        "recoveryRules": "{\"riskPressure\": \"플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.\"}"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1507809,
-      "lastMs": 34144,
+      "totalMs": 1541137,
+      "lastMs": 33328,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:32:06.389Z"
+      "updatedAt": "2026-10-09T09:32:39.718Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:58.445Z",
-  "updatedAt": "2026-10-09T09:32:06.389Z",
+  "updatedAt": "2026-10-09T09:32:39.725Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2712,40 +2735,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "END_LEVEL_STATE_CHANGE_FAILURE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[1]",
-          "value": "PLAYER_CHOICE_REDUCTION"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -2770,9 +2759,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2787,9 +2776,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2804,9 +2793,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→PLAYER_END_LEVEL_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→PLAYER_END_LEVEL_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2821,9 +2810,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→PLAYER_END_LEVEL_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1→SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3→PLAYER_END_LEVEL_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2850,7 +2839,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2876,13 +2865,22 @@
           "newGameplay": "Player's START LEVEL ACTION results in END LEVEL STATE change, connecting core loop and signature systems.",
           "systemImpact": "Player's START LEVEL ACTION results in END LEVEL STATE change, connecting core loop and signature systems."
         }
-      ]
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다.",
+          "플레이어가 선택 시 발생하는 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다."
+        ],
+        "retryFlow": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+        "riskPressure": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.",
+        "recoveryRules": "{\"riskPressure\": \"플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 기반으로, 게임 내에서의 상태 변화 및 플레이어의 전략적 결정을 유도하여 다양한 장르에 적절하게 재해석된다.\"}"
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:32:06.389Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T09:32:39.722Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
