@@ -419,25 +419,40 @@
     },
     "local_authoring_parts::bd21fcc635eefaf04322f3b449e0611211996ccf726775033c0de984364738ab:trigger": {
       "trigger": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다."
+    },
+    "local_authoring_parts::bd21fcc635eefaf04322f3b449e0611211996ccf726775033c0de984364738ab:stateChange": {
+      "stateChange": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다."
+    },
+    "local_authoring_parts::5f3ba89d0b53419b58ec1c27704e56c2940ad0dbe841b1b1ce216c55afe9368e:systemInterconnections:0": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "START_LEVEL_STATE",
+        "END_LEVEL_STATE"
+      ],
+      "fromSystem": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toSystem": "PLAYER_END_LEVEL_STATE",
+      "trigger": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다.",
+      "stateChange": "플레이어가 선택 결과로 인해 세계 상태와 다음 선택이 서로 영향을 주는 보조 요소로서, 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 518761,
-      "lastMs": 31866,
+      "totalMs": 551238,
+      "lastMs": 32477,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:15:37.295Z"
+      "updatedAt": "2026-10-09T09:16:09.773Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:58.445Z",
-  "updatedAt": "2026-10-09T09:15:37.295Z",
+  "updatedAt": "2026-10-09T09:16:09.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2644,7 +2659,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:15:37.295Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:16:09.774Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
