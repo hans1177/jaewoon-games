@@ -19,25 +19,33 @@
     "local_authoring_parts::9e9435c8898ca0acaddfeb9303c3eb95fda9aa2d16da04fdadffea8f12d989ec:identity,playerFantasy": {
       "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "휴먼 GO에서는 플레이어가 단순한 탐험을 하기보다, 사람들의 행동과 관계에 대한 이해와 성찰을 통해 새로운 기회를 발견하고, 그 기회를 이용해 다른 사람들과의 관계를 형성하며, 자신의 존재 가치를 증명하는 과정에서 게임을 진행하게 된다."
+    },
+    "local_authoring_parts::9e9435c8898ca0acaddfeb9303c3eb95fda9aa2d16da04fdadffea8f12d989ec:coreFun": {
+      "coreFun": "플레이어는 작은 활동 공간 내에서 인물, 작업 또는 수집 가능한 기회를 탐험하여 그에 대한 이해와 성찰을 통해 새로운 기회를 발견하고, 이를 바탕으로 다른 사람과의 관계를 형성하면서 자신의 존재 가치를 증명하며 게임을 진행한다."
+    },
+    "local_authoring_parts::c73f47dc7b1240f38a5c237e4759e0046c65faeb82e486c7f95f6965522a32fd:identity,playerFantasy,coreFun": {
+      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "휴먼 GO에서는 플레이어가 단순한 탐험을 하기보다, 사람들의 행동과 관계에 대한 이해와 성찰을 통해 새로운 기회를 발견하고, 그 기회를 이용해 다른 사람들과의 관계를 형성하며, 자신의 존재 가치를 증명하는 과정에서 게임을 진행하게 된다.",
+      "coreFun": "플레이어는 작은 활동 공간 내에서 인물, 작업 또는 수집 가능한 기회를 탐험하여 그에 대한 이해와 성찰을 통해 새로운 기회를 발견하고, 이를 바탕으로 다른 사람과의 관계를 형성하면서 자신의 존재 가치를 증명하며 게임을 진행한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 202445,
-      "lastMs": 19846,
+      "totalMs": 222904,
+      "lastMs": 20459,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:54:24.300Z"
+      "updatedAt": "2026-10-09T10:54:44.762Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:51:01.832Z",
-  "updatedAt": "2026-10-09T10:54:24.302Z",
+  "updatedAt": "2026-10-09T10:54:44.763Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1965,7 +1973,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:54:24.302Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:54:44.763Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
