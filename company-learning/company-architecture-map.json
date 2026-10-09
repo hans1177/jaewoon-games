@@ -1,5 +1,5 @@
 {
-  "version": 334,
+  "version": 335,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2676,7 +2676,7 @@
     "authorityExpansion": false,
     "webNativeDirectAssetReuseForbidden": true,
     "sharedStyleIdentityAcrossPlatforms": true,
-    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
+    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_NATIVE_3D_ONLY",
     "companyGraphicsLibrary24h": {
       "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -3723,11 +3723,13 @@
       "unityRobloxNativeVariantsSeparated": true,
       "actionReadyMotionVarietyRequired": true,
       "idlePreparationPreemptibleByProduction": true,
-      "minimumFinalGameplayDimension": "2.5D",
+      "minimumFinalGameplayDimension": "3D",
       "flat2DFinalGameplayForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true,
-      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+      "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+      "f0AndUnityWebFloorNative3dAuthoringRequired": true,
+      "f03dSourcePreflightRuntimePassAuthority": false
     }
   },
   "recordsGovernance": {
