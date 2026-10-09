@@ -545,25 +545,38 @@
       "name": "small-world survival pressure",
       "purpose": "Preserve original gameplay mechanics through ecological lens",
       "playerChoice": "Select between resource gathering or combat strategies"
+    },
+    "local_authoring_parts::3b792c572173a9d9702566cfd713d118174b655a8bf69988f80a77a20daaca56:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "ecological adaptation",
+      "purpose": "to simulate survival through environmental interaction and risk assessment",
+      "playerChoice": "selecting between resource gathering or combat based on ecological context"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 671964,
-      "lastMs": 10173,
+      "totalMs": 683141,
+      "lastMs": 11177,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:53:08.012Z"
+      "updatedAt": "2026-10-09T22:53:19.190Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T22:53:08.012Z",
+  "updatedAt": "2026-10-09T22:53:19.194Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2268,7 +2281,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3
+    "designer_draft_slices::identity-core": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2366,10 +2379,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:53:08.012Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T22:53:19.191Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
