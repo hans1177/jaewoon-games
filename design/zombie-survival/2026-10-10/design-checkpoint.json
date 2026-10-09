@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 주요 행동인 '생존'을 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며, 이는 단순한 선택에서 숙련으로 바뀌고, 발견 후 다음 질문으로 이어지게 된다.",
       "coreFun": "주요 행동은 플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임이다. 입력/선택 → 상태변화(성장 상태 전환 및 자원 확대) → 보상/위험/다음 선택의 연결을 포함하며, 인과 관계를 통한 실제 세계 상태 변화가 일어난다."
+    },
+    "local_authoring_parts::84f1a3775c66f6492ddeb1942465fbd38dfeee7b637f9dc75e2bbafc907aeeaf:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화(성장 상태 전환 및 자원 확대) → 보상/위험/다음 선택의 연결",
+        "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어 실제 세계 상태 변화가 일어난다.",
+        "생존 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 694263,
-      "lastMs": 111190,
+      "totalMs": 798579,
+      "lastMs": 104316,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:26:21.502Z"
+      "updatedAt": "2026-10-09T18:28:05.821Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:14:47.214Z",
-  "updatedAt": "2026-10-09T18:26:21.503Z",
+  "updatedAt": "2026-10-09T18:28:05.821Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "5b1c35ed59e786a73d9f4b30700e88e8d49e4deb1f9ec003b20cce05b9c17bd6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:26:21.503Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:28:05.821Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
