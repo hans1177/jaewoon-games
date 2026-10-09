@@ -8,30 +8,13 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 210,
-  "lastSuccessfulModelCallAt": "2026-10-09T07:28:08.636Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
-  "designerSeed": {
-    "file": "design/exorcist-office/2026-10-09/design-seed.json",
-    "contentDigest": "af9fdaf674dfbda37d1a8b502917f7cc709ef76e2524ccf4d29440ad6f6a02c7",
-    "authorModel": "ollama:qwen3:1.7b",
-    "status": "AUTHORED_CANDIDATE"
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 157,
-      "successes": 154,
-      "failures": 3,
-      "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 10695189,
-      "lastMs": 65740,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T07:28:08.633Z"
-    }
-  },
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "designerSeed": null,
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-09T07:28:08.642Z"
+  "updatedAt": "2026-10-09T08:17:28.399Z"
 }
