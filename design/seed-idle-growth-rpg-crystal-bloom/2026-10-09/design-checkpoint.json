@@ -601,25 +601,29 @@
         }
       ],
       "progressionDirection": "{\"type\": \"sequence\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}, \"progressionEconomyBalance\": {\"type\": \"balance\", \"value\": 0.8, \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
+    },
+    "local_authoring_parts::90cfb76d0fc752b3c6d6984abc55ddc68d5010666c2e0792cca9473051487218:progressionLoop,resourceFlow": {
+      "progressionLoop": "{\"type\": \"loop\", \"items\": [\"INPUT\",\"SELECT\",\"OUTPUT\",\"STATE\"], \"description\": \"플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프.\"}",
+      "resourceFlow": "{\"type\": \"flow\", \"items\": [\"FROM\",\"TO\",\"ACTION\",\"RESULT\",\"RISK\",\"NEXT_CHOICE\"], \"description\": \"주체적인 플레이를 통해 자원 획득과 손실의 균형이 유지된다.\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1717164,
-      "lastMs": 296243,
+      "totalMs": 1815752,
+      "lastMs": 98588,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T16:11:25.811Z"
+      "updatedAt": "2026-10-09T16:13:04.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T16:11:25.811Z",
+  "updatedAt": "2026-10-09T16:13:04.401Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2331,7 +2335,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T16:11:25.811Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:13:04.401Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
