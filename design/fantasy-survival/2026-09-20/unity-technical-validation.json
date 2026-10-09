@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:21:08.733Z",
+  "checkedAt": "2026-10-09T01:54:16.779Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37328152514,
-    "sourceCommit": "964523d5ac387218874356f0eb2dbf7357874757",
-    "sourceTreeSha": "07bc07b7d3ae984766b20f73a7e21a5dec10a188",
-    "apkSha256": "0477e321df37ee1a582ccb9ef206160a0a81a6994fb3752bf827ba34c5a76cc0",
+    "upstreamBuildRunId": 37789869176,
+    "sourceCommit": "d3b858554e129109d98f44142f95e3670658322c",
+    "sourceTreeSha": "f87d79fc6172e2b9512d178dc5b271014549b4ea",
+    "apkSha256": "8dd34d72b5a6b268e7a5ba65a59943ae5485dcef06ea943901b43a9ddb7e08c9",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -118,14 +118,14 @@
       "totalFramesRendered": 127,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": 10.9,
-      "avgFps": 14.180000000000001,
+      "minFps": 10.4,
+      "avgFps": 14.080000000000002,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 51555661,
+      "maxAllocatedMemoryBytes": 51591851,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/fantasy-survival-android-cloud-37328152514-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37328152514/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37328152514/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/fantasy-survival-android-cloud-37789869176-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37789869176/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37789869176/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/fantasy-survival"
   }
 }
