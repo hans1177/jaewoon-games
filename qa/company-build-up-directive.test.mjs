@@ -913,7 +913,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
     platformProfiles:{
       ROBLOX:{platform:'ROBLOX'},
       UNITY:{platform:'UNITY',unityWebSpatialPresentation:{
-        dimension:'2.5D',worldDepth:'실제 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 월드에 놓인다',
+        dimension:'3D',worldDepth:'실제 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 3D 월드에 놓인다',
         cameraAndOcclusion:'월드 높이별 카메라 오클루전과 캐릭터 앞뒤 물체 가림을 구현한다',
         lightingAndMaterials:'게임 월드 재질과 방향 광원을 사용해 캐릭터 발밑의 접지 그림자와 배경 높이차를 실제 장면에 구현한다',
         mobileWebglEvidence:'모바일 Unity WebGL 두 클라이언트에서 조명·깊이·공동 전투·재접속을 실행하여 촬영한다'
@@ -1064,4 +1064,103 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
   }
+});
+
+
+test('post-design volume keeps all authored systems, milestones and connected content as unverified build-up units',()=>{
+  const authored={
+    identity:'정원 방어',coreFun:'서식지 포식자를 선택해 정원을 방어한다',
+    coreLoop:['정원 탐색','해충 조합 확인','곤충 배치','전투 판정','보상과 다음 웨이브'],
+    signatureSystems:Array.from({length:17},(_,i)=>({
+      id:'system-'+(i+1),name:'설계 시스템 '+(i+1),purpose:'서식지 상태와 전투 선택을 연결',
+      playerChoice:'지역의 상황을 보고 곤충을 선택한다',
+      stateInputs:['worldState'],stateOutputs:['battleState']
+    })),
+    systemInterconnections:Array.from({length:18},(_,i)=>({
+      fromId:'system-'+(i%17+1),toId:'system-'+((i+1)%17+1),
+      fromSystem:'설계 시스템 '+(i%17+1),toSystem:'설계 시스템 '+((i+1)%17+1),
+      trigger:'곤충 배치',stateChange:'연결된 방어 상태 변화'
+    })),
+    contentExpansionPlan:[
+      {milestone:'첫 온실',newGameplay:'잠긴 온실 방어',systemImpact:'새 지형이 포식 관계를 바꿈'},
+      {milestone:'중반 숲',newGameplay:'유인과 매복 대응',systemImpact:'전투와 지도 연결'},
+      {milestone:'후반 분화구',newGameplay:'지형 전환 방어',systemImpact:'장비와 경로 연결'}
+    ],
+    contentVarietyPlan:{
+      regions:Array.from({length:9},(_,i)=>({name:'정원 지역 '+(i+1),encounterPattern:'해충 조합 '+(i+1),riskReward:'경로 선택의 보상'})),
+      enemiesOrChallenges:[{name:'매복 해충',playerChoice:'유인 또는 우회'}]
+    },
+    progressionDirection:'새 지역과 곤충 능력을 열어 다음 웨이브의 선택을 바꿈',
+    multiplayerMode:'COOP'
+  };
+  const source={
+    sourceRoot:'roblox-games/content-depth',sourceTreeFingerprint:'1'.repeat(64),
+    fileCount:1,topFiles:[{file:'roblox-games/content-depth/server/Game.server.luau',score:12}],
+    sourceAnchors:[],observations:[],
+    signals:{combat:1,progression:1,ai:1,save:0,content:1,connection:0}
+  };
+  const create=(previousDirective=null,previousDirectiveOutcome='',sourceTreeFingerprint='1'.repeat(64),runtimeEvidence={})=>
+    buildGameSpecificBuildUpDirective({
+      gameId:'content-depth',designRecord:{content:authored},
+      sourceObservation:{...source,sourceTreeFingerprint},
+      responsibleFiles:['roblox-games/content-depth/server/Game.server.luau'],
+      previousDirective,previousDirectiveOutcome,runtimeEvidence
+    });
+  const first=create();
+  const plan=first.designContentImplementation;
+  assert.equal(first.designImplementationContext.signatureSystems.length,17);
+  assert.equal(first.designImplementationContext.systemInterconnections.length,18);
+  assert.equal(plan.authoredVolume.signatureSystems,17);
+  assert.equal(plan.authoredVolume.systemConnections,18);
+  assert.equal(plan.authoredVolume.expansionMilestones,3);
+  assert.equal(plan.authoredVolume.contentFamilies.regions,9);
+  assert.equal(plan.authoredVolume.contentFamilies.enemiesOrChallenges,1);
+  assert.equal(plan.authoredVolume.totalUnits,51);
+  assert.equal(plan.authoredVolume.artificialContentCountCap,null);
+  assert.equal(plan.activeUnit.kind,'CORE_LOOP');
+  assert.equal(plan.activeUnit.implementationStatus,'PENDING_EXACT_SOURCE_AND_NATIVE_RUNTIME_EVIDENCE');
+  assert.equal(plan.units.filter(x=>x.kind==='SYSTEM').length,17);
+  assert.equal(plan.units.filter(x=>x.kind==='SYSTEM_CONNECTION').length,18);
+  assert.equal(plan.units.filter(x=>x.kind==='CONTENT_ELEMENT').length,10);
+  assert.match(directivePrompt(first),/DESIGN_GAME_VOLUME:/);
+  assert.match(directivePrompt(first),/DESIGN_CONTENT_ACTIVE_UNIT:/);
+  assert.match(directivePrompt(first),/DESIGN_CONTENT_VERIFICATION_RULE:/);
+
+  const failed=create(first,'failed','2'.repeat(64),{
+    runtimeObserved:true,runtimePassed:false,failureStage:'F3',failureSignature:'character-action-regression'
+  });
+  assert.equal(failed.primaryFocus,'STABILITY');
+  assert.equal(failed.designContentImplementation.activeUnit,null);
+  assert.equal(failed.designContentImplementation.deferredUnit.id,plan.activeUnit.id);
+  assert.match(failed.designContentImplementation.nextUnitSelection,/CAUSAL_REPAIR_FIRST/);
+  const recovery=create(failed,'verified','3'.repeat(64),{runtimeObserved:true,runtimePassed:true});
+  assert.equal(recovery.designContentImplementation.activeUnit.id,plan.activeUnit.id,
+    'successful foundation repair must not silently finish the deferred content unit');
+  const completed=create(recovery,'verified','4'.repeat(64),{runtimeObserved:true,runtimePassed:true});
+  assert.notEqual(completed.designContentImplementation.activeUnit.id,plan.activeUnit.id,
+    'content unit advances only after its own source delta and runtime effect are verified');
+});
+
+test('design trace rejects 2.5D as a final Unity Web spatial design even when depth fields exist',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-native-3d-only-'));
+  try{
+    const gameId='spatial-strict-demo';
+    const rel='unity-games/'+gameId+'/Assets/Scripts/GameCore.cs';
+    fs.mkdirSync(path.dirname(path.join(root,rel)),{recursive:true});
+    fs.writeFileSync(path.join(root,rel),'public class GameCore { public void UpdateWorld(){} }\n');
+    const base=design().content;
+    const withDepth={
+      ...base,platformProfiles:{UNITY:{platform:'UNITY',unityWebSpatialPresentation:{
+        dimension:'2.5D',worldDepth:'W'.repeat(60),cameraAndOcclusion:'C'.repeat(60),
+        lightingAndMaterials:'L'.repeat(60),mobileWebglEvidence:'E'.repeat(60)
+      }}}
+    };
+    const observation=inspectGameSources({repoRoot:root,sourceRoots:['unity-games/'+gameId]});
+    const rejected=buildDesignToPlatformCodingTrace({
+      gameId,design:withDepth,platform:'UNITY_WEB',sourceRoot:'unity-games/'+gameId,
+      sourceObservation:observation,repoRoot:root,responsibleFiles:[rel],multiplayerRequired:false
+    });
+    assert.equal(rejected.platformCodingPlans.find(x=>x.platform==='UNITY_WEB').minimumRenderedDimension,'3D');
+    assert.ok(rejected.gapReasons.includes('UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
