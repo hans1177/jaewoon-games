@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 단순한 전선 이동이나 자원 배분에 빠져 있을 뿐 아니라, 새로운 전선 위치에 대한 자원 재배분 및 전략 수립을 선택해야 한다. 이 과정에서 지역 특성과 전선 변화가 자원 배분 방식에 직접적인 영향을 미친다는 점을 명확히 해야 하며, 이를 기반으로 계속적으로 전략 실행의 변화가 발생할 것이다.",
       "coreFun": "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계를 구체화한다. 먼저 전선 위치 변경을 통해 자원 할당 결정을 내리고, 이후에는 새로운 전략 수립을 수행하며, 마지막으로 전선 이동 반영을 완료하여 전체 게임 진행이 지속적으로 변환된다."
+    },
+    "local_authoring_parts::f322c97007a8da060b1ebedc2d535567dc8cdb9b60b0ba3eff437173b6f71ea6:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상·위험·다음 선택",
+        "전선 위치 변경을 통해 자원 할당 결정을 내리고, 이후 새로운 전략 수립을 수행하며, 마지막으로 전선 이동 반영을 완료하여 전체 게임 진행이 지속적으로 변환된다.",
+        "플레이어는 지역 특성과 전선 변화의 인과적 결합을 기반으로 자원 배분 방식을 재설계하고, 이를 바탕으로 전략 실행의 연속적인 변화를 경험해야 함"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1269524,
-      "lastMs": 105900,
+      "totalMs": 1368218,
+      "lastMs": 98694,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:00:16.795Z"
+      "updatedAt": "2026-10-09T18:01:55.492Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:07.229Z",
-  "updatedAt": "2026-10-09T18:00:16.796Z",
+  "updatedAt": "2026-10-09T18:01:55.492Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2096,7 @@
     "e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2": true,
     "d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:00:16.796Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:01:55.492Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
