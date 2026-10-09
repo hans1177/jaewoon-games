@@ -5519,3 +5519,35 @@ test('asset supply summary indexes registry and quality lookups instead of neste
   assert.doesNotMatch(summarySource,/assets\.find\(/);
 });
 
+
+test('RPG and survival share one 3D creature master but raw cross-game clones cannot bind',()=>{
+  const asset={
+    id:'shared-wolf',family:'CREATURE',subfamily:'WOLF',styleFamily:'STYLIZED_FANTASY',
+    platform:'ROBLOX',status:'VERIFIED_COMPANY_ASSET',license:'project-original',
+    companyCommonBase:true,consumerGameIds:['forest-rpg'],sourceFiles:['assets/wolf.glb']
+  };
+  const gameDna={gameId:'island-survival',targetPlatform:'ROBLOX',
+    concept:createConceptProfile({styleFamily:'STYLIZED_FANTASY'})};
+  const requirement={family:'CREATURE',subfamily:'WOLF'};
+  const raw=evaluateInternalAssetReuse({asset,gameDna,requirement});
+  assert.equal(raw.usable,true);
+  assert.equal(raw.requiresGameSpecific3dVariant,true);
+  assert.equal(raw.directBindingReady,false);
+  const pending=buildStudioAssetLoadout({assets:[asset],gameDna,requirements:[requirement]});
+  assert.equal(pending.complete,true);
+  assert.equal(pending.atomicBindingReady,false);
+  assert.equal(pending.bindingAction,'AUTHOR_VERIFY_DISTINCT_3D_VARIANT_IN_EXISTING_GRAPHICS_PIPELINE');
+  const evidence={gameId:'island-survival',assetId:'shared-wolf',
+    distinctAxes:['SILHOUETTE','STANCE_GAIT','SURFACE_MATERIAL'],
+    runtimeBeforeAfterPass:true,nativePlatformPass:true};
+  const usageByAsset={'shared-wolf':{gameIdentityEvidence:evidence}};
+  const reuse=evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset['shared-wolf']});
+  assert.equal(reuse.requiresGameSpecific3dVariant,false);
+  assert.equal(reuse.crossGameIdentity.verified,true);
+  const selected=buildStudioAssetLoadout({assets:[asset],gameDna,requirements:[requirement],usageByAsset});
+  assert.equal(selected.atomicBindingReady,true);
+  assert.equal(selected.bindingAction,'APPLY_THROUGH_EXISTING_SOURCE_WORKER');
+  const colorOnly=evaluateInternalAssetReuse({asset,gameDna,requirement,
+    usage:{gameIdentityEvidence:{...evidence,distinctAxes:['SURFACE_MATERIAL','VFX_LANGUAGE','COLOR']}}});
+  assert.equal(colorOnly.directBindingReady,false);
+});
