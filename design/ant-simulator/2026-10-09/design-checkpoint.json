@@ -19,25 +19,33 @@
     "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:identity,playerFantasy": {
       "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
       "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다."
+    },
+    "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:coreFun": {
+      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다."
+    },
+    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:identity,playerFantasy,coreFun": {
+      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
+      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
+      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 138327,
-      "lastMs": 23294,
+      "totalMs": 163620,
+      "lastMs": 25293,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:45:48.937Z"
+      "updatedAt": "2026-10-09T12:46:14.233Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T12:45:48.939Z",
+  "updatedAt": "2026-10-09T12:46:14.234Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2095,7 +2103,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:45:48.939Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:46:14.234Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
