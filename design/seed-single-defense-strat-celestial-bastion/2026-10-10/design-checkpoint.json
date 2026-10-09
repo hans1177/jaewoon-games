@@ -213,25 +213,42 @@
       "name": "천상의 보루 - 단일 디펜스 전략",
       "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반의 전략적 선택 구현",
       "playerChoice": "방어 구성 변경, 자원 배분, 전략적 선택 도입의 순차적인 실행 과정 형성 및 게임 정체성 확립에 영향을 미침니다만, 이는 플레이어의 진보 수준에 따라 변화합니다. 즉, 새로운 위협에 대응하여 방어 전략을 조절하고, 자원 관리를 숙련으로 최적화하며, 전투의 진보로 인해 방어 계획이 유연하게 재구성됩니다. 이러한 선택은 게임의 핵심 요소로서 지속적으로 발전합니다. 결국, 모든 축을 인과적으로 결합한 새 정체성이 형성되며, 이는 플레이어가 실제 경험하는 게임의 정체성입니다."
+    },
+    "local_authoring_parts::e9c4e737d37c320a1a9d3aa02eb559b3bff08e57dd9e56b425af390e21ac660c:signatureSystems:1": {
+      "id": "signatureSystems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "defensiveConfigurationInput",
+        "enemyWaveInfoInput",
+        "resourceAllocationInput"
+      ],
+      "stateOutputs": [
+        "adaptiveDefenseStrategyOutput",
+        "economicResourceManagementOutput",
+        "strategicPathChoiceOutput"
+      ],
+      "name": "천상의 보루 - 단일 디펜스 전략",
+      "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반的战略路径 선택",
+      "playerChoice": "방어 구성 변경, 자원 배분 결정, 전략적 선택 실행 중인 실제 플레이 행동들로 이루어진 게임 과정입니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 688523,
-      "lastMs": 121363,
+      "totalMs": 792945,
+      "lastMs": 104422,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:48:06.390Z"
+      "updatedAt": "2026-10-09T20:49:50.814Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:36:37.837Z",
-  "updatedAt": "2026-10-09T20:48:06.390Z",
+  "updatedAt": "2026-10-09T20:49:50.814Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1940,7 +1957,7 @@
   "localAuthoringSplits": {
     "c4b34af08c2ba5a42eff6076fae1b5cfca91de052dd165fed5a07fedc0b712ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:48:06.390Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:49:50.814Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
