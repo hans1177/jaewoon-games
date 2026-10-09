@@ -19,25 +19,40 @@
     "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:identity,playerFantasy": {
       "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸는 중심 행동이며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 세계 상태와 다음 선택이 서로 영향을 주는 시그니처 상호작용을 실제 월드/시스템 상태 변화로 확정합니다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
       "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인 및 수정 책임을 구분하고 안정성을 우선으로 다루며, 한 판과 전체 세션 시간을 구별하여 검증되지 않은 시간이나 품질을 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석되고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않으며, 점수와 통과 판정은 결정론적 검증기가 담당합니다."
+    },
+    "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:coreFun": {
+      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다."
+    },
+    "local_authoring_parts::6a281d0c378bd4f617d576589683fde7f4178ebe1d42557adb02b2e665ac05d9:identity,playerFantasy,coreFun": {
+      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸는 중심 행동이며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 세계 상태와 다음 선택이 서로 영향을 주는 시그니처 상호작용을 실제 월드/시스템 상태 변화로 확정합니다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인 및 수정 책임을 구분하고 안정성을 우선으로 다루며, 한 판과 전체 세션 시간을 구별하여 검증되지 않은 시간이나 품질을 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석되고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않으며, 점수와 통과 판정은 결정론적 검증기가 담당합니다.",
+      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다."
+    },
+    "local_authoring_parts::6e99492dccaeb34da8a19c58699ad56e77407093a705df21d8e80db5adc4e95a:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다.",
+        "SELECT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다.",
+        "OUTPUT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 경로, 위험, 결과를 다른 방식으로 만듭니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 286469,
-      "lastMs": 62276,
+      "totalMs": 407917,
+      "lastMs": 68024,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:51:56.912Z"
+      "updatedAt": "2026-10-09T08:53:58.366Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:47:10.421Z",
-  "updatedAt": "2026-10-09T08:51:56.914Z",
+  "updatedAt": "2026-10-09T08:53:58.366Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2232,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:51:56.914Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:53:58.366Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
