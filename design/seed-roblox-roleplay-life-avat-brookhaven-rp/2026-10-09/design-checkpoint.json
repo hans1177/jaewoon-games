@@ -1391,25 +1391,43 @@
         "PROGRESSION_OPPORTUNITIES_CREATED"
       ],
       "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::68e8bc038edeb1a2cba9e13154d480981bf9cc5b0a6a48782907e60c9ee36933:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않는다",
+      "trigger": "FIGHT_THROUGH_ELEVATING_HORDE",
+      "stateChange": "systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않았습니다. 원본 규칙에 따라 해당 항목을 재설계하여 상태 교환 로직을 정확히 반영해야 합니다."
+    },
+    "local_authoring_parts::cd9079a7353a9145bd60972432c246b6abe5cfa2230b584e1773c55f007b25ff:systemInterconnections:1": {
+      "fromId": "CORE-01",
+      "toId": "CORE-01",
+      "stateKeys": [
+        "INCREASED_DIFFICULTY_STATE",
+        "NEW_GAME_STATES_GENERATED",
+        "PROGRESSION_OPPORTUNITIES_CREATED"
+      ],
+      "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "toSystem": "systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않는다",
+      "trigger": "FIGHT_THROUGH_ELEVATING_HORDE",
+      "stateChange": "systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않았습니다. 원본 규칙에 따라 해당 항목을 재설계하여 상태 교환 로직을 정확히 반영해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 145,
-      "successes": 145,
+      "calls": 146,
+      "successes": 146,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9722870,
-      "lastMs": 93701,
+      "totalMs": 9820105,
+      "lastMs": 97235,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:53:00.776Z"
+      "updatedAt": "2026-10-09T06:54:38.013Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T06:53:00.777Z",
+  "updatedAt": "2026-10-09T06:54:38.015Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3758,7 +3776,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:53:00.776Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:54:38.015Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
