@@ -230,25 +230,42 @@
       "name": "천상의 보루 - 단일 디펜스 전략",
       "purpose": "게임 내 방어 시스템의 유연한 재구성 및 자원 관리 기반的战略路径 선택",
       "playerChoice": "방어 구성 변경, 자원 배분 결정, 전략적 선택 실행 중인 실제 플레이 행동들로 이루어진 게임 과정입니다."
+    },
+    "local_authoring_parts::e9c4e737d37c320a1a9d3aa02eb559b3bff08e57dd9e56b425af390e21ac660c:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "defensiveConfigurationInput",
+        "enemyWaveInfoInput",
+        "resourceAllocationInput"
+      ],
+      "stateOutputs": [
+        "adaptiveDefenseStrategyOutput",
+        "economicResourceManagementOutput",
+        "strategicPathChoiceOutput"
+      ],
+      "name": "천상의 보루 - 단일 디펜스 전략",
+      "purpose": "Player's adaptive decision-making shapes the evolving defensive system",
+      "playerChoice": "Strategic placement of defenses and resource management based on enemy adaptability and economic constraints"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 792945,
-      "lastMs": 104422,
+      "totalMs": 893606,
+      "lastMs": 100661,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:49:50.814Z"
+      "updatedAt": "2026-10-09T20:51:31.477Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:36:37.837Z",
-  "updatedAt": "2026-10-09T20:49:50.814Z",
+  "updatedAt": "2026-10-09T20:51:31.477Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1957,7 +1974,7 @@
   "localAuthoringSplits": {
     "c4b34af08c2ba5a42eff6076fae1b5cfca91de052dd165fed5a07fedc0b712ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:49:50.814Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:51:31.477Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
