@@ -654,25 +654,33 @@
     },
     "local_authoring_parts::87e2d65e33a1de8155516bc5f06ebcedce24b7bd22bb4314fb7516470d436fd0:newGameplay": {
       "newGameplay": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::87e2d65e33a1de8155516bc5f06ebcedce24b7bd22bb4314fb7516470d436fd0:systemImpact": {
+      "systemImpact": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::a2f1581898a19d266cc965bd75eeaef3df70603c72eaa9f8a73ba512704af866:contentExpansionPlan:0": {
+      "milestone": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+      "newGameplay": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+      "systemImpact": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1566479,
-      "lastMs": 34239,
+      "totalMs": 1600342,
+      "lastMs": 33863,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:16:19.965Z"
+      "updatedAt": "2026-10-09T16:16:53.829Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T16:16:19.965Z",
+  "updatedAt": "2026-10-09T16:16:53.831Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2320,7 +2328,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:16:19.965Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:16:53.831Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
