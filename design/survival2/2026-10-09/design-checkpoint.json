@@ -1817,25 +1817,53 @@
       "toSystem": "SURVIVAL2-MAIN-02",
       "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
+    },
+    "local_authoring_parts::35c7e8e331c42c5460fe4522c9b5877f26ef469f3640a1f649bb8bea9209893f:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01"
+    },
+    "local_authoring_parts::35c7e8e331c42c5460fe4522c9b5877f26ef469f3640a1f649bb8bea9209893f:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
+    },
+    "local_authoring_parts::36ea04bab65a8fcb434706619665dac2ee6dc0aff719e3800fed2b89e4cff3f6:systemInterconnections:3": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01",
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 108,
-      "successes": 108,
+      "calls": 110,
+      "successes": 110,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8214252,
-      "lastMs": 61626,
+      "totalMs": 8342468,
+      "lastMs": 62219,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:40:03.900Z"
+      "updatedAt": "2026-10-09T06:42:12.122Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T06:40:03.902Z",
+  "updatedAt": "2026-10-09T06:42:12.125Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4210,7 +4238,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:40:03.902Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:42:12.124Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
