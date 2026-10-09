@@ -27,25 +27,32 @@
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다.",
       "playerFantasy": "천상의 보루에서 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 주로 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여 사용자의 참여와 몰입감을 강화한다.",
       "coreFun": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 이 행동을 수행하며, 이는 단순 반복에 비해 경쟁, 위험, 성공/실패 등 다양한 요소를 포함하는 핵심 루프를 형성하여 사용자의 몰입감과 참여도를 강화한다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하여, 플레이어의 전략적 결정과 반응을 실시간으로 감지하고 제어할 수 있는 시스템 구조를 갖추고 있다."
+    },
+    "local_authoring_parts::dd4a9404e76b6b06d916307fbfce7b58439d7690524013195e7fd3dbc7f03199:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: The game state shifts to a new defensive configuration, increasing resource pool and reducing threat level."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 216929,
-      "lastMs": 42696,
+      "totalMs": 251094,
+      "lastMs": 34165,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:06:04.698Z"
+      "updatedAt": "2026-10-09T09:06:38.866Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:02:27.675Z",
-  "updatedAt": "2026-10-09T09:06:04.699Z",
+  "updatedAt": "2026-10-09T09:06:38.866Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2240,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:06:04.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:06:38.866Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
