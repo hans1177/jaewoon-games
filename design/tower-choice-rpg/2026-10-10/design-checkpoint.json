@@ -363,25 +363,90 @@
           "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성합니다."
         }
       ]
+    },
+    "local_authoring_parts::ad7f0c044dd4975c31ac103bcc4455febf4561b7afdb77cf45846ec14ae0341c:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e5d3330e7792b2f2ac6f17daa5eff83a1ecff2415555ee8a2cef0636550cbedb:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        "선택 -> 상태 변화",
+        "보상/위험 -> 다음 선택"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "선택"
+          ],
+          "stateOutputs": [
+            "세계 상태 변동"
+          ],
+          "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+          "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성함",
+          "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성함"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "선택"
+          ],
+          "stateOutputs": [
+            "세계 상태 변동"
+          ],
+          "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+          "purpose": "플레이어 선택에 따른 세계 상태 변화를 인과적으로 관리하며, 중후반 두 시스템 간의 관계 형성을 촉진함",
+          "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "선택"
+          ],
+          "stateOutputs": [
+            "세계 상태 변동"
+          ],
+          "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+          "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다",
+          "playerChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다"
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "선택"
+          ],
+          "stateOutputs": [
+            "세계 상태 변동"
+          ],
+          "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+          "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성합니다.",
+          "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성합니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1271464,
-      "lastMs": 103173,
+      "totalMs": 1359687,
+      "lastMs": 88223,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:01:40.358Z"
+      "updatedAt": "2026-10-09T21:03:08.585Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T21:01:40.361Z",
+  "updatedAt": "2026-10-09T21:03:08.594Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2087,17 +2152,148 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {
-    "local_authoring_parts::e8cda5d5adf361993951252efc443a56f4e06cefbc815f86107c7a9b355c3702:signatureSystems:2": 1
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "slicePartialResults": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems_0",
+            "signatureSystems_1",
+            "signatureSystems_2",
+            "signatureSystems_3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::e8cda5d5adf361993951252efc443a56f4e06cefbc815f86107c7a9b355c3702:signatureSystems:2": 1,
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "10층 탑 RPG - 진보적 생존 전략",
+      "creativeGrammar": {
+        "mainIdentity": "생존 전략 시스템 - 단일 장르로 인해 주제 및 위험/목표가 서로 연결되는 반복 가능한 루프",
+        "a": {
+          "system": "생존 전략",
+          "material": "플레이어 선택, 기술 습득, 무기/속성 확장",
+          "materialDomain": "전략적 선택과 결과의 연계",
+          "stateChange": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택"
+        },
+        "b": {
+          "system": "생존 전략",
+          "material": "플레이어 선택, 기술 습득, 무기/속성 확장",
+          "materialDomain": "전략적 선택과 결과의 연계",
+          "stateChange": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택"
+        },
+        "abCausality": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택으로 이어지는 상호작용이 실제 일어나며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+        "abEvolution": {
+          "aChangesB": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택으로 이어지며, A와 B는 서로 다른 방식으로 연결된다.",
+          "bChangesA": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택으로 이어지며, B와 A는 서로 다른 방식으로 연결된다.",
+          "lateGameChange": "중후반 두 시스템은 각각 다른 방식으로 관계를 형성하며, 플레이어 선택에 따라 세계 상태가 변동된다."
+        },
+        "materialFusion": {
+          "contrast": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+          "causalBridge": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동되며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+          "removalConsequence": "C의 두 창작 소재 및 주·보조 장르는 실제 선택과 세계 변화로 이어지고, 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY) 간에는 실질적인 인과 변화가 일어난다."
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+          "characterConflict": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+          "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+          "worldChange": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+          "nextEvent": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+        },
+        "cThemes": [
+          {
+            "name": "전략적 선택 및 결과의 연계",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          },
+          {
+            "name": "생존 전략과 기술 습득",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+            "gameplayEffect": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "전략적 선택 - 기술 습득 및 무기 확장",
+            "gameplayEffect": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          }
+        ],
+        "cGenreInterlock": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+        "cWorldAndGameplayEffect": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+            "discovery": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+            "newChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          },
+          {
+            "clue": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+            "discovery": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+            "newChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          },
+          {
+            "clue": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+            "discovery": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+            "newChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          },
+          {
+            "clue": "플레이어 선택, 기술 습득, 무기/속성 확장, 전략적 선택과 결과의 연계",
+            "discovery": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다.",
+            "newChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+          }
+        ],
+        "delveGrowthRule": "중후반 두 시스템은 각각 다른 방식으로 관계를 형성하며, 플레이어 선택에 따라 세계 상태가 변동된다.",
+        "finalGameIdentity": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다."
+      },
+      "playerFantasy": "생존 전략 - 플레이어 선택 및 결과의 연계",
+      "coreFun": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성",
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        "선택 -> 상태 변화",
+        "보상/위험 -> 다음 선택"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:01:40.361Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T21:03:08.588Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
