@@ -469,6 +469,14 @@ local function damageMonster(player, enemy, amount)
   enemy:SetAttribute("HitReactionAt", os.clock())
   enemy:SetAttribute("RecoveryState", nextHealth > 0 and "RECOVERING" or "DEFEATED")
   setNumber(player, "EnemyHealth", nextHealth)
+  -- VFX · 이미 서버에서 확정한 피해만 기존 RemoteEvent로 클라이언트에 전달한다.
+  -- 게임 로직, 명중 범위, 저장, 재화, 멀티플레이 권한은 변경하지 않는다.
+  if player.Parent and enemy.PrimaryPart then
+    remote:FireClient(player, "COMBAT_PRESENTATION", {
+      Kind = nextHealth > 0 and "ENEMY_HIT" or "ENEMY_DEATH",
+      Position = enemy.PrimaryPart.Position,
+    })
+  end
 
   if nextHealth <= 0 then
     local isBoss = enemy:GetAttribute("Boss") == true
@@ -507,11 +515,28 @@ local function runEnemyAI(player, enemy)
       if os.clock() <= dodgeUntil then
         enemy:SetAttribute("AttackState", "DODGED")
         player:SetAttribute("LastDodgeAt", os.clock())
+        -- 회피 연출은 기존 서버 회피 판정이 성공한 경우에만 출력한다.
+        local character = player.Character
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+        if player.Parent and rootPart then
+          remote:FireClient(player, "COMBAT_PRESENTATION", {Kind = "DODGE", Position = rootPart.Position})
+        end
       else
         local damage = tonumber(enemy:GetAttribute("Damage")) or 8
-        local health = math.max(0, readNumber(player, "Health", 100) - damage)
+        local previousHealth = readNumber(player, "Health", 100)
+        local health = math.max(0, previousHealth - damage)
         setNumber(player, "Health", health)
         enemy:SetAttribute("AttackState", "HIT")
+        if health < previousHealth then
+          local character = player.Character
+          local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+          if player.Parent and rootPart then
+            remote:FireClient(player, "COMBAT_PRESENTATION", {
+              Kind = health > 0 and "PLAYER_HIT" or "PLAYER_DEATH",
+              Position = rootPart.Position,
+            })
+          end
+        end
         if health <= 0 then
           failDungeon(player, "PLAYER_DEFEATED")
           break
