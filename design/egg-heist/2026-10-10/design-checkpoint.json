@@ -104,25 +104,42 @@
         "감지 전략과 대응 방식 변경 -> 감지 확률 증가 -> 플레이어 행동 패턴 변형",
         "잠입 메커니즘과 운송 기술 조합 -> 실제 세계 상태 변화 -> 숙련된 선택 및 위험 감소"
       ]
+    },
+    "local_authoring_parts::3d64a774f1d3bfd4f8e6804511a649e0c47ef8b3e6657497da89ab374c92657d:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "위험 감소",
+        "감지 확률 증가",
+        "실제 세계 상태 변화"
+      ],
+      "stateOutputs": [
+        "플레이어 선택",
+        "보상/위험",
+        "다음 사건"
+      ],
+      "name": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임",
+      "purpose": "경비 시스템과 운송 기술 간의 실질적 인과 변화를 통해 플레이어의 선택에 따라 실제 세계 상태 변화를 유도하며, 감지 전략과 대응 방식의 조합을 바탕으로 새로운 플레이 경험을 제공함",
+      "playerChoice": "잠입 메커니즘과 감지 전략의 조합을 통해 새로운 플레이 경험을 창출"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 355366,
-      "lastMs": 100300,
+      "totalMs": 465516,
+      "lastMs": 110150,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:52:07.406Z"
+      "updatedAt": "2026-10-09T17:53:57.558Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:46:12.015Z",
-  "updatedAt": "2026-10-09T17:52:07.406Z",
+  "updatedAt": "2026-10-09T17:53:57.558Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1570,7 +1587,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:52:07.406Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:53:57.558Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
