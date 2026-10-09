@@ -1485,25 +1485,33 @@
       "toSystem": "BOARD_STATE",
       "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환",
       "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
+    },
+    "local_authoring_parts::105527476534b6cfd4bb74c91e3883cccd5b1e2bfbc92e7170dfb1c14e800a76:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD12345678901234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 163,
-      "successes": 163,
+      "calls": 164,
+      "successes": 164,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12299518,
-      "lastMs": 34560,
+      "totalMs": 12338798,
+      "lastMs": 39280,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:38:46.050Z"
+      "updatedAt": "2026-10-09T06:39:25.340Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:38:46.058Z",
+  "updatedAt": "2026-10-09T06:39:25.340Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3686,10 +3694,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:38:46.054Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:39:25.340Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
