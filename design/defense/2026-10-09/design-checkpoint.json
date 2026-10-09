@@ -1315,25 +1315,28 @@
     },
     "local_authoring_parts::32ba892c0b182ea1a5b7f5751a103ff76a78ee6fc0cfdf91514519553d2f0ceb:toSystem": {
       "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION"
+    },
+    "local_authoring_parts::32ba892c0b182ea1a5b7f5751a103ff76a78ee6fc0cfdf91514519553d2f0ceb:trigger": {
+      "trigger": "시스템 간 연결을 위한 임시 표식 'systemInterconnections[0].trigger'은 실제 조건·선택·상태 변화·검증 방법으로 재구성되어야 합니다. 이 과정에서 방어 범위 확대, 자원 축적 및 전략 유연성이 증가하는 상태 변화를 기반으로, 게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 새로운 경험과 의미를 제공하는 보조 요소로 발전합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 73,
-      "successes": 70,
+      "calls": 74,
+      "successes": 71,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5395590,
-      "lastMs": 44937,
+      "totalMs": 5459007,
+      "lastMs": 63417,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T01:53:05.467Z"
+      "updatedAt": "2026-10-09T01:54:08.886Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T01:53:05.467Z",
+  "updatedAt": "2026-10-09T01:54:08.886Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3758,7 +3761,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:53:05.467Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:54:08.886Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
