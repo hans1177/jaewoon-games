@@ -73,25 +73,38 @@
       "name": "Board State Transition System B",
       "purpose": "게임 내 주사위 전투 보드 레벨에서 선택 결과가 다음 월드 상태로 인해 게임을 진행하게 되는 시스템입니다.",
       "playerChoice": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 합니다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 됩니다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공합니다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성되었습니다."
+    },
+    "local_authoring_parts::62d8875b320b7d3ab7d1fe52d5c8b0d893c4c67823a7080d10660620bedf338c:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION"
+      ],
+      "name": "Content Expansion System",
+      "purpose": "Facilitates content expansion through discovery, mastery, and reiteration.",
+      "playerChoice": "Discover new content, master existing elements, or revisit previously explored areas to deepen gameplay experience."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 462296,
-      "lastMs": 53185,
+      "totalMs": 690441,
+      "lastMs": 228145,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:52:05.032Z"
+      "updatedAt": "2026-10-09T15:55:53.178Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:44:22.707Z",
-  "updatedAt": "2026-10-09T15:52:05.032Z",
+  "updatedAt": "2026-10-09T15:55:53.178Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1576,7 +1589,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:52:05.032Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:53.178Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
