@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어가 즉시 시작할 수 있는 단순한 행동 패턴, 사전 결정된 위험 또는 선택 사례와의 갈등, 새로운 경로 연동 결과",
       "coreFun": "{\"a\": \"기본적인 모바일 입력과 점수/거리 기반의 피드백\", \"b\": \"사전 결정된 위험/선택과 새로운 경로 연결\"}, \"c\": {\"themes\": [\"주요 장르: 모바일 플레이스타일\", \"보조 장르: 위험/선택 시스템\"]}"
+    },
+    "local_authoring_parts::6fafa9330a591e75d75136351f8ec17edf26d4eb2f19c910c0b5162e8adf56dd:coreLoop": {
+      "coreLoop": [
+        "입력: 단순한 모바일 입력(예: 터치 또는 스ワイ프) 및 즉각적인 점수/거리 기반 피드백 제공",
+        " 상태변화: 초기 게임 정체성 확립 및 기본적 성공/실패 결과 발생",
+        "보상: 점수/거리 기반의 간단한 보상, 새로운 경로 연동 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 587253,
-      "lastMs": 100331,
+      "totalMs": 683845,
+      "lastMs": 96592,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:33:28.863Z"
+      "updatedAt": "2026-10-09T20:35:05.458Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:23:41.588Z",
-  "updatedAt": "2026-10-09T20:33:28.865Z",
+  "updatedAt": "2026-10-09T20:35:05.458Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1772,7 +1779,7 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:33:28.865Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:35:05.458Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
