@@ -986,6 +986,7 @@ test('source reconciliation and sweep derive verified learning from the same bui
   assert.match(sweep,/runtimeBaseline\?\{record:runtimeBaseline\}/);
   assert.match(sweep,/ROBLOX_SWEEP_RUNTIME_DESIGN_BASELINE_UNAVAILABLE/);
   assert.match(sweep,/PRESERVED_NEWER_NATIVE_BINDING/);
+  assert.match(sweep,/!requestedGameSet\.has\(gameId\)/);
   const workflow=fs.readFileSync('.github/workflows/company-roblox-verified-learning-sweep.yml','utf8');
   assert.match(workflow,/origin\/company-runtime:development-queue\.json/);
   assert.equal((workflow.match(/--runtime-ref=origin\/company-runtime/g)||[]).length,2);
@@ -1184,6 +1185,10 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
     assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
     execFileSync(process.execPath,args,{cwd:tmp,stdio:'pipe'});
     assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    // Unscoped maintenance cannot rewrite the newer client native block.
+    execFileSync(process.execPath,args.filter(arg=>!arg.startsWith('--game-id=')),{cwd:tmp,stdio:'pipe'});
+    assert.equal(JSON.parse(fs.readFileSync(reportFile,'utf8')).changedGameCount,0);
+    assert.equal(fs.readFileSync(clientFile,'utf8').match(nativePattern)?.[0],nativeBefore);
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
