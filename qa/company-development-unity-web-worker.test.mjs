@@ -61,6 +61,7 @@ test('complete Unity Web child evidence produces compatibility build evidence wi
       noCriticalRuntimeError:true,
       markers:[
         `JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=${gameId} source=UNITY_MESH_FILTER inspected=2 validMeshes=2 triangles=120 volumetricMeshes=1 materialPass=1 texturePass=1 status=PASS`,
+        `JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=${gameId} source=UNITY_WORLD_MESH_DEPTH cameraPerspective=1 worldMeshes3d=4 worldDepthCm=350 gameplayActors3d=2 spriteGameplayActors=0 status=PASS`,
         `JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=${gameId} role=action x=0.5000 y=0.7000`,
         `JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=${gameId} role=action status=PASS`,
         `JAEWOON_UNITY_WEB_QA CORE_FUN game=${gameId} status=PASS`
