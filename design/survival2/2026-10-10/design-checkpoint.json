@@ -567,25 +567,39 @@
       "name": "자원 재배포 결정",
       "purpose": "생물 다양성 변화에 따른 자원 배분 전략의 실질적 적용 및 빌딩 효율성 최적화",
       "playerChoice": "생물 다양성 변화 → 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 최적화 → 빌딩 효율성 극대화; 자원 간 경쟁 심화 → 자원 분배 최적화 → 빌딩 효율성 개선"
+    },
+    "local_authoring_parts::ce411c8b65aca6228dd1a3b52b92b56ffbba64297551558f497f307413c27f14:signatureSystems:2": {
+      "id": "CORE_LOOP_3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "생물 다양성 변화"
+      ],
+      "stateOutputs": [
+        "자원 배분 전략 선택",
+        "빌딩 효율성 개선 결정"
+      ],
+      "name": "자원 재배포 결정",
+      "purpose": "생물 다양성 변화에 따라 자원 배분 전략을 유연하게 조정하며, 생식 기회 증대 및 빌딩 효율성 개선의 두 가지 결과로 이어진다",
+      "playerChoice": "자원 분배 최적화 선택을 통해 빌딩 효율성 개선 또는 새로운 자원 투입 방안을 선택하여 생존력 강화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1819099,
-      "lastMs": 102362,
+      "totalMs": 1918788,
+      "lastMs": 99689,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:22:43.707Z"
+      "updatedAt": "2026-10-09T18:24:23.397Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:24.564Z",
-  "updatedAt": "2026-10-09T18:22:43.707Z",
+  "updatedAt": "2026-10-09T18:24:23.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2295,7 +2309,7 @@
     "858d89ae2d06831456fac8eb64ddc860e0275d112d9bedcd74e1c812120b5ea1": true,
     "06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:22:43.707Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:24:23.397Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
