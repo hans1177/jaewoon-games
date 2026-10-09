@@ -436,6 +436,8 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.match(runtime,/Unity Web · 개발중/);
+  assert.match(runtime,/Unity Web · 테스트/);
+  assert.match(runtime,/unityWebTestOnly/);
   assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
@@ -451,6 +453,9 @@ test('Unity Web homepage requires actual deployed bundle, 3D browser play and in
   assert.match(probe,/unity-web-independent-qa\.json/);
   assert.match(probe,/unity-web-regression\.json/);
   assert.match(probe,/upper-platform-development-readiness\.json/);
+  assert.match(probe,/unity-web-build\.json/);
+  assert.match(probe,/ownerBrowserTestEligible/);
+  assert.match(probe,/REPAIR_REQUIRED/);
   assert.match(probe,/spatialGameplay\?\.pass===true/);
   assert.match(probe,/method:'HEAD'/);
   assert.match(probe,/\['loader','data','framework','wasm'\]/);
