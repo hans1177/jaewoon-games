@@ -80,25 +80,53 @@
         "worldChange": "길의 길이 증가, 손님 수 상승, 팀원 추가 가능 등 다양한 세계 상태 변화",
         "nextEvent": "새로운 선택 → 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환됨"
       }
+    },
+    "local_authoring_parts::d3ee1b4d11cee6564a1e58fa6fc8b3e53ea40751d95f04e32d72e7baf9d163d6:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "길의 길이",
+          "kind": "MATERIAL",
+          "gameplayEffect": "길의 길이 증가 -> 손님 수 상승 -> 팀원 추가 가능"
+        },
+        {
+          "name": "손님 수",
+          "kind": "MATERIAL",
+          "gameplayEffect": "손님 수 상승 -> 게임 진행 및 보상 제공"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "3D 경영 시뮬레이션",
+          "gameplayEffect": "길의 설계와 관리, 플레이어 선택 시스템"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "행동",
+          "gameplayEffect": "선택한 행동 결과, 상태 변화, 보상 제공"
+        }
+      ],
+      "cGenreInterlock": "길의 길이 증가 → 손님 수 상승 → 팀원 추가 가능성; 선택 → 상태 변화 → 보상 제공로 인해 양방향 실제 상태 교환됨",
+      "cWorldAndGameplayEffect": "길의 길이 증가, 손님 수 상승, 팀원 추가 가능 등 다양한 세계 상태 변화; 새로운 선택 → 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1029778,
-      "lastMs": 124486,
+      "totalMs": 1156403,
+      "lastMs": 126625,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:24:20.476Z"
+      "updatedAt": "2026-10-09T21:26:27.103Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:07:10.671Z",
-  "updatedAt": "2026-10-09T21:24:20.477Z",
+  "updatedAt": "2026-10-09T21:26:27.103Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1579,7 +1607,7 @@
     "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true,
     "dd4e29491fa3e01732e139046d91fb90ed6670dc0567dd9843759681265272bc": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:24:20.477Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:26:27.103Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
