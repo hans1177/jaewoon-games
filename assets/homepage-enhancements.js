@@ -70,9 +70,15 @@ const isHomepageGame=row=>{
   const webState=String(sourcesOf(row).web?.state||row?.ownerWebSourceState||'').toUpperCase();
   if(webState==='NON_GAME_SURFACE')return false;
   if(webState!=='WITHDRAWN_SIMPLE_PROTOTYPE')return true;
-  // 프로젝트 경로만 존재하는 버튼 시제품은 실제 게임으로 취급하지 않는다.
+  // 버튼 테스트는 제외하되, 기존 웹 시제품을 철회해도 같은 게임의 정식 네이티브 원본은 보존한다.
+  const id=gameIdOf(row);
+  const native=sourcesOf(row);
+  const unitySource=String(native.unity?.projectPath||row?.unityProjectPath||'').replace(/^\/+|\/+$/g,'');
+  const robloxSource=String(native.roblox?.projectPath||row?.robloxProjectPath||'').replace(/^\/+|\/+$/g,'');
+  const nativeGameSource=/^[a-z0-9][a-z0-9-]*$/.test(id)
+    &&(unitySource===`unity-games/${id}`||robloxSource===`roblox-games/${id}`);
   return lifecycleOf(row).ownerExistingGame===true||row?.ownerExistingGame===true
-    ||row?.unityWebAvailable===true||row?.unityBuildVerified===true||hasInternalRelease(row);
+    ||nativeGameSource||row?.unityWebAvailable===true||row?.unityBuildVerified===true||hasInternalRelease(row);
 };const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
