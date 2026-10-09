@@ -9,12 +9,35 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::16d881c7f2a245113a2fcfeb46a8eab2f406903eaef30260682eab7838fec26a:identity": {
+      "identity": "코어 전장 4대4은 플레이어가 단순한 생존 게임에서 시작해 점점 어려워지는 희생전쟁을 경험하는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'에 이른다. 세계 상태는 시그니처 인과법칙에 의해 다음 상태와 접근 가능성이 결정된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::16d881c7f2a245113a2fcfeb46a8eab2f406903eaef30260682eab7838fec26a:playerFantasy": {
+      "playerFantasy": "플레이어는 단순한 생존 게임에서 시작해 점점 어려워지는 희생전쟁을 경험하는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'에 이른다. 세계 상태는 시그니처 인과법칙에 의해 다음 상태와 접근 가능성이 결정된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::cb1eec5399a2905922800e7a340abac32dcc4b78bd9aae80f547f415cf9e7a07:identity,playerFantasy": {
+      "identity": "코어 전장 4대4은 플레이어가 단순한 생존 게임에서 시작해 점점 어려워지는 희생전쟁을 경험하는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'에 이른다. 세계 상태는 시그니처 인과법칙에 의해 다음 상태와 접근 가능성이 결정된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "playerFantasy": "플레이어는 단순한 생존 게임에서 시작해 점점 어려워지는 희생전쟁을 경험하는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주체는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'로, 선택은 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.'에 이른다. 세계 상태는 시그니처 인과법칙에 의해 다음 상태와 접근 가능성이 결정된다. 성장은 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 235009,
+      "lastMs": 35248,
+      "lastError": null,
+      "updatedAt": "2026-10-09T08:51:21.058Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:47:26.027Z",
-  "updatedAt": "2026-10-09T08:47:26.041Z",
+  "updatedAt": "2026-10-09T08:51:21.059Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2231,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T08:51:21.059Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
