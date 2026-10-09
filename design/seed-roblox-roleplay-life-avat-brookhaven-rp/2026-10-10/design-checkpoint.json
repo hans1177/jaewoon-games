@@ -539,25 +539,39 @@
         "Player's choice alters the progression path and modifies the build for future encounters, creating a dynamic interplay between resource management and strategic planning.",
         "Player's decision directly influences the next state, forming a causal loop between progression and build customization."
       ]
+    },
+    "local_authoring_parts::52cb83299db3e986c318640d944f108d7b2d8b846de4870a9b7deece9bcf04b3:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player's action leads to state change of resource allocation and risk assessment"
+      ],
+      "stateOutputs": [
+        "Player's choice alters the progression path and modifies the build for futureenc",
+        "Player's decision directly influences the next state, creating a causal loop"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Real-time survival with progression and resource management",
+      "playerChoice": "Player chooses to customize their build for future encounters based on current resources and available progression direction"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1362347,
-      "lastMs": 94653,
+      "totalMs": 1463020,
+      "lastMs": 100673,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:15:07.715Z"
+      "updatedAt": "2026-10-09T18:16:48.390Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:15:07.715Z",
+  "updatedAt": "2026-10-09T18:16:48.390Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2285,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:15:07.715Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:16:48.390Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
