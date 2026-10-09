@@ -617,8 +617,9 @@ test('exact first-frame evidence groups unobserved boot separately from proven u
     robloxFailureSignature:'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'
   };
   const noBoot={observed:true,sameLuauExecutionSession:true,runtimeWorldReady:false,basePartCount:1,spawnCount:0,
-    spawnGroundingObserved:false,unsupportedSpawns:0,floatingSpawns:0};
-  const unsupported={observed:true,sameLuauExecutionSession:true,runtimeWorldReady:true,basePartCount:21,spawnCount:2,
+    spawnGroundingObserved:false,unsupportedSpawns:0,floatingSpawns:0,
+    sourceRevision:revision,artifactIdentity:artifact,placeId:'123456',candidateVersionNumber:7};
+  const unsupported={...noBoot,runtimeWorldReady:true,basePartCount:21,spawnCount:2,
     spawnGroundingObserved:true,unsupportedSpawns:1,floatingSpawns:0};
   const result=analyzeSystemAiBottlenecks({developmentQueue:{items:[
     {...base,gameId:'amusement-tycoon',robloxFirstFrameGroundingEvidence:noBoot},
@@ -645,11 +646,28 @@ test('exact first-frame evidence groups unobserved boot separately from proven u
   assert.equal(empty.firstFrameObservation.basePartCount,1);
   assert.equal(empty.firstFrameObservation.spawnCount,0);
   assert.equal(empty.firstFrameObservation.renderedScreenshotClaimed,false);
-  assert.equal(result.development.rows.find(x=>x.gameId==='simulation-off').classification,'EXACT_PRIVATE_GAME_SERVER_SIMULATION_NOT_RUNNING');
+  assert.equal(result.development.rows.find(x=>x.gameId==='simulation-off').classification,'EXACT_OPEN_CLOUD_LUAU_NON_SIMULATING_CONTEXT');
   assert.equal(result.development.rows.find(x=>x.gameId==='stale-first-frame-binding').firstFrameObservation,null);
   assert.equal(result.development.rows.find(x=>x.gameId==='geometry-test').classification,'EXACT_PRIVATE_CANDIDATE_SPAWN_GROUNDING_FAILED');
   assert.equal(result.development.rows.find(x=>x.gameId==='quality-blocked').classification,'QUALITY_GATE_BLOCKS_CANDIDATE_HANDOFF');
   assert.equal(result.development.rows.find(x=>x.gameId==='superseded').firstFrameObservation,null);
+
+  // Legacy or mismatched first-frame fields cannot establish an exact-game failure.
+  const unbound=analyzeSystemAiBottlenecks({developmentQueue:{items:[{
+    ...base,gameId:'legacy-unbound',
+    robloxFirstFrameGroundingEvidence:{
+      ...noBoot,sourceRevision:'',artifactIdentity:'',placeId:'',candidateVersionNumber:0
+    }
+  }]}});
+  assert.equal(unbound.development.rows[0].firstFrameObservation,null);
+  assert.equal(unbound.development.rows[0].classification,'FIRST_FRAME_SPAWN_GROUNDING_EVIDENCE_INCOMPLETE');
+  const unboundGround=analyzeSystemAiBottlenecks({developmentQueue:{items:[{
+    ...base,gameId:'unbound-geometry',robloxFailureSignature:'ROBLOX_FIRST_FRAME_GROUNDING_FAILED',
+    robloxFirstFrameGroundingEvidence:{...unsupported,artifactIdentity:''}
+  }]}});
+  assert.equal(unboundGround.development.rows[0].firstFrameObservation,null);
+  assert.equal(unboundGround.development.rows[0].classification,'FIRST_FRAME_SPAWN_GROUNDING_EVIDENCE_INCOMPLETE');
+  assert.equal(unboundGround.development.firstFrameGroundingFailedCount,0);
   assert.deepEqual(result.development.commonFailureCohorts[0].gameIds,['amusement-tycoon','bug-defense']);
   assert.equal(result.development.commonFailureCohorts[0].representativeGameId,'amusement-tycoon');
   assert.ok(result.actions.includes('TRACE_EXACT_PRIVATE_RUNTIME_WORLD_BOOTSTRAP'));
