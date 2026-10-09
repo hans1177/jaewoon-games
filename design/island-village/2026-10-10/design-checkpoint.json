@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 무인도에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 자원을 수집하고, 이를 통해 마을을 발전시키며 새로운 주민·활동·지역을 발견해 나아간다. 이 과정에서는 숙련된 전략과 다양한 선택이 필요하며, 각 단계마다 새로운 기회와 도전이 등장하여 게임은 점점 복잡해진다.",
       "coreFun": "플레이어는 자원을 수집하고, 이를 통해 마을을 발전시키며 새로운 주민·활동·지역을 발견해 나아간다. 이 과정에서는 숙련된 전략과 다양한 선택이 필요하며, 각 단계마다 새로운 기회와 도전이 등장하여 게임은 점점 복잡해진다."
+    },
+    "local_authoring_parts::9d2f7e9bcec7446a37fe166a1b6c2ba76a5242b69c7f8f27102cff640ef0cbfd:coreLoop": {
+      "coreLoop": [
+        "Player collects island resources, which triggers building and unlocks new goals, creating a causal chain between resource gathering and village growth.",
+        "Players decide how to use their collected resources, balancing immediate benefits with long-term strategic value.",
+        "The village grows through resource collection and area expansion, introducing new challenges and opportunities for exploration and strategy."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 176159,
-      "lastMs": 176159,
+      "totalMs": 209607,
+      "lastMs": 33448,
       "lastError": null,
-      "updatedAt": "2026-10-09T19:46:43.959Z"
+      "updatedAt": "2026-10-09T19:47:17.413Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:43:47.705Z",
-  "updatedAt": "2026-10-09T19:46:43.959Z",
+  "updatedAt": "2026-10-09T19:47:17.413Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1716,7 +1723,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T19:46:43.959Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:47:17.413Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
