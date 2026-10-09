@@ -1025,10 +1025,13 @@ function zeroSkinWeightsInGlb(sourceFile,targetFile){
   fs.writeFileSync(targetFile,bytes);
 }
 
-function rewriteAnimationNamesInGlb(sourceFile,targetFile,nameForIndex){
+function rewriteAnimationNamesInGlb(sourceFile,targetFile,nameForIndex,mutateAnimation=null){
   const bytes=Buffer.from(fs.readFileSync(sourceFile));
   const jsonLength=bytes.readUInt32LE(12),document=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
-  for(const [index,animation] of (document.animations||[]).entries())animation.name=nameForIndex(index);
+  for(const [index,animation] of (document.animations||[]).entries()){
+    animation.name=nameForIndex(index);
+    if(mutateAnimation)mutateAnimation(animation,index,document);
+  }
   const raw=Buffer.from(JSON.stringify(document),'utf8');
   const paddedLength=Math.ceil(raw.length/4)*4,json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
   const remainder=bytes.subarray(20+jsonLength);
@@ -1138,6 +1141,38 @@ test('generic ATTACK clip cannot satisfy boss SPECIAL_ATTACK role coverage',()=>
     assert.equal(result.pass,false);
     assert.ok(result.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
     assert.ok(result.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+
+test('role motion QA rejects a named attack when only unrelated clips animate actual skeleton joints',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-fake-attack-role-'));
+  try{
+    const sourcePath='assets/roblox/world-ghosts/native/spider/spider.glb';
+    const baseline=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'BOSS',source:{path:sourcePath}});
+    assert.equal(baseline.pass,true);
+    const nonJointNode=baseline.inspection.inventory.nodes.find(row=>row.joint===false)?.index;
+    assert.ok(Number.isInteger(nonJointNode),'source must have a scene node outside animated skeleton joints');
+    const target=path.join(root,'fake-role.glb');
+    rewriteAnimationNamesInGlb(sourcePath,target,index=>index===0?'attack':'unassigned_'+index,(animation,index)=>{
+      if(index!==0)return;
+      for(const channel of animation.channels||[]){
+        if(['rotation','translation','scale'].includes(channel.target?.path))
+          channel.target.node=nonJointNode;
+      }
+    });
+    const checked=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'fake-role.glb'}});
+    assert.equal(checked.inspection.status,'INSPECTED_RECONSTRUCTION_INPUT',
+      'all samplers are still structurally valid; this tests role-level joint motion only');
+    assert.equal(checked.inspection.inventory.animations[0].valid,true);
+    assert.equal(checked.inspection.inventory.animations[0].jointChannelCount,0);
+    assert.ok(checked.inspection.inventory.jointAnimationChannelCount>0,
+      'other clips still have valid articulated animation');
+    assert.equal(checked.pass,false);
+    assert.ok(checked.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(checked.roleAnimationEvidence.rejectedClipNames.includes('attack'));
+    assert.equal(checked.roleAnimationEvidence.nativeRigAndPlatformRuntimeStillUnverified,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
