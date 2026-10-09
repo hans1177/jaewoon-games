@@ -747,25 +747,238 @@
           "storyContext": "주제/역사/철학 선택"
         }
       ]
+    },
+    "local_authoring_parts::57d6be782e8e91d52c3fb434c3ba8acaf25351b7bbeaabec4492836225215413:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "플레이어는 주제/역사/철학을 통해 전투 스타일 및 인식 변화를 경험하며, 새로운 전략 경로를 연다.",
+          "counterplay": "전투 스타일과 인식 변화의 깊이를 결정하고, 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "positioning": "주제/역사/철학 선택에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "timing": "주제/역사/철학 선택은 실시간 속도/강화 기능 증가와 함께 입력 후 즉시 발생한다.",
+          "mobility": "A/B/C 상태 교환에 참여하여 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다.",
+          "groupRole": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 중심 역할을 수행함.",
+          "identity": "주제/역사/철학 선택은 게임의 핵심 재미와 시스템 연결을 확정하는 고유한 요소이다.",
+          "rewardMeaning": "주제/역사/철학 선택은 플레이어의 성장과 전략적 능력 향상에 대한 보상을 제공하며, 새로운 전략 경로를 연다."
+        }
+      ],
+      "objectives": [
+        {
+          "role": "목표",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 경험하고, 새로운 전략 경로를 연다. 이는 주제/역사/철학 선택의 결과로 실제 세계 상태 변화를 경험하게 됨."
+        },
+        {
+          "role": "목표",
+          "variation": "퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 경험하고, 실시간 속도/강화 기능 증가를 유연하게 사용 가능성을 확보한다."
+        },
+        {
+          "role": "목표",
+          "variation": "무기/속성 선택으로 전투 스타일 및 인식 변화를 경험하고, 새로운 전략 경로를 연다. 이는 무기/속성 선택의 결과로 실제 세계 상태 변화를 경험하게 됨."
+        }
+      ],
+      "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 중심 역할을 수행함. 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함. 무기/속성 선택은 전투 스타일 및 인식 변화의 깊이를 결정하고, 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함."
+    },
+    "local_authoring_parts::55f237f9cf0b79f41739f8cada96b4bb814741e2f68ceae69890fbba0dca1869:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "A",
+          "trigger": "입력",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "무기/속성",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "weaponAttribute",
+          "costKey": "weaponCost",
+          "cooldownKey": "weaponCooldown"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "B",
+          "trigger": "입력",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "퀘스트/보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "",
+          "effect": "플레이어 경험/레벨 스토리 상승",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "플레이어 경험/레벨 스토리 상승"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "questReward",
+          "costKey": "questCost",
+          "cooldownKey": "questCooldown"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "C",
+          "trigger": "입력",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "주제/역사/철학",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "",
+          "effect": "전투 스타일 및 인식 변화",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "전투 스타일 및 인식 변화"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "themePhilosophy",
+          "costKey": "themeCost",
+          "cooldownKey": "themeCooldown"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "50일-플레이어",
+          "humanTool": "A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "플레이어 경험/레벨 스토리 상승",
+          "changedChoice": "주제/역사/철학 선택"
+        },
+        {
+          "humanId": "50일-플레이어",
+          "humanTool": "A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "humanAbilityId": "50일-퀘스트/보상 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "퀘스트/보상 선택",
+          "removedState": "주제/역사/철학 선택",
+          "changedChoice": "실시간 속도/강화 기능 증가"
+        },
+        {
+          "humanId": "50일-플레이어",
+          "humanTool": "A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "퀘스트/보상 선택",
+          "removedState": "주제/역사/철학 선택",
+          "changedChoice": "실시간 속도/강화 기능 증가"
+        }
+      ],
+      "regions": [
+        {
+          "id": "50일-동선",
+          "ruleIds": [
+            "50일-무기/속성 선택",
+            "50일-퀘스트/보상 선택"
+          ],
+          "name": "동선",
+          "traversal": "플레이어는 A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "riskReward": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하고, 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택",
+          "resourcePressure": "주제/역사/철학 선택",
+          "storyContext": "주제/역사/철학 선택"
+        },
+        {
+          "id": "50일-목적",
+          "ruleIds": [
+            "50일-무기/속성 선택",
+            "50일-퀘스트/보상 선택"
+          ],
+          "name": " 목적 ",
+          "traversal": "플레이어는 A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "riskReward": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하고, 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택",
+          "resourcePressure": "주제/역사/철학 선택",
+          "storyContext": "주제/역사/철학 선택"
+        },
+        {
+          "id": "50일-랜드마크",
+          "ruleIds": [
+            "50일-무기/속성 선택",
+            "50일-퀘스트/보상 선택"
+          ],
+          "name": "랜드마크",
+          "traversal": "플레이어는 A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "riskReward": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하고, 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택",
+          "resourcePressure": "주제/역사/철학 선택",
+          "storyContext": "주제/역사/철학 선택"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "플레이어는 주제/역사/철학을 통해 전투 스타일 및 인식 변화를 경험하며, 새로운 전략 경로를 연다.",
+          "counterplay": "전투 스타일과 인식 변화의 깊이를 결정하고, 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "positioning": "주제/역사/철학 선택에 참여하여 실제 세계 상태 변화를 경험한다.",
+          "timing": "주제/역사/철학 선택은 실시간 속도/강화 기능 증가와 함께 입력 후 즉시 발생한다.",
+          "mobility": "A/B/C 상태 교환에 참여하여 모바일에서도 즉시 이해되는 입력과 피드백을 제공한다.",
+          "groupRole": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 중심 역할을 수행함.",
+          "identity": "주제/역사/철학 선택은 게임의 핵심 재미와 시스템 연결을 확정하는 고유한 요소이다.",
+          "rewardMeaning": "주제/역사/철학 선택은 플레이어의 성장과 전략적 능력 향상에 대한 보상을 제공하며, 새로운 전략 경로를 연다."
+        }
+      ],
+      "objectives": [
+        {
+          "role": "목표",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 경험하고, 새로운 전략 경로를 연다. 이는 주제/역사/철학 선택의 결과로 실제 세계 상태 변화를 경험하게 됨."
+        },
+        {
+          "role": "목표",
+          "variation": "퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 경험하고, 실시간 속도/강화 기능 증가를 유연하게 사용 가능성을 확보한다."
+        },
+        {
+          "role": "목표",
+          "variation": "무기/속성 선택으로 전투 스타일 및 인식 변화를 경험하고, 새로운 전략 경로를 연다. 이는 무기/속성 선택의 결과로 실제 세계 상태 변화를 경험하게 됨."
+        }
+      ],
+      "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 중심 역할을 수행함. 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함. 무기/속성 선택은 전투 스타일 및 인식 변화의 깊이를 결정하고, 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1025699,
-      "lastMs": 164677,
+      "totalMs": 1123260,
+      "lastMs": 97561,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:41:31.252Z"
+      "updatedAt": "2026-10-09T21:43:08.814Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T21:41:31.252Z",
+  "updatedAt": "2026-10-09T21:43:08.820Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2473,15 +2686,91 @@
   },
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "afb96e1ac88826237a27ddf771c6e10df09be56623debb9633e0f584b531c72a"
+    "designer_draft_slices::systems-progression": "afb96e1ac88826237a27ddf771c6e10df09be56623debb9633e0f584b531c72a",
+    "designer_draft_slices::content-rules": "3a067e7af00dac5eab27ba01cf7357a090dbdffa62b009d129929cdefa5dff0b"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:41:31.252Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::content-rules": [
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.50일-무기/속성 선택",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.50일-무기/속성 선택: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.50일-퀘스트/보상 선택",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.50일-퀘스트/보상 선택: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.50일-주제/역사/철학 선택",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.50일-주제/역사/철학 선택: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_MAP_RULE_UNBOUND",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "regions",
+          "detail": "각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다"
+        },
+        "requiredAction": "regions: 각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::content-rules": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::content-rules": {}
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T21:43:08.817Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

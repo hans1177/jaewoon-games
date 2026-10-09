@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T21:41:31.252Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 15,
+  "lastSuccessfulModelCallAt": "2026-10-09T21:43:08.817Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "designerSeed": {
     "file": "design/fifty-days/2026-10-10/design-seed.json",
     "contentDigest": "32baafe9134baf37850f147a6ed155433722f358b9a54113c5ebe31c4b5263e9",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1025699,
-      "lastMs": 164677,
+      "totalMs": 1123260,
+      "lastMs": 97561,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:41:31.252Z"
+      "updatedAt": "2026-10-09T21:43:08.814Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T21:41:31.253Z"
+  "updatedAt": "2026-10-09T21:43:08.820Z"
 }
