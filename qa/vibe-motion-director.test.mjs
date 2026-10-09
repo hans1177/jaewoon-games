@@ -938,6 +938,16 @@ test('asset planner auto-detects requested duel weapon and martial style',async(
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,null);
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole,'LIGHT_COMBO');
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.authoringPreview.weaponMechanics.stance,'SIDE_ON_TWO_HAND');
+  const fusion=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'사무라이 무협 판타지 검술 스킬 모션 융합',combatTraditions:['SAMURAI','WUXIA','FANTASY']},
+    target:'roblox',repoRoot:path.resolve(here,'..')
+  });
+  const preview=fusion.companyGraphicsLibrary.duelCombatMotion;
+  assert.equal(preview.requested,true);
+  assert.deepEqual([...preview.requestedCombatTraditions],['SAMURAI','WUXIA','FANTASY']);
+  assert.deepEqual([...preview.authoringPreview.actionPresentation.traditions],['SAMURAI','WUXIA','FANTASY']);
+  assert.equal(preview.authoringPreview.actionPresentation.runtimeVerified,false);
+  assert.equal(preview.authoringPreview.gameplayAuthority,false);
 });
 
 test('transition director scores smooth transitions and hard-fails event desync',()=>{
