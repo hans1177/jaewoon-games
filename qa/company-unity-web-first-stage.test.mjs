@@ -31,7 +31,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
       '  string label = "Rigidbody2D";',
       '}',
       '',
-    ].join('\\n');
+    ].join('\n');
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),valid3d);
     fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
     fs.writeFileSync(path.join(root,'Packages','manifest.json'),'{}\n');
@@ -78,17 +78,17 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     ]){
       reject('Assets/Scripts/Game.cs',
         'using UnityEngine; using UnityEngine.Tilemaps; using UnityEngine.U2D; '+
-        'public class Game:MonoBehaviour { '+type+' component; }\\n');
+        'public class Game:MonoBehaviour { '+type+' component; }\n');
     }
     // 문자열의 URL에 있는 // 가 뒤쪽의 실제 Rigidbody2D 토큰을 숨기면 안 된다.
     reject('Assets/Scripts/Game.cs',
-      'using UnityEngine; public class Game:MonoBehaviour { void Start() { Debug.Log("https://example.org"); Rigidbody2D body = null; } }\\n');
+      'using UnityEngine; public class Game:MonoBehaviour { void Start() { Debug.Log("https://example.org"); Rigidbody2D body = null; } }\n');
     // Assets/Scripts 밖의 런타임 C#도 동일하게 차단한다.
     reject('Assets/Gameplay/Enemy.cs',
-      'using UnityEngine; public class Enemy:MonoBehaviour { CircleCollider2D hitbox; }\\n');
+      'using UnityEngine; public class Enemy:MonoBehaviour { CircleCollider2D hitbox; }\n');
     // 편집기용 레거시 코드는 런타임 3D 소스 판단에서 제외한다.
     fs.writeFileSync(path.join(root,'Assets','Editor','LegacyInspector.cs'),
-      'using UnityEngine; public class LegacyInspector { Rigidbody2D oldReference; }\\n');
+      'using UnityEngine; public class LegacyInspector { Rigidbody2D oldReference; }\n');
     assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
   } finally {
     process.chdir(old);
@@ -98,7 +98,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
 
 test('2D source detector uses a single literal word boundary and preserves 3D and UI authoring',()=>{
   const script=fs.readFileSync(tool,'utf8');
-  const line=script.split('\\n').find(row=>row.startsWith('const forbidden2dComponents='));
+  const line=script.split('\n').find(row=>row.startsWith('const forbidden2dComponents='));
   assert.ok(line);
   assert.ok(line.startsWith('const forbidden2dComponents=/\\b(?:Rigidbody2D'));
   assert.ok(line.endsWith(')\\b/u;'));
