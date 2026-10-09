@@ -789,25 +789,39 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::fab01dcf2072aa3aba24d7254db76202e818a56859dfc74af2680c39fb4e1d9b:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어의 선택"
+      ],
+      "stateOutputs": [
+        "보물 위치 변경",
+        "적의 행동 변동"
+      ],
+      "name": "기초 루프",
+      "purpose": "플레이어의 선택에 따라 보드게임의 보물 위치와 시뮬레이션의 적의 행동 패턴을 동시에 결정하며, 즉각적인 피드백을 제공하여 게임 진행을 이어간다.",
+      "playerChoice": "플레이어는 보물 위치 및 적의 행동 패턴을 선택하여, 즉각적인 보상이나 위험/보상이 제공되어 다음 질문으로 이어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1689069,
-      "lastMs": 55982,
+      "totalMs": 1760233,
+      "lastMs": 71164,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:12:12.166Z"
+      "updatedAt": "2026-10-09T21:13:23.341Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:44:02.586Z",
-  "updatedAt": "2026-10-09T21:12:12.175Z",
+  "updatedAt": "2026-10-09T21:13:23.341Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2531,10 +2545,10 @@
     "18174e9c67b388ca517bee8f4c614af03d50b3e0df957542621a8f03e2ef1dcc": true,
     "5284d587a66e7d02194e45181c1b95b02e2b08050fa8910a927441757ed85c21": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:12:12.169Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:13:23.341Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
