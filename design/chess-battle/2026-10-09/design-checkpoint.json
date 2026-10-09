@@ -408,25 +408,43 @@
         "playerChoices"
       ],
       "fromSystem": "systemInterconnections[0]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin"
+    },
+    "local_authoring_parts::5053b84ed3c70ad413b4f1b0ae0796d01b2d72f3e385c30078e971f9ea34fd6f:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[0]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
+    },
+    "local_authoring_parts::b020caa87598e2c7a9bd6f8e96f7d9b1e078927a6586589c8cfeb114441e00eb:systemInterconnections:0": {
+      "fromId": "worldState",
+      "toId": "newWorldState",
+      "stateKeys": [
+        "boardState",
+        "threats",
+        "playerChoices"
+      ],
+      "fromSystem": "systemInterconnections[0]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin",
+      "toSystem": "systemInterconnections[0]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 875701,
-      "lastMs": 65613,
+      "totalMs": 933710,
+      "lastMs": 58009,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:26:08.147Z"
+      "updatedAt": "2026-10-09T14:27:06.157Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:26:08.147Z",
+  "updatedAt": "2026-10-09T14:27:06.158Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2211,7 +2229,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:26:08.147Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:27:06.158Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
