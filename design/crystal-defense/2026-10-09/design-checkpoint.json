@@ -1115,25 +1115,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP"
+    },
+    "local_authoring_parts::a68f3a5a32ddbf11350bf0fecd0cc1be744a8535e58131aac3c6238ba7253b9d:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE 상태 교환"
+    },
+    "local_authoring_parts::9a62e871cd5ab9ef02b988df138700e2b7e79883e2ce91c76d4d57cb87c05101:systemInterconnections:4": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "toSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE 상태 교환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 78,
-      "successes": 78,
+      "calls": 79,
+      "successes": 79,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7241353,
-      "lastMs": 94717,
+      "totalMs": 7334527,
+      "lastMs": 93174,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:57:30.600Z"
+      "updatedAt": "2026-10-09T02:59:03.775Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T02:57:30.600Z",
+  "updatedAt": "2026-10-09T02:59:03.783Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3431,7 +3449,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3469,10 +3487,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:57:30.600Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T02:59:03.778Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
