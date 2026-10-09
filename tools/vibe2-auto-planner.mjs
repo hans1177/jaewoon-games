@@ -1095,6 +1095,7 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   const file=sourceFile(repoRoot,relative);
   const text=readText(file);
   const blockers=[];
+  const spatialScripts=[];
   if(!fs.existsSync(file)||!text.trim())blockers.push('EMPTY_OR_MISSING_WEB_ENTRYPOINT');
   if(text){
     for(const match of text.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)){
@@ -1102,6 +1103,7 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       if(!src||/^(?:https?:|\/\/|data:|blob:)/i.test(src))continue;
       const resolved=src.startsWith('/')?sourceFile(repoRoot,src.replace(/^\/+/,'')):path.resolve(path.dirname(file),src.split(/[?#]/)[0]);
       if(!fs.existsSync(resolved))blockers.push(`LOCAL_RUNTIME_DEPENDENCY_MISSING:${src}`);
+      else if(/\.(?:js|mjs)$/i.test(resolved))spatialScripts.push(readText(resolved));
     }
     const validationProxy=/<button\b[^>]*(?:data-session-stage|data-content-depth-stage|data-validation-stage|data-test-stage)|\bid=["']scope-control-/i.test(text);
     const realGameplay=/data-web-artifact-type=["']REAL_PLAYABLE_GAME["']|data-gameplay-action=|data-playable-cycle-contract=|<canvas\b/i.test(text);
@@ -1114,10 +1116,12 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
       if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
     }
-    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
-    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
-    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    const spatialSource=[text,...spatialScripts].join('\n');
+    const renderer=/(?:new\s+(?:THREE\.)?WebGLRenderer\s*\(|new\s+BABYLON\.Engine\s*\(|getContext\s*\(\s*['"]webgl2?['"])/i.test(spatialSource);
+    const scene=/(?:new\s+(?:THREE\.)?Scene\s*\(|new\s+BABYLON\.Scene\s*\()/i.test(spatialSource);
+    const camera=/(?:new\s+(?:THREE\.)?(?:PerspectiveCamera|OrthographicCamera)\s*\(|new\s+BABYLON\.(?:ArcRotateCamera|FreeCamera|UniversalCamera)\s*\()/i.test(spatialSource);
+    const geometry=/(?:new\s+(?:THREE\.)?(?:Mesh|BoxGeometry|BufferGeometry|SphereGeometry|PlaneGeometry)\s*\(|BABYLON\.MeshBuilder\.\w+\s*\(|gl\.drawElements\s*\(|gl\.drawArrays\s*\()/i.test(spatialSource);
+    if(!(renderer&&scene&&camera&&geometry))blockers.push('NATIVE_3D_GAMEPLAY_REQUIRED');
     if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
   return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
@@ -1128,15 +1132,15 @@ function findWebStartupSpatialRepairTask(project,repoRoot,queue){
   if(audit.pass)return null;
   const id=nextCausalGenerationId(queue,`${project.gameId}-web-startup-spatial-repair`);if(!id)return null;
   const blockers=audit.blockers.join(' | ');
-  const goal=`[WEB_REPAIR] [STARTABILITY_AND_2_5D] 게임: ${project.name||project.gameId}
-현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이 표현을 최소 2.5D 이상으로 올린다.
+  const goal=`[WEB_REPAIR] [STARTABILITY_AND_3D] 게임: ${project.name||project.gameId}
+현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이를 실제 3D 장면·카메라·메시로 재제작한다.
 확인된 실패: ${blockers}
 빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
-평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 높이·접지 그림자, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
+2D/2.5D·등각 스프라이트·parallax·CSS 원근감만으로 3D 판정을 받지 못한다. 실제 3D 렌더러·장면·월드 메시·카메라를 연결하고 모바일에서 관찰한다. UI와 텍스처만 2D 보조 자산으로 유지한다.
 기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
     'owner-directive:all-web-games-must-start',
-    'owner-directive:minimum-2.5d-final-gameplay',
+    'owner-directive:3d-only-final-gameplay',
     'web-stage:WEB_REPAIR',
     'startup-spatial-audit:FAIL',
     ...audit.blockers.map(value=>`startup-spatial-blocker:${value}`)
@@ -1158,7 +1162,7 @@ function webRepairImplementationHints(evidence=[]){
   add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
   add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
   add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
-  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/NATIVE_3D_GAMEPLAY_REQUIRED/,'기존 2D·2.5D 월드를 기존 게임 코드와 저장을 유지하며 실제 3D 렌더러·카메라·장면·월드 메시로 바꾼다. CSS 변환·스프라이트 깊이 정렬만으로는 통과하지 않으며 UI만 2D로 둔다.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');

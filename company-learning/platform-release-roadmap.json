@@ -1,5 +1,5 @@
 {
-  "version": 556,
+  "version": 557,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -489,7 +489,9 @@
       "failureState": "ASSET_REPAIR_REQUIRED",
       "accepted2_5DTechniquesAreNotFinalPass": true,
       "realNative3dMeshEvidenceRequiredForEveryUnityWebGame": true,
-      "allSpatialGameplayLibraryAssets3dOnly": true
+      "allSpatialGameplayLibraryAssets3dOnly": true,
+      "existing2_5DGamesAction": "MANDATORY_IN_PLACE_NATIVE_3D_REDEVELOPMENT",
+      "oldPlayableBuildMayRemainUntilVerified3dReplacement": true
     },
     "robloxCharacterMotionQuality": {
       "version": 1,
@@ -970,7 +972,8 @@
       },
       "spatialWorldAssetAuthoring3dOnly": true,
       "allLegacy2dOr2_5dWorldAssetsRequire3dRemodelBeforeFinalGameUse": true,
-      "flatTexturesAudioAndUiAreSupportResourcesNot3dGameplaySubstitutes": true
+      "flatTexturesAudioAndUiAreSupportResourcesNot3dGameplaySubstitutes": true,
+      "crossGenre3dActorReuse": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.crossGenre3dActorReuse"
     }
   },
   "platformRepresentativeSets": {
@@ -15473,7 +15476,7 @@
       "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
-      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_NATIVE_3D_ONLY",
       "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
       "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
       "characterEnemyAndCoreObjectVisualIdentityRequired": true,
@@ -16075,7 +16078,7 @@
       },
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
       "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
-      "minimumFinalGameplayDimension": "2.5D",
+      "minimumFinalGameplayDimension": "3D",
       "flat2DFinalPresentationForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true
@@ -20724,7 +20727,54 @@
       "runnerLabel": "ubuntu-24.04-arm",
       "spatialGameplayAssetProductionMode": "THREE_D_ONLY",
       "legacy2dSpatialAssetMigration": "REMODEL_TO_NATIVE_3D_BEFORE_FINAL_BINDING",
-      "uiAudioTexturesRemainSupportingResources": true
+      "uiAudioTexturesRemainSupportingResources": true,
+      "crossGenre3dActorReuse": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-09",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "scope": [
+          "CHARACTER",
+          "CREATURE"
+        ],
+        "genrePriority": [
+          "RPG",
+          "SURVIVAL",
+          "ACTION_RPG",
+          "ADVENTURE"
+        ],
+        "sharedMasterSource": "company-asset-library.json",
+        "existingPipelineOnly": true,
+        "highQualityVerifiedMasterPreferred": true,
+        "same3dMasterCanServeMultipleGames": true,
+        "gameSpecificPresentationMustDiffer": true,
+        "minimumDistinctAxes": 3,
+        "distinctStructuralAxes": [
+          "SILHOUETTE",
+          "BODY_PROPORTION",
+          "OUTFIT_EQUIPMENT",
+          "BODY_PARTS"
+        ],
+        "distinctMotionAxes": [
+          "STANCE_GAIT",
+          "SIGNATURE_MOTION"
+        ],
+        "supportingAxes": [
+          "SURFACE_MATERIAL",
+          "VFX_LANGUAGE",
+          "ENVIRONMENT_CONTEXT"
+        ],
+        "colorOnlyIdentityForbidden": true,
+        "requiredOneStructuralAndOneMotionAxis": true,
+        "sameNativeArtifactMayNotClaimPerGameVisualUniquenessWithoutRealComparison": true,
+        "runtimeBeforeAfterCaptureAndNativeQaRequired": true,
+        "originalMasterImmutable": true,
+        "derivedVariantsNeedProvenanceLicenseStyleLock": true,
+        "unityAndRobloxNativeVariantsSeparated": true,
+        "unverifiedVariantCannotReplaceCurrentPlayableAsset": true,
+        "old2dOr2_5dMustReauthorReal3dMaster": true,
+        "gameplayStatsHitboxesSaveProgressionEconomyNetworkAuthorityImmutable": true,
+        "noSeparateLibraryOrShadowPipeline": true
+      }
     },
     "buildUpRuntimeClosure": {
       "version": 2,
@@ -25381,7 +25431,7 @@
             "GAME_SPECIFIC_CHARACTER_ENEMY_ENVIRONMENT_OR_EQUIPMENT_IDENTITY_VISIBLE",
             "PLACEHOLDER_DOMINATED_PRESENTATION_FORBIDDEN",
             "BASE_MOTION_ANIMATION_AND_VFX_PRESENT",
-            "MINIMUM_2_5D_OR_3D_SPATIAL_PRESENTATION"
+            "NATIVE_3D_SPATIAL_PRESENTATION_WITH_RUNTIME_MESH_EVIDENCE"
           ]
         },
         "webglBuild": {

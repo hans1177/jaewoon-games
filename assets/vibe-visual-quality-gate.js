@@ -1,12 +1,14 @@
-// Vibe2 mandatory visual quality + Web 2.5D gate
-// Web games are 2.5D by default: projected world coordinates, depth sorting, elevation/shadows and real coherent assets.
+// 파일명: assets/vibe-visual-quality-gate.js
+// 역할: 기존 시각 품질·실제 3D 장면 정적 준비 검증. 최종 PASS는 런타임 증거를 사용한다.
 const IMAGE_EXT=/\.(png|webp|jpg|jpeg|gif|svg)$/i;
 const VISUAL_HINT=/(player|character|hero|companion|npc|enemy|boss|monster|background|terrain|tile|tree|rock|plant|resource|building|house|door|chest|weapon|armor|item|projectile|effect|vfx|icon|ui)/i;
 const PLACEHOLDER_CODE=/(ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(|[😀-🙏🌀-🫿])/u;
 const REAL_RENDER=/(drawImage\s*\(|<img\b|background(?:-image)?\s*:\s*url\(|Sprite2D|AnimatedSprite2D|TextureRect|TextureButton|texture\s*=)/i;
-const WEB_25D_PROJECTION=/(iso(?:metric)?|dimetric|project(?:World|Iso|25D|3D)|worldToScreen|tileToScreen|screenToWorld|perspective\s*\(|rotateX\s*\(|matrix3d\s*\()/i;
-const WEB_25D_DEPTH=/(depthSort|depth\s*[=:]|sort\s*\(\s*\([^)]*\)\s*=>[^\n]*(?:x\s*\+\s*y|screenY|depth|zIndex)|z-index|zIndex)/i;
-const WEB_25D_HEIGHT=/(elevation|heightScale|worldZ|\bz\s*[=:]|shadow(?:Offset|Scale)?|groundShadow|castShadow)/i;
+// 기존 공개 함수 이름은 보존하지만 2.5D 투영 및 표식만으로는 통과하지 않는다.
+const WEB_3D_RENDERER=/(?:new\s+(?:THREE\.)?(?:WebGLRenderer|WebGPURenderer)\s*\(|new\s+BABYLON\.Engine\s*\(|getContext\s*\(\s*['"]webgl2?['"])/i;
+const WEB_3D_SCENE=/(?:new\s+(?:THREE\.)?Scene\s*\(|new\s+BABYLON\.Scene\s*\()/i;
+const WEB_3D_CAMERA=/(?:new\s+(?:THREE\.)?(?:PerspectiveCamera|OrthographicCamera)\s*\(|new\s+BABYLON\.(?:ArcRotateCamera|FreeCamera|UniversalCamera)\s*\()/i;
+const WEB_3D_GEOMETRY=/(?:new\s+(?:THREE\.)?(?:Mesh|BoxGeometry|BufferGeometry|SphereGeometry|PlaneGeometry|CylinderGeometry)\s*\(|BABYLON\.MeshBuilder\.\w+\s*\(|gl\.drawElements\s*\(|gl\.drawArrays\s*\()/i;
 export const REQUIRED_VISUAL_TYPES=['character','enemy','boss','background','item','prop','effect','ui','animation'];
 export const GOLDEN_SCENE_ROLES=Object.freeze([
   'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
@@ -316,12 +318,17 @@ export function auditVibeVisualAssets(summary={}){
 }
 export function auditVibeWeb25D(summary={}){
   const files=Array.isArray(summary.files)?summary.files:[];
-  const web=files.filter(f=>/\.(?:js|mjs|html|css)$/i.test(f.path||'')&&typeof f.text==='string');
+  const web=files.filter(f=>/\.(?:js|mjs|html|ts)$/i.test(f.path||'')&&typeof f.text==='string');
   const joined=web.map(f=>f.text).join('\n');
-  const projection=WEB_25D_PROJECTION.test(joined),depthSorting=WEB_25D_DEPTH.test(joined),heightOrShadow=WEB_25D_HEIGHT.test(joined);
-  const pass=projection&&depthSorting&&heightOrShadow;
-  return {pass,projection,depthSorting,heightOrShadow,reasons:[...(projection?[]:['2.5D 투영/카메라 변환 없음']),...(depthSorting?[]:['2.5D 깊이 정렬 없음']),...(heightOrShadow?[]:['높이/그림자 표현 없음'])]};
+  const renderer=WEB_3D_RENDERER.test(joined);
+  const scene=WEB_3D_SCENE.test(joined);
+  const camera=WEB_3D_CAMERA.test(joined);
+  const geometry=WEB_3D_GEOMETRY.test(joined);
+  const pass=renderer&&scene&&camera&&geometry;
+  return {pass,minimumFinalGameplayDimension:'3D',renderer,scene,camera,geometry,
+    projection:camera,depthSorting:geometry,heightOrShadow:scene,
+    reasons:[...(renderer?[]:['실제 WebGL 3D 렌더러 없음']),...(scene?[]:['3D 장면 생성 없음']),...(camera?[]:['3D 카메라 없음']),...(geometry?[]:['3D 메시·기하 렌더링 없음'])]};
 }
 export function assertVibeVisualQuality(summary={}){const audit=auditVibeVisualAssets(summary);if(!audit.pass)throw new Error(`Vibe2 그래픽 품질 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
-export function assertVibeWeb25D(summary={}){const audit=auditVibeWeb25D(summary);if(!audit.pass)throw new Error(`Vibe2 Web 2.5D 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
+export function assertVibeWeb25D(summary={}){const audit=auditVibeWeb25D(summary);if(!audit.pass)throw new Error(`Vibe2 Web 3D 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
 export function assertVibeWebRelease(summary={}){return {visual:assertVibeVisualQuality(summary),web25d:assertVibeWeb25D(summary)};}
