@@ -206,10 +206,13 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
   assert.match(visual,/mesh\.GetIndexCount\(subMesh\) \/ 3/);
   assert.match(visual,/renderer\.sharedMaterial\.shader\.isSupported/);
   assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
-  assert.match(visual,/validMeshes == 2 && triangles > 0/);
+  assert.match(visual,/validMeshes == inspected && triangles > 0/);
+  assert.match(visual,/volumetricMeshes > 0/);
+  assert.match(visual,/bounds\.x > 0\.02f && bounds\.y > 0\.02f && bounds\.z > 0\.02f/);
   assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
   assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
   assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
+  assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
   assert.match(source,/nativeMeshMissing;/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
 });
@@ -343,6 +346,8 @@ test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한
   assert.match(source,/UNITY_WEB_3D_ONLY_POLICY_REQUIRED/);
   assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
   assert.match(source,/requiredForAllUnityWebGames:true/);
+  assert.match(source,/planarOnlyMeshesCannotPass:true/);
+  assert.match(source,/observedVolumetricMeshes:nativeMeshVerified\?nativeMeshProof\.volumetricMeshes:0/);
   assert.match(source,/observedTriangles:nativeMeshVerified\?nativeMeshProof\.triangles:0/);
   assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
 });
