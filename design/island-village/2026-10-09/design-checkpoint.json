@@ -1354,25 +1354,51 @@
       "toSystem": "VILLAGE_B",
       "trigger": "Resource accumulation + Infrastructure upgrade",
       "stateChange": "New population/land added"
+    },
+    "local_authoring_parts::e6318b515b3e8b61fad5e0cfcc1d5c6675b7ad95f6093ea4faf541455d1f61da:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
+    },
+    "local_authoring_parts::e6318b515b3e8b61fad5e0cfcc1d5c6675b7ad95f6093ea4faf541455d1f61da:toSystem,trigger,stateChange": {
+      "toSystem": "VILLAGE_B",
+      "trigger": "Resource accumulation + Infrastructure upgrade",
+      "stateChange": "New population/land added"
+    },
+    "local_authoring_parts::7d81b22d128d290f3b1691018b876e40d9cca073c6de6dc8e767ec7281850d4d:systemInterconnections:1": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "toSystem": "VILLAGE_B",
+      "trigger": "Resource accumulation + Infrastructure upgrade",
+      "stateChange": "New population/land added"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 123,
-      "successes": 123,
+      "calls": 125,
+      "successes": 125,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8191303,
-      "lastMs": 89719,
+      "totalMs": 8375784,
+      "lastMs": 91439,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:41:04.499Z"
+      "updatedAt": "2026-10-09T04:44:08.986Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T04:41:04.500Z",
+  "updatedAt": "2026-10-09T04:44:08.987Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3603,7 +3629,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:41:04.500Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:44:08.987Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
