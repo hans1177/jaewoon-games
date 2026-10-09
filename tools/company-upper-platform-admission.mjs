@@ -78,9 +78,14 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
     &&native3dChecks.every((proof,index)=>
       proof?.stage===requiredProofStages[index]&&proof.pass===true
       &&proof.requiredDimension==='3D'
-      &&proof.source==='UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF'
+      &&proof.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
       &&Number.isSafeInteger(proof.observedMeshCount)&&proof.observedMeshCount>0
-      &&Number.isSafeInteger(proof.observedTriangles)&&proof.observedTriangles>0);
+      &&Number.isSafeInteger(proof.observedTriangles)&&proof.observedTriangles>0
+      &&proof.depthPass===true&&proof.perspectiveCamera===true
+      &&Number.isSafeInteger(proof.worldMeshes3d)&&proof.worldMeshes3d>=2
+      &&Number.isSafeInteger(proof.worldDepthCm)&&proof.worldDepthCm>=50
+      &&Number.isSafeInteger(proof.gameplayActors3d)&&proof.gameplayActors3d>=1
+      &&proof.spriteGameplayActors===0);
   if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
   return{pass:true,reason:'READY',data,currentTree};
 }
