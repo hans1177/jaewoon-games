@@ -47,25 +47,51 @@
       "name": "PUZZLE_GAME_WORLD_RULE",
       "purpose": "Player's START LEVEL ACTION results in END LEVEL STATE change, connecting core loop and signature systems.",
       "playerChoice": "Start a board or grid level with clear goal, limited moves, obstacles, or visible puzzle constraint."
+    },
+    "local_authoring_parts::e36aa4711d47ed2f043c28da9cbfa84c66721b554f125da7c7104b502491c451:signatureSystems:1": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "END_LEVEL_STATE"
+      ],
+      "name": "PUZZLE_GAME_WORLD_RULE_A",
+      "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임의 주체와 대응 방식을 정의합니다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 통해 새로운 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 장르에 맞게 재해석합니다."
+    },
+    "local_authoring_parts::e36aa4711d47ed2f043c28da9cbfa84c66721b554f125da7c7104b502491c451:signatureSystems:2": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "END_LEVEL_STATE"
+      ],
+      "name": "PUZZLE_GAME_WORLD_RULE_B",
+      "purpose": "玩家在選擇時產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀",
+      "playerChoice": "選擇後產生新的行動、路線、組合、關係或應對法，並根據遊戲類型進行重新解讀"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 135303,
-      "lastMs": 15510,
+      "totalMs": 172872,
+      "lastMs": 17101,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:09:13.810Z"
+      "updatedAt": "2026-10-09T09:09:51.382Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:58.445Z",
-  "updatedAt": "2026-10-09T09:09:13.810Z",
+  "updatedAt": "2026-10-09T09:09:51.382Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:09:13.810Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:09:51.382Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
