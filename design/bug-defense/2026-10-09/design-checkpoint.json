@@ -469,25 +469,40 @@
     },
     "local_authoring_parts::7b4f4452179653996242070e542a1a927d692fd842bb6b052b64e511a0bd4bfb:trigger": {
       "trigger": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability."
+    },
+    "local_authoring_parts::7b4f4452179653996242070e542a1a927d692fd842bb6b052b64e511a0bd4bfb:stateChange": {
+      "stateChange": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability. This action triggers a status change that reflects increased defensive resilience, new strategic options, and altered regional dynamics."
+    },
+    "local_authoring_parts::6d4959392121e348a139574be06521f699eee1c4ea17bb7193151ca78209f05a:systemInterconnections:0": {
+      "fromId": "INCOMING_INSECT_WAVE_PATTERN",
+      "toId": "DEFENDER_REARRANGEMENT_PLAN",
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE_PATTERN",
+        "DEFENDER_REARRANGEMENT_PLAN"
+      ],
+      "fromSystem": "WAVES_AND_ENVIRONMENTS_SIGNATURE",
+      "toSystem": "DEFENDER_REARRANGEMENT_PLAN",
+      "trigger": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability.",
+      "stateChange": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability. This action triggers a status change that reflects increased defensive resilience, new strategic options, and altered regional dynamics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1312193,
-      "lastMs": 58032,
+      "totalMs": 1372677,
+      "lastMs": 60484,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:05:28.111Z"
+      "updatedAt": "2026-10-09T09:06:28.596Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:43:35.755Z",
-  "updatedAt": "2026-10-09T09:05:28.111Z",
+  "updatedAt": "2026-10-09T09:06:28.597Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2839,7 +2854,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:05:28.111Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:06:28.597Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
