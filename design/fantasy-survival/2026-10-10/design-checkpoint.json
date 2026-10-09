@@ -539,25 +539,42 @@
         "타격 손맛 선택 시 이동 블렌딩 상태가 더 강화되고, VFX 상태 변화에 따라 플레이어의 선택이 캐릭터 움직임에 영향을 미친다.",
         "음악 상태 전환 후 새로운 세계 상태 변화가 생성되며, 이는 캐릭터 움직임과 새로운 시스템 결합을 통해 게임 진행이 계속됨."
       ]
+    },
+    "local_authoring_parts::c49dc9a3258c88e034097f1f9bd914f158e894985cd61a10bd483801b527a029:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Idle 호흡"
+      ],
+      "stateOutputs": [
+        "이동 블렌딩",
+        "타격 손맛",
+        "VFX",
+        "카메라",
+        "음악 상태 전환"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "생존 시스템(지역 탐험, 생존 압박)과 RPG 시스템(채집·제작·장비·전투·퀘스트·연구소 스토리) 간의 인과적 조합을 통한 플레이어 선택에 따른 새로운 세계 상태 변화가 발생하며, 이는 캐릭터 움직임과 새로운 시스템 결합을 가능하게 합니다.",
+      "playerChoice": "플레이어가 이동 블렌딩 및 타격 손맛에 대한 반응을 제시할 수 있는 새로운 세계 상태 변화를 유도합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1551696,
-      "lastMs": 88576,
+      "totalMs": 1653586,
+      "lastMs": 101890,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:42:41.904Z"
+      "updatedAt": "2026-10-09T17:44:23.797Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:16:50.147Z",
-  "updatedAt": "2026-10-09T17:42:41.904Z",
+  "updatedAt": "2026-10-09T17:44:23.797Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2288,7 @@
     "28c68f8e9587d88755b5b687718fc650ff2f3ae4d2b01da0a547ee644ce1178f": true,
     "f21f9a65bb07af7f721ab9484ac9b85667b4c100cb05a010cc85cca5fef4730a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:42:41.904Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:44:23.797Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
