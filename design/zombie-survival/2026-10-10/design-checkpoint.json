@@ -194,25 +194,39 @@
         "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어 실제 세계 상태 변화가 일어난다.",
         "생존 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다."
       ]
+    },
+    "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE",
+        "RESULT"
+      ],
+      "name": "생존 진입 시스템",
+      "purpose": "선택적 진입, 성장 가능성, 심리적 영향 제공",
+      "playerChoice": "주요 행동(생존) 기반의 선택 및 진입 방식 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 798579,
-      "lastMs": 104316,
+      "totalMs": 903825,
+      "lastMs": 105246,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:28:05.821Z"
+      "updatedAt": "2026-10-09T18:29:51.069Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:14:47.214Z",
-  "updatedAt": "2026-10-09T18:28:05.821Z",
+  "updatedAt": "2026-10-09T18:29:51.069Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1939,7 @@
   "localAuthoringSplits": {
     "5b1c35ed59e786a73d9f4b30700e88e8d49e4deb1f9ec003b20cce05b9c17bd6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:28:05.821Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:29:51.069Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
