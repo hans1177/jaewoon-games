@@ -47,25 +47,51 @@
       "name": "World Rule Transition System",
       "purpose": "Main action rule that connects player choices to next level state changes",
       "playerChoice": "Start a board or grid level with clear goal, limited moves, obstacles, or another visible puzzle constraint. (INPUT) → Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve the current objective. (SELECT) → State change: LEVEL_STATE → NEXT_LEVEL_STATE (OUTPUT)"
+    },
+    "local_authoring_parts::a77e11d736a2295851bb887992ea14d579d1563bda3b27feecd2e447708d6271:signatureSystems:1": {
+      "id": "CAT-STEP-SIGNATURESYSTEM-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_LEVEL_STATE"
+      ],
+      "name": "Level Transition Mechanism",
+      "purpose": "Establishes the causal relationship between player actions and subsequent game states, ensuring that each choice leads to a new and meaningful state.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. (This is the core action, which must be performed in every session.)','stateContribution':'Player choices directly influence the next level's configuration, creating a dynamic and evolving gameplay experience.'}</think> же 100%의 원본 규칙과 숫자를 유지하며, 필수 구조와 설계 깊이를 지키고, 이 배열 항목만 출력합니다. 🌟🔥🎮✨. 100%의 원본 규칙과 숫자를 유지하며, 필수 구조와 설계 깊이를 지키"
+    },
+    "local_authoring_parts::a77e11d736a2295851bb887992ea14d579d1563bda3b27feecd2e447708d6271:signatureSystems:2": {
+      "id": "CAT-STEP-SIGNATURESYSTEM-3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_LEVEL_STATE"
+      ],
+      "name": "Level Transition Mechanism",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 273564,
-      "lastMs": 35154,
+      "totalMs": 364885,
+      "lastMs": 31352,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:27:14.453Z"
+      "updatedAt": "2026-10-09T08:28:45.777Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:22:40.843Z",
-  "updatedAt": "2026-10-09T08:27:14.453Z",
+  "updatedAt": "2026-10-09T08:28:45.777Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:27:14.453Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:28:45.777Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
