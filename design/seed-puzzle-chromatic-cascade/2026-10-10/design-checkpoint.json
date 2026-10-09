@@ -986,25 +986,33 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::da7f4e3bfbaba1028c0976e7509efce7fa2eb8ddb828c539541fb9ce51c228f8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "signatureSystems[0]",
+      "toId": "worldStateChange",
+      "stateKeys": [
+        "playerChoice"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 14,
+      "calls": 17,
+      "successes": 15,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2326218,
-      "lastMs": 283600,
+      "totalMs": 2415408,
+      "lastMs": 89190,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:36:49.328Z"
+      "updatedAt": "2026-10-09T18:38:18.527Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:58:03.033Z",
-  "updatedAt": "2026-10-09T18:36:49.334Z",
+  "updatedAt": "2026-10-09T18:38:18.527Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2743,10 +2751,10 @@
     "d3b14657e4d878caf2ea031a712e1067eba9d2ba183d0fca7beec6abf77e7c2d": true,
     "2882f8fd473bdadf754d7ed9a9a0b6d14073a8e81d57359e95f0e2f6f80b52ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:36:49.328Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:38:18.527Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
