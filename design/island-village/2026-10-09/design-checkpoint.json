@@ -287,25 +287,211 @@
           "playerChoice": "Select which village function to improve or expand, and determine the next goal based on current resources and goals."
         }
       ]
+    },
+    "local_authoring_parts::0b7756f890264fd749f9b7770460e95393761b0658180c1af960dda343a4906c:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::a32aa557d6c81c7237388ebc4fc949cc844fa46aae8438954f81405758e158ac:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 플레이어가 무인도에서 자원을 수집하여 특정 시설을 개선하거나 새로운 주민/활동을 추가하는 선택",
+        "상태변화: 자원 확보 -> 시설 개선/추가 -> 새 주민/활동 등록 -> 다음 목표 설정",
+        "보상: 새로운 기능 도입, 지역 생활 연결망 강화, 게임 진행 속도 향상"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System",
+          "purpose": "Establish and manage the expansion of village functions through resource gathering and player interaction.",
+          "playerChoice": "Select which resources to gather, determine which village function to improve, and unlock new residents or activities for the next goal set."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System II",
+          "purpose": "Facilitates the expansion of village functions through player choices that influence settlement growth and resource management.",
+          "playerChoice": "Select a focused set of island resources to improve a specific village function or add a new resident/activity, thereby setting the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System III",
+          "purpose": "Player-driven expansion of village functions through resource gathering and state improvement.",
+          "playerChoice": "Select a focused set of resources to improve a specific village function or add a new resident/activity, then set the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System IV",
+          "purpose": "Player chooses to gather resources and improve a village function, leading to new residents, activities, or goals.",
+          "playerChoice": "Gather focused island resources, improve a village function, and unlock a new resident/activity/goal."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System V",
+          "purpose": "Player-driven expansion of village functions through resource gathering and state transitions.",
+          "playerChoice": "Select which village function to improve or expand, and determine the next goal based on current resources and goals."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 플레이어는 무인도 마을에서 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "입력: 플레이어가 무인도에서 자원을 수집하여 특정 시설을 개선하거나 새로운 주민/활동을 추가하는 선택",
+        "상태변화: 자원 확보 -> 시설 개선/추가 -> 새 주민/활동 등록 -> 다음 목표 설정",
+        "보상: 새로운 기능 도입, 지역 생활 연결망 강화, 게임 진행 속도 향상"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System",
+          "purpose": "Establish and manage the expansion of village functions through resource gathering and player interaction.",
+          "playerChoice": "Select which resources to gather, determine which village function to improve, and unlock new residents or activities for the next goal set."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System II",
+          "purpose": "Facilitates the expansion of village functions through player choices that influence settlement growth and resource management.",
+          "playerChoice": "Select a focused set of island resources to improve a specific village function or add a new resident/activity, thereby setting the next village goal."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System III",
+          "purpose": "Player-driven expansion of village functions through resource gathering and state improvement.",
+          "playerChoice": "Select a focused set of resources to improve a specific village function or add a new resident/activity, then set the next village goal."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System IV",
+          "purpose": "Player chooses to gather resources and improve a village function, leading to new residents, activities, or goals.",
+          "playerChoice": "Gather focused island resources, improve a village function, and unlock a new resident/activity/goal."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "resource_gathered",
+            "village_function_improved"
+          ],
+          "stateOutputs": [
+            "new_resident_enrolled",
+            "activity_added",
+            "village_goal_set"
+          ],
+          "name": "Village Expansion System V",
+          "purpose": "Player-driven expansion of village functions through resource gathering and state transitions.",
+          "playerChoice": "Select which village function to improve or expand, and determine the next goal based on current resources and goals."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 358161,
-      "lastMs": 36368,
+      "totalMs": 389846,
+      "lastMs": 31685,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:55:05.326Z"
+      "updatedAt": "2026-10-09T14:55:37.013Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:49:07.139Z",
-  "updatedAt": "2026-10-09T14:55:05.327Z",
+  "updatedAt": "2026-10-09T14:55:37.020Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1902,12 +2088,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:55:05.327Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:55:37.015Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/island-village/2026-10-09/design-seed.json",
+    "contentDigest": "43df9522ba691df82f1218b9692e6b8d0e65487342408b055257467db3e88dbd",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
