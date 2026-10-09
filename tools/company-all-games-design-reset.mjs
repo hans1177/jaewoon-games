@@ -152,11 +152,14 @@ function normalizedCanonicalSketch(game,seed){
 function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
   // 기존 MAIN 중심 설계도 새 MAIN/A/B/C/@ 문법으로 재작성한다. 원본 게임 규칙은 별도 보존.
   if(completeNovelGrammarV5(seed))return false;
+  // 접수용 임시 V5를 매 실행마다 다시 쓰지 않는다. 디자이너가 고유 소재와 장르를 직접 완성해야 한다.
+  if(seed?.novelGrammarBackfill?.source===CANONICAL_NOVEL_GRAMMAR_V5_SOURCE
+    &&seed?.novelGrammarBackfill?.authoringPending===true)return false;
   const normalized=normalizedCanonicalSketch(game,seed);
   seed.GAME_CATEGORY=normalized.category;
   seed.CORE_LOOP=normalized.coreLoop;
   seed.GAMEPLAY_SKETCH=normalized.sketch;
-  seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,updatedAt:timestamp};
+  seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,authoringPending:true,updatedAt:timestamp};
   const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==CANONICAL_NOVEL_GRAMMAR_V5_SOURCE):[];
   signals.push({id:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,type:'OWNER_MAIN_AB_C_GRAMMAR_REDESIGN',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});
   seed.designEvolutionSignals=signals;
@@ -209,6 +212,9 @@ export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().to
     autoMissingDesignIntake:true,
     createdAt:timestamp,updatedAt:timestamp
   };
+  // 자동 접수 스케치는 설계 PASS가 아니다. 창작 소재·메인/보조 장르·@는 실제 디자이너 작성으로 채운다.
+  seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,authoringPending:true,updatedAt:timestamp};
+  seed.designEvolutionSignals=[{id:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,type:'OWNER_MAIN_AB_C_GRAMMAR_REDESIGN',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'}];
   const inputCheck=validateGameSeed(seed);
   if(!inputCheck.pass)seed.inputRepairNotes=inputCheck.errors;
   return seed;
@@ -247,7 +253,7 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     const id=clean(game?.id),life=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
     return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
   });
-  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[];
+  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[],grammarPending=[];
   for(const game of games){
     const id=clean(game.id);
     const candidates=state.seeds.filter(seed=>clean(seed?.gameId)===id);
@@ -264,7 +270,8 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
         reactivated.push(id);
       }
       if(upgradeCanonicalNovelGrammarSeed(active,game,timestamp))grammarUpgraded.push(id);
-      else grammarAlreadyCurrent.push(id);
+      else if(completeNovelGrammarV5(active))grammarAlreadyCurrent.push(id);
+      else grammarPending.push(id);
     }
     if(latestUsableDesign(root,id))designPresent.push(id);
     if(!created.includes(id)&&!reactivated.includes(id)&&!grammarUpgraded.includes(id))alreadySeeded.push(id);
@@ -281,12 +288,13 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
       canonicalNovelGrammarSource:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,
       canonicalTargetGameIds:games.map(game=>clean(game.id)),
       grammarUpgradedGameIds:grammarUpgraded,
-      grammarAlreadyCurrentGameIds:grammarAlreadyCurrent
+      grammarAlreadyCurrentGameIds:grammarAlreadyCurrent,
+      grammarPendingGameIds:grammarPending
     };
     writeJson(path.join(root,seedFile),state);
   }
   return{
-    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,
+    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,grammarPending,
     canonicalTargets:games.map(game=>clean(game.id)),
     eligibleGames:games.map(game=>clean(game.id)),
     changed:created.length+reactivated.length+grammarUpgraded.length
