@@ -1247,13 +1247,17 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
   const multiplayerRepairRequired=readiness?.data?.criteria?.qa?.multiplayerRequired===true&&readiness?.data?.criteria?.qa?.multiplayerPass!==true;
   const coreRel=`${root}/Assets/Scripts/GameCore.cs`;
   const runtimeRel=`${root}/Assets/Scripts/RuntimeBootstrap.cs`;
+  const floorRuntimeRel=`${root}/Assets/Scripts/UnityWebFloorGame.cs`;
+  const nativeVisualRel=`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
   const projectVersionRel=`${root}/ProjectSettings/ProjectVersion.txt`;
   const manifestRel=`${root}/Packages/manifest.json`;
   const projectReady=fs.existsSync(sourceFile(repoRoot,projectVersionRel))
     &&fs.existsSync(sourceFile(repoRoot,manifestRel))
-    &&fs.existsSync(sourceFile(repoRoot,coreRel))
-    &&fs.existsSync(sourceFile(repoRoot,runtimeRel));
-  const runtime=readText(sourceFile(repoRoot,runtimeRel));
+    &&((fs.existsSync(sourceFile(repoRoot,coreRel))&&fs.existsSync(sourceFile(repoRoot,runtimeRel)))
+      ||fs.existsSync(sourceFile(repoRoot,floorRuntimeRel)));
+  const runtime=readText(sourceFile(repoRoot,
+    fs.existsSync(sourceFile(repoRoot,runtimeRel))?runtimeRel:floorRuntimeRel));
+  const qaSource=[runtime,readText(sourceFile(repoRoot,nativeVisualRel))].join('\n');
   let buildWebReady=false;
   const editorRoot=sourceFile(repoRoot,`${root}/Assets/Editor`);
   if(fs.existsSync(editorRoot)){
@@ -1272,7 +1276,9 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
     &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_TARGET/.test(runtime)
     &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_INPUT/.test(runtime)
     &&/JAEWOON_UNITY_WEB_QA\s+CORE_FUN/.test(runtime)
-    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime);
+    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime)
+    &&/JAEWOON_UNITY_WEB_QA\s+MESH_INTEGRITY/.test(qaSource)
+    &&/JAEWOON_UNITY_WEB_QA\s+SPATIAL_DEPTH/.test(qaSource);
   const repairState=clean(project.queueCanonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'
     ||clean(project.queueCurrentStep).toUpperCase()==='VIBE_WEB_REPAIR';
 
@@ -1287,9 +1293,9 @@ Unity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit
 실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로 MOBILE_INPUT을 찍으면 안 된다.
 JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 또는 ATTACK, PROGRESS 또는 REWARD 실제 런타임 증거를 남긴다.
 장르 핵심 루프가 실제 게임 상태로 완료된 순간에만 CORE_FUN status=PASS loop=<genre-specific-loop>를 남긴다. 단순 시작/버튼 클릭/문구 표시만으로 CORE_FUN을 찍지 않는다.
-실제 게임 화면은 2D·2.5D나 평면 스프라이트를 최종 장면으로 사용하지 않고 Unity의 3D Scene·MeshFilter/MeshRenderer(또는 SkinnedMeshRenderer)·입체 공간/카메라/조명을 구현한다. placeholder primitive 중심 화면도 완료로 인정하지 않는다. 기존 저장소의 실제 3D 에셋과 권리 명확한 에셋을 우선 사용한다. 2D UI/텍스처/오디오는 보조 자료로만 허용한다.
+실제 게임 화면은 2D·2.5D나 평면 스프라이트를 최종 장면으로 사용하지 않고 Unity의 3D Scene·MeshFilter/MeshRenderer(또는 SkinnedMeshRenderer)·입체 공간/카메라/조명을 구현한다. placeholder primitive 중심 화면도 완료로 인정하지 않는다. 게임 개체는 company-asset-library.json에 등록된 내부 공용 3D 모델만 사용하고, 장르·다른 게임·원본 플랫폼별 인위적 사용 상한을 두지 않는다. 다른 플랫폼 모델은 Unity 네이티브로 변환하며, 재질·파츠·실루엣·모션으로 게임별 개성을 보존한다. 외부 미등록 자산 직접 사용을 금지하며 2D UI/텍스처/오디오만 보조로 허용한다.
 시스템이 생성하는 Packages/ProjectSettings/WebBuild.cs는 빌드 뼈대일 뿐 게임 구현이 아니다. 게임플레이 소스는 Vibe가 직접 구현한다.
-모든 게임에서 실제 MeshFilter 삼각형·재질을 검사한 Unity 런타임 MESH_INTEGRITY 증거(inspected>0, validMeshes=inspected, triangles>0, materialPass=1, texturePass=1)를 계산해서 출력해야 한다. 숫자 하드코딩·가짜 PASS는 금지한다. Unity Web에서 실제 3D 첫 플레이 사이클을 완성한 뒤 모바일 브라우저/저장/독립 QA·회귀검증으로 넘긴다.`;
+모든 게임에서 실제 MeshFilter 삼각형·재질을 검사한 Unity 런타임 MESH_INTEGRITY 증거(inspected>0, validMeshes=inspected, triangles>0, materialPass=1, texturePass=1)를 계산해서 출력해야 한다. SPATIAL_DEPTH 증거도 실제 Unity 컴포넌트에서 cameraPerspective=1, worldMeshes3d>=2, worldDepthCm>=50, gameplayActors3d>=1, spriteGameplayActors=0을 측정해 출력한다. 숫자 하드코딩·가짜 PASS는 금지한다. Unity Web에서 실제 3D 첫 플레이 사이클을 완성한 뒤 모바일 브라우저/저장/독립 QA·회귀검증으로 넘긴다.`;
     const out=task(id,{...project,engine:'unity',target:'unity'},goal,[coreRel,runtimeRel],'owner-immediate','high',[
       'owner-directive:webgame-first',
       'web-stage:WEB_BASE_IMPLEMENTATION',
@@ -1322,15 +1328,14 @@ JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 
 이 Unity Web 수리는 기존 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일을 우선 수정하고, 실제 3D 메시 검증 결함이 확인되면 현존하는 PrototypeAnimatedVisuals 책임 C#도 같은 작업에서 직접 수정한다. 그 외 native asset은 기존 ASSET_DEVELOPMENT 제작 루프가 담당하며 같은 파일 수정 충돌은 기존 Work Lock으로 직렬화한다.
 필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
 코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
-그래픽: 기존 2D·2.5D 플레이 화면은 전부 Unity 3D 장면/입체 메시/공간 카메라로 직접 재개발한다. 캐릭터·적·환경·장비에 실제 3D 메시와 고유 모션을 적용하고, 공용 라이브러리는 실제 3D 게임 오브젝트만 재사용한다. 기존 게임 규칙·세이브·보상은 그대로 둔다. Unity 런타임 MESH_INTEGRITY는 실제 MeshFilter 메시/삼각형/재질/텍스처 검사 결과만 기록하고 가짜 계측/PASS는 금지한다.
+그래픽: 기존 2D·2.5D 플레이 화면은 전부 기존 Unity C# 책임 소스 안에서 3D 장면/입체 메시/공간 카메라로 재개발한다. 캐릭터·적·환경·장비는 company-asset-library.json에 등록된 내부 3D 원본만 실제 사용한다. 다른 장르/기존 게임에서 사용한 모델도 컨셉에 맞으면 재활용하고, 모듈 파츠·비율·재질·실루엣·애니메이션을 변경해 시각 중복을 막는다. 신규 외부 모델을 직접 바인딩하지 않는다. 기존 게임 규칙·세이브·보상은 그대로 둔다. MESH_INTEGRITY 외에 SPATIAL_DEPTH source=UNITY_WORLD_MESH_DEPTH를 실제 카메라·깊이·배우 메시로 측정하고 2D SpriteRenderer 배우를 차단한다. 가짜 계측/PASS는 금지한다.
 브라우저: WebGL 빌드 후 실제 모바일 브라우저 입력·핵심 행동·진행·저장복구가 다시 검증 가능해야 한다.
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const nativeVisualRel=`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
     const nativeVisualNeeded=readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
       ||readiness?.data?.criteria?.graphics?.native3dVerified===false;
-    const files=[coreRel,runtimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
+    const files=[coreRel,runtimeRel,floorRuntimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
       .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
       const editorDir=sourceFile(repoRoot,`${root}/Assets/Editor`);
