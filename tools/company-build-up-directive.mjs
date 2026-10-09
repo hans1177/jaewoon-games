@@ -567,9 +567,163 @@ export function extractDesignContext(record={}){
     designIntegrityNotes:uniq(d?.designIntegrityPlan?.notes).slice(0,12),
     implementationTraceability:(Array.isArray(d?.implementationTraceability)?d.implementationTraceability:[]).slice(0,8),
     stabilityPriorityPlan:asObject(d?.stabilityPriorityPlan),
+    preservationContract:asObject(d?.preservationContract),
     progressionDirection:clean(d?.progressionDirection),
     multiplayerMode:clean(d?.multiplayerMode),
     platformProfiles:d?.platformProfiles&&typeof d.platformProfiles==='object'?d.platformProfiles:{}
+  });
+}
+
+// 설계 후 볼륨·완성도: 승인 설계의 개별 항목과 기존 소스 후보를 추적한다.
+// 정적 이름 일치만으로 실제 구현·플랫폼 런타임 완료를 판정하지 않는다.
+function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}={}){
+  const items=[],seen=new Set();
+  const preservationOnly=clean(design?.preservationContract?.mode).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+  const anchors=Array.isArray(source?.sourceAnchors)?source.sourceAnchors:[];
+  const traces=Array.isArray(design?.implementationTraceability)?design.implementationTraceability:[];
+  const add=(family,index,value)=>{
+    const detail=value&&typeof value==='object'&&!Array.isArray(value)?value:{step:clean(value)};
+    const title=clean(detail.name||detail.milestone||detail.designElement||detail.role||detail.humanId
+      ||(detail.fromSystem&&detail.toSystem&&clean(detail.fromSystem)+' → '+clean(detail.toSystem))
+      ||detail.step||detail.id)||family+' #'+(index+1);
+    const authoredId=clean(detail.id||detail.ruleId||detail.humanId);
+    const names=uniq([authoredId,detail.name,detail.milestone,detail.designElement,title])
+      .filter(name=>name.length>=3).map(name=>name.toLowerCase());
+    const namedAnchors=anchors.filter(row=>clean(row?.file)&&names.some(name=>
+      clean(row?.symbol).toLowerCase()===name||clean(row?.context).toLowerCase().includes(name)
+    )).map(row=>Object.freeze({file:posix(row.file),line:Number(row.line)||null,symbol:clean(row.symbol),kind:clean(row.kind)}));
+    const trace=traces.find(row=>{
+      const element=clean(row?.designElement).toLowerCase();
+      return element&&names.some(name=>element===name||element.includes(name));
+    });
+    const playerChoice=clean(detail.playerChoice||detail.counterplay||detail.riskReward||detail.changedChoice||detail.variation);
+    const trigger=clean(detail.trigger||detail.encounterPattern||detail.traversal||detail.milestone);
+    const stateChange=clean(detail.stateChange||detail.effect||detail.systemImpact||detail.rewardMeaning||detail.newGameplay);
+    const identity=family+':'+title.toLowerCase();
+    const review=[];
+    if(family==='SIGNATURE_SYSTEM'&&!playerChoice)review.push('PLAYER_CHOICE_UNSPECIFIED');
+    if(family==='CONTENT_MILESTONE'&&!trigger)review.push('MILESTONE_TRIGGER_UNSPECIFIED');
+    if(['SYSTEM_CONNECTION','CONTENT_MILESTONE'].includes(family)&&!stateChange)review.push('STATE_CHANGE_UNSPECIFIED');
+    if(seen.has(identity))review.push('DUPLICATE_DESIGN_TITLE_REVIEW');
+    seen.add(identity);
+    const linkedRuleIds=uniq([
+      ...(Array.isArray(detail.ruleIds)?detail.ruleIds:[]),detail.fromId,detail.toId,detail.ruleId,
+      ...((design.systemInterconnections||[]).filter(row=>authoredId&&
+        (clean(row?.fromId)===authoredId||clean(row?.toId)===authoredId)).flatMap(row=>[row.fromId,row.toId]))
+    ]);
+    // 개수 확보가 아니라 실제 플레이 연결·실패 복귀·기존 시스템 책임에 대한 구현 조건.
+    const requiredBehavior=family==='CORE_LOOP'?[
+      'CURRENT_STEP_IS_REACHABLE_FROM_PREVIOUS_SESSION_OR_LOOP_STATE',
+      'PLAYER_ACTION_TRANSITIONS_TO_NEXT_AUTHORED_LOOP_STEP',
+      'SUCCESS_FAILURE_AND_RETRY_FEEDBACK_OBSERVABLE'
+    ]:family==='SIGNATURE_SYSTEM'?[
+      'DESIGNED_RULE_ID_INPUT_OUTPUT_STATE_KEYS_BOUND_TO_EXISTING_GAME_SYSTEM',
+      'ALTERNATIVE_PLAYER_CHOICES_CHANGE_AUTHORED_STATE_OR_CONSEQUENCE',
+      'CORE_LOOP_AND_OTHER_SIGNATURE_SYSTEMS_SHARE_AUTHORITATIVE_STATE'
+    ]:family==='SYSTEM_CONNECTION'?[
+      'FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS',
+      'TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE',
+      'TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES'
+    ]:family==='CONTENT_MILESTONE'&&preservationOnly?[
+      'PRESENTATION_MILESTONE_BINDS_ONLY_TO_EXISTING_GAME_STATE',
+      'NO_NEW_GAMEPLAY_RULE_PROGRESSION_BALANCE_SAVE_OR_NETWORK_SEMANTIC',
+      'NATIVE_RENDER_MOTION_VFX_AUDIO_UI_AND_MOBILE_REPLAY_ONLY_WHEN_APPLICABLE'
+    ]:family==='CONTENT_MILESTONE'?[
+      'MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE',
+      'NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL',
+      'MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED'
+    ]:family==='VARIETY_REGIONS'?[
+      'NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE',
+      'TRAVERSAL_LANDMARK_RISK_RESOURCE_AND_ENCOUNTER_ROLES_DISTINCT',
+      'DISCOVERY_NEXT_OBJECTIVE_AND_RETURN_REASON_CONNECTED'
+    ]:family==='VARIETY_ENEMIESORCHALLENGES'?[
+      'ENEMY_BEHAVIOR_POSITIONING_TIMING_MOBILITY_AND_GROUP_ROLE_APPLIED',
+      'TELEGRAPH_AND_PLAYER_COUNTERPLAY_OBSERVABLE',
+      'REWARD_AND_ENCOUNTER_PROGRESS_CONNECTED_WITHOUT_BALANCE_CHANGE'
+    ]:family==='VARIETY_ABILITIES'?[
+      'EXACT_APPROVED_OWNER_TRIGGER_RANGE_RESOURCE_COST_COOLDOWN_PRESERVED',
+      'SERVER_OWNED_EFFECT_STATE_VALIDATION_AND_PRESENTATION_FEEDBACK',
+      'CANCEL_FAIL_RETRY_AND_MULTIPLAYER_STATE_CONSISTENCY'
+    ]:family==='VARIETY_OBJECTIVES'?[
+      'OBJECTIVE_ACTIVATION_AND_PROGRESS_CONDITIONS_REACHABLE',
+      'RESULT_REWARD_OR_NEXT_GOAL_CONNECTED_TO_EXISTING_FLOW',
+      'DUPLICATE_COMPLETION_AND_RECONNECT_PROTECTED'
+    ]:family==='VARIETY_ROLETRANSITIONS'?[
+      'AUTHORITATIVE_PRE_POST_ROLE_STATES_AND_RETENTION_RULES_PRESERVED',
+      'ROLE_CHANGE_PLAYER_CHOICE_AND_ABILITY_USAGE_PLAYABLE',
+      'SAVE_NETWORK_AND_RESPAWN_RECOVERY_VERIFIED'
+    ]:family.startsWith('NARRATIVE_')?[
+      'STORY_BEAT_OR_QUEST_STATE_TRIGGERED_BY_REAL_GAME_ACTION',
+      'WORLD_OR_OBJECTIVE_STATE_AND_NEXT_BEAT_CHANGE_OBSERVABLE',
+      'REPLAY_RECONNECT_AND_NARRATIVE_CAUSAL_ORDER_PRESERVED'
+    ]:family==='IMPLEMENTATION_TRACE'?[
+      'EXACT_DESIGN_ELEMENT_BOUND_TO_EXISTING_RESPONSIBLE_SOURCE',
+      'DESIGN_VALIDATION_EVIDENCE_REPLAYED_IN_NATIVE_GAME_RUNTIME',
+      'QA_RESULT_LINKED_TO_EXACT_SOURCE_REVISION'
+    ]:[
+      'EXISTING_SYSTEM_OR_SOURCE_OWNER_REVIEW_REQUIRED',
+      'DESIGNED_BEHAVIOR_APPLIED_WITH_OBSERVABLE_PLAYER_CHOICE',
+      'PLATFORM_RUNTIME_AND_PRESERVATION_REGRESSION_REQUIRED'
+    ];
+    items.push(Object.freeze({
+      ref:family+'['+index+']',family,index,title,authoredId:authoredId||null,
+      designDetail:Object.freeze({...detail}),playerChoice:playerChoice||null,trigger:trigger||null,
+      stateChange:stateChange||null,linkedRuleIds:Object.freeze(linkedRuleIds),
+      designResponsibleSystem:clean(trace?.responsibleSystem)||null,
+      sourceCandidates:Object.freeze(namedAnchors),
+      sourceEvidenceState:namedAnchors.length?'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED':'EXACT_SOURCE_OWNER_REVIEW_REQUIRED',
+      implementationVerified:false,runtimeVerified:false,
+      designReviewNeeded:Object.freeze(review),
+      requiredBehavior:Object.freeze(requiredBehavior),
+      buildUpStatus:'AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED',
+      observableAcceptance:clean(trace?.validationEvidence)
+        ||'실제 '+title+' 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증',
+      requiredStages:Object.freeze([
+        'INSPECT_EXISTING_RESPONSIBLE_FUNCTION','IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE',
+        'VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT','REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME'
+      ])
+    }));
+  };
+  if(!safeDesignlessMode){
+    const groups=[['CORE_LOOP',design.coreLoop],['SIGNATURE_SYSTEM',design.signatureSystems],
+      ['SYSTEM_CONNECTION',design.systemInterconnections],['CONTENT_MILESTONE',design.contentExpansionPlan]];
+    for(const [name,rows] of Object.entries(design.contentVarietyPlan||{}).sort(([a],[b])=>a.localeCompare(b))){
+      if(Array.isArray(rows))groups.push(['VARIETY_'+name.toUpperCase(),rows]);
+    }
+    if(design.narrativeDialoguePlan?.applicable===true){
+      for(const name of ['questStates','plotBeats','sceneBeats']){
+        const rows=design.narrativeDialoguePlan[name];
+        if(Array.isArray(rows))groups.push(['NARRATIVE_'+name.toUpperCase(),rows]);
+      }
+    }
+    groups.push(['IMPLEMENTATION_TRACE',traces]);
+    for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
+  }
+  const authoredCounts=Object.fromEntries([...new Set(items.map(row=>row.family))].map(family=>[
+    family,items.filter(row=>row.family===family).length
+  ]));
+  return Object.freeze({
+    version:1,boundary:'EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY',
+    sourceTreeFingerprint:clean(source?.sourceTreeFingerprint)||null,
+    mode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION':preservationOnly?'PRESERVATION_PRESENTATION_MILESTONES_ONLY':'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION',
+    authoredItemCount:items.length,authoredCounts:Object.freeze(authoredCounts),
+    namedSourceCandidateCount:items.filter(row=>row.sourceCandidates.length>0).length,
+    sourceReviewRequiredCount:items.filter(row=>row.sourceCandidates.length===0).length,
+    implementationVerifiedCount:0,runtimeVerifiedCount:0,
+    authoredCountsAreNotImplementedOrPlayableCounts:true,noArbitraryContentQuota:true,
+    coverageState:'DESIGN_CONTENT_INDEXED_NATIVE_IMPLEMENTATION_AND_RUNTIME_PENDING',
+    absenceOfNameMatchIsNotProofOfMissingImplementation:true,
+    existingSaveBalanceEconomyNetworkAuthorityPreserved:true,
+    action:preservationOnly?'IMPROVE_EXISTING_RENDER_MOTION_UI_AUDIO_ONLY_AND_PRESERVE_GAMEPLAY_MEANING':'BIND_EACH_APPROVED_ITEM_TO_EXISTING_RESPONSIBLE_SOURCE_AND_PROVE_CONNECTED_PLAYER_FACING_RESULT',
+    acceptance:Object.freeze([
+      'EACH_AUTHORED_ITEM_REQUIRES_EXACT_DESIGN_SOURCE_AND_PLAYER_EVIDENCE',
+      'CONTENT_REQUIRES_TRIGGER_STATE_PLAYER_CHOICE_NEXT_GOAL_CONNECTION_WHEN_APPLICABLE',
+      'SOURCE_NAMES_OR_SYMBOLS_ARE_NOT_IMPLEMENTATION_PASS',
+      'NATIVE_ACTION_STATE_RESULT_FAILURE_AND_RETRY_QA_REQUIRED',
+      'SPATIAL_CONTENT_REQUIRES_REAL_NATIVE_3D_AND_MOBILE_RUNTIME_QA',
+      'PRESERVE_EXISTING_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY'
+    ]),
+    items:Object.freeze(items)
   });
 }
 
@@ -687,7 +841,7 @@ export function buildDesignToPlatformCodingTrace({
     &&bindings.every(row=>row.designStatus==='AUTHORED');
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
-  const spatialReady=['2.5D','3D'].includes(unityDepth.dimension)
+  const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
       .every(field=>clean(unityDepth[field]).length>=32);
   const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
@@ -696,7 +850,8 @@ export function buildDesignToPlatformCodingTrace({
     gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
-    ...name==='UNITY_WEB'?{minimumRenderedDimension:'2.5D',spatialDesignReady:spatialReady}: {},
+    minimumRenderedDimension:'3D',
+    ...(name==='UNITY_WEB'?{spatialDesignReady:spatialReady}:{}),
     inspectedInThisDirective:name===selected
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
@@ -1493,6 +1648,10 @@ export function directivePrompt(d={}){
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
+  const volume=d.designedGameVolume||{};
+  // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
+  // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
+  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | ruleIds='+(row.linkedRuleIds||[]).join(',')+' | runtime=UNVERIFIED').join('\n');
   const expansion=d.autonomousContentExpansion||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
@@ -1502,6 +1661,9 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
+    'DESIGNED_GAME_VOLUME_ITEMS:',
+    volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
     'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
@@ -1711,6 +1873,20 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,design,platform,sourceRoot,sourceObservation:source,
     responsibleFiles:topFiles,repoRoot,multiplayerRequired
   });
+  // 전체 볼륨 인덱스는 기존 요약 컨텍스트의 8~24개 제한에 의해 설계 항목이 누락되지 않게 한다.
+  // 다른 코딩/계획 컨텍스트의 기존 요약 예산과 원본 게임 규칙은 그대로 유지한다.
+  const authoredDesign=designRecord?.content&&typeof designRecord.content==='object'
+    ?designRecord.content:(designRecord||{});
+  const designedGameVolume=buildDesignedGameVolume({
+    design:{
+      ...design,
+      coreLoop:Array.isArray(authoredDesign.coreLoop)?authoredDesign.coreLoop:design.coreLoop,
+      signatureSystems:Array.isArray(authoredDesign.signatureSystems)?authoredDesign.signatureSystems:design.signatureSystems,
+      systemInterconnections:Array.isArray(authoredDesign.systemInterconnections)?authoredDesign.systemInterconnections:design.systemInterconnections,
+      contentExpansionPlan:Array.isArray(authoredDesign.contentExpansionPlan)?authoredDesign.contentExpansionPlan:design.contentExpansionPlan,
+      implementationTraceability:Array.isArray(authoredDesign.implementationTraceability)?authoredDesign.implementationTraceability:design.implementationTraceability
+    },source,safeDesignlessMode
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1854,6 +2030,7 @@ export function buildGameSpecificBuildUpDirective({
     'AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS',
     'EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION',
     'CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE',
+    'DESIGNED_SYSTEM_CONTENT_VOLUME_TRACED_TO_EXACT_SOURCE_AND_PLAY_EVIDENCE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
@@ -1920,6 +2097,7 @@ export function buildGameSpecificBuildUpDirective({
     designFingerprint:sha(JSON.stringify(design)),
     identityReinforcement,
     designToPlatformCodingTrace,
+    designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       coreFun:design.coreFun,
@@ -1942,7 +2120,8 @@ export function buildGameSpecificBuildUpDirective({
       contentVarietyPlan:design.contentVarietyPlan,
       narrativeDialoguePlan:design.narrativeDialoguePlan,
       implementationTraceability:design.implementationTraceability,
-      stabilityPriorityPlan:design.stabilityPriorityPlan
+      stabilityPriorityPlan:design.stabilityPriorityPlan,
+      preservationContract:design.preservationContract
     }),
     gameIdentityAndNonNegotiables:{
       identity,

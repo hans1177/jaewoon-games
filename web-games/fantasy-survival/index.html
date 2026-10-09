@@ -3109,14 +3109,20 @@ function updatePet(dt,now){
  }
 }
 function nearestSporeTarget(p,w){
- let best=null,bd=Number(w?.range)||760;
- const cam=state.camera,viewPad=40,left=cam.x-viewPad,top=cam.y-viewPad,right=cam.x+innerWidth+viewPad,bottom=cam.y+innerHeight+viewPad;
+ // 메인: 태양석 구슬은 시선 방향의 적을 우선 조준하고, 다른 유도 무기는 기존 최근접 조준 유지
+ const range=Number(w?.range)||760,cam=state.camera,viewPad=40;
+ const left=cam.x-viewPad,top=cam.y-viewPad,right=cam.x+innerWidth+viewPad,bottom=cam.y+innerHeight+viewPad;
+ const fx=Number(p.faceX)||0,fy=Number(p.faceY)||0,fl=Math.hypot(fx,fy)||1;
+ let nearest=null,nearestDist=range,forward=null,forwardDist=range;
  for(const e of state.enemies){
-  if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;
+  if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&performance.now()<(e.submergedUntil||0)))continue;
   if(e.x+e.type.r<left||e.x-e.type.r>right||e.y+e.type.r<top||e.y-e.type.r>bottom)continue;
-  const d=dist(p.x,p.y,e.x,e.y);if(d<bd){best=e;bd=d}
+  const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy);
+  if(d>range+e.type.r)continue;
+  if(d<nearestDist){nearest=e;nearestDist=d}
+  if(w?.sunMagic&&d<forwardDist&&(dx*fx+dy*fy)/((d||1)*fl)>=.35){forward=e;forwardDist=d}
  }
- return best
+ return w?.sunMagic&&forward?forward:nearest
 }
 function fireSporeSeeker(now,p,w,target){
  const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=w.sunMagic?460:360;
@@ -4413,13 +4419,13 @@ function throwGuardianCrystal(e,p,now){
  state.projectiles.push({x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,damage:e.type.dmg,createdAt:now,life:5500,area:e.area,sourceId:e.netId});
  e.nextThrowAt=now+4000
 }
-function finishPlayerArrowKill(e,ownerId,now){
+function finishPlayerArrowKill(e,ownerId,now,weaponKind=''){
  queueDeathAnimation(e,now);e.hp=0;
  if(e.type.tigerLeader){finishStoryTigerBoss(e);return}
  if(e.type.labBoss){finishStoryLabBoss(e);return}
  if(e.type.boss){rewardBoss();if(ownerId!==multiplayer.playerId&&multiplayer.connected)multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id});return}
  if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)});
- if(ownerId===multiplayer.playerId||!multiplayer.connected){state.player.kills++;awardLoot(e);showNotice(e.type.name+' 처치');updateHud()}else multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})
+ if(ownerId===multiplayer.playerId||!multiplayer.connected){state.player.kills++;awardLoot(e);showNotice((weaponKind==='sunOrb'?'태양석 마법 구슬 · ':'')+e.type.name+' 처치');updateHud()}else multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})
 }
 function spawnSporeCloud(x,y,area,ownerId,now,enhanced=false){state.sporeClouds.push({x,y,r:115,area,ownerId,createdAt:now,until:now+(enhanced?1000:3000),nextTick:now,tick:enhanced?50:500,damage:enhanced?10:5})}
 function updateSporeClouds(now){
@@ -4429,7 +4435,7 @@ function updateProjectiles(dt,now){
  const p=state.player;
  for(let i=state.projectiles.length-1;i>=0;i--){
   const q=state.projectiles[i];
-  if(q.kind==='sporeOrb'||q.kind==='sunOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
+  if(q.kind==='sporeOrb'||q.kind==='sunOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(q.kind==='sunOrb'&&!t){state.projectiles.splice(i,1);continue}if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
   if(q.kind==='toxicGasShot'&&now>=(q.nextSlowAt||0)){
    q.nextSlowAt=(q.nextSlowAt||now)+500;
    q.speedRatio=Math.max(.5,(Number(q.speedRatio)||1.5)-.1);
@@ -4462,8 +4468,8 @@ function updateProjectiles(dt,now){
   if(q.playerOwned){
    if(multiplayer.connected&&!multiIsHost())continue;
    let hitEnemy=null;
-   for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
-   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now,!!q.enhanced);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now);state.projectiles.splice(i,1);state.dirty=true;continue}
+   for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if(q.kind==='sunOrb'&&e.netId!==q.targetId)continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
+   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now,!!q.enhanced);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;if(q.kind==='sunOrb'){hitEnemy.sunOrbImpactUntil=now+450;hitEnemy.sunOrbImpactDamage=Math.max(0,Math.round(dmg));playGameSfx('monsterHurt',hitEnemy.type)}engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now,q.kind==='sunOrb'?'sunOrb':'');state.projectiles.splice(i,1);state.dirty=true;continue}
    continue
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
@@ -5640,6 +5646,16 @@ function drawEnemyCombatVfx(e,x,y,now){
   ctx.strokeStyle='rgba(255,188,102,'+(.14+pose.anticipation*.34)+')';ctx.lineWidth=1.5+pose.anticipation*1.5;
   ctx.beginPath();ctx.arc(0,0,e.type.r+10,-.5,.5);ctx.stroke();ctx.restore()
  }
+ // 메인: 태양석 구슬 명중을 독립된 금빛 폭발과 피해량으로 표시
+ const orbRemain=(Number(e.sunOrbImpactUntil)||0)-now;
+ if(orbRemain>0&&orbRemain<=450){
+  const t=1-orbRemain/450,alpha=1-t;
+  ctx.save();ctx.strokeStyle='rgba(255,205,68,'+(alpha*.95)+')';ctx.lineWidth=Math.max(1,5*(1-t));
+  ctx.beginPath();ctx.arc(x,y,e.type.r+8+t*37,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='rgba(255,218,90,'+(alpha*.27)+')';ctx.beginPath();ctx.arc(x,y,e.type.r+12+t*14,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,245,175,'+Math.min(1,alpha*.96)+')';ctx.font='bold 17px system-ui';ctx.textAlign='center';
+  ctx.fillText('-'+(e.sunOrbImpactDamage||0),x,y-e.type.r-14-t*16);ctx.restore()
+ }
  const remaining=(Number(e.hitAt)||0)-now;if(remaining<=0||remaining>110)return;
  const t=1-remaining/110,alpha=1-t,seed=fantasyVfxSeed(e.netId||e.type.id),radius=e.type.r*(.65+t*.9);
  ctx.save();ctx.translate(x,y);
@@ -5702,7 +5718,7 @@ function drawProjectiles(cx,cy){
   if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);
   if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
-  else if(q.kind==='sunOrb'){ctx.fillStyle='#ffd567';ctx.strokeStyle='#fff3bf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
+  else if(q.kind==='sunOrb'){ctx.strokeStyle='rgba(255,190,55,.65)';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,30);ctx.stroke();ctx.fillStyle='rgba(255,220,90,.28)';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffd567';ctx.strokeStyle='#fff3bf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}

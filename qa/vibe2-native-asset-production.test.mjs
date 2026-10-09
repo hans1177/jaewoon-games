@@ -493,6 +493,62 @@ test('all game development scans the full internal registry and removes family a
   }
 });
 
+test('midnight hundred source entries stay shared for every game without bypassing real 3D source checks',()=>{
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const standard=library.internalAssetStandard.sharedOrganization;
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  assert.equal(standard.version,2);
+  assert.deepEqual(standard.familyOrder,families);
+  assert.deepEqual(standard.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
+  assert.equal(standard.gameExclusivePacks,false);
+  assert.equal(standard.originalGameNamedPacksAreSourceLineageOnly,true);
+  const monsters=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
+  assert.equal(monsters.length,100);
+  assert.equal(new Set(monsters.map(row=>row.skinId)).size,100);
+  assert.ok(monsters.every(row=>row.companyCommonBase===true&&row.gameExclusive===false&&row.reuseScope==='COMPANY_COMMON_BASE'));
+  assert.ok(monsters.every(row=>row.productionVerified!==true),'roster registration is not runtime verification');
+  const ids=new Set(monsters.map(row=>row.id));
+  for(const target of ['roblox','unity','web']){
+    const planA=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
+    const planB=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
+    assert.deepEqual(planA.libraryOrder,families);
+    assert.deepEqual(planA.librarySortKeys,standard.sortKeys);
+    assert.equal(planA.allCompatibleGamesEligible,true);
+    assert.equal(planA.sourcePackIdIsLineageOnly,true);
+    assert.equal(planA.evaluatedAssetCount,library.assets.length);
+    const seenA=planA.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    const seenB=planB.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    assert.equal(seenA.length,100,target+': all 100 source entries remain discoverable');
+    assert.deepEqual(seenA,seenB,target+': pack name must not restrict discovery by game');
+    assert.ok(seenA.every(row=>row.hardBlockReason===null||row.hardBlockReason==='SPATIAL_3D_SOURCE_REQUIRED'));
+    assert.ok(seenA.every(row=>row.eligibleForRoleEvaluation===!Boolean(row.hardBlockReason)));
+  }
+  // 실제 존재하는 원본 GLB를 제공한 경우에만 게임 선택 후보로 진입한다. 이것은 런타임 PASS가 아니다.
+  const bride=monsters.find(row=>row.skinId==='gwisin-bride');
+  assert.ok(bride);
+  assert.ok(fs.existsSync('assets/roblox/world-ghosts/native/mesh/bride.glb'));
+  const with3d={...bride,nativeArtifacts:['assets/roblox/world-ghosts/native/mesh/bride.glb']};
+  for(const target of ['roblox','unity','web']){
+    const registry={version:library.version,assets:[with3d]};
+    const a=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'horror-escape-room'});
+    const b=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'survival'});
+    assert.equal(a.familyCandidates.CREATURE.length,1);
+    assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
+    assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
+    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
+  }
+  const fixture={version:1,assets:[
+    {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
+    {id:'u',family:'UI',title:'가',license:'CC0',platform:'ROBLOX'},
+    {id:'a',family:'CREATURE',subfamily:'A',title:'나',license:'CC0',platform:'ROBLOX',path:'a.glb'},
+    {id:'c',family:'CHARACTER',title:'다',license:'CC0',platform:'ROBLOX',path:'c.glb'},
+    {id:'b',family:'CREATURE',subfamily:'A',title:'가',license:'CC0',platform:'ROBLOX',path:'b.glb'}
+  ]};
+  const sorted=buildAllGameDynamicLibraryBindingPlan({companyRegistry:fixture,target:'roblox',gameId:'any-existing-game'});
+  assert.deepEqual(sorted.evaluatedAssets.map(row=>row.assetId),['c','b','a','z','u']);
+});
+
 test('full library scan preserves low quality assets but rejects unsafe corrupt or forbidden assets',()=>{
   const assets=[
     {id:'low-quality',category:'UI',license:'CC0',internalAuditScore:0},
@@ -524,7 +580,7 @@ test('all game spatial families reject flat 2D assets but allow unlimited cross-
   ];
   for(const target of ['roblox','unity','web']){
     const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:9,assets},target,gameId:'any-genre'});
-    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['shared-creature','another-creature']);
+    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['another-creature','shared-creature']);
     assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),['building-part']);
     assert.deepEqual(plan.familyCandidates.UI.map(asset=>asset.assetId),['ui-icon']);
     assert.equal(plan.hardBlockedAssetCount,1);
@@ -533,6 +589,52 @@ test('all game spatial families reject flat 2D assets but allow unlimited cross-
     assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
     assert.equal(plan.internalRegisteredAssetsOnly,true);
   }
+});
+
+test('central Unity 3D policy and shared spatial asset prefilter stay aligned for all eight families',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const only3d=policy.ownerUnityWeb3dOnly20261009;
+  assert.equal(only3d.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(only3d.internalSharedLibraryOnlyForGameplayAssets,true);
+  assert.equal(only3d.registeredLibrarySpatialAssetRequiresReal3dSource,true);
+  assert.equal(only3d.uiAudioAndTextureFilesMayRemainNative2dResources,true);
+  assert.equal(only3d.uiAudioAndTextureFilesMayNotSubstituteFor3dGameplayObjects,true);
+  assert.equal(only3d.noShadowPipelineOr2dFallbackAsFinal,true);
+  const families=only3d.sharedLibraryGameWorldFamilies3dOnly;
+  assert.deepEqual(families,['CHARACTER','CREATURE','BUILDING','ENVIRONMENT',
+    'WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+  assert.deepEqual(only3d.supported3dSourceKinds,
+    ['GLB','GLTF','FBX','OBJ','MESH','UNITY_PREFAB_WITH_NATIVE_MESH']);
+  const assets=families.flatMap(family=>[
+    {id:'flat-'+family.toLowerCase(),family,license:'CC0',path:'/assets/shared/flat.png'},
+    {id:'model-'+family.toLowerCase(),family,license:'CC0',path:'/assets/shared/model.glb'},
+  ]);
+  assets.push({id:'ui-2d',family:'UI',license:'CC0',path:'/assets/shared/hud.png'});
+  assets.push({id:'audio-2d',family:'AUDIO',license:'CC0',path:'/assets/shared/bgm.ogg'});
+  for(const target of ['roblox','unity','web']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({
+      companyRegistry:{version:1,assets},target,gameId:'sample-3d'});
+    assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
+    assert.equal(plan.allRegistryAssetsScanned,true);
+    assert.equal(plan.internalRegisteredAssetsOnly,true);
+    for(const family of families){
+      const flat=plan.evaluatedAssets.find(row=>row.assetId==='flat-'+family.toLowerCase());
+      const model=plan.evaluatedAssets.find(row=>row.assetId==='model-'+family.toLowerCase());
+      assert.equal(flat.hardBlockReason,'SPATIAL_3D_SOURCE_REQUIRED',family+' '+target);
+      assert.equal(flat.eligibleForRoleEvaluation,false,family+' '+target);
+      assert.equal(model.hardBlockReason,null,family+' '+target);
+      if(plan.libraryOrder.includes(family)){
+        assert.ok(plan.familyCandidates[family].some(row=>row.assetId===model.assetId),family+' '+target);
+      }
+    }
+    assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['ui-2d']);
+    assert.deepEqual(plan.familyCandidates.AUDIO.map(row=>row.assetId),['audio-2d']);
+  }
+  // 후보 파일 확장자만으로 실제 메시 또는 Unity 네이티브 런타임 PASS를 주장하지 않는다.
+  const inspector=fs.readFileSync('tools/company-unity-web-gameplay-validation.mjs','utf8');
+  assert.match(inspector,/nativeMeshProof\.triangles>0/);
+  assert.match(inspector,/nativeDepthVerified/);
+  assert.match(inspector,/libraryAssetPromotionGranted:false/);
 });
 
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
@@ -1230,30 +1332,39 @@ test('NPC companion hostile humanoid mini boss and boss types resolve to the sha
   assert.ok(plan.nativeAuthoringExecution.dcc.crossPlatform3dMasterGlbRequiredTypes.includes('npc'));
 });
 
+
 test('Master GLB static QA alone never grants production verification',()=>{
-  const master='assets/roblox/world-ghosts/native/spider/spider.glb';
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
-    manifest:{assets:[{
-      id:'static-spider',family:'CREATURE',types:['enemy'],tags:['enemy','spider'],
-      license:'project-original',platforms:['roblox'],path:master,masterGlb:master,
-      downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',verifiedAnimation:true,animations:['idle','walk'],
+  const root=tempRoot();
+  try{
+    const master='assets/roblox/world-ghosts/native/spider/spider.glb';
+    const model=path.join(root,master);
+    fs.mkdirSync(path.dirname(model),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),master),model);
+    const staticAsset={
+      id:'static-spider',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      types:['enemy'],tags:['enemy','spider'],license:'project-original',platforms:['roblox'],
+      path:master,masterGlb:master,downloaded:true,rigged:true,rigType:'CUSTOM_SKINNED',
+      verifiedAnimation:true,animations:['idle','walk'],
       productionVerified:false,verifiedCompanyReusable:false
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  const enemy=plan.decisions.find(row=>row.type==='enemy');
-  const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
-  assert.ok(candidate);
-  assert.equal(candidate.masterGlbStaticQaPass,true);
-  assert.equal(candidate.sourceHash,null);
-  assert.equal(candidate.editableSourceHash,null);
-  assert.equal(candidate.artifactHash,null);
-  assert.equal(candidate.nativeArtifactHash,null);
-  assert.ok(candidate.masterGlbHash);
-  assert.equal(candidate.productionVerified,false);
-  assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+    };
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[staticAsset]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',
+      task:{gameId:'static-master-only',goal:'enemy monster 3D actor 적용'},
+      manifest:{assets:[staticAsset]},presetCatalog:{presets:[]}
+    });
+    const enemy=plan.decisions.find(row=>row.type==='enemy');
+    const candidate=enemy?.applyFirst?.candidates?.find(row=>row.id==='static-spider');
+    assert.ok(candidate);
+    assert.equal(candidate.masterGlbStaticQaPass,true);
+    assert.equal(candidate.sourceHash,null);
+    assert.equal(candidate.editableSourceHash,null);
+    assert.equal(candidate.artifactHash,null);
+    assert.equal(candidate.nativeArtifactHash,null);
+    assert.ok(candidate.masterGlbHash);
+    assert.equal(candidate.productionVerified,false);
+    assert.equal(plan.generatedAssetOutputContract.nativeRuntimeVerificationRequiredBeforeVerifiedPromotion,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('customization and detailed style instructions reach the existing asset work order input',()=>{
@@ -1602,45 +1713,44 @@ test('Web 3D actor work requires the shared Master GLB DCC path without forcing 
   assert.equal(twoD.nativeAuthoringExecution.dcc.web3dActorMasterAuthoringRequired,false);
 });
 
+
 test('task-declared Blender recipe stays mandatory even when a reusable animation candidate is ready',()=>{
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{
-      gameId:'declared-dcc-demo',
-      goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
-      assetAuthoring:{recipes:[{
-        id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
-        executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
-        script:'assets/roblox/demo/refine-motion.py',
-        args:['--output','assets/roblox/demo/native/motion-v1'],
-        outputs:[
-          'assets/roblox/demo/native/motion-v1/motion.glb',
-          'assets/roblox/demo/native/motion-v1/evidence.json',
-          'assets/roblox/demo/native/motion-v1/preview.png'
-        ],
-        evidenceJson:'assets/roblox/demo/native/motion-v1/evidence.json',
-        preview:'assets/roblox/demo/native/motion-v1/preview.png',
-        editableSource:'assets/roblox/demo/refine-motion.py',
-        runMode:'VERIFY_ONLY'
-      }]}
-    },
-    manifest:{assets:[{
-      id:'ready-motion',family:'MOTION',types:['animation'],tags:['animation','motion'],
+  const root=tempRoot();
+  try{
+    const readyMotion={id:'ready-motion',family:'MOTION',category:'MOTION',types:['animation'],tags:['animation','motion'],
       path:'assets/roblox/demo/ready-motion.glb',platforms:['roblox'],license:'project-original',
-      downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  const animation=plan.decisions.find(row=>row.type==='animation');
-  assert.equal(animation?.applyFirst?.enabled,true);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-  assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('animation'));
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+      downloaded:true,productionVerified:true,verifiedAnimation:true,sourceHash:'ready-motion-source'};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[readyMotion]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      target:'roblox',repoRoot:root,
+      task:{
+        gameId:'declared-dcc-demo',
+        goal:'기존 모션 자산을 유지하면서 선언된 Blender 파생 모션을 실제 제작',
+        assetAuthoring:{recipes:[{
+          id:'declared-motion-v1',assetId:'declared-motion-source',family:'MOTION',license:'project-original',
+          executor:'BLENDER_PYTHON',types:['animation'],targetPlatforms:['ROBLOX'],
+          script:'assets/roblox/demo/refine-motion.py',
+          args:['--output','assets/roblox/demo/native/motion-v1'],
+          outputs:['assets/roblox/demo/native/motion-v1/motion.glb','assets/roblox/demo/native/motion-v1/evidence.json',
+            'assets/roblox/demo/native/motion-v1/preview.png'],
+          evidenceJson:'assets/roblox/demo/native/motion-v1/evidence.json',
+          preview:'assets/roblox/demo/native/motion-v1/preview.png',
+          editableSource:'assets/roblox/demo/refine-motion.py',runMode:'VERIFY_ONLY'
+        }]}
+      },
+      manifest:{assets:[readyMotion]},presetCatalog:{presets:[]}
+    });
+    const animation=plan.decisions.find(row=>row.type==='animation');
+    assert.equal(animation?.applyFirst?.enabled,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.ok(plan.nativeAuthoringExecution.dcc.requiredTypes.includes('animation'));
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'declared-motion-v1');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].assetId,'declared-motion-source');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'MOTION');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('invalid task-declared recipe cannot be masked by generic DCC fallback',()=>{
@@ -1666,33 +1776,43 @@ test('invalid task-declared recipe cannot be masked by generic DCC fallback',()=
   assert.notEqual(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
 });
 
+
 test('native planner preserves an existing Blender recipe as the DCC execution path',()=>{
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
-    manifest:{assets:[{
-      id:'boss-authoring-base',family:'CREATURE',types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
+  const root=tempRoot();
+  try{
+    const authoringAsset={
+      id:'boss-authoring-base',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      types:['boss'],tags:['boss','보스','3D','메시','모션'],license:'project-original',
       platforms:['roblox'],downloaded:false,sourceHash:'boss-source-v1',
+      nativeArtifacts:['assets/roblox/demo/native/boss/boss.glb'],
       sourceFiles:['assets/roblox/demo/build-boss.py','assets/roblox/demo/BOSS.md'],
       authoringRecipes:[{
         id:'boss-blender-v1',executor:'BLENDER_PYTHON',types:['boss'],targetPlatforms:['ROBLOX'],
         script:'assets/roblox/demo/build-boss.py',args:['--output','assets/roblox/demo/native/boss'],
-        outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/evidence.json','assets/roblox/demo/native/boss/preview.png'],
-        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',preview:'assets/roblox/demo/native/boss/preview.png',editableSource:'assets/roblox/demo/build-boss.py',runMode:'VERIFY_ONLY'
+        outputs:['assets/roblox/demo/native/boss/boss.glb','assets/roblox/demo/native/boss/evidence.json',
+          'assets/roblox/demo/native/boss/preview.png'],
+        evidenceJson:'assets/roblox/demo/native/boss/evidence.json',
+        preview:'assets/roblox/demo/native/boss/preview.png',
+        editableSource:'assets/roblox/demo/build-boss.py',runMode:'VERIFY_ONLY'
       }]
-    }]},
-    presetCatalog:{presets:[]}
-  });
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
-  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
-  assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
-  assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
+    };
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[authoringAsset]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',
+      task:{gameId:'blender-recipe-demo',goal:'보스 3D 메시와 모션을 고품질로 다시 제작'},
+      manifest:{assets:[authoringAsset]},presetCatalog:{presets:[]}
+    });
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequired,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRequestCount,1);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].id,'boss-blender-v1');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].script,'assets/roblox/demo/build-boss.py');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].family,'CREATURE');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].license,'project-original');
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes[0].safe,true);
+    assert.deepEqual([...plan.nativeAuthoringExecution.dcc.availableExistingRecipes],['assets/roblox/demo/build-boss.py']);
+    assert.equal(plan.nativeAuthoringExecution.dcc.availableExistingRecipeCount,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Web native authoring stays inside Web source while Unity and Roblox keep platform-native recreation',()=>{
@@ -1719,32 +1839,42 @@ test('Web native authoring stays inside Web source while Unity and Roblox keep p
   assert.equal(unity.nativeAuthoringExecution.platformReauthoringRequired,true);
 });
 
-test('web-only assets are never reused directly by Unity or Roblox',()=>{
-  const manifest={version:1,assets:[
-    {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
-    {id:'unity-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',platforms:['unity']},
-    {id:'roblox-fx',path:'',types:['effect'],tags:['이펙트'],license:'CC0',platforms:['roblox']},
-    {id:'generic-vfx',path:'',types:['effect'],tags:['이펙트'],license:'CC0'}
-  ]};
-  const task={gameId:'fantasy-survival',goal:'숲 나무 UI 이펙트 애니메이션 그래픽 개선'};
-  const unity=buildVibeAssetProductionPlan({task,target:'unity',manifest,presetCatalog:{version:1,presets:[]}});
-  const roblox=buildVibeAssetProductionPlan({task,target:'roblox',manifest,presetCatalog:{version:1,presets:[]}});
-  const unityReuse=unity.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
-  const robloxReuse=roblox.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
-  assert.equal(unityReuse.includes('web-tree'),false);
-  assert.equal(robloxReuse.includes('web-tree'),false);
-  assert.equal(unityReuse.includes('unity-ui'),true);
-  assert.equal(robloxReuse.includes('unity-ui'),false);
-  assert.equal(robloxReuse.includes('roblox-fx'),true);
-  assert.equal(unityReuse.includes('roblox-fx'),false);
-  assert.equal(unity.capabilities.canChooseDirectAuthoring,true);
-  assert.equal(roblox.capabilities.canChooseDirectAuthoring,true);
-  assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('csharp-procedural-mesh-and-low-poly-model')));
-  assert.ok(roblox.decisions.some(row=>row.directAuthoring.includes('luau-composed-low-poly-model')));
-  assert.equal(unity.policy.crossPlatformWebAssetDirectReuseForbidden,true);
-  assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
-});
 
+test('web-only assets are never reused directly by Unity or Roblox',()=>{
+  const root=tempRoot();
+  try{
+    const manifest={version:1,assets:[
+      {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
+      {id:'unity-ui',path:'unity-games/shared/UI/ui-panel.png',types:['ui'],tags:['UI'],license:'CC0',platforms:['unity']},
+      {id:'roblox-fx',path:'roblox-games/shared/VFX/impact.png',types:['effect'],tags:['이펙트'],license:'CC0',platforms:['roblox']},
+      {id:'generic-vfx',path:'',types:['effect'],tags:['이펙트'],license:'CC0'}
+    ]};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:1,
+      assets:[
+        {...manifest.assets[1],family:'UI',category:'UI',status:'REPO_ASSET'},
+        {...manifest.assets[2],family:'VFX',category:'VFX',status:'REPO_ASSET'}
+      ]
+    },null,2));
+    const task={gameId:'fantasy-survival',goal:'숲 나무 UI 이펙트 애니메이션 그래픽 개선'};
+    const unity=buildVibeAssetProductionPlan({task,target:'unity',repoRoot:root,manifest,presetCatalog:{version:1,presets:[]}});
+    const roblox=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest,presetCatalog:{version:1,presets:[]}});
+    const unityReuse=unity.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+    const robloxReuse=roblox.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+    assert.equal(unityReuse.includes('web-tree'),false);
+    assert.equal(robloxReuse.includes('web-tree'),false);
+    assert.equal(unityReuse.includes('unity-ui'),true);
+    assert.equal(robloxReuse.includes('unity-ui'),false);
+    assert.equal(robloxReuse.includes('roblox-fx'),true);
+    assert.equal(unityReuse.includes('roblox-fx'),false);
+    assert.equal(unity.capabilities.canChooseDirectAuthoring,true);
+    assert.equal(roblox.capabilities.canChooseDirectAuthoring,true);
+    assert.ok(unity.decisions.some(row=>row.directAuthoring.includes('csharp-procedural-mesh-and-low-poly-model')));
+    assert.ok(roblox.decisions.some(row=>row.directAuthoring.includes('luau-composed-low-poly-model')));
+    assert.equal(unity.policy.crossPlatformWebAssetDirectReuseForbidden,true);
+    assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('Roblox planner reuses source-bound same-game assets before cross-game library candidates',()=>{
   const root=tempRoot();
@@ -3013,51 +3143,63 @@ test('runtime visual defects flow from asset planning into the source worker pro
 });
 
 
+
 test('usable same-game asset is applied before new authoring and weak regions derive later',()=>{
-  const sameGame={
-    id:'existing-wolf',path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
-    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',
-    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
-  };
-  const company={
-    id:'company-wolf',path:'assets/roblox/wolf.glb',types:['enemy'],
-    tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
-    companyVerified:true,sourceHash:'company-wolf-v1',
-    masterGlb:'assets/roblox/world-ghosts/native/spider/spider.glb'
-  };
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',
-    manifest:{assets:[sameGame,company]},
-    presetCatalog:{version:1,presets:[{id:'wolf',name:'Wolf',genre:'survival',keywords:['wolf'],actorAssets:['existing-wolf','company-wolf'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
-    task:{gameId:'apply-first-demo',goal:'wolf enemy 그래픽을 실제 게임에 적용하고 더 디테일하게'}
-  });
-  const enemy=plan.decisions.find(row=>row.type==='enemy');
-  assert.ok(enemy);
-  assert.equal(enemy.applyFirst.enabled,true);
-  assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
-  assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
-  assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
-  assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
-  assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
-  assert.ok(enemy.applyFirst.donorCandidates.some(row=>row.id==='company-wolf'));
-  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SPECIES_SILHOUETTE'));
-  assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SURFACE_MATERIAL'));
-  assert.ok(enemy.applyFirst.candidates[0].rescueLadder.includes('RECOMPOSE_COMPATIBLE_PART_DONORS'));
-  assert.equal(enemy.applyFirst.candidates[0].randomDetailInflationForbidden,true);
-  assert.equal(plan.applyFirstSummary.existingAssetApplicationBeforeNewAuthoring,true);
-  assert.equal(plan.applyFirstSummary.newAuthoringOnlyAfterReusableCandidateFailure,true);
-  assert.match(assetProductionGuidance(plan),/APPLY USABLE ASSETS FIRST/);
-  const prompt=buildPrompt(
-    {target:'roblox',goal:'기존 사용 가능 자산부터 적용',assetProduction:plan},
-    {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
-    ['client/Game.client.luau']
-  );
-  assert.match(prompt,/APPLY USABLE ASSETS FIRST BEGIN/);
-  assert.match(prompt,/PATCH_EXISTING_GAME_BINDING/);
-  assert.match(prompt,/Keep strong axes and rebuild only failed axes/);
-  assert.match(prompt,/donate parts, rig structure, material language, sockets, motion/);
-  assert.match(prompt,/Random clutter, texture noise/);
+  const root=tempRoot();
+  try{
+    const master='assets/roblox/world-ghosts/native/spider/spider.glb';
+    const masterPath=path.join(root,master);
+    fs.mkdirSync(path.dirname(masterPath),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),master),masterPath);
+    const sameGame={
+      id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
+      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',masterGlb:master
+    };
+    const company={
+      id:'company-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',
+      path:'assets/roblox/wolf.glb',types:['enemy'],
+      tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
+      companyVerified:true,verifiedCompanyReusable:true,sourceHash:'company-wolf-v1',masterGlb:master
+    };
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:[sameGame,company]},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',manifest:{assets:[sameGame,company]},
+      presetCatalog:{version:1,presets:[{
+        id:'wolf',name:'Wolf',genre:'survival',keywords:['wolf'],
+        actorAssets:['existing-wolf','company-wolf'],effectAssets:[],toolCandidates:[],
+        platformProfiles:{roblox:{},unity:{},webValidation:{}}
+      }]},
+      task:{gameId:'apply-first-demo',goal:'wolf enemy 그래픽을 실제 게임에 적용하고 더 디테일하게'}
+    });
+    const enemy=plan.decisions.find(row=>row.type==='enemy');
+    assert.ok(enemy);
+    assert.equal(enemy.applyFirst.enabled,true);
+    assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
+    assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
+    assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
+    assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
+    assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
+    assert.ok(enemy.applyFirst.donorCandidates.some(row=>row.id==='company-wolf'));
+    assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SPECIES_SILHOUETTE'));
+    assert.ok(enemy.applyFirst.candidates[0].qualityAxes.includes('SURFACE_MATERIAL'));
+    assert.ok(enemy.applyFirst.candidates[0].rescueLadder.includes('RECOMPOSE_COMPATIBLE_PART_DONORS'));
+    assert.equal(enemy.applyFirst.candidates[0].randomDetailInflationForbidden,true);
+    assert.equal(plan.applyFirstSummary.existingAssetApplicationBeforeNewAuthoring,true);
+    assert.equal(plan.applyFirstSummary.newAuthoringOnlyAfterReusableCandidateFailure,true);
+    assert.match(assetProductionGuidance(plan),/APPLY USABLE ASSETS FIRST/);
+    const prompt=buildPrompt(
+      {target:'roblox',goal:'기존 사용 가능 자산부터 적용',assetProduction:plan},
+      {files:[{path:'client/Game.client.luau',content:'return true',editable:true}]},
+      ['client/Game.client.luau']
+    );
+    assert.match(prompt,/APPLY USABLE ASSETS FIRST BEGIN/);
+    assert.match(prompt,/PATCH_EXISTING_GAME_BINDING/);
+    assert.match(prompt,/Keep strong axes and rebuild only failed axes/);
+    assert.match(prompt,/donate parts, rig structure, material language, sockets, motion/);
+    assert.match(prompt,/Random clutter, texture noise/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('precision production continues from inspection through authoring and application',()=>{
@@ -3110,47 +3252,66 @@ test('precision production continues from inspection through authoring and appli
 });
 
 
-test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
-  const manifest={assets:[
-    {id:'base-hero',path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb'},
-    {id:'donor-hero',path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],license:'project-original',platforms:['roblox'],companyVerified:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,masterGlb:'assets/roblox/world-ghosts/native/mesh/bride.glb',
-      platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
-  ]};
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',manifest,
-    presetCatalog:{version:1,presets:[{id:'hero',name:'Hero',genre:'rpg',keywords:['hero','character'],actorAssets:['base-hero','donor-hero'],effectAssets:[],toolCandidates:[],platformProfiles:{roblox:{},unity:{},webValidation:{}}}]},
-    task:{gameId:'rescue-demo',goal:'hero character 저퀄 자산을 디테일하게 보강해서 적용'}
-  });
-  const row=plan.decisions.find(item=>item.type==='character');
-  assert.ok(row);
-  assert.equal(row.applyFirst.enabled,true);
-  assert.equal(row.applyFirst.qualityRescue.fullAssetReplacementNotDefault,true);
-  assert.equal(row.applyFirst.qualityRescue.preserveStrongAxes,true);
-  assert.equal(row.applyFirst.failedCandidateCanRemainAsReusablePartDonor,true);
-  assert.ok(row.applyFirst.candidateLadder.length>=1);
-  assert.ok(row.applyFirst.donorCandidates.some(item=>item.id==='donor-hero'));
-  const base=row.applyFirst.candidates.find(item=>item.id==='base-hero');
-  assert.ok(base);
-  for(const axis of ['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','MATERIAL','RIG','SOCKET','MOTION','LOD'])assert.ok(base.qualityAxes.includes(axis),axis);
-  assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
-  assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
-  assert.equal(base.visualQualityNotImpliedByVerification,true);
-  assert.equal(row.qualityDNA.profile,'HERO_CHARACTER');
-  assert.ok(row.qualityDNA.axes.includes('FACE_HANDS_FEET'));
-  assert.equal(row.qualityDNA.minimumFloors.FACE_HANDS_FEET,'HERO_GRADE');
-  assert.equal(row.qualityDNA.donorPolicy.donorMayReplaceOnlyFailedAxes,true);
-  assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
-  assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
-  assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
-  assert.equal(plan.qualityDNA.commonRules.donorAssemblyBeforeFullReauthor,true);
-  assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
-  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
-  assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
-  assert.equal(base.detailInvestmentPolicy.polygonOrTextureCountAloneIsNotQuality,true);
-  assert.equal(plan.applyFirstSummary.visualVerificationAndVisualQualitySeparated,true);
-  assert.ok(plan.applyFirstSummary.detailInvestmentPriority.includes('CAMERA_PROXIMITY'));
-});
 
+test('low-quality asset rescue preserves strong axes and escalates to full authoring only after targeted derivation',()=>{
+  const root=tempRoot();
+  try{
+    const master='assets/roblox/world-ghosts/native/mesh/bride.glb';
+    const masterPath=path.join(root,master);
+    fs.mkdirSync(path.dirname(masterPath),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),master),masterPath);
+    const manifest={assets:[
+      {id:'base-hero',family:'CHARACTER',category:'CHARACTER',status:'REPO_ASSET',
+        path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],
+        license:'project-original',platforms:['roblox'],sameGameExistingRoblox:true,sourceHash:'hero-base',
+        robloxAssetId:'111',rigType:'R15',retargetable:true,masterGlb:master},
+      {id:'donor-hero',family:'CHARACTER',category:'CHARACTER',status:'VERIFIED_COMPANY_ASSET',
+        path:'assets/roblox/hero-donor.glb',types:['character'],tags:['character','hero'],
+        license:'project-original',platforms:['roblox'],companyVerified:true,
+        verifiedCompanyReusable:true,sourceHash:'hero-donor',rigType:'R15',retargetable:true,
+        masterGlb:master,platformVariants:{ROBLOX:{path:'assets/roblox/hero-donor.glb'}}}
+    ]};
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,assets:manifest.assets},null,2));
+    const plan=buildVibeAssetProductionPlan({
+      repoRoot:root,target:'roblox',manifest,
+      presetCatalog:{version:1,presets:[{
+        id:'hero',name:'Hero',genre:'rpg',keywords:['hero','character'],
+        actorAssets:['base-hero','donor-hero'],effectAssets:[],toolCandidates:[],
+        platformProfiles:{roblox:{},unity:{},webValidation:{}}
+      }]},
+      task:{gameId:'rescue-demo',goal:'hero character 저퀄 자산을 디테일하게 보강해서 적용'}
+    });
+    const row=plan.decisions.find(item=>item.type==='character');
+    assert.ok(row);
+    assert.equal(row.applyFirst.enabled,true);
+    assert.equal(row.applyFirst.qualityRescue.fullAssetReplacementNotDefault,true);
+    assert.equal(row.applyFirst.qualityRescue.preserveStrongAxes,true);
+    assert.equal(row.applyFirst.failedCandidateCanRemainAsReusablePartDonor,true);
+    assert.ok(row.applyFirst.candidateLadder.length>=1);
+    assert.ok(row.applyFirst.donorCandidates.some(item=>item.id==='donor-hero'));
+    const base=row.applyFirst.candidates.find(item=>item.id==='base-hero');
+    assert.ok(base);
+    for(const axis of ['SILHOUETTE','PROPORTION','ANATOMY','FACE_HANDS_FEET','MATERIAL','RIG','SOCKET','MOTION','LOD'])
+      assert.ok(base.qualityAxes.includes(axis),axis);
+    assert.equal(base.fullReauthorTrigger,'CORE_IDENTITY_OR_STRUCTURAL_QUALITY_STILL_BLOCKED_AFTER_TARGETED_DERIVATION');
+    assert.equal(base.sourceAssetMayRemainAsPartialDonorAfterReplacement,true);
+    assert.equal(base.visualQualityNotImpliedByVerification,true);
+    assert.equal(row.qualityDNA.profile,'HERO_CHARACTER');
+    assert.ok(row.qualityDNA.axes.includes('FACE_HANDS_FEET'));
+    assert.equal(row.qualityDNA.minimumFloors.FACE_HANDS_FEET,'HERO_GRADE');
+    assert.equal(row.qualityDNA.donorPolicy.donorMayReplaceOnlyFailedAxes,true);
+    assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
+    assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
+    assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
+    assert.equal(plan.qualityDNA.donorAssemblyBeforeFullReauthor,true);
+    assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
+    assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
+    assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
+    assert.equal(base.detailInvestmentPolicy.polygonOrTextureCountAloneIsNotQuality,true);
+    assert.equal(plan.applyFirstSummary.visualVerificationAndVisualQualitySeparated,true);
+    assert.ok(plan.applyFirstSummary.detailInvestmentPriority.includes('CAMERA_PROXIMITY'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('quality DNA keeps hero floors higher than background floors without inventing observed scores',()=>{
   const plan=buildVibeAssetProductionPlan({

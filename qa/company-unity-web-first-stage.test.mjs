@@ -20,7 +20,19 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     fs.mkdirSync(path.join(root,'Assets','Editor'),{recursive:true});
     fs.mkdirSync(path.join(root,'Packages'),{recursive:true});
     fs.mkdirSync(path.join(root,'ProjectSettings'),{recursive:true});
-    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),'using UnityEngine; public class Game:MonoBehaviour {}\n');
+    const valid3d=[
+      'using UnityEngine;',
+      'using UnityEngine.UI;',
+      '// SpriteRenderer / Physics2D in comments are not active components.',
+      '/* TilemapRenderer is historical documentation, not gameplay. */',
+      'public class Game : MonoBehaviour {',
+      '  MeshFilter world; MeshRenderer actor; Rigidbody body;',
+      '  Image hud; RawImage minimap; Texture2D icon;',
+      '  string label = "Rigidbody2D";',
+      '}',
+      '',
+    ].join('\n');
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),valid3d);
     fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
     fs.writeFileSync(path.join(root,'Packages','manifest.json'),'{}\n');
     fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
@@ -42,14 +54,57 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.requiredGameplayDimension,'3D');
     assert.equal(req.native3dRuntimeMeshQaRequired,true);
     assert.equal(req.existing2dOr2_5dSourceRequiresInPlace3dRebuild,true);
-    // 같은 원본 프로젝트에서 2D 물리를 추가하면 기존 빌드 진입점이 거부해야 한다.
-    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
-      'using UnityEngine; public class Game:MonoBehaviour { Rigidbody2D body; }\\n');
-    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
+    // 실제 C# 파일로 검사기를 실행하고 2D 탐지가 실패 원인인지 확인한다.
+    const run=()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'});
+    assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
+    const reject=(relative,body)=>{
+      const target=path.join(root,relative);
+      fs.mkdirSync(path.dirname(target),{recursive:true});
+      fs.writeFileSync(target,body);
+      try{
+        assert.throws(run,error=>{
+          assert.match(String(error.stderr),/UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:/);
+          assert.ok(String(error.stderr).includes(relative.replaceAll('\\','/')));
+          return true;
+        });
+      } finally {
+        if(relative==='Assets/Scripts/Game.cs')fs.writeFileSync(target,valid3d);
+        else fs.rmSync(target,{force:true});
+      }
+    };
+    for(const type of [
+      'Rigidbody2D','BoxCollider2D','Physics2D','SpriteRenderer',
+      'Tilemap','TilemapRenderer','SpriteShapeRenderer'
+    ]){
+      reject('Assets/Scripts/Game.cs',
+        'using UnityEngine; using UnityEngine.Tilemaps; using UnityEngine.U2D; '+
+        'public class Game:MonoBehaviour { '+type+' component; }\n');
+    }
+    // 문자열의 URL에 있는 // 가 뒤쪽의 실제 Rigidbody2D 토큰을 숨기면 안 된다.
+    reject('Assets/Scripts/Game.cs',
+      'using UnityEngine; public class Game:MonoBehaviour { void Start() { Debug.Log("https://example.org"); Rigidbody2D body = null; } }\n');
+    // Assets/Scripts 밖의 런타임 C#도 동일하게 차단한다.
+    reject('Assets/Gameplay/Enemy.cs',
+      'using UnityEngine; public class Enemy:MonoBehaviour { CircleCollider2D hitbox; }\n');
+    // 편집기용 레거시 코드는 런타임 3D 소스 판단에서 제외한다.
+    fs.writeFileSync(path.join(root,'Assets','Editor','LegacyInspector.cs'),
+      'using UnityEngine; public class LegacyInspector { Rigidbody2D oldReference; }\n');
+    assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
   } finally {
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('2D source detector uses a single literal word boundary and preserves 3D and UI authoring',()=>{
+  const script=fs.readFileSync(tool,'utf8');
+  const line=script.split('\n').find(row=>row.startsWith('const forbidden2dComponents='));
+  assert.ok(line);
+  assert.ok(line.startsWith('const forbidden2dComponents=/\\b(?:Rigidbody2D'));
+  assert.ok(line.endsWith(')\\b/u;'));
+  assert.equal(line.includes('\\\\b'),false,'double escaping would match a literal backslash instead of C# boundaries');
+  assert.match(script,/walk\(path\.join\(sourceRoot,'Assets'\)\)/);
+  assert.match(script,/entry\.name!=='Editor'&&entry\.name!=='Tests'/);
 });
 
 test('source preflight requires the central existing-game and all-spatial-assets 3D contract',()=>{
