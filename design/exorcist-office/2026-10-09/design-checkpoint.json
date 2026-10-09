@@ -567,25 +567,106 @@
     },
     "local_authoring_parts::8fedf1ba242d77694ddbff3bdec75debe702ea7af4a1710f74d83462618a4a21:trigger": {
       "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+    },
+    "local_authoring_parts::8fedf1ba242d77694ddbff3bdec75debe702ea7af4a1710f74d83462618a4a21:stateChange": {
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+    },
+    "local_authoring_parts::7bdf5bc118659870bf7e75785ba6a1dd6555e5a8e2863430eebdd2f8d8f9bbeb:systemInterconnections:4": {
+      "fromId": "CORE_FUN_04",
+      "toId": "CONTENT_EXPANSION_PLAN",
+      "stateKeys": [
+        "RUN_RESULT",
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "fromSystem": "CORE_FUN_04",
+      "toSystem": "CONTENT_EXPANSION_PLAN",
+      "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다.",
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+    },
+    "local_authoring_parts::80aa0bdf970f1d86f081f0761caae638ba701fd8e99d41b5c6560d7aa8f30a48:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "CORE_FUN_01",
+          "toId": "NEXT_WORLD_STATE",
+          "stateKeys": [
+            "START_INPUT",
+            "RUN_INPUT",
+            "RUN_RESULT",
+            "NEXT_WORLD_STATE"
+          ],
+          "fromSystem": "CORE_FUN_01",
+          "toSystem": "NEXT_WORLD_STATE",
+          "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+        },
+        {
+          "fromId": "CORE_FUN_02",
+          "toId": "RUN_RESULT",
+          "stateKeys": [
+            "RUN_INPUT",
+            "RUN_RESULT"
+          ],
+          "fromSystem": "CORE_FUN_02",
+          "toSystem": "CORE_FUN_02",
+          "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+          "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+        },
+        {
+          "fromId": "CORE_FUN_04",
+          "toId": "DELVE_CONTENT",
+          "stateKeys": [
+            "RUN_RESULT",
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "fromSystem": "CORE_FUN_04",
+          "toSystem": "DELVE_CONTENT",
+          "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+          "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+        },
+        {
+          "fromId": "CORE_FUN_04",
+          "toId": "DELVE_CONTENT",
+          "stateKeys": [
+            "RUN_RESULT",
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "fromSystem": "CORE_FUN_04",
+          "toSystem": "DELVE_CONTENT",
+          "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.",
+          "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+        },
+        {
+          "fromId": "CORE_FUN_04",
+          "toId": "CONTENT_EXPANSION_PLAN",
+          "stateKeys": [
+            "RUN_RESULT",
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "fromSystem": "CORE_FUN_04",
+          "toSystem": "CONTENT_EXPANSION_PLAN",
+          "trigger": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다.",
+          "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다. 이 과정에서는 기존의 간단한 입력 및 명확한 목표를 바탕으로 새로운 월드 상태를 생성하며, 이후의 플레이가 이러한 변화에 따라 재조정된다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 46,
+      "calls": 47,
+      "successes": 47,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1461606,
-      "lastMs": 38260,
+      "totalMs": 1498644,
+      "lastMs": 37038,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:14:35.087Z"
+      "updatedAt": "2026-10-09T16:15:12.126Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T16:14:35.087Z",
+  "updatedAt": "2026-10-09T16:15:12.128Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2233,7 +2314,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:14:35.087Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:15:12.128Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
