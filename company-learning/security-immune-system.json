@@ -81,13 +81,7 @@
       "REGRESSION_OR_RESCAN_PASS",
       "PRIMARY_AI_SECURITY_REVIEW_PASS"
     ],
-    "storedKnowledge": [
-      "GENERALIZED_THREAT_SIGNATURE",
-      "DETECTION_RULE",
-      "SAFE_CONTAINMENT_PATTERN",
-      "VERIFIED_RECOVERY_PATTERN",
-      "AVOID_PATTERN"
-    ],
+    "storedKnowledge": ["GENERALIZED_THREAT_SIGNATURE","DETECTION_RULE","SAFE_CONTAINMENT_PATTERN","VERIFIED_RECOVERY_PATTERN","AVOID_PATTERN"],
     "forbiddenKnowledge": [
       "RAW_SECRET_VALUE",
       "RAW_MALWARE_BYTES",
@@ -206,13 +200,7 @@
     },
     "roblox": {
       "existingStaticGate": "tools/company-development-roblox-bootstrap.mjs",
-      "existingStaticChecks": [
-        "SERVER_REMOTE_BOUNDARY_REQUIRED",
-        "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
-        "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
-        "SERVER_LOADSTRING_FORBIDDEN",
-        "SERVER_ASSET_REQUIRE_FORBIDDEN"
-      ],
+      "existingStaticChecks": ["SERVER_REMOTE_BOUNDARY_REQUIRED","SERVER_REMOTE_INPUT_VALIDATION_REQUIRED","SERVER_REMOTE_RATE_LIMIT_REQUIRED","SERVER_LOADSTRING_FORBIDDEN","SERVER_ASSET_REQUIRE_FORBIDDEN"],
       "existingRuntimeEvidence": [
         "robloxServerClientBoundaryPassed",
         "robloxIndependentQaPassed",
@@ -428,13 +416,7 @@
   },
   "departmentRuntimeSecurity": {
     "version": 1,
-    "canonicalDepartments": [
-      "planning",
-      "graphics",
-      "development",
-      "qa",
-      "audio"
-    ],
+    "canonicalDepartments": ["planning","graphics","development","qa","audio"],
     "strictDesignMayRunParallelWithDevelopment": true,
     "designDepartmentDirectGameSourceWriteForbidden": true,
     "gameSourceMutationOwner": "VIBE2_VIBE3",
@@ -787,14 +769,7 @@
       "existingGameRefresh": "FINGERPRINT_OR_MAPPING_VERSION_CHANGE_REQUIRES_REAL_BEHAVIOR_SOURCE_DIFF",
       "preserveExistingEvolutionLoop": true,
       "preserveExistingFloors": true,
-      "requiredEvidence": [
-        "PRINCIPLE",
-        "GAME_SPECIFIC_SEMANTIC_MAPPING",
-        "EXECUTABLE_SOURCE_DIFF",
-        "TEST_RESULT",
-        "SOURCE_COMMIT",
-        "PROMOTION_RESULT"
-      ],
+      "requiredEvidence": ["PRINCIPLE","GAME_SPECIFIC_SEMANTIC_MAPPING","EXECUTABLE_SOURCE_DIFF","TEST_RESULT","SOURCE_COMMIT","PROMOTION_RESULT"],
       "gameDevelopmentSurfaces": [
         "GAMEPLAY",
         "INPUT_FEEDBACK",
@@ -815,26 +790,10 @@
         "HUD_UI",
         "AUDIO_VISUAL_TIMING"
       ],
-      "qaOnlySurfaces": [
-        "APK_INSTALLATION",
-        "ANDROID_ABI",
-        "ARTIFACT_INTEGRITY",
-        "HOSTED_EMULATOR",
-        "CI_QA_EVIDENCE",
-        "RUNTIME_INFRASTRUCTURE",
-        "AUTOMATION_INFRASTRUCTURE"
-      ],
+      "qaOnlySurfaces": ["APK_INSTALLATION","ANDROID_ABI","ARTIFACT_INTEGRITY","HOSTED_EMULATOR","CI_QA_EVIDENCE","RUNTIME_INFRASTRUCTURE","AUTOMATION_INFRASTRUCTURE"],
       "serverValidation": {
         "serverFilesAreAssets": false,
-        "onlyWhenAffected": [
-          "DAMAGE_AUTHORITY",
-          "REWARDS",
-          "SAVE",
-          "ECONOMY",
-          "MULTIPLAYER_AUTHORITY",
-          "AUTHORITATIVE_STATE",
-          "EXPLOIT_PREVENTION"
-        ],
+        "onlyWhenAffected": ["DAMAGE_AUTHORITY","REWARDS","SAVE","ECONOMY","MULTIPLAYER_AUTHORITY","AUTHORITATIVE_STATE","EXPLOIT_PREVENTION"],
         "pureClientPresentationRequiresServerRescan": false,
         "exactValidEvidenceReuseRequired": true,
         "sourceIntegrityStillRequired": true
@@ -957,20 +916,8 @@
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
     "evidenceReuse": {
-      "evidenceKey": [
-        "sourceRevision",
-        "artifactIdentity",
-        "securityScopeFingerprint",
-        "affectedResponsibilities",
-        "pass",
-        "checkedAt"
-      ],
-      "reuseRequires": [
-        "EXACT_SOURCE_REVISION",
-        "EXACT_ARTIFACT_IDENTITY",
-        "UNCHANGED_RELEVANT_SECURITY_SCOPE",
-        "NO_CHANGED_SECURITY_RESPONSIBILITY"
-      ],
+      "evidenceKey": ["sourceRevision","artifactIdentity","securityScopeFingerprint","affectedResponsibilities","pass","checkedAt"],
+      "reuseRequires": ["EXACT_SOURCE_REVISION","EXACT_ARTIFACT_IDENTITY","UNCHANGED_RELEVANT_SECURITY_SCOPE","NO_CHANGED_SECURITY_RESPONSIBILITY"],
       "alwaysInvalidateAffectedEvidenceOn": [
         "REMOTE_EVENT_OR_REMOTE_FUNCTION_CHANGE",
         "SERVER_AUTHORITY_CHANGE",
@@ -1336,13 +1283,7 @@
     "concurrentSlots": 63,
     "slotMeaning": "MAX_SIMULTANEOUS_DISTINCT_SAFE_TASKS_NOT_TOTAL_ASSET_COUNT",
     "normalOperationsOwner": "VIBE2_VIBE3",
-    "priority": [
-      "ROBLOX_RELEASED_GAME_CURRENT_ASSET",
-      "ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET",
-      "OTHER_ACTIVE_GAME_CURRENT_ASSET",
-      "REUSABLE_LIBRARY_QUALITY",
-      "DEMAND_BOUND_MISSING_ASSET"
-    ],
+    "priority": ["ROBLOX_RELEASED_GAME_CURRENT_ASSET","ROBLOX_RELEASE_PREPARATION_CURRENT_ASSET","OTHER_ACTIVE_GAME_CURRENT_ASSET","REUSABLE_LIBRARY_QUALITY","DEMAND_BOUND_MISSING_ASSET"],
     "qualityBeforeVolume": true,
     "recommendedVolumeBlocksQuality": false,
     "quantityQuotaRequiresNewAsset": false,
