@@ -1517,25 +1517,35 @@
       "toSystem": "STAGE_GATE_SCORING_V2",
       "trigger": "INPUT",
       "stateChange": "SELECT → OUTPUT"
+    },
+    "local_authoring_parts::3ec2b1a39494b8867abde29bd8f7c9a84882ff2f9c28ebb5af7def52f63a2bdd:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 95,
+      "calls": 99,
+      "successes": 96,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8890196,
-      "lastMs": 90343,
+      "totalMs": 8983331,
+      "lastMs": 93135,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:08:47.563Z"
+      "updatedAt": "2026-10-09T05:10:20.701Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T05:08:47.564Z",
+  "updatedAt": "2026-10-09T05:10:20.701Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3880,7 +3890,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:08:47.564Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:10:20.701Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
