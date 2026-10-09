@@ -80,25 +80,53 @@
         "worldChange": "The transformation of the run result into the next progression choice",
         "nextEvent": "The emergence of new play options based on the previous event"
       }
+    },
+    "local_authoring_parts::5a9c4dfdf20bc208a54fddbed440216d8a58e25ec8a36a7ff43645c7458dba66:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "ACTION_SURVIVAL",
+          "kind": "GENRE",
+          "gameplayEffect": "Survival pressure and progression"
+        },
+        {
+          "name": "ROGUELITE",
+          "kind": "GENRE",
+          "gameplayEffect": "Short runs with progression choices"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Combination of action, survival, and roguelite elements"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "MOBILE_SURVIVAL_roguelite",
+          "gameplayEffect": "Mobile-friendly short-run gameplay"
+        }
+      ],
+      "cGenreInterlock": "The primary genre ACTION_SURVIVAL_ROGUELITE is reinforced by the secondary genre MOBILE_SURVIVAL_roguelite through the interaction of systems A and B.",
+      "cWorldAndGameplayEffect": "The game's world evolves through player choices that affect both action and survival elements in gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1032713,
-      "lastMs": 116560,
+      "totalMs": 1145095,
+      "lastMs": 112382,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:13:05.204Z"
+      "updatedAt": "2026-10-09T18:14:57.589Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:52.465Z",
-  "updatedAt": "2026-10-09T18:13:05.205Z",
+  "updatedAt": "2026-10-09T18:14:57.589Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c": true,
     "84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:13:05.205Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:14:57.589Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
