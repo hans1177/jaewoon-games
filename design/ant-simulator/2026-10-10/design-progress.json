@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
+      "calls": 20,
       "successes": 18,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1516396,
-      "lastMs": 128122,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:07:04.158Z"
+      "totalMs": 1706116,
+      "lastMs": 189720,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-09T23:10:13.941Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T23:07:04.220Z"
+  "updatedAt": "2026-10-09T23:10:13.942Z"
 }
