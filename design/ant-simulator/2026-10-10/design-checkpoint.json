@@ -927,25 +927,199 @@
         "riskPressure": "각 단계별 자원 압박 및 위험 감수를 통해 게임 흐름을 제한한다",
         "recoveryRules": "실패 시점에서 월드 상태와 보상/위험을 바탕으로 다음 목표 결정이 이루어지며, 재도전은 기존 저장 의미로 유지됨"
       }
+    },
+    "local_authoring_parts::a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "OPENING",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[0]",
+          "trigger": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "위험",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어의 선택이 월드 상태와 보상/위험에 영향을 미친다.",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환 및 보상/위험 발생",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "OPENING",
+          "costKey": "OPENING_COST",
+          "cooldownKey": "OPENING_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_2",
+          "name": "MAIN",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[1]",
+          "trigger": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "MAIN",
+          "costKey": "MAIN_COST",
+          "cooldownKey": "MAIN_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_3",
+          "name": "SUB",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[2]",
+          "trigger": "실제 입력으로 월드 상태와 보상/위험 조정됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 후 다음 목표 결정",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "SUB",
+          "costKey": "SUB_COST",
+          "cooldownKey": "SUB_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_4",
+          "name": "DELVE",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE_FUN",
+          "ruleId": "SIGNATURESYSTEMS[3]",
+          "trigger": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정의 순차적 루프 재설계됨",
+          "range": 5,
+          "rangeUnit": "개미",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "avoidance": "플레이어는 무의미한 선택을 하지 않음",
+          "effect": "월드 상태 변환, 보상/위험 발생, 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULESET_V4_CAUSAL_GRAMMAR",
+          "rangeKey": "DELVE",
+          "costKey": "DELVE_COST",
+          "cooldownKey": "DELVE_COOLDOWN"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER_1",
+          "humanTool": "OPENING",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "OPENING",
+          "removedState": "MAIN",
+          "changedChoice": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨"
+        },
+        {
+          "humanId": "PLAYER_2",
+          "humanTool": "SUB",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "SUB",
+          "removedState": "MAIN",
+          "changedChoice": "실제 입력으로 월드 상태와 보상/위험 조정됨"
+        }
+      ],
+      "regions": [
+        {
+          "id": "REGION_A",
+          "ruleIds": [
+            "ACTION_SURVIVAL_ROGUELITE_1",
+            "ACTION_SURVIVAL_ROGUELITE_2"
+          ],
+          "name": "주요 요소 및 보조 요소의 초기 위치",
+          "traversal": "플레이어 선택에 따른 월드 상태 변환, 보상/위험 발생",
+          "riskReward": "자원 확보 시 위험 감수",
+          "landmark": "개미 종족 선택과 월드 탐험 시작 지점",
+          "encounterPattern": "월드 상태 변화 및 보상/위험 발생",
+          "resourcePressure": "자원 압박",
+          "storyContext": "게임 루프 재설계"
+        },
+        {
+          "id": "REGION_B",
+          "ruleIds": [
+            "ACTION_SURVIVAL_ROGUELITE_2",
+            "ACTION_SURVIVAL_ROGUELITE_3"
+          ],
+          "name": "플레이어 선택에 따른 월드 상태 변환 및 보상/위험 발생 지역",
+          "traversal": "실제 입력으로 월드 상태와 보상/위험 조정",
+          "riskReward": "자원 확보 시 위험 감수",
+          "landmark": "플레이어 선택 결정지",
+          "encounterPattern": "월드 상태 변화 및 보상/위험 발생",
+          "resourcePressure": "자원 압박",
+          "storyContext": "게임 루프 재설계"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 18,
+      "calls": 21,
+      "successes": 19,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1706116,
-      "lastMs": 189720,
+      "totalMs": 1866501,
+      "lastMs": 160385,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:10:13.941Z"
+      "updatedAt": "2026-10-09T23:12:54.328Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:10:13.941Z",
+  "updatedAt": "2026-10-09T23:12:54.328Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2557,7 +2731,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:07:04.158Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:12:54.328Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
