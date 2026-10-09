@@ -700,6 +700,8 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     if(design.creativeGrammar?.a)groups.push(['CREATIVE_A_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.a.system+' × '+design.creativeGrammar.a.material,trigger:design.creativeGrammar.a.system,stateChange:design.creativeGrammar.a.stateChange}]]);
     if(design.creativeGrammar?.b)groups.push(['CREATIVE_B_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.b.system+' × '+design.creativeGrammar.b.material,trigger:design.creativeGrammar.b.system,stateChange:design.creativeGrammar.b.stateChange}]]);
     if(Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
+    if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
     if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({name:row.discovery,trigger:row.clue,stateChange:row.newChoice}))]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
@@ -1797,6 +1799,7 @@ export function buildGameSpecificBuildUpDirective({
     :[...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),...design.systemInterconnections.slice(0,4).map(row=>row.trigger)]
   ).slice(0,6);
   const delveEvidence=uniq([
+    ...(design.creativeGrammar?.delveDiscoveries||[]).map(row=>row.discovery),
     ...delveSystems.map(row=>row.name||row.purpose),
     ...design.contentExpansionPlan.flatMap(row=>[row.milestone,row.newGameplay]),
     ...design.narrativeWorldRules,
@@ -1812,11 +1815,13 @@ export function buildGameSpecificBuildUpDirective({
     cSubElements:Object.freeze(confirmedSubElements),
     sourcedAxes:Object.freeze({A:design.creativeGrammar?.a||null,B:design.creativeGrammar?.b||null}),
     cGenreThemes:Object.freeze(design.creativeGrammar?.cThemes||[]),
+    cPrimarySecondaryGenres:Object.freeze(design.creativeGrammar?.cGenres||[]),
+    cGenreInterlock:clean(design.creativeGrammar?.cGenreInterlock),
     cCausalWorldEffect:clean(design.creativeGrammar?.cWorldAndGameplayEffect),
     atUnboundedGrowthRule:clean(design.creativeGrammar?.delveGrowthRule),
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_IS_TWO_THEMES_WITH_AT_LEAST_ONE_GENRE; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
+    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
