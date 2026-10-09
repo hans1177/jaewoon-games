@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
       "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다."
+    },
+    "local_authoring_parts::6e6e883b1fe22f6ba187b0196dd94b9bccaa2e47e28c13bcc62c48ae0a5e0b40:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택",
+          "discovery": "게임 시작 시 보드에 설정하는 첫 번째 목표 및 장애물 해결 과정",
+          "newChoice": "보드 초기 상태에서 최소 두 가지 선택 옵션 제공"
+        },
+        {
+          "clue": "실제 세계 상태 변화",
+          "discovery": "보드 초기 상태의 인과적 영향을 통해 새로운 플레이어 선택과 세계 변화 발생",
+          "newChoice": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+        },
+        {
+          "clue": "양방향 실제 상태 교환",
+          "discovery": "A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함한 게임 구조",
+          "newChoice": "주사위 전투 + 빈칸, 게임 시스템 + 빈칸로 인해 생성되는 실제 선택"
+        },
+        {
+          "clue": "무한 발전 규칙 적용",
+          "discovery": "발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용",
+          "newChoice": "게임 내에서 반복 가능한 핵심 루프 및 보상/위험 연결"
+        }
+      ],
+      "delveGrowthRule": "게임 시작 시 보드에 설정하는 첫 번째 목표와 장애물 해결 과정은 실질적인 플레이어 선택과 세계 변화를 유도하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성한다.",
+      "finalGameIdentity": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화가 기반으로 한 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템으로 구성된 주사위 전투 보드의 최종 정체성이 됩니다."
+    },
+    "local_authoring_parts::ce1741272eda7fd86b9069e40d70539641658641583e90b1cc5b369a67345b75:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "주사위 전투",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 내에서 주사위로 결정되는 이벤트 및 결과"
+        },
+        {
+          "name": "보드 게임",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 보드에 설정하는 목표와 장애물을 해결해야 하는 구조"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략",
+          "gameplayEffect": "플레이어의 선택과 보상 사이의 복잡한 관계"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "플레이어의 성장, 스토리 진입, 캐릭터 개발"
+        }
+      ],
+      "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
+      "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택",
+          "discovery": "게임 시작 시 보드에 설정하는 첫 번째 목표 및 장애물 해결 과정",
+          "newChoice": "보드 초기 상태에서 최소 두 가지 선택 옵션 제공"
+        },
+        {
+          "clue": "실제 세계 상태 변화",
+          "discovery": "보드 초기 상태의 인과적 영향을 통해 새로운 플레이어 선택과 세계 변화 발생",
+          "newChoice": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+        },
+        {
+          "clue": "양방향 실제 상태 교환",
+          "discovery": "A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함한 게임 구조",
+          "newChoice": "주사위 전투 + 빈칸, 게임 시스템 + 빈칸로 인해 생성되는 실제 선택"
+        },
+        {
+          "clue": "무한 발전 규칙 적용",
+          "discovery": "발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용",
+          "newChoice": "게임 내에서 반복 가능한 핵심 루프 및 보상/위험 연결"
+        }
+      ],
+      "delveGrowthRule": "게임 시작 시 보드에 설정하는 첫 번째 목표와 장애물 해결 과정은 실질적인 플레이어 선택과 세계 변화를 유도하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성한다.",
+      "finalGameIdentity": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화가 기반으로 한 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템으로 구성된 주사위 전투 보드의 최종 정체성이 됩니다."
+    },
+    "local_authoring_parts::f29ec0b0bd58dea0437510f740168bd0e5149a737311956cc63f5f1358a8179b:creativeGrammar": {
+      "mainIdentity": "주사위 전투 보드 - 진입 단계, 선택 루프, 보상 및 위험 연결의 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템입니다.",
+      "a": {
+        "system": "주사위 전투 보드",
+        "material": "빈칸",
+        "materialDomain": "게임 정체성",
+        "stateChange": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화"
+      },
+      "b": {
+        "system": "게임 시스템",
+        "material": "빈칸",
+        "materialDomain": "게임 구조",
+        "stateChange": "게임 상태 변경에 따른 새로운 선택 옵션 제공"
+      },
+      "abCausality": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+      "abEvolution": {
+        "aChangesB": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+        "bChangesA": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+        "lateGameChange": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+      },
+      "materialFusion": {
+        "contrast": "주사위 전투 보드 + 빈칸, 게임 시스템 + 빈칸",
+        "causalBridge": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+        "removalConsequence": "C의 두 창작 소재 및 주/보조 장르로 인한 실제 선택 및 세계 변화"
+      },
+      "storyCausalChain": {
+        "cause": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+        "characterConflict": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+        "playerChoice": "모든 축을 인과적으로 결합한 새 정체성이 됩니다.",
+        "worldChange": "실제 세계 상태 변화를 통해 발전 규칙 적용됨",
+        "nextEvent": "다음 사건으로 이어지는 플레이 사례 구성"
+      },
+      "cThemes": [
+        {
+          "name": "주사위 전투",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 내에서 주사위로 결정되는 이벤트 및 결과"
+        },
+        {
+          "name": "보드 게임",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 보드에 설정하는 목표와 장애물을 해결해야 하는 구조"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략",
+          "gameplayEffect": "플레이어의 선택과 보상 사이의 복잡한 관계"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "플레이어의 성장, 스토리 진입, 캐릭터 개발"
+        }
+      ],
+      "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
+      "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택",
+          "discovery": "게임 시작 시 보드에 설정하는 첫 번째 목표 및 장애물 해결 과정",
+          "newChoice": "보드 초기 상태에서 최소 두 가지 선택 옵션 제공"
+        },
+        {
+          "clue": "실제 세계 상태 변화",
+          "discovery": "보드 초기 상태의 인과적 영향을 통해 새로운 플레이어 선택과 세계 변화 발생",
+          "newChoice": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+        },
+        {
+          "clue": "양방향 실제 상태 교환",
+          "discovery": "A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함한 게임 구조",
+          "newChoice": "주사위 전투 + 빈칸, 게임 시스템 + 빈칸로 인해 생성되는 실제 선택"
+        },
+        {
+          "clue": "무한 발전 규칙 적용",
+          "discovery": "발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용",
+          "newChoice": "게임 내에서 반복 가능한 핵심 루프 및 보상/위험 연결"
+        }
+      ],
+      "delveGrowthRule": "게임 시작 시 보드에 설정하는 첫 번째 목표와 장애물 해결 과정은 실질적인 플레이어 선택과 세계 변화를 유도하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성한다.",
+      "finalGameIdentity": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화가 기반으로 한 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템으로 구성된 주사위 전투 보드의 최종 정체성이 됩니다."
+    },
+    "local_authoring_parts::02c84d48073200c40ac89cf8adc15cd4bcca11ee719bb3a52560db5fd7b136ff:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "주사위 전투 보드 - 진입 단계, 선택 루프, 보상 및 위험 연결의 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템입니다.",
+        "a": {
+          "system": "주사위 전투 보드",
+          "material": "빈칸",
+          "materialDomain": "게임 정체성",
+          "stateChange": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화"
+        },
+        "b": {
+          "system": "게임 시스템",
+          "material": "빈칸",
+          "materialDomain": "게임 구조",
+          "stateChange": "게임 상태 변경에 따른 새로운 선택 옵션 제공"
+        },
+        "abCausality": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+        "abEvolution": {
+          "aChangesB": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+          "bChangesA": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+          "lateGameChange": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+        },
+        "materialFusion": {
+          "contrast": "주사위 전투 보드 + 빈칸, 게임 시스템 + 빈칸",
+          "causalBridge": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+          "removalConsequence": "C의 두 창작 소재 및 주/보조 장르로 인한 실제 선택 및 세계 변화"
+        },
+        "storyCausalChain": {
+          "cause": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+          "characterConflict": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+          "playerChoice": "모든 축을 인과적으로 결합한 새 정체성이 됩니다.",
+          "worldChange": "실제 세계 상태 변화를 통해 발전 규칙 적용됨",
+          "nextEvent": "다음 사건으로 이어지는 플레이 사례 구성"
+        },
+        "cThemes": [
+          {
+            "name": "주사위 전투",
+            "kind": "GENRE",
+            "gameplayEffect": "게임 내에서 주사위로 결정되는 이벤트 및 결과"
+          },
+          {
+            "name": "보드 게임",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 보드에 설정하는 목표와 장애물을 해결해야 하는 구조"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략",
+            "gameplayEffect": "플레이어의 선택과 보상 사이의 복잡한 관계"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "RPG",
+            "gameplayEffect": "플레이어의 성장, 스토리 진입, 캐릭터 개발"
+          }
+        ],
+        "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
+        "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택",
+            "discovery": "게임 시작 시 보드에 설정하는 첫 번째 목표 및 장애물 해결 과정",
+            "newChoice": "보드 초기 상태에서 최소 두 가지 선택 옵션 제공"
+          },
+          {
+            "clue": "실제 세계 상태 변화",
+            "discovery": "보드 초기 상태의 인과적 영향을 통해 새로운 플레이어 선택과 세계 변화 발생",
+            "newChoice": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+          },
+          {
+            "clue": "양방향 실제 상태 교환",
+            "discovery": "A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함한 게임 구조",
+            "newChoice": "주사위 전투 + 빈칸, 게임 시스템 + 빈칸로 인해 생성되는 실제 선택"
+          },
+          {
+            "clue": "무한 발전 규칙 적용",
+            "discovery": "발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용",
+            "newChoice": "게임 내에서 반복 가능한 핵심 루프 및 보상/위험 연결"
+          }
+        ],
+        "delveGrowthRule": "게임 시작 시 보드에 설정하는 첫 번째 목표와 장애물 해결 과정은 실질적인 플레이어 선택과 세계 변화를 유도하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성한다.",
+        "finalGameIdentity": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화가 기반으로 한 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템으로 구성된 주사위 전투 보드의 최종 정체성이 됩니다."
+      }
+    },
+    "local_authoring_parts::fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47:identity,creativeGrammar": {
+      "identity": "주사위 전투 보드 - 진입 단계, 선택 루프, 보상 및 위험 연결의 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템입니다. 게임 정체성: 주사위 전투 보드로 시작하여 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정합니다. 대표 행동: 보드에 첫 번째 목표 설정, 한 방씩 이동하며 새로운 장애물 또는 문제 해결. 대표 선택: 보드 초기 상태에서 최소 두 가지 선택 옵션 제공. 시그니처 세계 규칙: 측면 볼륨, 시간 제약, 조건적 보상 등 실제 플레이어가 실제로 경험하는 상황 변화를 기반으로 합니다. Core Fun: 보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화를 명확히 나타냅니다. Creative Grammar: A/B 소재는 서로 다른 시스템 내에서 인과적으로 연결되어야 하며, C는 두 개의 창작 소재와 각각의 메인/보조 장르를 구분하고, @는 무한 발전 규칙을 포함해야 합니다. Main = 기본 게임 주제/정체성, A = 게임 시스템 + 해당 축 창작 소재, B = 다른 시스템 + 해당 축 창작 소재, abCausality = 양방향 실제 상태 교환, C = 주·보조 장르로 인한 실제 선택 및 세계 변화. 예시: A=주사위 전투 보드 + 빈칸, B=게임 시스템 + 빈칸, C=주·보조 장르로 인한 실제 선택 및 세계 변화. @=발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용. Final Game Identity: 모든 축을 인과적으로 결합한 새 정체성이 됩니다. Core Loop: 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결이 있어야 합니다. Signature Systems: MAIN/A/B는 기존 원본 규칙·상태 입출력으로 구성되며 최소 4개 고유 역할이 필요합니다. DELVE(@)는 하나 이상입니다. Depth: 학문적 규칙·관계·응용 층위이며, 대표 행동에서 시작해 시스템 상호작용, 상황별 예외, 조합의 새로운 용도, 여러 유효한 해",
+      "creativeGrammar": {
+        "mainIdentity": "주사위 전투 보드 - 진입 단계, 선택 루프, 보상 및 위험 연결의 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템입니다.",
+        "a": {
+          "system": "주사위 전투 보드",
+          "material": "빈칸",
+          "materialDomain": "게임 정체성",
+          "stateChange": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화"
+        },
+        "b": {
+          "system": "게임 시스템",
+          "material": "빈칸",
+          "materialDomain": "게임 구조",
+          "stateChange": "게임 상태 변경에 따른 새로운 선택 옵션 제공"
+        },
+        "abCausality": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+        "abEvolution": {
+          "aChangesB": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+          "bChangesA": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+          "lateGameChange": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+        },
+        "materialFusion": {
+          "contrast": "주사위 전투 보드 + 빈칸, 게임 시스템 + 빈칸",
+          "causalBridge": "양방향 실제 상태 교환: A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함합니다.",
+          "removalConsequence": "C의 두 창작 소재 및 주/보조 장르로 인한 실제 선택 및 세계 변화"
+        },
+        "storyCausalChain": {
+          "cause": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화",
+          "characterConflict": "게임 상태 변경에 따른 새로운 선택 옵션 제공",
+          "playerChoice": "모든 축을 인과적으로 결합한 새 정체성이 됩니다.",
+          "worldChange": "실제 세계 상태 변화를 통해 발전 규칙 적용됨",
+          "nextEvent": "다음 사건으로 이어지는 플레이 사례 구성"
+        },
+        "cThemes": [
+          {
+            "name": "주사위 전투",
+            "kind": "GENRE",
+            "gameplayEffect": "게임 내에서 주사위로 결정되는 이벤트 및 결과"
+          },
+          {
+            "name": "보드 게임",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 보드에 설정하는 목표와 장애물을 해결해야 하는 구조"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략",
+            "gameplayEffect": "플레이어의 선택과 보상 사이의 복잡한 관계"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "RPG",
+            "gameplayEffect": "플레이어의 성장, 스토리 진입, 캐릭터 개발"
+          }
+        ],
+        "cGenreInterlock": "주사위 전투와 보드 게임이 서로 다른 시스템을 통해 인과적으로 연결되며, 전략적 선택은 RPG 요소를 반영한다.",
+        "cWorldAndGameplayEffect": "주사위로 결정된 이벤트는 플레이어의 선택에 따라 보상/위험의 변화를 유도하며, 전략적 판단은 RPG 요소를 반영한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택",
+            "discovery": "게임 시작 시 보드에 설정하는 첫 번째 목표 및 장애물 해결 과정",
+            "newChoice": "보드 초기 상태에서 최소 두 가지 선택 옵션 제공"
+          },
+          {
+            "clue": "실제 세계 상태 변화",
+            "discovery": "보드 초기 상태의 인과적 영향을 통해 새로운 플레이어 선택과 세계 변화 발생",
+            "newChoice": "모든 축을 인과적으로 결합한 새 정체성으로 이어지는 실제 세계 상태 변화"
+          },
+          {
+            "clue": "양방향 실제 상태 교환",
+            "discovery": "A→B, B→A 양쪽 모두 실제로 일어나는 상호작용을 포함한 게임 구조",
+            "newChoice": "주사위 전투 + 빈칸, 게임 시스템 + 빈칸로 인해 생성되는 실제 선택"
+          },
+          {
+            "clue": "무한 발전 규칙 적용",
+            "discovery": "발견 단서와 새로운 실제 선택 4개 이상, 무한 발전 규칙 적용",
+            "newChoice": "게임 내에서 반복 가능한 핵심 루프 및 보상/위험 연결"
+          }
+        ],
+        "delveGrowthRule": "게임 시작 시 보드에 설정하는 첫 번째 목표와 장애물 해결 과정은 실질적인 플레이어 선택과 세계 변화를 유도하며, 이후의 선택은 모든 축을 인과적으로 결합한 새 정체성을 형성한다.",
+        "finalGameIdentity": "보드 초기 상태에서 직접적인 결과와 피드백이 있는 선택과 상태 변화가 기반으로 한 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템으로 구성된 주사위 전투 보드의 최종 정체성이 됩니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1282363,
-      "lastMs": 127528,
+      "totalMs": 1440103,
+      "lastMs": 157740,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:26:20.480Z"
+      "updatedAt": "2026-10-09T21:28:58.222Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:04:58.089Z",
-  "updatedAt": "2026-10-09T21:26:20.480Z",
+  "updatedAt": "2026-10-09T21:28:58.227Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1720,7 +2052,7 @@
     "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true,
     "02c84d48073200c40ac89cf8adc15cd4bcca11ee719bb3a52560db5fd7b136ff": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:26:20.480Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:28:58.227Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
