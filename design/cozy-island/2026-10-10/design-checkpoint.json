@@ -561,25 +561,42 @@
       "name": "협동 지원 게임",
       "purpose": "플레이어가 자원 거점을 순차적으로 점령하여 협력적인 방식으로 강력한 기지로 확장하는 중심 행동",
       "playerChoice": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상 → 협동 지원로 강한 거점 확장"
+    },
+    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:1": {
+      "id": "2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "나무 및 식량 직접 채집",
+        "주민 고용",
+        "병영 강화"
+      ],
+      "stateOutputs": [
+        "다음 자원 거점 선택",
+        "보이는 자동전투와 점령 보상",
+        "협동 지원로 강한 거점 공략"
+      ],
+      "name": "협동 지원 게임",
+      "purpose": "플레이어가 주민 자동화에 참여하여 생산성 향상을 이루며, 병사들을 모집해 전투력을 강화하는 과정에서 5개의 서로 다른 자원 거점을 점령하며 협력적인 방식으로 강력한 기지로 확장할 수 있는 역할을 수행해야 한다.",
+      "playerChoice": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상 → 협동 지원로 강한 거점 공략"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1497561,
-      "lastMs": 83358,
+      "totalMs": 1583815,
+      "lastMs": 86254,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:32:30.503Z"
+      "updatedAt": "2026-10-09T17:33:56.760Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:07:32.737Z",
-  "updatedAt": "2026-10-09T17:32:30.505Z",
+  "updatedAt": "2026-10-09T17:33:56.760Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2005,8 +2022,8 @@
     "e8df166333f3847595a0c47cae7984b1d70ae5bf3ca41b1cdd0380008fe4f10b": true,
     "984307432df21cc9fa083075c9bf0d8802739226c685109d1498f04260e7075f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:32:30.503Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-09T17:33:56.760Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
