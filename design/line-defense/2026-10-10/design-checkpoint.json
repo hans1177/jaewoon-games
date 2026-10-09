@@ -495,25 +495,42 @@
       "name": "골목 군단 대전",
       "purpose": "주요 장르와 보조 장르 간의 상호 작용이 실제 선택으로 반영됨, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
       "playerChoice": "실제 게임에서 발생하는 선택 사항 명시"
+    },
+    "local_authoring_parts::dd72425fc75e3018088d4ce829883d8dfca4b408200668b20f9a8e48555b3ccb:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "stateOutputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "name": "골목 군단 대전",
+      "purpose": "주요 장르와 보조 장르 간의 인과 변화 및 상태 교환을 실현하여 플레이어 선택과 세계 상태 변화를 연결함",
+      "playerChoice": "플레이어는 주요 장르와 보조 장르 간의 상호 작용에 따라 전략적 선택을 하며, 이 선택은 진행, 위험, 보상을 연결해 반복 가능한 핵심 루프를 만든다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1413329,
-      "lastMs": 92056,
+      "totalMs": 1513727,
+      "lastMs": 100398,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:47:00.642Z"
+      "updatedAt": "2026-10-09T21:48:41.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:23:27.262Z",
-  "updatedAt": "2026-10-09T21:47:00.644Z",
+  "updatedAt": "2026-10-09T21:48:41.042Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2367,10 +2384,10 @@
   "localAuthoringSplits": {
     "b67afd9b59e0eadfdddd967165813c63277b1cb229832100bfefdd95acaa3a55": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:47:00.642Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:48:41.042Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
