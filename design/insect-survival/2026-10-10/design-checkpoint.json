@@ -104,25 +104,42 @@
         "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택.",
         "각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다."
       ]
+    },
+    "local_authoring_parts::d61da667a55f6ca3b6b93f714814ce998415a1ea5be45a876837399c413b0548:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "CHOICE",
+        "STATE_CHANGE",
+        "REWARD/THREAT",
+        "NEXT_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+      "purpose": "to enable player agency in a small-scale ecological system through adaptive decision-making",
+      "playerChoice": "choose between gathering resources or engaging in combat based on environmental context and risk assessment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 179842,
-      "lastMs": 28699,
+      "totalMs": 217878,
+      "lastMs": 38036,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:56:14.374Z"
+      "updatedAt": "2026-10-09T20:56:52.412Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T20:56:14.374Z",
+  "updatedAt": "2026-10-09T20:56:52.412Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1795,7 +1812,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:56:14.374Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:56:52.412Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
