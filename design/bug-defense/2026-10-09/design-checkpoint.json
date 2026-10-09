@@ -27,25 +27,33 @@
       "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n기본 정체성 문장: 이 게임은 곤충의 생태, 위협, 방어 전략에 기반한 단일 방어 전략을 중심으로 한 시뮬레이션 게임이다.",
       "playerFantasy": "플레이어는 곤충의 생태, 위협, 방어 전략에 기반한 단일 방어 전략을 중심으로 한 시뮬레이션 게임에서 Read the incoming insect wave and its threat pattern.을 숙련하며, 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 경험은 플레이어가 곤충의 병종과 서식 환경의 상성을 이해하는 데 도움을 줍니다.",
       "coreFun": "Read the incoming insect wave and its threat pattern.의 결과를 이용해 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 중심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n플레이어의 Read the incoming insect wave and its threat pattern.과 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n시그니처 세계 규칙은 MAIN/A/B/c/@ 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템으로 구성되어 있으며, 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다.\n\n기본 정체성 문장: 이 게임은 곤충의 생태, 위협, 방어 전략에 기반한 단일 방어 전략을 중심으로 한 시뮬레이션 게임이다."
+    },
+    "local_authoring_parts::e317ff9f563af5e4ffc54a201264c0f8e749b951d1575c724a6e7959318277fe:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the incoming insect wave and its threat pattern.",
+        "SELECT: Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "OUTPUT: Status change in the world system, including increased defense effectiveness, new strategies, and altered resource allocation.",
+        "ACTION: The player's choice directly influences the state of the game world, altering the environment and available options for future play."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 325206,
-      "lastMs": 63789,
+      "totalMs": 377319,
+      "lastMs": 52113,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:04:50.344Z"
+      "updatedAt": "2026-10-09T15:05:42.460Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:25.113Z",
-  "updatedAt": "2026-10-09T15:04:50.346Z",
+  "updatedAt": "2026-10-09T15:05:42.460Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1718,7 +1726,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:04:50.345Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:05:42.460Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
