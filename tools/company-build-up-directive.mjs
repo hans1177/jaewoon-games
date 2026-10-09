@@ -539,6 +539,7 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    creativeGrammar:d?.creativeGrammar&&typeof d.creativeGrammar==='object'?d.creativeGrammar:{},
     playerFantasy:clean(d?.playerFantasy),
     genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
@@ -696,6 +697,10 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
         if(Array.isArray(rows))groups.push(['NARRATIVE_'+name.toUpperCase(),rows]);
       }
     }
+    if(design.creativeGrammar?.a)groups.push(['CREATIVE_A_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.a.system+' × '+design.creativeGrammar.a.material,trigger:design.creativeGrammar.a.system,stateChange:design.creativeGrammar.a.stateChange}]]);
+    if(design.creativeGrammar?.b)groups.push(['CREATIVE_B_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.b.system+' × '+design.creativeGrammar.b.material,trigger:design.creativeGrammar.b.system,stateChange:design.creativeGrammar.b.stateChange}]]);
+    if(Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({name:row.discovery,trigger:row.clue,stateChange:row.newChoice}))]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
   }
@@ -1782,7 +1787,7 @@ export function buildGameSpecificBuildUpDirective({
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
   const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&cSystems.length&&delveSystems.length);
-  const reconstructedMain=clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
+  const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
     Object.freeze({key:'B',systemId:clean(bSystem?.id)||null,name:clean(bSystem?.name)||clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:authorMapped?'DESIGNER_AUTHORED_ROLE_B':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'})
@@ -1799,15 +1804,19 @@ export function buildGameSpecificBuildUpDirective({
   ]).slice(0,10);
   const existingGameGrammarMap=Object.freeze({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
-    formula:'MAIN × A × B × c + @',
+    formula:'MAIN × A × B × C + @',
     main:reconstructedMain,
     source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
     roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
+    sourcedAxes:Object.freeze({A:design.creativeGrammar?.a||null,B:design.creativeGrammar?.b||null}),
+    cGenreThemes:Object.freeze(design.creativeGrammar?.cThemes||[]),
+    cCausalWorldEffect:clean(design.creativeGrammar?.cWorldAndGameplayEffect),
+    atUnboundedGrowthRule:clean(design.creativeGrammar?.delveGrowthRule),
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:'PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS',
+    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_IS_TWO_THEMES_WITH_AT_LEAST_ONE_GENRE; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
@@ -1831,7 +1840,7 @@ export function buildGameSpecificBuildUpDirective({
       systemInterconnections:Object.freeze(design.systemInterconnections||[]),
       expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
-      formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',
+      formula:'MAIN × A × B × C + @',
       existingGameGrammarMap,
       rule:'NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
@@ -2100,6 +2109,7 @@ export function buildGameSpecificBuildUpDirective({
     designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      creativeGrammar:design.creativeGrammar,
       coreFun:design.coreFun,
       coreLoop:design.coreLoop,
       signatureSystems:design.signatureSystems,
