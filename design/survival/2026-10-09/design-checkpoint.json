@@ -1298,25 +1298,34 @@
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
       "trigger": "시스템 간 상태 교환을 위한 조건 및 선택이 설정되어 있으며, SURVIVAL_01_SIGNATURE_SYSTEM에서 생성된 RUN_REWARDS와 UPGRADES 값이 SURVIVAL_02_SIGNATURE_SYSTEM로 전달된다. 이 과정에서는 주어진 자원과 능력을 기반으로 하여 다음 단계로 전환하는 데 사용되며, 플레이어의 선택 결과가 시스템 내 다양한 경로와 상태 변화에 영향을 미친다.",
       "stateChange": "시스템 간 상태 교환을 위한 조건 및 선택이 설정되어 있으며, SURVIVAL_01_SIGNATURE_SYSTEM에서 생성된 RUN_REWARDS와 UPGRADES 값이 SURVIVAL_02_SIGNATURE_SYSTEM로 전달된다. 이 과정에서는 주어진 자원과 능력을 기반으로 하여 다음 단계로 전환하는 데 사용되며, 플레이어의 선택 결과가 시스템 내 다양한 경로와 상태 변화에 영향을 미친다."
+    },
+    "local_authoring_parts::e28a58c9627f84a2f13c233bd75e890ee31cb5c09177915571b17a170cb0c89c:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 121,
-      "successes": 121,
+      "calls": 122,
+      "successes": 122,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6908115,
-      "lastMs": 34906,
+      "totalMs": 6939869,
+      "lastMs": 31754,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:22:05.506Z"
+      "updatedAt": "2026-10-09T03:22:37.274Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T03:22:05.518Z",
+  "updatedAt": "2026-10-09T03:22:37.274Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3661,10 +3670,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:22:05.514Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:22:37.274Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
