@@ -573,6 +573,101 @@ export function extractDesignContext(record={}){
   });
 }
 
+// 설계 후 볼륨·완성도: 승인 설계의 개별 항목과 기존 소스 후보를 추적한다.
+// 정적 이름 일치만으로 실제 구현·플랫폼 런타임 완료를 판정하지 않는다.
+function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}={}){
+  const items=[],seen=new Set();
+  const anchors=Array.isArray(source?.sourceAnchors)?source.sourceAnchors:[];
+  const traces=Array.isArray(design?.implementationTraceability)?design.implementationTraceability:[];
+  const add=(family,index,value)=>{
+    const detail=value&&typeof value==='object'&&!Array.isArray(value)?value:{step:clean(value)};
+    const title=clean(detail.name||detail.milestone||detail.designElement||detail.role||detail.humanId
+      ||(detail.fromSystem&&detail.toSystem&&clean(detail.fromSystem)+' → '+clean(detail.toSystem))
+      ||detail.step||detail.id)||family+' #'+(index+1);
+    const authoredId=clean(detail.id||detail.ruleId||detail.humanId);
+    const names=uniq([authoredId,detail.name,detail.milestone,detail.designElement,title])
+      .filter(name=>name.length>=3).map(name=>name.toLowerCase());
+    const namedAnchors=anchors.filter(row=>clean(row?.file)&&names.some(name=>
+      clean(row?.symbol).toLowerCase()===name||clean(row?.context).toLowerCase().includes(name)
+    )).map(row=>Object.freeze({file:posix(row.file),line:Number(row.line)||null,symbol:clean(row.symbol),kind:clean(row.kind)}));
+    const trace=traces.find(row=>{
+      const element=clean(row?.designElement).toLowerCase();
+      return element&&names.some(name=>element===name||element.includes(name));
+    });
+    const playerChoice=clean(detail.playerChoice||detail.counterplay||detail.riskReward||detail.changedChoice||detail.variation);
+    const trigger=clean(detail.trigger||detail.encounterPattern||detail.traversal||detail.milestone);
+    const stateChange=clean(detail.stateChange||detail.effect||detail.systemImpact||detail.rewardMeaning||detail.newGameplay);
+    const identity=family+':'+title.toLowerCase();
+    const review=[];
+    if(family==='SIGNATURE_SYSTEM'&&!playerChoice)review.push('PLAYER_CHOICE_UNSPECIFIED');
+    if(family==='CONTENT_MILESTONE'&&!trigger)review.push('MILESTONE_TRIGGER_UNSPECIFIED');
+    if(['SYSTEM_CONNECTION','CONTENT_MILESTONE'].includes(family)&&!stateChange)review.push('STATE_CHANGE_UNSPECIFIED');
+    if(seen.has(identity))review.push('DUPLICATE_DESIGN_TITLE_REVIEW');
+    seen.add(identity);
+    const linkedRuleIds=uniq([
+      ...(Array.isArray(detail.ruleIds)?detail.ruleIds:[]),detail.fromId,detail.toId,detail.ruleId,
+      ...((design.systemInterconnections||[]).filter(row=>authoredId&&
+        (clean(row?.fromId)===authoredId||clean(row?.toId)===authoredId)).flatMap(row=>[row.fromId,row.toId]))
+    ]);
+    items.push(Object.freeze({
+      ref:family+'['+index+']',family,index,title,authoredId:authoredId||null,
+      designDetail:Object.freeze({...detail}),playerChoice:playerChoice||null,trigger:trigger||null,
+      stateChange:stateChange||null,linkedRuleIds:Object.freeze(linkedRuleIds),
+      designResponsibleSystem:clean(trace?.responsibleSystem)||null,
+      sourceCandidates:Object.freeze(namedAnchors),
+      sourceEvidenceState:namedAnchors.length?'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED':'EXACT_SOURCE_OWNER_REVIEW_REQUIRED',
+      implementationVerified:false,runtimeVerified:false,
+      designReviewNeeded:Object.freeze(review),
+      observableAcceptance:clean(trace?.validationEvidence)
+        ||'실제 '+title+' 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증',
+      requiredStages:Object.freeze([
+        'INSPECT_EXISTING_RESPONSIBLE_FUNCTION','IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE',
+        'VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT','REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME'
+      ])
+    }));
+  };
+  if(!safeDesignlessMode){
+    const groups=[['CORE_LOOP',design.coreLoop],['SIGNATURE_SYSTEM',design.signatureSystems],
+      ['SYSTEM_CONNECTION',design.systemInterconnections],['CONTENT_MILESTONE',design.contentExpansionPlan]];
+    for(const [name,rows] of Object.entries(design.contentVarietyPlan||{}).sort(([a],[b])=>a.localeCompare(b))){
+      if(Array.isArray(rows))groups.push(['VARIETY_'+name.toUpperCase(),rows]);
+    }
+    if(design.narrativeDialoguePlan?.applicable===true){
+      for(const name of ['questStates','plotBeats','sceneBeats']){
+        const rows=design.narrativeDialoguePlan[name];
+        if(Array.isArray(rows))groups.push(['NARRATIVE_'+name.toUpperCase(),rows]);
+      }
+    }
+    groups.push(['IMPLEMENTATION_TRACE',traces]);
+    for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
+  }
+  const authoredCounts=Object.fromEntries([...new Set(items.map(row=>row.family))].map(family=>[
+    family,items.filter(row=>row.family===family).length
+  ]));
+  return Object.freeze({
+    version:1,boundary:'EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY',
+    sourceTreeFingerprint:clean(source?.sourceTreeFingerprint)||null,
+    mode:safeDesignlessMode?'SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION':'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION',
+    authoredItemCount:items.length,authoredCounts:Object.freeze(authoredCounts),
+    namedSourceCandidateCount:items.filter(row=>row.sourceCandidates.length>0).length,
+    sourceReviewRequiredCount:items.filter(row=>row.sourceCandidates.length===0).length,
+    implementationVerifiedCount:0,runtimeVerifiedCount:0,
+    authoredCountsAreNotImplementedOrPlayableCounts:true,noArbitraryContentQuota:true,
+    absenceOfNameMatchIsNotProofOfMissingImplementation:true,
+    existingSaveBalanceEconomyNetworkAuthorityPreserved:true,
+    action:'BIND_EACH_APPROVED_ITEM_TO_EXISTING_RESPONSIBLE_SOURCE_AND_PROVE_CONNECTED_PLAYER_FACING_RESULT',
+    acceptance:Object.freeze([
+      'EACH_AUTHORED_ITEM_REQUIRES_EXACT_DESIGN_SOURCE_AND_PLAYER_EVIDENCE',
+      'CONTENT_REQUIRES_TRIGGER_STATE_PLAYER_CHOICE_NEXT_GOAL_CONNECTION_WHEN_APPLICABLE',
+      'SOURCE_NAMES_OR_SYMBOLS_ARE_NOT_IMPLEMENTATION_PASS',
+      'NATIVE_ACTION_STATE_RESULT_FAILURE_AND_RETRY_QA_REQUIRED',
+      'SPATIAL_CONTENT_REQUIRES_REAL_NATIVE_3D_AND_MOBILE_RUNTIME_QA',
+      'PRESERVE_EXISTING_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY'
+    ]),
+    items:Object.freeze(items)
+  });
+}
+
 // 단일 디자이너 원본의 MAIN/A/B/c/@를 실제 플랫폼 소스에 연결한다.
 // 파일/함수 발견은 '구현 완료' 증거가 아니며 BUILD_UP/독립 런타임 QA의 책임을 바꾸지 않는다.
 export function buildDesignToPlatformCodingTrace({
@@ -687,7 +782,7 @@ export function buildDesignToPlatformCodingTrace({
     &&bindings.every(row=>row.designStatus==='AUTHORED');
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
-  const spatialReady=['2.5D','3D'].includes(unityDepth.dimension)
+  const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
       .every(field=>clean(unityDepth[field]).length>=32);
   const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
@@ -696,7 +791,7 @@ export function buildDesignToPlatformCodingTrace({
     gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
-    ...name==='UNITY_WEB'?{minimumRenderedDimension:'2.5D',spatialDesignReady:spatialReady}: {},
+    ...name==='UNITY_WEB'?{minimumRenderedDimension:'3D',spatialDesignReady:spatialReady}: {},
     inspectedInThisDirective:name===selected
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
@@ -1493,6 +1588,8 @@ export function directivePrompt(d={}){
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
+  const volume=d.designedGameVolume||{};
+  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | trigger='+(row.trigger||'DESIGN_DETAIL_REQUIRED')+' | choice='+(row.playerChoice||'DESIGN_DETAIL_REQUIRED')+' | state='+(row.stateChange||'DESIGN_DETAIL_REQUIRED')+' | accept='+row.observableAcceptance).join('\n');
   const expansion=d.autonomousContentExpansion||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
@@ -1502,6 +1599,9 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
+    'DESIGNED_GAME_VOLUME_ITEMS:',
+    volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
     'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
@@ -1711,6 +1811,7 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,design,platform,sourceRoot,sourceObservation:source,
     responsibleFiles:topFiles,repoRoot,multiplayerRequired
   });
+  const designedGameVolume=buildDesignedGameVolume({design,source,safeDesignlessMode});
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
@@ -1854,6 +1955,7 @@ export function buildGameSpecificBuildUpDirective({
     'AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS',
     'EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION',
     'CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE',
+    'DESIGNED_SYSTEM_CONTENT_VOLUME_TRACED_TO_EXACT_SOURCE_AND_PLAY_EVIDENCE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
@@ -1920,6 +2022,7 @@ export function buildGameSpecificBuildUpDirective({
     designFingerprint:sha(JSON.stringify(design)),
     identityReinforcement,
     designToPlatformCodingTrace,
+    designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       coreFun:design.coreFun,
