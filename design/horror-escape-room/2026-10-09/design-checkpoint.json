@@ -27,25 +27,35 @@
       "identity": "인간4명과 몬스터4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임 정체성: 감염 전환, 인물 전환, 스킬 사용, 이벤트 발생, 결과 결정. 플레이어 역할: 감염 대응, 전투, 정화, 스킬 활용, 이벤트 관리. 시그니처 세계: 감염, 정화, 전쟁, 이벤트, 결과. 기능 약속: 감염 공격, 정화, 스킬 사용, 이벤트 발생, 결과 결정.",
       "playerFantasy": "감염 대응자는 명시적 감염 공격에 맞서 인물로 변환되는 몬스터와 함께 추격전을 펼친다. 그들은 전투에서 정화 능력과 대시 기술을 활용해 적들을 제거하며, 감염 스킬을 통해 이벤트를 유도한다. 플레이어는 인간 직업별 고유의 감염 스킬을 사용하여 전략적으로 이벤트를 관리하고, 감염 공격이나 정화 공격에 대한 결과를 결정해야 한다.",
       "coreFun": "감염 대응자는 명시적 감염 공격에 맞서 인물로 변환되는 몬스터와 함께 추격전을 펼친다. 그들은 전투에서 정화 능력과 대시 기술을 활용해 적들을 제거하며, 감염 스킬을 통해 이벤트를 유도한다. 플레이어는 인간 직업별 고유의 감염 스킬을 사용하여 전략적으로 이벤트를 관리하고, 감염 공격이나 정화 공격에 대한 결과를 결정해야 한다."
+    },
+    "local_authoring_parts::0d221ede5e6ebf890169a9cf8c29781183eb799b0a667e422e6be4e8b73418df:coreLoop": {
+      "coreLoop": [
+        "INPUT: 인간4/몬스터4 배정, 빈자리 AI 충원",
+        "SELECT: 감염 스킬 선택 및 정화 공격 결정",
+        "OUTPUT: 인물 상태 변환 및 몬스터 전환",
+        "STATE CHANGE: 감염 숫자 증가, 이벤트 발생",
+        "REWARD: 감염 스킬 사용, 이벤트 관리",
+        "NEXT STEP: 다음 순간의 감염 스킬 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 188845,
-      "lastMs": 40032,
+      "totalMs": 231936,
+      "lastMs": 43091,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:32:13.060Z"
+      "updatedAt": "2026-10-09T08:32:56.154Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:29:03.964Z",
-  "updatedAt": "2026-10-09T08:32:13.061Z",
+  "updatedAt": "2026-10-09T08:32:56.154Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -762,7 +772,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:32:13.061Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:32:56.154Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
