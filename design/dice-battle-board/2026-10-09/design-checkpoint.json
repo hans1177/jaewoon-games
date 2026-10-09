@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::71f9271734c0f6b0112c9028f141ae9d485073f9e4324b007435d5034e8a6b0d:identity": {
       "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+    },
+    "local_authoring_parts::71f9271734c0f6b0112c9028f141ae9d485073f9e4324b007435d5034e8a6b0d:playerFantasy": {
+      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+    },
+    "local_authoring_parts::f2579d5f8258d61d4f44155e5e23eec9187b571de7bd2d305746d03a5a49e109:identity,playerFantasy": {
+      "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
+      "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 198570,
-      "lastMs": 198570,
+      "totalMs": 222494,
+      "lastMs": 23924,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:53:05.305Z"
+      "updatedAt": "2026-10-09T10:53:29.230Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T10:53:05.305Z",
+  "updatedAt": "2026-10-09T10:53:29.232Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1962,7 +1969,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:53:05.305Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:53:29.232Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
