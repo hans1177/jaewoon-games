@@ -894,25 +894,40 @@
     },
     "local_authoring_parts::4d6ef7665ede64172a658e4db6d9204e10633909fab3a02d3b1593b70778844c:trigger": {
       "trigger": "BOARD_STATE → NEW_BOARD_STATE"
+    },
+    "local_authoring_parts::4d6ef7665ede64172a658e4db6d9204e10633909fab3a02d3b1593b70778844c:stateChange": {
+      "stateChange": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::7bbcd7f533b41a5eb9e49e65baa6a1c31b91c5fb4c87b81d225da0c922aec723:systemInterconnections:0": {
+      "fromId": "BOARD_STATE",
+      "toId": "NEW_BOARD_STATE",
+      "stateKeys": [
+        "{\"from\": \"BOARD_STATE\", \"to\": \"NEW_BOARD_STATE\"}",
+        "{\"from\": \"MATCH_GAME\", \"to\": \"BOARD_STATE\"}"
+      ],
+      "fromSystem": "BOARD_STATE",
+      "toSystem": "BOARD_STATE",
+      "trigger": "BOARD_STATE → NEW_BOARD_STATE",
+      "stateChange": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 79,
-      "successes": 79,
+      "calls": 80,
+      "successes": 80,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5629471,
-      "lastMs": 93212,
+      "totalMs": 5728208,
+      "lastMs": 98737,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:03:25.297Z"
+      "updatedAt": "2026-10-09T01:05:04.035Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T01:03:25.297Z",
+  "updatedAt": "2026-10-09T01:05:04.037Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3180,7 +3195,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:03:25.297Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:05:04.037Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
