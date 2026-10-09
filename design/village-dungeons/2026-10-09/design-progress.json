@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T12:51:18.081Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T12:52:26.391Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/village-dungeons/2026-10-09/design-seed.json",
+    "contentDigest": "b57bfe753a3de5fdcc6d5c1510efc048bde95da74e48c151c2a4ebed80bceb6f",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1019766,
-      "lastMs": 91498,
+      "totalMs": 1088070,
+      "lastMs": 68304,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:51:18.077Z"
+      "updatedAt": "2026-10-09T12:52:26.386Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T12:51:18.082Z"
+  "updatedAt": "2026-10-09T12:52:26.400Z"
 }
