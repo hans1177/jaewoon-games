@@ -556,25 +556,28 @@
       "toSystem": "DEFENDER_REARRANGEMENT_PLAN",
       "trigger": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability.",
       "stateChange": "Player interprets incoming insect wave and its threat pattern based on environmental factors such as terrain, enemy types, and resource availability. This action triggers a status change that reflects increased defensive resilience, new strategic options, and altered regional dynamics."
+    },
+    "local_authoring_parts::8c3dc7c6a80e50bc29b26c03aed49d186a90982a2844f8f43d8821a9919c6c5b:fromId": {
+      "fromId": "INCOMING_INSECT_WAVE_PATTERN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 32,
+      "calls": 33,
+      "successes": 33,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2181708,
-      "lastMs": 60827,
+      "totalMs": 2238244,
+      "lastMs": 56536,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:19:57.652Z"
+      "updatedAt": "2026-10-09T09:20:54.191Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:43:35.755Z",
-  "updatedAt": "2026-10-09T09:19:57.654Z",
+  "updatedAt": "2026-10-09T09:20:54.191Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2926,7 +2929,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:19:57.654Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:20:54.191Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
