@@ -539,25 +539,38 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::7de01bb40cf1f6874d4998e7dbd95823ae93058ffaf9ebeb55f1f079da48ae0d:signatureSystems:0": {
+      "id": "CORE_4x4_ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ACTION_SURVIVAL_ROGUELITE_FIGHT"
+      ],
+      "stateOutputs": [
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "CORE_4x4_ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "Player's initial decision to fight through an escalating horde",
+      "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1476882,
-      "lastMs": 95844,
+      "totalMs": 1576543,
+      "lastMs": 99661,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:20:29.387Z"
+      "updatedAt": "2026-10-09T18:22:09.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:52.465Z",
-  "updatedAt": "2026-10-09T18:20:29.387Z",
+  "updatedAt": "2026-10-09T18:22:09.050Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2284,7 @@
     "7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c": true,
     "84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:20:29.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:22:09.050Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
