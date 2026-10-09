@@ -222,13 +222,13 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   if(selected.has('platformProfiles')){
     // 기존 중앙 공간 연출 계약을 설계 게이트에서도 적용한다. 이 기록은 실제 WebGL 실행 PASS가 아니다.
     const spatial=profiles.UNITY?.unityWebSpatialPresentation;
-    const dimensions=['2.5D','3D'];
+    const dimensions=['3D'];
     const fields=['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'];
     const missing=fields.filter(field=>!textReady(spatial?.[field],32));
     if(!dimensions.includes(spatial?.dimension)||missing.length){
       reject('DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED','PLATFORM_FIT_DESIGN',['platformProfiles'],
         {dimension:spatial?.dimension||'MISSING',missing},
-        'Unity WebGL 게임은 최소 2.5D(또는 3D) 실제 공간 그래픽을 설계한다. 세계 깊이·카메라/가림·조명/재질·모바일 브라우저 플레이와 전후 비교 검증을 각각 구체화한다. 평면 2D 카드·스프라이트·태그만으로 통과할 수 없다. 2D HUD는 가능하다.');
+        'Unity WebGL 게임은 실제 3D 메시와 월드 깊이만 최종 승인한다. 2.5D·스프라이트 월드는 불합격이다. 고저차·상하층 이동 연결·경로 분기·랜드마크, 시야/가림·조명·재질·모바일 WebGL 런타임 검증을 구체화한다. 2D HUD만 허용하고 실제 3D 런타임 PASS는 별도 증거가 필요하다.');
     }
   }
   for(const [platform,foreign] of [['UNITY',/(?:OPEN_CLOUD(?:_|\b)|\b(?:Rojo|ScreenGui|RemoteEvent|Roblox DataStore)\b)/i],['ROBLOX',/\b(?:APK|AAB|Unity Input System|UnityEditor)\b/i]]){
@@ -281,6 +281,16 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(valid){
       const broken=steps.slice(1).map((step,index)=>({phase:step.phase,previous:steps[index].exitState,current:step.entryState})).filter(row=>normalize(row.previous)!==normalize(row.current));
       if(broken.length)reject('DESIGN_PLAYTHROUGH_DISCONNECTED','CORE_LOOP_DESIGN',['selectedDesignPlan'],{broken},'앞 단계 exitState를 다음 단계 entryState로 그대로 이어 같은 한 판의 상태 전이를 증명한다.');
+    }
+  }
+  // 동일한 직선 경로와 랜드마크를 반복한 지역 목록은 입체적 공간 다양성으로 인정하지 않는다.
+  if(selected.has('contentVarietyPlan')){
+    const regions=list(design.contentVarietyPlan?.regions);
+    if(regions.length>=2){
+      const repeated=['traversal','landmark'].filter(field=>new Set(regions.map(row=>normalize(row?.[field]))).size<2);
+      if(repeated.length)reject('DESIGN_REGION_PATH_LANDMARK_MONOTONY','CONTENT_EXPANSION_PLAN',['contentVarietyPlan'],
+        {repeated,regionCount:regions.length},
+        '지역마다 고도·분기·귀환·지름길을 포함한 실제 이동 구조와 게임 고유 랜드마크를 구별하고 A/B/C/@ 선택·정보·위험에 연결한다. 같은 복도나 오브젝트 반복은 지역 차이로 인정하지 않는다.');
     }
   }
   for(const [root,rows] of [['contentVarietyPlan',[...list(design.contentVarietyPlan?.regions),...list(design.contentVarietyPlan?.enemiesOrChallenges)]],['failureRetryRisk',[design.failureRetryRisk]]]){
