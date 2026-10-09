@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 단순히 캐릭터 선택을 하지 않고, 주체로 삼아야 할 적대적 희생군을 직접 탈출해 나가는 시뮬레이션 게임입니다. 이는 기존 ACTION_SURVIVAL_ROGUELITE의 핵심 재미인 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 루프를 유지하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다.",
       "coreFun": "플레이어가 매 순간 진입하는 생존 루틴에서 단순히 스타크래프트처럼 캐릭터 선택을 하지 않고, 주체로 삼아야 할 적대적 희생군을 직접 탈출해 나가는 시뮬레이션 게임입니다. 이는 기존 ACTION_SURVIVAL_ROGUELITE의 핵심 재미인 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 루프를 유지하며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다."
+    },
+    "local_authoring_parts::c74e14a08056608abfdaecf2a964047454a83094c86e4da05e473183c1c14782:coreLoop": {
+      "coreLoop": [
+        "Player inputs and selects to survive escalating horde waves while positioning around enemy pressure.",
+        "Collects run rewards or experience, chooses upgrades, perks, weapons, or skills that change the current build.",
+        "Combines upgrades into a stronger build, survives harder waves or a boss, then converts the run result into the next progression choice."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1478009,
-      "lastMs": 118746,
+      "totalMs": 1564393,
+      "lastMs": 86384,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:02:26.477Z"
+      "updatedAt": "2026-10-09T18:03:52.864Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:37:48.429Z",
-  "updatedAt": "2026-10-09T18:02:26.478Z",
+  "updatedAt": "2026-10-09T18:03:52.864Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2271,7 @@
     "cb2fdd83b67ccbbd161d13e0a17070e25bd5285ec9b25008ce185ad0bf38a28f": true,
     "852fc3ed43fe1701a4ff03077bdc1b3c4de88e2efa75349054f74707c3e65fbd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:02:26.478Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:03:52.864Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
