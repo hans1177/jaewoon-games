@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g28-96f8053a3188",
-  "directiveFingerprint": "96f8053a3188cc40108ddc4b8fcd7b088c3bf769df466d1e870228678ba13c70",
-  "previousDirectiveFingerprint": "7473e69a85e16ddabccf51965b108db5a025b39aac4ad470c9ed07a866ee8a6f",
-  "forbiddenRepeatFingerprint": "7473e69a85e16ddabccf51965b108db5a025b39aac4ad470c9ed07a866ee8a6f",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g29-5e7e3dedeb86",
+  "directiveFingerprint": "5e7e3dedeb86a2c4d6195e6f5359d0bb17a1a81644d055719582bb655e9e2299",
+  "previousDirectiveFingerprint": "96f8053a3188cc40108ddc4b8fcd7b088c3bf769df466d1e870228678ba13c70",
+  "forbiddenRepeatFingerprint": "96f8053a3188cc40108ddc4b8fcd7b088c3bf769df466d1e870228678ba13c70",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 28,
+  "generation": 29,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+  "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
   "designFingerprint": "b046160bdb12792dbea695ecc118a6ea27162d1f90c0ae068a49f71b5917b6c8",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "적의 웨이브 정보를 확인하고, 현재 가용 자원을 고려하여 방어 타워를 배치하거나 지형을 수정하여 적의 이동 경로를 최적화합니다.",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "지형 변형 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "속성 공명 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -104,7 +114,7 @@
           "타워 각성 및 궁극기 시스템",
           "특정 타워를 최고 레벨까지 강화하면 고유한 궁극기 스킬을 해금하는 각성 시스템을 도입하여, 플레이어가 후반 웨이브에서 전황을 뒤집을 수 있는 강력한 한 방의 선택지를 제공합니다."
         ],
-        "sourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+        "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +124,319 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "seed-single-defense-strat-celestial-bastion",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "b046160bdb12792dbea695ecc118a6ea27162d1f90c0ae068a49f71b5917b6c8",
+    "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
+    "multiplayerMode": "SINGLE",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/seed-single-defense-strat-celestial-bastion",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/seed-single-defense-strat-celestial-bastion",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "transformTerrain",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "reviewDefenseState",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "transformTerrain",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "reviewDefenseState",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "transformTerrain",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "reviewDefenseState",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "transformTerrain",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "reviewDefenseState",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "transformTerrain",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "symbol": "reviewDefenseState",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "MULTIPLAYER_DESIGN_MODE_MISSING",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -326,8 +649,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 188,
-      "progression": 194,
+      "combat": 186,
+      "progression": 181,
       "ai": 42,
       "save": 66,
       "multiplayer": 30,
@@ -339,12 +662,12 @@
       "audio": 4,
       "audioDynamics": 17,
       "ui": 61,
-      "uiFlow": 42,
+      "uiFlow": 40,
       "entryFlow": 10,
       "loadingFlow": 0,
       "input": 62,
       "map": 178,
-      "landmark": 85,
+      "landmark": 81,
       "interaction": 29,
       "inventory": 6,
       "equipment": 3,
@@ -367,7 +690,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 282
+        "score": 284
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -640,9 +963,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 27,
-    "previousSourceTreeFingerprint": "eaeb07a0b9cf044ba0caac35c5372a149f1a3338eeb6f1fa2af4549e840bf41a",
-    "currentSourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+    "previousGeneration": 28,
+    "previousSourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+    "currentSourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -650,7 +973,7 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1800,8 +2123,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 149356,
-        "largestFileBytes": 48440,
+        "sourceBytes": 149443,
+        "largestFileBytes": 48464,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1833,13 +2156,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 4,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=3.",
+    "themeDepth": 5,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 5,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1856,7 +2179,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1889,7 +2212,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 132,
+        "score": 114,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -2005,11 +2328,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 28,
-    "previousGeneration": 27,
+    "generation": 29,
+    "previousGeneration": 28,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
-    "priorSourceFingerprint": "eaeb07a0b9cf044ba0caac35c5372a149f1a3338eeb6f1fa2af4549e840bf41a",
+    "sourceFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
+    "priorSourceFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2254,9 +2577,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2470,7 +2793,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+    "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2563,7 +2886,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+    "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2602,9 +2925,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "sourceAnchors": [
@@ -2748,9 +3071,9 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+      "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
       "roblox-games/seed-single-defense-strat-celestial-bastion/default.project.json"
     ],
     "impact": {
@@ -2828,11 +3151,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "64a4d2562464a710b0b8bafbbebd10773bf83ee151efc9ff43f6c0ffb5ce10c7",
+      "sourceTreeFingerprint": "470534a5409fd61cebac9a8beb5ed68d168d37f3937a0c3faa4926b3b0970bb3",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
+      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2883,7 +3206,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 29,
+    "nextGeneration": 30,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2949,5 +3272,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T11:50:07.028Z"
+  "generatedAt": "2026-10-09T05:23:59.012Z"
 }

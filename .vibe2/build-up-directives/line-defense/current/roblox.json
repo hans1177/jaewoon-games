@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "line-defense-build-up-g30-ebb7da9a934a",
-  "directiveFingerprint": "ebb7da9a934a53e108dccfb41343fc0b385813e7a822e672c67f8e2bbaf2ef0b",
-  "previousDirectiveFingerprint": "97af9a892eb89b3f5c54d2b5aa2b86971dec2642ea912bc82084ff0fe11a901e",
-  "forbiddenRepeatFingerprint": "97af9a892eb89b3f5c54d2b5aa2b86971dec2642ea912bc82084ff0fe11a901e",
+  "directiveId": "line-defense-build-up-g31-5dddf7900ac1",
+  "directiveFingerprint": "5dddf7900ac1e38a9b3d10c15f74b2e82a862dbf38a4aa5c50e880429b809f32",
+  "previousDirectiveFingerprint": "ebb7da9a934a53e108dccfb41343fc0b385813e7a822e672c67f8e2bbaf2ef0b",
+  "forbiddenRepeatFingerprint": "ebb7da9a934a53e108dccfb41343fc0b385813e7a822e672c67f8e2bbaf2ef0b",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
-  "generation": 30,
+  "generation": 31,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/line-defense",
-  "sourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+  "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
   "designFingerprint": "a4f58f0eefaa6a7529b0357797c74319994ef2241e1c10e2853621ab9c5dfd98",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "적의 다음 침공 경로와 유닛 구성을 확인하고 아군 유닛을 골목길의 최적 위치에 배치하는 단계",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "골목길 시너지 배치 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "실시간 재화 순환 엔진",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -104,7 +114,7 @@
           "무한의 골목길 디펜스 모드 오픈",
           "끝없이 밀려오는 적들을 막아내며 자신의 한계에 도전하고 글로벌 랭킹을 겨루는 무한 모드가 도입됩니다."
         ],
-        "sourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+        "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +124,319 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "line-defense",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "a4f58f0eefaa6a7529b0357797c74319994ef2241e1c10e2853621ab9c5dfd98",
+    "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
+    "multiplayerMode": "SINGLE",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/line-defense",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/line-defense",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/line-defense",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/line-defense/server/Game.server.luau",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/line-defense/server/Game.server.luau",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/line-defense/server/Game.server.luau",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/line-defense/client/Game.client.luau",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/line-defense/server/Game.server.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/line-defense/server/Game.server.luau",
+          "roblox-games/line-defense/shared/GameConfig.luau",
+          "roblox-games/line-defense/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "damageEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnEnemy",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "spawnBoss",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/line-defense/server/Game.server.luau",
+            "symbol": "startWave",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
+      "roblox-games/line-defense/client/Game.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/client/Game.client.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "MULTIPLAYER_DESIGN_MODE_MISSING",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -326,8 +649,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 228,
-      "progression": 256,
+      "combat": 226,
+      "progression": 243,
       "ai": 51,
       "save": 57,
       "multiplayer": 31,
@@ -339,12 +662,12 @@
       "audio": 4,
       "audioDynamics": 16,
       "ui": 62,
-      "uiFlow": 47,
+      "uiFlow": 45,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 62,
       "map": 173,
-      "landmark": 69,
+      "landmark": 65,
       "interaction": 31,
       "inventory": 33,
       "equipment": 5,
@@ -367,7 +690,7 @@
       },
       {
         "file": "roblox-games/line-defense/shared/GameConfig.luau",
-        "score": 281
+        "score": 283
       },
       {
         "file": "roblox-games/line-defense/client/Game.client.luau",
@@ -648,9 +971,9 @@
   "previousVersionDelta": {
     "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 29,
-    "previousSourceTreeFingerprint": "ebfc2096fcffde9fc58dd76abaa0cb28399c89a259d8893e9d2cf7ab224afaa3",
-    "currentSourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+    "previousGeneration": 30,
+    "previousSourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+    "currentSourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -658,7 +981,7 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-    "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+    "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
     "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -1803,8 +2126,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 150140,
-        "largestFileBytes": 48072,
+        "sourceBytes": 150227,
+        "largestFileBytes": 48096,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -1836,8 +2159,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 2,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=3.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -1845,13 +2168,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 8,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 2,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 3,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1862,6 +2184,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
       ],
@@ -1892,7 +2215,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 164,
+        "score": 146,
         "gapDomains": []
       },
       {
@@ -2006,11 +2329,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 30,
-    "previousGeneration": 29,
+    "generation": 31,
+    "previousGeneration": 30,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
-    "priorSourceFingerprint": "ebfc2096fcffde9fc58dd76abaa0cb28399c89a259d8893e9d2cf7ab224afaa3",
+    "sourceFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
+    "priorSourceFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2255,9 +2578,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -2471,7 +2794,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+    "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2564,7 +2887,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+    "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2603,9 +2926,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -2747,9 +3070,9 @@
     "gameId": "line-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/line-defense/shared/GameConfig.luau",
-      "roblox-games/line-defense/server/Game.server.luau",
       "roblox-games/line-defense/client/Game.client.luau",
+      "roblox-games/line-defense/server/Game.server.luau",
+      "roblox-games/line-defense/shared/GameConfig.luau",
       "roblox-games/line-defense/default.project.json"
     ],
     "impact": {
@@ -2824,11 +3147,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "15d02d39eec549b1898c87991ef9b08e3d532f271784aec69b08691daf897644",
+      "sourceTreeFingerprint": "dfa97160d822acb6f6d93ba6b1cc684795c5f77565c54aa651b160c8e4ef5c83",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "failureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE"
+      "failureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -2879,7 +3202,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 31,
+    "nextGeneration": 32,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2943,5 +3266,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T11:50:06.232Z"
+  "generatedAt": "2026-10-09T05:23:59.205Z"
 }
