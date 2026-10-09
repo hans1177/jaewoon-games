@@ -611,25 +611,28 @@
       "toSystem": "CORE-02→CORE-03",
       "trigger": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙에 따라, CORE-01의 출력 상태가 CORE-02→CORE-03의 입력 상태로 전달되어야 하며, 이 과정에서 조건 및 선택 로직이 실행되어야 한다.",
       "stateChange": "CORE-01의 출력 상태가 CORE-02→CORE-03의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::71c7b30f33e944534fb0bc217154c63e9c1fe4beb3d9a47e3c7d10e3aff1152f:fromId": {
+      "fromId": "CORE-01→CORE-02"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 40,
+      "calls": 41,
+      "successes": 41,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1569532,
-      "lastMs": 33634,
+      "totalMs": 1601213,
+      "lastMs": 31681,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:07:21.364Z"
+      "updatedAt": "2026-10-09T12:07:53.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T12:07:21.365Z",
+  "updatedAt": "2026-10-09T12:07:53.048Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3381,7 +3384,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:07:21.365Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:07:53.048Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
