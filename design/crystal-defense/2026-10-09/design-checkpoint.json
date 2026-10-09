@@ -1497,25 +1497,35 @@
       "toSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_",
       "trigger": "ATTACK_PATTERNS",
       "stateChange": "PLACEMENT → RESONANCE"
+    },
+    "local_authoring_parts::01dd4894e000a36e07b9ea47577969ffb7730dbc9881a653c50bd24155cd01aa:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 105,
-      "successes": 105,
+      "calls": 106,
+      "successes": 106,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9284996,
-      "lastMs": 71923,
+      "totalMs": 9360177,
+      "lastMs": 75181,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:25:35.263Z"
+      "updatedAt": "2026-10-09T05:26:50.447Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T05:25:35.265Z",
+  "updatedAt": "2026-10-09T05:26:50.447Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3851,7 +3861,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:25:35.264Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:26:50.447Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
