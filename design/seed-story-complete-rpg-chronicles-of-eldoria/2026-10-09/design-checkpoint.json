@@ -1657,25 +1657,36 @@
       "toSystem": "LOCATION_CHANGE_STATE",
       "trigger": "SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE: 플레이어가 탐험 중에 EXPLORATION_STATE, CHARACTER_INTERACTION_STATE, QUEST_ACCEPTANCE_STATE, INFORMATION_DISCOVERY_STATE 상태를 경험하면, 이들의 결과가 LOCATION_CHANGE_STATE로 전환되며, 새로운 정보와 아이템을 획득하게 된다.",
       "stateChange": "플레이어가 탐험 중에 EXPLORATION_STATE, CHARACTER_INTERACTION_STATE, QUEST_ACCEPTANCE_STATE, INFORMATION_DISCOVERY_STATE 상태를 경험하면, 이들의 결과가 LOCATION_CHANGE_STATE로 전환되며, 새로운 정보와 아이템을 획득하게 된다."
+    },
+    "local_authoring_parts::9ff82698d8bc4348581489a807460630417511ec903a95075ac7c6b467b67a21:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 123,
-      "successes": 122,
+      "calls": 124,
+      "successes": 123,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 10248540,
-      "lastMs": 92103,
+      "totalMs": 10342340,
+      "lastMs": 93800,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:49:19.597Z"
+      "updatedAt": "2026-10-09T06:50:53.411Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T06:49:19.608Z",
+  "updatedAt": "2026-10-09T06:50:53.411Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4053,10 +4064,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:49:19.602Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:50:53.411Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
