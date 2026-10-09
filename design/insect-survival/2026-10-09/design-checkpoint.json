@@ -27,25 +27,32 @@
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다. 그 중심 행동은 'Explore a dangerous small-scale habitat and identify food, material and insect threats.'이며, 두 대축 A/B는 'Take a risk to gather or fight, then convert the result into survival tools or a safer route.' 및 'Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.'로 구성된다. 보조 요소 c는 이들을 변주하며, 파고들기 @는 발견·숙련·재방문 깊이로 역할을 구분한다. 세계 규칙은 MAIN × A × B × c의 상태 교환에 기반하여 동일한 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 인과법칙은 KARMA_RETURN와 MANDATE_LEGITIMACY로 구체화되어, 성장은 수치 증가뿐만 아니라 새 행동·경로·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 시그니처 시스템은 각각 5개 이상의 서로 다른 메커니즘을 포함하며, 저장·보상·진행을 임의 변경하지 않는다. 게임은 UNITY 플랫폼에서 웹 브라우저로 배포되며, 모바일 터치 컨트롤 없이 실제 세계 깊이·가림·조명을 지원한다.",
       "playerFantasy": "곤충 생존기에서는 플레이어가 작은 세계 속에 서 있는 곤충의 시점에서, 먹이 사슬과 생태계의 위험을 직접 체감하는 독자의 생존 게임이다. 이 게임은 단순한 탐험보다는 진보적 선택과 위험의 결과로 인해 성장하며, 다양한 경로와 보상이 존재하여 플레이어에게 새로운 경험과 의미를 제공한다.",
       "coreFun": "Explore a dangerous small-scale habitat and identify food, material and insect threats.의 결과가 다음 월드 상태를 바꾸는 ACTION_SURVIVAL_ROGUELITE 게임이다.\n\n플레이어는 이 세계에서 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이로, Explore a dangerous small-scale habitat and identify food, material and insect threats.과 선택이 서로 영향을 주는 월드 상태로 구성된다.\n\n이 과정에서는 탐험, 위험, 성공, 실패, 성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화되고, 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::754a6dee163e8b5a3eb9f3948ec1b9330531742cefbcc4d1c80da771c8d765d9:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.\nSELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.\nOUTPUT: Status change in world state due to exploration, resource acquisition, or threat mitigation.\nSTATE: Main × A × B × c system interaction",
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.\nSELECT: Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.\nOUTPUT: Status change in world state due to ecological knowledge, increased resilience, or goal progression.\nSTATE: Main × A ×",
+        "INPUT: Explore a dangerous small-scale habitat and identify food, material and insect threats.\nSELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.\nOUTPUT: Status change in world state due to risk assessment, resource conversion, or path optimization.\nSTATE: Main × A × B × c"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 365369,
-      "lastMs": 72201,
+      "totalMs": 458173,
+      "lastMs": 92804,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:57:58.648Z"
+      "updatedAt": "2026-10-09T11:59:31.454Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:51:53.255Z",
-  "updatedAt": "2026-10-09T11:57:58.649Z",
+  "updatedAt": "2026-10-09T11:59:31.454Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2277,7 +2284,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:57:58.649Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:59:31.454Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
