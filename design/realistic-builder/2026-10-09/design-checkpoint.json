@@ -34,25 +34,38 @@
         "주체는 희망적이고 실질적으로 행동하는 인물이며, 선택은 즉각적인 결과와 상태 변화로 연결된다.",
         "이 게임은 시스템 내에서 학습 가능한 루프와 재미 있는 입력/피드백을 제공하며, 사용자는 다양한 대응과 숙련을 통해 게임의 진입점과 심리적 깊이를 증대할 수 있다."
       ]
+    },
+    "local_authoring_parts::ac331e74429431a0ce6ec34ed5692baec6eccce45ca463930fd7875f5061655f:signatureSystems:0": {
+      "id": "REALISTIC-BUILDER-MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT_STATE"
+      ],
+      "stateOutputs": [
+        "PROGRESS_STATE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player's core action and progression driver, generating immediate state changes and reward outcomes.",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. with [ACTION_SURVIVAL_ROGUELITE] progression options or [ACTION_UPGRADE] build modifications.','signatureWorldRule':'Player's "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 303214,
-      "lastMs": 44385,
+      "totalMs": 338305,
+      "lastMs": 35091,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:37:27.714Z"
+      "updatedAt": "2026-10-09T08:38:02.807Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:32:24.473Z",
-  "updatedAt": "2026-10-09T08:37:27.714Z",
+  "updatedAt": "2026-10-09T08:38:02.807Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,7 +2417,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:37:27.714Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:38:02.807Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
