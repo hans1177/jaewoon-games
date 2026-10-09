@@ -1,5 +1,5 @@
 {
-  "version": 561,
+  "version": 562,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6779,7 +6779,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 13,
+    "version": 14,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -28793,14 +28793,16 @@
     "noShadowWrapperTemporaryBypass": true,
     "independentQaBeforeCompletion": true,
     "allGamesMigrationViaExistingCanonicalUnityWebWorkflow": true,
-    "homepageCardRendering": "LIST_ALL_NONTRIVIAL_CANONICAL_GAMES_REGARDLESS_OF_GAMEPLAY_QA_OR_UNITY_WEB_BUILD",
+    "homepageCardRendering": "PRESERVE_ALL_OWNER_REGISTERED_GAME_IDENTITIES_EVEN_IF_LEGACY_WEB_SOURCE_IS_BUTTON_ONLY",
     "gameCardRenderingDoesNotRequireGameRuntimeQa": true,
     "unverifiedGamePlaybackLinkMustRemainDisabled": true,
-    "homepageCardInclusion": "EVERY_ACTIVE_CANONICAL_GAME_EXCEPT_CONFIRMED_SIMPLE_BUTTON_CONTROL_TEST_AND_NON_GAME_SURFACE",
+    "homepageCardInclusion": "EVERY_ACTIVE_CANONICAL_GAME_EXCEPT_NON_GAME_PAGE_OR_CONTROL_ONLY_TEST_RECORD_WITHOUT_REAL_GAME_IDENTITY",
     "excludeFromHomepageByExistingClassification": [
-      "WITHDRAWN_SIMPLE_PROTOTYPE",
-      "NON_GAME_SURFACE"
+      "NON_GAME_SURFACE",
+      "WITHDRAWN_SIMPLE_PROTOTYPE_ONLY_WHEN_NO_OWNER_GAME_IDENTITY_OR_NATIVE_GAME_SOURCE"
     ],
-    "homepageCardVisibilityNotBlockedByAbsentArtwork": true
+    "homepageCardVisibilityNotBlockedByAbsentArtwork": true,
+    "oldWebPrototypeWithdrawalDoesNotHideOwnerGameCard": true,
+    "withdrawnWebPrototypeStillDisablesOldWebPlayLink": true
   }
 }
