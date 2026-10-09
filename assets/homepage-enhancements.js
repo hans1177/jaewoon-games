@@ -70,9 +70,9 @@ const isHomepageGame=row=>{
   const webState=String(sourcesOf(row).web?.state||row?.ownerWebSourceState||'').toUpperCase();
   if(webState==='NON_GAME_SURFACE')return false;
   if(webState!=='WITHDRAWN_SIMPLE_PROTOTYPE')return true;
-  const sources=sourcesOf(row);
+  // 프로젝트 경로만 존재하는 버튼 시제품은 실제 게임으로 취급하지 않는다.
   return lifecycleOf(row).ownerExistingGame===true||row?.ownerExistingGame===true
-    ||Boolean(sources.unity?.projectPath||sources.roblox?.projectPath);
+    ||row?.unityWebAvailable===true||row?.unityBuildVerified===true||hasInternalRelease(row);
 };const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
