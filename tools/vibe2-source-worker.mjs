@@ -6126,6 +6126,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const target=clean(order.target).toLowerCase();
+  if(target==='web')throw new Error('LEGACY_WEB_GAME_AUTHORING_FORBIDDEN_USE_UNITY_WEB_CANONICAL_SOURCE');
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);

@@ -152,7 +152,7 @@ test('homepage shows native, Unity Web, and server-catalog playable web actions'
   assert.match(homepage,/unityWebAction/);
   assert.match(homepage,/Unity Web · 개발중/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.match(homepage,/웹 플레이/);
+  assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
   assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -187,7 +187,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
+  assert.match(homepage,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -419,8 +419,8 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasRunnableHomepageTarget\(item\)\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.roblox\|\|links\.unity\?'게임 입장':links\.unityWeb\?'Unity Web 플레이':'웹 플레이'/);
+  assert.match(runtime,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.unityWeb\?'유니티 웹 플레이':'게임 입장'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
@@ -436,8 +436,8 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.match(runtime,/Unity Web · 개발중/);
-  assert.match(runtime,/웹 플레이/);
-  assert.match(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
@@ -516,7 +516,7 @@ test('platform availability uses current release evidence or verified historical
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.match(runtime,/웹 플레이/);
+  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
