@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 25,
-  "lastSuccessfulModelCallAt": "2026-10-09T17:48:51.837Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 27,
+  "lastSuccessfulModelCallAt": "2026-10-09T17:50:28.097Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/chess-battle/2026-10-10/design-seed.json",
     "contentDigest": "b9b9103eade0336159d3ee3b8c7603713986b9201500c63c7d9455f3940a826a",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2044733,
-      "lastMs": 105137,
+      "totalMs": 2140990,
+      "lastMs": 96257,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:48:51.837Z"
+      "updatedAt": "2026-10-09T17:50:28.095Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T17:48:51.838Z"
+  "updatedAt": "2026-10-09T17:50:28.103Z"
 }
