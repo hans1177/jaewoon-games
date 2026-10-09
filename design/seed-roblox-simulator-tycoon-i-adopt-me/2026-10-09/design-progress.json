@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 78,
-  "lastSuccessfulModelCallAt": "2026-10-09T12:19:50.678Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 81,
+  "lastSuccessfulModelCallAt": "2026-10-09T12:20:23.267Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-09/design-seed.json",
     "contentDigest": "8b061763e9a3faf424d2662e1b850df5a2b565cddb714c75a94452552b418c3f",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 62,
-      "successes": 62,
+      "calls": 63,
+      "successes": 63,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2318787,
-      "lastMs": 33660,
+      "totalMs": 2351371,
+      "lastMs": 32584,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:19:50.678Z"
+      "updatedAt": "2026-10-09T12:20:23.263Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T12:19:50.679Z"
+  "updatedAt": "2026-10-09T12:20:23.272Z"
 }
