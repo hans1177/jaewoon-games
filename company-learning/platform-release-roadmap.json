@@ -1,5 +1,5 @@
 {
-  "version": 555,
+  "version": 556,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -444,11 +444,11 @@
     "highEndEvolutionAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
     "highEndEvolutionRole": "MOTION_AND_PRESENTATION_FOUNDATION_CONSUMED_BY_EXISTING_GRAPHICS_PRODUCTION",
     "minimumSpatialPresentation": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-09",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
-      "minimumFinalGameplayDimension": "2.5D",
-      "preferred": "3D_WHEN_GENRE_AND_PLATFORM_SUPPORT",
+      "minimumFinalGameplayDimension": "3D",
+      "preferred": "REAL_3D_REQUIRED",
       "appliesTo": [
         "WEB_VALIDATION_SURFACE",
         "ROBLOX",
@@ -456,9 +456,9 @@
       ],
       "flat2DFinalGameplayForbidden": true,
       "uiOverlayMayRemain2D": true,
-      "prototype2DAllowedTemporarily": true,
+      "prototype2DAllowedTemporarily": false,
       "prototype2DMustCreateVisualDebt": true,
-      "existing2DGamesAction": "SPATIAL_PRESENTATION_REBUILD_REQUIRED",
+      "existing2DGamesAction": "MANDATORY_IN_PLACE_NATIVE_3D_REDEVELOPMENT",
       "preserveGameplaySaveProgressionBalanceEconomyAndHitSemantics": true,
       "accepted2_5DTechniques": [
         "ISOMETRIC_OR_OBLIQUE_PROJECTION",
@@ -486,7 +486,10 @@
       "runtimeEvidenceRequired": true,
       "beforeAfterVisualComparisonRequired": true,
       "mobileReadabilityAndPerformanceRequired": true,
-      "failureState": "ASSET_REPAIR_REQUIRED"
+      "failureState": "ASSET_REPAIR_REQUIRED",
+      "accepted2_5DTechniquesAreNotFinalPass": true,
+      "realNative3dMeshEvidenceRequiredForEveryUnityWebGame": true,
+      "allSpatialGameplayLibraryAssets3dOnly": true
     },
     "robloxCharacterMotionQuality": {
       "version": 1,
@@ -964,7 +967,10 @@
         "webRequiresActualBrowserAndCloudflareDeploymentEvidence": true,
         "completeOnlyWithPerGamePlatformSourceRuntimeAndDeploymentEvidence": true,
         "protectedGameplaySaveEconomyAndNetworkSemanticsUnchanged": true
-      }
+      },
+      "spatialWorldAssetAuthoring3dOnly": true,
+      "allLegacy2dOr2_5dWorldAssetsRequire3dRemodelBeforeFinalGameUse": true,
+      "flatTexturesAudioAndUiAreSupportResourcesNot3dGameplaySubstitutes": true
     }
   },
   "platformRepresentativeSets": {
@@ -6473,7 +6479,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-09T07:45:00.000Z",
+  "updatedAt": "2026-10-09T08:55:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -8766,6 +8772,18 @@
       "saveAndBalancePreserved": true,
       "existingPipelineOnly": true,
       "noticeIssue": "https://github.com/hans1177/jaewoon-games/issues/6490"
+    },
+    "ownerUnityWeb3dOnly20261009": {
+      "id": "OWNER_UNITY_WEB_3D_ONLY_ALL_EXISTING_GAMES_AND_LIBRARIES_2026-10-09",
+      "authority": "OWNER_DIRECTIVE_2026-10-09",
+      "status": "MANDATORY_ACTIVE",
+      "source": "company-learning/platform-release-roadmap.json#ownerUnityWeb3dOnly20261009",
+      "unityWebMode": "REAL_3D_ONLY",
+      "existingGames": "ALL_MUST_REDEVELOP_IN_PLACE_TO_3D",
+      "libraries": "ALL_SPATIAL_GAMEPLAY_LIBRARIES_NATIVE_3D_ONLY",
+      "enforcement": "EXISTING_SOURCE_PREFLIGHT_AND_ACTUAL_BROWSER_NATIVE_MESH_QA",
+      "platformHoldsUnchanged": true,
+      "saveAndGameplayPreservationRequired": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20703,7 +20721,10 @@
         ],
         "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
       },
-      "runnerLabel": "ubuntu-24.04-arm"
+      "runnerLabel": "ubuntu-24.04-arm",
+      "spatialGameplayAssetProductionMode": "THREE_D_ONLY",
+      "legacy2dSpatialAssetMigration": "REMODEL_TO_NATIVE_3D_BEFORE_FINAL_BINDING",
+      "uiAudioTexturesRemainSupportingResources": true
     },
     "buildUpRuntimeClosure": {
       "version": 2,
@@ -24151,10 +24172,16 @@
       "primitiveOnlyForDebugCollisionOrTemporaryGap": true,
       "placeholderDominatedPlayableCannotPass": true,
       "rightsAndLicenseTraceabilityRequired": true,
-      "minimumFinalGameplayDimension": "2.5D",
+      "minimumFinalGameplayDimension": "3D",
       "flat2DFinalGameplayForbidden": true,
       "runtimeSpatialEvidenceRequired": true,
-      "markerOnlySpatialPassForbidden": true
+      "markerOnlySpatialPassForbidden": true,
+      "native3dRequired": true,
+      "twoPointFiveDOr2DFinalGameplayForbidden": true,
+      "prototype2dFinalPassForbidden": true,
+      "everyExistingUnityWebGameMustBeRedevelopedIn3d": true,
+      "actual3dMeshRuntimeEvidenceRequired": true,
+      "assetLibrarySpatial3dOnly": true
     },
     "mobileInput": {
       "implementedInsideUnityProject": true,
@@ -25307,7 +25334,13 @@
         "genericLegacyWebUiCannotSatisfyUnityWebRequirement": true,
         "plannerActiveBindingProfileRequired": true,
         "requiredPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE"
-      }
+      },
+      "finalGameplayDimension": "3D",
+      "no2dOr2_5dFinalGameplay": true,
+      "allExistingUnityWebGamesMandatory3dRebuild": true,
+      "allSpatialGameAssetLibrariesMustBe3d": true,
+      "nativeMeshQaRequiredForEveryGame": true,
+      "old2dBuildNotAcceptedAsFinalQa": true
     },
     "upperPlatformAdmission": "MINIMUM_DESIGN_READY",
     "upperPlatformDevelopmentReadinessGate": {
@@ -28440,6 +28473,58 @@
     "independentGameExecution": true,
     "sameResponsibleFileWriteConflictSerializes": true,
     "saveAndBalancePreserved": true,
-    "existingPipelineOnly": true
+    "existingPipelineOnly": true,
+    "unityWeb3dOnlyRequired": true,
+    "existingUnityWeb2dGamesMustRebuild3d": true,
+    "allSpatialGameAssetLibraries3dOnly": true,
+    "unityWeb3dRuntimeProofRequired": true
+  },
+  "ownerUnityWeb3dOnly20261009": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-09",
+    "status": "OWNER_DIRECT_LOCKED",
+    "notice": "모든 유니티 웹 신규·기존 게임은 3D 전용. 기존 2D·2.5D 게임은 전부 원본 Unity 프로젝트에서 3D로 재개발. 모든 게임 세계·캐릭터·몬스터·건물·무기·소품 제작 라이브러리는 실제 3D 자산만 허용.",
+    "appliesTo": [
+      "ALL_NEW_UNITY_WEB_GAMES",
+      "ALL_EXISTING_UNITY_WEB_GAMES",
+      "ALL_SHARED_SPATIAL_GAMEPLAY_ASSET_LIBRARIES"
+    ],
+    "finalGameplayDimension": "3D",
+    "twoDimensionalGameplayAuthoringForbidden": true,
+    "twoPointFiveDimensionalFinalPassForbidden": true,
+    "temporary2dGameplayPrototypeAsUnityWebFinalForbidden": true,
+    "existing2dOr2_5dGameAction": "MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES",
+    "sceneCameraWorldMustHaveReal3dDepth": true,
+    "nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame": true,
+    "forbiddenFinalGameplaySurfaces": [
+      "PURE_2D_SPRITE_GAMEPLAY",
+      "2_5D_PSEUDO_DEPTH_ONLY",
+      "CANVAS_OR_DOM_ONLY_GAME_WORLD",
+      "FLAT_IMAGE_ONLY_WORLD"
+    ],
+    "sharedLibraryGameWorldFamilies3dOnly": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "PROP",
+      "WORLD_OBJECT",
+      "TERRAIN"
+    ],
+    "uiAudioAndTextureFilesMayRemainNative2dResources": true,
+    "uiAudioAndTextureFilesMayNotSubstituteFor3dGameplayObjects": true,
+    "keepLegacy2dGamePlayableUntilVerified3dReplacement": true,
+    "rebuildWithoutDestroyingExistingCanonicalProject": true,
+    "reuseExistingAssetProductionAndUnityWebBuildQaRegressionPipelinesOnly": true,
+    "gameLogicSaveEconomyProgressionCombatBalancePreserved": true,
+    "noShadowPipelineOr2dFallbackAsFinal": true,
+    "independentBrowserAndMobileRuntimeQaRequired": true,
+    "noTextMarkerOnlyPass": true,
+    "missing3dEvidenceAction": "REPAIR_REQUIRED",
+    "ownerHeldUnityAndroidUnchanged": true,
+    "robloxDevelopmentContinuesIndependently": true,
+    "allEligibleGameWorkRequeuedThroughExistingCanonicalPipeline": true,
+    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true
   }
 }
