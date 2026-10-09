@@ -34,25 +34,42 @@
         "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
         "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다."
       ]
+    },
+    "local_authoring_parts::1e45e0b62933bbc8f7c88251995fff952c1d860673fd99db20335255bb722e91:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENTRY_STATE",
+        "SELECT_STATE",
+        "PROGRESS_STATE"
+      ],
+      "stateOutputs": [
+        "CHANGED_ENTRY_STATE",
+        "CHANGED_SELECT_STATE",
+        "CHANGED_PROGRESS_STATE"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE",
+      "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "ENTRY_STATE -> SELECT_STATE -> PROGRESS_STATE -> CHANGED_ENTRY_STATE / CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 302741,
-      "lastMs": 47070,
+      "totalMs": 348088,
+      "lastMs": 45347,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:41:15.934Z"
+      "updatedAt": "2026-10-09T08:42:01.282Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:36:13.165Z",
-  "updatedAt": "2026-10-09T08:41:15.934Z",
+  "updatedAt": "2026-10-09T08:42:01.282Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2268,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:41:15.934Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:42:01.282Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
