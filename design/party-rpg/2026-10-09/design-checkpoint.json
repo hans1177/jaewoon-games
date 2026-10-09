@@ -34,25 +34,38 @@
         "매번 새로운 상태로 전환하며 선택의 결과가 다음 월드 상태에 영향을 미친다.",
         "성장은 행동의 재사용, 경로 개선, 조합 발전 등으로 이루어지며, 콘텐츠의 다양성을 확보할 수 있다."
       ]
+    },
+    "local_authoring_parts::78c683a33bc7d6ad91559f3ae6214ea309d2e9e60a842408fec964f8f527ab74:signatureSystems:0": {
+      "id": "CORE-01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "END_LEVEL_STATE"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "Plays as the central action, initiating gameplay by setting up a structured challenge that players must solve through strategic choices.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (This is the core action: the player's primary choice in the game.)','input/selection -> state change -> reward/pain/next selection: INPUT/SELECT/OUTPUT/STATE'}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 303766,
-      "lastMs": 45540,
+      "totalMs": 340752,
+      "lastMs": 36986,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:54:06.851Z"
+      "updatedAt": "2026-10-09T08:54:43.838Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:49:03.059Z",
-  "updatedAt": "2026-10-09T08:54:06.851Z",
+  "updatedAt": "2026-10-09T08:54:43.838Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2102,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:54:06.851Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:54:43.838Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
