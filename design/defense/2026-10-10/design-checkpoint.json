@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::c4d6721b5833fde225a72efdf9628c4eb863a39698b4eb66c6db81b21d96fb5a:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "숲길 디펜스: 진격의 방어, 선택의 끝없는 경쟁",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "Resource Management & Strategic Placement",
+          "material": "Enemy Defeat Resources",
+          "materialDomain": "Economic System",
+          "stateChange": "Resources are earned from defeated enemies and spent on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        "b": {
+          "system": "Adaptive Defense Strategy",
+          "material": "Enemy Type & Wave Composition",
+          "materialDomain": "Military Tactics",
+          "stateChange": "Defense is adapted to enemy types and waves, protected objectives, and cleared stages to unlock harder defense choices."
+        },
+        "abCausality": "Main state change triggers A/B state transitions, which in turn affect C's thematic elements.",
+        "abEvolution": {
+          "aChangesB": "A's resource spending affects B's defensive strategy options.",
+          "bChangesA": "B's adaptive defense influences A's placement strategies.",
+          "lateGameChange": "In late game, A and B states evolve into a new primary verb for main action."
+        },
+        "materialFusion": {
+          "contrast": "A's material domain (economy) contrasts with B's military domain.",
+          "causalBridge": "Resource management bridges the economic and strategic domains through player choice.",
+          "removalConsequence": "Removing A's economy domain removes the causal bridge between Main and B."
+        },
+        "storyCausalChain": {
+          "cause": "Player's initial action of placing defenses triggers core loop state changes.",
+          "characterConflict": "The character's goal to protect objective vs. enemy pressure creates conflict.",
+          "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward.",
+          "worldChange": "Defense placements alter the world map, affecting subsequent choices and risks.",
+          "nextEvent": "New event or scenario emerges from the interaction of main action and state change."
+        },
+        "cThemes": [
+          {
+            "name": "Economic System",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Resources influence strategy options"
+          },
+          {
+            "name": "Military Tactics",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Tactics affect placement strategies"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Economic Strategy & Resource Management",
+            "gameplayEffect": "A/B states evolve into new primary verb for main action"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Military Adaptation & Defensive Placement",
+            "gameplayEffect": "B's adaptive defense influences A's placement strategies"
+          }
+        ],
+        "cGenreInterlock": "Economic system contrasts military tactics; resource management bridges economic and strategic domains through player choice.",
+        "cWorldAndGameplayEffect": "Defenses alter the world map, influencing future choices and risks. Player decisions shape both the game mechanics and narrative progression.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player's initial defensive placements trigger core loop state changes",
+            "discovery": "New event or scenario emerges from interaction of main action and state change",
+            "newChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+          },
+          {
+            "clue": "Character's goal to protect objective vs. enemy pressure creates conflict",
+            "discovery": "Player's decision affects both game mechanics and narrative progression",
+            "newChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+          },
+          {
+            "clue": "Resource management bridges economic and strategic domains through player choice",
+            "discovery": "A/B states evolve into new primary verb for main action",
+            "newChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+          },
+          {
+            "clue": "Economic system contrasts military tactics",
+            "discovery": "Defense placements alter the world map, affecting future choices and risks",
+            "newChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+          }
+        ],
+        "delveGrowthRule": "In late game, A and B states evolve into a new primary verb for main action.",
+        "finalGameIdentity": "Main action triggers core loop state changes, which in turn affect A/B state transitions, leading to new event scenarios."
+      },
+      "playerFantasy": "방어의 진격: 선택이 끝없는 경쟁을 통해 세계를 바꾸는 플레이어. 각 단계에서 새로운 사건과 보상이 생기며, 숙련으로 발전하는 게임 경험을 선사한다.",
+      "coreFun": "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 최소 3개의 실제 플레이 단계. 방어 위치 결정, 자원 분배, 전략 조정 등 구체적 행동 및 결과를 명시하고 정체성 약속을 증명한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 173112,
+      "lastMs": 173112,
+      "lastError": null,
+      "updatedAt": "2026-10-09T17:23:09.082Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:15.929Z",
-  "updatedAt": "2026-10-09T17:20:15.939Z",
+  "updatedAt": "2026-10-09T17:23:09.082Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1715,5 +1816,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T17:23:09.082Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
