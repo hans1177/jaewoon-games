@@ -1149,25 +1149,28 @@
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
       "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::833c06fe620dd225c6fb6a2115a35ad5f6cfe8d75895bda965a0462629bc03c5:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 122,
-      "successes": 122,
+      "calls": 123,
+      "successes": 123,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4062660,
-      "lastMs": 32572,
+      "totalMs": 4094864,
+      "lastMs": 32204,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:42:38.396Z"
+      "updatedAt": "2026-10-09T01:43:10.603Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:42:38.397Z",
+  "updatedAt": "2026-10-09T01:43:10.603Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3493,7 +3496,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:42:38.397Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:43:10.603Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
