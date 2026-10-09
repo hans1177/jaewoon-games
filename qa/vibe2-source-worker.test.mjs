@@ -4274,6 +4274,24 @@ test('semantic diff validates Unity C# methods without depending on language key
   assert.deepEqual(result.unapprovedSymbols,['Assets/Scripts/GameCore.cs:GrantReward']);
 });
 
+test('coding retry consumes the exact unrelated function violation instead of repeating a generic patch',()=>{
+  const prompt=[
+    'Engine: web',
+    'Goal: repair handlePointer',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    error:new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYMBOL:index.html:awardCoins'),
+    responsibleFiles:['index.html'],attempt:2
+  });
+  assert.match(retry,/OFF-TARGET FUNCTIONS REJECTED: index\.html:awardCoins/);
+  assert.match(retry,/Do not edit their declarations or bodies/);
+  assert.match(retry,/ORIGINAL writable source/);
+});
+
 test('semantic diff hard gate protects existing save keys from silent removal',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
