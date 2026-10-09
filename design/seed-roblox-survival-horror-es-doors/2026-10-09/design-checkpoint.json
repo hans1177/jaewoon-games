@@ -1309,25 +1309,54 @@
     },
     "local_authoring_parts::eed65fc9da17a9418902e74ef602ad66f7fb38e77bac25bb6eddb74f9892ca3f:riskPressure": {
       "riskPressure": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
+    },
+    "local_authoring_parts::eed65fc9da17a9418902e74ef602ad66f7fb38e77bac25bb6eddb74f9892ca3f:recoveryRules": {
+      "recoveryRules": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
+    },
+    "local_authoring_parts::9b7bead58a92d5faea1cd32ce794be1136aa07607071cd3e147bf8a8d9c13c8a:failureRetryRisk": {
+      "failureStates": [
+        "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 STRATEGIC_DECISIONS을 통해 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+        "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+      ],
+      "retryFlow": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다.",
+      "riskPressure": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다.",
+      "recoveryRules": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
+    },
+    "local_authoring_parts::6946685e439dad193d5ad67d313715bf16fd7fc9d7f5428502e8ba644846280b:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 BOARD_STATE 상태에서 STRATEGIC_DECISIONS을 통해 다음의 판 패턴 상태를 생성하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+          "시스템은 BOARD_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+        ],
+        "retryFlow": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다.",
+        "riskPressure": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다.",
+        "recoveryRules": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 139,
-      "successes": 139,
+      "calls": 140,
+      "successes": 140,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4613436,
-      "lastMs": 35671,
+      "totalMs": 4649186,
+      "lastMs": 35750,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:51:49.201Z"
+      "updatedAt": "2026-10-09T01:52:24.953Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:51:49.202Z",
+  "updatedAt": "2026-10-09T01:52:24.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3367,152 +3396,15 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_REPEATED_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CONTENT_EXPANSION_PLAN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "BOARD_STATE_TRANSITION"
+          "name": "failureRetryRisk"
         },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "BOARD_STATE_TRANSITION"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "BOARD_STATE_TRANSITION"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "NEW_COMBO_GENERATION"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "BOARD_STATE_TRANSITION"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "RISK_REWARD_ANALYSIS"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "BOARD_STATE_TRANSITION"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "LEVEL_GOAL_STATE_FAILURE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[1]",
-          "value": "BOARD_PATTERN_FAILURE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3544,9 +3436,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_01의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3561,9 +3453,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3578,9 +3470,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3595,9 +3487,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→SIGNATURE_SYSTEM_05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_01→BOARD_STATE_TRANSITION_SYSTEM의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3624,7 +3516,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 5
+    "designer_draft_slices::systems-progression": 6
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3653,10 +3545,10 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:51:49.201Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:52:24.956Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
