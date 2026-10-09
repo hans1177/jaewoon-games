@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T16:06:06.283Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T16:07:34.592Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/human-go-temp/2026-10-09/design-seed.json",
+    "contentDigest": "199f9063caf620b4d83094d95ca908722cde2f93e3af528c43510bf60e549b62",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 989217,
-      "lastMs": 99283,
+      "totalMs": 1077522,
+      "lastMs": 88305,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:06:06.280Z"
+      "updatedAt": "2026-10-09T16:07:34.589Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T16:06:06.283Z"
+  "updatedAt": "2026-10-09T16:07:34.600Z"
 }

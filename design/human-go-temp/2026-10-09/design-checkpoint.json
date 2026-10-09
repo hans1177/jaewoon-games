@@ -274,25 +274,203 @@
           "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
         }
       ]
+    },
+    "local_authoring_parts::3f923316157fbd79142003b7487f59c8427949404eb98596d333491b290cedae:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::48a276f575e9e9cc4e8deb2f4961c38c4eb97ebeeeba7a5befd3a3ae77a87a02:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "PLAYER FIGHTS AN EASILY STARTED SURVIVAL RUN WITH ASCENDING HORDE AND ENEMY PRESSURE",
+        "CHOOSES UPDATES, PERKS, WEAPONS, SKILLS TO IMPROVE BUILD AND CONTINUE THE RUN",
+        "CONVERTS RUN RESULT INTO NEXT PROGRESSION CHOICE THROUGH CONTEXTUAL ACTIONS"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player-driven progression through escalating survival challenges with contextual actions and reward-based decision-making",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice via contextual actions and reward systems"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player choice and progression in survival run with enemy pressure",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and subsequent progression in the game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival run, ensuring that each decision leads to a new state of play.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build, leading to a new progression choice based on contextual actions and outcomes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival roguelite game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임의 콘텐츠를 재설계한다. 이 과정에서, 성장은 단순한 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 플레이 경험을 제공한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어와 음악으로 세계 분위기를 강화한다. 인과 법칙은 MAIN×A×B×c의 관계를 바탕으로, 각각의 선택 결과가 다른 상황/비용/위험으로 연결되어, 반복 가능한 루프를 형성한다. 실패·중단·재접속·저장은 원본 의미를 보존하고, 설계 수정은 기존 검증 및 보안 체계를 유지한다. 최소 두 실제 대안을 비교하여 한 판의 시작·전개·결말로 재생하며, 품질과 시간을 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석되며, 현대 보호 작품은 추상적 기법만 참고된다. 보호된 인물·대사·장면은 복제되지 않고, 설계 수정은 기존 검증 및 보안 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "playerFantasy": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임의 콘텐츠를 재설계한다. 이 과정에서, 성장은 단순한 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 플레이 경험을 제공한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어와 음악으로 세계 분위기를 강화한다. 인과 법칙은 MAIN×A×B×c의 관계를 바탕으로, 각각의 선택 결과가 다른 상황/비용/위험으로 연결되어, 반복 가능한 루프를 형성한다. 실패·중단·재접속·저장은 원본 의미를 보존하고, 설계 수정은 기존 검증 및 보안 체계를 유지한다. 최소 두 실제 대안을 비교하여 한 판의 시작·전개·결말로 재생하며, 품질과 시간을 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석되며, 현대 보호 작품은 추상적 기법만 참고된다. 보호된 인물·대사·장면은 복제되지 않고, 설계 수정은 기존 검증 및 보안 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "coreFun": "플레이어는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 통해, 선택 결과가 다음 월드 상태로 영향을 주는 ACTION_SURVIVAL_ROGUELITE 게임의 콘텐츠를 재설계한다. 이 과정에서, 성장은 단순한 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 장르에 맞게 다양한 플레이 경험을 제공한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동의 존재 이유를 설명하며, 시각 언어와 음악으로 세계 분위기를 강화한다. 인과 법칙은 MAIN×A×B×c의 관계를 바탕으로, 각각의 선택 결과가 다른 상황/비용/위험으로 연결되어, 반복 가능한 루프를 형성한다. 실패·중단·재접속·저장은 원본 의미를 보존하고, 설계 수정은 기존 검증 및 보안 체계를 유지한다. 최소 두 실제 대안을 비교하여 한 판의 시작·전개·결말로 재생하며, 품질과 시간을 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석되며, 현대 보호 작품은 추상적 기법만 참고된다. 보호된 인물·대사·장면은 복제되지 않고, 설계 수정은 기존 검증 및 보안 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "PLAYER FIGHTS AN EASILY STARTED SURVIVAL RUN WITH ASCENDING HORDE AND ENEMY PRESSURE",
+        "CHOOSES UPDATES, PERKS, WEAPONS, SKILLS TO IMPROVE BUILD AND CONTINUE THE RUN",
+        "CONVERTS RUN RESULT INTO NEXT PROGRESSION CHOICE THROUGH CONTEXTUAL ACTIONS"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player-driven progression through escalating survival challenges with contextual actions and reward-based decision-making",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice via contextual actions and reward systems"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player choice and progression in survival run with enemy pressure",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and subsequent progression in the game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival run, ensuring that each decision leads to a new state of play.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build, leading to a new progression choice based on contextual actions and outcomes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival roguelite game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 989217,
-      "lastMs": 99283,
+      "totalMs": 1077522,
+      "lastMs": 88305,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:06:06.280Z"
+      "updatedAt": "2026-10-09T16:07:34.589Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T16:06:06.283Z",
+  "updatedAt": "2026-10-09T16:07:34.599Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1998,12 +2176,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T16:06:06.283Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:07:34.592Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/human-go-temp/2026-10-09/design-seed.json",
+    "contentDigest": "199f9063caf620b4d83094d95ca908722cde2f93e3af528c43510bf60e549b62",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
