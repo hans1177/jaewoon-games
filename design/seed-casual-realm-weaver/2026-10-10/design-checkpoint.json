@@ -208,25 +208,39 @@
       "name": "Progression System",
       "purpose": "Player advances through levels",
       "playerChoice": "Initial action leading to state change via scoring, progressions, and retry mechanics"
+    },
+    "local_authoring_parts::907a1c6fa495535148f355b0357888a1d714e24b4054da282b5e50dbfc37f1a0:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Player's initial action"
+      ],
+      "stateOutputs": [
+        "Feedback/reward",
+        "Progression/retry"
+      ],
+      "name": "Risk Management",
+      "purpose": "Player learns to manage risks",
+      "playerChoice": "Initial action leading to state change via scoring, progressions, and retry mechanics"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 813383,
-      "lastMs": 64542,
+      "totalMs": 877582,
+      "lastMs": 64199,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:52:48.331Z"
+      "updatedAt": "2026-10-09T18:53:52.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:39:14.913Z",
-  "updatedAt": "2026-10-09T18:52:48.331Z",
+  "updatedAt": "2026-10-09T18:53:52.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1706,7 +1720,7 @@
   "localAuthoringSplits": {
     "7d13aea6edee6c890096e50f33fb561a63033d57a116cc4d3580567dbdaa37f8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:52:48.331Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:53:52.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
