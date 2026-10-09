@@ -1104,25 +1104,34 @@
         "riskPressure": "전선 파괴 결정의 위험 요소, 자원 배분 선택의 기회비용, 대응법의 중요성 강조",
         "recoveryRules": "실패 시 자원 분배 재조정, 전략적 동기 부여 재구성, 새 행동/경로/세계관계 도입"
       }
+    },
+    "local_authoring_parts::aab88a43943bf294e5d3e3e1c96fed167661430faaec7b1594f46f40a02945cc:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "identity-core",
+      "toId": "signatureSystems-1",
+      "stateKeys": [
+        "전선 상태 변화",
+        "전략적 동기 부여"
+      ],
+      "fromSystem": "identity-core"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 32,
-      "successes": 28,
+      "calls": 33,
+      "successes": 29,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 4092403,
-      "lastMs": 131250,
+      "totalMs": 4183505,
+      "lastMs": 91102,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:41:50.912Z"
+      "updatedAt": "2026-10-09T23:43:22.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T23:41:50.921Z",
+  "updatedAt": "2026-10-09T23:43:22.026Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2812,10 +2821,10 @@
     "e3991c91af100edb3449564f0fd5cdb1d6b7611be364ff8e8ee43cd3c66c82e3": true,
     "6590538dd7d43630a2db0bc448a401acf5e0771c40df0c9d596698a6a3dd0908": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:41:50.915Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:43:22.026Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
