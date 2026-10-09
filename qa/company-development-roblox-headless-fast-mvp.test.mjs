@@ -70,6 +70,11 @@ test('F0 rejects a GUI-only source and missing 3D camera',()=>{
  assert.equal(fake2d.pass,false);
  assert.equal(fake2d.f0Native3dSourcePassed,false);
  assert.ok(fake2d.blockers.includes('native3dWorldGeometrySource'));
+ const commentOnly=inspectHeadlessSourceTexts({...params,
+   server:server.replace('local worldPart=Instance.new("Part") worldPart.Size=Vector3.new(8,1,8) worldPart.Anchored=true worldPart.Parent=workspace','')
+     +' -- Instance.new("Part") Vector3.new(8,1,8)'});
+ assert.equal(commentOnly.pass,false);
+ assert.ok(commentOnly.blockers.includes('native3dWorldGeometrySource'));
  const missingCamera=inspectHeadlessSourceTexts({...params,client:client.replace('workspace.CurrentCamera','nil')});
  assert.equal(missingCamera.pass,false);
  assert.ok(missingCamera.blockers.includes('native3dCameraAndCharacterSource'));
