@@ -543,25 +543,42 @@
         "STATE"
       ],
       "fromSystem": "MAIN_01"
+    },
+    "local_authoring_parts::6d5187f0fcd7f8319b2e9cf63407a97f651b58af40b839e09c1776f6f259ba40:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN_02",
+      "trigger": "PLAYER CHOICES AFFECT WORLD STATE",
+      "stateChange": "INPUT -> OUTPUT -> REWARD/RISKS -> NEXT CHOICE"
+    },
+    "local_authoring_parts::0382201128b24983c834580c3b1dfc825d8bce18dea86b6221bcfdb0d73d9d7b:systemInterconnections:3": {
+      "fromId": "MAIN_01",
+      "toId": "MAIN_02",
+      "stateKeys": [
+        "OUTPUT",
+        "STATE"
+      ],
+      "fromSystem": "MAIN_01",
+      "toSystem": "MAIN_02",
+      "trigger": "PLAYER CHOICES AFFECT WORLD STATE",
+      "stateChange": "INPUT -> OUTPUT -> REWARD/RISKS -> NEXT CHOICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1888050,
-      "lastMs": 92676,
+      "totalMs": 1981149,
+      "lastMs": 93099,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:43:54.811Z"
+      "updatedAt": "2026-10-09T15:45:27.912Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:12:26.675Z",
-  "updatedAt": "2026-10-09T15:43:54.811Z",
+  "updatedAt": "2026-10-09T15:45:27.913Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2171,7 +2188,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:43:54.811Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:45:27.913Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
