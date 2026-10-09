@@ -504,25 +504,28 @@
       "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb",
       "trigger": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
       "stateChange": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::0286e49f3ede8e0c88ad325b2367b29b00885b0fe0c9cde692ecd065d5447187:fromId": {
+      "fromId": "V1_02"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1416590,
-      "lastMs": 49014,
+      "totalMs": 1457829,
+      "lastMs": 41239,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:44:32.863Z"
+      "updatedAt": "2026-10-09T08:45:14.104Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:44:32.864Z",
+  "updatedAt": "2026-10-09T08:45:14.104Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3088,7 +3091,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:44:32.864Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:45:14.104Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
