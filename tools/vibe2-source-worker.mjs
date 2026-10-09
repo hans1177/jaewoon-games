@@ -4113,7 +4113,29 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
           return ![...existing,...proposed].some(owner=>allowedSymbols.has(owner.name)
             &&owner.start<row.start&&owner.end>=row.end);
         });
-        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols});
+        // 허용된 함수 몸체만 가리고 원본과 후보의 나머지 소스를 대조한다.
+        // 같은 파일의 다른 전역 상태·실행문을 고치는 후보는 책임 함수명이 근처에 있어도 거부한다.
+        const nonOwnedSource=(text,functions)=>{
+          const ownerFunctions=functions.filter(row=>allowedSymbols.has(row.name))
+            .sort((a,b)=>a.start-b.start||b.end-a.end);
+          const outerOwners=[];
+          for(const row of ownerFunctions){
+            if(!outerOwners.some(owner=>owner.start<=row.start&&owner.end>=row.end))outerOwners.push(row);
+          }
+          let remaining=text;
+          for(const row of outerOwners.sort((a,b)=>b.start-a.start)){
+            remaining=remaining.slice(0,row.start)+'\u001fOWNED_FUNCTION:'+row.name+'\u001e'+remaining.slice(row.end);
+          }
+          // 읽기 전용 상태와 구분해 명시적으로 소유한 단일 상태 선언·대입만 허용한다.
+          for(const name of ownedState){
+            if(!/^[A-Za-z_$][\w$]*$/.test(name))continue;
+            const declaration=new RegExp('(^|\\n)[ \\t]*(?:(?:public|private|protected|internal|static|readonly|const|let|var|local)\\s+)*(?:[A-Za-z_][\\w<>\\[\\]?]*\\s+)?'+regexEscape(name)+'\\s*=\\s*[^;\\n]*;?[ \\t]*(?=\\n|$)','g');
+            remaining=remaining.replace(declaration,(_,prefix)=>prefix+'\u001fOWNED_STATE:'+name+'\u001e');
+          }
+          return remaining;
+        };
+        const unownedSourceMutation=nonOwnedSource(before,existing)!==nonOwnedSource(after,proposed);
+        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols,unownedSourceMutation});
       }catch{
         // 소스 검사 자체가 실패한 경우에도 함수 범위를 추측해 PASS로 만들지 않는다.
       }
@@ -4124,6 +4146,7 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     if(inspected?.changedSymbols.length&&!inspected.unrelatedSymbols.length)row.touchesAllowedMarker=true;
   }
   const unapprovedSymbols=unique(symbolMutationRows.flatMap(row=>row.unrelatedSymbols.map(name=>row.path+':'+name)));
+  const unownedSourcePaths=unique(symbolMutationRows.filter(row=>row.unownedSourceMutation).map(row=>row.path));
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
   const saveKeyViolations=[];
@@ -4139,12 +4162,13 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
   if(hardGate&&unapprovedSymbols.length)violations.push('UNRELATED_SYMBOL:'+unapprovedSymbols.join(','));
+  if(hardGate&&unownedSourcePaths.length)violations.push('UNOWNED_SOURCE_MUTATION:'+unownedSourcePaths.join(','));
   if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
   if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
     version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
-    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,unownedSourcePaths,
     protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
     saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
