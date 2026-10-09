@@ -20,6 +20,7 @@ const TYPES = Object.freeze({
 
 const REQUIRED_VISUAL_TYPES = Object.freeze(['character', 'enemy', 'boss', 'background', 'item', 'prop', 'effect', 'ui', 'animation']);
 const ACTOR_TYPES = Object.freeze(['character', 'npc', 'companion', 'creature', 'enemy', 'boss']);
+const THREE_D_WORLD_TYPES = Object.freeze([...ACTOR_TYPES,'background','prop']);
 const DEFAULT_MOTION_STATES = Object.freeze(['idle', 'move', 'attack', 'hit', 'skill', 'death']);
 const LOCOMOTION_STATES = Object.freeze(['move', 'walk', 'run', 'jump', 'fly', 'swim', 'crawl']);
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
@@ -48,8 +49,30 @@ function normalizeProductionTarget(value = '') {
 }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
-function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
+function declaredTypes(asset) {
+  const named = Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : [];
+  const family = text(asset?.family || asset?.category).toLowerCase();
+  const translated = {character:'character',creature:'creature',environment:'background',building:'prop',prop:'prop',weapon:'item'}[family];
+  return unique([...named,translated]);
+}
 function frozenList(values) { return Object.freeze([...(Array.isArray(values) ? values : [])]); }
+
+// 원본 2D 자산·UI 텍스처는 보존한다. 월드에 직접 배치할 후보에는 실제 3D 모델만 허용한다.
+function native3DModelAvailable(asset = {}) {
+  const dimension = text(asset.renderDimension || asset.worldDimension || asset.dimension).toUpperCase();
+  if (dimension === '2D' || dimension === '2.5D') return false;
+  const sources = [
+    asset.path,asset.sourcePath,asset.meshPath,asset.masterGlbPath,asset.nativeModelPath,
+    ...(Array.isArray(asset.sourceFiles) ? asset.sourceFiles : []),
+    ...(Array.isArray(asset.nativeArtifacts) ? asset.nativeArtifacts : [])
+  ];
+  return sources.some(row => /\.(?:glb|gltf|fbx|obj|blend|rbxm|rbxmx|prefab|unity)(?:[?#]|$)/i
+    .test(text(typeof row === 'object' ? row.path || row.sourcePath : row)));
+}
+function gameVisualVariantRequired(asset, gameId = '') {
+  const consumers = Array.isArray(asset.consumerGameIds) ? asset.consumerGameIds : [];
+  return Boolean(gameId && consumers.some(other => text(other) !== text(gameId)));
+}
 
 function animationResourceReady(asset) {
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
@@ -96,6 +119,8 @@ function findCandidates(type, candidates) {
     const descriptor = `${asset?.id || ''} ${asset?.name || ''} ${tags}`;
     const declared = declaredTypes(asset);
     if (!declared.includes(type) && !hasAny(descriptor, TYPES[type])) return false;
+    if ((THREE_D_WORLD_TYPES.includes(type) || (type === 'item' && asset.worldModel === true))
+      && !native3DModelAvailable(asset)) return false;
 
     if (ACTOR_TYPES.includes(type)) {
       if (asset?.blockedForActorUse === true) return false;
@@ -106,6 +131,7 @@ function findCandidates(type, candidates) {
     return true;
   }).map((asset) => ({
     type,
+    native3D:THREE_D_WORLD_TYPES.includes(type) || asset.worldModel === true,
     id:text(asset.id),
     path:text(asset.path),
     license:text(asset.license),
@@ -114,6 +140,12 @@ function findCandidates(type, candidates) {
     animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset, candidates)) : Boolean(asset?.verifiedAnimation),
     motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset, candidates) : null,
     sourceUrl:text(asset.sourceUrl),
+    consumerGameIds:frozenList(asset.consumerGameIds),
+    productionVerified:asset.productionVerified===true,
+    companyVerified:asset.verifiedCompanyReusable===true,
+    runtimeVerificationState:text(asset.runtimeVerificationState),
+    internalAuditScore:Number.isFinite(Number(asset.internalAuditScore))?Number(asset.internalAuditScore):null,
+    gameVisualVariantEvidence:asset.gameVisualVariantEvidence||null,
     platforms:frozenList(asset.platforms),
     platformResearchTargets:frozenList(asset.platformResearchTargets),
     rigged:asset?.rigged===true,
@@ -208,12 +240,14 @@ function buildProductionPlan(request, preset) {
     nativeGeneratedAssetSourceRecipeRequired:true,
     nativeGeneratedAssetReviewEvidenceRequired:true,
     nativeRuntimeVerificationRequiredBeforePromotion:true,
+    minimumFinalGameplayDimension:'3D',
+    crossGenreShared3DCharacterMonsterSourcePreferred:true,
     heavy3dUnityAndroidPreferred:['survival','rpg','action-rpg','fps-shooter','zombie-horror'].includes(preset.genre),
     legacyHeavy3dHintDoesNotOverrideExplicitOrCentralNativeTarget:true,
   });
 }
 
-export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
+export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false, gameId = '', genre = '' } = {}) {
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
   const explicitRequestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
@@ -228,8 +262,26 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const preferredIds = presetPreferredIds(prototypePreset);
   const matched = types.flatMap((type) => findCandidates(type, candidates))
     .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
-      || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
+      || Number(b.companyVerified&&b.productionVerified) - Number(a.companyVerified&&a.productionVerified)
+      || Number(b.studioMotionCandidate===true) - Number(a.studioMotionCandidate===true)
+      || Number(b.internalAuditScore ?? -1) - Number(a.internalAuditScore ?? -1));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
+  const legacy2DWorldAssetIds = unique(candidates.filter(asset =>
+    !native3DModelAvailable(asset) && THREE_D_WORLD_TYPES.some(type => declaredTypes(asset).includes(type))
+  ).map(asset => text(asset.id)));
+  const gameSpecific3dVariants = matched.filter(asset => ACTOR_TYPES.includes(asset.type))
+    .filter(asset => gameVisualVariantRequired(asset,gameId))
+    .map(asset => {
+      const proof = asset.gameVisualVariantEvidence||{};
+      const axes = unique((Array.isArray(proof.distinctAxes)?proof.distinctAxes:[]).map(v=>text(v).toUpperCase()));
+      const structural = ['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','BODY_PARTS'].some(axis=>axes.includes(axis));
+      const motion = ['STANCE_GAIT','SIGNATURE_MOTION'].some(axis=>axes.includes(axis));
+      const verified = text(proof.gameId)===text(gameId)&&proof.runtimeBeforeAfterPass===true
+        &&proof.nativePlatformPass===true&&axes.length>=3&&structural&&motion;
+      return Object.freeze({sourceAssetId:asset.id,gameId:text(gameId),genre:text(genre),
+        verified,minimumDistinctAxes:3,structuralAndMotionRequired:true,colorOnlyForbidden:true,
+        productionAction:verified?'USE_VERIFIED_GAME_VARIANT':'AUTHOR_AND_QA_VARIANT_FROM_SHARED_3D_MASTER'});
+    });
   const binding = types.map((type) => Object.freeze({
     type,
     required:true,
@@ -248,8 +300,11 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     explicitRequestedTypes:Object.freeze(explicitRequestedTypes),
     matched:Object.freeze(matched),
     missingTypes:Object.freeze(missingTypes),
+    legacy2DWorldAssetIds:Object.freeze(legacy2DWorldAssetIds),
+    gameSpecific3dVariants:Object.freeze(gameSpecific3dVariants),
+    requiredWorldDimension:'3D',
     binding:Object.freeze(binding),
-    ready:missingTypes.length===0,
+    ready:missingTypes.length===0&&gameSpecific3dVariants.every(variant=>variant.verified),
     animation:Object.freeze({
       required:true,
       actorAnimationRequired:true,
@@ -274,6 +329,10 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       generatedAssetNativeRuntimeVerificationRequired:true,
       webHighQualityAllowed:true,
       unityAndroidPreferredForHeavy3D:true,
+      native3dRequiredForEveryWorldCharacterCreatureAndProp:true,
+      crossGenre3dMasterReusePreferred:true,
+      colorOnlyCrossGameCloneForbidden:true,
+      preserve2dUiAudioAndTexturesAsSupport:true,
       blockedLicenses:[...BLOCKED_LICENSE_WORDS],
       blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
       requireLicenseRecord:true,
@@ -313,8 +372,8 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       '플레이어/일반 NPC/동료/아군/상인·퀘스트 NPC/펫·탈것·소환수/적·엘리트/보스와 배경·지형·사물·자원·건물·UI·VFX 목록 작성',
       '누락 에셋은 승인 소스에서 상업/수정 라이선스 확인 후 확보',
       'LICENSES/에셋 장부에 출처·제작자·라이선스·수정 여부 기록',
-      '모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결',
-      '프레임 에셋은 animation-state, 정지/보조 모션은 Jaewoon Motion Engine에 연결',
+      '기존 2D·2.5D 게임 월드는 3D 모델·지형·리그로 재제작하고 저장 키·판정·밸런스를 유지',
+      'RPG와 생존게임은 검증된 공용 3D 배우·몬스터 원본을 재사용하고 게임마다 실루엣·장비·모션을 차별화해 실제 화면에서 검증',
       '도형/이모지/단색 임시 그래픽 잔존 여부 검사',
       '에셋/모션과 authoritative 게임 로직 분리 확인',
       '모바일 화면/성능/reduced-motion 확인',
