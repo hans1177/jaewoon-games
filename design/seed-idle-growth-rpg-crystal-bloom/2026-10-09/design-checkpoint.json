@@ -90,25 +90,43 @@
       "name": "IDLE_GROWTH_RPG_B_RULE",
       "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 또는 관계 상태로 연결하는 최초의 시스템 규칙",
       "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
+    },
+    "local_authoring_parts::9f43a3ed52bda1e9764d39746437eeb6b2d6488aeeed67d183ca2c08ccffb83a:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT",
+        "STATE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "RISK",
+        "NEXT_CHOICE"
+      ],
+      "name": "IDLE_GROWTH_RPG_C_RULE",
+      "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서 발견, 숙련, 재방문의 깊이를 나타내는 시그니처 시스템.",
+      "playerChoice": "Discover hidden patterns in the world and unlock new growth layers through exploration, mastery, or revisiting previously explored areas. This choice directly influences the progression of the game and the availability of new resources and challenges in subsequent rounds."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 446915,
-      "lastMs": 32315,
+      "totalMs": 490335,
+      "lastMs": 43420,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:50:15.536Z"
+      "updatedAt": "2026-10-09T15:50:58.957Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T15:50:15.536Z",
+  "updatedAt": "2026-10-09T15:50:58.957Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1818,7 +1836,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:50:15.536Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:50:58.957Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
