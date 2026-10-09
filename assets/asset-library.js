@@ -6,7 +6,7 @@ const categoryLabels={CHARACTER:'캐릭터',CREATURE:'크리처',BUILDING:'건�
 // Owner-retired homepage previews. Keep the reusable source assets intact.
 const retiredPreviews=new Set(['roblox-insect-spider-hd-v1','roblox-insect-spider-hd','roblox-world-ghost-gwisin-bride']);
 const publicAssets=assets=>assets.filter(row=>!retiredPreviews.has(row.id));
-const registrySignature=value=>JSON.stringify(value?.assets?.map(({id,title,category,family,subfamily,platform,status,path,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,internalAuditScore,internalAuditGrade})=>({id,title,category,family,subfamily,platform,status,path,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,internalAuditScore,internalAuditGrade})));
+const registrySignature=value=>JSON.stringify(value?.assets?.map(({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256})=>({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256})));
 const biomes={forest:'숲',snow:'설원',desert:'사막',swamp:'늪',cave:'동굴',coast:'해안',village:'마을',city:'도시',ruins:'폐허',dungeon:'던전'};
 const clipNames={idle:'대기',walk:'걷기',chase:'추격',attack:'공격',hit:'피격',death:'쓰러짐'};
 const motionLabels={IDLE_RELAXED:'대기',WALK:'걷기',JOG:'조깅',RUN:'달리기',START:'출발',STOP:'정지',TURN_90:'90도 회전',JUMP_START:'점프',LAND:'착지',HIT_FRONT:'정면 피격',DEATH_FRONT:'쓰러짐',BLOCK_RAISE:'방어 올리기',BLOCK_HOLD:'방어 유지',PARRY_PERFECT:'정밀 받아치기',GUARD_BREAK:'가드 브레이크',COUNTER_READY:'카운터 준비',SPRINT:'전력질주',CROUCH_IDLE:'웅크리기',DODGE_LEFT:'왼쪽 회피',DODGE_RIGHT:'오른쪽 회피',ROLL_FORWARD:'앞구르기',CLIMB_LOOP:'오르기',SWIM_FORWARD:'수영',INTERACT_USE:'상호작용',GATHER_SWING:'채집 휘두르기',CRAFT_LOOP:'제작',CARRY_IDLE:'들고 대기',EQUIP_DRAW:'장비 꺼내기',UNEQUIP_STOW:'장비 넣기',USE_CONSUMABLE:'소모품 사용',DOWNED_IDLE:'다운',REVIVE_HELP:'부활 도움',EMOTE_WAVE:'손 흔들기',LIGHT_ATTACK_1:'약공격',HEAVY_ATTACK_1:'강공격',RANGED_DRAW_SHOT:'원거리 발사',CAST_BURST:'마법 발동',CHANNEL_LOOP:'집중 시전',HIT_BACK:'후방 피격',BLEND_NEUTRAL:'중립 블렌드',SIT_DOWN:'앉기',STAND_UP:'일어나기',LEAN_WALL_IDLE:'벽 기대기',OPEN_DOOR:'문 열기',OPEN_CONTAINER:'상자 열기',PICKUP_GROUND:'줍기',PLACE_GROUND:'놓기',PUSH_OBJECT:'밀기',PULL_OBJECT:'당기기',TALK_GESTURE:'대화 제스처',NPC_WORK_LOOP:'NPC 작업',COOK_LOOP:'요리',FARM_TEND:'농사',FISH_CAST:'낚시',BED_LIE_DOWN:'눕기',LADDER_ENTER:'사다리 진입',LADDER_EXIT:'사다리 이탈',SLOPE_ASCEND:'오르막',SLOPE_DESCEND:'내리막',FATIGUED_IDLE:'지친 대기',INJURED_WALK:'부상 걷기'};
@@ -53,15 +53,53 @@ function allRows(){
    sharedImage:Boolean(asset.previewPath&&asset.previewPath!==asset.path)};
  }).sort((a,b)=>Number(Boolean(b.sample))-Number(Boolean(a.sample)));
 }
+// --- 검색: 등록 자산의 실제 경로·플랫폼·검증 근거만 사용 ---
 function updateFilters(){
  const old=$('formFilter').value;
  $('formFilter').replaceChildren(new Option('모든 종류',''));
  for(const form of [...new Set(rows.map(row=>row.form))].sort())$('formFilter').add(new Option(kind==='all'?(categoryLabels[form]||form):(forms[form]||form),form));
- if([...$('formFilter').options].some(option=>option.value===old))$('formFilter').value=old;
+ $('formFilter').value=[...$('formFilter').options].some(option=>option.value===old)?old:'';
+ const folderFilter=$('folderFilter'),oldFolder=folderFilter.value;
+ folderFilter.replaceChildren(new Option('모든 폴더',''));
+ const folderPaths=new Set();
+ for(const row of rows){
+  const raw=String(row.asset?.sourcePath||row.asset?.path||'').trim();
+  if(!raw)continue;
+  if(/^https?:\/\//i.test(raw)){folderPaths.add('외부 경로');continue;}
+  const parts=raw.replace(/^\//,'').split('/').filter(Boolean);
+  folderPaths.add(parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위');
+ }
+ for(const folder of [...folderPaths].sort((a,b)=>a.localeCompare(b,'ko')))folderFilter.add(new Option(folder,folder));
+ folderFilter.value=[...folderFilter.options].some(option=>option.value===oldFolder)?oldFolder:'';
+ const platformFilter=$('platformFilter'),oldPlatform=platformFilter.value;
+ platformFilter.replaceChildren(new Option('모든 플랫폼',''));
+ for(const platform of [...new Set(rows.map(row=>String(row.asset?.platform||'').trim()).filter(Boolean))].sort())platformFilter.add(new Option(platform,platform));
+ platformFilter.value=[...platformFilter.options].some(option=>option.value===oldPlatform)?oldPlatform:'';
 }
 function showList(){
  const query=$('assetSearch').value.trim().toLocaleLowerCase(),form=(kind==='monster'||kind==='all')?$('formFilter').value:'';
- const filtered=rows.filter(row=>(!form||row.form===form)&&(!query||[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,row.asset?.platform,row.asset?.status,row.asset?.runtimeVerificationState,row.asset?.internalAuditGrade,row.asset?.consumerGameIds?.join(' '),row.asset?.productionVerified===true?'production verified':row.asset?.productionVerified===false?'production unverified':''].filter(Boolean).join(' ').toLocaleLowerCase().includes(query)));
+ const selectedFolder=$('folderFilter').value,selectedPlatform=$('platformFilter').value;
+ const verification=$('verificationFilter').value,sourceFilter=$('sourceFilter').value;
+ const sourceCounts=new Map();
+ for(const asset of registry?.assets||[]){
+  const source=String(asset?.sourcePath||asset?.path||'').trim();
+  if(source)sourceCounts.set(source,(sourceCounts.get(source)||0)+1);
+ }
+ const filtered=rows.filter(row=>{
+  const asset=row.asset||{},source=String(asset.sourcePath||asset.path||'').trim();
+  const parts=source.replace(/^\//,'').split('/').filter(Boolean);
+  const folder=!source?'':/^https?:\/\//i.test(source)?'외부 경로':parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위';
+  const platform=String(asset.platform||'').trim(),sameSource=sourceCounts.get(source)||0;
+  const verified=asset.productionVerified===true?'verified':asset.productionVerified===false?'unverified':'unknown';
+  const text=[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,
+   source,asset.previewPath,folder,platform,asset.status,asset.runtimeVerificationState,asset.internalAuditGrade,
+   asset.consumerGameIds?.join(' '),asset.intendedConsumerGameIds?.join(' '),asset.sourceRevision,asset.version,asset.sha256,
+   verified==='verified'?'production verified':verified==='unverified'?'production unverified':''].filter(Boolean).join(' ').toLocaleLowerCase();
+  return(!form||row.form===form)&&(!selectedFolder||selectedFolder===folder)
+   &&(!selectedPlatform||selectedPlatform===platform)&&(!verification||verification===verified)
+   &&(!sourceFilter||(sourceFilter==='shared'?sameSource>1:sourceFilter==='unique'?Boolean(source)&&sameSource===1:true))
+   &&(!query||text.includes(query));
+ });
  const list=$('assetList'),scrollTop=list.scrollTop,scrollLeft=list.scrollLeft,focused=document.activeElement?.dataset?.id;list.replaceChildren();
  $('resultCount').textContent=filtered.length+'개 / 전체 '+rows.length+'개';
  for(const row of filtered){
@@ -70,7 +108,8 @@ function showList(){
   const detail=document.createElement('small');
   const preview=row.retiredPreview?'홈 미리보기 제외':row.atom?'3D 모션':row.sample?(row.category==='ENVIRONMENT'?'3차원 배경':'3차원 동작'):row.image?'등록 이미지':'미리보기 준비 중';
   const quality=row.asset?.internalAuditScore!==undefined?['품질 '+row.asset.internalAuditScore,row.asset?.internalAuditGrade].filter(Boolean).join(' / '):row.asset?.internalAuditGrade?'품질 '+row.asset.internalAuditGrade:'';
-  detail.textContent=kind==='all'?[categoryLabels[row.category]||row.category,row.id,row.asset?.platform,row.asset?.status,quality,preview].filter(Boolean).join(' · '):kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.atom?(row.role||'공용 R15 동작')+' · 3D 모션':'미리보기 준비 중'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
+  const source=String(row.asset?.sourcePath||row.asset?.path||'').trim(),shared=sourceCounts.get(source)||0;
+  detail.textContent=kind==='all'?[categoryLabels[row.category]||row.category,row.id,row.asset?.platform,row.asset?.status,shared>1?'같은 경로 '+shared+'개':'',quality,preview].filter(Boolean).join(' · '):kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.atom?(row.role||'공용 R15 동작')+' · 3D 모션':'미리보기 준비 중'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
   button.append(title,detail);button.addEventListener('click',()=>choose(row));list.append(button);
  }
  if(!filtered.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='찾는 자산이 없어. 이름이나 종류를 바꿔 봐.';list.append(empty);}
@@ -115,7 +154,13 @@ async function choose(row,force=false){
  const production=row.asset?.productionVerified===true?'productionVerified: 검증됨':row.asset?.productionVerified===false?'productionVerified: 미검증':'productionVerified: 미기재';
  const runtime=row.asset?.runtimeVerificationState?'runtimeVerificationState: '+row.asset.runtimeVerificationState:'runtimeVerificationState: 미기재';
  const consumers=Array.isArray(row.asset?.consumerGameIds)&&row.asset.consumerGameIds.length?'사용 게임: '+row.asset.consumerGameIds.join(', '):'';
- $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
+ const sourcePath=String(row.asset?.sourcePath||row.asset?.path||'').trim();
+ const sharedSource=sourcePath?(registry?.assets||[]).filter(asset=>String(asset?.sourcePath||asset?.path||'').trim()===sourcePath).length:0;
+ const sourceInfo=sourcePath?'원본 경로: '+sourcePath:'원본 경로: 미기재';
+ const sharedInfo=sharedSource>1?'동일 경로 등록 '+sharedSource+'개 · 실제 중복 여부는 별도 확인 필요':'';
+ const sourceVersion=row.asset?.sourceRevision||row.asset?.version?'자산 버전: '+(row.asset.sourceRevision||row.asset.version):'';
+ const registryVersion=registry?.version?'등록부 버전: '+registry.version:'';
+ $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;
  $('previewStatus').textContent='미리보기를 불러오는 중…';$('previewBadge').textContent='불러오는 중';
@@ -188,12 +233,12 @@ function switchKind(next){
  $('allTab').setAttribute('aria-pressed',String(kind==='all'));$('monsterTab').setAttribute('aria-pressed',String(kind==='monster'));$('commonTab').setAttribute('aria-pressed',String(kind==='common'));$('environmentTab').setAttribute('aria-pressed',String(kind==='environment'));
  $('formFilter').hidden=!(kind==='monster'||kind==='all');$('formLabel').hidden=!(kind==='monster'||kind==='all');$('assetSearch').value='';
  $('formLabel').textContent=kind==='all'?'자산군':'몬스터 종류';
- $('assetSearch').placeholder=kind==='all'?'전체 자산 검색':kind==='monster'?'몬스터 이름 검색':kind==='common'?'공용 동작 이름 검색':'배경 이름 검색';
+ $('assetSearch').placeholder=kind==='all'?'이름·원본 경로·사용 게임 검색':kind==='monster'?'몬스터·원본 경로 검색':kind==='common'?'동작·원본 경로 검색':'배경·원본 경로 검색';
  if(!manifest||!registry)return;rows=allRows();updateFilters();showList();const initial=rows.find(row=>row.sample||row.atom||row.image)||rows[0];if(initial)choose(initial);
 }
 for(const [buttonId,assetId,clipId]of featuredTargets)$(buttonId).addEventListener('click',()=>openFeatured(assetId,clipId));
 $('allTab').addEventListener('click',()=>switchKind('all'));$('monsterTab').addEventListener('click',()=>switchKind('monster'));$('commonTab').addEventListener('click',()=>switchKind('common'));$('environmentTab').addEventListener('click',()=>switchKind('environment'));
-$('assetSearch').addEventListener('input',showList);$('formFilter').addEventListener('change',showList);
+$('assetSearch').addEventListener('input',showList);$('formFilter').addEventListener('change',showList);for(const id of ['folderFilter','platformFilter','verificationFilter','sourceFilter'])$(id).addEventListener('change',showList);
 $('refreshAssets').addEventListener('click',()=>refresh(true));
 $('pauseMotion').addEventListener('click',()=>{paused=!paused;viewer?.setPaused(paused);pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+(paused?' · 멈춤':' · 재생');});
 $('replayMotion').addEventListener('click',()=>{paused=false;viewer?.setPaused(false);viewer?.replay();pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+' · 재생';});
