@@ -3,78 +3,23 @@
   "gameId": "seed-casual-realm-weaver",
   "date": "2026-10-09",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
-  "fingerprint": "bea04dc6cb2496490dfd3d62dd36e4cd41675b712d917bfbac3cedda26551454",
-  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
+  "fingerprint": "f5dffda19f45983185e7917836d2103390d80404d409d2bcd75a09166178500a",
+  "policyDigest": "3bae97985d3734f0dd2be83c7447ba4928188d9e542be339dee50932cef38315",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::7b248a398fb62c62b975f0d157a33dc71c60315577877b2b86b30dcd93f552a7:identity": {
-      "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n\n플레이어는 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n핵심 재미: 선택 결과가 다음 월드 상태로 연결되는 CASUAL 게임\n핵심 루프: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\n보조 요소 c: 이전 선택과 현재 상태 간의 관계를 변환하는 서브요소\n파고들기 @: 발견, 숙련, 재방문 깊이로 역할 구분\n인과법칙: 행위의 결과가 지연되어 행위자, 관계, 후대에 되돌아온다.\n\n시스템: 플레이어의 시작과 선택이 실제 월드/시스템 상태 변화로 연결된 플레이 공간\n\n장르: 캐주얼, 모바일\n\n원본 규칙 및 수치 보존:\n- START -> STATE CHANGE -> REWARD / RISK / NEXT CHOICE\n- MAIN × A × B × C + @\n- 인과법칙 유지\n- 저장·보상·진행 기능 병렬 추가\n- 각 시스템은 최소 5개 이상의 서로 다른 메커니즘 포함\n- 상황별 예외와 대가, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택\n- 발동 조건, 자원, 시간, 전조, 상대 대응 담음\n- 게임 규칙과 저장 의미 임의 변경 불가\n- 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담 확인 필요"
-    },
-    "local_authoring_parts::7b248a398fb62c62b975f0d157a33dc71c60315577877b2b86b30dcd93f552a7:playerFantasy": {
-      "playerFantasy": "세계의 직조자는 플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n플레이어는 이 선택을 통해 월드 상태를 바꾸며, 다음 선택과 보상이 동시에 발생하는 반복 가능한 핵심 루프를 경험합니다.\n\n선택 결과는 월드/시스템 상태 변화로 연결되어 있으며, 주체인 플레이어는 자신의 행동에 따라 다양한 경로와 위험, 보상을 경험하게 됩니다."
-    },
-    "local_authoring_parts::e9c22ccd98403c48e89793abcd0df50a1b5dabc932d2fd52552669c3b3065c09:identity,playerFantasy": {
-      "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n\n플레이어는 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n핵심 재미: 선택 결과가 다음 월드 상태로 연결되는 CASUAL 게임\n핵심 루프: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\n보조 요소 c: 이전 선택과 현재 상태 간의 관계를 변환하는 서브요소\n파고들기 @: 발견, 숙련, 재방문 깊이로 역할 구분\n인과법칙: 행위의 결과가 지연되어 행위자, 관계, 후대에 되돌아온다.\n\n시스템: 플레이어의 시작과 선택이 실제 월드/시스템 상태 변화로 연결된 플레이 공간\n\n장르: 캐주얼, 모바일\n\n원본 규칙 및 수치 보존:\n- START -> STATE CHANGE -> REWARD / RISK / NEXT CHOICE\n- MAIN × A × B × C + @\n- 인과법칙 유지\n- 저장·보상·진행 기능 병렬 추가\n- 각 시스템은 최소 5개 이상의 서로 다른 메커니즘 포함\n- 상황별 예외와 대가, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택\n- 발동 조건, 자원, 시간, 전조, 상대 대응 담음\n- 게임 규칙과 저장 의미 임의 변경 불가\n- 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담 확인 필요",
-      "playerFantasy": "세계의 직조자는 플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n플레이어는 이 선택을 통해 월드 상태를 바꾸며, 다음 선택과 보상이 동시에 발생하는 반복 가능한 핵심 루프를 경험합니다.\n\n선택 결과는 월드/시스템 상태 변화로 연결되어 있으며, 주체인 플레이어는 자신의 행동에 따라 다양한 경로와 위험, 보상을 경험하게 됩니다."
-    },
-    "local_authoring_parts::e9c22ccd98403c48e89793abcd0df50a1b5dabc932d2fd52552669c3b3065c09:coreFun": {
-      "coreFun": "플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n선택 결과는 월드/시스템 상태 변화로 연결되어 있으며, 주체인 플레이어는 자신의 행동에 따라 다양한 경로와 위험, 보상을 경험하게 됩니다."
-    },
-    "local_authoring_parts::3f4357da93799f8ae6e6106e9f6c25c3b4bbb8477e0ef9073e435fc5a55de814:identity,playerFantasy,coreFun": {
-      "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n\n플레이어는 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n핵심 재미: 선택 결과가 다음 월드 상태로 연결되는 CASUAL 게임\n핵심 루프: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\n보조 요소 c: 이전 선택과 현재 상태 간의 관계를 변환하는 서브요소\n파고들기 @: 발견, 숙련, 재방문 깊이로 역할 구분\n인과법칙: 행위의 결과가 지연되어 행위자, 관계, 후대에 되돌아온다.\n\n시스템: 플레이어의 시작과 선택이 실제 월드/시스템 상태 변화로 연결된 플레이 공간\n\n장르: 캐주얼, 모바일\n\n원본 규칙 및 수치 보존:\n- START -> STATE CHANGE -> REWARD / RISK / NEXT CHOICE\n- MAIN × A × B × C + @\n- 인과법칙 유지\n- 저장·보상·진행 기능 병렬 추가\n- 각 시스템은 최소 5개 이상의 서로 다른 메커니즘 포함\n- 상황별 예외와 대가, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택\n- 발동 조건, 자원, 시간, 전조, 상대 대응 담음\n- 게임 규칙과 저장 의미 임의 변경 불가\n- 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담 확인 필요",
-      "playerFantasy": "세계의 직조자는 플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n플레이어는 이 선택을 통해 월드 상태를 바꾸며, 다음 선택과 보상이 동시에 발생하는 반복 가능한 핵심 루프를 경험합니다.\n\n선택 결과는 월드/시스템 상태 변화로 연결되어 있으며, 주체인 플레이어는 자신의 행동에 따라 다양한 경로와 위험, 보상을 경험하게 됩니다.",
-      "coreFun": "플레이어가 즉시 시작할 수 있는 단순한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 중심입니다.\n\n선택 결과는 월드/시스템 상태 변화로 연결되어 있으며, 주체인 플레이어는 자신의 행동에 따라 다양한 경로와 위험, 보상을 경험하게 됩니다."
-    },
-    "local_authoring_parts::e7cf158c1616c9993fa3ef87a5ea2faf3a922434201b5e15acf90fce31348b6d:coreLoop": {
-      "coreLoop": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
-        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
-      ]
-    },
-    "local_authoring_parts::cd29a193e326b918f1c5c7d32a8426acfc9733662de14a7910945002c5929e9d:signatureSystems:0": {
-      "id": "KARMA_RETURN",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "START_STATE",
-        "STATE_CHANGE",
-        "REWARD_RISK_NEXT_CHOICE"
-      ],
-      "stateOutputs": [
-        "NEXT_WORLD_STATE",
-        "ACTION_EFFECT",
-        "PROGRESSION_INDICATOR"
-      ],
-      "name": "인과 지연 시스템",
-      "purpose": "행위의 결과가 행위자, 관계, 후대에 되돌아온다.",
-      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. -> Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. -> Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 900964,
-      "lastMs": 203613,
-      "lastError": null,
-      "updatedAt": "2026-10-09T12:34:31.873Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T12:19:30.567Z",
-  "updatedAt": "2026-10-09T12:34:31.885Z",
+  "createdAt": "2026-10-09T14:18:48.035Z",
+  "updatedAt": "2026-10-09T14:18:48.046Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 121,
-    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "version": 122,
+    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
     "inventoryCount": 717,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -82,7 +27,7 @@
     "platforms": {
       "WEB": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -97,77 +42,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -234,34 +124,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -273,33 +135,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -543,30 +381,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -594,17 +412,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "ADAPT",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -635,17 +449,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -689,7 +499,7 @@
       },
       "UNITY": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -704,77 +514,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -841,34 +596,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -880,33 +607,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1150,30 +853,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1201,17 +884,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "ADAPT",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1242,17 +921,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1296,7 +971,7 @@
       },
       "ROBLOX": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1311,77 +986,22 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1448,34 +1068,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1487,33 +1079,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1757,30 +1325,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1808,17 +1356,13 @@
           },
           {
             "family": "CHARACTER",
-            "action": "USE",
-            "assetId": "roblox-common-character-gear-travel-cloak",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "back"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1849,17 +1393,13 @@
           },
           {
             "family": "PROP",
-            "action": "USE",
-            "assetId": "roblox-common-world-prop-animal-trough",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "feed"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1903,27 +1443,6 @@
       }
     },
     "assetFacts": {
-      "roblox-common-character-gear-travel-cloak": {
-        "family": "CHARACTER",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "back"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "BACK_GEAR",
-        "sourcePath": "/assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 883.4,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
       "roblox-common-motion-run": {
         "family": "MOTION",
         "roleEvidence": {
@@ -1940,27 +1459,6 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-world-prop-animal-trough": {
-        "family": "PROP",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "feed"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "ANIMAL_TROUGH",
-        "sourcePath": "/assets/roblox/common-world-props-v1/RobloxCommonWorldProps.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 883.2,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -1988,25 +1486,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::cd29a193e326b918f1c5c7d32a8426acfc9733662de14a7910945002c5929e9d:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "KARMA_RETURN"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::cd29a193e326b918f1c5c7d32a8426acfc9733662de14a7910945002c5929e9d:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:34:31.873Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
