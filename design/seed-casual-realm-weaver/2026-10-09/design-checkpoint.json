@@ -34,25 +34,40 @@
         ">// 게임 내부에서 사용되는 상태 변화 및 보상 내용 정의됨 (실제 플레이 시에 따라 다름) // 실제 보상은 캐주얼 게임 특성에 맞게 수정 필요함 (예: 점수, 거리, 또는 짧은 세션 목표 등) // 이 부분은 구현 단계에서 추가해야 함 (보안 및 네트워크 권한 제약 포함) // 예시: ",
         "Reward: Score increase by 10 points"
       ]
+    },
+    "local_authoring_parts::92dee42fb02f906aeea4f38833740e8e5eff864d8e6389fa03da99903d06c695:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "score",
+        "distance",
+        "sessionGoal"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "Player action directly transitions the world state into a new configuration.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 157147,
-      "lastMs": 30608,
+      "totalMs": 176908,
+      "lastMs": 19761,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:21:25.203Z"
+      "updatedAt": "2026-10-09T14:21:44.966Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:18:48.035Z",
-  "updatedAt": "2026-10-09T14:21:25.203Z",
+  "updatedAt": "2026-10-09T14:21:44.966Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1529,7 +1544,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:21:25.203Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:21:44.966Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
