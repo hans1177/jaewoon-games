@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::ffd4779d52cfb8236af7cd20374553dc989aa83074301c71ffd64c41e0840897:identity": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 164804,
+      "lastMs": 164804,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:05:16.887Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:02:32.060Z",
-  "updatedAt": "2026-10-09T11:02:32.076Z",
+  "updatedAt": "2026-10-09T11:05:16.888Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:05:16.887Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
