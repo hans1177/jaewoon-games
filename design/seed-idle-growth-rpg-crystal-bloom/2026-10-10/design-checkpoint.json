@@ -224,25 +224,40 @@
       "name": "플레이어 선택",
       "purpose": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 확립하며, 다음 사건이 생성됨.",
       "playerChoice": "플레이어 선택은 게임 세계관 형성이 필요로 하는 필수 조건이며, 시그니처 세계 규칙은 게임 정체성의 핵심 요소이다."
+    },
+    "local_authoring_parts::9125caf8069879dce33e2ec54505647d6363cfbef991e760a9fe696ed07f3c2b:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "플레이어 선택",
+        "시그니처 세계 규칙"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택",
+        "게임 세계관 형성"
+      ],
+      "name": "플레이어 선택",
+      "purpose": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 게임 정체성과 세계관 형성을 통해 재정립된다.",
+      "playerChoice": "플레이어 선택은 실제 세계의 사건 생성과 게임 세계관 형성이 필수적인 결정 요소이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 813644,
-      "lastMs": 73602,
+      "totalMs": 883613,
+      "lastMs": 69969,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:40:44.484Z"
+      "updatedAt": "2026-10-09T20:41:54.455Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T20:40:44.484Z",
+  "updatedAt": "2026-10-09T20:41:54.455Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1955,7 +1970,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:40:44.484Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:41:54.455Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
