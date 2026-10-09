@@ -1018,25 +1018,28 @@
     },
     "local_authoring_parts::bf17c58adefa0a6048c99d0a0bf2b5111d8cb445b805cc8e269ace0159f46d11:toSystem": {
       "toSystem": "ENEMY_WAVE→TOWER_PLACEMENT"
+    },
+    "local_authoring_parts::bf17c58adefa0a6048c99d0a0bf2b5111d8cb445b805cc8e269ace0159f46d11:trigger": {
+      "trigger": "ENEMY_WAVE 정보가 입력되고, 사용자가 TOWER_PLACEMENT 옵션 중 하나를 선택하여 방어 전략이 생성된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되어 팀 내부의 방어 구성에 활용됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 89,
-      "successes": 89,
+      "calls": 90,
+      "successes": 90,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7655248,
-      "lastMs": 84105,
+      "totalMs": 7745694,
+      "lastMs": 90446,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:30:16.739Z"
+      "updatedAt": "2026-10-09T05:31:47.187Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T05:30:16.739Z",
+  "updatedAt": "2026-10-09T05:31:47.187Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3548,7 +3551,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:30:16.739Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:31:47.187Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
