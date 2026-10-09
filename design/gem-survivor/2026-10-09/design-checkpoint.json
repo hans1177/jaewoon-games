@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::74fb4b36610dbc4fa07c31bbdce76b58e8715b862ba21d6fca35de29df7123ab:identity": {
+      "identity": "보석 생존전은 플레이어가 '진행'하는 단일 행동 중심의 ACTION_SURVIVAL_ROGUELITE 게임이다. 진입 시점부터 최소 60자 이상의 구체적 정체성, 대표 행동, 선택, 시그니처 세계 규칙이 포함되어야 한다. 게임의 핵심 재미와 시스템 연결이 실제 플레이에 적용되며, MAIN/A/B/c/@와 관련된 상태 변화가 명확하게 나타나야 한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 196158,
+      "lastMs": 196158,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:59:11.918Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:55:55.739Z",
-  "updatedAt": "2026-10-09T12:55:55.754Z",
+  "updatedAt": "2026-10-09T12:59:11.918Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:59:11.918Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
