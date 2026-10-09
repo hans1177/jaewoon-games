@@ -779,25 +779,40 @@
     },
     "local_authoring_parts::3227b2f7b6e212afaf016f828fab8f89b68c3542391a8cda1bfc2d4a10f9af65:trigger": {
       "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::3227b2f7b6e212afaf016f828fab8f89b68c3542391a8cda1bfc2d4a10f9af65:stateChange": {
+      "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::2a42ae231acc72bc2bf4b6bbb0b838b4c40aad4dd2db87db1cb2aa0f5bd04115:systemInterconnections:2": {
+      "fromId": "DELVE",
+      "toId": "DELVE",
+      "stateKeys": [
+        "GAME_WORLD",
+        "EVENT"
+      ],
+      "fromSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "toSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 33,
+      "calls": 35,
+      "successes": 34,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2739724,
-      "lastMs": 61224,
+      "totalMs": 2803282,
+      "lastMs": 63558,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:13:46.132Z"
+      "updatedAt": "2026-10-09T23:14:49.691Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T23:13:46.132Z",
+  "updatedAt": "2026-10-09T23:14:49.693Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2846,7 +2861,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:13:46.132Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:14:49.693Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
