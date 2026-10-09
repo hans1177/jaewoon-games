@@ -851,25 +851,108 @@
     },
     "local_authoring_parts::dc0b7f28a8d987313acda1fee3d90760c478857a1200a9db3a0e6d6876e33d75:trigger": {
       "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::dc0b7f28a8d987313acda1fee3d90760c478857a1200a9db3a0e6d6876e33d75:stateChange": {
+      "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::2a42ae231acc72bc2bf4b6bbb0b838b4c40aad4dd2db87db1cb2aa0f5bd04115:systemInterconnections:4": {
+      "fromId": "DELVE",
+      "toId": "DELVE",
+      "stateKeys": [
+        "GAME_WORLD",
+        "EVENT"
+      ],
+      "fromSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨",
+      "toSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::edbc16c83e2e23287cb0c5fc731772f1993852c30d9c350488cdb6c2ba2ab2c3:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "A",
+          "toId": "MAIN",
+          "stateKeys": [
+            "PLAYERS",
+            "ACTION",
+            "GAME_WORLD",
+            "EVENT"
+          ],
+          "fromSystem": "실제 조건 및 선택을 기반으로 게임 세계관 형성",
+          "toSystem": "실제 조건 및 선택을 기반으로 게임 세계관 형성",
+          "trigger": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
+          "stateChange": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다."
+        },
+        {
+          "fromId": "A",
+          "toId": "MAIN",
+          "stateKeys": [
+            "PLAYERS",
+            "ACTION",
+            "GAME_WORLD",
+            "EVENT"
+          ],
+          "fromSystem": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
+          "toSystem": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
+          "trigger": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
+          "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "DELVE",
+          "stateKeys": [
+            "GAME_WORLD",
+            "EVENT"
+          ],
+          "fromSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "toSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "DELVE",
+          "stateKeys": [
+            "GAME_WORLD",
+            "EVENT"
+          ],
+          "fromSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨",
+          "toSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+        },
+        {
+          "fromId": "DELVE",
+          "toId": "DELVE",
+          "stateKeys": [
+            "GAME_WORLD",
+            "EVENT"
+          ],
+          "fromSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨",
+          "toSystem": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "trigger": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+          "stateChange": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 47,
+      "calls": 49,
+      "successes": 48,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3589254,
-      "lastMs": 59399,
+      "totalMs": 3648651,
+      "lastMs": 59397,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:27:55.686Z"
+      "updatedAt": "2026-10-09T23:28:55.085Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T23:27:55.687Z",
+  "updatedAt": "2026-10-09T23:28:55.088Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2918,7 +3001,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:27:55.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:28:55.088Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
