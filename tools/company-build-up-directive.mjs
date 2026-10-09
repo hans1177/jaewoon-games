@@ -1502,6 +1502,10 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGN_GAME_VOLUME: ${JSON.stringify(d.designContentImplementation?.authoredVolume||{})}`,
+    `DESIGN_CONTENT_ACTIVE_UNIT: ${JSON.stringify(d.designContentImplementation?.activeUnit||null)}`,
+    `DESIGN_CONTENT_VERIFICATION_RULE: ${d.designContentImplementation?.nextUnitSelection||'DESIGN_PENDING'}; acceptance=${(d.designContentImplementation?.acceptance||[]).join(',')}`,
+    'DESIGN_CONTENT_IMPLEMENTATION_EVIDENCE: Design quantity and source candidates are not implemented content. Edit the current approved unit in its existing owner source, connect player input→authoritative state→feedback→next goal, and replay native runtime before advancing.',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
     'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
@@ -1799,6 +1803,136 @@ export function buildGameSpecificBuildUpDirective({
       'DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP'
     ])
   }):autonomousContentExpansionBase;
+  // 설계가 승인한 실제 루프·시스템·연결·콘텐츠를 기존 BUILD_UP의 구현 단위로 유지한다.
+  // 설계 개수와 소스 키워드 개수는 실제 게임 콘텐츠 구현/실행 PASS가 아니다.
+  const authoredContentFamilies=Object.entries(design.contentVarietyPlan||{})
+    .filter(([,entries])=>Array.isArray(entries));
+  const designVolumeUnits=[];
+  const addDesignUnit=({kind,index,title,designOrigin,playerAction='',trigger='',stateChange='',nextConnection='',details={}})=>{
+    if(!clean(title))return;
+    designVolumeUnits.push(Object.freeze({
+      id:kind+':'+index,kind,title:clean(title),designOrigin,
+      playerAction:clean(playerAction),trigger:clean(trigger),
+      stateChange:clean(stateChange),nextConnection:clean(nextConnection),
+      authoredDetails:Object.freeze({...details}),
+      sourceOwnerCandidates:Object.freeze([...topFiles]),
+      sourceOwnerStatus:'INSPECTED_CANDIDATES_NOT_VERIFIED_IMPLEMENTATION',
+      implementationStatus:'PENDING_EXACT_SOURCE_AND_NATIVE_RUNTIME_EVIDENCE',
+      executableChain:'PREREQUISITE -> PLAYER_INPUT -> AUTHORITATIVE_STATE -> FEEDBACK -> CONNECTED_NEXT_GOAL',
+      acceptance:'REAL_PLAYER_INPUT_STATE_RESULT_REPLAY_AND_NO_SAVE_BALANCE_ECONOMY_NETWORK_REGRESSION'
+    }));
+  };
+  if(!safeDesignlessMode){
+    if(design.coreLoop.length)addDesignUnit({
+      kind:'CORE_LOOP',index:1,title:design.coreFun||design.coreLoop[0],
+      designOrigin:'content.coreLoop',playerAction:design.coreLoop[0],
+      trigger:design.coreLoop.join(' -> '),stateChange:design.coreLoop.at(-1),
+      nextConnection:design.progressionDirection,details:{steps:[...design.coreLoop],identity}
+    });
+    design.signatureSystems.forEach((system,index)=>{
+      const id=clean(system.id)||'DESIGN_SYSTEM_'+(index+1);
+      const related=design.systemInterconnections.filter(edge=>
+        [edge.fromId,edge.toId,edge.fromSystem,edge.toSystem].some(value=>
+          clean(value)&&(clean(value)===id||clean(value)===clean(system.name))
+        )
+      );
+      addDesignUnit({
+        kind:'SYSTEM',index:index+1,title:system.name||system.purpose,
+        designOrigin:'content.signatureSystems['+index+']',
+        playerAction:system.playerChoice,trigger:system.purpose,
+        stateChange:uniq(system.stateOutputs||[]).join(', '),
+        nextConnection:related.map(edge=>clean(edge.toSystem)||clean(edge.toId)||clean(edge.stateChange)).filter(Boolean).join(' -> '),
+        details:{id:clean(system.id),grammarRole:clean(system.grammarRole),purpose:system.purpose,
+          stateInputs:system.stateInputs||[],stateOutputs:system.stateOutputs||[],relatedConnections:related}
+      });
+    });
+    design.systemInterconnections.forEach((edge,index)=>addDesignUnit({
+      kind:'SYSTEM_CONNECTION',index:index+1,
+      title:(clean(edge.fromSystem)||clean(edge.fromId)||'DESIGNED_SOURCE')+' -> '+
+        (clean(edge.toSystem)||clean(edge.toId)||'DESIGNED_TARGET'),
+      designOrigin:'content.systemInterconnections['+index+']',
+      playerAction:edge.playerChoice||edge.trigger,trigger:edge.trigger,
+      stateChange:edge.stateChange,nextConnection:edge.toSystem||edge.toId,
+      details:{...edge}
+    }));
+    design.contentExpansionPlan.forEach((stage,index)=>addDesignUnit({
+      kind:'CONTENT_MILESTONE',index:index+1,title:stage.milestone||stage.newGameplay,
+      designOrigin:'content.contentExpansionPlan['+index+']',
+      trigger:stage.milestone,playerAction:stage.newGameplay,
+      stateChange:stage.systemImpact,nextConnection:design.progressionDirection,
+      details:{...stage,approvedMilestoneOrder:index+1}
+    }));
+    authoredContentFamilies.forEach(([family,entries])=>entries.forEach((item,index)=>{
+      const row=item&&typeof item==='object'&&!Array.isArray(item)?item:{name:clean(item)};
+      const title=clean(row.name||row.title||row.id||row.goal||row.objective||row.description)||family+' '+(index+1);
+      addDesignUnit({
+        kind:'CONTENT_ELEMENT',index:family+':'+(index+1),title,
+        designOrigin:'content.contentVarietyPlan.'+family+'['+index+']',
+        trigger:row.trigger||row.encounterPattern||row.requirements,
+        playerAction:row.playerChoice||row.gameplay||row.objective||row.traversal,
+        stateChange:row.consequence||row.riskReward||row.reward,
+        nextConnection:row.unlock||row.systemImpact||design.progressionDirection,
+        details:{family,...row}
+      });
+    }));
+    if(design.progressionDirection)addDesignUnit({
+      kind:'PROGRESSION_CHAIN',index:1,title:design.progressionDirection,
+      designOrigin:'content.progressionDirection',playerAction:design.coreLoop[0],
+      trigger:design.coreLoop.join(' -> '),stateChange:design.progressionDirection,
+      nextConnection:design.contentExpansionPlan.map(stage=>stage.milestone).filter(Boolean).join(' -> '),
+      details:{direction:design.progressionDirection}
+    });
+  }
+  const unitKinds=['CORE_LOOP','SYSTEM','SYSTEM_CONNECTION','CONTENT_MILESTONE','CONTENT_ELEMENT','PROGRESSION_CHAIN'];
+  const authoredUnitsByKind=Object.fromEntries(unitKinds.map(kind=>
+    [kind,designVolumeUnits.filter(unit=>unit.kind===kind).length]
+  ));
+  const activeContentFocus=['CORE_FUN','PROGRESSION'].includes(focus)&&!safeDesignlessMode;
+  const unitOrder=focus==='PROGRESSION'
+    ?['CONTENT_MILESTONE','PROGRESSION_CHAIN','SYSTEM_CONNECTION','CONTENT_ELEMENT','SYSTEM','CORE_LOOP']
+    :['CORE_LOOP','SYSTEM','SYSTEM_CONNECTION','CONTENT_ELEMENT','CONTENT_MILESTONE','PROGRESSION_CHAIN'];
+  const orderedDesignUnits=designVolumeUnits.map((unit,index)=>({unit,index}))
+    .sort((a,b)=>unitOrder.indexOf(a.unit.kind)-unitOrder.indexOf(b.unit.kind)||a.index-b.index)
+    .map(row=>row.unit);
+  const previousUnitId=clean(previousDirective?.designContentImplementation?.activeUnit?.id);
+  const previousUnitIndex=orderedDesignUnits.findIndex(row=>row.id===previousUnitId);
+  const unitAdvanceVerified=previousUnitIndex>=0
+    &&previousEffectiveness.classification==='EFFECT_CONFIRMED'
+    &&depthInfo.advanceAllowed===true;
+  const activeUnitIndex=!activeContentFocus||!orderedDesignUnits.length?-1:
+    previousUnitIndex<0?0:unitAdvanceVerified?(previousUnitIndex+1)%orderedDesignUnits.length:previousUnitIndex;
+  const runtimeContentRepairFirst=foundationRepairRequired||clean(nextActionDecision.action).toUpperCase()==='CAUSAL_REPAIR';
+  const designContentImplementation=Object.freeze({
+    version:1,authority:'EXISTING_GAME_SPECIFIC_BUILD_UP',designSource:'LATEST_VERIFIED_OR_MINIMUM_DESIGN',
+    designlessSafeMode:safeDesignlessMode,focus,
+    authoredVolume:Object.freeze({
+      coreLoopSteps:design.coreLoop.length,signatureSystems:design.signatureSystems.length,
+      systemConnections:design.systemInterconnections.length,
+      expansionMilestones:design.contentExpansionPlan.length,
+      contentFamilies:Object.freeze(Object.fromEntries(authoredContentFamilies.map(([family,entries])=>[family,entries.length]))),
+      unitsByKind:Object.freeze(authoredUnitsByKind),totalUnits:designVolumeUnits.length,
+      authoredScopeIsMinimumNotCeiling:true,artificialContentCountCap:null
+    }),
+    units:Object.freeze([...designVolumeUnits]),
+    activeUnit:activeUnitIndex<0?null:orderedDesignUnits[activeUnitIndex],
+    nextUnitSelection:!activeContentFocus?'CURRENT_FOCUS_IS_NOT_CORE_FUN_OR_PROGRESSION'
+      :runtimeContentRepairFirst?'CAUSAL_REPAIR_FIRST_RETAIN_CURRENT_UNIT'
+        :unitAdvanceVerified?'VERIFIED_SOURCE_AND_PLAYER_EFFECT_ADVANCE_TO_NEXT_AUTHORED_UNIT'
+          :'IMPLEMENT_OR_REPAIR_CURRENT_AUTHORED_UNIT_UNTIL_VERIFIED_EFFECT',
+    sourceTokenCountsCannotProveImplementation:true,
+    designUnitCountsCannotProveRuntimeContent:true,
+    firstSessionAcceptance:'ENTER -> FIRST_CORE_ACTION -> STATE_CHANGE -> FEEDBACK -> FIRST_REWARD_OR_NEXT_GOAL',
+    midLateAcceptance:'EXISTING_UNLOCK -> DISTINCT_NEW_CHOICE -> CONNECTED_SYSTEM -> MEANINGFUL_RESULT_WHEN_DESIGNED',
+    retryAndReconnectAcceptance:'PRESERVE_EXISTING_PROGRESS_SAVE_BALANCE_AND_SERVER_AUTHORITY',
+    acceptance:Object.freeze([
+      'DIRECTLY_EDIT_SELECTED_UNIT_IN_EXISTING_RESPONSIBLE_GAME_SOURCE',
+      'IMPLEMENT_EXACT_DESIGN_INPUT_STATE_FEEDBACK_AND_NEXT_CONTENT_CONNECTION',
+      'REPLAY_FIRST_SESSION_AND_APPLICABLE_MID_LATE_CONTENT_AND_RECONNECT',
+      'DO_NOT_CLOSE_UNVERIFIED_AUTHORED_SYSTEM_OR_CONTENT_UNITS',
+      'ADVANCE_ONLY_AFTER_VERIFIED_SOURCE_CHANGE_AND_PLAYER_VALUE_EFFECT'
+    ]),
+    existingCanonicalPipelineOnly:true,nativeRuntimeEvidenceRequired:true
+  });
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
     `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
@@ -1855,6 +1989,8 @@ export function buildGameSpecificBuildUpDirective({
     'EXISTING_GAME_GRAMMAR_DISCOVERED_FROM_CURRENT_DESIGN_AND_SOURCE_BEFORE_EXPANSION',
     'CHARACTER_MONSTER_REGION_STORY_SHARE_CAUSAL_WORLD_LAW_WHEN_APPLICABLE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
+    'DESIGN_CONTENT_UNITS_REQUIRE_REAL_GAME_SOURCE_AND_RUNTIME_EVIDENCE',
+    'APPROVED_SYSTEM_CONNECTIONS_AND_CONTENT_MILESTONES_CANNOT_BE_SILENTLY_SKIPPED',
     'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
   const safeGameplay=[
@@ -1975,6 +2111,7 @@ export function buildGameSpecificBuildUpDirective({
     gameplayImplementationDirectives:effectiveGameplay,
     progressionContentWorldDirectives:effectiveProgression,
     autonomousContentExpansion,
+    designContentImplementation,
     internalAssetEvolution:{
       required:true,
       generation,
