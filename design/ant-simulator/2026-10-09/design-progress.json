@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T14:29:02.299Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T14:29:41.663Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/ant-simulator/2026-10-09/design-seed.json",
+    "contentDigest": "0124cab83e3f295a301cea7d7c014049db5943e2208548ea1f7fa9ef6be328fd",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 387213,
-      "lastMs": 40020,
+      "totalMs": 426572,
+      "lastMs": 39359,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:29:02.297Z"
+      "updatedAt": "2026-10-09T14:29:41.660Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T14:29:02.300Z"
+  "updatedAt": "2026-10-09T14:29:41.671Z"
 }

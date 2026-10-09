@@ -11,120 +11,129 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "6ba34b4d98c730be7289edb6f4ad3274c6b567c81b0b9793a0d7cf819be3800c",
+  "fingerprint": "3402e042a666725621598968a9e717bb4e4af63d87aef07ae3e93ea9bca088b4",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "42917956113cfed840d38826c394dba841fcc27b192eb3df610af0c1ec1a035b",
+  "contentDigest": "0124cab83e3f295a301cea7d7c014049db5943e2208548ea1f7fa9ef6be328fd",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-    "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-    "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다.",
+    "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 루프에 대한 게임 정체성입니다. 플레이어는 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략을 통해 생존하며, 이는 단순한 행동 선택에서 복잡한 의사결정까지 다양한 측면에서 발전합니다. 주요 행동은 '개미의 선택'이며, 이는 월드 상태와 다음 선택 간의 인과관계를 구축하는 반복 가능한 루프로 구성됩니다.",
+    "playerFantasy": "플레이어는 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략을 통해 생존하는 단순한 행동 선택에서 복잡한 의사결정까지 다양한 측면에서 발전합니다. 주요 행동은 '개미의 선택'이며, 이는 월드 상태와 다음 선택 간의 인과관계를 구축하는 반복 가능한 루프로 구성됩니다.",
+    "coreFun": "개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화하여, 입력 -> 상태변화 -> 보상/위험/다음 선택의 반복 가능한 게임 루프를 구축합니다. 이 루프는 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략에 따라 유연하게 변환되며, 주요 행동은 '개미의 선택'입니다.",
     "coreLoop": [
-      "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-      "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
-      "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+      "플레이어가 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략을 통해 생존하며, 이는 단순한 행동 선택에서 복잡한 의사결정까지 다양한 측면에서 발전합니다.",
+      "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태를 변환하고, 그 결과로 보상/위험/다음 선택을 결정합니다.",
+      "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 설정하여 게임 루프를 계속 진행합니다."
     ],
     "signatureSystems": [
       {
         "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "월드 상태",
-          "자원",
-          "위험",
-          "목표"
+          "world_state",
+          "target_choice",
+          "resource_management",
+          "risk_detection",
+          "entry_exit_strategy"
         ],
         "stateOutputs": [
-          "새로운 월드 상태",
-          "새로운 자원",
-          "새로운 위험",
-          "새로운 목표"
+          "new_world_state",
+          "next_target_choice",
+          "updated_resource_management",
+          "modified_risk_detection",
+          "adjusted_entry_exit_strategy"
         ],
-        "name": "OPEN_WORLD_ACTION_REGISTRY",
-        "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
+        "name": "OPENING_WORLD_STATE_TRANSFORMATION",
+        "purpose": "Player-driven world state transformation through target choice, resource management, and risk detection to ensure survival in the simulation.",
+        "playerChoice": "Select a target location, manage resources, and assess risks to drive the game forward with strategic decision-making based on current world state and goals."
       },
       {
         "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
-          "월드 상태",
-          "자원",
-          "위험",
-          "목표"
+          "world_state",
+          "target_choice",
+          "resource_management",
+          "risk_detection",
+          "entry_exit_strategy"
         ],
         "stateOutputs": [
-          "새로운 월드 상태",
-          "새로운 자원",
-          "새로운 위험",
-          "새로운 목표"
+          "new_world_state",
+          "next_target_choice",
+          "updated_resource_management",
+          "modified_risk_detection",
+          "adjusted_entry_exit_strategy"
         ],
-        "name": "OPEN_WORLD_ACTION_REGISTRY",
-        "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
+        "name": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+        "purpose": "플레이어가 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략을 통해 생존하며, 이는 단순한 행동 선택에서 복잡한 의사결정까지 다양한 측면에서 발전합니다.",
+        "playerChoice": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태를 변환하고, 그 결과로 보상/위험/다음 선택을 결정합니다."
       },
       {
         "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "월드 상태",
-          "자원",
-          "위험",
-          "목표"
+          "world_state",
+          "target_choice",
+          "resource_management",
+          "risk_detection",
+          "entry_exit_strategy"
         ],
         "stateOutputs": [
-          "새로운 월드 상태",
-          "새로운 자원",
-          "새로운 위험",
-          "새로운 목표"
+          "new_world_state",
+          "next_target_choice",
+          "updated_resource_management",
+          "modified_risk_detection",
+          "adjusted_entry_exit_strategy"
         ],
-        "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-        "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-        "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        "name": "CORE_GAMEPLAY_ACTION_SEQUENCE_B",
+        "purpose": "플레이어가 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략에 기반하여 복잡한 의사결정을 수행하며, 이는 주요 행동인 '개미의 선택'에서 시작하여 유연하게 변환되는 게임 루프로 구성됩니다.",
+        "playerChoice": "실제 입력과 상호작용 결과로 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략이 변화하고, 그 결과로 보상/위험/다음 선택이 결정되며, 이는 다음 목표·지역·상호작용·전략 선택으로 이어집니다."
       },
       {
         "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "월드 상태",
-          "자원",
-          "위험",
-          "목표"
+          "world_state",
+          "target_choice",
+          "resource_management",
+          "risk_detection",
+          "entry_exit_strategy"
         ],
         "stateOutputs": [
-          "새로운 월드 상태",
-          "새로운 자원",
-          "새로운 위험",
-          "새로운 목표"
+          "new_world_state",
+          "next_target_choice",
+          "updated_resource_management",
+          "modified_risk_detection",
+          "adjusted_entry_exit_strategy"
         ],
-        "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-        "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-        "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
+        "name": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
+        "purpose": "플레이어가 기존 월드 상태와 대상 선택에 대한 발견, 숙련 및 재방문을 통해 게임 루프의 깊이를 확대하는 시스템입니다.",
+        "playerChoice": "기존 월드 상태와 대상 선택을 다시 탐험하며, 자원 관리 방식, 위험 감지 전략, 진입/진출 전술을 유연하게 조합하여 새로운 목표와 상호작용을 설정합니다."
       },
       {
         "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "월드 상태",
-          "자원",
-          "위험",
-          "목표"
+          "world_state",
+          "target_choice",
+          "resource_management",
+          "risk_detection",
+          "entry_exit_strategy"
         ],
         "stateOutputs": [
-          "새로운 월드 상태",
-          "새로운 자원",
-          "새로운 위험",
-          "새로운 목표"
+          "new_world_state",
+          "next_target_choice",
+          "updated_resource_management",
+          "modified_risk_detection",
+          "adjusted_entry_exit_strategy"
         ],
-        "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-        "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-        "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+        "name": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
+        "purpose": "플레이어가 현재 월드 상태와 대상 선택을 재조명하여, 자원 관리, 위험 감지 및 진입/진출 전략에 대한 새로운 의사결정을 도출하는 시스템입니다.",
+        "playerChoice": "월드 상태와 대상 선택을 다시 확인하고, 자원 관리 방식, 위험 수준, 그리고 진입/진출 전략의 변화를 결정합니다."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-09T12:50:36.798Z"
+  "updatedAt": "2026-10-09T14:29:41.670Z"
 }
