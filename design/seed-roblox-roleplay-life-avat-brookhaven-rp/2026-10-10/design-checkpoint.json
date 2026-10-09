@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 기존 점수나 관문을 승계하지 않고, 단순 반복을 거쳐 새로운 행동·경로·관계·발견을 열어가는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주제는 '기존의 힘든 환경에서 즉각적인 위험을 맞으며 자원을 효과적으로 관리해 살아남는 실시간 생존 루틴'이며, 핵심 재미는 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 루프이다. 세계 규칙은 플레이어의 행동과 선택이 MAIN×A×B×C와 같은 인과법칙에 따라 실제 상태 변화로 연결되어 있다.",
       "coreFun": "플레이어는 기존의 점수나 관문을 승계하지 않고, 단순 반복을 거쳐 새로운 행동·경로·관계·발견을 열어가는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주제는 '기존의 힘든 환경에서 즉각적인 위험을 맞으며 자원을 효과적으로 관리해 살아남는 실시간 생존 루틴'이며, 핵심 재미는 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 루프이다. 세계 규칙은 플레이어의 행동과 선택이 MAIN×A×B×C와 같은 인과법칙에 따라 실제 상태 변화로 연결되어 있다."
+    },
+    "local_authoring_parts::77a1fccf7da8906249492c0b59dacac3ead52f5b7bed83240c3c621562fb55db:coreLoop": {
+      "coreLoop": [
+        "Player initiates a survival run with limited resources and risk assessment, facing escalating threats that require adaptive strategies.",
+        "Player's choice alters the progression path and modifies the build for future encounters, creating a dynamic interplay between resource management and strategic planning.",
+        "Player's decision directly influences the next state, forming a causal loop between progression and build customization."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1267694,
-      "lastMs": 119703,
+      "totalMs": 1362347,
+      "lastMs": 94653,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:13:33.059Z"
+      "updatedAt": "2026-10-09T18:15:07.715Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:13:33.061Z",
+  "updatedAt": "2026-10-09T18:15:07.715Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2271,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:13:33.061Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:15:07.715Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
