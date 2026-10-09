@@ -1343,25 +1343,43 @@
     },
     "local_authoring_parts::53e549d723c72a29e93250a43152337a9231a10aff0f6b241803823d2e021147:toSystem": {
       "toSystem": "CORE-4V4-SIGNATURE-2"
+    },
+    "local_authoring_parts::53e549d723c72a29e93250a43152337a9231a10aff0f6b241803823d2e021147:trigger": {
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::53e549d723c72a29e93250a43152337a9231a10aff0f6b241803823d2e021147:stateChange": {
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::0bda76f89ed798bf4ff5aac199126aa971401605163bd1d676408a882e5a0055:systemInterconnections:2": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "fromId",
+        "toId"
+      ],
+      "fromSystem": "CORE-4V4-SIGNATURE-1",
+      "toSystem": "CORE-4V4-SIGNATURE-2",
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 76,
-      "successes": 73,
+      "calls": 78,
+      "successes": 75,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6842702,
-      "lastMs": 93392,
+      "totalMs": 7036329,
+      "lastMs": 97208,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T03:01:44.713Z"
+      "updatedAt": "2026-10-09T03:04:58.345Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T03:01:44.714Z",
+  "updatedAt": "2026-10-09T03:04:58.347Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3791,7 +3809,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:01:44.713Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:04:58.347Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
