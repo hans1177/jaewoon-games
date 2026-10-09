@@ -248,25 +248,200 @@
       "name": "OPENING",
       "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 하며, 이 선택은 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정의 순차적 루프로 연결된다.",
       "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정으로 인해 게임 루프 재시작됨."
+    },
+    "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "개미 종족 선택",
+        "월드 상태 및 자원 정보",
+        "위험 및 진행 상태"
+      ],
+      "stateOutputs": [
+        "장르 핵심 행동 결정",
+        "월드 상태 변환",
+        "보상/위험 발생",
+        " 다음 목표 결정"
+      ],
+      "name": "OPENING",
+      "purpose": "플레이어의 현재 상황과 목표 추론 후 장르 핵심 행동 선택, 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정을 통합적 루프로 재설계",
+      "playerChoice": "실제 입력에 따른 월드 상태, 자원, 위험, 진행 상태 변환 및 보상/위험 발생 후 다음 목표 결정으로 인해 주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재시작됨"
+    },
+    "local_authoring_parts::e7785b57c05a023ec442058246e2013af18e985a8492f114664b8ad71c0f87d9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 수행한다.",
+          "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정의 순차적 루프로 연결됨으로 인해 주요 요소가 서로 영향을 미친다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+          "playerChoice": "실제 입력에 따라 월드 상태, 자원, 위험, 진행 상태가 변환되고, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어진다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 하며, 이 선택은 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정의 순차적 루프로 연결된다.",
+          "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정으로 인해 게임 루프 재시작됨."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어의 현재 상황과 목표 추론 후 장르 핵심 행동 선택, 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정을 통합적 루프로 재설계",
+          "playerChoice": "실제 입력에 따른 월드 상태, 자원, 위험, 진행 상태 변환 및 보상/위험 발생 후 다음 목표 결정으로 인해 주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재시작됨"
+        }
+      ]
+    },
+    "local_authoring_parts::ead080585063796bccb0d0f7d1148fc7bfa784f8c2bb9d47e54a2dec0c0ae713:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+        "실제 입력에 따라 월드 상태, 자원, 위험, 진행 상태가 변환되고, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어진다.",
+        "변화된 상태와 보상/위험을 바탕으로 다음 선택을 하며, 게임 루프는 주기적으로 재설계되어 플레이어의 경험을 증대시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 수행한다.",
+          "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정의 순차적 루프로 연결됨으로 인해 주요 요소가 서로 영향을 미친다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핵심 행동을 결정한다.",
+          "playerChoice": "실제 입력에 따라 월드 상태, 자원, 위험, 진행 상태가 변환되고, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어진다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 및 굴 지킴을 시작하며, 현재 상태와 목표 추론 후 장르 핸디 베테이지 선택을 하며, 이 선택은 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정의 순차적 루프로 연결된다.",
+          "playerChoice": "개미 종족 선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정으로 인해 게임 루프 재시작됨."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "개미 종족 선택",
+            "월드 상태 및 자원 정보",
+            "위험 및 진행 상태"
+          ],
+          "stateOutputs": [
+            "장르 핵심 행동 결정",
+            "월드 상태 변환",
+            "보상/위험 발생",
+            " 다음 목표 결정"
+          ],
+          "name": "OPENING",
+          "purpose": "플레이어의 현재 상황과 목표 추론 후 장르 핵심 행동 선택, 월드 상태 변환, 보상/위험 발생 및 다음 목표 결정을 통합적 루프로 재설계",
+          "playerChoice": "실제 입력에 따른 월드 상태, 자원, 위험, 진행 상태 변환 및 보상/위험 발생 후 다음 목표 결정으로 인해 주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재시작됨"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 856564,
-      "lastMs": 49236,
+      "totalMs": 910570,
+      "lastMs": 54006,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:54:26.557Z"
+      "updatedAt": "2026-10-09T20:55:20.564Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T20:54:26.557Z",
+  "updatedAt": "2026-10-09T20:55:20.566Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1865,18 +2040,7 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:2": 1
   },
@@ -1884,7 +2048,7 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:54:26.557Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:55:20.566Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
