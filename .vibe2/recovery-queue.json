@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-10-09T18:59:50.600Z"
+      "updatedAt": "2026-10-09T19:16:37.920Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -148707,7 +148707,7 @@
     },
     {
       "id": "recovery-c6e7736588dc69fb9540",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "internal-motion-gwisin-bride-walk-v1",
@@ -149025,7 +149025,8 @@
         "recovery-route:SYSTEM_AI",
         "primary-ai-collaboration:REQUESTED",
         "primary-ai-collaboration-reason:COMMON_BOTTLENECK",
-        "primary-ai-collaboration-task:internal-motion-gwisin-bride-walk-v1"
+        "primary-ai-collaboration-task:internal-motion-gwisin-bride-walk-v1",
+        "recovery-reactivated-after-source-refailure"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -149043,15 +149044,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.543Z",
-      "updatedAt": "2026-10-09T18:59:51.440Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-10-09T18:59:51.440Z"
-      ]
+      "updatedAt": "2026-10-09T19:16:37.893Z"
     },
     {
       "id": "recovery-13016eae2090171271f7",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "internal-motion-mongdal-walk-v1",
@@ -149373,7 +149370,8 @@
         "recovery-route:SYSTEM_AI",
         "primary-ai-collaboration:REQUESTED",
         "primary-ai-collaboration-reason:COMMON_BOTTLENECK",
-        "primary-ai-collaboration-task:internal-motion-mongdal-walk-v1"
+        "primary-ai-collaboration-task:internal-motion-mongdal-walk-v1",
+        "recovery-reactivated-after-source-refailure"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -149391,11 +149389,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.578Z",
-      "updatedAt": "2026-10-09T18:59:51.440Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-10-09T18:59:51.440Z"
-      ]
+      "updatedAt": "2026-10-09T19:16:37.908Z"
     }
   ]
 }
