@@ -687,7 +687,7 @@ export function buildDesignToPlatformCodingTrace({
     &&bindings.every(row=>row.designStatus==='AUTHORED');
   const mandatory=multiplayerRequired===true;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
-  const spatialReady=['2.5D','3D'].includes(unityDepth.dimension)
+  const spatialReady=clean(unityDepth.dimension).toUpperCase()==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
       .every(field=>clean(unityDepth[field]).length>=32);
   const platforms=['ROBLOX','UNITY_WEB','UNITY_APP'].map(name=>Object.freeze({
@@ -696,7 +696,7 @@ export function buildDesignToPlatformCodingTrace({
     gameCodePlatformProfile:name==='ROBLOX'?'ROBLOX':'UNITY',
     requiresSameServerTwoClientPlay:mandatory,
     requiresNativeRuntimeResult:true,
-    ...name==='UNITY_WEB'?{minimumRenderedDimension:'2.5D',spatialDesignReady:spatialReady}: {},
+    ...name==='UNITY_WEB'?{minimumRenderedDimension:'3D',spatialDesignReady:spatialReady}: {},
     inspectedInThisDirective:name===selected
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
