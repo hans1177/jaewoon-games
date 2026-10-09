@@ -27,25 +27,34 @@
       "identity": "캣 스텝 - 게임 정체성 확정판 최초 빌딩물입니다. 이 게임은 단순한 보드게임에서부터 시작하여 플레이어가 중심 행동인 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'을 통해 세계 상태와 다음 선택을 바꾸는 PUZZLE 게임으로 진화합니다. 핵심 재미는 진행·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프이며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 게임의 시스템은 MAIN/A/B/c/@로 구성되며, 각각 다른 기존 또는 신규 시스템을 포함하며, 인과법칙과 상호작용을 구체적으로 증명합니다. 캐릭터 역할은 '플레이어'로서, 대표 행동은 'Start a board...'이고, 대표 선택은 'Make matches...'. 시그니처 세계 규칙은 'Puzzle'로 설정됩니다. 게임의 깊이는 학문적 규칙 및 관계에 초점이 맞춰져 있으며, 주요 요소는 '진행', '위험', '보상', '다음 선택'입니다. 이 게임은 단순한 보드게임에서부터 시작하여 다양한 플레이 스타일과 복잡한 인과관계를 가진 PUZZLE 게임으로 발전합니다. 게임의 상태 변화와 대응은 실제 상태 키만 참조하고, 원본 규칙과 수치를 보존합니다. 이 게임은 공통 원본 하나이며, 플랫폼별 구현 제약을 따릅니다. 게임의 설계는 기존 검증된 규칙과 모순되지 않는 방식으로 진행되며, 최종 장르는 PUZZLE로 결정됩니다.",
       "playerFantasy": "플레이어는 단순한 보드게임에서부터 시작하여, 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 통해 세계 상태와 다음 선택을 바꾸는 PUZZLE 게임으로 진화합니다. 핵심 재미는 진행·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프이며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 이 게임의 시스템은 MAIN/A/B/c/@로 구성되며, 각각 다른 기존 또는 신규 시스템을 포함하며, 인과법칙과 상호작용을 구체적으로 증명합니다.",
       "coreFun": "플레이어는 단순한 보드게임에서부터 시작하여, 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 통해 세계 상태와 다음 선택을 바꾸는 PUZZLE 게임으로 진화합니다. 핵심 재미는 진행·위험·보상이 서로 연결되어 있는 반복 가능한 핵심 루프이며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공합니다. 이 게임의 시스템은 MAIN/A/B/c/@로 구성되며, 각각 다른 기존 또는 신규 시스템을 포함하며, 인과법칙과 상호작용을 구체적으로 증명합니다."
+    },
+    "local_authoring_parts::3e5d7c12faad5e713453150249d1d3a2ddeaed519fba0cc74529923cc860a80f:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 게임 시작 시 'Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.'이라는 중심 행동을 수행합니다.",
+        "SELECT: 선택은 주로 'Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.' 형태이며, 이 과정에서 월드 상태가 즉시 변형됩니다.",
+        "OUTPUT: 성공적인 선택은 보상을 제공하며, 실패 또는 부적절한 선택은 위험을 유발합니다.",
+        "STATE CHANGE: 월드 상태는 선택에 따라 다양한 방향으로 전환되며, 다음 선택의 가능성도 영향을 받습니다.",
+        "ACTION: 플레이어는 선택 결과에 따라 새로운 루프와 상호작용을 생성하여 게임이 계속 진행됩니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 324048,
-      "lastMs": 49206,
+      "totalMs": 389591,
+      "lastMs": 65543,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:24:16.636Z"
+      "updatedAt": "2026-10-09T11:25:22.182Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:18:52.564Z",
-  "updatedAt": "2026-10-09T11:24:16.637Z",
+  "updatedAt": "2026-10-09T11:25:22.182Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2091,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:24:16.637Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:25:22.182Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
