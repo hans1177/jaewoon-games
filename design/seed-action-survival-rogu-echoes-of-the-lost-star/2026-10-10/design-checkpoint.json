@@ -511,21 +511,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1427059,
-      "lastMs": 103094,
+      "totalMs": 1527126,
+      "lastMs": 100067,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:54:55.510Z"
+      "updatedAt": "2026-10-09T20:56:35.579Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-09T20:54:55.510Z",
+  "updatedAt": "2026-10-09T20:56:35.581Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,13 +2264,23 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "identity-core"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:1": 1,
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:2": 1,
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:3": 1,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2371,10 +2381,10 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:54:55.510Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T20:56:35.579Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
