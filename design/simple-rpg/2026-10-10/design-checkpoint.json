@@ -80,25 +80,53 @@
         "worldChange": "플레이어의 선택 결과는 다음 월드 상태로 전환하며, 이는 게임의 핵심 재미와 시스템 연결이 확정된 것으로 간주된다.",
         "nextEvent": "플레이어의 선택으로 인해 새로운 사건이나 상황이 생성되며, 이는 게임의 깊이와 발전성을 증진시키는 데 기여한다."
       }
+    },
+    "local_authoring_parts::8d8b9ac01b42fdc1b4b308af0bd6d7f618129d059c27b949cacd2a3d27432e24:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "모바일 게임",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 모바일 환경에서 즉각적인 입력과 피드백을 경험할 수 있는 빠른 진입 절차"
+        },
+        {
+          "name": "인과적 관계",
+          "kind": "GENRE",
+          "gameplayEffect": "선택의 결과가 세계 상태에 직접 영향을 미친다는 인과적 연결"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "보드/게임",
+          "gameplayEffect": "사전 정의된 블록, 패턴, 또는 문제 구성 요소로 사용되는 시스템"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "시뮬레이션",
+          "gameplayEffect": "진행 및 위험의 변화를 통해 플레이어에게 새로운 선택 기회 제공"
+        }
+      ],
+      "cGenreInterlock": "보드/게임 시스템은 시뮬레이션 시스템의 결과와 상호작용하며, 이는 플레이어 선택이 세계 상태에 영향을 주는 인과적 연관성을 보여준다.",
+      "cWorldAndGameplayEffect": "플레이어의 시작 행동(게임 시스템 실행)은 다음 월드 상태를 바꾸는 PUZZLE 게임의 초기 단계이며, 이는 진보 가능한 시스템 연결을 반영한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1018853,
-      "lastMs": 147237,
+      "totalMs": 1137823,
+      "lastMs": 118970,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:54:57.483Z"
+      "updatedAt": "2026-10-09T18:56:56.456Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:37:58.564Z",
-  "updatedAt": "2026-10-09T18:54:57.484Z",
+  "updatedAt": "2026-10-09T18:56:56.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1720,7 @@
     "ac14098384a9115fce6edb895cff9dc61f49ffe33adfaf236e4444f6aa936ecd": true,
     "3bc7ac55d3d4bb2c86a88ecd3bfe47b205fcb89d300f071c9d9935402906fb08": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:54:57.484Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:56:56.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
