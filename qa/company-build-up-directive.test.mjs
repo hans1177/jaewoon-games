@@ -941,6 +941,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.equal(trace.platformCodingPlans.find(x=>x.platform==='UNITY_WEB').canonicalGameSourceRoot,
         trace.platformCodingPlans.find(x=>x.platform==='UNITY_APP').canonicalGameSourceRoot);
       assert.equal(trace.minimumParticipants,2);
+      assert.ok(trace.platformCodingPlans.every(row=>row.minimumRenderedDimension==='3D'));
       assert.equal(trace.sourceImplementationPassed,false);
       assert.equal(trace.actualTwoClientPassed,false);
       assert.equal(trace.independentQaPassed,false);
@@ -1213,4 +1214,35 @@ test('focused game worker keeps one exact approved content item in compact sourc
   assert.match(compacted,/volumeSpec=WORLD:/);
   assert.match(compacted,/encounterPattern/);
   assert.match(compacted,/volumeRequiredBehavior=NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE/);
+});
+
+test('large authored game content volume keeps all entries without cloning a full implementation prompt per item',()=>{
+  const d=design();
+  d.content.contentVarietyPlan={
+    regions:[],enemiesOrChallenges:[],objectives:[],antiMonotonyRule:'기존 규칙을 보존한다',
+    abilities:Array.from({length:64},(_,index)=>({
+      id:'ability-'+index,name:'전용 행동 '+index,kind:'ACTIVE',
+      trigger:'입력 후 기존 조건 확인',cooldownSeconds:index+1,cost:index,
+      effect:'현재 플레이어 행동과 기존 상태를 연결한다'
+    }))
+  };
+  const sourceObservation={
+    sourceRoot:'roblox-games/volume-large',sourceTreeFingerprint:'e'.repeat(64),
+    sourceAnchors:[],topFiles:[{file:'roblox-games/volume-large/server/Game.server.luau',score:10}],
+    observations:[],signals:{combat:1,progression:1,content:1,session:1}
+  };
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'volume-large',platform:'ROBLOX',designRecord:d,sourceObservation,
+    responsibleFiles:['roblox-games/volume-large/server/Game.server.luau']
+  });
+  const abilities=directive.designedGameVolume.items.filter(row=>row.family==='VARIETY_ABILITIES');
+  assert.equal(abilities.length,64);
+  assert.equal(abilities[63].ref,'VARIETY_ABILITIES[63]');
+  assert.equal(abilities[63].designDetail.cooldownSeconds,64);
+  assert.ok(abilities.every(row=>row.runtimeVerified===false));
+  assert.equal(directive.designedGameVolume.noArbitraryContentQuota,true);
+  const prompt=directivePrompt(directive);
+  assert.match(prompt,/VARIETY_ABILITIES\[0\] 전용 행동 0/);
+  assert.match(prompt,/VARIETY_ABILITIES\[63\] 전용 행동 63/);
+  assert.ok(prompt.length<75000,'content index should not repeat the full implementation blueprint for every item');
 });
