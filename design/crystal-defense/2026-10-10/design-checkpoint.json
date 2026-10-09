@@ -134,25 +134,40 @@
       "name": "레이아웃 기반 플래그십",
       "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템을 구축",
       "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계 및 실제 세계 상태 변화 유도"
+    },
+    "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": {
+      "id": "layout-advancement",
+      "grammarRole": "B",
+      "stateInputs": [
+        "배치 위치 선택",
+        "전투 주제 변경"
+      ],
+      "stateOutputs": [
+        "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+        "전투 장면 경험 및 방어 효과 재설계"
+      ],
+      "name": "방어 전략 진화적 투입 시스템",
+      "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성에 기반하여 방어 전략의 진화를 촉진하며, 이는 실제 세계 상태 변화와 다음 선택 결정에 영향을 미친다.",
+      "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계를 선택함으로써 실제 세계 상태 변화를 유도합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 469621,
-      "lastMs": 41520,
+      "totalMs": 573690,
+      "lastMs": 104069,
       "lastError": null,
-      "updatedAt": "2026-10-09T19:46:05.537Z"
+      "updatedAt": "2026-10-09T22:35:05.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-09T22:33:21.758Z",
+  "updatedAt": "2026-10-09T22:35:05.834Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1876,8 +1891,8 @@
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T19:46:05.537Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T22:35:05.834Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
