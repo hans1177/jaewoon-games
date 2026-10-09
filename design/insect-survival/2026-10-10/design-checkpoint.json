@@ -480,25 +480,38 @@
       "name": "small-world survival pressure",
       "purpose": "Establishes the core gameplay mechanism for surviving in a small-scale ecological environment.",
       "playerChoice": "Selecting between resource gathering or combat based on environmental assessment and risk evaluation."
+    },
+    "local_authoring_parts::2dcd02d00dd2cc9c86beaa8e085078951db0e192b97f28230acf45145c506c70:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "Establishes the core gameplay mechanism for surviving in a small-scale ecological environment",
+      "playerChoice": "Selecting between resource gathering or combat based on environmental context"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 568308,
-      "lastMs": 35564,
+      "totalMs": 604008,
+      "lastMs": 35700,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:51:24.341Z"
+      "updatedAt": "2026-10-09T22:52:00.043Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T22:51:24.341Z",
+  "updatedAt": "2026-10-09T22:52:00.043Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2301,7 +2314,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:51:24.341Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:52:00.043Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
