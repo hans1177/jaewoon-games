@@ -118,25 +118,39 @@
       "name": "MONSTER_CAPTURE_SYSTEM",
       "purpose": "플레이어 선택에 따른 몬스터 포획 및 월드 상태 변화 관리",
       "playerChoice": "몬스터 포획, 성장 모험, 재방문 결정 및 새로운 세계 상태 전환의 연관성 발생 시 실제 세계 상태 변화와 다음 사건 연결됨으로서 플레이어의 숙련적 선택을 유도함으로써 진입부터 깊은 세계 깊이·가림·조명 등 모든 요소를 포함하는 모바일 게임 중심의 플레이어 역할을 형성합니다."
+    },
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "MONSTER_COUNT",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "WORLD_CHANGE"
+      ],
+      "name": "MONSTER_CAPTURE_SYSTEM",
+      "purpose": "실제 세계 상태 변화 및 다음 사건 연결",
+      "playerChoice": "플레이어 선택에 따른 원인 갈등 발생, 시그니처 세계 규칙과 실제 상태 변화 일치, 무한 발전 규칙으로 이어지게 된다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 275342,
-      "lastMs": 38757,
+      "totalMs": 309981,
+      "lastMs": 34639,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:40:10.756Z"
+      "updatedAt": "2026-10-09T17:40:45.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:35:35.348Z",
-  "updatedAt": "2026-10-09T17:40:10.756Z",
+  "updatedAt": "2026-10-09T17:40:45.396Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1700,7 +1714,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:40:10.756Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:40:45.396Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
