@@ -120,25 +120,40 @@
       "name": "개미 탐험 루프",
       "purpose": "플레이어가 개미 종족 중 하나를 선택하여 오픈월드 정원 탐험 시작, 선택 결과로 월드 상태, 대상, 자원, 위험, 진행 상태 변환, 변환에 따른 보상/실패/목표 결정 및 다음 목표/지역/전략 선택을 반복 가능하게 구성",
       "playerChoice": "종족선택 -> 월드 상태 변환 -> 보상/실패/목표 결정 -> 다음 목표/지역/전략 선택의 반복 가능 루프 생성"
+    },
+    "local_authoring_parts::7973889b48dd61ed1c4c6c5e438299f07a9b9fb8be056a7f7998c2d6e87d1f0c:signatureSystems:1": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "A",
+      "stateInputs": [
+        "종족선택: 개미 종족 중 하나 선택",
+        "월드 상태: 월드 상태 변환"
+      ],
+      "stateOutputs": [
+        "보상/실패/목표 결과: 보상/실패/목표 결정",
+        "다음 목표/지역/전략 선택: 다음 목표/지역/전략 결정"
+      ],
+      "name": "개미 탐험 루프",
+      "purpose": "플레이어의 선택, 실행, 결과, 위험, 보상 등 실제 상호작용 기반의 반복 가능 루프",
+      "playerChoice": "장르 핵심 행동을 선택하여 월드 상태 변화 및 보상/실패 발생 후 다음 목표·지역·전략 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 229061,
-      "lastMs": 31949,
+      "totalMs": 254180,
+      "lastMs": 25119,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:31:55.336Z"
+      "updatedAt": "2026-10-09T18:32:20.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:28:06.257Z",
-  "updatedAt": "2026-10-09T18:31:55.336Z",
+  "updatedAt": "2026-10-09T18:32:20.458Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,7 +1755,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:31:55.336Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:32:20.458Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
