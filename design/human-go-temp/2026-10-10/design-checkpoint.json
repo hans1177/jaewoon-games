@@ -539,25 +539,40 @@
         "Player builds unique skills and relationships with enemies, gaining new abilities and strategic insights from interactions.",
         "Environmental challenges trigger adaptive strategies, while character development influences decision-making in dynamic scenarios."
       ]
+    },
+    "local_authoring_parts::9e51cb70736652f3b07fa33c673bc508fa75566b84eff121f4d94b72f8758a4a:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+        "Environmental challenges trigger adaptive strategies"
+      ],
+      "stateOutputs": [
+        "Player gains experience and resources from successful navigation",
+        "Character development influences decision-making in dynamic scenarios"
+      ],
+      "name": "Dynamic Terrain System",
+      "purpose": "Enables player adaptation to environmental changes through strategic interaction",
+      "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental constraints"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1492553,
-      "lastMs": 83665,
+      "totalMs": 1586432,
+      "lastMs": 93879,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:45:17.713Z"
+      "updatedAt": "2026-10-09T17:46:51.593Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:25.119Z",
-  "updatedAt": "2026-10-09T17:45:17.713Z",
+  "updatedAt": "2026-10-09T17:46:51.593Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2286,7 @@
     "03b26008f6a55b505867f805418255705b83c8c865f5009f5c9bac8b71e40070": true,
     "600483efdcf67bd180436a0b8183fd7914493db159f88200748ed37eb727695b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:45:17.713Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:46:51.593Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
