@@ -9,7 +9,7 @@ export const SEED_FILE='game-seed-state.json';
 export const RESET_REVISION='OWNER-ALL-GAMES-DESIGN-RESET-20260917-1';
 export const RESET_SOURCE='OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17';
 export const AUTO_MISSING_DESIGN_SOURCE='AUTO_MISSING_DESIGN_INTAKE_2026-09-25';
-export const CANONICAL_NOVEL_GRAMMAR_V4_SOURCE='CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007';
+export const CANONICAL_NOVEL_GRAMMAR_V5_SOURCE='CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009';
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -49,9 +49,20 @@ function meaningfulDesign(record,gameId=''){
   if(!record||typeof record!=='object'||Array.isArray(record))return false;
   if(clean(record.gameId)&&clean(record.gameId)!==clean(gameId))return false;
   const content=record.content&&typeof record.content==='object'&&!Array.isArray(record.content)?record.content:record;
-  return clean(content.identity).length>=8
-    &&clean(content.coreFun).length>=8
-    &&Array.isArray(content.coreLoop)&&content.coreLoop.filter(x=>clean(x)).length>=3;
+  const grammar=content.creativeGrammar,c=Array.isArray(grammar?.cThemes)?grammar.cThemes:[];
+  return clean(content.identity).length>=8&&clean(content.coreFun).length>=8
+    &&Array.isArray(content.coreLoop)&&content.coreLoop.filter(x=>clean(x)).length>=3
+    &&clean(grammar?.mainIdentity).length>=15
+    &&['a','b'].every(key=>clean(grammar?.[key]?.system)&&clean(grammar?.[key]?.material)&&clean(grammar?.[key]?.stateChange))
+    &&clean(grammar?.abCausality).length>=35
+    &&c.length===2
+    &&Array.isArray(grammar?.cGenres)&&grammar.cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>grammar.cGenres.some(row=>row?.role===role))
+    &&new Set(grammar.cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(grammar?.cGenreInterlock).length>=30
+    &&clean(grammar?.cWorldAndGameplayEffect).length>=30
+    &&Array.isArray(grammar?.delveDiscoveries)&&grammar.delveDiscoveries.length>=4
+    &&clean(grammar?.delveGrowthRule).length>=25;
 }
 export function latestUsableDesign(root='.',gameId=''){
   const base=path.join(root,'design',clean(gameId));
@@ -101,17 +112,24 @@ export function latestVerifiedDesign(root='.',gameId=''){
   }
   return null;
 }
-function completeNovelGrammarV4(seed={}){
+function completeNovelGrammarV5(seed={}){
   const sketch=seed?.GAMEPLAY_SKETCH;
   const grammar=sketch?.novelGameGrammar;
-  return Number(sketch?.version||0)>=4
+  return Number(sketch?.version||0)>=5
     &&grammar&&typeof grammar==='object'&&!Array.isArray(grammar)
     &&Array.isArray(grammar.causalDNAs)&&grammar.causalDNAs.length>=2
-    &&grammar.gameplaySystemFusion?.formula==='MAIN × A × B × c'
+    &&grammar.gameplaySystemFusion?.formula==='MAIN × A × B × C'
     &&Array.isArray(grammar.gameplaySystemFusion?.majorAxes)&&grammar.gameplaySystemFusion.majorAxes.length===2
+    &&grammar.gameplaySystemFusion.majorAxes.every(row=>clean(row?.systemFamily)&&clean(row?.sourceMaterial)&&clean(row?.materialRule))
+    &&grammar.gameplaySystemFusion?.themeFusion?.themes?.length===2
+    &&Array.isArray(grammar.gameplaySystemFusion.themeFusion.genres)
+    &&grammar.gameplaySystemFusion.themeFusion.genres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>grammar.gameplaySystemFusion.themeFusion.genres.some(row=>row?.role===role))
+    &&new Set(grammar.gameplaySystemFusion.themeFusion.genres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(grammar.gameplaySystemFusion.themeFusion.genreInterlock)
     &&Array.isArray(grammar.delveLayer?.elements)&&grammar.delveLayer.elements.length>=4
     &&grammar.delveLayer?.formulaSuffix==='+ @'
-    &&grammar.emergentGenre?.grammarFormula==='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @';
+    &&grammar.emergentGenre?.grammarFormula==='MAIN × A × B × C + @';
 }
 function normalizedCanonicalSketch(game,seed){
   const gameId=clean(game?.id),gameName=clean(game?.name||gameId);
@@ -132,16 +150,19 @@ function normalizedCanonicalSketch(game,seed){
   return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
 }
 function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
-  // Owner briefs are authored by the existing designer; never replace them with automatic grammar.
-  if(seed?.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY')return false;
-  if(completeNovelGrammarV4(seed))return false;
+  // 기존 MAIN 중심 설계도 새 MAIN/A/B/C/@ 문법으로 재작성한다. 원본 게임 규칙은 별도 보존.
+  if(completeNovelGrammarV5(seed))return false;
+  // 접수용 임시 V5를 매 실행마다 다시 쓰지 않는다. 디자이너가 고유 소재와 장르를 직접 완성해야 한다.
+  if(Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5
+    &&seed?.novelGrammarBackfill?.source===CANONICAL_NOVEL_GRAMMAR_V5_SOURCE
+    &&seed?.novelGrammarBackfill?.authoringPending===true)return false;
   const normalized=normalizedCanonicalSketch(game,seed);
   seed.GAME_CATEGORY=normalized.category;
   seed.CORE_LOOP=normalized.coreLoop;
   seed.GAMEPLAY_SKETCH=normalized.sketch;
-  seed.novelGrammarBackfill={version:4,source:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,updatedAt:timestamp};
-  const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==CANONICAL_NOVEL_GRAMMAR_V4_SOURCE):[];
-  signals.push({id:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,type:'NOVEL_GRAMMAR_V4_BACKFILL',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});
+  seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,authoringPending:true,updatedAt:timestamp};
+  const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==CANONICAL_NOVEL_GRAMMAR_V5_SOURCE):[];
+  signals.push({id:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,type:'OWNER_MAIN_AB_C_GRAMMAR_REDESIGN',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});
   seed.designEvolutionSignals=signals;
   seed.updatedAt=timestamp;
   const inputCheck=validateGameSeed(seed);
@@ -192,6 +213,9 @@ export function makeAutoMissingDesignSeed(game,{serial=1,timestamp=new Date().to
     autoMissingDesignIntake:true,
     createdAt:timestamp,updatedAt:timestamp
   };
+  // 자동 접수 스케치는 설계 PASS가 아니다. 창작 소재·메인/보조 장르·@는 실제 디자이너 작성으로 채운다.
+  seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,authoringPending:true,updatedAt:timestamp};
+  seed.designEvolutionSignals=[{id:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,type:'OWNER_MAIN_AB_C_GRAMMAR_REDESIGN',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'}];
   const inputCheck=validateGameSeed(seed);
   if(!inputCheck.pass)seed.inputRepairNotes=inputCheck.errors;
   return seed;
@@ -230,7 +254,7 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     const id=clean(game?.id),life=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
     return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
   });
-  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[];
+  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[],grammarPending=[];
   for(const game of games){
     const id=clean(game.id);
     const candidates=state.seeds.filter(seed=>clean(seed?.gameId)===id);
@@ -247,7 +271,8 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
         reactivated.push(id);
       }
       if(upgradeCanonicalNovelGrammarSeed(active,game,timestamp))grammarUpgraded.push(id);
-      else grammarAlreadyCurrent.push(id);
+      else if(completeNovelGrammarV5(active))grammarAlreadyCurrent.push(id);
+      else grammarPending.push(id);
     }
     if(latestUsableDesign(root,id))designPresent.push(id);
     if(!created.includes(id)&&!reactivated.includes(id)&&!grammarUpgraded.includes(id))alreadySeeded.push(id);
@@ -256,20 +281,21 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     state.version=Math.max(2,Number(state.version)||0);
     state.policyDocument='company-learning/platform-release-roadmap.json';
     state.autoMissingDesignIntake={
-      version:3,
+      version:4,
       source:AUTO_MISSING_DESIGN_SOURCE,
       updatedAt:timestamp,
       createdGameIds:created,
       reactivatedGameIds:reactivated,
-      canonicalNovelGrammarSource:CANONICAL_NOVEL_GRAMMAR_V4_SOURCE,
+      canonicalNovelGrammarSource:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,
       canonicalTargetGameIds:games.map(game=>clean(game.id)),
       grammarUpgradedGameIds:grammarUpgraded,
-      grammarAlreadyCurrentGameIds:grammarAlreadyCurrent
+      grammarAlreadyCurrentGameIds:grammarAlreadyCurrent,
+      grammarPendingGameIds:grammarPending
     };
     writeJson(path.join(root,seedFile),state);
   }
   return{
-    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,
+    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,grammarPending,
     canonicalTargets:games.map(game=>clean(game.id)),
     eligibleGames:games.map(game=>clean(game.id)),
     changed:created.length+reactivated.length+grammarUpgraded.length

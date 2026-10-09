@@ -93,7 +93,7 @@ test('incomplete intake remains input for the designer instead of failing a seed
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('designer can start without a pre-authored seed and preserves the original instead of automatic grammar',()=>{
+test('designer starts from owner identity without treating legacy MAIN-only design as creative authority',()=>{
   const source=design.slice(design.indexOf('function resolveDesignerSeedInput('),design.indexOf('const gameId='));
   const resolve=runInNewContext(source+'\nresolveDesignerSeedInput',{path,activeSeedForGame,ownerDesignResetSeedForGame,makeAutoMissingDesignSeed,latestUsableDesign,validateGameSeed,clean:v=>String(v??'').trim()});
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-self-seed-'));
@@ -106,8 +106,10 @@ test('designer can start without a pre-authored seed and preserves the original 
     assert.equal(input.created,true);assert.equal(state.seeds.length,1);
     assert.equal(validateGameSeed(input.seed).pass,true);
     assert.equal(input.seed.designInputMode,'DESIGNER_SELF_SEED');
-    assert.deepEqual(input.seed.originalDesignContext.content,original.content);
-    assert.equal(input.seed.MULTIPLAYER_DESIGN_MODE,'COMPETITIVE');
+    assert.equal(latestUsableDesign(root,'demo'),null,'MAIN-only legacy design cannot authorize the new game grammar');
+    assert.equal(input.seed.originalDesignContext,undefined,'incomplete legacy creative design must not be copied as canonical');
+    assert.notEqual(input.seed.REUSE_PRIOR_DESIGN_BASELINE,true);
+    assert.equal(input.seed.MULTIPLAYER_DESIGN_MODE,'SINGLE','intake mode is provisional until source-grounded designer authors multiplayer');
     assert.equal(input.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
     assert.match(input.seed.GAMEPLAY_SKETCH.source,/NOT_AUTHORED_DESIGN/);
     assert.equal(input.seed.seedAuthoring.externalSeedRequired,false);

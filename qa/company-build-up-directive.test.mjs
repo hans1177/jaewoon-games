@@ -240,8 +240,8 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/IDENTITY_BUILD_UP_RULE:/);
   assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_EVIDENCE:/);
   assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_BUILD_UP_RULE:/);
-  assert.equal(directive.identityReinforcement.causalGrammarEvidence.formula,'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @');
-  assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.formula,'MAIN × A × B × c + @');
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.formula,'MAIN × A × B × C + @');
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.formula,'MAIN × A × B × C + @');
   assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.majorAxes.length,2);
   assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.identityRewriteRequired,false);
   assert.match(directivePrompt(directive),/EXISTING_GAME_MAIN_A_B_c_AT_MAP:/);
