@@ -1,5 +1,5 @@
 {
-  "version": 556,
+  "version": 557,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -24181,7 +24181,10 @@
       "prototype2dFinalPassForbidden": true,
       "everyExistingUnityWebGameMustBeRedevelopedIn3d": true,
       "actual3dMeshRuntimeEvidenceRequired": true,
-      "assetLibrarySpatial3dOnly": true
+      "assetLibrarySpatial3dOnly": true,
+      "native3dF0SourcePreflightRequired": true,
+      "native3dFloorBootstrapSourceRequired": true,
+      "f0Native3dSourcePassCannotReplaceRealRuntimeMeshQa": true
     },
     "mobileInput": {
       "implementedInsideUnityProject": true,
@@ -28525,6 +28528,22 @@
     "ownerHeldUnityAndroidUnchanged": true,
     "robloxDevelopmentContinuesIndependently": true,
     "allEligibleGameWorkRequeuedThroughExistingCanonicalPipeline": true,
-    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true
+    "runtimeAndQaVerifiedBeforeClaiming3dCompletion": true,
+    "f0Source3dRequiredPlatforms": [
+      "ROBLOX",
+      "UNITY_WEB"
+    ],
+    "f0RequiresNative3dWorldGeometryAndCameraSource": true,
+    "f0UiOnlyOrSpriteOnlySourceCannotPass": true,
+    "f0StaticEvidenceDoesNotGrantRuntimePass": true,
+    "unityWebFloorMustAuthorNative3dOnFirstCreation": true,
+    "unityWebFloorMustRejectApproved2dOr2_5dWorld": true,
+    "runtimeMeshQaAndBeforeAfterGameEvidenceStillRequired": true,
+    "nativeF0AndUnityWebFloorPipelineBindings": [
+      "tools/company-development-roblox-headless-fast-mvp.mjs",
+      "tools/company-unity-web-first-stage.mjs",
+      "tools/company-unity-web-floor-bootstrap.mjs"
+    ],
+    "f0AndFloorMustPreserveExistingGameState": true
   }
 }
