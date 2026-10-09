@@ -2743,37 +2743,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     signatureSystems:designSystems,
     progressionDirection:clean(designContent?.progressionDirection)
   };
-  const flowBaseline=designContext?{...designContext.record,content:designContent}:{content:{}};
-  const flowArchitecture=designContext?buildGameFlowArchitecture({
-    gameId:project.gameId,
-    genre:project.genre||project.category||project.gameCategory||'',
-    baseline:flowBaseline,
-    inventory:[]
-  }):null;
-  const flowAssetRequirements=flowArchitecture?buildFlowAssetRequirements({
-    architecture:flowArchitecture,
-    genre:project.genre||project.category||project.gameCategory||'',
-    baseline:flowBaseline
-  }):[];
-  const flowSystemBlueprint=flowArchitecture?.systemBlueprint||null;
-  const systemRequirements=flowSystemBlueprint?[
-    ...(flowSystemBlueprint.requiredSystems||[]).map(row=>({...row,stage:'REQUIRED'})),
-    ...(flowSystemBlueprint.expansionSystems||[]).map(row=>({...row,stage:'EXPANSION'}))
-  ]:[];
-  const systemBlueprintSummary=flowSystemBlueprint?{
-    profile:flowSystemBlueprint.profile,
-    target:flowSystemBlueprint.target,
-    required:(flowSystemBlueprint.requiredSystems||[]).map(row=>row.id),
-    expansion:(flowSystemBlueprint.expansionSystems||[]).map(row=>row.id),
-    phasePlan:flowSystemBlueprint.phasePlan||{},
-    interconnectionChains:flowSystemBlueprint.interconnectionChains||[],
-    reusableLibraries:flowSystemBlueprint.libraryReusePolicy?.knownReusableLibraries||[],
-    awardCaliberPrinciples:flowSystemBlueprint.awardCaliberPrinciples||[]
-  }:null;
-  const flowAssetInstruction=flowAssetRequirements.length
-    ?' FLOW_ASSET_REQUIREMENTS는 플로우 단계의 시각 역할 요구다. 특정 내부 자산 ID를 고정하지 말고 실행 시점 최신 회사 자산 라이브러리에서 호환 자산을 다시 조회한다. USE_AS_IS→LIGHT_THEME_ADAPT→STYLE_ADAPT→RECOMBINE_PARTS→NATIVE_REAUTHOR_BASE 중 가장 작은 적합 변경을 사용하고, 자산 계층은 게임 규칙·밸런스·세이브·진행·네트워크 권한을 소유하지 않는다.'
-    :'';
-
+  // --- 기존 소스 구조 검색: 새로운 작업 단계를 만들지 않고 기존 스캔을 설계 앞에서 재사용 ---
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
     :project.engine==='web'?new Set(['.html','.htm','.js','.mjs','.css'])
@@ -2793,6 +2763,46 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     }
   }
   if(!candidates.length)return null;
+
+  const flowBaseline=designContext?{...designContext.record,content:designContent}:{content:{}};
+  const flowArchitecture=designContext?buildGameFlowArchitecture({
+    gameId:project.gameId,
+    genre:project.genre||project.category||project.gameCategory||'',
+    baseline:flowBaseline,
+    inventory:candidates.map(sourcePath=>({path:sourcePath,label:sourcePath.slice(sourceRoot.length+1)}))
+  }):null;
+  const flowAssetRequirements=flowArchitecture?buildFlowAssetRequirements({
+    architecture:flowArchitecture,
+    genre:project.genre||project.category||project.gameCategory||'',
+    baseline:flowBaseline
+  }):[];
+  const flowSystemBlueprint=flowArchitecture?.systemBlueprint||null;
+  const sourceLibraryHints=flowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[];
+  const presentLibraryHints=sourceLibraryHints.filter(hint=>{
+    if(!hint.startsWith('assets/'))return false;
+    const file=path.join(repoRoot,hint);
+    try{return fs.statSync(file).isFile();}catch{return false;}
+  });
+  const absentLibraryHints=sourceLibraryHints.filter(hint=>!presentLibraryHints.includes(hint));
+  const systemRequirements=flowSystemBlueprint?[
+    ...(flowSystemBlueprint.requiredSystems||[]).map(row=>({...row,stage:'REQUIRED'})),
+    ...(flowSystemBlueprint.expansionSystems||[]).map(row=>({...row,stage:'EXPANSION'}))
+  ]:[];
+  const systemBlueprintSummary=flowSystemBlueprint?{
+    profile:flowSystemBlueprint.profile,
+    target:flowSystemBlueprint.target,
+    required:(flowSystemBlueprint.requiredSystems||[]).map(row=>row.id),
+    expansion:(flowSystemBlueprint.expansionSystems||[]).map(row=>row.id),
+    phasePlan:flowSystemBlueprint.phasePlan||{},
+    interconnectionChains:flowSystemBlueprint.interconnectionChains||[],
+    reusableLibraries:sourceLibraryHints,
+    repositoryPresentLibraries:presentLibraryHints,
+    repositoryMissingLibraries:absentLibraryHints,
+    awardCaliberPrinciples:flowSystemBlueprint.awardCaliberPrinciples||[]
+  }:null;
+  const flowAssetInstruction=flowAssetRequirements.length
+    ?' FLOW_ASSET_REQUIREMENTS는 플로우 단계의 시각 역할 요구다. 특정 내부 자산 ID를 고정하지 말고 실행 시점 최신 회사 자산 라이브러리에서 호환 자산을 다시 조회한다. USE_AS_IS→LIGHT_THEME_ADAPT→STYLE_ADAPT→RECOMBINE_PARTS→NATIVE_REAUTHOR_BASE 중 가장 작은 적합 변경을 사용하고, 자산 계층은 게임 규칙·밸런스·세이브·진행·네트워크 권한을 소유하지 않는다.'
+    :'';
 
   const relevance=file=>{
     const value=file.toLowerCase();
@@ -2836,7 +2846,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     ?' 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.'
     :'';
   const goal=`[STUDIO_QUALITY_EVOLUTION] cycle=${cycle}; phase=${phase}; focus=${focusPillar}; baseline=${baselineId}
-${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${flowQualityInstruction}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
+${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designInstruction}${flowQualityInstruction}${flowArchitecture?` CURRENT_GAME_SOURCE_INVENTORY=${JSON.stringify({count:candidates.length,paths:candidates.slice(0,24)})}; LIBRARY_PATH_CHECK=${JSON.stringify({found:presentLibraryHints,missing:absentLibraryHints})}. 실제 소스 위치와 존재하는 라이브러리를 먼저 대조하고, 동일 이름이어도 버전·내용·저장 계약을 확인하기 전에는 덮어쓰거나 신규 중복 시스템을 생성하지 않는다.`:''}${platformLane==='unity-web'?' Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리 예산, 핵심 루프 실제 진행을 독립 검증한다. Unity Native PASS나 Roblox PASS로 대체하지 않는다.':''}
 ${expectationInstruction}
 현재 근거=${explicitGap}
 설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.
