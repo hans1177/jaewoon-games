@@ -718,25 +718,28 @@
       "toSystem": "실제 조건 및 선택을 기반으로 게임 세계관 형성",
       "trigger": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
       "stateChange": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다."
+    },
+    "local_authoring_parts::5fe22a31f74ae4e9015670f1919ba1cfde4b3a628b69a754d744b59ee6274e49:fromId": {
+      "fromId": "A"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 20,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1985108,
-      "lastMs": 58712,
+      "totalMs": 2041033,
+      "lastMs": 55925,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:00:15.993Z"
+      "updatedAt": "2026-10-09T21:01:11.920Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T21:00:15.994Z",
+  "updatedAt": "2026-10-09T21:01:11.920Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2785,7 +2788,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:00:15.994Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:01:11.920Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
