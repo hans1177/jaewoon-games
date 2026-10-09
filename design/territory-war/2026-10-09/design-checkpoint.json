@@ -543,25 +543,54 @@
         "resourceFlow": "Initial allocation → dynamic adjustment → long-term stability",
         "balanceRules": "Immediate gain vs. long-term sustainability"
       }
+    },
+    "local_authoring_parts::9accac6c28b19cf6507d2a8679a973122174e11be8adbcfe1d838c1115f782f3:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Border Pressure Readiness",
+          "newGameplay": "Player reads current border pressure and selects a territory objective.",
+          "systemImpact": "Establishes causal relationship between player decision and game state change."
+        },
+        {
+          "milestone": "Territory Objective Selection",
+          "newGameplay": "Player commits units or resources to attack, reinforce, or expand the economy.",
+          "systemImpact": "Influences resource deployment and economic strategy."
+        },
+        {
+          "milestone": "Territorial Change Resolution",
+          "newGameplay": "Player resolves territorial change and adapts next plan to new front line.",
+          "systemImpact": "Adapts strategic plan based on evolving conditions."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Initial border pressure assessment failure due to misread or incomplete data.",
+          "Resource allocation mismatch leading to tactical disadvantage.",
+          "Front-line shift not aligned with strategic goals resulting in positional vulnerability."
+        ],
+        "retryFlow": "Player re-evaluates objectives, adjusts strategies, and recalibrates unit deployments based on feedback from previous iterations.",
+        "riskPressure": "High risk of losing strategic advantage if initial decisions are not well-informed or if adaptation is insufficiently tested.",
+        "recoveryRules": "Player uses historical data and adaptive learning to refine future strategies, ensuring continuity and improvement over time."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1283888,
-      "lastMs": 126446,
+      "totalMs": 1374645,
+      "lastMs": 90757,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T08:42:31.953Z"
+      "updatedAt": "2026-10-09T08:44:02.711Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:42:31.953Z",
+  "updatedAt": "2026-10-09T08:44:02.825Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2582,15 +2611,159 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "b694019817b33dc8654b3b616acb319bedf08d82c66c98d4c979d752c299e736"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:42:31.953Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "territory-war-signature-systems-0→territory-war-signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: territory-war-signature-systems-0→territory-war-signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "territory-war-signature-systems-1→territory-war-signature-systems-2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: territory-war-signature-systems-1→territory-war-signature-systems-2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "territory-war-signature-systems-2→territory-war-signature-systems-3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: territory-war-signature-systems-2→territory-war-signature-systems-3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "territory-war-signature-systems-3→territory-war-signature-systems-4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: territory-war-signature-systems-3→territory-war-signature-systems-4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "territory-war-signature-systems-0→territory-war-signature-systems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: territory-war-signature-systems-0→territory-war-signature-systems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Incremental expansion with strategic adaptation",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Read border pressure → choose objective → commit units/resources → resolve change → adapt plan",
+        "resourceFlow": "Initial allocation → dynamic adjustment → long-term stability",
+        "balanceRules": "Immediate gain vs. long-term sustainability"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Border Pressure Readiness",
+          "newGameplay": "Player reads current border pressure and selects a territory objective.",
+          "systemImpact": "Establishes causal relationship between player decision and game state change."
+        },
+        {
+          "milestone": "Territory Objective Selection",
+          "newGameplay": "Player commits units or resources to attack, reinforce, or expand the economy.",
+          "systemImpact": "Influences resource deployment and economic strategy."
+        },
+        {
+          "milestone": "Territorial Change Resolution",
+          "newGameplay": "Player resolves territorial change and adapts next plan to new front line.",
+          "systemImpact": "Adapts strategic plan based on evolving conditions."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Initial border pressure assessment failure due to misread or incomplete data.",
+          "Resource allocation mismatch leading to tactical disadvantage.",
+          "Front-line shift not aligned with strategic goals resulting in positional vulnerability."
+        ],
+        "retryFlow": "Player re-evaluates objectives, adjusts strategies, and recalibrates unit deployments based on feedback from previous iterations.",
+        "riskPressure": "High risk of losing strategic advantage if initial decisions are not well-informed or if adaptation is insufficiently tested.",
+        "recoveryRules": "Player uses historical data and adaptive learning to refine future strategies, ensuring continuity and improvement over time."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T08:44:02.713Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
