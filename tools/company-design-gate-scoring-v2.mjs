@@ -529,7 +529,12 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const scores=Object.fromEntries(Object.entries(DESIGN_GATE_WEIGHTS).map(([axis,weight])=>[axis,weighted(evidenceLevels[axis],weight)]));
   const totalScore=Math.round(Object.values(scores).reduce((sum,value)=>sum+Number(value||0),0)*100)/100;
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
-  const rejectionReasons=validateDesignAuthoringContent({design,seed,multiplayerRequired,requirePlayableContract,assetLibrary,sourceText,assetFamilies});
+  // MAIN만 존재하는 과거 설계는 새 점수 체계에서 PASS할 수 없다.
+  // 부분 필드 수선은 별도 경로로 유지하되, 최종 설계 점수에서는 C 장르까지 반드시 심사한다.
+  const rejectionReasons=validateDesignAuthoringContent({
+    design,seed,fields:[...new Set([...Object.keys(design),'creativeGrammar'])],
+    multiplayerRequired,requirePlayableContract,assetLibrary,sourceText,assetFamilies
+  });
   const hardFailures=rejectionReasons.map(reason=>reason.code);
   const ownerPreservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   if(ownerPreservationSeed){
