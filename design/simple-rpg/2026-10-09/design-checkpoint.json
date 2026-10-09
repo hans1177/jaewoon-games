@@ -88,25 +88,183 @@
       "name": "심층 탐험 시스템 (보조 요소)",
       "purpose": "플레이어가 새로운 월드 상태에 도달했음을 나타내며, 이 상태에서 플레이어는 다양한 선택과 대응법을 통해 세계의 역사·생활·경제·지역 기능을 이해하고 발전시킬 수 있도록 구성된다.",
       "playerChoice": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다."
+    },
+    "local_authoring_parts::8b4f10881f5b8bae74e3438bef8ef8b448503043b011ebf5cc923ebc31cdfa54:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 월드 상태"
+      ],
+      "name": "심층 탐험 시스템 (보조 요소)",
+      "purpose": "플레이어가 선택한 월드 상태에 따라 새로운 콘텐츠를 생성하여 게임 세계의 진입 방식을 다양화합니다.",
+      "playerChoice": "플레이어는 월드 상태를 선택하거나, 특정 조합이나 관계를 통해 새롭게 생성되는 월드 상태를 결정할 수 있습니다."
+    },
+    "local_authoring_parts::ee05c7a5f5a258b1f7322f6328efad12dd5fa347bed47707b3f04fb1255dabd0:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "기초 게임 맵 시스템",
+          "purpose": "게임 맵에 새로운 상태를 생성하여 플레이어의 선택 결과를 반영합니다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템",
+          "purpose": "플레이어가 선택 결과에 따라 새로운 월드 상태를 생성하여 게임 세계의 진입 및 발전을 촉진합니다.",
+          "playerChoice": "플레이어는 현재 월드 상태에서 새로운 문제, 장애물, 혹은 도전을 선택하며, 이 선택은 다음 월드 상태로 전환됩니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하며, 위험, 보상, 그리고 다음 선택에 대한 대응법을 결정하는 데 사용된다.",
+          "playerChoice": "플레이어는 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하여, 위험, 보상, 및 다음 선택에 대한 대응법을 결정합니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 새로운 월드 상태에 도달했음을 나타내며, 이 상태에서 플레이어는 다양한 선택과 대응법을 통해 세계의 역사·생활·경제·지역 기능을 이해하고 발전시킬 수 있도록 구성된다.",
+          "playerChoice": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 선택한 월드 상태에 따라 새로운 콘텐츠를 생성하여 게임 세계의 진입 방식을 다양화합니다.",
+          "playerChoice": "플레이어는 월드 상태를 선택하거나, 특정 조합이나 관계를 통해 새롭게 생성되는 월드 상태를 결정할 수 있습니다."
+        }
+      ]
+    },
+    "local_authoring_parts::0df1f4bea7d18593bd47b11c0f0b720e91d62a0a54878e1931efc1b6bde10ad4:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 선택합니다.",
+        "STATE: 게임 맵에 새로운 상태를 생성하여 플레이어의 선택 결과를 반영합니다.",
+        "OUTPUT: 플레이어에게 보상(예: 점수 증가, 아이템 획득)을 제공합니다.",
+        "ACTION: 다음 단계로 전환하며, 플레이어의 선택이 월드 상태에 영향을 미칩니다.",
+        "NEXT: 플레이어는 새롭게 생성된 월드 상태에서 다시 시작할 수 있습니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "기초 게임 맵 시스템",
+          "purpose": "게임 맵에 새로운 상태를 생성하여 플레이어의 선택 결과를 반영합니다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템",
+          "purpose": "플레이어가 선택 결과에 따라 새로운 월드 상태를 생성하여 게임 세계의 진입 및 발전을 촉진합니다.",
+          "playerChoice": "플레이어는 현재 월드 상태에서 새로운 문제, 장애물, 혹은 도전을 선택하며, 이 선택은 다음 월드 상태로 전환됩니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하며, 위험, 보상, 그리고 다음 선택에 대한 대응법을 결정하는 데 사용된다.",
+          "playerChoice": "플레이어는 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하여, 위험, 보상, 및 다음 선택에 대한 대응법을 결정합니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 새로운 월드 상태에 도달했음을 나타내며, 이 상태에서 플레이어는 다양한 선택과 대응법을 통해 세계의 역사·생활·경제·지역 기능을 이해하고 발전시킬 수 있도록 구성된다.",
+          "playerChoice": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태"
+          ],
+          "name": "심층 탐험 시스템 (보조 요소)",
+          "purpose": "플레이어가 선택한 월드 상태에 따라 새로운 콘텐츠를 생성하여 게임 세계의 진입 방식을 다양화합니다.",
+          "playerChoice": "플레이어는 월드 상태를 선택하거나, 특정 조합이나 관계를 통해 새롭게 생성되는 월드 상태를 결정할 수 있습니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 869364,
-      "lastMs": 104878,
+      "totalMs": 969997,
+      "lastMs": 100633,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:46:13.562Z"
+      "updatedAt": "2026-10-09T15:47:54.196Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:46:13.562Z",
+  "updatedAt": "2026-10-09T15:47:54.199Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1696,7 +1854,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:46:13.562Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:47:54.199Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
