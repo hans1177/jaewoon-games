@@ -1382,25 +1382,43 @@
         "TACTICAL_FLEXIBILITY"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_CORE_LOOP_MAIN_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_"
+    },
+    "local_authoring_parts::ac92983ec458d03546d3117b8314874608a75f351a634bcf6ee3456cceeee006:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_LOOP_ADAPTATION",
+      "trigger": "DEFENSE_COVERAGE_CHANGE AND RESOURCE_ACUMULATION_INCREASE AND TACTICAL_FLEXIBILITY_INCREMENT",
+      "stateChange": "DEFENSE_COVERAGE_EXPANSION AND RESOURCE_ACCUMULATION_GROWTH AND STRATEGIC_FLEXIBILITY_REINFORCEMENT"
+    },
+    "local_authoring_parts::da0094842656bc448e5b9cf7bd18d396fb740268d99637814a93cbabdb20640c:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_LOOP_MAIN_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_LOOP_ADAPTATION",
+      "trigger": "DEFENSE_COVERAGE_CHANGE AND RESOURCE_ACUMULATION_INCREASE AND TACTICAL_FLEXIBILITY_INCREMENT",
+      "stateChange": "DEFENSE_COVERAGE_EXPANSION AND RESOURCE_ACCUMULATION_GROWTH AND STRATEGIC_FLEXIBILITY_REINFORCEMENT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 83,
-      "successes": 80,
+      "calls": 84,
+      "successes": 81,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5976385,
-      "lastMs": 104125,
+      "totalMs": 6068196,
+      "lastMs": 91811,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:24:34.841Z"
+      "updatedAt": "2026-10-09T02:26:06.654Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T02:24:34.841Z",
+  "updatedAt": "2026-10-09T02:26:06.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3740,7 +3758,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:24:34.841Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:26:06.656Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
