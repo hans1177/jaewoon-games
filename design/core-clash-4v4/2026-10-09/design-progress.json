@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 70,
-  "lastSuccessfulModelCallAt": "2026-10-09T01:06:59.052Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 71,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:07:39.139Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/core-clash-4v4/2026-10-09/design-seed.json",
     "contentDigest": "b77f76531fe4307e6c0d0494925e3dee13b1dcda875fb4ef8218908c607110fe",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 47,
-      "successes": 44,
+      "calls": 48,
+      "successes": 45,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 4643045,
-      "lastMs": 88145,
+      "totalMs": 4683125,
+      "lastMs": 40080,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T01:06:59.049Z"
+      "updatedAt": "2026-10-09T01:07:39.139Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T01:06:59.058Z"
+  "updatedAt": "2026-10-09T01:07:39.140Z"
 }
