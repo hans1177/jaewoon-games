@@ -80,25 +80,53 @@
         "worldChange": "성능 변환 → 선택 변화 → 성능 재변화의 순차적 플레이어 행동 결과로 세계 규칙 변경됨",
         "nextEvent": "다음 웨이브에서는 기존 전략보다 더 빠른 성능 반응과 다양한 업그레이드 옵션 제공"
       }
+    },
+    "local_authoring_parts::ed1722ca5c80c9f52bd30bd41c24b922040e283b9c7af540af59232f4473ed02:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "공명 연결",
+          "kind": "GENRE",
+          "gameplayEffect": "방어 성능의 유연성 증대 및 플레이어 선택에 대한 인과적 영향"
+        },
+        {
+          "name": "배치 조합",
+          "kind": "GENRE",
+          "gameplayEffect": "방어 성능의 재설계 및 새로운 진입 시점 생성"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 디펜스",
+          "gameplayEffect": "플레이어 선택에 따른 자원 활용 전략 최적화"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "무한 보상 악용",
+          "gameplayEffect": "선택 변화로 인해 방어 성능의 지속적인 변환"
+        }
+      ],
+      "cGenreInterlock": "공명 연결 ↔ 업그레이드 경로의 인과적 결합을 통해 방어 성능의 유연성을 증대시킴",
+      "cWorldAndGameplayEffect": "성능 변환 → 선택 변화 → 성능 재변화의 순차적 상태 교환이 이루어짐으로 세계 규칙 변경됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 918574,
-      "lastMs": 124426,
+      "totalMs": 1032301,
+      "lastMs": 113727,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:20:44.565Z"
+      "updatedAt": "2026-10-09T18:22:38.295Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:25.966Z",
-  "updatedAt": "2026-10-09T18:20:44.567Z",
+  "updatedAt": "2026-10-09T18:22:38.295Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1804,7 +1832,7 @@
     "de3a2567b5b3fd56b4cf08b531052b7041f29bdd1150c9c0d56b0b94a44a8dd4": true,
     "12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:20:44.567Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:22:38.295Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
