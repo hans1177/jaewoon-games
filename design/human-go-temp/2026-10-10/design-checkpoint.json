@@ -599,25 +599,203 @@
       "name": "Adaptive Scenario System",
       "purpose": "Player's skill set and relationship dynamics evolve dynamically as they navigate environmental pressures, leading to more complex decision-making and progression.",
       "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes."
+    },
+    "local_authoring_parts::9e51cb70736652f3b07fa33c673bc508fa75566b84eff121f4d94b72f8758a4a:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+        "Character development influences decision-making in dynamic scenarios"
+      ],
+      "stateOutputs": [
+        "Progression to next challenge in survival run",
+        "Increased strategic depth from adaptive gameplay"
+      ],
+      "name": "Adaptive Scenario System",
+      "purpose": "Influences progression and accessibility based on player decisions",
+      "playerChoice": "Progression to next challenge in survival run or increased strategic depth from adaptive gameplay"
+    },
+    "local_authoring_parts::95da87575ceaac53b2c1b674a693072309ab7c19e402cdc8c60926e024ea23ca:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Environmental challenges trigger adaptive strategies"
+          ],
+          "stateOutputs": [
+            "Player gains experience and resources from successful navigation",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "name": "Dynamic Terrain System",
+          "purpose": "Enables player adaptation to environmental changes through strategic interaction",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental constraints"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Environmental challenges trigger adaptive strategies"
+          ],
+          "stateOutputs": [
+            "Player gains experience and resources from successful navigation",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "name": "Adaptive Strategy System",
+          "purpose": "Player builds unique skills and relationships with enemies, gaining new abilities and strategic insights from interactions",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Player builds unique skills and relationships with enemies, gaining new ability",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Player gains strategic insights from interactions",
+            "Environmental challenges trigger adaptive gameplay"
+          ],
+          "name": "Adaptive Gameplay System",
+          "purpose": "Influences player strategy selection in dynamic scenarios",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Progression to next challenge in survival run",
+            "Increased strategic depth from adaptive gameplay"
+          ],
+          "name": "Adaptive Scenario System",
+          "purpose": "Player's skill set and relationship dynamics evolve dynamically as they navigate environmental pressures, leading to more complex decision-making and progression.",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Progression to next challenge in survival run",
+            "Increased strategic depth from adaptive gameplay"
+          ],
+          "name": "Adaptive Scenario System",
+          "purpose": "Influences progression and accessibility based on player decisions",
+          "playerChoice": "Progression to next challenge in survival run or increased strategic depth from adaptive gameplay"
+        }
+      ]
+    },
+    "local_authoring_parts::153b3301121b6a737aa351890ed51259ee32be8d18dad6afd2b490031b3e1274:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Player navigates through dynamic terrain with shifting obstacles and resource distribution, gaining experience and resources.",
+        "Player builds unique skills and relationships with enemies, gaining new abilities and strategic insights from interactions.",
+        "Environmental challenges trigger adaptive strategies, while character development influences decision-making in dynamic scenarios."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Environmental challenges trigger adaptive strategies"
+          ],
+          "stateOutputs": [
+            "Player gains experience and resources from successful navigation",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "name": "Dynamic Terrain System",
+          "purpose": "Enables player adaptation to environmental changes through strategic interaction",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental constraints"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Environmental challenges trigger adaptive strategies"
+          ],
+          "stateOutputs": [
+            "Player gains experience and resources from successful navigation",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "name": "Adaptive Strategy System",
+          "purpose": "Player builds unique skills and relationships with enemies, gaining new abilities and strategic insights from interactions",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Player builds unique skills and relationships with enemies, gaining new ability",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Player gains strategic insights from interactions",
+            "Environmental challenges trigger adaptive gameplay"
+          ],
+          "name": "Adaptive Gameplay System",
+          "purpose": "Influences player strategy selection in dynamic scenarios",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Progression to next challenge in survival run",
+            "Increased strategic depth from adaptive gameplay"
+          ],
+          "name": "Adaptive Scenario System",
+          "purpose": "Player's skill set and relationship dynamics evolve dynamically as they navigate environmental pressures, leading to more complex decision-making and progression.",
+          "playerChoice": "Strategic adaptation or retreat based on resource distribution and environmental changes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Player navigates through dynamic terrain with shifting obstacles and resource分布",
+            "Character development influences decision-making in dynamic scenarios"
+          ],
+          "stateOutputs": [
+            "Progression to next challenge in survival run",
+            "Increased strategic depth from adaptive gameplay"
+          ],
+          "name": "Adaptive Scenario System",
+          "purpose": "Influences progression and accessibility based on player decisions",
+          "playerChoice": "Progression to next challenge in survival run or increased strategic depth from adaptive gameplay"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1870307,
-      "lastMs": 96512,
+      "totalMs": 1965248,
+      "lastMs": 94941,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:51:35.473Z"
+      "updatedAt": "2026-10-09T17:53:10.416Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:25.119Z",
-  "updatedAt": "2026-10-09T17:51:35.474Z",
+  "updatedAt": "2026-10-09T17:53:10.419Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2331,7 +2509,7 @@
     "03b26008f6a55b505867f805418255705b83c8c865f5009f5c9bac8b71e40070": true,
     "600483efdcf67bd180436a0b8183fd7914493db159f88200748ed37eb727695b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:51:35.473Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:53:10.419Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
