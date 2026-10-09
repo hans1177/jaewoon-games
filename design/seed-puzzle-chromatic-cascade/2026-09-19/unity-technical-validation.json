@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T23:27:34.082Z",
+  "checkedAt": "2026-10-09T01:45:31.034Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37327766206,
-    "sourceCommit": "d5234db09c7fbd7802f1d2b46e0d71177cb06b02",
-    "sourceTreeSha": "fca82aca22d85e448c220f1df6651a66f6ef3e32",
-    "apkSha256": "989c8fb4460060e5c18721603531479e8210a8e98063590d97bb58f86c0f6f2e",
+    "upstreamBuildRunId": 37789615122,
+    "sourceCommit": "958908552487521a202cf8f1200ec52fb6045042",
+    "sourceTreeSha": "dacc24bcaa40c6b23e97749c12aab9e1c3e2cf4f",
+    "apkSha256": "24789649d36dc23caa8ec0aa3b2cded1f4efe1c5daece42992c764bfc5630306",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -115,17 +115,17 @@
       "state": "PASS",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
       "sampleCount": 5,
-      "totalFramesRendered": 124,
+      "totalFramesRendered": 123,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
       "minFps": 10.9,
-      "avgFps": 13.299999999999999,
+      "avgFps": 13.466666666666667,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 64099118,
+      "maxAllocatedMemoryBytes": 64097886,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-puzzle-chromatic-cascade-android-cloud-37327766206-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37327766206/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37327766206/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-puzzle-chromatic-cascade-android-cloud-37789615122-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37789615122/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37789615122/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-puzzle-chromatic-cascade"
   }
 }
