@@ -1172,25 +1172,28 @@
     },
     "local_authoring_parts::588760c923c34568c7fb9a60d91df611c626cb9624e26591ed53ba78168408c0:toSystem": {
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::588760c923c34568c7fb9a60d91df611c626cb9624e26591ed53ba78168408c0:trigger": {
+      "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 98,
+      "calls": 99,
+      "successes": 99,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6203286,
-      "lastMs": 29940,
+      "totalMs": 6234030,
+      "lastMs": 30744,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:10:20.644Z"
+      "updatedAt": "2026-10-09T03:10:51.389Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T03:10:20.644Z",
+  "updatedAt": "2026-10-09T03:10:51.389Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3705,7 +3708,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:10:20.644Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:10:51.389Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
