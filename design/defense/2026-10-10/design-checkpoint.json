@@ -705,25 +705,41 @@
         "DefensesPlaced"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::884af016860c0a7e2c9226623c98c363832e991411f93edf0b47f93b47bdc844:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "DefensesPlaced",
+      "stateChange": "ResourcesEarned"
+    },
+    "local_authoring_parts::e1523a323cd1b29dcfd099e87132a43a8b751cbf8a7b8966821f976f2f5a8cf5:systemInterconnections:4": {
+      "fromId": "MAIN",
+      "toId": "A",
+      "stateKeys": [
+        "DefensesPlaced"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "DefensesPlaced",
+      "stateChange": "ResourcesEarned"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 878817,
-      "lastMs": 32972,
+      "totalMs": 911788,
+      "lastMs": 32971,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:34:54.853Z"
+      "updatedAt": "2026-10-09T17:35:27.826Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:15.929Z",
-  "updatedAt": "2026-10-09T17:34:54.853Z",
+  "updatedAt": "2026-10-09T17:35:27.836Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2456,9 +2472,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "A→B의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: A→B의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2473,9 +2489,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "B→C의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: B→C의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2490,9 +2506,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "C→DELVE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: C→DELVE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2507,9 +2523,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "MAIN→A의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: DELVE→MAIN의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: MAIN→A의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2536,7 +2552,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2576,10 +2592,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:34:54.853Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T17:35:27.829Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
