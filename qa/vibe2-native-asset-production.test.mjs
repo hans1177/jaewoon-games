@@ -493,46 +493,57 @@ test('all game development scans the full internal registry and removes family a
   }
 });
 
-test('every game can select the hundred midnight creatures without game-pack ownership gates',()=>{
+test('midnight hundred source entries stay shared for every game without bypassing real 3D source checks',()=>{
   const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-  const organization=library.internalAssetStandard.sharedOrganization;
+  const standard=library.internalAssetStandard.sharedOrganization;
   const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
-  assert.equal(organization.version,2);
-  assert.deepEqual(organization.familyOrder,families);
-  assert.deepEqual(organization.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
-  assert.equal(organization.gameExclusivePacks,false);
-  assert.equal(organization.originalGameNamedPacksAreSourceLineageOnly,true);
-  const creatures=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
-  assert.equal(creatures.length,100);
-  assert.equal(new Set(creatures.map(row=>row.skinId)).size,100);
-  for(const creature of creatures){
-    assert.equal(creature.companyCommonBase,true,creature.id);
-    assert.equal(creature.gameExclusive,false,creature.id);
-    assert.equal(creature.reuseScope,'COMPANY_COMMON_BASE',creature.id);
-    assert.equal(creature.productionVerified,false,creature.id);
-  }
-  const expectedIds=new Set(creatures.map(row=>row.id));
+  assert.equal(standard.version,2);
+  assert.deepEqual(standard.familyOrder,families);
+  assert.deepEqual(standard.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
+  assert.equal(standard.gameExclusivePacks,false);
+  assert.equal(standard.originalGameNamedPacksAreSourceLineageOnly,true);
+  const monsters=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
+  assert.equal(monsters.length,100);
+  assert.equal(new Set(monsters.map(row=>row.skinId)).size,100);
+  assert.ok(monsters.every(row=>row.companyCommonBase===true&&row.gameExclusive===false&&row.reuseScope==='COMPANY_COMMON_BASE'));
+  assert.ok(monsters.every(row=>row.productionVerified!==true),'roster registration is not runtime verification');
+  const ids=new Set(monsters.map(row=>row.id));
   for(const target of ['roblox','unity','web']){
-    const fromMidnight=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
-    const fromSurvival=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
-    assert.deepEqual(fromMidnight.libraryOrder,families);
-    assert.deepEqual(fromMidnight.librarySortKeys,organization.sortKeys);
-    assert.equal(fromMidnight.allCompatibleGamesEligible,true);
-    assert.equal(fromMidnight.sourcePackIdIsLineageOnly,true);
-    const a=fromMidnight.familyCandidates.CREATURE.filter(row=>expectedIds.has(row.assetId));
-    const b=fromSurvival.familyCandidates.CREATURE.filter(row=>expectedIds.has(row.assetId));
-    assert.equal(a.length,100,target);
-    assert.deepEqual(a,b,target+': candidate access must not depend on game pack name');
-    assert.ok(a.every(row=>row.sourcePackId==='roblox-world-ghost-skins-v1'));
-    assert.ok(a.every(row=>row.applicationMode===(target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE')));
-    assert.equal(fromMidnight.evaluatedAssetCount,library.assets.length);
+    const planA=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
+    const planB=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
+    assert.deepEqual(planA.libraryOrder,families);
+    assert.deepEqual(planA.librarySortKeys,standard.sortKeys);
+    assert.equal(planA.allCompatibleGamesEligible,true);
+    assert.equal(planA.sourcePackIdIsLineageOnly,true);
+    assert.equal(planA.evaluatedAssetCount,library.assets.length);
+    const seenA=planA.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    const seenB=planB.evaluatedAssets.filter(row=>ids.has(row.assetId));
+    assert.equal(seenA.length,100,target+': all 100 source entries remain discoverable');
+    assert.deepEqual(seenA,seenB,target+': pack name must not restrict discovery by game');
+    assert.ok(seenA.every(row=>row.hardBlockReason===null||row.hardBlockReason==='SPATIAL_3D_SOURCE_REQUIRED'));
+    assert.ok(seenA.every(row=>row.eligibleForRoleEvaluation===!Boolean(row.hardBlockReason)));
+  }
+  // 실제 존재하는 원본 GLB를 제공한 경우에만 게임 선택 후보로 진입한다. 이것은 런타임 PASS가 아니다.
+  const bride=monsters.find(row=>row.skinId==='gwisin-bride');
+  assert.ok(bride);
+  assert.ok(fs.existsSync('assets/roblox/world-ghosts/native/mesh/bride.glb'));
+  const with3d={...bride,nativeArtifacts:['assets/roblox/world-ghosts/native/mesh/bride.glb']};
+  for(const target of ['roblox','unity','web']){
+    const registry={version:library.version,assets:[with3d]};
+    const a=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'horror-escape-room'});
+    const b=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'survival'});
+    assert.equal(a.familyCandidates.CREATURE.length,1);
+    assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
+    assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
+    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
   }
   const fixture={version:1,assets:[
-    {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX'},
+    {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
     {id:'u',family:'UI',title:'가',license:'CC0',platform:'ROBLOX'},
-    {id:'a',family:'CREATURE',subfamily:'A',title:'나',license:'CC0',platform:'ROBLOX'},
-    {id:'c',family:'CHARACTER',title:'다',license:'CC0',platform:'ROBLOX'},
-    {id:'b',family:'CREATURE',subfamily:'A',title:'가',license:'CC0',platform:'ROBLOX'}
+    {id:'a',family:'CREATURE',subfamily:'A',title:'나',license:'CC0',platform:'ROBLOX',path:'a.glb'},
+    {id:'c',family:'CHARACTER',title:'다',license:'CC0',platform:'ROBLOX',path:'c.glb'},
+    {id:'b',family:'CREATURE',subfamily:'A',title:'가',license:'CC0',platform:'ROBLOX',path:'b.glb'}
   ]};
   const sorted=buildAllGameDynamicLibraryBindingPlan({companyRegistry:fixture,target:'roblox',gameId:'any-existing-game'});
   assert.deepEqual(sorted.evaluatedAssets.map(row=>row.assetId),['c','b','a','z','u']);
@@ -553,6 +564,30 @@ test('full library scan preserves low quality assets but rejects unsafe corrupt 
     assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['low-quality']);
     assert.equal(plan.hardBlockedAssetCount,5);
     assert.equal(plan.unclassifiedAssetCount,0);
+  }
+});
+
+test('all game spatial families reject flat 2D assets but allow unlimited cross-game 3D donor reuse',()=>{
+  const assets=[
+    {id:'flat-creature',family:'CREATURE',license:'project-original',platform:'WEB_REFERENCE',path:'/assets/flat.png'},
+    {id:'shared-creature',family:'CREATURE',license:'project-original',platform:'ROBLOX',
+      companyCommonBase:true,path:'/assets/shared/spider.png',nativeArtifacts:['assets/shared/spider.glb']},
+    {id:'another-creature',family:'CREATURE',license:'CC0',platform:'SHARED_NATIVE_SOURCE',
+      companyCommonBase:true,path:'/assets/shared/wolf.obj'},
+    {id:'building-part',family:'BUILDING',license:'project-original',platform:'ROBLOX',
+      companyCommonBase:true,path:'/assets/shared/wall.obj'},
+    {id:'ui-icon',family:'UI',license:'CC0',path:'/assets/shared/icon.png'}
+  ];
+  for(const target of ['roblox','unity','web']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:9,assets},target,gameId:'any-genre'});
+    assert.deepEqual(plan.familyCandidates.CREATURE.map(asset=>asset.assetId),['another-creature','shared-creature']);
+    assert.deepEqual(plan.familyCandidates.BUILDING.map(asset=>asset.assetId),['building-part']);
+    assert.deepEqual(plan.familyCandidates.UI.map(asset=>asset.assetId),['ui-icon']);
+    assert.equal(plan.hardBlockedAssetCount,1);
+    assert.equal(plan.crossGameAndGenreReuseUnrestricted,true);
+    assert.equal(plan.noArtificialAssetCountCap,true);
+    assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
+    assert.equal(plan.internalRegisteredAssetsOnly,true);
   }
 });
 
@@ -2081,7 +2116,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('native asset plan prefers verified company library then repository then external gap fill',()=>{
+test('game asset selection uses only the registered internal company library',()=>{
   const root=tempRoot();
   try{
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
@@ -2093,8 +2128,8 @@ test('native asset plan prefers verified company library then repository then ex
       externalSources:[{id:'external-source'}]
     },null,2));
     const manifest={version:1,assets:[
-      {id:'repo-ui',path:'unity-games/demo/Assets/UI/repo.png',types:['ui'],tags:['UI'],license:'project-original'},
-      {id:'external-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',source:'KayKit',sourceUrl:'https://example.invalid/ui',downloaded:false,platforms:['unity']}
+      {id:'unregistered-ui',path:'unity-games/demo/Assets/UI/repo.png',types:['ui'],tags:['UI'],license:'project-original'},
+      {id:'external-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',source:'External',sourceUrl:'https://example.invalid/ui',downloaded:false}
     ]};
     const plan=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'UI 그래픽 개선'},target:'unity',repoRoot:root,
@@ -2103,23 +2138,18 @@ test('native asset plan prefers verified company library then repository then ex
     const row=plan.decisions.find(item=>item.type==='ui');
     assert.ok(row);
     assert.deepEqual(row.companyCandidates.map(item=>item.id),['company-ui']);
-    assert.deepEqual(row.repositoryCandidates.map(item=>item.id),['repo-ui']);
-    assert.deepEqual(row.externalCandidates.map(item=>item.id),['external-ui']);
-    assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui','repo-ui']);
-    assert.deepEqual(row.decisionOrder.slice(1,4),[
-      'REUSE_VERIFIED_COMPANY_ASSET',
-      'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
-      'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'
-    ]);
+    assert.deepEqual(row.repositoryCandidates.map(item=>item.id),[]);
+    assert.deepEqual(row.externalCandidates.map(item=>item.id),[]);
+    assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui']);
     assert.equal(plan.summary.companyCandidateTypes>0,true);
-    assert.equal(plan.summary.externalCandidateTypes>0,true);
+    assert.equal(plan.summary.externalCandidateTypes,0);
+    assert.ok(!row.decisionOrder.includes('ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'));
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
 
-
-test('downloaded external asset keeps external provenance and must compare against internal assets before selection',()=>{
+test('an externally acquired asset can be evaluated only after registration in the internal library',()=>{
   const root=tempRoot();
   try{
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
@@ -2127,6 +2157,10 @@ test('downloaded external asset keeps external provenance and must compare again
       assets:[{
         id:'company-ui',category:'UI',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
         path:'unity-games/shared/ui/company.png',license:'company-owned',platforms:['unity'],sourceHash:'company-ui-v1'
+      },{
+        id:'downloaded-external-ui',category:'UI',license:'CC0',status:'REPO_ASSET',
+        path:'unity-games/demo/Assets/UI/external.png',platforms:['unity'],sourceHash:'external-ui-v1',
+        source:'External Pack',sourceUrl:'https://example.invalid/ui-pack',downloaded:true
       }]
     },null,2));
     const manifest={version:1,assets:[{
