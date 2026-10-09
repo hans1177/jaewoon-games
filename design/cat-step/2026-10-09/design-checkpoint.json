@@ -407,25 +407,51 @@
         "NEXT_LEVEL_STATE"
       ],
       "fromSystem": "CAT-STEP-SIGNATURESYSTEM-1"
+    },
+    "local_authoring_parts::7f6423638075b5afa0dc41ee7f10ec062cde359407fa6b86f57bf56c4ca142b7:toSystem,trigger,stateChange": {
+      "toSystem": "CAT-STEP-SIGNATURESYSTEM-2",
+      "trigger": "LEVEL_STATE_CHANGE_TRIGGER",
+      "stateChange": "FROM_ LEVEL_STATE TO NEXT_LEVEL_STATE"
+    },
+    "local_authoring_parts::1201d4f1f99f16570cc25f02c9b1b961b909469f1903cea7801d0820552d4e67:systemInterconnections:0": {
+      "fromId": "CAT-STEP-SIGNATURESYSTEM-1",
+      "toId": "CAT-STEP-SIGNATURESYSTEM-2",
+      "stateKeys": [
+        "LEVEL_STATE",
+        "NEXT_LEVEL_STATE"
+      ],
+      "fromSystem": "CAT-STEP-SIGNATURESYSTEM-1",
+      "toSystem": "CAT-STEP-SIGNATURESYSTEM-2",
+      "trigger": "LEVEL_STATE_CHANGE_TRIGGER",
+      "stateChange": "FROM_ LEVEL_STATE TO NEXT_LEVEL_STATE"
+    },
+    "local_authoring_parts::9f939ae85590b7b33df91ac489b0dc0f84f8de6a1011026366b8a20918987592:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CAT-STEP-SIGNATURESYSTEM-1",
+      "toId": "CAT-STEP-SIGNATURESYSTEM-2",
+      "stateKeys": [
+        "LEVEL_STATE",
+        "NEXT_LEVEL_STATE"
+      ],
+      "fromSystem": "CAT-STEP-SIGNATURESYSTEM-1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 756453,
-      "lastMs": 61572,
+      "totalMs": 877091,
+      "lastMs": 61739,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:35:17.393Z"
+      "updatedAt": "2026-10-09T08:37:18.034Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:22:40.843Z",
-  "updatedAt": "2026-10-09T08:35:17.393Z",
+  "updatedAt": "2026-10-09T08:37:18.034Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2612,7 +2638,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:35:17.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:37:18.034Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
