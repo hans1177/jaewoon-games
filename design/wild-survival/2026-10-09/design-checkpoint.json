@@ -94,25 +94,203 @@
       "name": "생존 깊이 확대 시스템",
       "purpose": "야생 생존의 실제 플레이 상태와 목표를 기반으로, 다양한 선택과 전략에 따른 깊이 증가 및 재해석을 가능하게 하는 시스템.",
       "playerChoice": "플레이어는 현재 월드 상태와 목표를 읽고, 다음 단계에서 새로운 선택이나 전략을 통해 게임의 깊이를 확대할 수 있습니다. 이 과정에서는 발견, 숙련, 재방문 등 다양한 플레이 경험을 제공합니다."
+    },
+    "local_authoring_parts::e1e764be1dc7ddb4b2530c732f16fc3f8586c6c4546d3bb8897c7107709e32fa:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextAction"
+      ],
+      "name": "생존 깊이 확대 시스템",
+      "purpose": "플레이어가 현재 월드 상태와 목표를 기반으로, 생존 과정에서 발생하는 다양한 가능성 및 전략적 선택을 발견하며, 게임의 깊이와 복잡성에 따라 새로운 행동과 전략을 탐색하고 적용합니다.",
+      "playerChoice": "플레이어는 월드 상태와 목표를 바탕으로, 다음 단계로 이어지는 여러 가능성을 탐색하여, 생존 전략의 다양화와 숙련도 향상을 추구합니다."
+    },
+    "local_authoring_parts::f675499bab2aa096a9ea7460f785fde62c02bf6edcf4d7f93f4b283357e5d95c:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 상태 관리 시스템",
+          "purpose": "플레이어가 현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동(예: 이동, 자원 수집, 위협 회피)을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동을 선택하여 월드 상태를 변환합니다. 해당 변화에 따른 보상/위험/다음 목표가 발생하며, 플레이어는 새로운 목표로 진입합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어가 선택한 생존 전략을 다른 플레이어와 공유하거나, 새로운 전략을 도입하여 월드 상태를 재구성하는 데 사용된다.",
+          "playerChoice": "플레이어는 현재의 생존 전략(예: 이동 방향, 자원 수집 전략, 위협 회피 전술)을 선택하고, 해당 전략에 따라 월드 상태가 변하게 된다. 변경된 상태에 따른 보상/위험/다음 목표가 발생하며, 플레이어는 새로운 전략을 선택해 진입한다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표에 기반하여, 다양한 생존 전략을 선택하고, 해당 전략 실행 후 새로운 월드 상태 및 다음 행동을 결정하는 시스템입니다.",
+          "playerChoice": "플레이어는 월드 상태와 목표를 읽고, 이동, 자원 수집, 위협 회피 등 생존 핵심 행동 중 하나를 선택합니다. 선택 후 실제 입력을 수행하여 월드 상태가 변하게 되며, 해당 변화에 따른 보상/위험/다음 목표가 발생합니다. 보상 또는 위험에 따라 다음 지역, 대상, 자원, 혹은 전략 선택이 결정되며, 플레이어는 새로운 목표로 진입합니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 깊이 확대 시스템",
+          "purpose": "야생 생존의 실제 플레이 상태와 목표를 기반으로, 다양한 선택과 전략에 따른 깊이 증가 및 재해석을 가능하게 하는 시스템.",
+          "playerChoice": "플레이어는 현재 월드 상태와 목표를 읽고, 다음 단계에서 새로운 선택이나 전략을 통해 게임의 깊이를 확대할 수 있습니다. 이 과정에서는 발견, 숙련, 재방문 등 다양한 플레이 경험을 제공합니다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 깊이 확대 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 기반으로, 생존 과정에서 발생하는 다양한 가능성 및 전략적 선택을 발견하며, 게임의 깊이와 복잡성에 따라 새로운 행동과 전략을 탐색하고 적용합니다.",
+          "playerChoice": "플레이어는 월드 상태와 목표를 바탕으로, 다음 단계로 이어지는 여러 가능성을 탐색하여, 생존 전략의 다양화와 숙련도 향상을 추구합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::574167a8449fd6599cb6710d386b8214cacaa8003366df40f4acb422a32d3cad:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동(예: 이동, 자원 수집, 위협 회피)을 선택합니다.",
+        "선택 후 실제 입력을 수행하여 월드 상태가 변하게 되며, 해당 변화에 따른 보상/위험/다음 목표가 발생합니다.",
+        "보상 또는 위험에 따라 다음 지역, 대상, 자원, 혹은 전략 선택이 결정되며, 플레이어는 새로운 목표로 진입합니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 상태 관리 시스템",
+          "purpose": "플레이어가 현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동(예: 이동, 자원 수집, 위협 회피)을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+          "playerChoice": "현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동을 선택하여 월드 상태를 변환합니다. 해당 변화에 따른 보상/위험/다음 목표가 발생하며, 플레이어는 새로운 목표로 진입합니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어가 선택한 생존 전략을 다른 플레이어와 공유하거나, 새로운 전략을 도입하여 월드 상태를 재구성하는 데 사용된다.",
+          "playerChoice": "플레이어는 현재의 생존 전략(예: 이동 방향, 자원 수집 전략, 위협 회피 전술)을 선택하고, 해당 전략에 따라 월드 상태가 변하게 된다. 변경된 상태에 따른 보상/위험/다음 목표가 발생하며, 플레이어는 새로운 전략을 선택해 진입한다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표에 기반하여, 다양한 생존 전략을 선택하고, 해당 전략 실행 후 새로운 월드 상태 및 다음 행동을 결정하는 시스템입니다.",
+          "playerChoice": "플레이어는 월드 상태와 목표를 읽고, 이동, 자원 수집, 위협 회피 등 생존 핵심 행동 중 하나를 선택합니다. 선택 후 실제 입력을 수행하여 월드 상태가 변하게 되며, 해당 변화에 따른 보상/위험/다음 목표가 발생합니다. 보상 또는 위험에 따라 다음 지역, 대상, 자원, 혹은 전략 선택이 결정되며, 플레이어는 새로운 목표로 진입합니다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 깊이 확대 시스템",
+          "purpose": "야생 생존의 실제 플레이 상태와 목표를 기반으로, 다양한 선택과 전략에 따른 깊이 증가 및 재해석을 가능하게 하는 시스템.",
+          "playerChoice": "플레이어는 현재 월드 상태와 목표를 읽고, 다음 단계에서 새로운 선택이나 전략을 통해 게임의 깊이를 확대할 수 있습니다. 이 과정에서는 발견, 숙련, 재방문 등 다양한 플레이 경험을 제공합니다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "currentWorldState",
+            "playerGoal"
+          ],
+          "stateOutputs": [
+            "newWorldState",
+            "nextAction"
+          ],
+          "name": "생존 깊이 확대 시스템",
+          "purpose": "플레이어가 현재 월드 상태와 목표를 기반으로, 생존 과정에서 발생하는 다양한 가능성 및 전략적 선택을 발견하며, 게임의 깊이와 복잡성에 따라 새로운 행동과 전략을 탐색하고 적용합니다.",
+          "playerChoice": "플레이어는 월드 상태와 목표를 바탕으로, 다음 단계로 이어지는 여러 가능성을 탐색하여, 생존 전략의 다양화와 숙련도 향상을 추구합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353115,
-      "lastMs": 35041,
+      "totalMs": 389930,
+      "lastMs": 36815,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:45:47.840Z"
+      "updatedAt": "2026-10-09T15:46:24.656Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:45:47.840Z",
+  "updatedAt": "2026-10-09T15:46:24.658Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1714,7 +1892,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:45:47.840Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:46:24.658Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
