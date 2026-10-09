@@ -209,25 +209,40 @@
       "name": "Forest Adaptation System",
       "purpose": "Enables players to dynamically adjust their survival strategies based on environmental conditions and group dynamics.",
       "playerChoice": "Prioritize resource acquisition, evaluate risk, and select shelter strategy in response to ecological changes and cooperative needs."
+    },
+    "local_authoring_parts::6d92114ad0e5013e1a7499c3f14f543db45c9c95e42405f1b508478c4d142c0b:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "resourceDistribution",
+        "groupReadiness"
+      ],
+      "stateOutputs": [
+        "survivalAdvantage",
+        "defensiveTactics"
+      ],
+      "name": "Resource-Based Survival System",
+      "purpose": "Determines group composition and strategic focus based on resource availability",
+      "playerChoice": "Prioritize one member over another for survival advantage or form temporary alliances for defensive tactics based on resource distribution patterns and group readiness levels"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 820770,
-      "lastMs": 70251,
+      "totalMs": 888356,
+      "lastMs": 67586,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:07:34.869Z"
+      "updatedAt": "2026-10-09T21:08:42.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T21:07:34.869Z",
+  "updatedAt": "2026-10-09T21:08:42.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1936,7 +1951,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:07:34.869Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:08:42.457Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
