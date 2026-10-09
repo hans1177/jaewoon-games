@@ -80,25 +80,53 @@
         "worldChange": "NextEvent → FinalGameIdentity",
         "nextEvent": "FinalGameIdentity → NewPlayOption"
       }
+    },
+    "local_authoring_parts::299babb881020b12f03fee6aaa766689f3a67876d7649be3a391d6d4266127b9:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "EnemyTypeChange",
+          "kind": "GENRE",
+          "gameplayEffect": "EnemyTypeChange → DefenseStrategyUpdate"
+        },
+        {
+          "name": "ResourceSpendingPatternChange",
+          "kind": "GENRE",
+          "gameplayEffect": "DefenseStrategyUpdate → ResourceSpendingPatternChange"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "DEFENSE_STRATEGY",
+          "gameplayEffect": "EnemyTypeChange → DefenseStrategyUpdate"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RESOURCE_MANAGEMENT",
+          "gameplayEffect": "DefenseStrategyUpdate → ResourceSpendingPatternChange"
+        }
+      ],
+      "cGenreInterlock": "EnemyTypeChange ↔ DefenseStrategyUpdate",
+      "cWorldAndGameplayEffect": "EnemyTypeChange → EffectOnPlayerChoice → PlayerChoice → StateChangeInWorld → NextEvent → FinalGameIdentity → NewPlayOption"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1145675,
-      "lastMs": 260430,
+      "totalMs": 1254781,
+      "lastMs": 109106,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:40:45.930Z"
+      "updatedAt": "2026-10-09T18:42:35.038Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:40.225Z",
-  "updatedAt": "2026-10-09T18:40:45.931Z",
+  "updatedAt": "2026-10-09T18:42:35.038Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1808,7 +1836,7 @@
     "282e07c4f86efbe0d3307ad28126c011786c503d2f3ffea4b364808e760ff761": true,
     "82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:40:45.931Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:42:35.038Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
