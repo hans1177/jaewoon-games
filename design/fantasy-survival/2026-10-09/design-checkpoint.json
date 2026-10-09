@@ -1017,25 +1017,51 @@
       "toSystem": "SIGNATURE_SYSTEMS",
       "trigger": "GAME_PROGRESS_UPDATE",
       "stateChange": "GAME_FANTASY_UPDATED"
+    },
+    "local_authoring_parts::6b88d774167eca2700cd80b473bcf53d4ab849af77ad36a064f479ba7b63ac87:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy"
+      ],
+      "fromSystem": "CORE_FUNCS"
+    },
+    "local_authoring_parts::6b88d774167eca2700cd80b473bcf53d4ab849af77ad36a064f479ba7b63ac87:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "GAME_PROGRESS_UPDATE",
+      "stateChange": "GAME_FANTASY_UPDATED"
+    },
+    "local_authoring_parts::b19ce97ab454497db9f71bb07be348d9cc1c8f949386ecd21ba188223ade2cee:systemInterconnections:1": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "gameProgress",
+        "playerFantasy"
+      ],
+      "fromSystem": "CORE_FUNCS",
+      "toSystem": "SIGNATURE_SYSTEMS",
+      "trigger": "GAME_PROGRESS_UPDATE",
+      "stateChange": "GAME_FANTASY_UPDATED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 45,
-      "successes": 44,
+      "calls": 47,
+      "successes": 46,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3871580,
-      "lastMs": 88486,
+      "totalMs": 4050708,
+      "lastMs": 89734,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:20:11.833Z"
+      "updatedAt": "2026-10-09T01:23:10.967Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:20:11.835Z",
+  "updatedAt": "2026-10-09T01:23:10.969Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3295,7 +3321,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:20:11.835Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:23:10.969Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
