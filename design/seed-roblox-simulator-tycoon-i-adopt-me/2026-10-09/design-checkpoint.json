@@ -35,25 +35,42 @@
         "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES.",
         "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE, AND CLEAR THE STAGE OR BOSS TO UNLOCK HARDER DEFENSE CHOICES."
       ]
+    },
+    "local_authoring_parts::cf99873eea3b51b0b8858c1ba24484f42967c494c480772ea19df7a3696540a0:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+      ],
+      "stateOutputs": [
+        "CHANGE THE WORLD STATE TO A NEW PATH, RISK, OR OUTCOME",
+        "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+        "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+      ],
+      "name": "SINGLE_DEFENSE_STRATEGY",
+      "purpose": "A cyclic loop where players choose a main strategy and adapt it through various systems to achieve new outcomes.",
+      "playerChoice": "CHOOSE A PRIMARY DEFENSIVE ACTION, THEN USE RESOURCES TO REFINE IT BEFORE PRESSURE INCREASES, AND FINALIZE WITH A HARDER DEFENSE OPTION BASED ON ENEMY RESPONSE."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 130795,
-      "lastMs": 19960,
+      "totalMs": 156263,
+      "lastMs": 25468,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:31:33.056Z"
+      "updatedAt": "2026-10-09T14:31:58.525Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:31:33.056Z",
+  "updatedAt": "2026-10-09T14:31:58.525Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1759,7 +1776,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:31:33.056Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:31:58.525Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
