@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
+import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 // 실제 워크플로의 저장 코드를 실행해 늦게 끝난 게임/작업이 다른 증거를 덮지 않는지 확인한다.
 test('per-game F0 persistence checks uploaded identity and never demotes a newer exact checkpoint',()=>{
@@ -346,4 +347,60 @@ test('F0 blocks generic scope handlers when an exact survival design baseline is
  assert.ok(r.gameplayProductReadiness.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
  assert.ok(r.gameplayProductReadiness.blockers.some(x=>x.includes('CRAFTING')));
  assert.equal(r.version,5);
+});
+
+test('current per-game Roblox and Unity concurrent lane passes build preflight without bypassing source guards',()=>{
+  const revision='a'.repeat(40);
+  const artifact='sha256:'+'b'.repeat(64);
+  const directive={ai:{robloxPreflightModel:'llama3.2:1b',modelPool:['llama3.2:1b']}};
+  const item={
+    gameId:'daechung-rpg',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'UNITY',
+    targetPlatform:'UNITY',
+    platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxSourceBootstrapPassedAt:'2026-10-09T00:00:00Z',
+    robloxBuildOrPackagePassed:true,
+    robloxSourceCommit:revision,
+    robloxBuildSourceRevision:revision,
+    robloxBuildArtifactIdentity:artifact,
+  };
+  const actual=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(actual.pass,true,actual.blockers.join(','));
+  assert.equal(actual.concurrentRoblox,true);
+  assert.equal(actual.robloxLaneEligible,true);
+  const historical=inspectRobloxBuildPreflight({item:{...item,platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME'},directive});
+  assert.equal(historical.pass,true,historical.blockers.join(','));
+  const absentTarget=inspectRobloxBuildPreflight({item:{...item,concurrentTargetPlatforms:['UNITY']},directive});
+  assert.ok(absentTarget.blockers.includes('roblox-platform-required'));
+  const unsupported=inspectRobloxBuildPreflight({item:{...item,platformExecutionMode:'UNKNOWN'},directive});
+  assert.ok(unsupported.blockers.includes('roblox-platform-required'));
+  const invalidPackage=inspectRobloxBuildPreflight({item:{...item,robloxBuildArtifactIdentity:'sha256:invalid'},directive});
+  assert.ok(invalidPackage.blockers.includes('artifact-identity-invalid'));
+  const staleSource=inspectRobloxBuildPreflight({item:{...item,robloxBuildSourceRevision:'c'.repeat(40)},directive});
+  assert.ok(staleSource.blockers.includes('source-revision-mismatch'));
+  const missingPackage=inspectRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive});
+  assert.ok(missingPackage.blockers.includes('build-package-not-passed'));
+});
+
+test('village-dungeons F0 uses bounded actual ground contact rather than a one-frame raycast marker',()=>{
+  const gameId='village-dungeons';
+  const base='roblox-games/'+gameId+'/';
+  const config=fs.readFileSync(base+'shared/GameConfig.luau','utf8');
+  const server=fs.readFileSync(base+'server/Game.server.luau','utf8');
+  const client=fs.readFileSync(base+'client/Game.client.luau','utf8');
+  const project=fs.readFileSync(base+'default.project.json','utf8');
+  const r=inspectHeadlessSourceTexts({
+    gameId,sourcePath:'roblox-games/'+gameId,sourceRevision:'a'.repeat(40),
+    artifactIdentity:'sha256:'+'b'.repeat(64),
+    rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),
+    artifactRunId:12,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',
+    config,server,client,project,
+  });
+  assert.equal(r.pass,true,r.blockers.join(','));
+  assert.match(server,/for attempt = 1, 30 do/);
+  assert.match(server,/groundHit ~= nil and groundHit\\.Instance ~= nil and humanoid\\.FloorMaterial ~= Enum\\.Material\\.Air/);
+  assert.match(server,/character:SetAttribute\\("GROUND_CONTACT", groundContact\\)/);
+  assert.doesNotMatch(server,/character:SetAttribute\\("GROUND_CONTACT", groundHit ~= nil\\)/);
 });
