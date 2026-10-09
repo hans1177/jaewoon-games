@@ -434,7 +434,13 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
       &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
       &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
-    if(!existingRobloxRuntime)continue;
+    // Roblox F0를 통과한 기존 소스는 Unity Web 3D 재개발과 독립적으로 계속 계획한다.
+    // F0는 런타임 PASS가 아니므로 runtimeVerified로 승격하지 않는다.
+    const robloxSourcePath=posix(item?.robloxProjectPath);
+    const independentlyStartedRoblox=item?.robloxFoundationF0Passed===true
+      &&/^roblox-games\/[a-zA-Z0-9._-]+$/.test(robloxSourcePath)
+      &&fs.existsSync(path.join(repoRoot,robloxSourcePath));
+    if(!existingRobloxRuntime&&!independentlyStartedRoblox)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
@@ -3863,7 +3869,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       deferredSmallPackages.push({gameId:project.gameId,taskIds:packageTasks.map(task=>task.id),workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
       continue;
     }
-    const acceptedTasks=pkg.tasks;
+    // 기존 소유자 재개발은 작업 패키징 이후에도 무제한 인과 재시도 계약을 보존한다.
+    const acceptedTasks=project.ownerResumableBuildUp===true
+      ?pkg.tasks.map(task=>({...task,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
+      :pkg.tasks;
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
