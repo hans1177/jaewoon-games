@@ -3,70 +3,18 @@
   "gameId": "line-defense",
   "date": "2026-10-09",
   "seedId": "OWNER-ALL-DESIGN-RESET-LINE-DEFENSE-20260917",
-  "fingerprint": "a03a2c991cb7218b4b40eea01c52e37d30ae54f686163615a42fe669beb3709f",
-  "policyDigest": "e52d6ff61e4cec0c252bb23c569e8ece7cfcebb20513b56aff2ac91ee3eff92b",
+  "fingerprint": "42fca05126635ddf02d382df7decccf1e26ca3de8c976d8eed1cf7675aa6b432",
+  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::a19de10857eb79f19b1bb77f0f616e082d1c94208ef7d956f308e2e104193bc8:identity": {
-      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸는 중심 행동이며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 세계 상태와 다음 선택이 서로 영향을 주는 시그니처 상호작용을 실제 월드/시스템 상태 변화로 확정합니다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다."
-    },
-    "local_authoring_parts::a19de10857eb79f19b1bb77f0f616e082d1c94208ef7d956f308e2e104193bc8:playerFantasy": {
-      "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인 및 수정 책임을 구분하고 안정성을 우선으로 다루며, 한 판과 전체 세션 시간을 구별하여 검증되지 않은 시간이나 품질을 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석되고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않으며, 점수와 통과 판정은 결정론적 검증기가 담당합니다."
-    },
-    "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:identity,playerFantasy": {
-      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸는 중심 행동이며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 세계 상태와 다음 선택이 서로 영향을 주는 시그니처 상호작용을 실제 월드/시스템 상태 변화로 확정합니다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
-      "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인 및 수정 책임을 구분하고 안정성을 우선으로 다루며, 한 판과 전체 세션 시간을 구별하여 검증되지 않은 시간이나 품질을 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석되고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않으며, 점수와 통과 판정은 결정론적 검증기가 담당합니다."
-    },
-    "local_authoring_parts::27f25f3f529a9379a48a3f3301c3a2692961c045b2082117d3a36c5bfff68a75:coreFun": {
-      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다."
-    },
-    "local_authoring_parts::6a281d0c378bd4f617d576589683fde7f4178ebe1d42557adb02b2e665ac05d9:identity,playerFantasy,coreFun": {
-      "identity": "골목 군단 대전 - Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸는 중심 행동이며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 세계 상태와 다음 선택이 서로 영향을 주는 시그니처 상호작용을 실제 월드/시스템 상태 변화로 확정합니다. 성장은 수치 증가만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다. 이 게임은 단순 반복보다는 경로·위험·결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.",
-      "playerFantasy": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다. 구현 버그와 설계 모순의 원인 및 수정 책임을 구분하고 안정성을 우선으로 다루며, 한 판과 전체 세션 시간을 구별하여 검증되지 않은 시간이나 품질을 확정하지 않습니다. 공공영역 고전의 원형은 게임에 맞게 재해석되고 현대 보호 작품은 추상적 기법만 참고합니다. 보호된 인물·대사·장면은 복제하지 않고, 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않으며, 점수와 통과 판정은 결정론적 검증기가 담당합니다.",
-      "coreFun": "골목 군단 대전에서 플레이어는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다. 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다. 이 선택은 단순 반복보다는 경로, 위험, 결과를 다른 방식으로 만듭니다."
-    },
-    "local_authoring_parts::6e99492dccaeb34da8a19c58699ad56e77407093a705df21d8e80db5adc4e95a:coreLoop": {
-      "coreLoop": [
-        "INPUT: 플레이어가 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이라는 중심 행동을 수행하며, 이 선택은 기존 시스템과 새로운 인과법칙에 의해 연결됩니다.",
-        "SELECT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다.",
-        "OUTPUT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 경로, 위험, 결과를 다른 방식으로 만듭니다."
-      ]
-    },
-    "local_authoring_parts::b1eaf4210eddfdb2d79fa846f27350d8592992c49387f8e3286e057e2242f749:signatureSystems:0": {
-      "id": "KARMA_RETURN",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "ENEMY_WAVE",
-        "TOWER_POSITION"
-      ],
-      "stateOutputs": [
-        "WORLD_STATE_CHANGE"
-      ],
-      "name": "SINGLE_DEFENSE_STRATEGY",
-      "purpose": "Player selects and executes the core action to influence world state.",
-      "playerChoice": "Place towers or defenders on lanes to affect world state."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 640784,
-      "lastMs": 99765,
-      "lastError": null,
-      "updatedAt": "2026-10-09T08:57:51.240Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T08:47:10.421Z",
-  "updatedAt": "2026-10-09T08:57:51.250Z",
+  "createdAt": "2026-10-09T13:00:17.800Z",
+  "updatedAt": "2026-10-09T13:00:17.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2256,25 +2204,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::b1eaf4210eddfdb2d79fa846f27350d8592992c49387f8e3286e057e2242f749:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "KARMA_RETURN"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::b1eaf4210eddfdb2d79fa846f27350d8592992c49387f8e3286e057e2242f749:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:57:51.240Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
