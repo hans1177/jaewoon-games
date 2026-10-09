@@ -1347,25 +1347,28 @@
         }
       ],
       "antiMonotonyRule": "주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨"
+    },
+    "local_authoring_parts::c546179c897c3b95b8debec4c692fe09977058b3faddcec8e036bd3b4ea2ae0e:id": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 20,
+      "calls": 23,
+      "successes": 21,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1939023,
-      "lastMs": 72522,
+      "totalMs": 1961332,
+      "lastMs": 22309,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:14:06.851Z"
+      "updatedAt": "2026-10-09T23:14:29.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:14:06.856Z",
+  "updatedAt": "2026-10-09T23:14:29.167Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3137,10 +3140,10 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:14:06.853Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "content-rules",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:14:29.167Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
