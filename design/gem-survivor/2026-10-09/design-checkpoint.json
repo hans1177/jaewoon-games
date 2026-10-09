@@ -302,25 +302,221 @@
           "playerChoice": "Discover a new route or mastery path that reflects the current state and evolves with the player's progression."
         }
       ]
+    },
+    "local_authoring_parts::653747bad35608562f2a1c94e59f8722aaede66bdf5ea9121894a6a96ff766e8:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ccb602d5c03b8879b1cd4505e73a11f633e89b8db5ee2667c8f54bde9ad3ca32:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+        "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+        "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "ENTRY_STATE -> SELECT_STATE -> PROGRESS_STATE -> CHANGED_ENTRY_STATE / CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_A_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "진입 → 선택 → 상태 변화 → 보상/위험 → 다음 선택의 순환적 메커니즘을 통해 핵심 재미를 확립하며, 모바일에서도 즉시 이해 가능한 입력과 피드백의 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_B_RULE",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 상태와 비용 구조로 연결된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_C_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "세계 상태와 다음 선택을 바꾸는 보조 요소로서, MAIN/A/B의 관계를 상황별로 변주하며 복합적인 플레이 경험을 제공한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "DISCOVERED_ROUTE",
+            "MASTERY_PATH",
+            "REFLECTION_SPACE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_DELVE_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Discover a new route or mastery path that reflects the current state and evolves with the player's progression."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "보석 생존전은 플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다. 이 게임은 '진입' → '선택' → '상태 변화' → '보상/위험' → '다음 선택'이라는 순환적 메커니즘을 통해 핵심 재미를 확립하며, 모바일에서도 즉시 이해 가능한 입력과 피드백의 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "playerFantasy": "플레이어는 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다. 이 게임은 '진입' → '선택' → '상태 변화' → '보상/위험' → '다음 선택'이라는 순환적 메커니즘을 통해 핵심 재미를 확립하며, 모바일에서도 즉시 이해 가능한 입력과 피드백의 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "coreFun": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다. 이 게임은 '진입' → '선택' → '상태 변화' → '보상/위험' → '다음 선택'이라는 순환적 메커니즘을 통해 핵심 재미를 확립하며, 모바일에서도 즉시 이해 가능한 입력과 피드백의 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다.",
+      "coreLoop": [
+        "진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+        "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+        "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "ENTRY_STATE -> SELECT_STATE -> PROGRESS_STATE -> CHANGED_ENTRY_STATE / CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_A_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "진입 → 선택 → 상태 변화 → 보상/위험 → 다음 선택의 순환적 메커니즘을 통해 핵심 재미를 확립하며, 모바일에서도 즉시 이해 가능한 입력과 피드백의 구조를 갖춘 ACTION_SURVIVAL_ROGUELITE 장르의 게임이다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_B_RULE",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 다음 상태와 비용 구조로 연결된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "CHANGED_ENTRY_STATE",
+            "CHANGED_SELECT_STATE",
+            "CHANGED_PROGRESS_STATE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_C_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "세계 상태와 다음 선택을 바꾸는 보조 요소로서, MAIN/A/B의 관계를 상황별로 변주하며 복합적인 플레이 경험을 제공한다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENTRY_STATE",
+            "SELECT_STATE",
+            "PROGRESS_STATE"
+          ],
+          "stateOutputs": [
+            "DISCOVERED_ROUTE",
+            "MASTERY_PATH",
+            "REFLECTION_SPACE"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_DELVE_RULE",
+          "purpose": "플레이어가 진입 시점부터 즉시 시작되는 단일 행동으로, 주체로 빠르게 심화되고 있는 흐름에 따라 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Discover a new route or mastery path that reflects the current state and evolves with the player's progression."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 521541,
-      "lastMs": 43836,
+      "totalMs": 609811,
+      "lastMs": 88270,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:44:54.742Z"
+      "updatedAt": "2026-10-09T08:46:23.017Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:36:13.165Z",
-  "updatedAt": "2026-10-09T08:44:54.745Z",
+  "updatedAt": "2026-10-09T08:46:23.027Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2515,12 +2711,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:44:54.745Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:46:23.020Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/gem-survivor/2026-10-09/design-seed.json",
+    "contentDigest": "286a6d2d67143fd84e6e22e52a1dc821eae4d785a348983017054ec4ed805ed2",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
