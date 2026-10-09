@@ -1744,25 +1744,40 @@
     },
     "local_authoring_parts::d93e95d2a7640ef7dd7137955bb707983626ada15d085d33d9d84f0be1268d11:trigger": {
       "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::d93e95d2a7640ef7dd7137955bb707983626ada15d085d33d9d84f0be1268d11:stateChange": {
+      "stateChange": "플레이어는 현재 경계 압박을 읽고, 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::8742b744b5d38bb93652261b470716332b8162adeda6e26877d234aea6c71fe3:systemInterconnections:1": {
+      "fromId": "{\"type\": \"ACTION\", \"name\": \"Read the current border pressure and choose one terr",
+      "toId": "{\"type\": \"ACTION\", \"name\": \"Read the current border pressure and choose one terr",
+      "stateKeys": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "fromSystem": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
+      "toSystem": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다.",
+      "stateChange": "플레이어는 현재 경계 압박을 읽고, 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 140,
-      "successes": 137,
+      "calls": 141,
+      "successes": 138,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10487178,
-      "lastMs": 61076,
+      "totalMs": 10546407,
+      "lastMs": 59229,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:30:09.518Z"
+      "updatedAt": "2026-10-09T06:31:08.749Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T06:30:09.518Z",
+  "updatedAt": "2026-10-09T06:31:08.750Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4016,7 +4031,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:30:09.518Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:31:08.750Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
