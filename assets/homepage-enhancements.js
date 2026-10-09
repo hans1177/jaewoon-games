@@ -220,9 +220,11 @@ async function bindAvailableUnityWebSurfaces(catalog){
         if(build?.engine!=='UNITY_WEB'||build?.gameId!==id||build?.bootSmoke!=='PASS')continue;
         const ready=readiness?.pass===true&&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY'
           &&readiness?.gameId===id&&[gameplay,independent,regression].every(e=>e.pass===true&&e.performance?.pass===true);
-        const preview=testOnly&&readiness?.pass===false&&readiness?.state==='REPAIR_REQUIRED'
-          &&readiness?.gameId===id&&build?.ownerBrowserTestEligible===true
-          &&['PASS','PLAYABLE_TEST_ONLY'].includes(build?.actualBrowserPlay);
+        const preview=testOnly&&readiness?.gameId===id&&build?.ownerBrowserTestEligible===true
+          &&['PASS','PLAYABLE_TEST_ONLY'].includes(build?.actualBrowserPlay)
+          &&((readiness?.pass===false&&readiness?.state==='REPAIR_REQUIRED')
+            ||(readiness?.pass===true&&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY'
+              &&build?.legacyRootPreservedForSave===true));
         if(testOnly?!preview:!ready)continue;
         const refs=[...new Set(['loader','data','framework','wasm'].flatMap(key=>groups[key]))];
         if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
