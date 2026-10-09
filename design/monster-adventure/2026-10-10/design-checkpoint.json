@@ -460,25 +460,41 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::cfa1f907fffee52db48554a958916880c60a2cbf6759ab0316baac8363e9ffb1:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START",
+        "SCORE",
+        "DISTANCE"
+      ],
+      "stateOutputs": [
+        "GAME_OVER",
+        "NEW_PATH"
+      ],
+      "name": "몬스터 어드벤처: 진입 즉각",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 행동 패턴을 기반으로 게임 정체성을 확립하는 주요 규칙",
+      "playerChoice": "플레이어가 선택한 새로운 경로 연동 결과에 따라 다음 사건이 결정됨으로써 게임의 초기 상태가 변환됨으로써 플레이어 선택에 따른 세계 상태 변화가 발생함으로써 게임 진행이 이어짐니다।"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1178191,
-      "lastMs": 90716,
+      "totalMs": 1282715,
+      "lastMs": 104524,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:43:19.813Z"
+      "updatedAt": "2026-10-09T20:45:04.349Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:23:41.588Z",
-  "updatedAt": "2026-10-09T20:43:19.823Z",
+  "updatedAt": "2026-10-09T20:45:04.349Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2175,10 +2191,10 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:43:19.816Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:45:04.349Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
