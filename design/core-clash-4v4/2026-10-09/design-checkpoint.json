@@ -1307,25 +1307,46 @@
     },
     "local_authoring_parts::957f3ff168b5c0dc8152de914a58a2f0caa77c70ea8115cf7c30cb6b51dd4961:toSystem": {
       "toSystem": "CORE-4V4-SIGNATURE-2"
+    },
+    "local_authoring_parts::957f3ff168b5c0dc8152de914a58a2f0caa77c70ea8115cf7c30cb6b51dd4961:trigger": {
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::957f3ff168b5c0dc8152de914a58a2f0caa77c70ea8115cf7c30cb6b51dd4961:stateChange": {
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::0bda76f89ed798bf4ff5aac199126aa971401605163bd1d676408a882e5a0055:systemInterconnections:1": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "fromId",
+        "toId"
+      ],
+      "fromSystem": "CORE-4V4-SIGNATURE-1",
+      "toSystem": "CORE-4V4-SIGNATURE-2",
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다.",
+      "stateChange": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::53e549d723c72a29e93250a43152337a9231a10aff0f6b241803823d2e021147:fromId": {
+      "fromId": "CORE-4V4-SIGNATURE-1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 66,
+      "calls": 72,
+      "successes": 69,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6178820,
-      "lastMs": 94234,
+      "totalMs": 6468669,
+      "lastMs": 94179,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:50:40.815Z"
+      "updatedAt": "2026-10-09T02:55:30.672Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T02:50:40.815Z",
+  "updatedAt": "2026-10-09T02:55:30.672Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3755,7 +3776,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:50:40.815Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:55:30.672Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
