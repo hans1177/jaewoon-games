@@ -607,25 +607,225 @@
       "name": "Board State Transformation via Matchmaking and Combo Building System",
       "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
       "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels"
+    },
+    "local_authoring_parts::55ba336268231841d20b757d759e6b823e128ee6fdc7df39721dadd1edac3e84:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "goal_clearance",
+        "reward_acquisition",
+        "new_board_pattern"
+      ],
+      "stateOutputs": [
+        "progression_unlocked",
+        "risk_assessed",
+        "board_configuration_set"
+      ],
+      "name": "Board State Transformation via Matchmaking and Combo Building System",
+      "purpose": "Enables players to create combos and transform board states, enhancing the depth of interaction.",
+      "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels."
+    },
+    "local_authoring_parts::205a720169c74de1e8072d4ffb95596e29ed261a2fb77de22878b37538fcb44a:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation System",
+          "purpose": "Enables dynamic obstacle reconfiguration and goal clearance mechanics to drive progression and risk assessment in puzzle gameplay.",
+          "playerChoice": "Player completes the level, triggering transition to new board configuration via reward acquisition and risk assessment."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Progression and Stage Unlocking System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "Player chooses to complete the level, which triggers the transition to a new board configuration via reward acquisition and risk assessment"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Progression and Stage Unlocking via Matchmaking and Combo Building System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "The player chooses to complete the level, which triggers the transition to a new board configuration through strategic match-making and combo-building strategies that adapt to evolving puzzles and dynamic obstacles."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation via Matchmaking and Combo Building System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation via Matchmaking and Combo Building System",
+          "purpose": "Enables players to create combos and transform board states, enhancing the depth of interaction.",
+          "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels."
+        }
+      ]
+    },
+    "local_authoring_parts::f95121008d2d4b8dbca2bbd74ff10d3349a44a158a5bb5eb02b78cd90c2b8e08:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Player initiates the central action of starting a puzzle game with clear goals, limited moves, obstacles, and visible constraints.",
+        "Goal clearance leads to reward acquisition and sets up for new challenges in the form of new patterns.",
+        "Reward accumulation triggers risk assessment and prepares the player for transitioning to a new board configuration."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation System",
+          "purpose": "Enables dynamic obstacle reconfiguration and goal clearance mechanics to drive progression and risk assessment in puzzle gameplay.",
+          "playerChoice": "Player completes the level, triggering transition to new board configuration via reward acquisition and risk assessment."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Progression and Stage Unlocking System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "Player chooses to complete the level, which triggers the transition to a new board configuration via reward acquisition and risk assessment"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Progression and Stage Unlocking via Matchmaking and Combo Building System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "The player chooses to complete the level, which triggers the transition to a new board configuration through strategic match-making and combo-building strategies that adapt to evolving puzzles and dynamic obstacles."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation via Matchmaking and Combo Building System",
+          "purpose": "Strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics",
+          "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "stateOutputs": [
+            "progression_unlocked",
+            "risk_assessed",
+            "board_configuration_set"
+          ],
+          "name": "Board State Transformation via Matchmaking and Combo Building System",
+          "purpose": "Enables players to create combos and transform board states, enhancing the depth of interaction.",
+          "playerChoice": "Players must balance between strategic match-making and risk management as they progress through levels."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1636187,
-      "lastMs": 69785,
+      "totalMs": 1705338,
+      "lastMs": 69151,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:51:51.077Z"
+      "updatedAt": "2026-10-09T17:53:00.230Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:24:34.778Z",
-  "updatedAt": "2026-10-09T17:51:51.077Z",
+  "updatedAt": "2026-10-09T17:53:00.232Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2219,7 +2419,7 @@
     "c84933c4b5abd1e12bd2549b682b699bff7665793b571cc9e43fb14367f46d2b": true,
     "37b4da1226a761b0f9d6b13cb7e699817596b8d8c93ff80b585c2838a68946e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:51:51.077Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:53:00.232Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
