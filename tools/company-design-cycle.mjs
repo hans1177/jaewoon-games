@@ -90,6 +90,14 @@ const seed=seedInput.seed;
 if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
 const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+// 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
+const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
+const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
+  &&seed?.novelGrammarBackfill?.authoringPending===true
+  &&(!Array.isArray(intakeFusion?.majorAxes)||intakeFusion.majorAxes.length!==2
+    ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
+    ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2
+    ||!Array.isArray(intakeFusion?.themeFusion?.genres)||intakeFusion.themeFusion.genres.length!==2);
 const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
 const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
@@ -97,7 +105,7 @@ const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.r
 const seedDesignDepthContext={
   source:'GAME_SEED.GAMEPLAY_SKETCH',
   version:seedGameplaySketchVersion,
-  compatibilityMode:seedGameplaySketchVersion>=5?'V5_OWNER_CREATIVE_GRAMMAR_INPUT':seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
+  compatibilityMode:pendingSeedGrammarNotAuthored?'V5_DESIGNER_AUTHORING_PENDING_INPUT':seedGameplaySketchVersion>=5?'V5_OWNER_CREATIVE_GRAMMAR_INPUT':seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
   identityCore:seedGameplaySketch?.identityCore&&typeof seedGameplaySketch.identityCore==='object'?seedGameplaySketch.identityCore:null,
   novelGameGrammar:seedGameplaySketch?.novelGameGrammar&&typeof seedGameplaySketch.novelGameGrammar==='object'?seedGameplaySketch.novelGameGrammar:null,
   playerPromise:clean(seedGameplaySketch?.playerPromise),
@@ -881,7 +889,7 @@ function repairStructureContract(fields){
   if(fields.includes('artAudioDirection'))rules.push('아트/오디오는 캐릭터·배경·재질·광원·동작·효과·카메라·메뉴가 같은 세계 정체성을 유지하게 한다. 기존 자산의 용도·역할과 실제 발생 이벤트를 연결하고 스타일·라이선스·플랫폼 호환을 보존한다.');
   if(fields.includes('narrativeDialoguePlan'))rules.push('서사가 필요하면 사건 원인·선행조건·선택·결과·후속, 캐릭터 욕구/말투/관계/기억/지식범위, 복선·회수·반전을 연결한다. 불필요하면 applicable=false와 빈 배열을 사용한다. 공공영역 원형 또는 추상 기법만 재해석하며 보호된 인물·대사·장면을 복제하지 않는다.');
   if(fields.includes('designIntegrityPlan'))rules.push('이동·첫 행동·진행·선행조건·종료·복구·경제·보스 전환·멀티 입장/이탈/재입장·저장 호환·서사 인과를 실제 규칙과 대조한다. 확인 안 된 조건을 참으로 쓰지 않고 notes에 정확한 미확정 근거를 남긴다.');
-  if(seedGameplaySketchVersion>=5&&seedGameplaySketch?.novelGameGrammar)rules.push('GAMEPLAY_SKETCH v5 owner creative grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다. MAIN은 coreFun/coreLoop, A/B 두 대축은 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명한다. C의 두 소재와 주·보조 장르는 creativeGrammar의 실제 인과와 플레이 변화로 입증하고 예전 c 서브요소는 필수로 만들지 않는다. @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. GAME_CATEGORY를 최종 장르로 복사하지 않는다.');
+  if(seedGameplaySketchVersion>=5&&!pendingSeedGrammarNotAuthored&&seedGameplaySketch?.novelGameGrammar)rules.push('GAMEPLAY_SKETCH v5 owner creative grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다. MAIN은 coreFun/coreLoop, A/B 두 대축은 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명한다. C의 두 소재와 주·보조 장르는 creativeGrammar의 실제 인과와 플레이 변화로 입증하고 예전 c 서브요소는 필수로 만들지 않는다. @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. GAME_CATEGORY를 최종 장르로 복사하지 않는다.');
   return rules;
 }
 function impactedRolesFromScores(...scores){

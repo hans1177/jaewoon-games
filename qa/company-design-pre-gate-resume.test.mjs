@@ -36,6 +36,17 @@ test('V5 designer instructions require creative C without inventing a legacy c m
   assert.doesNotMatch(author,/MAIN\/A\/B\/c\/@/);
 });
 
+
+test('incomplete auto-enrolled V5 seeds do not force invented names and causal DNA into designer authoring',()=>{
+  assert.match(design,/pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5/);
+  assert.match(design,/V5_DESIGNER_AUTHORING_PENDING_INPUT/);
+  assert.match(design,/seedGameplaySketchVersion>=5&&!pendingSeedGrammarNotAuthored&&seedGameplaySketch\?\.novelGameGrammar/);
+  const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(scorer,/pendingIntakeV5=seedV5/);
+  assert.match(scorer,/pendingSeedStillRequiresCreativeDesign:pendingIntakeV5/);
+  assert.match(scorer,/validateDesignAuthoringContent\(\{/);
+});
+
 // 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
 test('design target selection never waits for three other games to validate the engine',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
