@@ -465,25 +465,136 @@
     "local_authoring_parts::51e16592cc2c6e8aab7357b7e546b86d352e42c60c6951140e22a0f768b32a6d:progressionLoop,resourceFlow": {
       "progressionLoop": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
       "resourceFlow": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다."
+    },
+    "local_authoring_parts::51e16592cc2c6e8aab7357b7e546b86d352e42c60c6951140e22a0f768b32a6d:balanceRules": {
+      "balanceRules": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 이 과정에서 진입/실행/종료 상태 간의 관계를 통해 자원 획득 및 소비의 흐름을 정립하고, 실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다."
+    },
+    "local_authoring_parts::7a1dd0d0ddea52711ce0166fbf24034189c362136db4395cbc73c1a7e13611a3:progressionEconomyBalance": {
+      "progressionLoop": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+      "resourceFlow": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+      "balanceRules": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 이 과정에서 진입/실행/종료 상태 간의 관계를 통해 자원 획득 및 소비의 흐름을 정립하고, 실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다."
+    },
+    "local_authoring_parts::8c9fb226f98d306fa0b1f61e5d3a95f85f345966eaf7a5160139d9ab7f95c945:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+        "resourceFlow": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+        "balanceRules": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 이 과정에서 진입/실행/종료 상태 간의 관계를 통해 자원 획득 및 소비의 흐름을 정립하고, 실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다."
+      }
+    },
+    "local_authoring_parts::6a04f3aabdcc3aa6d4ef05ecbddb3f7384e05f0d4a01a1405567dada1cf417b1:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_STATE",
+          "toId": "END_STATE",
+          "stateKeys": [
+            "SCORE",
+            "DISTANCE"
+          ],
+          "fromSystem": "GAME_RULE",
+          "toSystem": "PLAYER_CHOICE",
+          "trigger": "INITIAL_INPUT",
+          "stateChange": "INPUT_TO_SCORE"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "REWARD",
+            "RISK",
+            "ROUTE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_ACTION",
+          "trigger": "RUN_FEEDBACK",
+          "stateChange": "FEEDBACK_TO_REWARD"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "PROGRESSION_BENEFIT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_PROGRESS",
+          "trigger": "RUN_RESULT",
+          "stateChange": "RESULT_TO_PROGRESSION"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "FAILURE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_RISK",
+          "trigger": "RUN_FAILURE",
+          "stateChange": "FAILURE_TO_RISK"
+        },
+        {
+          "fromId": "RUN_STATE",
+          "toId": "NEXT_RUN_STATE",
+          "stateKeys": [
+            "END_STATE"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH",
+          "toSystem": "GAMEPLAY_END",
+          "trigger": "RUN_COMPLETE",
+          "stateChange": "COMPLETE_TO_END"
+        }
+      ],
+      "progressionDirection": "CASCADING_EXPANSION_WITH_INHERITED_SOLUTIONS_AND_ADAPTIVE_RISKS_OR_CHANCES_20260917_V4_A_MERGEABLE_VERSION_OF_THE_BASELINE_CASUAL_GAME_FLOW_20250823_B_FUTURE_PLAYABILITY_STUDY_20260917_D_MULTIPLE_VIABLE_SOLUTIONS_E_NEXT_OPEN_QUESTION_FUTURE_PLAYABILITY_STUDY_20260917_G_RELATED_TO_WORLD_RELATIONSHIP_H_I_J_K_L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z_20260917_A_B_C_CORE_FUN_20250823_AB_C_MAIN_A_B_C_C_DELVE_20260917_D_CONTENT_EXPANSION_PLAN_20260917_E_PROGRESSION_DIRECTION_20260917_F_SYSTEM_INTERCONNECTIONS_20260917_G_SYSTEM_INTERDEPENDENCE_20260917_H_CONTEXTUAL_TRADEOFFS_20260917_I_COMBINATORIAL_NEW_USES_20260917_J_MULTIPLE_VIABLE_SOLUTIONS_20260917_K_MASTERY_CHANGES_CHOICES_20260917_L_NEXT_OPEN_QUESTION_20260917_M_PRESERVE_GENRE_SAVE_AND_BALANCE_20260917_N_COMPARE_BEFORE_AFTER_PLAYER_CHOICES_20260917_O_FAILED_HYPOTHESIS_MUST_INFORM_NEXT_ITERATION_20260917_P_PAYOFF_AXES_20260917_Q_NEW_ACTION_20260917_R",
+      "progressionEconomyBalance": {
+        "progressionLoop": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+        "resourceFlow": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+        "balanceRules": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 이 과정에서 진입/실행/종료 상태 간의 관계를 통해 자원 획득 및 소비의 흐름을 정립하고, 실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다."
+      }
+    },
+    "local_authoring_parts::6a04f3aabdcc3aa6d4ef05ecbddb3f7384e05f0d4a01a1405567dada1cf417b1:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_STATE -> END_STATE",
+          "newGameplay": "게임 규칙은 시작 즉시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어져 있으며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+          "systemImpact": "게임의 진화적 관계를 형성하며, 선택 결과가 다음 월드 상태와 비용 구조로 연결되는 보조 요소입니다."
+        },
+        {
+          "milestone": "RUN_STATE -> NEXT_RUN_STATE",
+          "newGameplay": "선택 결과가 다음 위험·보상·자원 또는 경로 상태로 연결됨.",
+          "systemImpact": "게임 내에서 세계 상태와 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 진화적 관계를 형성함."
+        },
+        {
+          "milestone": "RUN_STATE -> NEXT_RUN_STATE",
+          "newGameplay": "사용자가 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+          "systemImpact": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "START_STATE -> END_STATE",
+          "RUN_STATE -> NEXT_RUN_STATE"
+        ],
+        "retryFlow": "실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다.",
+        "riskPressure": "선택 결과가 다음 위험·보상·자원 또는 경로 상태로 연결됨.",
+        "recoveryRules": "실패 후 재도전 준비와 관련 메뉴에 연결하고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 16,
+      "successes": 14,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1766621,
-      "lastMs": 94315,
+      "totalMs": 2029902,
+      "lastMs": 164145,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T12:58:04.714Z"
+      "updatedAt": "2026-10-09T13:02:28.002Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T12:58:04.714Z",
+  "updatedAt": "2026-10-09T13:02:28.008Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,15 +2515,259 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "ed1f78450d4a2a2901f57a6014891332ab053295e031c77d37d17a4aad7f374b"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:58:04.714Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "INPUT_TO_SCORE"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "FEEDBACK_TO_REWARD"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "RESULT_TO_PROGRESSION"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "FAILURE_TO_RISK"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "COMPLETE_TO_END"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "progressionDirection",
+          "value": "CASCADING_EXPANSION_WITH_INHERITED_SOLUTIONS_AND_ADAPTIVE_RISKS_OR_CHANCES_20260917_V4_A_MERGEABLE_VERSION_OF_THE_BASELINE_CASUAL_GAME_FLOW_20250823_B_FUTURE_PL"
+        },
+        "requiredAction": "progressionDirection의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "progressionDirection"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_STATE→END_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_STATE→END_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: RUN_STATE→NEXT_RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+        "resourceFlow": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+        "balanceRules": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 이 과정에서 진입/실행/종료 상태 간의 관계를 통해 자원 획득 및 소비의 흐름을 정립하고, 실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_STATE -> END_STATE",
+          "newGameplay": "게임 규칙은 시작 즉시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어져 있으며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+          "systemImpact": "게임의 진화적 관계를 형성하며, 선택 결과가 다음 월드 상태와 비용 구조로 연결되는 보조 요소입니다."
+        },
+        {
+          "milestone": "RUN_STATE -> NEXT_RUN_STATE",
+          "newGameplay": "선택 결과가 다음 위험·보상·자원 또는 경로 상태로 연결됨.",
+          "systemImpact": "게임 내에서 세계 상태와 선택 결과가 서로 영향을 주는 시그니처 상호작용을 통해 진화적 관계를 형성함."
+        },
+        {
+          "milestone": "RUN_STATE -> NEXT_RUN_STATE",
+          "newGameplay": "사용자가 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다.",
+          "systemImpact": "기존 수치 및 보상 의미를 보존하며, 새로운 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "START_STATE -> END_STATE",
+          "RUN_STATE -> NEXT_RUN_STATE"
+        ],
+        "retryFlow": "실패 시 잃는 것/보존하는 것을 구체적으로 명시하여 경제적 균형을 유지한다.",
+        "riskPressure": "선택 결과가 다음 위험·보상·자원 또는 경로 상태로 연결됨.",
+        "recoveryRules": "실패 후 재도전 준비와 관련 메뉴에 연결하고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T13:02:28.003Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
