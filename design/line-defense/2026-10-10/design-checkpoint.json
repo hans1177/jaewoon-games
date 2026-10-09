@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 상대방의 아지트를 부순 동시에 자신이 소화할 수 있는 재화를 모아 유닛을 소환하는 데 참여해야 한다. 이 과정에서 전략적 판단과 즉각적인 결과가 발생하며, 게임은 계속해서 새로운 방식으로 진화해 나간다.",
       "coreFun": "입력 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함한 최소 3개의 실제 플레이 단계. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명."
+    },
+    "local_authoring_parts::e17426be79106581d4fbcd86789c8e98ed1bbf4c0e86dff32abb7b6d42796d1a:coreLoop": {
+      "coreLoop": [
+        "Input: Read next enemy wave",
+        "State change: Resources gained from defeated enemies → Upgrades, new placements, tactical changes",
+        "Reward: Defense adapted to enemy types/wave composition → Protection of objective, unlocking harder defense choices"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 756302,
-      "lastMs": 171772,
+      "totalMs": 816657,
+      "lastMs": 60355,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:25:20.790Z"
+      "updatedAt": "2026-10-09T18:26:21.148Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:12:44.451Z",
-  "updatedAt": "2026-10-09T18:25:20.791Z",
+  "updatedAt": "2026-10-09T18:26:21.148Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1914,7 +1921,7 @@
   "localAuthoringSplits": {
     "bee2550e641d5f4297320ff3aedaf7f9cfc81aa9be6355f3c8421bea5f5cc2e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:25:20.791Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:26:21.148Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
