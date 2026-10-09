@@ -64,25 +64,40 @@
       "name": "PUZZLE_CORE_RULE_SET_A",
       "purpose": "PLACEMENT_OF_PLAYER_ACTIONS_IN_VARYING_BOARD_STATES",
       "playerChoice": "ACTION_SEQUENCE_BASED_ON_BOARD_CONFIGURATIONS_AND_PLAYER_STRATEGY"
+    },
+    "local_authoring_parts::5d2a784172c2a69793923b7f243defd0fa4daa002b85e018d1a7af70192b77b1:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "NEXT_PLAY_OPTION"
+      ],
+      "name": "PUZZLE_CORE_RULE_SET_B",
+      "purpose": "게임 내에서 사용되는 기본적인 규칙 및 상태 변환 메커니즘",
+      "playerChoice": "플레이어가 선택하는 게임 단계와 다음의 선택지를 정해 루프에 참여하게 한다는 의미로, 주체 역할과 대응 방식을 구현한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 665106,
-      "lastMs": 235734,
+      "totalMs": 765889,
+      "lastMs": 100783,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:01:57.256Z"
+      "updatedAt": "2026-10-09T15:03:38.040Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:50:52.121Z",
-  "updatedAt": "2026-10-09T15:01:57.256Z",
+  "updatedAt": "2026-10-09T15:03:38.040Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1672,7 +1687,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:01:57.256Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:03:38.040Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
