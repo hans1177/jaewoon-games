@@ -80,25 +80,53 @@
         "worldChange": "Player receives score, unlocks progress, re-tries game",
         "nextEvent": "Player gains score, collects rewards, makes a decision"
       }
+    },
+    "local_authoring_parts::d406a51ad995f5c704658d13ce7fd9c5f3045accaf5bb478a918f290b92724a5:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "Start",
+          "kind": "GENRE",
+          "gameplayEffect": "Player gains score, collects rewards, makes a decision"
+        },
+        {
+          "name": "Run",
+          "kind": "GENRE",
+          "gameplayEffect": "Player receives score, unlocks progress, re-tries game"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "CASUAL",
+          "gameplayEffect": "Emergent genre with simple one-thumb input and clear scoring system"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "SIMULATION",
+          "gameplayEffect": "Progression through multiple routes and risks in a mobile context"
+        }
+      ],
+      "cGenreInterlock": "Start -> Run -> Progression (Score/Retry/Choice) - Casual Simulation",
+      "cWorldAndGameplayEffect": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 984655,
-      "lastMs": 110293,
+      "totalMs": 1089715,
+      "lastMs": 105060,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:57:49.745Z"
+      "updatedAt": "2026-10-09T17:59:34.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:41:25.065Z",
-  "updatedAt": "2026-10-09T17:57:49.747Z",
+  "updatedAt": "2026-10-09T17:59:34.808Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1579,7 +1607,7 @@
     "7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70": true,
     "d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:57:49.747Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:59:34.808Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
