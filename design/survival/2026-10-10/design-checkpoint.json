@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 채집과 제작의 선택에서 생존의 진보를 얻으며, 이 선택들은 다음 하루의 가능성을 바꾸는 새로운 세계로 전환된다. 플레이어는 자신의 행동과 결과에 따라 다양한 선택을 할 수 있으며, 이러한 선택은 게임 세계의 상태를 변화시키고, 새로운 갈등과 위험을 만들어내며, 결국 더 나아진 성취와 기회를 제공한다.",
       "coreFun": "플레이어는 긴급한 희생을 겪으며, 빠르게 변하는 적군 밀도 속에서 살아남기 위해 위치를 조절해야 한다. 이 과정에서는 스토리 아크와 상호 연결되는 대표적인 선택이 발생하며, 이를 통해 자주 사용되는 재화나 업그레이드를 수집하거나, 새로운 시스템으로부터의 진입을 결정해야 한다. 이러한 선택은 게임 세계의 상태를 변화시켜, 미래의 도전과 보상에 영향을 미친다."
+    },
+    "local_authoring_parts::3e46fa83770fb2a5e88638710a958af55b8d462c7c8f3311315f8219cf7d2b6a:coreLoop": {
+      "coreLoop": [
+        "Player makes strategic choices to collect run rewards or upgrade their build, which affects the game world state and introduces new challenges.",
+        "These decisions drive narrative progression, shaping future encounters and rewarding player growth through experience and upgrades.",
+        "The cycle of adaptation and growth is reinforced by the interplay between survival mechanics, story arcs, and player agency."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 673339,
-      "lastMs": 112478,
+      "totalMs": 753098,
+      "lastMs": 79759,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:37:40.016Z"
+      "updatedAt": "2026-10-09T17:38:59.779Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:26:26.652Z",
-  "updatedAt": "2026-10-09T17:37:40.018Z",
+  "updatedAt": "2026-10-09T17:38:59.779Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "20ed2848148c97cab2167c82e7c3422767efd6f54f47be5a6a9d1dea6b677869": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:37:40.018Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:38:59.779Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
