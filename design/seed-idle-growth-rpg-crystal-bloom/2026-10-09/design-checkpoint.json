@@ -19,25 +19,33 @@
     "local_authoring_parts::d37011f37811ebfcad9de4245612a130eecac6e62e222d396f9cca5c53a40c8b:identity,playerFantasy": {
       "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 진입하는 중심 행동과 선택에 기반하여 시스템 상태 변화를 통해 반복 가능한 핵심 루프를 만든다. 게임의 정체성은 '진행·위험·보상'이 서로 연결되는 반복 가능한 핸들링 과정이다. 플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 세계 상태 변화와 다음 선택을 바꾼다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
       "playerFantasy": "플레이어는 '진행'이라는 단순한 행동을 통해 '위험'과 '보상' 사이에 연결되는 반복 가능한 핵심 루프를 만든다. 이 루프는 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변화와 새로운 선택의 가능성을 만들어간다. 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다."
+    },
+    "local_authoring_parts::d37011f37811ebfcad9de4245612a130eecac6e62e222d396f9cca5c53a40c8b:coreFun": {
+      "coreFun": "진행·위험·보상이 서로 연결되어 반복 가능한 핵심 루프를 만든다. 플레이어는 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 중심으로 세계 상태 변화와 다음 선택을 바꾼다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다."
+    },
+    "local_authoring_parts::2d7b460cd810e8f85a6779612f3b6be9e0a2080ffaac22915ea91553f09a31d8:identity,playerFantasy,coreFun": {
+      "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 진입하는 중심 행동과 선택에 기반하여 시스템 상태 변화를 통해 반복 가능한 핵심 루프를 만든다. 게임의 정체성은 '진행·위험·보상'이 서로 연결되는 반복 가능한 핸들링 과정이다. 플레이어는 Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.을 중심으로 세계 상태 변화와 다음 선택을 바꾼다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
+      "playerFantasy": "플레이어는 '진행'이라는 단순한 행동을 통해 '위험'과 '보상' 사이에 연결되는 반복 가능한 핵심 루프를 만든다. 이 루프는 주체로 진입하는 중심 행동인 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 기반으로, 선택 결과가 다음 상태 변화와 새로운 선택의 가능성을 만들어간다. 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다.",
+      "coreFun": "진행·위험·보상이 서로 연결되어 반복 가능한 핵심 루프를 만든다. 플레이어는 'Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.'을 중심으로 세계 상태 변화와 다음 선택을 바꾼다. 이는 모바일에서도 즉시 이해되는 입력/피드백 형태의 게임 구조이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 191407,
-      "lastMs": 45128,
+      "totalMs": 228764,
+      "lastMs": 37357,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:04:49.567Z"
+      "updatedAt": "2026-10-09T09:05:26.927Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:01:38.141Z",
-  "updatedAt": "2026-10-09T09:04:49.569Z",
+  "updatedAt": "2026-10-09T09:05:26.929Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2269,7 +2277,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:04:49.569Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:05:26.929Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
