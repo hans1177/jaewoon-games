@@ -3,141 +3,119 @@
   "gameId": "insect-survival",
   "date": "2026-10-10",
   "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
-  "fingerprint": "c4cc067a3d6e6665a76a20470bd49a4e864f7507973592ffb9bd91fe911ed692",
+  "fingerprint": "000dc07de1fb21a244e3034018eed947de720cbdc26e8ba8cee56e0492606d01",
   "policyDigest": "91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f",
-  "engineDigest": "82009f805d07dbc37fef4617083aa8c5a90af5bb1042521a1f511131cb58898c",
+  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {
-    "local_authoring_parts::afa65b0a2a28ed2d4e80fbee5ae6ff8edf949eb5ac9363d58dd8103007631a0e:identity,creativeGrammar,playerFantasy,coreFun": {
+    "local_authoring_parts::9916481dccaa6d5351dc446c1dd0d7d13cab8cb29fd084a49a099e3ff13ea175:identity,creativeGrammar,playerFantasy,coreFun": {
       "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
       "creativeGrammar": {
-        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
+        "mainIdentity": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
         "a": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "INSECT_ECOLOGY",
-          "materialDomain": "ECOLOGICAL_RISK",
-          "stateChange": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE"
+          "system": "ecology",
+          "material": "food, material, insect threats",
+          "materialDomain": "environmental interaction",
+          "stateChange": "identify and gather resources"
         },
         "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "EARTH_RESOURCES",
-          "materialDomain": "RESOURCE_MANAGEMENT",
-          "stateChange": "USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE"
+          "system": "combat",
+          "material": "dangerous habitat",
+          "materialDomain": "threat assessment",
+          "stateChange": "evaluate risk and make strategic decisions"
         },
-        "abCausality": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE → USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE",
+        "abCausality": "environmental impact → combat strategy → survival progression",
         "abEvolution": {
-          "aChangesB": "A→B 조건에 따라 B의 상태 변화를 반영합니다.",
-          "bChangesA": "B→A 조건에 따라 A의 상태 변화를 반영합니다.",
-          "lateGameChange": "A→B, B→A 두 시스템 간 상호작용이 다음 상태로 확장됩니다."
+          "aChangesB": "resource gathering increases in complexity",
+          "bChangesA": "risk evaluation becomes more nuanced with environmental context",
+          "lateGameChange": "adaptive strategies emerge based on ecological feedback"
         },
         "materialFusion": {
-          "contrast": "INSECT_ECOLOGY과 EARTH_RESOURCES는 서로 다른 생태·위험·보상 구조를 가진다. 주요 인물의 목표와 두려움은 학문적 기반으로 정의된다.",
-          "causalBridge": "생태학적 분석을 통해 선택과 위험을 연결하는 데 사용됩니다.",
-          "removalConsequence": "INSECT_ECOLOGY 또는 EARTH_RESOURCES가 제거되면 게임 규칙이 변형됩니다."
+          "contrast": "original ecosystem mechanics are preserved but reinterpreted through a survival lens",
+          "causalBridge": "every choice impacts the next state via ecological consequence",
+          "removalConsequence": "loss of natural resources triggers adaptive responses"
         },
         "storyCausalChain": {
-          "cause": "INSECT_ECOLOGY 연구 및 자원 수집",
-          "characterConflict": "플레이어의 선택과 자원 관리 전략 갈등",
-          "playerChoice": "자원 수집 후 위험 대응 전략 결정하기",
-          "worldChange": "자원 수집 및 위험 대응이 실제 세계 상태로 이어집니다.",
-          "nextEvent": "자원 수집 및 위험 대응 이후 새로운 사건 발생"
+          "cause": "player's initial exploration of the habitat",
+          "characterConflict": "the environment itself presents new challenges",
+          "playerChoice": "selecting between resource gathering or combat",
+          "worldChange": "new ecological pressures emerge from player choices",
+          "nextEvent": "increased difficulty in maintaining survival due to evolving threats"
         },
         "cThemes": [
           {
-            "name": "EARTH_RESOURCES",
-            "kind": "MATERIAL",
-            "gameplayEffect": "자원 수집 및 조합 가능성이 증대됨"
+            "name": "ecological adaptation",
+            "kind": "GENRE",
+            "gameplayEffect": "survival progression"
           },
           {
-            "name": "INSECT_ECOLOGY",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택과 위험에 대한 이해 능력 향상"
+            "name": "adaptive behavior",
+            "kind": "GENRE",
+            "gameplayEffect": "strategic decision making"
           }
         ],
         "cGenres": [
           {
             "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "주요 플레이 단계와 위험 구조를 가진다"
+            "name": "environmental survival",
+            "gameplayEffect": "resource management and threat assessment"
           },
           {
             "role": "SECONDARY",
-            "name": "ECOLOGICAL_RISK",
-            "gameplayEffect": "선택과 위험에 대한 인과 변화를 유도한다"
+            "name": "combat strategy",
+            "gameplayEffect": "risk evaluation and adaptive tactics"
           }
         ],
-        "cGenreInterlock": "INSECT_ECOLOGY와 EARTH_RESOURCES는 서로 다른 생태·위험·보상 구조를 가지며, 주요 인물의 목표와 두려움은 학문적 기반으로 정의된다. 선택과 위험을 연결하는 데 사용되는 연구 결과가 게임 규칙에 반영되며, 자원 수집 후 위험 대응 전략 결정이 실제 세계 상태로 이어지게 된다.",
-        "cWorldAndGameplayEffect": "자원 수집 및 위험 대응이 실제 세계 상태로 이어지는 방식으로 게임 진행이 이루어집니다.",
+        "cGenreInterlock": "environmental mechanics influence combat strategies, which in turn shape survival progression through adaptive behaviors.",
+        "cWorldAndGameplayEffect": "every choice alters the next state via ecological consequence, creating a dynamic survival loop.",
         "delveDiscoveries": [
           {
-            "clue": "생태학적 분석을 통해 선택과 위험을 연결합니다.",
-            "discovery": "자원 수집 및 위험 대응 전략 결정 가능성이 증대함",
-            "newChoice": "자원 수집 후 위험 대응 전략 결정하기"
+            "clue": "initial exploration of the habitat",
+            "discovery": "identifying food sources and assessing risks",
+            "newChoice": "choose between gathering resources or engaging in combat"
           },
           {
-            "clue": "플레이어의 선택과 자원 관리 전략 갈등 발생",
-            "discovery": "자원 수집 및 위험 대응 전략 결정 가능성 향상",
-            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+            "clue": "evolving environmental pressures",
+            "discovery": "adaptation becomes more complex",
+            "newChoice": "selecting strategic options based on new threats"
           },
           {
-            "clue": "자원 수집 및 위험 대응이 실제 세계 상태로 이어짐",
-            "discovery": "선택과 위험에 대한 이해 능력 향상",
-            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+            "clue": "player's evolving mastery",
+            "discovery": "increased difficulty in maintaining survival",
+            "newChoice": "making decisions that reflect deeper understanding of the ecosystem"
           },
           {
-            "clue": "주요 인물의 목표와 두려움은 학문적 기반으로 정의됨",
-            "discovery": "선택과 위험에 대한 인과 변화가 유도됨",
-            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+            "clue": "adaptive behavior patterns",
+            "discovery": "strategies become more nuanced",
+            "newChoice": "choosing actions that align with ecological feedback"
           }
         ],
-        "delveGrowthRule": "자원 수집 및 위험 대응 전략 결정이 게임 진행에 반영되며, 선택과 위험에 대한 이해 능력이 증대해 새로운 사건 발생을 유도합니다.",
-        "finalGameIdentity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계된 새 정체성입니다."
+        "delveGrowthRule": "each discovery introduces a new causal link between player choices and world states, expanding the survival loop dynamically.",
+        "finalGameIdentity": "a fully integrated survival game where every action impacts the next state through ecological consequences."
       },
-      "playerFantasy": "플레이어는 자원 수집과 위험 대응 전략 결정을 통해 살아남고, 선택과 위험에 대한 이해를 바탕으로 진보하며, 게임 세계 상태로 이어지는 방식으로 플레이어의 역할을 수행해야 합니다. 주요 인물의 목표와 두려움은 학문적 기반으로 정의됩니다. 조건에 따라 자원 수집 후 위험 대응 전략 결정이 이루어지며, 선택과 위험에 대한 이해 능력이 향상되어 새로운 사건 발생을 유도합니다.",
-      "coreFun": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE → USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE → RESEARCH_ECOLOGICAL_DATA_TO_IMPROVE_SELECTION_PROCESSING"
-    },
-    "local_authoring_parts::04fddf2cb38f9b7705121218b6b90a2389b7b2af40356a765fe657e225280396:coreLoop": {
-      "coreLoop": [
-        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
-        "자원 수집 후 위험 대응 전략 결정 가능성이 증대함",
-        "선택과 위험에 대한 이해 능력 향상",
-        "자원 수집 및 위험 대응이 실제 세계 상태로 이어짐"
-      ]
-    },
-    "local_authoring_parts::b44abf2eb7f8faf4509ed0fe2d20a65f95338c9abc0e1bd513af285f9c904817:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE",
-        "USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE"
-      ],
-      "stateOutputs": [
-        "RESEARCH_ECOLOGICAL_DATA_TO_IMPROVE_SELECTION_PROCESSING"
-      ],
-      "name": "ACTION_SURVIVAL_ROGUELITE",
-      "purpose": "주요 플레이 단계와 위험 구조를 가진다",
-      "playerChoice": "자원 수집 후 위험 대응 전략 결정하기"
+      "playerFantasy": "플레이어는 작은 세계에서 살아남는 생존 게임의 중심이 되며, 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 경험을 선호한다. 플레이어는 단순한 수집이나 전투를 넘어, 환경의 변화에 따라 적응하고 진화하는 생존 전략을 숙련하며, 새로운 상황에서 실질적인 선택과 위험을 직접 체험하게 된다.",
+      "coreFun": "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택. 각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다. 이러한 과정은 플레이어의 숙련과 성장에 기여하며, 다양한 상황에서 유연한 전략을 적용할 수 있도록 설계된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 1,
+      "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 322421,
-      "lastMs": 36389,
+      "totalMs": 151143,
+      "lastMs": 151143,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:14:08.155Z"
+      "updatedAt": "2026-10-09T20:55:45.674Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T17:08:45.684Z",
-  "updatedAt": "2026-10-09T17:14:08.162Z",
+  "createdAt": "2026-10-09T20:53:14.397Z",
+  "updatedAt": "2026-10-09T20:55:45.674Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1807,23 +1785,11 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::b44abf2eb7f8faf4509ed0fe2d20a65f95338c9abc0e1bd513af285f9c904817:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "signatureSystems[0]"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::b44abf2eb7f8faf4509ed0fe2d20a65f95338c9abc0e1bd513af285f9c904817:signatureSystems:1": 2
-  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:14:08.155Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T20:55:45.674Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
