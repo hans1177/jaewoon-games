@@ -993,25 +993,35 @@
       "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS",
       "trigger": "ATTACK_PATTERNS",
       "stateChange": "RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS"
+    },
+    "local_authoring_parts::f3ecc28435cde21a1e65087d5db211bb4fe45b86eb726e03a4ba9e2204cfd5fe:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 69,
+      "calls": 70,
+      "successes": 70,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6390918,
-      "lastMs": 92608,
+      "totalMs": 6486562,
+      "lastMs": 95644,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:05:52.822Z"
+      "updatedAt": "2026-10-09T02:44:55.786Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T02:43:20.138Z",
+  "updatedAt": "2026-10-09T02:44:55.786Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3347,10 +3357,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:05:52.825Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:44:55.786Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
