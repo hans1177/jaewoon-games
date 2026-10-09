@@ -60,25 +60,38 @@
       "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::78c683a33bc7d6ad91559f3ae6214ea309d2e9e60a842408fec964f8f527ab74:signatureSystems:2": {
+      "id": "CORE-03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "END_LEVEL_STATE"
+      ],
+      "stateOutputs": [
+        "START_NEXT_STAGE_STATE"
+      ],
+      "name": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+      "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+      "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 369979,
-      "lastMs": 29227,
+      "totalMs": 402393,
+      "lastMs": 32414,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:55:13.067Z"
+      "updatedAt": "2026-10-09T08:55:45.482Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:49:03.059Z",
-  "updatedAt": "2026-10-09T08:55:13.067Z",
+  "updatedAt": "2026-10-09T08:55:45.482Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2115,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:55:13.067Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:55:45.482Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
