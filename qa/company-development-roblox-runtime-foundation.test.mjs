@@ -1313,7 +1313,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED/);
   assert.match(body.script,/item:GetAttribute\("WorldObjectId"\)/);
-  assert.match(body.script,/pcall\(function\(\) RunService:Run\(\) end\)/);
+  assert.doesNotMatch(body.script,/RunService:Run\(\)/);
+  assert.match(body.script,/local simulationStartAttempted=false/);
+  assert.equal(result.exactLuauTaskObserved,false,'test omits a server context marker');
+  assert.equal(result.serverBootObserved,false,'scene inspection is not actual game boot');
   assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
   assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY/);
