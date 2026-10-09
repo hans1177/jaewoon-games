@@ -58,7 +58,7 @@ assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.internalSharedLibraryOnlyForGa
 assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame,true);
 assert.equal(roadmap.finalDevelopmentLock?.sequenceLock?.status,'LOCKED');
 assert.equal(dual.unityWebRequired,true);
-assert.equal(dual.unityWebGateRequired,true);
+assert.equal(dual.unityWebGateRequired,false);
 assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
 
 const webAlias=directive.developmentLifecycle.webFirst;
