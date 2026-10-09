@@ -1,5 +1,5 @@
 {
-  "version": 556,
+  "version": 557,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -970,7 +970,59 @@
       },
       "spatialWorldAssetAuthoring3dOnly": true,
       "allLegacy2dOr2_5dWorldAssetsRequire3dRemodelBeforeFinalGameUse": true,
-      "flatTexturesAudioAndUiAreSupportResourcesNot3dGameplaySubstitutes": true
+      "flatTexturesAudioAndUiAreSupportResourcesNot3dGameplaySubstitutes": true,
+      "universalLibraryOrganization": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-10-09",
+        "status": "REQUIRED_POLICY_AWAITING_IMPLEMENTATION_AND_RUNTIME_QA",
+        "scope": "ALL_EXISTING_AND_FUTURE_GAMES_ALL_REGISTERED_INTERNAL_LIBRARIES",
+        "assetFamilyOrder": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "ordering": [
+          "FAMILY_ORDER",
+          "SUBFAMILY",
+          "TITLE_KO",
+          "ASSET_ID"
+        ],
+        "deterministicOrderingRequired": true,
+        "sourcePathsMayNotBeMovedForSorting": true,
+        "gameSpecificPackPartitionForbidden": true,
+        "legacyGameNamedPackIdsAreSourceLineageOnly": true,
+        "originalObjectsMustRemainRegistered": true,
+        "originalSourceAndAssetIdentifiersPreserved": true,
+        "monsterHundredSource": "assets/roblox/world-ghosts/catalog.tsv",
+        "midnightHundredCreatureVariantsEligibleForAllCompatibleGames": true,
+        "monsterCountIsSourceCatalogCountNotNativeRuntimePass": true,
+        "allLibrariesAllGamesEligibleWithoutOwnershipOrDemandHintFiltering": true,
+        "consumerGameIdsAreActualUsageHistoryOnly": true,
+        "intendedConsumerGameIdsAreHintsOnly": true,
+        "assetAccessMayOnlyBeBlockedByVerifiedSafetyLicenseSourcePlatformRoleStyleOrNativeAdaptationReasons": true,
+        "allCompatibleAssetsConsideredWithoutCountCap": true,
+        "native3dSpatialWorldAssetsRequired": true,
+        "crossPlatformNativeAdaptationRequired": true,
+        "gameSpecificVisualStyleAndIdentityRetained": true,
+        "noAutomaticGameMechanicEnemySpawnOrBalanceChange": true,
+        "gameplaySaveProgressionEconomyAndNetworkAuthorityPreserved": true,
+        "actualSourceBindingsAndIndependentPlatformRuntimeQaRequiredBeforeCompletedClaim": true,
+        "integration": "tools/vibe2-asset-production-plan.mjs#synchronizeCompanyCommonAssetRegistry_and_buildAllGameDynamicLibraryBindingPlan",
+        "registry": "company-asset-library.json#internalAssetStandard.sharedOrganization",
+        "viewer": "assets/asset-library.js",
+        "regression": "qa/vibe2-native-asset-production.test.mjs",
+        "existingCanonicalPipelineOnly": true,
+        "newWrapperShadowOrParallelPipelineForbidden": true
+      }
     }
   },
   "platformRepresentativeSets": {
@@ -8784,6 +8836,18 @@
       "enforcement": "EXISTING_SOURCE_PREFLIGHT_AND_ACTUAL_BROWSER_NATIVE_MESH_QA",
       "platformHoldsUnchanged": true,
       "saveAndGameplayPreservationRequired": true
+    },
+    "ownerUniversalLibraryNormalization20261009": {
+      "authority": "OWNER_DIRECTIVE_2026-10-09",
+      "status": "POLICY_AND_SOURCE_CHANGE_QA_REQUIRED",
+      "objective": "ALL_INTERNAL_ASSETS_FOR_ALL_COMPATIBLE_GAMES_AND_100_MIDNIGHT_MONSTERS_WITHOUT_GAME_PACK_EXCLUSIVITY",
+      "action": "REMOVE_GAME_SPECIFIC_PACK_ACCESS_PARTITIONS_PRESERVE_OBJECTS_AND_SOURCE_PATHS",
+      "ordering": "FAMILY_SUBFAMILY_KOREAN_TITLE_ID",
+      "activeTargetsUnchanged": true,
+      "lockedF0F9SequenceUnchanged": true,
+      "originalAssetsPreserved": true,
+      "saveBalanceGameplaySecurityUnaffected": true,
+      "runtimeEvidenceNotYetVerified": true
     }
   },
   "vibeExecutionLaneContract": {
