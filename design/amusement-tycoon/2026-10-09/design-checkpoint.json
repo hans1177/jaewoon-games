@@ -579,25 +579,28 @@
       "toSystem": "RUN_INPUT",
       "trigger": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
       "stateChange": "CORE_FUN_02에서 RUN_INPUT로 연결되어, 즉시 상태 변화가 발생하며, RUN_INPUT, REWARD_KEY, RISK_LEVEL 등의 입력값을 기반하여 플레이어에게 명확한 피드백을 제공하고, 적절한 리워드 수집 및 소소한 위험 또는 경로 선택을 수행하여 게임 경험을 강화한다."
+    },
+    "local_authoring_parts::c6f0b9de253ff93c8dc7d67e30fc9d0da0e7b1037db57e262994e3b863ac1f3f:fromId": {
+      "fromId": "CORE_FUN_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1902347,
-      "lastMs": 93987,
+      "totalMs": 1989365,
+      "lastMs": 87018,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:48:56.195Z"
+      "updatedAt": "2026-10-09T09:50:23.216Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:48:56.197Z",
+  "updatedAt": "2026-10-09T09:50:23.216Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2946,7 +2949,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:48:56.197Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:50:23.216Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
