@@ -35,25 +35,39 @@
         "OUTPUT: 다음 월드 상태와 접근 가능성이 실제 바뀌는 선택 결과",
         "STATE CHANGE: 공격 패턴 → 배치 결정 → 월드 상태 변화"
       ]
+    },
+    "local_authoring_parts::d66048df769929861cac1899309526a340dc1a4878eb65644a728cb852a35769:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "공격 패턴"
+      ],
+      "stateOutputs": [
+        "배치 결정",
+        "월드 상태 변화"
+      ],
+      "name": "공격 패턴 → 배치 결정 → 월드 상태 변화",
+      "purpose": "플레이어가 현재 웨이브의 공격 패턴을 읽고, 크리스트 데미지 배치 위치에 최적화하는 선택 결과를 실제 월드 상태와 접근 가능성을 바꾼다.",
+      "playerChoice": "위치 선택/조합/업그레이드 우선순위 변경"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 133754,
-      "lastMs": 20012,
+      "totalMs": 152631,
+      "lastMs": 18877,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:48:00.930Z"
+      "updatedAt": "2026-10-09T11:48:19.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:45:47.159Z",
-  "updatedAt": "2026-10-09T11:48:00.930Z",
+  "updatedAt": "2026-10-09T11:48:19.808Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2258,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:48:00.930Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:48:19.808Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
