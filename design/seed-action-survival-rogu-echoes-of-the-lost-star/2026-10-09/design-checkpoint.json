@@ -27,25 +27,32 @@
       "identity": "잃어버린 별의 메아리 - 진입, 선택, 위험, 보상, 재방문의 반복 루프로 구성된 ACTION_SURVIVAL_ROGUELITE 게임 정체성입니다. 플레이어는 단순한 생존 흐름에서 심층적인 인과 관계와 콘텐츠 확대를 경험하며, 주요 행동은 '전투'이며, 대축은 '보상 수집' 및 '업그레이드 선택', 보조 요소는 '재방문'입니다. 시그니처 세계 규칙은 '전투 -> 보상 -> 다음 전투'의 순환 구조로 연결됩니다. 이 게임은 기존 장르 태그 하나만으로도 충분히 표현되며, 학문적 깊이를 유지합니다.",
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 단순한 생존 흐름에서 심층적인 인과 관계와 콘텐츠 확대를 경험하며, 주요 행동은 '전투'이며, 대축은 '보상 수집' 및 '업그레이드 선택', 보조 요소는 '재방문'입니다. 시그니처 세계 규칙은 '전투 -> 보상 -> 다음 전투'의 순환 구조로 연결됩니다.",
       "coreFun": "플레이어는 단순한 생존 흐름에서 심층적인 인과 관계와 콘텐츠 확대를 경험하며, 주요 행동은 '전투'이며, 대축은 '보상 수집' 및 '업그레이드 선택', 보조 요소는 '재방문'입니다. 시그니처 세계 규칙은 '전투 -> 보상 -> 다음 전투'의 순환 구조로 연결됩니다."
+    },
+    "local_authoring_parts::f7493b6b550db0159b12db329cac4a64fbdfcc735e2ed643a26f93355529c1d8:coreLoop": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택",
+        "전투 -> 보상 -> 전투",
+        "업그레이드 선택 -> 보상 -> 업그레이드 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 101222,
-      "lastMs": 14181,
+      "totalMs": 114715,
+      "lastMs": 13493,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:04:18.406Z"
+      "updatedAt": "2026-10-09T15:04:31.901Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:02:36.962Z",
-  "updatedAt": "2026-10-09T15:04:18.407Z",
+  "updatedAt": "2026-10-09T15:04:31.901Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:04:18.407Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:04:31.901Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
