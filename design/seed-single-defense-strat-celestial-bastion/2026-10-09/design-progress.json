@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T12:56:56.189Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T12:57:54.019Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-single-defense-strat-celestial-bastion/2026-10-09/design-seed.json",
+    "contentDigest": "d8fa8f598b12c744f9bde2f3b3434d339d2340da8bf109e96e3a4e590a26fab7",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 949923,
-      "lastMs": 206177,
+      "totalMs": 1007718,
+      "lastMs": 57795,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:56:56.186Z"
+      "updatedAt": "2026-10-09T12:57:53.985Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T12:56:56.190Z"
+  "updatedAt": "2026-10-09T12:57:54.027Z"
 }
