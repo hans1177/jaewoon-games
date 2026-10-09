@@ -473,25 +473,95 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::164449c1cf328f4083c1d1f37b72b7ea2bd657f438d395e929453c542ae969d1:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "START_INPUT",
+          "toId": "STATE_CHANGE_1",
+          "stateKeys": [
+            "INITIAL_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "GAME_FLOW",
+          "toSystem": "PLAY_SPACE",
+          "trigger": "SIMPLE_TAP_OR_SWIPE",
+          "stateChange": "SCORE_DISPLAY_AND_DISTANCE_MEASURE"
+        },
+        {
+          "fromId": "STATE_CHANGE_1",
+          "toId": "STATE_CHANGE_2",
+          "stateKeys": [
+            "FLOW_INITIATED",
+            "ACTION_SEQUENCE"
+          ],
+          "fromSystem": "PLAY_SPACE",
+          "toSystem": "GAME_FLOW",
+          "trigger": "READABLE_FEEDBACK",
+          "stateChange": "REWARD_COLLECTION_AND_RISK_ASSUMPTION"
+        },
+        {
+          "fromId": "STATE_CHANGE_2",
+          "toId": "STATE_CHANGE_3",
+          "stateKeys": [
+            "FLOW_COMPLETED",
+            "SESSION_PROGRESS"
+          ],
+          "fromSystem": "GAME_FLOW",
+          "toSystem": "PLAY_SPACE",
+          "trigger": "FINISH_OR_FAIL",
+          "stateChange": "PROGRESSION_BENEFIT_UNLOCKED"
+        },
+        {
+          "fromId": "STATE_CHANGE_3",
+          "toId": "STATE_CHANGE_4",
+          "stateKeys": [
+            "FLOW_TERMINATION",
+            "SESSION_END"
+          ],
+          "fromSystem": "PLAY_SPACE",
+          "toSystem": "GAME_FLOW",
+          "trigger": "RESULT_DISPLAY",
+          "stateChange": "NEXT_PLAY_SPACE_ACCESS"
+        },
+        {
+          "fromId": "STATE_CHANGE_4",
+          "toId": "STATE_CHANGE_5",
+          "stateKeys": [
+            "FLOW_RECONFIGURATION",
+            "SESSION_EXTENSION"
+          ],
+          "fromSystem": "GAME_FLOW",
+          "toSystem": "PLAY_SPACE",
+          "trigger": "DELVE_ACTION",
+          "stateChange": "CONTENT_EXPANSION_PLAN"
+        }
+      ],
+      "progressionDirection": "SIMPLE_TO_COMPLEX",
+      "progressionEconomyBalance": {
+        "progressionLoop": "CIRCULAR",
+        "resourceFlow": "UNIDIRECTIONAL",
+        "balanceRules": "BALANCED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1136042,
-      "lastMs": 300060,
+      "totalMs": 1420684,
+      "lastMs": 284642,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T13:15:27.010Z"
+      "updatedAt": "2026-10-09T13:20:11.654Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:15:27.010Z",
+  "updatedAt": "2026-10-09T13:20:11.654Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2417,7 +2487,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:10:26.940Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:20:11.654Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
