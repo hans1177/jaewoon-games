@@ -591,6 +591,52 @@ test('all game spatial families reject flat 2D assets but allow unlimited cross-
   }
 });
 
+test('central Unity 3D policy and shared spatial asset prefilter stay aligned for all eight families',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const only3d=policy.ownerUnityWeb3dOnly20261009;
+  assert.equal(only3d.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(only3d.internalSharedLibraryOnlyForGameplayAssets,true);
+  assert.equal(only3d.registeredLibrarySpatialAssetRequiresReal3dSource,true);
+  assert.equal(only3d.uiAudioAndTextureFilesMayRemainNative2dResources,true);
+  assert.equal(only3d.uiAudioAndTextureFilesMayNotSubstituteFor3dGameplayObjects,true);
+  assert.equal(only3d.noShadowPipelineOr2dFallbackAsFinal,true);
+  const families=only3d.sharedLibraryGameWorldFamilies3dOnly;
+  assert.deepEqual(families,['CHARACTER','CREATURE','BUILDING','ENVIRONMENT',
+    'WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+  assert.deepEqual(only3d.supported3dSourceKinds,
+    ['GLB','GLTF','FBX','OBJ','MESH','UNITY_PREFAB_WITH_NATIVE_MESH']);
+  const assets=families.flatMap(family=>[
+    {id:'flat-'+family.toLowerCase(),family,license:'CC0',path:'/assets/shared/flat.png'},
+    {id:'model-'+family.toLowerCase(),family,license:'CC0',path:'/assets/shared/model.glb'},
+  ]);
+  assets.push({id:'ui-2d',family:'UI',license:'CC0',path:'/assets/shared/hud.png'});
+  assets.push({id:'audio-2d',family:'AUDIO',license:'CC0',path:'/assets/shared/bgm.ogg'});
+  for(const target of ['roblox','unity','web']){
+    const plan=buildAllGameDynamicLibraryBindingPlan({
+      companyRegistry:{version:1,assets},target,gameId:'sample-3d'});
+    assert.equal(plan.spatialFamiliesRequire3dGeometrySource,true);
+    assert.equal(plan.allRegistryAssetsScanned,true);
+    assert.equal(plan.internalRegisteredAssetsOnly,true);
+    for(const family of families){
+      const flat=plan.evaluatedAssets.find(row=>row.assetId==='flat-'+family.toLowerCase());
+      const model=plan.evaluatedAssets.find(row=>row.assetId==='model-'+family.toLowerCase());
+      assert.equal(flat.hardBlockReason,'SPATIAL_3D_SOURCE_REQUIRED',family+' '+target);
+      assert.equal(flat.eligibleForRoleEvaluation,false,family+' '+target);
+      assert.equal(model.hardBlockReason,null,family+' '+target);
+      if(plan.libraryOrder.includes(family)){
+        assert.ok(plan.familyCandidates[family].some(row=>row.assetId===model.assetId),family+' '+target);
+      }
+    }
+    assert.deepEqual(plan.familyCandidates.UI.map(row=>row.assetId),['ui-2d']);
+    assert.deepEqual(plan.familyCandidates.AUDIO.map(row=>row.assetId),['audio-2d']);
+  }
+  // 후보 파일 확장자만으로 실제 메시 또는 Unity 네이티브 런타임 PASS를 주장하지 않는다.
+  const inspector=fs.readFileSync('tools/company-unity-web-gameplay-validation.mjs','utf8');
+  assert.match(inspector,/nativeMeshProof\.triangles>0/);
+  assert.match(inspector,/nativeDepthVerified/);
+  assert.match(inspector,/libraryAssetPromotionGranted:false/);
+});
+
 test('Vibe source asset consumption is genre-agnostic fit-first and incrementally synchronized',()=>{
   const order={
     gameId:'demo',

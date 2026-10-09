@@ -370,3 +370,39 @@ test('Unity Web 3D gameplay rejects pseudo-depth even when triangles exist',()=>
   assert.match(worker,/qa\?\.spatialGameplay\?\.depthPass===true/);
   assert.match(worker,/qa\?\.spatialGameplay\?\.spriteGameplayActors===0/);
 });
+
+
+test('실제 Unity 메시·원근·3축 깊이 검증식이 2D/2.5D와 평면 메시를 승인하지 않는다',()=>{
+  const start=source.indexOf('  const nativeMeshMarker=');
+  const end=source.indexOf('  const shaderLikelyMissing=',start);
+  assert.ok(start>=0&&end>start,'evaluate the actual browser QA 3D proof expressions');
+  const evaluate=new Function('markers','gameId',source.slice(start,end)+
+    '\nreturn {mesh:nativeMeshVerified,depth:nativeDepthVerified,missing:nativeMeshMissing};');
+  const gameId='sample-game';
+  const mesh='JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=sample-game source=UNITY_MESH_FILTER '+
+    'inspected=3 validMeshes=3 triangles=90 volumetricMeshes=3 materialPass=1 texturePass=1 status=PASS';
+  const depth='JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=sample-game source=UNITY_WORLD_MESH_DEPTH '+
+    'cameraPerspective=1 worldMeshes3d=3 worldDepthCm=160 gameplayActors3d=2 spriteGameplayActors=0 status=PASS';
+  assert.deepEqual(evaluate([mesh,depth],gameId),{mesh:true,depth:true,missing:false});
+  const reject=[
+    ['missing native depth',[mesh]],
+    ['orthographic 2D camera',[mesh,depth.replace('cameraPerspective=1','cameraPerspective=0')]],
+    ['2.5D flat world',[mesh,depth.replace('worldDepthCm=160','worldDepthCm=0')]],
+    ['2.5D depth below minimum',[mesh,depth.replace('worldDepthCm=160','worldDepthCm=49')]],
+    ['no 3D gameplay actor',[mesh,depth.replace('gameplayActors3d=2','gameplayActors3d=0')]],
+    ['sprite gameplay actor',[mesh,depth.replace('spriteGameplayActors=0','spriteGameplayActors=1')]],
+    ['all planar meshes',[mesh.replace('volumetricMeshes=3','volumetricMeshes=0'),depth]],
+    ['no real triangles',[mesh.replace('triangles=90','triangles=0'),depth]],
+    ['forged PASS without numeric triangles',[mesh.replace('triangles=90','triangles=unknown'),depth]],
+    ['foreign game proof',[mesh.replace('game=sample-game','game=other-game'),depth]],
+  ];
+  for(const [reason,markers] of reject){
+    const result=evaluate(markers,gameId);
+    assert.equal(result.mesh,false,reason);
+    assert.equal(result.missing,true,reason);
+  }
+  assert.match(source,/const visualBlocked=shaderLikelyMissing\|\|blankOrFrozenFrame/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
+  assert.match(source,/pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded/);
+  assert.match(source,/libraryAssetPromotionGranted:false/);
+});

@@ -50,18 +50,24 @@ const scriptFiles=[];
 const walk=dir=>{
   for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
     const full=path.join(dir,entry.name);
-    if(entry.isDirectory())walk(full);
+    if(entry.isDirectory()){
+      // Unity 런타임에 포함되는 모든 Assets C# 검사. Editor/Tests는 게임 소스가 아니다.
+      if(entry.name!=='Editor'&&entry.name!=='Tests')walk(full);
+    }
     else if(entry.isFile()&&entry.name.endsWith('.cs'))scriptFiles.push(full.replaceAll('\\','/'));
   }
 };
-walk(scriptsRoot);
+walk(path.join(sourceRoot,'Assets'));
 if(scriptFiles.length===0)throw new Error('UNITY_WEB_CSHARP_SOURCE_REQUIRED');
 
 // Unity 월드의 2D 물리·스프라이트·타일맵은 신규/기존 게임 모두 허용하지 않는다.
+// C# 식별자 단어 경계는 정규식 리터럴의 단일 \\b로 검사한다 (중복 이스케이프 금지).
 // UI 이미지와 텍스처는 3D 게임 화면을 대체하지 않는 한 계속 재사용할 수 있다.
-const forbidden2dComponents=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|TilemapRenderer|TilemapCollider2D)\b/;
+const forbidden2dComponents=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|Tilemap|TilemapRenderer|TilemapCollider2D|SpriteShapeRenderer)\b/u;
 for(const file of scriptFiles){
-  const gameplaySource=fs.readFileSync(file,'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,'');
+  // 문자열(URL 포함)과 주석을 식별자 검사에서 제외하되, 실제 C# 컴포넌트 선언은 검사한다.
+  const gameplaySource=fs.readFileSync(file,'utf8')
+    .replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
   if(forbidden2dComponents.test(gameplaySource))
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
 }
