@@ -86,25 +86,337 @@
       "name": "Discover and unlock new play options through repeated exploration.",
       "purpose": "This system allows players to uncover hidden gameplay possibilities by revisiting past states, gaining new insights, and making strategic choices that alter the game's dynamics.",
       "playerChoice": "Explore previously visited states, gain new knowledge, and make decisions that reshape the game world and future actions while maintaining a consistent reward structure and risk profile."
+    },
+    "local_authoring_parts::805ed275072b6d1d2b1a464a245d2b972c22d03d84a7d29c1db3f8ed3e22bdc9:signatureSystems:4": {
+      "id": "CORE_FUN_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "name": "Discover and unlock new play options through repeated exploration.",
+      "purpose": "Player's initial action leads to expanded gameplay through exploration and discovery.",
+      "playerChoice": "Explore the environment, collect rewards, and uncover hidden paths or secrets through trial and error."
+    },
+    "local_authoring_parts::e3f84af7b71d652a80d2e653dab6c1173cfd6f33e1e822ea8ed305a7e17746d4:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as the core action that instantly changes the world state by triggering a simple input and a clear objective in a casual game.",
+          "playerChoice": "Tap or swipe to initiate the run, receive immediate feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT"
+          ],
+          "stateOutputs": [
+            "RUN_RESULT"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establish a conditional relationship between the outcome of the main action and the next world state, introducing variability through risk/reward choices.",
+          "playerChoice": "Select a short run with clear feedback, gather rewards, and take a minimal risk or choose a simple path before completion."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "This system allows players to uncover hidden gameplay possibilities by revisiting past states, gaining new insights, and making strategic choices that alter the game's dynamics.",
+          "playerChoice": "Explore previously visited states, gain new knowledge, and make decisions that reshape the game world and future actions while maintaining a consistent reward structure and risk profile."
+        },
+        {
+          "id": "CORE_FUN_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "Player's initial action leads to expanded gameplay through exploration and discovery.",
+          "playerChoice": "Explore the environment, collect rewards, and uncover hidden paths or secrets through trial and error."
+        }
+      ]
+    },
+    "local_authoring_parts::e0547b1c9ba7dc71d292b4087197c492652f1cc081e80cf7755d959f2627bd18:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as the core action that instantly changes the world state by triggering a simple input and a clear objective in a casual game.",
+          "playerChoice": "Tap or swipe to initiate the run, receive immediate feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT"
+          ],
+          "stateOutputs": [
+            "RUN_RESULT"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establish a conditional relationship between the outcome of the main action and the next world state, introducing variability through risk/reward choices.",
+          "playerChoice": "Select a short run with clear feedback, gather rewards, and take a minimal risk or choose a simple path before completion."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "This system allows players to uncover hidden gameplay possibilities by revisiting past states, gaining new insights, and making strategic choices that alter the game's dynamics.",
+          "playerChoice": "Explore previously visited states, gain new knowledge, and make decisions that reshape the game world and future actions while maintaining a consistent reward structure and risk profile."
+        },
+        {
+          "id": "CORE_FUN_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "Player's initial action leads to expanded gameplay through exploration and discovery.",
+          "playerChoice": "Explore the environment, collect rewards, and uncover hidden paths or secrets through trial and error."
+        }
+      ]
+    },
+    "local_authoring_parts::e0547b1c9ba7dc71d292b4087197c492652f1cc081e80cf7755d959f2627bd18:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::f41c5ebb6577c5ac60d3ad7c3aacbef8921fe6caca4616c8f5c7bccd04ef5da2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as the core action that instantly changes the world state by triggering a simple input and a clear objective in a casual game.",
+          "playerChoice": "Tap or swipe to initiate the run, receive immediate feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT"
+          ],
+          "stateOutputs": [
+            "RUN_RESULT"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establish a conditional relationship between the outcome of the main action and the next world state, introducing variability through risk/reward choices.",
+          "playerChoice": "Select a short run with clear feedback, gather rewards, and take a minimal risk or choose a simple path before completion."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "This system allows players to uncover hidden gameplay possibilities by revisiting past states, gaining new insights, and making strategic choices that alter the game's dynamics.",
+          "playerChoice": "Explore previously visited states, gain new knowledge, and make decisions that reshape the game world and future actions while maintaining a consistent reward structure and risk profile."
+        },
+        {
+          "id": "CORE_FUN_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "Player's initial action leads to expanded gameplay through exploration and discovery.",
+          "playerChoice": "Explore the environment, collect rewards, and uncover hidden paths or secrets through trial and error."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 단계에서 즉시 실행 가능한 기본 입력(단축 터치 또는 스ワイ프)과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 기존의 간단한 반복 구조를 뒤집어 새로운 인과 법칙과 시스템 연결을 확립하는 핵심 재미를 제공한다.",
+      "playerFantasy": "퇴마 사무소에서 플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 이는 기존의 간단한 반복 구조를 뒤집어 새로운 인과 법칙과 시스템 연결을 확립하는 핵심 재미를 제공하며, 세계 상태와 다음 선택을 즉시 바꾼다.",
+      "coreFun": "퇴마 사무소은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 단계에서 즉시 실행 가능한 기본 입력(단축 터치 또는 스ワイ프)과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 기존의 간단한 반복 구조를 뒤집어 새로운 인과 법칙과 시스템 연결을 확립하는 핵심 재미를 제공한다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as the core action that instantly changes the world state by triggering a simple input and a clear objective in a casual game.",
+          "playerChoice": "Tap or swipe to initiate the run, receive immediate feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT"
+          ],
+          "stateOutputs": [
+            "RUN_RESULT"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "NEXT_WORLD_STATE"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establish a conditional relationship between the outcome of the main action and the next world state, introducing variability through risk/reward choices.",
+          "playerChoice": "Select a short run with clear feedback, gather rewards, and take a minimal risk or choose a simple path before completion."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "This system allows players to uncover hidden gameplay possibilities by revisiting past states, gaining new insights, and making strategic choices that alter the game's dynamics.",
+          "playerChoice": "Explore previously visited states, gain new knowledge, and make decisions that reshape the game world and future actions while maintaining a consistent reward structure and risk profile."
+        },
+        {
+          "id": "CORE_FUN_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_RESULT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN"
+          ],
+          "name": "Discover and unlock new play options through repeated exploration.",
+          "purpose": "Player's initial action leads to expanded gameplay through exploration and discovery.",
+          "playerChoice": "Explore the environment, collect rewards, and uncover hidden paths or secrets through trial and error."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 217990,
-      "lastMs": 17669,
+      "totalMs": 249885,
+      "lastMs": 14269,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:53:51.397Z"
+      "updatedAt": "2026-10-09T15:54:23.297Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:53:51.398Z",
+  "updatedAt": "2026-10-09T15:54:23.304Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1577,14 +1889,24 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::805ed275072b6d1d2b1a464a245d2b972c22d03d84a7d29c1db3f8ed3e22bdc9:signatureSystems:2": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:53:51.397Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:54:23.299Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/exorcist-office/2026-10-09/design-seed.json",
+    "contentDigest": "1aac6cd840ebd667ce4fdd1fa01bdc03f8795cf8b02a2694f7d0f12f48e30840",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
