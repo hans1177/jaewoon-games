@@ -386,12 +386,14 @@ try{
   const nativeDepthProof={
     cameraPerspective:nativeDepthMetric('cameraPerspective'),
     worldMeshes3d:nativeDepthMetric('worldMeshes3d'),
+    worldDepthCm:nativeDepthMetric('worldDepthCm'),
     gameplayActors3d:nativeDepthMetric('gameplayActors3d'),
     spriteGameplayActors:nativeDepthMetric('spriteGameplayActors'),
   };
   const nativeDepthVerified=Boolean(nativeDepthMarker)&&nativeDepthMarker.includes('status=PASS')
     &&nativeDepthProof.cameraPerspective===1
     &&Number.isSafeInteger(nativeDepthProof.worldMeshes3d)&&nativeDepthProof.worldMeshes3d>=2
+    &&Number.isSafeInteger(nativeDepthProof.worldDepthCm)&&nativeDepthProof.worldDepthCm>=50
     &&Number.isSafeInteger(nativeDepthProof.gameplayActors3d)&&nativeDepthProof.gameplayActors3d>=1
     &&nativeDepthProof.spriteGameplayActors===0;
   const nativeMeshVerified=Boolean(nativeMeshMarker)&&nativeMeshMarker.includes('status=PASS')
@@ -469,6 +471,7 @@ try{
       requiredDimension:'3D',pass:nativeMeshVerified,
       depthPass:nativeDepthVerified,perspectiveCamera:nativeDepthProof.cameraPerspective===1,
       gameplayActors3d:nativeDepthProof.gameplayActors3d,worldMeshes3d:nativeDepthProof.worldMeshes3d,
+      worldDepthCm:nativeDepthProof.worldDepthCm,
       spriteGameplayActors:nativeDepthProof.spriteGameplayActors,
       source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
       requiredForAllUnityWebGames:true,
