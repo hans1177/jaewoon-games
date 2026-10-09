@@ -193,6 +193,36 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!rolesReady||!statesReady)reject(ownerV5?'DESIGN_MAIN_A_B_DELVE_REQUIRED':'DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
       {counts,systemCount:systems.length,statesReady},
       ownerV5?'MAIN/A/B 각각 하나와 @ 발견·숙련을 실제 규칙 및 상태 입출력으로 작성한다. C의 두 소재·메인 및 보조 장르의 효과는 creativeGrammar에서 따로 인과 검증한다. 기존 c 보조 시스템은 필수가 아니다.':'메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+    // 버전 5에서 A/B 상태 교환 자체가 불가능하면 연결 조각을 작성하기 전에 이 시스템부터 수리한다.
+    // 존재하지 않는 coreFun 의사 ID, 새 자원, 보상 또는 저장키를 만들지 않는다.
+    if(ownerV5&&rolesReady&&statesReady){
+      const candidates=new Map(systems.map(row=>[row.id,[]]));
+      for(const from of systems)for(const to of systems){
+        if(from.id===to.id)continue;
+        if(list(from.stateOutputs).some(key=>list(to.stateInputs).includes(key)))
+          candidates.get(from.id).push(to.id);
+      }
+      const canReach=(from,to)=>{
+        const pending=[from],visited=new Set();
+        while(pending.length){
+          const id=pending.shift();
+          if(id===to)return true;
+          if(visited.has(id))continue;
+          visited.add(id);
+          pending.push(...(candidates.get(id)||[]));
+        }
+        return false;
+      };
+      const main=systems.find(row=>row.grammarRole==='MAIN')?.id;
+      const a=systems.find(row=>row.grammarRole==='A')?.id;
+      const b=systems.find(row=>row.grammarRole==='B')?.id;
+      const unconnected=systems.filter(row=>!canReach(main,row.id)&&!canReach(row.id,main)).map(row=>row.grammarRole);
+      if(!canReach(a,b)||!canReach(b,a)||unconnected.length){
+        reject('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE','SYSTEM_INTERCONNECTION_DESIGN',['signatureSystems'],
+          {aToB:canReach(a,b),bToA:canReach(b,a),unconnected,ruleIds:ids},
+          'MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.');
+      }
+    }
     // 메인: ID만 달리 붙인 복제 규칙도 실제 MAIN/A/B/c/@ 완성으로 인정하지 않는다.
     for(let i=0;i<systems.length;i++)for(let j=i+1;j<systems.length;j++){
       const left=systems[i],right=systems[j];

@@ -70,6 +70,46 @@ test('incomplete auto-enrolled V5 seeds do not force invented names and causal D
   assert.equal(authored.flowArchitecture.systemBlueprint.novelGrammarContract.formula,'PLACEHOLDER');
 });
 
+test('connection authoring restricts IDs and state keys to existing V5 rule handoffs',()=>{
+  const start=design.indexOf('function authoredStateHandoffContract(');
+  const end=design.indexOf('const DESIGN_BASE=',start);
+  assert.ok(start>=0&&end>start);
+  const factory=fields=>({
+    type:'object',required:fields,
+    properties:{systemInterconnections:{type:'array',items:{type:'object',properties:{
+      fromId:{type:'string'},toId:{type:'string'},
+      stateKeys:{type:'array',items:{type:'string'}}
+    }}}}
+  });
+  const helpers=runInNewContext(
+    design.slice(start,end)+'\n({authoredStateHandoffContract,designSliceSchemaWithAuthoredHandoffs})',
+    {clean:value=>String(value??'').trim(),uniq:values=>[...new Set(values)],designSliceSchema:factory}
+  );
+  const rows=[
+    {id:'MAIN_RULE',grammarRole:'MAIN',stateInputs:['SchoolSafety'],stateOutputs:['SchoolBudget']},
+    {id:'BUILD_A',grammarRole:'A',stateInputs:['SchoolSafety'],stateOutputs:['SchoolBudget','SchoolSafety']},
+    {id:'ACTION_B',grammarRole:'B',stateInputs:['SchoolBudget'],stateOutputs:['SchoolSafety']},
+    {id:'DISCOVERY_AT',grammarRole:'DELVE',stateInputs:['SchoolSafety'],stateOutputs:['SchoolBudget']}
+  ];
+  const contract=helpers.authoredStateHandoffContract(rows);
+  assert.equal(JSON.stringify(contract.ruleIds),JSON.stringify(['MAIN_RULE','BUILD_A','ACTION_B','DISCOVERY_AT']));
+  assert.ok(contract.handoffs.some(edge=>edge.fromId==='BUILD_A'&&edge.toId==='ACTION_B'&&edge.stateKeys.includes('SchoolBudget')));
+  assert.ok(contract.handoffs.some(edge=>edge.fromId==='ACTION_B'&&edge.toId==='BUILD_A'&&edge.stateKeys.includes('SchoolSafety')));
+  const schema=helpers.designSliceSchemaWithAuthoredHandoffs(['systemInterconnections'],rows);
+  const item=schema.properties.systemInterconnections.items;
+  assert.equal(JSON.stringify(item.properties.fromId.enum),JSON.stringify(contract.ruleIds));
+  assert.equal(JSON.stringify(item.properties.toId.enum),JSON.stringify(contract.ruleIds));
+  assert.equal(JSON.stringify(item.properties.stateKeys.items.enum),JSON.stringify(contract.stateKeys));
+  assert.equal(item.properties.fromId.enum.includes('coreFun'),false);
+  assert.equal(item.properties.stateKeys.items.enum.includes('InventedState'),false);
+  const missingHandoff=rows.map(row=>({...row,stateInputs:['InputOnly'],stateOutputs:['OutputOnly']}));
+  assert.equal(helpers.designSliceSchemaWithAuthoredHandoffs(['systemInterconnections'],missingHandoff)
+    .properties.systemInterconnections.items.properties.fromId.enum,undefined,'never fabricate handoff candidates');
+  assert.match(design,/designSliceSchemaWithAuthoredHandoffs\(requestedFields,merged.signatureSystems\)/);
+  assert.match(design,/AUTHORED_RULE_IDS_AND_HANDOFFS=/);
+  assert.match(design,/SYSTEM_INTERCONNECTION_AUTHORING_RULE=/);
+});
+
 // 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
 test('design target selection never waits for three other games to validate the engine',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
