@@ -334,25 +334,243 @@
           "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
         }
       ]
+    },
+    "local_authoring_parts::34ac404af203bd48f1e9b310c3884c02589b9a5b7cffd82cd4ceed1a9110e630:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
+        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
+        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY",
+          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY",
+          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
+          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
+          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
+          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
+          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
+          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
+      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
+      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다.",
+      "coreLoop": [
+        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
+        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
+        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY",
+          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY",
+          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
+          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
+          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
+          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
+          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
+        },
+        {
+          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "월드 상태",
+            "자원",
+            "위험",
+            "목표"
+          ],
+          "stateOutputs": [
+            "새로운 월드 상태",
+            "새로운 자원",
+            "새로운 위험",
+            "새로운 목표"
+          ],
+          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
+          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
+          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 387133,
-      "lastMs": 40410,
+      "totalMs": 426159,
+      "lastMs": 39026,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:49:57.757Z"
+      "updatedAt": "2026-10-09T12:50:36.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T12:49:57.759Z",
+  "updatedAt": "2026-10-09T12:50:36.798Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2406,12 +2624,22 @@
     },
     "assetFacts": {}
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:49:57.759Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:50:36.790Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/ant-simulator/2026-10-09/design-seed.json",
+    "contentDigest": "42917956113cfed840d38826c394dba841fcc27b192eb3df610af0c1ec1a035b",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
