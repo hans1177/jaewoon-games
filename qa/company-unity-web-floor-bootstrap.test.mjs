@@ -70,6 +70,17 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
+    assert.equal(source.requiredAuthoringDimension,'3D');
+    assert.equal(source.f0Native3dSourcePreflight.sourceOnly,true);
+    assert.equal(source.f0Native3dSourcePreflight.runtimeVerified,false);
+    assert.equal(source.f0Native3dSourcePreflight.primitiveBootstrapIsVisualDebt,true);
+    assert.equal(source.f0Native3dSourcePreflight.perspectiveCameraAuthoredInScene,true);
+    assert.match(runtime,/cam\.orthographic = false/);
+    assert.match(runtime,/source3d = Camera\.main != null/);
+    assert.match(runtime,/player\.GetComponent<MeshFilter>\(\)/);
+    assert.match(build,/nativeCamera\.orthographic=false/);
+    assert.doesNotMatch(runtime,/domain=character status=PASS/);
+
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
     assert.equal(source.releaseOrDeploymentAuthority,false);
@@ -114,6 +125,30 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     for(const dir of ['Art','Prefabs','Materials','Animations']){
       assert.equal(fs.existsSync(path.join('unity-games/test-survival/Assets',dir,'unity-web-floor-domain.json')),true);
     }
+  }finally{
+    process.chdir(old);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('Unity Web floor rejects explicit 2D or 2.5D source design before creating any game files',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-3d-only-'));
+  const old=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design.json');
+    const playbooks=writeVerifiedPlaybooks(root);
+    const content={identity:'Legacy isometric RPG',platformProfiles:{UNITY:{platform:'UNITY'}},
+      spatialLayout:{dimension:'2.5D'}};
+    const output='unity-games/legacy-rpg';
+    fs.writeFileSync(baseline,JSON.stringify({content}));
+    const command=['--game-id=legacy-rpg','--baseline='+baseline,'--playbooks='+playbooks,'--output='+output];
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...command],{stdio:'pipe'}),/Command failed/);
+    assert.equal(fs.existsSync(output),false);
+    content.spatialLayout={dimension:'3D',proceduralWorld:{dimension:'2D',approvedDesign:false}};
+    fs.writeFileSync(baseline,JSON.stringify({content}));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,...command],{stdio:'pipe'}),/Command failed/);
+    assert.equal(fs.existsSync(output),false);
   }finally{
     process.chdir(old);
     fs.rmSync(root,{recursive:true,force:true});
