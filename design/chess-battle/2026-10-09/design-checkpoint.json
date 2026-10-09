@@ -27,25 +27,33 @@
       "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이는 체스 배틀의 실제 플레이 공간인 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다.",
       "playerFantasy": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이는 체스 배틀의 실제 플레이 공간인 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다.",
       "coreFun": "Read the board and enemy threat information.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 이는 체스 배틀의 실제 플레이 공간인 PUZZLE 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성된다."
+    },
+    "local_authoring_parts::e67371b0db2866b2de476cb0aef1cbb76095bd1969414384a480742bd1b0c8d3:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the board and enemy threat information.",
+        "SELECT: Commit a move or ability that changes control of key spaces.",
+        "OUTPUT: Status change in the world state due to tactical exchange.",
+        "ACTION: Resolve the tactical exchange and use the new board state to plan the next decisive turn."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 286119,
-      "lastMs": 51134,
+      "totalMs": 329537,
+      "lastMs": 43418,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:32:55.110Z"
+      "updatedAt": "2026-10-09T08:33:38.532Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:28:08.896Z",
-  "updatedAt": "2026-10-09T08:32:55.112Z",
+  "updatedAt": "2026-10-09T08:33:38.532Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2174,7 +2182,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:32:55.112Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:33:38.532Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
