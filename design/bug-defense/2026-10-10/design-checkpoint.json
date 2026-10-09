@@ -118,25 +118,39 @@
       "name": "Defender Placement System",
       "purpose": "Player's choice to configure defenders based on threat pattern and resource availability",
       "playerChoice": "Adjust defender placement to maximize survival likelihood while managing resource allocation efficiently"
+    },
+    "local_authoring_parts::7b4be175cbe65f923ce339fe89b063e640db4d842ff801e378c35cadc2562a55:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "defender_configuration",
+        "resource_cost"
+      ],
+      "stateOutputs": [
+        "next_defense_plan"
+      ],
+      "name": "Resource Allocation System",
+      "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
+      "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 227030,
-      "lastMs": 35264,
+      "totalMs": 261796,
+      "lastMs": 34766,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:53:30.979Z"
+      "updatedAt": "2026-10-09T17:54:05.747Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T17:53:30.979Z",
+  "updatedAt": "2026-10-09T17:54:05.747Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1809,7 +1823,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:53:30.979Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:54:05.747Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
