@@ -457,25 +457,42 @@
         "PLAYER_ACTION"
       ],
       "fromSystem": "SYSTEM_INTERCONNECTION_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC"
+    },
+    "local_authoring_parts::b24eb900f0f33de19d09263882cbcc19fed9a075d5904b91acf257165bb547db:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_INTERCONNECTION_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC",
+      "trigger": "BOARD_STATE_CHANGE_AND_PLAYER_ACTION",
+      "stateChange": "WORLD_STATE_CHANGE_AND_GAME_PROGRESS"
+    },
+    "local_authoring_parts::19f5aa898537745868ca1ee946d1c348fe7b75727f8527134a88e363dfc73dc4:systemInterconnections:0": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toId": "WORLD_STATE_CHANGE",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "fromSystem": "SYSTEM_INTERCONNECTION_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC",
+      "toSystem": "SYSTEM_INTERCONNECTION_0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABC",
+      "trigger": "BOARD_STATE_CHANGE_AND_PLAYER_ACTION",
+      "stateChange": "WORLD_STATE_CHANGE_AND_GAME_PROGRESS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 875754,
-      "lastMs": 108715,
+      "totalMs": 978188,
+      "lastMs": 102434,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:49:20.437Z"
+      "updatedAt": "2026-10-09T14:51:02.872Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:34:44.626Z",
-  "updatedAt": "2026-10-09T14:49:20.437Z",
+  "updatedAt": "2026-10-09T14:51:02.873Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2210,7 +2227,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:49:20.437Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:51:02.873Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
