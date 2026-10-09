@@ -633,25 +633,40 @@
       "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
       "purpose": "To initiate exploration of a limited area and uncover an object, event, or social interaction.",
       "playerChoice": "The player chooses to engage with the environment or pursue specific goals within the confined space."
+    },
+    "local_authoring_parts::e37f9161cbf315f0e0452bf0df5809f0c4463f546313048896aebf3138f08ec3:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_EXPLODING",
+        "ENVIRONMENT_CHANGED"
+      ],
+      "stateOutputs": [
+        "FIGURE_INTERACTED",
+        "RESOURCE_ACQUIRED"
+      ],
+      "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
+      "purpose": "To enable the player to interact with the figure and acquire resources in a dynamic environment.",
+      "playerChoice": "The player chooses whether to engage with the figure or avoid it based on their current goals and environmental conditions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1888921,
-      "lastMs": 69544,
+      "totalMs": 1957030,
+      "lastMs": 68109,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:14:09.863Z"
+      "updatedAt": "2026-10-09T23:15:17.973Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T23:14:09.863Z",
+  "updatedAt": "2026-10-09T23:15:17.973Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2298,7 +2313,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:14:09.863Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:15:17.973Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
