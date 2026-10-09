@@ -19,25 +19,33 @@
     "local_authoring_parts::608458658352ede8688c08ea29764f492696d6208ae7b83b140809c4d9360cca:identity,playerFantasy": {
       "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다.",
       "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다."
+    },
+    "local_authoring_parts::608458658352ede8688c08ea29764f492696d6208ae7b83b140809c4d9360cca:coreFun": {
+      "coreFun": "Read the board and enemy threat information.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다."
+    },
+    "local_authoring_parts::7b7ecbc75af399a0490eacdef763b7a747bdf705619f8de9522a85010f7e5526:identity,playerFantasy,coreFun": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다.",
+      "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다.",
+      "coreFun": "Read the board and enemy threat information.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이는 단순한 전략 퀘스트가 아니라, 주체가 되어 월드 상태와 다음 선택을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 250233,
-      "lastMs": 24747,
+      "totalMs": 280966,
+      "lastMs": 30733,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:27:33.782Z"
+      "updatedAt": "2026-10-09T11:28:04.519Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:23:23.526Z",
-  "updatedAt": "2026-10-09T11:27:33.785Z",
+  "updatedAt": "2026-10-09T11:28:04.521Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2166,7 +2174,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:27:33.784Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:28:04.521Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
