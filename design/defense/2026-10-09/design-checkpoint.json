@@ -1512,25 +1512,35 @@
       "toSystem": "CORE_LOOP_DESIGN_CORE_LOOP_ADAPTATION",
       "trigger": "DEFENSE_COVERAGE_CHANGE AND RESOURCE_ACUMULATION_INCREASE AND TACTICAL_FLEXIBILITY_INCREMENT",
       "stateChange": "DEFENSE_COVERAGE_EXPANSION AND RESOURCE_ACCUMULATION_GROWTH AND STRATEGIC_FLEXIBILITY_REINFORCEMENT"
+    },
+    "local_authoring_parts::4b4fcbe6303d2f848307212314cef155c8df857e516c0bd48df24ad2beff77db:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_0_BASELINE_V1_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZRSTUVWXYZABCD_EF0123456789ABCDFGHIJKL_MNO_PQRS_TUV_WXYZ_1234567890_1234567890_1234567890_12"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 92,
-      "successes": 89,
+      "calls": 93,
+      "successes": 90,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6859883,
-      "lastMs": 91617,
+      "totalMs": 6961521,
+      "lastMs": 101638,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:39:18.368Z"
+      "updatedAt": "2026-10-09T02:41:00.019Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T02:39:18.379Z",
+  "updatedAt": "2026-10-09T02:41:00.020Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3870,10 +3880,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:39:18.372Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:41:00.019Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
