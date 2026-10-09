@@ -1280,25 +1280,34 @@
       "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
       "trigger": "worldState→targetGoal",
       "stateChange": "{\"from\": \"newWorldState\", \"to\": \"nextTargetGoal\"}"
+    },
+    "local_authoring_parts::7f93f9450dd1573219d2943a9217ed3408d9ded6517911f0c341dc2c7ce7030b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "worldState",
+      "toId": "targetGoal",
+      "stateKeys": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "fromSystem": "OPEN_WORLD_ADAPTATION_SYSTEM_A_B_C_D_E_L_V_E_DELVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 75,
-      "successes": 75,
+      "calls": 76,
+      "successes": 76,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2997630,
-      "lastMs": 15334,
+      "totalMs": 3020661,
+      "lastMs": 23031,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:51:54.074Z"
+      "updatedAt": "2026-10-09T02:52:17.108Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:48:01.443Z",
-  "updatedAt": "2026-10-09T02:51:54.076Z",
+  "updatedAt": "2026-10-09T02:52:17.108Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3502,7 +3511,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:51:54.076Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:52:17.108Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
