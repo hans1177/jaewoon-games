@@ -327,25 +327,274 @@
           "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
         }
       ]
+    },
+    "local_authoring_parts::47043bd8b99de9ea664898d2c62cf8a4eb9f8c6e1d48d53a2d25e47c15ab3851:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::39aa2df1d89796bbce6941599c9dd7dc4e406c2f3fb0bb32be590fbe41f86bee:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Input → Defender configuration change → Resource cost → Survival outcome → Next defense plan",
+        "Discovery → Experimentation → Refinement → Evolving strategy",
+        "Adaptive placement → Experience-based planning → Dynamic resource allocation"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Defender Placement System",
+          "purpose": "Player's choice to configure defenders based on threat pattern and resource availability",
+          "playerChoice": "Adjust defender placement to maximize survival likelihood while managing resource allocation efficiently"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Resource Allocation System",
+          "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
+          "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Experience-Based Planning System",
+          "purpose": "Experience gain tracking and survival outcome inference",
+          "playerChoice": "Plan for adaptive deployment based on past experiences"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Player's desire for survival vs. need to allocate resources",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Enables dynamic resource allocation based on incoming threats",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "Read the incoming insect wave and its threat pattern.",
+        "a": {
+          "system": "defender placement",
+          "material": "resource allocation",
+          "materialDomain": "cost/efficiency/risk",
+          "stateChange": "defender configuration change"
+        },
+        "b": {
+          "system": "survival strategy",
+          "material": "experience gain",
+          "materialDomain": "reward/preparation",
+          "stateChange": "next defense decision"
+        },
+        "abCausality": "defender configuration → resource cost → survival outcome → next defense plan",
+        "abEvolution": {
+          "aChangesB": "defender config change affects next defense plan",
+          "bChangesA": "survival strategy changes defender configuration",
+          "lateGameChange": "new defense plan overrides previous one"
+        },
+        "materialFusion": {
+          "contrast": "defender placement vs. experience gain",
+          "causalBridge": "resource cost as a mediator between configuration and survival outcome",
+          "removalConsequence": "original game mechanic is preserved, but new causal bridge replaces old one"
+        },
+        "storyCausalChain": {
+          "cause": "incoming wave threat",
+          "characterConflict": "player's desire for survival vs. need to allocate resources",
+          "playerChoice": "configure defenders or reallocate resources",
+          "worldChange": "defender configuration alters risk/reward landscape",
+          "nextEvent": "new defense plan emerges"
+        },
+        "cThemes": [
+          {
+            "name": "adaptive defense",
+            "kind": "MATERIAL",
+            "gameplayEffect": "defender configuration dynamically adjusts based on incoming threats"
+          },
+          {
+            "name": "experience-based planning",
+            "kind": "MATERIAL",
+            "gameplayEffect": "survival outcomes inform future defensive strategies"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "adaptive defense",
+            "gameplayEffect": "dynamic resource allocation"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "experience-based planning",
+            "gameplayEffect": "strategic foresight"
+          }
+        ],
+        "cGenreInterlock": "adaptive defense → experience-based planning → new defense strategy",
+        "cWorldAndGameplayEffect": "environmental adaptation drives strategic evolution",
+        "delveDiscoveries": [
+          {
+            "clue": "wave pattern analysis",
+            "discovery": "adaptive defender config changes with each wave",
+            "newChoice": "reallocate resources based on previous wave patterns"
+          },
+          {
+            "clue": "experience gain tracking",
+            "discovery": "survival outcome informs next defense decision",
+            "newChoice": "plan for adaptive deployment based on past experiences"
+          },
+          {
+            "clue": "risk assessment",
+            "discovery": "resource cost determines survival likelihood",
+            "newChoice": "optimize resource distribution to maximize survival chance"
+          },
+          {
+            "clue": "multi-wave progression",
+            "discovery": "defender configuration evolves over multiple waves",
+            "newChoice": "develop multi-stage defense plan that adapts to changing threats"
+          }
+        ],
+        "delveGrowthRule": "each subsequent wave introduces a new defensive layer, increasing complexity and depth",
+        "finalGameIdentity": "a dynamic equilibrium between environmental adaptation and strategic foresight"
+      },
+      "playerFantasy": "the player is both the observer and the architect of the defense system. They must navigate the ever-changing threat landscape while balancing resource allocation against survival needs. The game demands constant adaptation, where every choice has immediate consequences and long-term implications.",
+      "coreFun": "input → state change → reward/risks → next selection. The core fun lies in the continuous evolution of the defense strategy, where each wave presents a new challenge requiring innovative placement and resource management. This creates a cycle of discovery, experimentation, and refinement, ultimately leading to an evolving defense mechanism that reflects the player's adaptability and intelligence.",
+      "coreLoop": [
+        "Input → Defender configuration change → Resource cost → Survival outcome → Next defense plan",
+        "Discovery → Experimentation → Refinement → Evolving strategy",
+        "Adaptive placement → Experience-based planning → Dynamic resource allocation"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Defender Placement System",
+          "purpose": "Player's choice to configure defenders based on threat pattern and resource availability",
+          "playerChoice": "Adjust defender placement to maximize survival likelihood while managing resource allocation efficiently"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Resource Allocation System",
+          "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
+          "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Experience-Based Planning System",
+          "purpose": "Experience gain tracking and survival outcome inference",
+          "playerChoice": "Plan for adaptive deployment based on past experiences"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Player's desire for survival vs. need to allocate resources",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Enables dynamic resource allocation based on incoming threats",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 368865,
-      "lastMs": 35473,
+      "totalMs": 399703,
+      "lastMs": 30838,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:55:52.827Z"
+      "updatedAt": "2026-10-09T17:56:23.671Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T17:55:52.832Z",
+  "updatedAt": "2026-10-09T17:56:23.697Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2014,12 +2263,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:55:52.832Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:56:23.683Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/bug-defense/2026-10-10/design-seed.json",
+    "contentDigest": "71e3888cf8fcff4df4f8897a61d7b29e23829f228edfc3581b7898907a1c1b22",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
