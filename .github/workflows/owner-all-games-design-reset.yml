@@ -3,25 +3,46 @@ name: Owner All Games Design Reset
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'game-catalog.json'
       - 'tools/company-game-seed-contract.mjs'
       - '.github/workflows/owner-all-games-design-reset.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-all-games-design-reset.yml'
+      - 'qa/owner-design-reset.test.mjs'
+      - 'tools/company-all-games-design-reset.mjs'
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 concurrency:
-  group: owner-all-games-design-reset
-  cancel-in-progress: true
+  group: owner-all-games-design-reset-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  validate-reset:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify reset regression and shared-context contracts
+        run: |
+          node --check tools/company-all-games-design-reset.mjs
+          node --test qa/owner-design-reset.test.mjs qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
+
   reset-to-design:
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !endsWith(github.event.head_commit.message, '[owner-reset-trigger-scope-only]'))
+    permissions:
+      contents: write
+      actions: write
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -29,8 +50,11 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - name: Validate reset synchronizer
-        run: node --check tools/company-all-games-design-reset.mjs
+      - name: Validate reset synchronizer and canonical QA
+        run: |
+          node --check tools/company-all-games-design-reset.mjs
+          node --test qa/owner-design-reset.test.mjs qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
       - name: Persist canonical DESIGN_ONLY seed state
         shell: bash
         run: |
@@ -49,7 +73,9 @@ jobs:
             git fetch --depth=1 origin \
               "+refs/heads/main:refs/remotes/origin/main" \
               "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
-            git checkout -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            # A disposable CI main checkout may have Git LFS Unity files marked modified.
+            # All required script sources were copied to /tmp above; discard only checkout-local edits.
+            git checkout -f -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git show origin/main:game-catalog.json > game-catalog.json
             node /tmp/company-all-games-design-reset.mjs | tee /tmp/design-reset-state.txt
             git add -- game-seed-state.json
