@@ -39,7 +39,7 @@ test('검증된 설계 요약은 홈페이지 전용으로 표시하고 원본 �
 test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하고 옛 게임 주소는 유지한다',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const fetched=[];
-  let previewMode=false,invalid3d=false,missingWasm=false;
+  let previewMode=false,invalid3d=false,invalidVisual=false,missingWasm=false;
   const group={loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']};
   const evidence=()=>({
     engine:'UNITY_WEB',gameId:'demo',pass:!previewMode,playableBrowserTest:true,
@@ -48,7 +48,7 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
     spatialGameplay:{pass:!invalid3d,requiredDimension:'3D',depthPass:true,perspectiveCamera:true,
       observedMeshCount:3,observedTriangles:500,worldMeshes3d:2,worldDepthCm:70,
       gameplayActors3d:1,spriteGameplayActors:0},
-    visualQa:{nativeUnityMesh:{pass:!invalid3d}}
+    visualQa:{pass:!invalidVisual,nativeUnityMesh:{pass:!invalid3d}}
   });
   const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
     document:{readyState:'loading',addEventListener(){}},
@@ -92,6 +92,10 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
   const blocked=await engine.bindAvailableUnityWebSurfaces(catalog);
   assert.equal(blocked.games[0].unityWebAvailable,false,'2D and missing native mesh cannot count as an owner test');
   invalid3d=false;
+  invalidVisual=true;
+  const brokenScreen=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(brokenScreen.games[0].unityWebAvailable,false,'real browser visual QA failure blocks owner test link');
+  invalidVisual=false;
   missingWasm=true;
   const noBundle=await engine.bindAvailableUnityWebSurfaces(catalog);
   assert.equal(noBundle.games[0].unityWebAvailable,false,'missing actual WebGL runtime assets blocks the test link');
