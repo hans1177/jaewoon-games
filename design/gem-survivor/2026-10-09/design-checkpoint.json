@@ -427,25 +427,40 @@
     },
     "local_authoring_parts::5cf311b32a3786b31cd8cbbc90c6c2a8656abe7e9ffca9caf661ab56dd81801f:trigger": {
       "trigger": "플레이어가 적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택할 때 발생하는 상태 교환 메커니즘"
+    },
+    "local_authoring_parts::5cf311b32a3786b31cd8cbbc90c6c2a8656abe7e9ffca9caf661ab56dd81801f:stateChange": {
+      "stateChange": "플레이어가 적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택할 때 발생하는 상태 교환 메커니즘"
+    },
+    "local_authoring_parts::349c6f25b1e84696f1d5210dd983f5ef1eed7854f6c9baf64be1d7f8b39fe598:systemInterconnections:0": {
+      "fromId": "SURVIVAL_STATE",
+      "toId": "ACTION_SURVIVAL_ROGUELITE",
+      "stateKeys": [
+        "SURVIVAL_STATE",
+        "ACTION_SURVIVAL_ROGUELITE"
+      ],
+      "fromSystem": "SURVIVAL_STATE",
+      "toSystem": "ACTION_SURVIVAL_ROGUELITE",
+      "trigger": "플레이어가 적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택할 때 발생하는 상태 교환 메커니즘",
+      "stateChange": "플레이어가 적군에 맞서며 실시간 생존 전투 시작 또는 수집/업그레이드 선택, 팀/개인 협력/경쟁 결정 중 하나를 선택할 때 발생하는 상태 교환 메커니즘"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1238387,
-      "lastMs": 64290,
+      "totalMs": 1303803,
+      "lastMs": 65416,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:08:16.721Z"
+      "updatedAt": "2026-10-09T15:09:22.138Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:47:38.208Z",
-  "updatedAt": "2026-10-09T15:08:16.721Z",
+  "updatedAt": "2026-10-09T15:09:22.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2300,7 +2315,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:08:16.721Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:09:22.139Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
