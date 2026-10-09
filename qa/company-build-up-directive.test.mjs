@@ -267,6 +267,7 @@ test('V5 creative C and individually sourced A/B are required for authored build
     mainIdentity:'학생 안전과 학교 시설을 직접 선택하는 학교 만들기 타이쿤',
     a:{system:'건축',material:'로마 신전 구조',materialDomain:'서양 역사·건축',stateChange:'교실과 복도의 연결이 봉인 조건과 학생 동선을 바꾼다.'},
     b:{system:'액션',material:'로마 신화 괴물',materialDomain:'서양 신화',stateChange:'괴물 대응 결과가 시설 접근과 학교의 다음 건설 우선순위를 바꾼다.'},
+    abCausality:'건축한 복도 구조가 괴물 대응의 위험과 경로를 바꾸고 괴물 사건의 결과가 다음 교실 배치 선택과 학생 안전 상태를 되돌려 바꾼다.',
     cThemes:[{name:'철학',kind:'MATERIAL',gameplayEffect:'학생의 증언과 선택 책임이 사건의 원인 판단을 바꾼다.'},{name:'엽기',kind:'MATERIAL',gameplayEffect:'오해가 생긴 시설이 단서와 괴물 출현 조건을 바꾼다.'}],
     cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'단서를 조사해 사건의 원인을 알아내야 다음 구역을 해금한다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'학생의 오해가 단서의 신뢰도와 대응 경로를 변형한다.'}],
     cGenreInterlock:'코믹 오해가 미스터리 단서 판정과 괴물 대응 방법을 실제로 바꾼다.',
