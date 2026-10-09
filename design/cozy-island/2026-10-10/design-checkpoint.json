@@ -107,25 +107,46 @@
         "자동전투",
         "협동 지원"
       ]
+    },
+    "local_authoring_parts::10a3245a0cb0021e1e80553dae48a20450d07c2a5848badee61b2df1569b229f:signatureSystems:0": {
+      "id": "COOP_기본_성장_게임_주제",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "직접 채집",
+        "주민 자동화",
+        "병영 강화",
+        "거점 선택",
+        "자동전투",
+        "협동 지원"
+      ],
+      "stateOutputs": [
+        "생명체",
+        "사회",
+        "협동 왕국 성장 게임",
+        "5개 전략 거점을 점령하는 실제 세계 상태"
+      ],
+      "name": "협동 왕국 성장 게임",
+      "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득하며, 주민은 생산 직업에 고용되어 반복 노동을 자동화하고, 병력은 자원으로 전환하여 전투력을 확장함으로써 5개 거점을 순차적으로 점령하며 확장되는 성장감이 나타남",
+      "playerChoice": "거리 선택 시 무한히 파고드는 발견, 숙련된 선택, 재방문 계층 형성됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 342325,
-      "lastMs": 45902,
+      "totalMs": 391335,
+      "lastMs": 49010,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:00:48.145Z"
+      "updatedAt": "2026-10-09T20:01:37.156Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:55:05.739Z",
-  "updatedAt": "2026-10-09T20:00:48.145Z",
+  "updatedAt": "2026-10-09T20:01:37.156Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1535,7 +1556,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:00:48.145Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:01:37.156Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
