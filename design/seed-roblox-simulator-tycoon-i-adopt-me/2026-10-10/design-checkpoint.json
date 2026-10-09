@@ -28,25 +28,77 @@
         "stateChange": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       },
       "abCausality": "Enemy type adaptation → Resource allocation → Defensive strategy evolution"
+    },
+    "local_authoring_parts::46e5b50197f05c48366352ea252764fd17bbfc97bace36fce766c702df2419d9:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "Enemy type adaptation triggers resource allocation",
+        "bChangesA": "Defensive strategy evolution initiates resource allocation",
+        "lateGameChange": "Final defense choices trigger defensive strategy evolution"
+      },
+      "materialFusion": {
+        "contrast": "Enemy type adaptation ↔ Resource allocation ↔ Defensive strategy evolution",
+        "causalBridge": "Adaptation → Allocation → Strategy Evolution",
+        "removalConsequence": "Removing enemy type adaptation removes resource allocation and defensive strategy evolution"
+      },
+      "storyCausalChain": {
+        "cause": "Player's initial choice of enemy type adaptation",
+        "characterConflict": "Character's desire for strategic advantage vs. risk of resource depletion",
+        "playerChoice": "Player adapts defense to enemy types, allocates resources, and evolves strategy",
+        "worldChange": "World state changes as player implements adaptive strategies",
+        "nextEvent": "New game mechanics emerge from evolved defensive strategies"
+      }
+    },
+    "local_authoring_parts::b3e11ee582c604e54a4bccb3a2a80aa996f06b945d0f1868cb849673b96b34ab:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "a": {
+        "system": "ECONOMICS",
+        "material": "Resource Allocation",
+        "materialDomain": "Economic System",
+        "stateChange": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+      },
+      "b": {
+        "system": "DEFENSE_STRATEGY",
+        "material": "Tactical Adaptation",
+        "materialDomain": "Military Strategy",
+        "stateChange": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      },
+      "abCausality": "Enemy type adaptation → Resource allocation → Defensive strategy evolution",
+      "abEvolution": {
+        "aChangesB": "Enemy type adaptation triggers resource allocation",
+        "bChangesA": "Defensive strategy evolution initiates resource allocation",
+        "lateGameChange": "Final defense choices trigger defensive strategy evolution"
+      },
+      "materialFusion": {
+        "contrast": "Enemy type adaptation ↔ Resource allocation ↔ Defensive strategy evolution",
+        "causalBridge": "Adaptation → Allocation → Strategy Evolution",
+        "removalConsequence": "Removing enemy type adaptation removes resource allocation and defensive strategy evolution"
+      },
+      "storyCausalChain": {
+        "cause": "Player's initial choice of enemy type adaptation",
+        "characterConflict": "Character's desire for strategic advantage vs. risk of resource depletion",
+        "playerChoice": "Player adapts defense to enemy types, allocates resources, and evolves strategy",
+        "worldChange": "World state changes as player implements adaptive strategies",
+        "nextEvent": "New game mechanics emerge from evolved defensive strategies"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 835918,
-      "lastMs": 60641,
+      "totalMs": 899259,
+      "lastMs": 63341,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:07:43.799Z"
+      "updatedAt": "2026-10-09T18:08:47.141Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:53:47.848Z",
-  "updatedAt": "2026-10-09T18:07:43.800Z",
+  "updatedAt": "2026-10-09T18:08:47.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1756,7 +1808,7 @@
     "465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e": true,
     "781fc60926591f2fc5355640421baf6175a705be225803085ac38b733ce72190": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:07:43.799Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:08:47.142Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
