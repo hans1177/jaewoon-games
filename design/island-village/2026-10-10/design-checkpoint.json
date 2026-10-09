@@ -104,25 +104,42 @@
         "INPUT/SELECT/OUTPUT/STATE: PLAYER_SELECT_NEW_FUNCTION -> PLAYER_ASSIGNS_SOCIAL_ROLES -> REWARD_OF_SOCIAL_CONNECTIVITY",
         "INPUT/SELECT/OUTPUT/STATE: PLAYER_ANNOUNCES_NEW_GOAL -> VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION -> REWARD_OF_NEXT_VILLAGE_FUNCTION"
       ]
+    },
+    "local_authoring_parts::6e03ab5025ae58036da8fe154c29e836ff75dcc39f81d3617303fcd5c43618a9:signatureSystems:0": {
+      "id": "RESOURCE_BASED_PLAYER_ROLE_ASSIGNMENT_AND_VILLAGE_GROWTH",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_GATHER_RESOURCES",
+        "PLAYER_SELECT_NEW_FUNCTION",
+        "PLAYER_ANNOUNCES_NEW_GOAL"
+      ],
+      "stateOutputs": [
+        "RESOURCE_ALLOCATED_TO_VILLAGE",
+        "PLAYER_ASSIGNS_SOCIAL_ROLES",
+        "VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION"
+      ],
+      "name": "ECONOMICS_SOCIETY_INTERACTION_UNDER_RESOURCES_PRESSURE",
+      "purpose": "Player chooses to expand village functions based on resource allocation and social roles.",
+      "playerChoice": "PLAYER_CHOOSE_TO_EXPAND_VILLAGE_FUNCTIONS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 223881,
-      "lastMs": 73558,
+      "totalMs": 298145,
+      "lastMs": 74264,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:32:36.250Z"
+      "updatedAt": "2026-10-09T17:33:50.516Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:28:52.266Z",
-  "updatedAt": "2026-10-09T17:32:36.251Z",
+  "updatedAt": "2026-10-09T17:33:50.516Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1723,7 +1740,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:32:36.250Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:33:50.516Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
