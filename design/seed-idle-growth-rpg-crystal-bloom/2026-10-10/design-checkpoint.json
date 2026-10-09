@@ -80,25 +80,53 @@
         "worldChange": "플레이어 선택 -> 상태변화 -> 보상/위험/다음 선택",
         "nextEvent": "새로운 게임 주제와 중심 행동을 기반으로 한 창작 소재"
       }
+    },
+    "local_authoring_parts::f1bdb24297d8793c8684951d471aa2f41ea68ded948ad1e961b620df18aaef5a:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "플레이어 욕망과 두려움",
+          "kind": "MATERIAL",
+          "gameplayEffect": "새 세계 규칙에 충돌하는 플레이어의 욕망과 두려움"
+        },
+        {
+          "name": "진행 및 보상 시스템",
+          "kind": "MATERIAL",
+          "gameplayEffect": "지속적으로 진행 가능한 자원 생성 및 상태 변화 유도"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "IDLE_GROWTH_RPG",
+          "gameplayEffect": "플레이어가 지속적으로 진행 가능한 자원 생성 및 상태 변화를 유도하는 심리적 구조"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "EMERGENT_GENRE",
+          "gameplayEffect": "새로운 게임 주제와 중심 행동을 기반으로 한 창작 소재"
+        }
+      ],
+      "cGenreInterlock": "플레이어의 욕망과 두려움이 새 세계 규칙에 충돌함 -> 새로운 행동·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다 -> 진행 및 보상 시스템이 계속해서 발전하며, 이는 플레이어 선택과 세계 상태 변화를 통해 증명된다.",
+      "cWorldAndGameplayEffect": "플레이어 선택 -> 상태변화 -> 보상/위험/다음 선택의 연결은 인과 관계를 통해 유지되며, 이는 플레이어의 선택과 세계 상태 변화를 통해 증명된다. 각 대축(A/B/c/@)은 주체적인 선택과 결과를 연결하여, 상호작용을 통해 게임의 진전과 발전을 촉진한다. 게임의 모든 요소는 이러한 인과 관계와 함께 동기 부여되고, 이를 바탕으로 한 루프가 반복되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1048009,
-      "lastMs": 125751,
+      "totalMs": 1180800,
+      "lastMs": 132791,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:25:20.635Z"
+      "updatedAt": "2026-10-09T18:27:33.429Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:07:52.598Z",
-  "updatedAt": "2026-10-09T18:25:20.637Z",
+  "updatedAt": "2026-10-09T18:27:33.429Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "fa73b7fccfc66d6333937e0cf9f6b5606644d25cffbebee91d49a0aa02cdfac7": true,
     "757b6ea0caceeb29166c1c903a94f03ba2682147e5cde383f0841458286fa680": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:25:20.637Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:27:33.429Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
