@@ -92,7 +92,20 @@ for(const gameId of gameIds){
   const currentClientSource=fs.readFileSync(clientFile,'utf8');
   const currentNativeBindingVersion=nativeBindingVersion(currentClientSource);
   let applied;
-  if(currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION){
+  if(currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION&&!requestedGameSet.has(gameId)){
+    // Preserve legacy all-game sweep behavior; only the exact reconciliation scope may
+    // refresh a newer game-owned native client's verified config.
+    const requiredConfigSignals=[
+      `MemoryFingerprint = "${learning.verifiedExternalLearningFingerprint||''}"`,
+      `SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)}`,
+      'GameSpecificSemanticMappings = {',
+      'LearningDispositions = {'
+    ];
+    if(requiredConfigSignals.some(signal=>!configSource.includes(signal))){
+      throw new Error('ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT:'+gameId);
+    }
+    applied=Object.freeze({changed:false,changedFiles:Object.freeze([]),serverInspection:'PRESERVED_NEWER_NATIVE_BINDING'});
+  }else if(currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION){
     // Refresh only the managed config and context; do not downgrade game-owned native code.
     const nativePattern=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/;
     const nativeBefore=currentClientSource.match(nativePattern)?.[0]||'';
