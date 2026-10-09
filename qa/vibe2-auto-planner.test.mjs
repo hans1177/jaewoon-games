@@ -1987,6 +1987,8 @@ test('same-game Unity Web repair and Unity asset task stay parallel when respons
 
 test('grandfathered Roblox progress remains independent while existing Unity Web receives 3D floor repair',()=>{
   const root=tempRepo();
+  fs.mkdirSync(path.join(root,'roblox-games','cozy-island','server'),{recursive:true});
+  fs.writeFileSync(path.join(root,'roblox-games','cozy-island','server','Game.server.luau'),'-- current F0 source, not a runtime pass\n');
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     authority:'MACHINE_EXECUTION_CONTRACT',
     machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
