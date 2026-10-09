@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::5be0c38899445b528b8536c92c4c86461c0094da54019d75f78b9ca9c6a624da:identity": {
       "identity": "야생 생존: 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 단순한 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 반복 루프로 구성되어 있으며, 모바일에서도 즉시 이해되는 구조로 설계되었습니다."
+    },
+    "local_authoring_parts::5be0c38899445b528b8536c92c4c86461c0094da54019d75f78b9ca9c6a624da:playerFantasy": {
+      "playerFantasy": "야생 생존: 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 단순한 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 반복 루프로 구성되어 있으며, 모바일에서도 즉시 이해되는 구조로 설계되었습니다."
+    },
+    "local_authoring_parts::28f981878e620bdeeb4cb467bfad99cf472590e498b80a9bc63b9f66145dc86c:identity,playerFantasy": {
+      "identity": "야생 생존: 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 단순한 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 반복 루프로 구성되어 있으며, 모바일에서도 즉시 이해되는 구조로 설계되었습니다.",
+      "playerFantasy": "야생 생존: 실제 야생 환경과 동물 행동, 날씨, 체온, 식수와 부상을 관리하는 오픈월드 생존 게임입니다. 플레이어는 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꿉니다. 이 게임은 단순한 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 반복 루프로 구성되어 있으며, 모바일에서도 즉시 이해되는 구조로 설계되었습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 118759,
-      "lastMs": 118759,
+      "totalMs": 142316,
+      "lastMs": 23557,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:41:53.471Z"
+      "updatedAt": "2026-10-09T15:42:17.029Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:41:53.471Z",
+  "updatedAt": "2026-10-09T15:42:17.031Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1632,7 +1639,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:41:53.471Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:42:17.031Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
