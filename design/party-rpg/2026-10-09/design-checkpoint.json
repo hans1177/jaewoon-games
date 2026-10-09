@@ -73,25 +73,194 @@
       "name": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
       "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
       "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    },
+    "local_authoring_parts::78c683a33bc7d6ad91559f3ae6214ea309d2e9e60a842408fec964f8f527ab74:signatureSystems:3": {
+      "id": "CORE-04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "END_NEXT_STAGE_STATE"
+      ],
+      "stateOutputs": [
+        "DELVE_CONTENT_EXPANSION_STATE"
+      ],
+      "name": "Discover and Expand the Game's Depth",
+      "purpose": "Player discovers new content, expands gameplay depth, and explores hidden layers of the game through interaction with the evolving world rules.",
+      "playerChoice": "Explore new regions, uncover secrets, or discover alternative paths that reflect the changing world rules and player progression."
+    },
+    "local_authoring_parts::78c683a33bc7d6ad91559f3ae6214ea309d2e9e60a842408fec964f8f527ab74:signatureSystems:4": {
+      "id": "CORE-05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "END_NEXT_STAGE_STATE"
+      ],
+      "stateOutputs": [
+        "DELVE_CONTENT_EXPANSION_STATE"
+      ],
+      "name": "Discover and Expand the Game's Depth",
+      "purpose": "플레이어가 기존 상태에서 새로운 인과법칙과 세계 규칙에 따라 콘텐츠의 깊이와 다양성을 확보하는 주체입니다.",
+      "playerChoice": "기존 상태에서 새로운 블라인드 패턴이나 이벤트를 발견하여 게임의 다양한 콘텐츠를 확장합니다."
+    },
+    "local_authoring_parts::90d95095932b6fdf034fda4ef5d4fbf4a345935f889a3e7343ca84940d25d116:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "END_LEVEL_STATE"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Plays as the central action, initiating gameplay by setting up a structured challenge that players must solve through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (This is the core action: the player's primary choice in the game.)','input/selection -> state change -> reward/pain/next selection: INPUT/SELECT/OUTPUT/STATE'}"
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "END_LEVEL_STATE"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "END_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "START_NEXT_STAGE_STATE"
+          ],
+          "name": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "END_NEXT_STAGE_STATE"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT_EXPANSION_STATE"
+          ],
+          "name": "Discover and Expand the Game's Depth",
+          "purpose": "Player discovers new content, expands gameplay depth, and explores hidden layers of the game through interaction with the evolving world rules.",
+          "playerChoice": "Explore new regions, uncover secrets, or discover alternative paths that reflect the changing world rules and player progression."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "END_NEXT_STAGE_STATE"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT_EXPANSION_STATE"
+          ],
+          "name": "Discover and Expand the Game's Depth",
+          "purpose": "플레이어가 기존 상태에서 새로운 인과법칙과 세계 규칙에 따라 콘텐츠의 깊이와 다양성을 확보하는 주체입니다.",
+          "playerChoice": "기존 상태에서 새로운 블라인드 패턴이나 이벤트를 발견하여 게임의 다양한 콘텐츠를 확장합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::36ade8c582af5c88b9c73fbb673bcae7a6e47d39566665b107afbe26b85b6978:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어가 시작하는 게임 공간에서 단순한 퀴즈나 관문을 승계하지 않고, 진입 시 명확한 목표, 제한된 이동, 장애물 또는 복잡한 블라인드 패턴을 통해 해결해야 하는 PUZZLE 게임이다.",
+        "매번 새로운 상태로 전환하며 선택의 결과가 다음 월드 상태에 영향을 미친다.",
+        "성장은 행동의 재사용, 경로 개선, 조합 발전 등으로 이루어지며, 콘텐츠의 다양성을 확보할 수 있다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE-01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "END_LEVEL_STATE"
+          ],
+          "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "purpose": "Plays as the central action, initiating gameplay by setting up a structured challenge that players must solve through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. (This is the core action: the player's primary choice in the game.)','input/selection -> state change -> reward/pain/next selection: INPUT/SELECT/OUTPUT/STATE'}"
+        },
+        {
+          "id": "CORE-02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "END_LEVEL_STATE"
+          ],
+          "name": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "CORE-03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "END_LEVEL_STATE"
+          ],
+          "stateOutputs": [
+            "START_NEXT_STAGE_STATE"
+          ],
+          "name": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "CORE-04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "END_NEXT_STAGE_STATE"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT_EXPANSION_STATE"
+          ],
+          "name": "Discover and Expand the Game's Depth",
+          "purpose": "Player discovers new content, expands gameplay depth, and explores hidden layers of the game through interaction with the evolving world rules.",
+          "playerChoice": "Explore new regions, uncover secrets, or discover alternative paths that reflect the changing world rules and player progression."
+        },
+        {
+          "id": "CORE-05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "END_NEXT_STAGE_STATE"
+          ],
+          "stateOutputs": [
+            "DELVE_CONTENT_EXPANSION_STATE"
+          ],
+          "name": "Discover and Expand the Game's Depth",
+          "purpose": "플레이어가 기존 상태에서 새로운 인과법칙과 세계 규칙에 따라 콘텐츠의 깊이와 다양성을 확보하는 주체입니다.",
+          "playerChoice": "기존 상태에서 새로운 블라인드 패턴이나 이벤트를 발견하여 게임의 다양한 콘텐츠를 확장합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 402393,
-      "lastMs": 32414,
+      "totalMs": 475376,
+      "lastMs": 39767,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:55:45.482Z"
+      "updatedAt": "2026-10-09T08:56:58.468Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:49:03.059Z",
-  "updatedAt": "2026-10-09T08:55:45.482Z",
+  "updatedAt": "2026-10-09T08:56:58.471Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2128,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:55:45.482Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:56:58.470Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
