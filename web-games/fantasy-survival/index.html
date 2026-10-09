@@ -17,6 +17,12 @@
 <div id="startScreen" class="startScreen" role="dialog" aria-modal="true" aria-label="마력숲 시작 화면"><div class="startCard"><h1>마력숲 생존기</h1><p>숲을 탐험하고, 만들고, 살아남아 봐.</p><div id="startMain"><button id="startPlay" class="startAction">플레이</button><button id="startOptions" class="startAction secondary">옵션</button></div><div id="startModes" hidden><p>플레이할 모드를 선택해.</p><button id="startNormal" class="startAction">일반 모드<br><small>기존 마력숲 · 기존 저장 이어하기</small></button><button id="startCreative" class="startAction">크리에이티브 모드<br><small>재료 무제한 · 몬스터 소환과 대결</small></button><button id="startBack" class="startAction secondary">뒤로</button></div></div></div>
 <!-- 메인: 몬스터 스폰 블록 -->
 <div id="creativePanel" class="creativePanel" role="dialog" aria-modal="true" aria-label="몬스터 소환 설정" hidden><div class="creativeBox"><h3>몬스터 스폰 블록</h3><p>블록에서 몬스터를 소환해. 소환한 몬스터 두 마리를 각각 두 번 누르면 서로 싸워.</p><label for="creativeType">소환할 몬스터</label><select id="creativeType"></select><label for="creativeCount">소환 마릿수 (1~30)</label><input id="creativeCount" type="number" min="1" max="30" step="1" inputmode="numeric" value="1"><div class="creativeButtons"><button id="creativeSpawn">소환</button><button id="creativeRemove">블록 회수</button><button id="creativeClose">닫기</button></div></div></div>
+<!-- 크리에이티브: 소환한 몬스터 꾹 누르기 설정 -->
+<div id="creativeAggroPanel" class="creativePanel" role="dialog" aria-modal="true" aria-label="소환 몬스터 공격 설정" hidden>
+ <div class="creativeBox"><h3 id="creativeAggroName">몬스터 공격 설정</h3>
+ <p>이 몬스터가 나를 공격하게 할지 정해. 기본은 공격 안 함이야.</p>
+ <div class="creativeButtons"><button id="creativePassive">공격 안 함</button><button id="creativeAttackPlayer">나를 공격</button></div>
+ <div class="creativeButtons"><button id="creativeAggroClose">닫기</button></div></div></div>
 <div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="/">홈</a></div>
 <div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><button id="autoGather" data-mechanic-id="auto-gather-toggle" aria-pressed="false">자동 OFF</button></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
 <div class="actions"><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><div class="utilityStack"><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button></div><div class="combatStack"><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button></div></div>
@@ -492,22 +498,55 @@ function spawnCreativeMonsters(){
  const block=state.creativeSpawners.find(b=>b.id===state.creativeSpawnerId),type=creatures[document.getElementById('creativeType').value],count=Number(document.getElementById('creativeCount').value);
  if(!block||!type||!Number.isInteger(count)||count<1||count>30){showNotice('몬스터와 마릿수 1~30을 확인해');return}
  const live=state.enemies.filter(e=>e.creativeOwned&&e.hp>0).length;if(live+count>150){showNotice('소환 몬스터는 동시에 최대 150마리까지 가능해');return}
- for(let i=0;i<count;i++){const a=i*Math.PI*(3-Math.sqrt(5)),r=90+42*Math.sqrt(i),x=clamp(block.x+Math.cos(a)*r,45,WORLD.w-45),y=clamp(block.y+Math.sin(a)*r,45,WORLD.h-45);const e=spawnAt(type,x,y,null);e.area='surface';e.creativeOwned=true;e.noRespawn=true;e.hostile=false;e.creativeOpponentId=null;state.enemies.push(e)}
+ for(let i=0;i<count;i++){const a=i*Math.PI*(3-Math.sqrt(5)),r=90+42*Math.sqrt(i),x=clamp(block.x+Math.cos(a)*r,45,WORLD.w-45),y=clamp(block.y+Math.sin(a)*r,45,WORLD.h-45);const e=spawnAt(type,x,y,null);e.area='surface';e.creativeOwned=true;e.noRespawn=true;e.hostile=false;e.creativeAttackPlayer=false;e.creativeOpponentId=null;state.enemies.push(e)}
  state.dirty=true;document.getElementById('creativePanel').hidden=true;showNotice(type.name+' '+count+'마리 소환 · 두 마리를 각각 두 번 눌러 대결');saveGame(false)
 }
+/* 크리에이티브: 무해 몬스터 전투 금지 및 공격 명령 */
 function selectCreativeMonster(e){
  if(!e.creativeOwned||e.hp<=0)return;
+ if(e.type.mood==='harmless'){state.creativeSelectedId=null;showNotice('무해한 몬스터는 아무도 공격하지 않아');return}
  const first=state.enemies.find(m=>m.netId===state.creativeSelectedId&&m.creativeOwned&&m.hp>0);
  if(!first||first===e){state.creativeSelectedId=e.netId;showNotice(e.type.name+' 선택 · 상대 몬스터를 두 번 눌러');return}
- first.creativeOpponentId=e.netId;e.creativeOpponentId=first.netId;first.enemyTarget=e;e.enemyTarget=first;first.nextAttackAt=0;e.nextAttackAt=0;first.hostile=false;e.hostile=false;state.creativeSelectedId=null;state.dirty=true;showNotice(first.type.name+' 대 '+e.type.name+' · 대결 시작');saveGame(false)
+ if(first.type.mood==='harmless'){state.creativeSelectedId=null;showNotice('무해한 몬스터는 몬스터끼리 싸우지 않아');return}
+ first.creativeOpponentId=e.netId;e.creativeOpponentId=first.netId;
+ first.enemyTarget=e;e.enemyTarget=first;first.nextAttackAt=0;e.nextAttackAt=0;
+ first.creativeAttackPlayer=false;e.creativeAttackPlayer=false;first.hostile=false;e.hostile=false;
+ state.creativeSelectedId=null;state.dirty=true;showNotice(first.type.name+' 대 '+e.type.name+' · 대결 시작');saveGame(false)
+}
+function openCreativeMonsterAggro(e){
+ if(!isCreative()||!e?.creativeOwned||e.hp<=0)return;
+ if(e.type.mood==='harmless'){showNotice('무해한 몬스터는 공격 설정을 변경할 수 없어');return}
+ state.creativeAggroTargetId=e.netId;
+ document.getElementById('creativeAggroName').textContent=e.type.name+' · 공격 설정';
+ document.getElementById('creativePassive').textContent=e.creativeAttackPlayer?'공격 안 함':'공격 안 함 ✓';
+ document.getElementById('creativeAttackPlayer').textContent=e.creativeAttackPlayer?'나를 공격 ✓':'나를 공격';
+ document.getElementById('creativeAggroPanel').hidden=false
+}
+function setCreativeMonsterAggro(shouldAttack){
+ const e=state.enemies.find(m=>m.creativeOwned&&m.hp>0&&m.netId===state.creativeAggroTargetId);
+ if(!e||e.type.mood==='harmless'){document.getElementById('creativeAggroPanel').hidden=true;return}
+ e.creativeAttackPlayer=!!shouldAttack;e.hostile=e.creativeAttackPlayer;e.creativeOpponentId=null;e.enemyTarget=null;state.creativeSelectedId=null;
+ state.creativeAggroTargetId=null;state.dirty=true;document.getElementById('creativeAggroPanel').hidden=true;
+ showNotice(e.type.name+(shouldAttack?' · 플레이어를 공격함':' · 공격하지 않음'));saveGame(false)
 }
 function updateCreativeMonster(e,dt,now){
- const target=state.enemies.find(m=>m.netId===e.creativeOpponentId&&m.hp>0&&m.area===e.area);
- if(!target){e.enemyTarget=null;e.creativeOpponentId=null;e.moving=false;return}
- e.enemyTarget=target;if(now<(e.stunnedUntil||0)){e.moving=false;return}
- const dx=target.x-e.x,dy=target.y-e.y,d=Math.hypot(dx,dy)||1,range=(e.type.r||20)+(target.type.r||20)+12;e.faceX=dx/d;e.faceY=dy/d;
+ if(e.type.mood==='harmless'){e.creativeAttackPlayer=false;e.creativeOpponentId=null;e.enemyTarget=null;e.hostile=false;e.moving=false;return}
+ const opponent=state.enemies.find(m=>m.creativeOwned&&m.netId===e.creativeOpponentId&&m.hp>0&&m.area===e.area&&m.type.mood!=='harmless');
+ const target=opponent||(e.creativeAttackPlayer&&e.area===state.area?state.player:null);
+ if(!target){e.enemyTarget=null;e.creativeOpponentId=null;e.hostile=false;e.moving=false;return}
+ e.hostile=!opponent&&!!e.creativeAttackPlayer;
+ e.enemyTarget=opponent||null;if(now<(e.stunnedUntil||0)){e.moving=false;return}
+ const dx=target.x-e.x,dy=target.y-e.y,d=Math.hypot(dx,dy)||1;
+ const range=(e.type.r||20)+(opponent?(target.type.r||20):25)+12;
+ if(!opponent&&d>enemyDetectRange(e,430)){e.moving=false;return}
+ e.faceX=dx/d;e.faceY=dy/d;
  if(d>range){const speed=Math.min(270,Number(e.type.speed)||55),nx=clamp(e.x+dx/d*speed*dt,35,WORLD.w-35),ny=clamp(e.y+dy/d*speed*dt,35,WORLD.h-35);if(!blockedByPlayerBuilding(nx,e.y,e.type.r||20))e.x=nx;if(!blockedByPlayerBuilding(e.x,ny,e.type.r||20))e.y=ny;e.moving=true}
- else{e.moving=false;const cooldown=Math.max(500,Number(e.type.attackCooldown)||1000);if(now>=(e.nextAttackAt||0)){e.nextAttackAt=now+cooldown;markEnemyAttack(e,now);damageMonster(target,Math.max(0,Number(e.type.dmg)||0),e,now);state.dirty=true}}
+ else{e.moving=false;const cooldown=Math.max(500,Number(e.type.attackCooldown)||1000);if(now>=(e.nextAttackAt||0)){
+  e.nextAttackAt=now+cooldown;markEnemyAttack(e,now);
+  if(opponent)damageMonster(opponent,Math.max(0,Number(e.type.dmg)||0),e,now);
+  else enemyDamageTarget(e,Math.max(0,Number(e.type.dmg)||0),false);
+  state.dirty=true
+ }}
 }
 const RAID_DIFFICULTY_SCALE=1;
 const RAID_WAVES=[
@@ -4569,7 +4608,7 @@ function updateCameraPresentation(p,dt,now,camW,camH){
 }
 function update(dt,now){
   const p=state.player;
-  if(isCreative()){p.hp=p.maxHp;p.hunger=100;p.downedUntil=0;}
+  if(isCreative()){if(!state.enemies.some(e=>e.creativeOwned&&e.creativeAttackPlayer&&e.hp>0&&e.area===state.area))p.hp=p.maxHp;p.hunger=100;p.downedUntil=0;}
   let mx=(state.keys.has('KeyD')||state.keys.has('ArrowRight')?1:0)-(state.keys.has('KeyA')||state.keys.has('ArrowLeft')?1:0)+state.stick.x,
       my=(state.keys.has('KeyS')||state.keys.has('ArrowDown')?1:0)-(state.keys.has('KeyW')||state.keys.has('ArrowUp')?1:0)+state.stick.y,
       m=Math.hypot(mx,my);
@@ -5865,7 +5904,7 @@ function saveGame(manual=true){
  if(!gameStarted)return;
  try{
    const p=state.player;
-   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null,attackPlayer:!!e.creativeAttackPlayer}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -5916,7 +5955,7 @@ function loadGame(){
   if(isCreative()){
    state.creativeSpawners=Array.isArray(s.creativeSpawners)?s.creativeSpawners.filter(b=>b&&typeof b.id==='string'&&Number.isFinite(b.x)&&Number.isFinite(b.y)).slice(0,150):[];
    const saved=Array.isArray(s.creativeMonsters)?s.creativeMonsters.slice(0,150):[],idMap=new Map(),revived=[];
-   for(const v of saved){if(!v||!creatures[v.id]||!Number.isFinite(v.x)||!Number.isFinite(v.y))continue;const e=spawnAt(creatures[v.id],clamp(v.x,45,WORLD.w-45),clamp(v.y,45,WORLD.h-45),null);e.area='surface';e.creativeOwned=true;e.noRespawn=true;e.hostile=false;e.hp=Math.max(1,Math.min(e.maxHp,Number(v.hp)||e.maxHp));idMap.set(v.netId,e.netId);revived.push({e,opponentId:v.opponentId});state.enemies.push(e)}
+   for(const v of saved){if(!v||!creatures[v.id]||!Number.isFinite(v.x)||!Number.isFinite(v.y))continue;const e=spawnAt(creatures[v.id],clamp(v.x,45,WORLD.w-45),clamp(v.y,45,WORLD.h-45),null);e.area='surface';e.creativeOwned=true;e.noRespawn=true;e.creativeAttackPlayer=e.type.mood!=='harmless'&&v.attackPlayer===true;e.hostile=e.creativeAttackPlayer;e.hp=Math.max(1,Math.min(e.maxHp,Number(v.hp)||e.maxHp));idMap.set(v.netId,e.netId);revived.push({e,opponentId:v.opponentId});state.enemies.push(e)}
    for(const {e,opponentId} of revived)e.creativeOpponentId=idMap.get(opponentId)||null;
   }
   checkAchievementProgress(false);if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
@@ -5944,13 +5983,32 @@ function startCommunicationRepairHold(e,wx,wy){
  const pointerId=e.pointerId,startedAt=Date.now(),timer=setTimeout(()=>{if(!communicationRepairHold||communicationRepairHold.pointerId!==pointerId)return;communicationRepairHold=null;repairCommunicationDevice()},5000);
  communicationRepairHold={pointerId,startedAt,timer};return true
 }
-canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}handleWorldTap(e)});
+let creativeMonsterPress=null;
+canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
+ if(isCreative()&&!state.blueprint&&!state.creativePlacing){
+  const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;
+  let owned=null,best=Infinity;
+  for(const m of state.enemies)if(m.creativeOwned&&m.hp>0&&m.area===state.area){
+   const d=dist(wx,wy,m.x,m.y);if(d<Math.max(50,m.type.r+18)&&d<best){owned=m;best=d}
+  }
+  if(owned){
+   const hold={pointerId:e.pointerId,x:e.clientX,y:e.clientY,fired:false,timer:null};
+   hold.timer=setTimeout(()=>{if(creativeMonsterPress!==hold)return;hold.fired=true;openCreativeMonsterAggro(owned)},700);
+   creativeMonsterPress=hold;return
+  }
+ }
+ if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}handleWorldTap(e)});
 canvas.addEventListener('pointerup',e=>{
+ if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){
+  const hold=creativeMonsterPress;clearTimeout(hold.timer);creativeMonsterPress=null;
+  if(!hold.fired)handleWorldTap(e);return
+ }
  if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId){const hold=clearCompanionSwitchHold();if(hold&&!hold.fired)handleWorldTap(e);return}
  if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(true);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}
 });
-canvas.addEventListener('pointercancel',e=>{if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId)clearCompanionSwitchHold();if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(false);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}});
+canvas.addEventListener('pointercancel',e=>{if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId)clearCompanionSwitchHold();if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(false);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}});
 canvas.addEventListener('pointermove',e=>{
+ if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId&&Math.hypot(e.clientX-creativeMonsterPress.x,e.clientY-creativeMonsterPress.y)>30){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}
  if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId&&Math.hypot(e.clientX-companionSwitchHold.startX,e.clientY-companionSwitchHold.startY)>35)clearCompanionSwitchHold();
  if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
  if(!state.blueprint)return;moveBlueprint(e.clientX+state.camera.x,e.clientY+state.camera.y)
@@ -5964,6 +6022,9 @@ document.getElementById('startNormal').addEventListener('click',()=>beginGame('n
 document.getElementById('startCreative').addEventListener('click',()=>beginGame('creative'));
 document.getElementById('toTitle').addEventListener('click',()=>{saveGame(false);location.reload()});
 document.getElementById('creativeSpawn').addEventListener('click',spawnCreativeMonsters);
+document.getElementById('creativePassive').addEventListener('click',()=>setCreativeMonsterAggro(false));
+document.getElementById('creativeAttackPlayer').addEventListener('click',()=>setCreativeMonsterAggro(true));
+document.getElementById('creativeAggroClose').addEventListener('click',()=>{state.creativeAggroTargetId=null;document.getElementById('creativeAggroPanel').hidden=true});
 document.getElementById('creativeClose').addEventListener('click',()=>{document.getElementById('creativePanel').hidden=true});
 document.getElementById('creativeRemove').addEventListener('click',()=>{state.creativeSpawners=state.creativeSpawners.filter(b=>b.id!==state.creativeSpawnerId);document.getElementById('creativePanel').hidden=true;state.dirty=true;saveGame(false);showNotice('스폰 블록 회수 완료')});
 document.getElementById('optionsClose').addEventListener('click',()=>document.getElementById('optionsPanel').classList.remove('menuOptions'));
