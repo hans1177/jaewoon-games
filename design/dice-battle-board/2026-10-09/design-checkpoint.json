@@ -34,25 +34,47 @@
         "SELECT: START a board or grid level with clear goal, limited moves, obstacles, or another visible puzzle constraint.",
         "OUTPUT: 선택 결과가 다음 월드 상태를 바꾸며, 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 장르에 맞게 다양한 가능성을 실제 플레이에 적용할 수 있다."
       ]
+    },
+    "local_authoring_parts::75a76910b222f8b089f845015b12bcf108a9316e43518fd25a7a3c000e2b73f5:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START",
+        "BOARD",
+        "GOAL",
+        "LIMITED_MOVES",
+        "OBSTACLES",
+        "PUZZLE_CONSTRAINT"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "NEXT_BOARD_PATTERN",
+        "NEW_GOAL",
+        "REWARD",
+        "RISK"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "START a board or grid level with clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 317809,
-      "lastMs": 64320,
+      "totalMs": 376700,
+      "lastMs": 58891,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:24:10.512Z"
+      "updatedAt": "2026-10-09T08:25:09.405Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:18:52.663Z",
-  "updatedAt": "2026-10-09T08:24:10.512Z",
+  "updatedAt": "2026-10-09T08:25:09.405Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1984,7 +2006,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:24:10.512Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:25:09.405Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
