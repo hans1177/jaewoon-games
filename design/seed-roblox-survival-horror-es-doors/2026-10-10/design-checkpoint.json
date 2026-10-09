@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 시간의 흐름을 기반으로 새로운 상태 변화를 선택하며, 감정적 반응과 캐릭터 진化进程을 통해 게임의 깊이를 증대시키는 역할을 수행한다.",
       "coreFun": "시간의 흐름을 바탕으로 한 새로운 선택이 가능하다. 이는 감정적 반응과 캐릭터 진화에 영향을 미치며, 플레이어가 이해할 수 있는 욕망과 두려움을 유발하는 PUZZLE 게임의 핵심 재미를 제공한다."
+    },
+    "local_authoring_parts::a1ed11b8b1f1787a34e3e86b4cbdb8b62908be425065390a330db401fbfa271b:coreLoop": {
+      "coreLoop": [
+        "플레이어가 게임 시작 시 맵에 명확한 목표를 설정하고, 제한된 이동 횟수 및 장애물로 구성된 레벨을 선택하여 문제 해결을 위해 타겟을 풀어야 한다.",
+        "타겟을 풀 때는 매칭이나 정교한 패턴 생성, 즉각적인 피드백을 통해 문제를 해결하는 방식으로 플레이어의 선택이 이루어지며, 성공하면 다음 레벨 또는 새로운 매표 형태로 전환된다.",
+        "이 과정에서 시간의 흐름, 감정적 반응, 캐릭터 진화 등 다양한 요소들이 영향을 미쳐 게임의 깊이와 재미를 증대시킨다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 658061,
-      "lastMs": 104828,
+      "totalMs": 766473,
+      "lastMs": 108412,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:42:57.227Z"
+      "updatedAt": "2026-10-09T18:44:45.642Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:31:59.142Z",
-  "updatedAt": "2026-10-09T18:42:57.229Z",
+  "updatedAt": "2026-10-09T18:44:45.642Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1798,7 +1805,7 @@
   "localAuthoringSplits": {
     "d9766de94aa258ed9a14a65adabaab754c98eac49fcc1b39d29d5402bd96b4cf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:42:57.229Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:44:45.642Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
