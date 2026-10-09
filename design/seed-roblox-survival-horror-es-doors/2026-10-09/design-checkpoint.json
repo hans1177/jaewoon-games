@@ -917,25 +917,108 @@
     },
     "local_authoring_parts::5a5c3ffb42b5222d9a966dde2dfd0acfe26ed2ebe0bc48b87c233605fd0dedfc:trigger": {
       "trigger": "시스템은 BOARD_STATE 상태를 입력받아, NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 새로운 패턴을 확정합니다."
+    },
+    "local_authoring_parts::5a5c3ffb42b5222d9a966dde2dfd0acfe26ed2ebe0bc48b87c233605fd0dedfc:stateChange": {
+      "stateChange": "시스템은 BOARD_STATE 상태를 입력받아, PLAYER_CHOICE의 선택 기반으로 NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시킨다."
+    },
+    "local_authoring_parts::5f102ab0c58d242a30992b2eda7677292f2e7c5cd00bec21a968a8181e1fbb7f:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_04",
+      "toId": "SIGNATURE_SYSTEM_04",
+      "stateKeys": [
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_04",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "trigger": "시스템은 BOARD_STATE 상태를 입력받아, NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 새로운 패턴을 확정합니다.",
+      "stateChange": "시스템은 BOARD_STATE 상태를 입력받아, PLAYER_CHOICE의 선택 기반으로 NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시킨다."
+    },
+    "local_authoring_parts::89342e36dbbcc8a3a2ab5268a851b6f699ff4379f4639504a6ae45b711d3950b:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_01",
+          "stateKeys": [
+            "LEVEL_GOAL_STATE",
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_01",
+          "toSystem": "SIGNATURE_SYSTEM_01",
+          "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+          "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_01",
+          "stateKeys": [
+            "LEVEL_GOAL_STATE",
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_01",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+          "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_01",
+          "stateKeys": [
+            "LEVEL_GOAL_STATE",
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_01",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+          "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_01",
+          "toId": "SIGNATURE_SYSTEM_01",
+          "stateKeys": [
+            "LEVEL_GOAL_STATE",
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_01",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+          "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+        },
+        {
+          "fromId": "SIGNATURE_SYSTEM_04",
+          "toId": "SIGNATURE_SYSTEM_04",
+          "stateKeys": [
+            "BOARD_STATE",
+            "NEXT_BOARD_PATTERN_STATE"
+          ],
+          "fromSystem": "SIGNATURE_SYSTEM_04",
+          "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+          "trigger": "시스템은 BOARD_STATE 상태를 입력받아, NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 새로운 패턴을 확정합니다.",
+          "stateChange": "시스템은 BOARD_STATE 상태를 입력받아, PLAYER_CHOICE의 선택 기반으로 NEXT_BOARD_PATTERN_STATE를 생성하여 게임 세계를 동적으로 진화시킨다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 95,
-      "successes": 95,
+      "calls": 96,
+      "successes": 96,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3163401,
-      "lastMs": 33579,
+      "totalMs": 3196257,
+      "lastMs": 32856,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:16:01.659Z"
+      "updatedAt": "2026-10-09T00:16:34.517Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:16:01.659Z",
+  "updatedAt": "2026-10-09T00:16:34.519Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3261,7 +3344,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:16:01.659Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:16:34.519Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
