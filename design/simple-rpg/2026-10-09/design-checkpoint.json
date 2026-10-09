@@ -401,25 +401,38 @@
     },
     "local_authoring_parts::2b297349289786cb038b547c7240e5e4c66434206e62ce796b71fffbbe992819:fromId": {
       "fromId": "BOARD_TO_WEAPON"
+    },
+    "local_authoring_parts::2b297349289786cb038b547c7240e5e4c66434206e62ce796b71fffbbe992819:toId": {
+      "toId": "WEAPON_SLOT"
+    },
+    "local_authoring_parts::2b297349289786cb038b547c7240e5e4c66434206e62ce796b71fffbbe992819:stateKeys": {
+      "stateKeys": [
+        "BOARD_STATE",
+        "WEAPON_SLOT",
+        "ACTION_SLOT"
+      ]
+    },
+    "local_authoring_parts::2b297349289786cb038b547c7240e5e4c66434206e62ce796b71fffbbe992819:fromSystem": {
+      "fromSystem": "BOARD_TO_WEAPON"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1475180,
-      "lastMs": 92853,
+      "totalMs": 1750154,
+      "lastMs": 91551,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:58:11.619Z"
+      "updatedAt": "2026-10-09T13:02:46.598Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:33:36.381Z",
-  "updatedAt": "2026-10-09T12:58:11.619Z",
+  "updatedAt": "2026-10-09T13:02:46.598Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2813,7 +2826,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:58:11.619Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:02:46.598Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
