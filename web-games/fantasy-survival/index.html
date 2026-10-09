@@ -688,7 +688,14 @@ const MUSIC_THEMES={
  battle3:{bpm:138,mode:'minor',root:98,progression:[0,1,5,6,0,3,1,5],riff:[0,2,3,1,4,2,5,3,0,3,2,5,4,2,1,3],style:'battle3'},
  boss:{bpm:132,mode:'minor',root:73.42,progression:[0,5,6,4,0,3,1,5],riff:[0,4,5,3,4,2,1,3,0,5,6,4,5,3,2,4],style:'boss'}
 };
-const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false};
+// 전투곡 네 종류: 모두 CC0. 정식 음원을 우선 재생하고 기존 합성 음악을 오프라인 대체곡으로 유지한다.
+const COMBAT_MUSIC_URLS={
+ battle1:'https://opengameart.org/sites/default/files/jrpg_battle_loop.mp3', // HydroGene
+ battle2:'https://opengameart.org/sites/default/files/Battle.mp3', // Wolfgang_
+ battle3:'https://opengameart.org/sites/default/files/raiders_march_-_loop.mp3', // Bobjt
+ boss:'https://opengameart.org/sites/default/files/CleytonRX%20-%20Battle%20RPG%20Theme_1.mp3' // Cleyton Kauffman
+};
+const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false,combatAudio:null,combatKey:null,combatFailed:false};
 function initMusicNoiseDeferred(){
  if(!music.ctx||music.noise||music.noiseInitPending)return;music.noiseInitPending=true;
  const build=()=>{music.noiseInitPending=false;if(!music.ctx||music.noise)return;const len=Math.max(1,Math.floor(music.ctx.sampleRate*.12)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf};
@@ -872,9 +879,69 @@ function scheduleBandBeat(key,t,beat,at){
    break;
  }
 }
-function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.10;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}if(music.nextAt<now-.25)music.nextAt=now+.04;let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;while(music.nextAt<now+.08&&scheduled<maxPerFrame){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur;scheduled++}}
-function setBgmVolume(raw){const pct=clamp(Number(raw)||0,0,100)/100;music.volume=1.44*pct;if(music.master&&music.ctx&&music.enabled)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime)}
-function toggleBgm(){music.enabled=!music.enabled;if(!music.enabled&&sfxState.ambientAudio){sfxState.ambientAudio.pause()}if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime);state.dirty=true;syncOptionsUi();saveGame(false)}
+function syncCombatMusic(key){
+ const src=COMBAT_MUSIC_URLS[key];
+ if(!src){
+  if(music.combatAudio){music.combatAudio.pause();music.combatAudio.removeAttribute('src');music.combatAudio=null}
+  music.combatKey=null;music.combatFailed=false;
+  return false;
+ }
+ if(music.combatKey!==key){
+  if(music.combatAudio){music.combatAudio.pause();music.combatAudio.removeAttribute('src')}
+  music.combatKey=key;music.combatFailed=false;
+  const audio=new Audio(src);
+  audio.loop=true;audio.preload='auto';audio.volume=clamp(music.volume/1.44*.78,0,1);
+  music.combatAudio=audio;
+  audio.addEventListener('error',()=>{if(music.combatAudio===audio)music.combatFailed=true},{once:true});
+  const attempt=audio.play();
+  if(attempt&&attempt.catch)attempt.catch(()=>{
+   if(music.combatAudio!==audio)return;
+   music.combatFailed=true;
+   // 모바일 자동재생 차단 시 다음 터치로만 재생을 재시도한다.
+   window.addEventListener('pointerdown',()=>{
+    if(music.combatAudio!==audio||!music.enabled)return;
+    const retry=audio.play();
+    if(retry&&retry.then)retry.then(()=>{music.combatFailed=false}).catch(()=>{});
+   },{once:true,capture:true});
+  });
+ }
+ return !!(music.combatAudio&&!music.combatFailed&&!music.combatAudio.paused&&music.combatAudio.readyState>=2);
+}
+function musicTick(){
+ if(!music.started||!music.enabled||!music.ctx)return;
+ const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;
+ if(music.theme!==key){
+  music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.10;music.nextAt=music.trackStart;
+ }
+ if(syncCombatMusic(key))return;
+ const now=music.ctx.currentTime,elapsed=now-music.trackStart;
+ if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}
+ if(music.nextAt<now-.25)music.nextAt=now+.04;
+ let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;
+ while(music.nextAt<now+.08&&scheduled<maxPerFrame){
+  scheduleBandBeat(key,t,music.beatIndex,music.nextAt);
+  music.beatIndex++;music.nextAt+=beatDur;scheduled++;
+ }
+}
+function setBgmVolume(raw){
+ const pct=clamp(Number(raw)||0,0,100)/100;
+ music.volume=1.44*pct;
+ if(music.master&&music.ctx&&music.enabled)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime);
+ if(music.combatAudio)music.combatAudio.volume=clamp(pct*.78,0,1);
+}
+function toggleBgm(){
+ music.enabled=!music.enabled;
+ if(!music.enabled){
+  if(sfxState.ambientAudio)sfxState.ambientAudio.pause();
+  if(music.combatAudio){music.combatAudio.pause();music.combatAudio.removeAttribute('src');music.combatAudio=null}
+  music.combatKey=null;music.combatFailed=false;
+  if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}
+ }else{
+  ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0;
+  if(music.master&&music.ctx)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime);
+ }
+ state.dirty=true;syncOptionsUi();saveGame(false);
+}
 function markExplored(){
   const p=state.player,gx=Math.floor(p.x/MAP_CELL),gy=Math.floor(p.y/MAP_CELL);
   for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){
