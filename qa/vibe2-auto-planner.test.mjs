@@ -1070,8 +1070,17 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
-  if(autoExpanded){
+  const canonicalUnityBootstrap=first.task.evidence.includes('unity-web-first-stage')
+    &&first.task.evidence.includes('source-root-bootstrap-required');
+  if(canonicalUnityBootstrap){
+    // Unity Web의 3D 원본이 아직 없으면 F0 소스 부트스트랩을 우선하며 다른 내용으로 패키지를 부풀리지 않는다.
+    assert.equal(first.task.sourceRoot,'unity-games/demo');
+    assert.equal(first.task.unityWebDevelopment,true);
+    assert.deepEqual(first.task.responsibleFiles,[
+      'unity-games/demo/Assets/Scripts/GameCore.cs',
+      'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+    ]);
+  }else if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   }else{
@@ -1967,6 +1976,53 @@ test('Unity native presentation responsibility excludes gameplay core when a vis
   assert.ok(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/GameCore.cs'),false);
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
+});
+
+test('Unity Web 3D floor repair and independent native asset source can be planned together',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    validationSurfaceOnly:false,
+    canonicalGameSourceRoot:'unity-games/<gameId>/'
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const projectDir=path.join(root,'unity-games','demo');
+  fs.mkdirSync(path.join(projectDir,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(projectDir,'Assets','Editor','Build.cs'),
+    'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const project={
+    gameId:'demo',name:'Demo',engine:'unity',target:'unity',
+    releaseState:'development-confirmed',projectPath:'unity-games/demo',
+    existing:true,firstStageUnityWeb:true
+  };
+  const rows=findSafeTasks(project,root,{tasks:[]});
+  const repair=rows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  const assets=rows.find(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
+  assert.ok(repair,'canonical source repair must continue');
+  assert.ok(assets,'disjoint native graphic authoring must not be serialized behind WebGL readiness');
+  assert.equal(repair.target,'unity');
+  assert.equal(assets.target,'unity');
+  assert.equal(repair.sourceRoot,assets.sourceRoot);
+  assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false,
+    'the existing file conflict guard must remain intact');
+  // 2.5D 액터가 기존 시각 책임 파일에 있다면 이 파일은 코어 수리가 소유하고 자산 작업이 병행 수정하지 않는다.
+  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
+  const collisionRows=findSafeTasks(project,root,{tasks:[]});
+  const collisionRepair=collisionRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.ok(collisionRepair?.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
+  assert.equal(collisionRows.some(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs')),false);
 });
 
 test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{
@@ -4394,7 +4450,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
   const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
   assert.ok(resumed);
-  assert.equal(resumed.maxRetries,null);
+  assert.equal(resumed.maxRetries==null,true,'missing or null limit means no artificial retry cap');
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
 });
@@ -4414,6 +4470,9 @@ test('actual fantasy-survival routes future source development to canonical Unit
   const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='unity'&&row.firstStageUnityWeb===true);
   assert.ok(project,'actual fantasy-survival must be in the canonical Unity Web development lane');
   assert.equal(project.projectPath,'unity-games/fantasy-survival');
+  // 실제 게임이 Unity Android 보류에 잘못 흡수되면 이 검사는 실패한다.
+  assert.equal(project.unityWebDevelopmentFloor,true);
+  assert.equal(project.firstStageEngine,'UNITY_WEB');
 
   const work=findSafeTasks(project,root,{tasks:[]});
   assert.ok(work.length>0,'existing Unity Web must have a real source repair or implementation task');
