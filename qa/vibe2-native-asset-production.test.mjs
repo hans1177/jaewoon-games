@@ -965,6 +965,15 @@ test('3D world planning preserves original routes and rejects flat or unsafe wor
   assert.equal(flat.regions[0].layers[1].assetId,null);
   const blocked=createVibeMapDetailReconstruction({sketch,assets:[{...asset,quarantined:true}]});
   assert.equal(blocked.regions[0].layers[1].assetId,null);
+  // 비정상 객체형 자산 목록은 3D 경로 증거로 승인하지 않고 예외 없이 건너뛴다.
+  const invalidSourceLists=createVibeMapDetailReconstruction({sketch,assets:[{
+    ...asset,path:'',nativeArtifacts:{unity:'assets/bridge.glb'},
+    sourceFiles:{mesh:'assets/bridge.glb'},fileRoles:{models:{primary:'assets/bridge.glb'}}
+  }]});
+  assert.equal(invalidSourceLists.status,'DETAIL_AUTHORING_PLAN');
+  assert.equal(invalidSourceLists.regions[0].layers[1].assetId,null);
+  const arraySource=createVibeMapDetailReconstruction({sketch,assets:[{...asset,path:'',sourceFiles:['assets/bridge.glb']}]});
+  assert.equal(arraySource.regions[0].layers[1].assetId,'stone-bridge');
   const invalid=createVibeMapDetailReconstruction({sketch:{...sketch,verticalLinks:[{from:'entry',to:'gate'}]}});
   assert.equal(invalid.status,'MAP_INTERPRETATION_REQUIRED');
   assert.equal(invalid.routeGeometry.length,0);
