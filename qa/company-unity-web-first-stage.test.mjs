@@ -39,6 +39,12 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.releaseAuthority,false);
     assert.equal(req.homepageTestSurface,true);
     assert.equal(req.postGateAction,'CONTINUE_INDEPENDENT_UNITY_WEB_DEVELOPMENT');
+    assert.equal(req.requiredGameplayDimension,'3D');
+    assert.equal(req.native3dRuntimeMeshQaRequired,true);
+    // 같은 원본 프로젝트에서 2D 물리를 추가하면 기존 빌드 진입점이 거부해야 한다.
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
+      'using UnityEngine; public class Game:MonoBehaviour { Rigidbody2D body; }\\n');
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
   } finally {
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
