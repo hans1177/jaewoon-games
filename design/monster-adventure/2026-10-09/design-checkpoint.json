@@ -260,25 +260,193 @@
           "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
         }
       ]
+    },
+    "local_authoring_parts::8f34bb037c9b4f6ffb22f9ff517edf9c39dc955e005143d3ef937a0e70f0a6e2:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9a7f613f5f6a503a0ccb2a3f82bce3082f5beadc154f9a8de92d5a49c7faaeea:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 1 손 tap 또는 swipe",
+        "점수/거리/세션 목표 설정",
+        "세계 상태 변경 및 다음 선택 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "POINT_SCORE_CONNECTION",
+          "purpose": "시그니처 세계 규칙인 점수, 거리, 선택의 연결에 기반하여 이루어진다.",
+          "playerChoice": "점수/거리/세션 목표 설정 후 세계 상태 변경 및 다음 선택 결정"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION",
+          "purpose": "설명: 입력 및 선택에 따라 세션 길이와 보상을 연결하는 주요 시스템.",
+          "playerChoice": "세션 길이 설정 후, 보상 또는 위험을 선택하여 다음 상태로 전환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
+          "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
+          "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE_DELVE",
+          "purpose": "게임 내에서 시그니처 세계 규칙과 관련된 복잡한 상태 변환 및 재방문 기능을 수행합니다.",
+          "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "몬스터 어드벤처는 시작 단계부터 즉시 이해되는 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 플레이어는 이 입력을 통해 세계 상태가 바뀌며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다.",
+      "playerFantasy": "몬스터 어드벤처에서 플레이어는 시작 단계부터 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 이 입력은 세계 상태를 바꾸며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다.",
+      "coreFun": "몬스터 어드벤처는 시작 단계부터 즉시 이해되는 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 플레이어는 이 입력을 통해 세계 상태가 바뀌며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다.",
+      "coreLoop": [
+        "입력: 1 손 tap 또는 swipe",
+        "점수/거리/세션 목표 설정",
+        "세계 상태 변경 및 다음 선택 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "POINT_SCORE_CONNECTION",
+          "purpose": "시그니처 세계 규칙인 점수, 거리, 선택의 연결에 기반하여 이루어진다.",
+          "playerChoice": "점수/거리/세션 목표 설정 후 세계 상태 변경 및 다음 선택 결정"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION",
+          "purpose": "설명: 입력 및 선택에 따라 세션 길이와 보상을 연결하는 주요 시스템.",
+          "playerChoice": "세션 길이 설정 후, 보상 또는 위험을 선택하여 다음 상태로 전환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
+          "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
+          "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE_DELVE",
+          "purpose": "게임 내에서 시그니처 세계 규칙과 관련된 복잡한 상태 변환 및 재방문 기능을 수행합니다.",
+          "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 714440,
-      "lastMs": 242289,
+      "totalMs": 803949,
+      "lastMs": 89509,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:28:42.310Z"
+      "updatedAt": "2026-10-09T11:30:11.823Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:28:42.313Z",
+  "updatedAt": "2026-10-09T11:30:11.833Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2360,12 +2528,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:28:42.313Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:30:11.826Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/monster-adventure/2026-10-09/design-seed.json",
+    "contentDigest": "dbb0ecd6aac43d2939ca4001916dc6e10bb407f341058d95dc4cee41fa0571c2",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
