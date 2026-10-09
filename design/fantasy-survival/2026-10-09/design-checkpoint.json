@@ -1121,25 +1121,28 @@
       "toSystem": "SIGNATURE_SYSTEMS",
       "trigger": "GAME_PROGRESS_UPDATE",
       "stateChange": "GAME_FANTASY_UPDATED"
+    },
+    "local_authoring_parts::b626a6d40638719505db9a814b02a92e9a32f7094dc4e0bdcc3cd0b0fe4ff728:fromId": {
+      "fromId": "systemInterconnections[0]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 52,
+      "calls": 54,
+      "successes": 53,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4586869,
-      "lastMs": 89003,
+      "totalMs": 4674312,
+      "lastMs": 87443,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:32:07.143Z"
+      "updatedAt": "2026-10-09T01:33:34.598Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:32:07.152Z",
+  "updatedAt": "2026-10-09T01:33:34.598Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3569,10 +3572,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:32:07.146Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:33:34.598Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
