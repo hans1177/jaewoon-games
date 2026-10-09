@@ -47,17 +47,18 @@ const writePolicy=root=>write(root,'company-learning/platform-release-roadmap.js
     status:'OWNER_DIRECT_LOCKED',mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
     canonicalDevelopmentAdmissionAuthority:true,minimumDesignRequired:true,
     strictDesignScoreRequiredForDevelopmentAdmission:false,legacyWebFirstFallbackForbidden:true,
-    webDevelopmentStageRemoved:false,unityWebEnabled:true,unityWebRequired:true,unityWebGateRequired:true,
+    webDevelopmentStageRemoved:false,unityWebEnabled:true,unityWebRequired:true,unityWebGateRequired:false,
+    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
     unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
-    upperPlatformAdmission:'UPPER_PLATFORM_DEVELOPMENT_READY',
+    upperPlatformAdmission:'MINIMUM_DESIGN_READY',
     supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
     automaticPairing:{
-      ROBLOX:['UNITY_WEB_FLOOR','ROBLOX','UNITY'],
-      UNITY:['UNITY_WEB_FLOOR','UNITY','ROBLOX']
+      ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],
+      UNITY:['UNITY_WEB_FLOOR']
     },
     development:{
-      unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:true,
-      upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass:true
+      unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:false,
+      upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass:false
     },
     upperPlatformDevelopmentReadinessGate:{
       gateId:'UPPER_PLATFORM_DEVELOPMENT_READY',allCriteriaRequired:true,targets:['ROBLOX','UNITY']

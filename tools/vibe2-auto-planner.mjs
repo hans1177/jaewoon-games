@@ -386,11 +386,11 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     &&firstStagePolicy?.appliesToAllGames===true;
   const unityWebDevelopmentFloor=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
     &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&firstStagePolicy?.developmentAdmissionAuthority===true
+    &&firstStagePolicy?.developmentAdmissionAuthority===false
     &&firstStagePolicy?.validationSurfaceOnly===false;
   const grandfatherIds=new Set((centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[]).map(clean).filter(Boolean));
   const unityWebGrandfathered=unityWebDevelopmentFloor&&grandfatherIds.has(id)&&nativeUpperPlatformAlreadyStarted(item);
-  const unityWebFirstStage=(legacyUnityWebFirstStage||unityWebDevelopmentFloor)&&!unityWebGrandfathered;
+  const unityWebFirstStage=legacyUnityWebFirstStage||unityWebDevelopmentFloor;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
@@ -739,11 +739,10 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='unity'){
     if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
-    if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
-    return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
+    return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web';
+  if(project.releaseState==='development-confirmed')return false; // Legacy HTML web is not Unity WebGL.
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -851,7 +850,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
       +(project.genre&&project.subgenre?5:0))
     : 0;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':(ownerResume&&!['critical','owner-immediate'].includes(clean(priority).toLowerCase())?'high':priority),
+    id,gameId:project.gameId,target:project.engine,unityWebDevelopment:project.engine==='unity'&&project.firstStageUnityWeb===true,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':(ownerResume&&!['critical','owner-immediate'].includes(clean(priority).toLowerCase())?'high':priority),
     releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
@@ -859,7 +858,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
     supervisionContract:supervised?supervisedWebBuildContract():null,
     packageLongWorkProtected:(focused||ownerResume)||undefined,packageRole:focused?'implementation-owner':ownerResume?'owner-resumable-build-up':undefined,
     focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,ownerResumableBuildUp:ownerResume||undefined,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...(project.engine==='unity'&&project.firstStageUnityWeb===true?['unity-web-first-stage']:[]),...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
@@ -3497,6 +3496,8 @@ export function findSafeTasks(project,repoRoot,queue){
     ]);
   }
   if(project.engine==='unity'){
+    // WebGL work continues from the canonical Unity source; Android-only work is held.
+    if(project.firstStageUnityWeb!==true)return [];
     if(project.firstStageUnityWeb===true){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
       if(firstStage)return[firstStage];
@@ -3776,7 +3777,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
   const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowGames=new Set(developmentPool.filter(item=>item.target==='web'&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
+  const webFlowGames=new Set(developmentPool.filter(item=>item.unityWebDevelopment===true&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
   const internalAssetFocus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
@@ -3808,7 +3809,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
   const planningProjects=[
-    ...(webSeedCapacity?projects.filter(project=>project.engine==='web'&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true})):[]),
+    ...(webSeedCapacity?projects.filter(project=>project.engine==='unity'&&project.firstStageUnityWeb===true&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true})):[]),
     ...projects.map(project=>({project,webSeed:false}))
   ];
   for(const {project,webSeed} of planningProjects){
@@ -3818,7 +3819,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
     const remaining=webSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
-    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(candidate.target==='web'&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
+    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(candidate.unityWebDevelopment===true&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
@@ -3846,7 +3847,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
-    for(const task of developmentPlanningPool(queue))if(task.target==='web'&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
+    for(const task of developmentPlanningPool(queue))if(task.unityWebDevelopment===true&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
     planningBacklog.webGameFlow.gameIds=[...webFlowGames];
     planningBacklog.webGameFlow.shortfall=Math.max(0,webFlowTarget-webFlowGames.size);
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);

@@ -38,7 +38,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.upperPlatformReadinessEvidence,'web-games/sample-game/upper-platform-development-readiness.json');
     assert.equal(req.releaseAuthority,false);
     assert.equal(req.homepageTestSurface,true);
-    assert.equal(req.postGateAction,'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY');
+    assert.equal(req.postGateAction,'CONTINUE_INDEPENDENT_UNITY_WEB_DEVELOPMENT');
   } finally {
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
@@ -130,11 +130,11 @@ test('Unity Web build never directly fans out; main-bound readiness evidence own
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
   const fan=policy.directNativeDualPlatformDevelopment.unityWebNativeFanOut;
-  assert.equal(fan.enabled,true);
+  assert.equal(fan.enabled,false);
   assert.equal(fan.trigger,'UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN');
   assert.deepEqual(fan.targets,['ROBLOX','UNITY']);
   assert.equal(fan.exactGameOnly,true);
-  assert.equal(fan.developmentAdmissionAuthority,true);
+  assert.equal(fan.developmentAdmissionAuthority,false);
   assert.equal(fan.releaseAuthority,false);
   assert.equal(fan.directDispatchFromUnityWebBuildForbidden,true);
   assert.equal(fan.sourceTreeExactMatchRequired,true);

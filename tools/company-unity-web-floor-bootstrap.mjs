@@ -174,7 +174,7 @@ const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).d
 if(hasApprovedWorld&&fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')))
   throw new Error('UNITY_WEB_APPROVED_WORLD_EXISTING_SOURCE_MUST_BE_EDITED_NOT_REBOOTSTRAPPED');
 
-fs.rmSync(output,{recursive:true,force:true});
+if(fs.existsSync(output))throw new Error('UNITY_WEB_EXISTING_SOURCE_PRESERVE_AND_REPAIR_IN_PLACE');
 for(const dir of [
   'Assets/Scripts','Assets/Editor','Assets/Art','Assets/Prefabs','Assets/Materials','Assets/Animations',
   'Packages','ProjectSettings'

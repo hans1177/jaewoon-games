@@ -79,12 +79,14 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)return{gameId,state:'BLOCKED',reason:'DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED'};
   const targets=new Set(item.concurrentTargetPlatforms||[]);
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
-  const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
   const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
-  if(nativeStarted)return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true,grandfatherSource:grandfathered.has(gameId)?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'};
+  const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
-  if(readiness.pass)return{gameId,state:'UPPER_PLATFORM',reason:'UPPER_PLATFORM_DEVELOPMENT_READY',grandfathered:false,readiness};
-  const buildMethod=discoverUnityWebBuildMethod(repoRoot,gameId);
-  if(buildMethod)return{gameId,state:'UNITY_WEB_FLOOR',reason:readiness.reason,buildMethod};
-  return{gameId,state:'UNITY_WEB_BOOTSTRAP',reason:readiness.reason+':CANONICAL_UNITY_WEB_SOURCE_REQUIRED'};
+  const method=readiness.pass?null:discoverUnityWebBuildMethod(repoRoot,gameId);
+  const web=readiness.pass?{state:'UNITY_WEB_VERIFIED',reason:'CURRENT_UNITY_WEB_QA_VERIFIED',readiness}
+    :method?{state:'UNITY_WEB_FLOOR',reason:readiness.reason,buildMethod:method}
+    :fs.existsSync(path.join(repoRoot,'unity-games',gameId))?{state:'UNITY_WEB_SOURCE_REPAIR',reason:'EXISTING_UNITY_SOURCE_REPAIR_REQUIRED'}
+    :{state:'UNITY_WEB_BOOTSTRAP',reason:readiness.reason+':CANONICAL_UNITY_WEB_SOURCE_REQUIRED'};
+  return{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted,
+    grandfatherSource:nativeStarted?(grandfathered.has(gameId)?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'):null,web};
 }

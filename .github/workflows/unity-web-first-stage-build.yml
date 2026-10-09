@@ -213,7 +213,7 @@ jobs:
           const c=policy.unityWebFirstStage;
           const gate=policy.directNativeDualPlatformDevelopment?.upperPlatformDevelopmentReadinessGate;
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==true) throw new Error('Unity Web development floor contract changed');
+          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web development floor contract changed');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');

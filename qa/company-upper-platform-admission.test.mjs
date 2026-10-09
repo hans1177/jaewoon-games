@@ -26,8 +26,9 @@ test('new upper-platform entry stays in Unity Web floor until readiness exists',
   try{
     write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_EVIDENCE_MISSING');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_EVIDENCE_MISSING');
     assert.equal(result.buildMethod,'Demo.WebBuild.BuildWeb');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -48,7 +49,7 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
     });
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
-    assert.equal(result.reason,'UPPER_PLATFORM_DEVELOPMENT_READY');
+    assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -69,8 +70,9 @@ test('Unity source drift invalidates readiness and returns the new game to Unity
     });
     write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game { public int Changed; }');
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_SOURCE_STALE');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_SOURCE_STALE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -80,7 +82,7 @@ test('already-started native games remain grandfathered from durable progress ev
     const item={...baseItem('existing-game'),currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxFoundationF0Passed:true};
     const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
-    assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+    assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,true);
     assert.equal(result.grandfatherSource,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -101,16 +103,18 @@ test('readiness must pass all seven domains and may never gain release authority
       }
     });
     let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_CRITERIA_INCOMPLETE');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_CRITERIA_INCOMPLETE');
 
     const evidence=JSON.parse(fs.readFileSync(path.join(root,'web-games/new-game/upper-platform-development-readiness.json'),'utf8'));
     evidence.criteria.qa.pass=true;
     evidence.releaseOrDeploymentAuthority=true;
     write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
     result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_RELEASE_AUTHORITY_INVALID');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_RELEASE_AUTHORITY_INVALID');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -126,7 +130,7 @@ test('any durable native progress continues without backtracking, regardless of 
     ]){
       const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
       assert.equal(result.state,'UPPER_PLATFORM');
-      assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+      assert.equal(result.reason,'MINIMUM_DESIGN_READY');
       assert.equal(result.grandfathered,true);
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -137,10 +141,12 @@ test('a source bootstrap timestamp without an exact native source commit cannot 
   try{
     const item={...baseItem('bootstrap-only'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'};
     let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/bootstrap-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -149,10 +155,12 @@ test('a native-looking currentStep without durable evidence cannot bypass the Un
   try{
     const item={...baseItem('step-only'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
     let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/step-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -160,10 +168,12 @@ test('an explicit migration id without durable native progress cannot bypass the
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-explicit-no-evidence-'));
   try{
     let result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/listed-but-new/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
