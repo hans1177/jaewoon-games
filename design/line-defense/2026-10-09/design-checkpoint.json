@@ -50,25 +50,40 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "Players decide to read the next enemy wave and place defensive structures in strategic locations, which directly impacts the game state and determines future choices.",
       "playerChoice": "Players choose where to place defensive structures based on the current enemy wave composition and threat level, influencing resource gains and pressure levels before it increases."
+    },
+    "local_authoring_parts::e0404e7994188da813727a26a80e82ca85761eda463bb9f3916fe96a17122c80:signatureSystems:1": {
+      "id": "LINE-DEFENSE-SIGNATURE-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemyWave",
+        "defensivePlacements"
+      ],
+      "stateOutputs": [
+        "resourceGains",
+        "pressureLevel"
+      ],
+      "name": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "purpose": "Players gain resources that can be used for upgrades, new placements, or tactical changes before pressure increases.",
+      "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 415632,
-      "lastMs": 32599,
+      "totalMs": 449202,
+      "lastMs": 33570,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:07:13.465Z"
+      "updatedAt": "2026-10-09T13:07:47.037Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T13:00:17.800Z",
-  "updatedAt": "2026-10-09T13:07:13.465Z",
+  "updatedAt": "2026-10-09T13:07:47.037Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,20 +2275,12 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::e0404e7994188da813727a26a80e82ca85761eda463bb9f3916fe96a17122c80:signatureSystems:0": [
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::e0404e7994188da813727a26a80e82ca85761eda463bb9f3916fe96a17122c80:signatureSystems:0": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:07:13.465Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:07:47.037Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
