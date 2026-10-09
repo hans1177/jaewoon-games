@@ -29,7 +29,7 @@ test('new upper-platform entry stays in Unity Web floor until readiness exists',
     assert.equal(result.state,'UPPER_PLATFORM');
     assert.equal(result.web.state,'UNITY_WEB_FLOOR');
     assert.equal(result.web.reason,'READINESS_EVIDENCE_MISSING');
-    assert.equal(result.buildMethod,'Demo.WebBuild.BuildWeb');
+    assert.equal(result.web.buildMethod,'Demo.WebBuild.BuildWeb');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
