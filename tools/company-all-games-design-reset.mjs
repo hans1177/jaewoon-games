@@ -55,7 +55,11 @@ function meaningfulDesign(record,gameId=''){
     &&clean(grammar?.mainIdentity).length>=15
     &&['a','b'].every(key=>clean(grammar?.[key]?.system)&&clean(grammar?.[key]?.material)&&clean(grammar?.[key]?.stateChange))
     &&clean(grammar?.abCausality).length>=35
-    &&c.length===2&&c.some(row=>row.kind==='GENRE')
+    &&c.length===2
+    &&Array.isArray(grammar?.cGenres)&&grammar.cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>grammar.cGenres.some(row=>row?.role===role))
+    &&new Set(grammar.cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(grammar?.cGenreInterlock).length>=30
     &&clean(grammar?.cWorldAndGameplayEffect).length>=30
     &&Array.isArray(grammar?.delveDiscoveries)&&grammar.delveDiscoveries.length>=4
     &&clean(grammar?.delveGrowthRule).length>=25;
@@ -118,7 +122,11 @@ function completeNovelGrammarV5(seed={}){
     &&Array.isArray(grammar.gameplaySystemFusion?.majorAxes)&&grammar.gameplaySystemFusion.majorAxes.length===2
     &&grammar.gameplaySystemFusion.majorAxes.every(row=>clean(row?.systemFamily)&&clean(row?.sourceMaterial)&&clean(row?.materialRule))
     &&grammar.gameplaySystemFusion?.themeFusion?.themes?.length===2
-    &&grammar.gameplaySystemFusion.themeFusion.themes.some(row=>row.kind==='GENRE')
+    &&Array.isArray(grammar.gameplaySystemFusion.themeFusion.genres)
+    &&grammar.gameplaySystemFusion.themeFusion.genres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>grammar.gameplaySystemFusion.themeFusion.genres.some(row=>row?.role===role))
+    &&new Set(grammar.gameplaySystemFusion.themeFusion.genres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(grammar.gameplaySystemFusion.themeFusion.genreInterlock)
     &&Array.isArray(grammar.delveLayer?.elements)&&grammar.delveLayer.elements.length>=4
     &&grammar.delveLayer?.formulaSuffix==='+ @'
     &&grammar.emergentGenre?.grammarFormula==='MAIN × A × B × C + @';
