@@ -1,5 +1,5 @@
 {
-  "version": 121,
+  "version": 122,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-07T12:05:00+09:00",
@@ -78602,7 +78602,7 @@
     }
   },
   "internalAssetStandard": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_INTERNAL_ASSET_STANDARD",
     "machineSources": [
       "company-asset-library.json",
@@ -78632,7 +78632,7 @@
     "allInternalAssetsComposableAcrossExistingStages": true,
     "compositionContract": "company-asset-library.json#internalAssetCompositionContract",
     "sharedOrganization": {
-      "version": 1,
+      "version": 2,
       "scope": "ALL_REGISTERED_ASSETS",
       "groupBy": "FAMILY",
       "gameExclusivePacks": false,
@@ -78655,7 +78655,35 @@
         "field": "internalAuditScore",
         "maxScore": 1000
       },
-      "fileClassificationIsNotRuntimeVerification": true
+      "fileClassificationIsNotRuntimeVerification": true,
+      "familyOrder": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "sortKeys": [
+        "FAMILY_ORDER",
+        "SUBFAMILY",
+        "TITLE_KO",
+        "ASSET_ID"
+      ],
+      "sortMode": "STABLE_VIEW_AND_SELECTION_NO_SOURCE_REORDER",
+      "originalGameNamedPacksAreSourceLineageOnly": true,
+      "originalObjectsAndSourcePathsPreserved": true,
+      "allExistingAndFutureGamesEligible": true,
+      "consumerGameIdsCannotRestrictOtherGames": true,
+      "noAutomaticMonsterSpawnOrGameplayChange": true,
+      "roleStyleLicenseAndSecurityCompatibilityRequired": true,
+      "crossPlatformNativeAdaptationRequired": true
     }
   },
   "internalAssetRoutineReview": {
@@ -79857,7 +79885,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 121,
+    "lastCatalogSynchronizedVersion": 122,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
@@ -90300,7 +90328,7 @@
       "lastChangeFingerprint": "243b46f8",
       "catalogFingerprint": "139e07054babbef4db627f2709a6a89c4ecb218e8ad6093aef0a633275afd2c5",
       "catalogChanged": false,
-      "synchronizedRegistryVersion": 120
+      "synchronizedRegistryVersion": 122
     },
     "studioVariationAxes": {
       "BUILDING": [
