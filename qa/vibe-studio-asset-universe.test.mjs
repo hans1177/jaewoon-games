@@ -5537,8 +5537,10 @@ test('RPG and survival share one 3D creature master but raw cross-game clones ca
   assert.equal(pending.complete,true);
   assert.equal(pending.atomicBindingReady,false);
   assert.equal(pending.bindingAction,'AUTHOR_VERIFY_DISTINCT_3D_VARIANT_IN_EXISTING_GRAPHICS_PIPELINE');
-  const evidence={gameId:'island-survival',assetId:'shared-wolf',
+  const evidence={gameId:'island-survival',assetId:'shared-wolf',platform:'ROBLOX',
     distinctAxes:['SILHOUETTE','STANCE_GAIT','SURFACE_MATERIAL'],
+    baselineCaptureId:'rpg-before-capture',candidateCaptureId:'survival-after-capture',
+    nativeRuntimeEvidenceId:'roblox-qa-validated-wolf',candidateRevision:'game-variant-revision',
     runtimeBeforeAfterPass:true,nativePlatformPass:true};
   const usageByAsset={'shared-wolf':{gameIdentityEvidence:evidence}};
   const reuse=evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset['shared-wolf']});
