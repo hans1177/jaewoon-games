@@ -331,6 +331,10 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision='',{sta
       if(row.pass!==true||row.sourceRevision!==revision||row.artifactIdentity!==identity)blocked.push(name+'-exact-evidence-missing');
     }
     if(item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed!==true||f0.nativeLanguageCompilePassed!==true)blocked.push('candidate-source-preflight-not-passed');
+    if(Number(f0.version||0)<6||f0.native3dSourcePreflight?.worldGeometry!==true
+      ||f0.native3dSourcePreflight?.characterAndCamera!==true
+      ||f0.native3dSourcePreflight?.runtimeVerified!==false)
+      blocked.push('candidate-f0-native3d-source-required');
     if(staticOnly){
       if(!Number.isSafeInteger(Number(f0.artifactRunId))||Number(f0.artifactRunId)<=0)blocked.push('exact-artifact-run-mismatch');
       for(const key of ['serverClientBoundaryPreflightPassed','remoteSecurityPreflightPassed','mobileControlUiPreflightPassed','datastoreContractPassed','multiplayerSyncContractPassed']){
@@ -449,6 +453,10 @@ export function createRobloxRuntimeCandidatePublishPlan({placeFile='',universeId
   if(!ARTIFACT_SHA256.test(artifact))blocked.push('artifact-identity-invalid');
   if(f0Evidence?.sourcePreflightPassed!==true)blocked.push('f0-source-preflight-not-passed');
   if(f0Evidence?.f0SourceIntegrityPassed!==true)blocked.push('f0-source-integrity-not-passed');
+  if(Number(f0Evidence?.version||0)<6||f0Evidence?.native3dSourcePreflight?.worldGeometry!==true
+    ||f0Evidence?.native3dSourcePreflight?.characterAndCamera!==true
+    ||f0Evidence?.native3dSourcePreflight?.runtimeVerified!==false)
+    blocked.push('f0-native3d-source-required');
   if(f0Evidence?.actualRuntimeEvidence!==false)blocked.push('f0-must-not-claim-runtime-evidence');
   if(f0Evidence?.runtimeFoundationPassed!==false)blocked.push('f0-must-not-claim-runtime-foundation');
   if(clean(f0Evidence?.sourceRevision)!==revision)blocked.push('f0-source-revision-mismatch');
