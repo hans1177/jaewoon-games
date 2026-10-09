@@ -242,25 +242,181 @@
           "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
         }
       ]
+    },
+    "local_authoring_parts::195905f974af2a0ce1c92a59c6f5aab07717c739923f5ba09bd648d1135c1617:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e1779bc5ee1eab031fe48f2cfa2df12f54edc836d67031d0c49e6b8ff8a986ce:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_CAUSAL",
+          "purpose": "Plays as the core gameplay mechanism, where players start with a clear goal and limited moves to solve puzzles, leading to new board states through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives, resulting in state transitions that reflect causal relationships between actions and outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "색채의 연쇄에서 선택 결과가 다음 월드 상태로 전환하는 첫 번째 대축.",
+          "playerChoice": "Board state transition with color-based constraints and immediate feedback to determine the next level pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태로 전환하는 보조 요소로서, 다양한 인과법칙과 시스템 연결을 포함하며, 발견·숙련·재방문 깊이를 제공합니다.",
+          "playerChoice": "플레이어는 현재 상태에 따라 새로운 상태를 생성하여 다음 선택 및 진행 방향을 결정해야 합니다. 이 과정에서는 즉각적인 결과와 함께 성장이 이루어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION_DELVE",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태와 관계를 확대하는 복합적 진입 절차입니다.",
+          "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "색채의 연쇄 - 색채의 연쇄는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여 제한된 이동, 장애물, 또는 흐름 있는 빈 공간을 통해 문제를 해결해야 한다. 선택은 매번 새로운 상태로 전환되며, 성장은 즉각적인 결과와 함께 이루어진다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 다양한 인과법칙과 시스템 연결을 포함한다.",
+      "playerFantasy": "색채의 연쇄는 플레이어가 시작 단계에서 명확한 목표를 설정하여 제한된 이동, 장애물, 또는 흐름 있는 빈 공간을 통해 문제를 해결해야 한다. 선택은 매번 새로운 상태로 전환되며, 성장은 즉각적인 결과와 함께 이루어진다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 다양한 인과법칙과 시스템 연결을 포함한다.",
+      "coreFun": "색채의 연쇄는 플레이어가 시작 단계에서 명확한 목표를 설정하여 제한된 이동, 장애물, 또는 흐름 있는 빈 공간을 통해 문제를 해결해야 한다. 선택은 매번 새로운 상태로 전환되며, 성장은 즉각적인 결과와 함께 이루어진다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 다양한 인과법칙과 시스템 연결을 포함한다.",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_CAUSAL",
+          "purpose": "Plays as the core gameplay mechanism, where players start with a clear goal and limited moves to solve puzzles, leading to new board states through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives, resulting in state transitions that reflect causal relationships between actions and outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "색채의 연쇄에서 선택 결과가 다음 월드 상태로 전환하는 첫 번째 대축.",
+          "playerChoice": "Board state transition with color-based constraints and immediate feedback to determine the next level pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태로 전환하는 보조 요소로서, 다양한 인과법칙과 시스템 연결을 포함하며, 발견·숙련·재방문 깊이를 제공합니다.",
+          "playerChoice": "플레이어는 현재 상태에 따라 새로운 상태를 생성하여 다음 선택 및 진행 방향을 결정해야 합니다. 이 과정에서는 즉각적인 결과와 함께 성장이 이루어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION_DELVE",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태와 관계를 확대하는 복합적 진입 절차입니다.",
+          "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 448485,
-      "lastMs": 43512,
+      "totalMs": 476766,
+      "lastMs": 28281,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:31:39.298Z"
+      "updatedAt": "2026-10-09T12:32:07.583Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:24:10.768Z",
-  "updatedAt": "2026-10-09T12:31:39.301Z",
+  "updatedAt": "2026-10-09T12:32:07.593Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2293,12 +2449,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:31:39.301Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:32:07.586Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
+    "contentDigest": "fc9384826aa3adcfe1fdfea1da08aedbb4180e74ec066baac3ec06e9c3661f4a",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

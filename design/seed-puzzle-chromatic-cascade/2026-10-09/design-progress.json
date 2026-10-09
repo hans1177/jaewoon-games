@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T12:31:39.301Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T12:32:07.586Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
+    "contentDigest": "fc9384826aa3adcfe1fdfea1da08aedbb4180e74ec066baac3ec06e9c3661f4a",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 448485,
-      "lastMs": 43512,
+      "totalMs": 476766,
+      "lastMs": 28281,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:31:39.298Z"
+      "updatedAt": "2026-10-09T12:32:07.583Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T12:31:39.302Z"
+  "updatedAt": "2026-10-09T12:32:07.593Z"
 }
