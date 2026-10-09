@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어가 주도하는 단일 캐릭터의 탈출",
       "coreFun": "플레이어의 숙련된 전략적 결정과 새로운 도구의 결합"
+    },
+    "local_authoring_parts::f7267b5eaf250696336df252d0321c372304d47f24c4a79335ffccfa639ae1d7:coreLoop": {
+      "coreLoop": [
+        "플레이어가 주도하는 단일 캐릭터의 탈출",
+        "실시간 스타트업 루프를 생성하여 전투 방식 및 장비 선택을 통해 진입 시 흐름에 맞춘 게임 진행",
+        "보상/위험/다음 선택을 통해 플레이어의 전략적 결정과 환경/지역 변화 간 인과적 연결"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 600412,
-      "lastMs": 91749,
+      "totalMs": 696992,
+      "lastMs": 96580,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:26:52.275Z"
+      "updatedAt": "2026-10-09T21:28:28.858Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T21:26:52.277Z",
+  "updatedAt": "2026-10-09T21:28:28.858Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:26:52.277Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:28:28.858Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
