@@ -100,9 +100,13 @@ const CAUSAL_DNA_ITEM_SCHEMA={
 };
 const SYSTEM_AXIS_SCHEMA={
   type:'object',
-  required:['key','name','purpose','playerChoice','stateContribution'],
+  required:['key','name','purpose','playerChoice','stateContribution','systemFamily','sourceMaterial','sourceDomain','materialRule'],
   properties:{
     key:{type:'string',enum:['A','B']},
+    systemFamily:{type:'string',minLength:2,maxLength:160},
+    sourceMaterial:{type:'string',minLength:2,maxLength:180},
+    sourceDomain:{type:'string',minLength:2,maxLength:180},
+    materialRule:{type:'string',minLength:15,maxLength:700},
     name:{type:'string',minLength:2,maxLength:180},
     purpose:{type:'string',minLength:10,maxLength:600},
     playerChoice:{type:'string',minLength:10,maxLength:600},
@@ -121,6 +125,17 @@ const SUB_ELEMENT_SCHEMA={
   },
   additionalProperties:false
 };
+// C: 두 창작 주제를 융합하며 그중 최소 한 개는 장르다. 소재 분야는 열린 문자열이다.
+const C_THEME_SCHEMA={type:'object',required:['name','kind','causalEffect'],properties:{
+  name:{type:'string',minLength:2,maxLength:180},
+  kind:{type:'string',enum:['GENRE','MATERIAL']},
+  causalEffect:{type:'string',minLength:15,maxLength:700}
+},additionalProperties:false};
+const C_FUSION_SCHEMA={type:'object',required:['themes','jointWorldRule','abGameplayEffect'],properties:{
+  themes:{type:'array',minItems:2,maxItems:2,items:C_THEME_SCHEMA},
+  jointWorldRule:{type:'string',minLength:20,maxLength:700},
+  abGameplayEffect:{type:'string',minLength:20,maxLength:700}
+},additionalProperties:false};
 const DELVE_ELEMENT_SCHEMA={
   type:'object',
   required:['name','discoveryCondition','masteryOrInsight','gameplayEffect','connectsTo'],
@@ -146,23 +161,24 @@ const NOVEL_GAME_GRAMMAR_SCHEMA={
     causalFusion:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
     irreducibilityTest:{type:'object',required:['removeFirstAxis','removeSecondAxis','verdict'],properties:{removeFirstAxis:{type:'string',minLength:15,maxLength:600},removeSecondAxis:{type:'string',minLength:15,maxLength:600},verdict:{type:'string',minLength:15,maxLength:600}},additionalProperties:false},
     storyWorldBindings:{type:'object',required:['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'],properties:{emotionalConflict:{type:'string',minLength:15,maxLength:700},characterRule:{type:'string',minLength:15,maxLength:700},monsterRule:{type:'string',minLength:15,maxLength:700},regionRule:{type:'string',minLength:15,maxLength:700},storyRule:{type:'string',minLength:15,maxLength:700},plausibility:{type:'string',minLength:15,maxLength:700}},additionalProperties:false},
-    gameplaySystemFusion:{type:'object',required:['formula','main','majorAxes','subElements','crossSystemRules'],properties:{
-      formula:{type:'string',enum:['MAIN × A × B × c']},
+    gameplaySystemFusion:{type:'object',required:['formula','main','majorAxes','themeFusion','subElements','crossSystemRules'],properties:{
+      formula:{type:'string',enum:['MAIN × A × B × C']},
       main:{type:'object',required:['name','purpose','playerAction','stateContribution'],properties:{name:{type:'string',minLength:2,maxLength:180},purpose:{type:'string',minLength:10,maxLength:600},playerAction:{type:'string',minLength:10,maxLength:600},stateContribution:{type:'string',minLength:10,maxLength:700}},additionalProperties:false},
       majorAxes:{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA},
+      themeFusion:C_FUSION_SCHEMA,
       subElements:{type:'array',minItems:2,maxItems:6,items:SUB_ELEMENT_SCHEMA},
       crossSystemRules:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}}
     },additionalProperties:false},
     delveLayer:{type:'object',required:['formulaSuffix','role','elements'],properties:{
       formulaSuffix:{type:'string',enum:['+ @']},
       role:{type:'string',enum:['DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS']},
-      elements:{type:'array',minItems:4,maxItems:10,items:DELVE_ELEMENT_SCHEMA}
+      elements:{type:'array',minItems:4,items:DELVE_ELEMENT_SCHEMA}
     },additionalProperties:false},
     emergentGenre:{type:'object',required:['name','definition','whyNotSingleConventionalGenre','grammarFormula','categoryRole'],properties:{
       name:{type:'string',minLength:4,maxLength:180},
       definition:{type:'string',minLength:20,maxLength:800},
       whyNotSingleConventionalGenre:{type:'string',minLength:20,maxLength:800},
-      grammarFormula:{type:'string',enum:['MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @']},
+      grammarFormula:{type:'string',enum:['MAIN × A × B × C + @']},
       categoryRole:{type:'string',enum:['SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE']}
     },additionalProperties:false},
     expansionVectors:{type:'array',minItems:4,maxItems:8,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
@@ -430,7 +446,7 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
   const rawMain=fusion.main&&typeof fusion.main==='object'&&!Array.isArray(fusion.main)?fusion.main:{};
   const rawAxes=Array.isArray(fusion.majorAxes)?fusion.majorAxes:(Array.isArray(fusion.axes)?fusion.axes:[]);
   const byKey=new Map(rawAxes.map(row=>[clean(row?.key).toUpperCase(),row]));
-  const primary=coreLoop[0]||identityCore.representativeAction||'핵심 행동';
+  const primary=identityCore.oneLineFantasy||identityCore.playerRole||coreLoop[0]||'게임 정체성';
   const second=coreLoop[1]||identityCore.representativeChoice||'다음 선택';
   const third=coreLoop[2]||'결과를 다음 상황에 반영한다';
   const axisFallback={
@@ -439,7 +455,7 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
   };
   const axes=['A','B'].map(key=>{
     const row=byKey.get(key)||{},fb=axisFallback[key];
-    return {key,name:clean(row.name)||fb.name,purpose:clean(row.purpose)||fb.purpose,playerChoice:clean(row.playerChoice)||fb.playerChoice,stateContribution:clean(row.stateContribution)||fb.stateContribution};
+    return {key,name:clean(row.name)||fb.name,purpose:clean(row.purpose)||fb.purpose,playerChoice:clean(row.playerChoice)||fb.playerChoice,stateContribution:clean(row.stateContribution)||fb.stateContribution,systemFamily:clean(row.systemFamily),sourceMaterial:clean(row.sourceMaterial),sourceDomain:clean(row.sourceDomain),materialRule:clean(row.materialRule)};
   });
   const rawSubElements=Array.isArray(fusion.subElements)?fusion.subElements:[];
   const subFallback=[
@@ -453,10 +469,17 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     supports:uniq(row?.supports).filter(x=>['MAIN','A','B'].includes(x)).slice(0,3),
     variationEffect:clean(row?.variationEffect)||subFallback[i%subFallback.length].variationEffect
   })).map((row,i)=>({...row,supports:row.supports.length?row.supports:subFallback[i%subFallback.length].supports}));
+  const authoredThemes=Array.isArray(fusion.themeFusion?.themes)?fusion.themeFusion.themes:[];
+  const themeFusion={
+    themes:authoredThemes.map(row=>({name:clean(row?.name),kind:clean(row?.kind).toUpperCase(),causalEffect:clean(row?.causalEffect)})),
+    jointWorldRule:clean(fusion.themeFusion?.jointWorldRule),
+    abGameplayEffect:clean(fusion.themeFusion?.abGameplayEffect)
+  };
   const gameplaySystemFusion={
-    formula:'MAIN × A × B × c',
+    formula:'MAIN × A × B × C',
     main:{name:clean(rawMain.name)||primary,purpose:clean(rawMain.purpose)||'플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.',playerAction:clean(rawMain.playerAction)||primary,stateContribution:clean(rawMain.stateContribution)||'MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.'},
     majorAxes:axes,
+    themeFusion,
     subElements:subElements.slice(0,Math.max(2,Math.min(6,subElements.length))),
     crossSystemRules:sketchArray(fusion.crossSystemRules,[
       'MAIN의 결과가 A의 선택 비용·위험·보상 중 하나를 바꾼다.',
@@ -473,7 +496,7 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     {name:'재방문 재해석',discoveryCondition:'이전 선택이 누적된 뒤 과거 공간·상대·관계로 돌아간다.',masteryOrInsight:'과거 콘텐츠가 현재 상태에 따라 다른 기능과 의미를 갖는다는 것을 발견한다.',gameplayEffect:'새 통로·사건·상호작용·위험·보상 중 하나가 열린다.',connectsTo:['MAIN','c']},
     {name:'인과 문법 숨은 변형',discoveryCondition:'선택된 causalDNA 두 개 이상의 조건을 동시에 충족한다.',masteryOrInsight:'세계의 인과법칙들이 서로 상쇄·증폭·이전될 수 있음을 이해한다.',gameplayEffect:'기존 시스템 조합만으로는 나오지 않는 예외 규칙이나 특수 결과를 만든다.',connectsTo:['MAIN','A','B','c']}
   ];
-  const delveElements=[...rawDelveElements,...delveFallback].slice(0,10).map((row,i)=>({
+  const delveElements=rawDelveElements.map((row,i)=>({
     name:clean(row?.name)||delveFallback[i%delveFallback.length].name,
     discoveryCondition:clean(row?.discoveryCondition)||delveFallback[i%delveFallback.length].discoveryCondition,
     masteryOrInsight:clean(row?.masteryOrInsight)||delveFallback[i%delveFallback.length].masteryOrInsight,
@@ -495,8 +518,8 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     irreducibilityTest:{removeFirstAxis:clean(ir.removeFirstAxis)||`${dnaA.id} 인과를 제거하면 세계 규칙과 MAIN×A×B×c의 관계가 평범한 기능 조합으로 돌아간다.`,removeSecondAxis:clean(ir.removeSecondAxis)||`${dnaB.id} 인과를 제거하면 일반 시스템 융복합이 재료에서 나온 새 인과문법과 분리된다.`,verdict:clean(ir.verdict)||'재료 인과문법과 MAIN×A×B×c의 시스템 관계가 서로를 바꾸므로 단순 장르 태그나 기능 합산으로 분리할 수 없다.'},
     storyWorldBindings:{emotionalConflict:clean(sw.emotionalConflict)||'플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.',characterRule:clean(sw.characterRule)||'주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.',monsterRule:clean(sw.monsterRule)||'몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.',regionRule:clean(sw.regionRule)||'지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.',storyRule:clean(sw.storyRule)||'스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.',plausibility:clean(sw.plausibility)||'낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.'},
     gameplaySystemFusion,
-    delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveElements.slice(0,Math.max(4,Math.min(10,delveElements.length)))},
-    emergentGenre:{name:emergentName,definition:clean(emergentRaw.definition)||`${newPrimaryVerb}을 중심으로 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다.`,whyNotSingleConventionalGenre:clean(emergentRaw.whyNotSingleConventionalGenre)||'기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.',grammarFormula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveElements},
+    emergentGenre:{name:emergentName,definition:clean(emergentRaw.definition)||`${newPrimaryVerb}을 중심으로 재료 인과문법과 MAIN×A×B×c가 서로 상태를 바꾸고 @ 파고들기 요소가 숨은 운용을 여는 복합장르다.`,whyNotSingleConventionalGenre:clean(emergentRaw.whyNotSingleConventionalGenre)||'기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
     expansionVectors:sketchArray(raw.expansionVectors,['새 지역은 같은 인과법칙과 MAIN×A×B×c의 관계를 다른 공간 조건에서 변형한다.','새 몬스터는 체력 배수가 아니라 A/B/c 관계의 상태 전달을 방해·증폭·반전한다.','새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.','새 아이템/능력은 MAIN/A/B/c 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다.','새 @는 숨은 조합·숙련·재해석·재방문·관계 변화·고급 변형 중 하나로 기존 시스템을 더 깊게 사용하게 한다.'],4,8),
     culturalAbstractionRule:clean(raw.culturalAbstractionRule)||'동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 높낮이 없이 동등한 재료이며 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다.'
   };
@@ -602,7 +625,7 @@ export function normalizeGameplaySketch(target,p,coreLoop,gameName){
     novelGameGrammar,
   }};
   const flowArchitecture=buildGameFlowArchitecture({gameId:`seed:${target.requestId}`,genre:target.category,baseline:flowBaseline,inventory:[]});
-  return{version:4,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH_V4_CAUSAL_GRAMMAR',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,novelGameGrammar,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
+  return{version:5,source:clean(raw.source)||'GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,identityCore,novelGameGrammar,playerPromise,funDrivers,balanceRules,pacingPlan,progressionLayers,expansionPlan,longGoalScenario,completionCriteria,codingGrowthHooks,validationRisks,flowArchitecture};
 }
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
@@ -659,7 +682,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 재료 사이에 깊이 등급을 만들지 않는다. toneBlend는 이 게임에 맞는 톤을 자유롭게 섞는다. gameplaySystemFusion은 일반 플레이 구조를 MAIN × A × B × c로 정확히 구성한다. MAIN은 가장 반복하는 중심 플레이, A와 B는 서로 크게 물리는 일반 시스템 대축이다. c는 A/B와 동급 대축이 아니라 날씨·타이밍·지역규칙·이벤트·보조자원·상태변수처럼 MAIN/A/B 관계를 상황별로 변주하고 연결하는 서브요소 묶음이다. A/B는 전투·탐험·경제·제작·퍼즐·대화·관계·건설·카드·레이싱·외교 등 익숙한 시스템이어도 된다. 중요한 것은 병렬 기능 목록이 아니라 MAIN↔A↔B의 상태 전달에 c가 변주를 만들고 결과가 다시 MAIN으로 돌아오는 것이다. delveLayer의 + @는 c와도 다르며 일반 시스템이 아니다. @는 숨은 조합·숙련 테크닉·발견·재해석·재방문·관계 변화·고급 변형·메타 규칙처럼 플레이어가 파고들수록 드러나는 요소이며 최소 4개를 설계하고 각 요소는 MAIN/A/B 중 최소 2개와 연결하거나 c 서브요소를 통해 그 관계를 확장한다. emergentGenre는 GAME_CATEGORY를 그대로 답하지 말고 재료 인과문법 × (MAIN × A × B × c) + @의 결과로 생긴 새 복합장르의 이름과 정의를 작성한다. GAME_CATEGORY는 시드 탐색과 운영 라우팅 힌트일 뿐 최종 장르가 아니다. expansionVectors는 콘텐츠 개수 증가보다 MAIN/A/B/c 관계와 @의 새로운 사용법을 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 재료 사이에 깊이 등급을 만들지 않는다. toneBlend는 이 게임에 맞는 톤을 자유롭게 섞는다. gameplaySystemFusion은 일반 플레이 구조를 MAIN × A × B × c로 정확히 구성한다. MAIN은 주제와 게임 정체성이다. A와 B는 RPG·생존·타이쿤·디펜스·생활·퍼즐·액션 등의 실제 플레이 시스템을 각각 하나 선택하고, 각 축에 구체적인 창작 소재(sourceMaterial/sourceDomain)를 반드시 결합한다. 두 축의 소재는 같아도 서로 다른 실제 인과 효과를 만들어야 한다. C는 themeFusion의 두 주제이며 최소 하나는 kind=GENRE여야 한다. 다른 소재는 인물·예술·종교·역사·무협·신화·엽기·과학 등 제한 없는 영역에서 선택한다. 두 주제가 서사와 세계 규칙 및 A/B 플레이 판단을 바꿔야 한다. subElements는 작은 실행 변주일 뿐 C 자체가 아니다. A/B는 전투·탐험·경제·제작·퍼즐·대화·관계·건설·카드·레이싱·외교 등 익숙한 시스템이어도 된다. 중요한 것은 병렬 기능 목록이 아니라 MAIN↔A↔B의 상태 전달에 c가 변주를 만들고 결과가 다시 MAIN으로 돌아오는 것이다. delveLayer의 + @는 c와도 다르며 일반 시스템이 아니다. @는 숨은 조합·숙련 테크닉·발견·재해석·재방문·관계 변화·고급 변형·메타 규칙처럼 플레이어가 파고들수록 드러나는 요소이며 최소 4개를 설계하고 각 요소는 MAIN/A/B 중 최소 2개와 연결하거나 c 서브요소를 통해 그 관계를 확장한다. emergentGenre는 GAME_CATEGORY를 그대로 답하지 말고 재료 인과문법 × (MAIN × A × B × c) + @의 결과로 생긴 새 복합장르의 이름과 정의를 작성한다. GAME_CATEGORY는 시드 탐색과 운영 라우팅 힌트일 뿐 최종 장르가 아니다. expansionVectors는 콘텐츠 개수 증가보다 MAIN/A/B/c 관계와 @의 새로운 사용법을 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
