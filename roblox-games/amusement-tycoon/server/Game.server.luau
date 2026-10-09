@@ -522,7 +522,7 @@ local function bindNativeFoundationCharacter(character)
     local displacement = (rootPart.Position - movementOrigin) * Vector3.new(1, 0, 1)
     if speed > 0.1 and displacement.Magnitude > 0.5 then
       character:SetAttribute("MOVEMENT_CONFIRMED", true)
-      if foundationPlayer then
+      if foundationPlayer and foundationSeen.GROUND_CONTACT then
         foundationCheckpoint("MOVEMENT_CONFIRMED", foundationPlayer, {displacement = displacement.Magnitude})
       end
     end
@@ -565,11 +565,5 @@ end
 nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
   if typeof(signal) ~= "string" then return end
   player:SetAttribute("NativeFoundationReadyAt", os.time())
-  -- F5는 실제 클라이언트가 보낸 준비 보고만 저장한다. F1~F4를 대신 통과시키지 않는다.
-  if signal == "CAMERA_READY" or signal == "INPUT_READY" or signal == "INPUT_READY_TOUCH" then
-    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-      foundationCheckpoint(signal == "INPUT_READY_TOUCH" and "INPUT_READY" or signal, player, {clientReported = true})
-    end
-  end
 end)
 game:BindToClose(function() end)
