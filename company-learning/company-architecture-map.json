@@ -5491,9 +5491,9 @@
       "wrapperOrShadowPipeline": false,
       "genreSpecificPrimaryActionPreserved": true,
       "causalGrammarFlow": {
-        "version": 2,
+        "version": 3,
         "existingPipelineOnly": true,
-        "formula": "MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @ = EMERGENT_COMPOSITE_GENRE",
+        "formula": "MAIN × A × B × C + @ = EMERGENT_COMPOSITE_GENRE",
         "flow": [
           "EXISTING_SEED_MATERIAL_POOL_WITH_CAUSAL_DNA_METADATA",
           "GAMEPLAY_SKETCH.novelGameGrammar",
@@ -5505,18 +5505,22 @@
           "CURRENT_SOURCE_INSPECTION",
           "EXISTING_RESPONSIBLE_SOURCE_MUTATION",
           "QA_RUNTIME",
-          "NEXT_BUILD_UP"
+          "NEXT_BUILD_UP",
+          "STRICT_MAIN_AB_C_PRIMARY_SECONDARY_GENRE_AND_CAUSAL_STORY_CHECK",
+          "OWNER_GRAMMAR_FIVE_IDEA_CHECK",
+          "VERIFY_REAL_PLAY_AND_DO_NOT_PROMOTE_FROM_DESIGN_ONLY"
         ],
         "roles": {
-          "MAIN": "CENTRAL_REPEATED_ACTION",
-          "A": "MAJOR_AXIS_ONE",
-          "B": "MAJOR_AXIS_TWO",
+          "MAIN": "GAME_TOPIC_AND_PLAYER_IDENTITY",
+          "A": "GAME_SYSTEM_MULTIPLIED_BY_ITS_CREATIVE_SOURCE",
+          "B": "SECOND_GAME_SYSTEM_MULTIPLIED_BY_ITS_CREATIVE_SOURCE",
           "c": "SUB_ELEMENT_COLLECTION_NOT_MAJOR_AXIS",
-          "at": "DELVE_LAYER_NOT_GENERAL_SYSTEM"
+          "at": "UNBOUNDED_DISCOVERY_MASTERY_REVISIT_DEEPENING",
+          "C": "TWO_OPEN_CREATIVE_THEMES_PLUS_PRIMARY_AND_SECONDARY_DISTINCT_GENRES"
         },
         "categoryRole": "SEED_DISCOVERY_AND_OPERATIONAL_ROUTING_HINT_ONLY",
         "emergentGenreCreatedAfterGrammar": true,
-        "existingGameMode": "RECONSTRUCT_CURRENT_MAIN_A_B_c_AT_FROM_DESIGN_AND_SOURCE_THEN_CLOSE_MISSING_CONNECTIONS",
+        "existingGameMode": "REWRITE_LEGACY_MAIN_ONLY_DESIGN_USING_MAIN_A_B_C_AT_AND_EXISTING_SOURCE",
         "newWorkflow": false,
         "newQueue": false,
         "newScheduler": false,
@@ -5527,7 +5531,10 @@
         "gameCategoryRoutingHintOnly": true,
         "emergentGenreFinalCompositeIdentity": true,
         "existingGameSourceAndDesignReconstructionFirst": true,
-        "existingGameIdentityRewriteRequired": false
+        "existingGameIdentityRewriteRequired": false,
+        "cThemeGenreCount": 2,
+        "cPrimarySupportingDistinct": true,
+        "aAndBRequireDistinctCreativeBindings": true
       }
     }
   },
