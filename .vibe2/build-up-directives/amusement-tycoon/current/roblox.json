@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g33-9155b17187e9",
-  "directiveFingerprint": "9155b17187e9a924da7defed84a2a069848eaa52279620404ad72dc07c10ca16",
-  "previousDirectiveFingerprint": "65f25ae77822a6d672d2b5ba9e33e57308ad7ceb87e159b11351807cefcf1dc2",
-  "forbiddenRepeatFingerprint": "65f25ae77822a6d672d2b5ba9e33e57308ad7ceb87e159b11351807cefcf1dc2",
+  "directiveId": "amusement-tycoon-build-up-g34-04ec67dc60af",
+  "directiveFingerprint": "04ec67dc60af9ad6cabaf2d35cbf40aee46dba4b7d1355cac2d7419ca89f3c1e",
+  "previousDirectiveFingerprint": "9155b17187e9a924da7defed84a2a069848eaa52279620404ad72dc07c10ca16",
+  "forbiddenRepeatFingerprint": "9155b17187e9a924da7defed84a2a069848eaa52279620404ad72dc07c10ca16",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 33,
+  "generation": 34,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+  "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
   "designFingerprint": "af9cdfd554ffe86590f12dffe98e649884792bac133edc5747ea0a25a21ccdb2",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -79,16 +79,26 @@
         "mode": "EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE",
         "formula": "MAIN × A × B × c + @",
         "main": "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+        "source": "LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE",
+        "roleSystemIds": {
+          "MAIN": null,
+          "A": null,
+          "B": null,
+          "c": [],
+          "AT": []
+        },
         "majorAxes": [
           {
             "key": "A",
+            "systemId": null,
             "name": "동선 최적화 시스템",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           },
           {
             "key": "B",
+            "systemId": null,
             "name": "감정 기반 만족도 엔진",
-            "source": "CURRENT_DESIGN_SIGNATURE_SYSTEM_OR_LOOP"
+            "source": "LEGACY_DESIGN_FALLBACK_UNVERIFIED"
           }
         ],
         "cSubElements": [
@@ -104,7 +114,7 @@
           "글로벌 랭킹 및 경쟁 경영 챌린지",
           "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다."
         ],
-        "sourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+        "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
         "rule": "PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -114,6 +124,319 @@
     },
     "buildUpRule": "EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT",
     "genreAdaptationRule": "PRESERVE_THE_GENRE_PRIMARY_ACTION; DO_NOT_FORCE_RPG_STYLE_SYSTEMS_ON_PUZZLE_RACING_TYCOON_DEFENSE_SURVIVAL_ACTION_CARD_BOARD_STRATEGY_CASUAL_OR_OTHER_GENRES"
+  },
+  "designToPlatformCodingTrace": {
+    "version": 1,
+    "authority": "GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK",
+    "gameId": "amusement-tycoon",
+    "requestedPlatform": "ROBLOX",
+    "activePlatform": "ROBLOX",
+    "designFingerprint": "af9cdfd554ffe86590f12dffe98e649884792bac133edc5747ea0a25a21ccdb2",
+    "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
+    "multiplayerMode": "SINGLE",
+    "multiplayerRequired": true,
+    "minimumParticipants": 2,
+    "platformCodingPlans": [
+      {
+        "platform": "ROBLOX",
+        "canonicalGameSourceRoot": "roblox-games/amusement-tycoon",
+        "sharedUnitySource": false,
+        "gameCodePlatformProfile": "ROBLOX",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": true
+      },
+      {
+        "platform": "UNITY_WEB",
+        "canonicalGameSourceRoot": "unity-games/amusement-tycoon",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "minimumRenderedDimension": "2.5D",
+        "spatialDesignReady": false,
+        "inspectedInThisDirective": false
+      },
+      {
+        "platform": "UNITY_APP",
+        "canonicalGameSourceRoot": "unity-games/amusement-tycoon",
+        "sharedUnitySource": true,
+        "gameCodePlatformProfile": "UNITY",
+        "requiresSameServerTwoClientPlay": true,
+        "requiresNativeRuntimeResult": true,
+        "inspectedInThisDirective": false
+      }
+    ],
+    "roleBindings": [
+      {
+        "role": "MAIN",
+        "grammarRole": "MAIN",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "reportNativeFoundationReady",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildPathTile",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildThemeParkWorld",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "A",
+        "grammarRole": "A",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "reportNativeFoundationReady",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildPathTile",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildThemeParkWorld",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "B",
+        "grammarRole": "B",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "reportNativeFoundationReady",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildPathTile",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildThemeParkWorld",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "c",
+        "grammarRole": "c",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/amusement-tycoon/client/Game.client.luau",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/amusement-tycoon/server/Game.server.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "reportNativeFoundationReady",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildPathTile",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildThemeParkWorld",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      },
+      {
+        "role": "@",
+        "grammarRole": "DELVE",
+        "systemId": null,
+        "systemIds": [],
+        "names": [],
+        "name": null,
+        "stateInputs": [],
+        "stateOutputs": [],
+        "connections": [],
+        "suggestedExistingOwnerFiles": [
+          "roblox-games/amusement-tycoon/server/Game.server.luau",
+          "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+          "roblox-games/amusement-tycoon/client/Game.client.luau"
+        ],
+        "inspectedSymbols": [
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "initializePlayer",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "render",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
+            "symbol": "reportNativeFoundationReady",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildPathTile",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+            "symbol": "buildThemeParkWorld",
+            "kind": "FUNCTION"
+          }
+        ],
+        "designStatus": "DESIGN_REPAIR_REQUIRED",
+        "codingStatus": "SOURCE_OWNER_CANDIDATE_UNVERIFIED",
+        "executableBehaviorVerified": false,
+        "actualRuntimeVerified": false,
+        "evidenceNeeded": "EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA"
+      }
+    ],
+    "observedGameCodeFiles": [
+      "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau"
+    ],
+    "executableCodeCandidateFiles": [
+      "roblox-games/amusement-tycoon/server/Game.server.luau",
+      "roblox-games/amusement-tycoon/client/Game.client.luau"
+    ],
+    "gapReasons": [
+      "DESIGN_MAIN_A_B_c_AT_INCOMPLETE",
+      "MULTIPLAYER_DESIGN_MODE_MISSING",
+      "DESIGN_ROLE_NOT_AUTHORED:MAIN",
+      "DESIGN_ROLE_NOT_AUTHORED:A",
+      "DESIGN_ROLE_NOT_AUTHORED:B",
+      "DESIGN_ROLE_NOT_AUTHORED:c",
+      "DESIGN_ROLE_NOT_AUTHORED:@"
+    ],
+    "codingReviewState": "GAME_STAGE_LOCAL_REPAIR_REQUIRED",
+    "sourceImplementationPassed": false,
+    "actualTwoClientPassed": false,
+    "actualWebglRenderPassed": false,
+    "independentQaPassed": false,
+    "stageLocalAction": "IMPLEMENT_IN_EXISTING_GAME_SOURCE_THEN_VALIDATE_WITH_EXISTING_F0_TO_F9_AND_PLATFORM_RUNTIME",
+    "schemaAndMarkersAloneCannotPass": true,
+    "newPipeline": false,
+    "changesDevelopmentAdmission": false,
+    "saveBalanceAndExistingMultiplayerMeaningPreserved": true
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
@@ -329,36 +652,36 @@
       "combat": 35,
       "progression": 105,
       "ai": 21,
-      "save": 48,
-      "multiplayer": 13,
+      "save": 52,
+      "multiplayer": 15,
       "animation": 37,
-      "motionStates": 157,
+      "motionStates": 166,
       "gameFeel": 29,
       "vfx": 24,
       "camera": 33,
       "audio": 4,
       "audioDynamics": 16,
       "ui": 62,
-      "uiFlow": 33,
-      "entryFlow": 24,
+      "uiFlow": 37,
+      "entryFlow": 26,
       "loadingFlow": 0,
       "input": 61,
-      "map": 120,
-      "landmark": 11,
+      "map": 130,
+      "landmark": 28,
       "interaction": 43,
       "inventory": 6,
       "equipment": 3,
       "settings": 2,
-      "feedback": 69,
-      "session": 13,
+      "feedback": 71,
+      "session": 32,
       "content": 78,
-      "choice": 43,
+      "choice": 44,
       "connection": 2,
       "performance": 18,
       "lighting": 39,
       "primitive": 18,
       "todo": 0,
-      "errorRecovery": 12
+      "errorRecovery": 14
     },
     "topFiles": [
       {
@@ -367,7 +690,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "score": 170
+        "score": 209
       },
       {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
@@ -381,7 +704,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 33,
+        "line": 100,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
@@ -405,7 +728,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 216,
+        "line": 283,
         "kind": "FUNCTION",
         "symbol": "buildPathTile",
         "context": "local function buildPathTile(player)",
@@ -413,7 +736,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 54,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "buildThemeParkWorld",
         "context": "local function buildThemeParkWorld()",
@@ -429,7 +752,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 48,
+        "line": 115,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, scope, pattern)",
@@ -437,7 +760,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 116,
+        "line": 183,
         "kind": "FUNCTION",
         "symbol": "spawnCustomer",
         "context": "local function spawnCustomer(player)",
@@ -445,7 +768,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 175,
+        "line": 242,
         "kind": "FUNCTION",
         "symbol": "startParkDay",
         "context": "local function startParkDay(player)",
@@ -453,7 +776,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 182,
+        "line": 249,
         "kind": "FUNCTION",
         "symbol": "finishParkDay",
         "context": "local function finishParkDay(player)",
@@ -461,7 +784,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 441,
+        "line": 557,
         "kind": "FUNCTION",
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
@@ -469,7 +792,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 149,
+        "line": 216,
         "kind": "FUNCTION",
         "symbol": "recomputePark",
         "context": "local function recomputePark(player)",
@@ -477,7 +800,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 189,
+        "line": 256,
         "kind": "FUNCTION",
         "symbol": "toggleParkSession",
         "context": "local function toggleParkSession(player)",
@@ -485,7 +808,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 197,
+        "line": 264,
         "kind": "FUNCTION",
         "symbol": "runCustomerFlow",
         "context": "local function runCustomerFlow(player)",
@@ -493,10 +816,18 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 233,
+        "line": 300,
         "kind": "FUNCTION",
         "symbol": "upgradeRide",
         "context": "local function upgradeRide(player)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 459,
+        "kind": "FUNCTION",
+        "symbol": "bindNativeFoundationCharacter",
+        "context": "local function bindNativeFoundationCharacter(character)",
         "score": 58
       },
       {
@@ -509,7 +840,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 223,
+        "line": 290,
         "kind": "FUNCTION",
         "symbol": "placeRide",
         "context": "local function placeRide(player)",
@@ -517,7 +848,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 252,
+        "line": 319,
         "kind": "FUNCTION",
         "symbol": "manageJanitors",
         "context": "local function manageJanitors(player)",
@@ -533,7 +864,15 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 24,
+        "line": 32,
+        "kind": "FUNCTION",
+        "symbol": "foundationCheckpoint",
+        "context": "local function foundationCheckpoint(name, player, facts)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "line": 91,
         "kind": "FUNCTION",
         "symbol": "readNumber",
         "context": "local function readNumber(player, name, fallback)",
@@ -541,7 +880,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 29,
+        "line": 96,
         "kind": "FUNCTION",
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
@@ -556,14 +895,6 @@
         "score": 34
       },
       {
-        "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 366,
-        "kind": "FUNCTION",
-        "symbol": "bindNativeFoundationCharacter",
-        "context": "local function bindNativeFoundationCharacter(character)",
-        "score": 34
-      },
-      {
         "file": "roblox-games/amusement-tycoon/client/Game.client.luau",
         "line": 24,
         "kind": "FUNCTION",
@@ -573,7 +904,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 44,
+        "line": 111,
         "kind": "FUNCTION",
         "symbol": "clamp",
         "context": "local function clamp(value, low, high)",
@@ -584,9 +915,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 32,
-    "previousSourceTreeFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
-    "currentSourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+    "previousGeneration": 33,
+    "previousSourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+    "currentSourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -1744,7 +2075,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 133949,
+        "sourceBytes": 139551,
         "largestFileBytes": 48234,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -1777,13 +2108,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=3.",
+    "themeDepth": 10,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -1795,7 +2126,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -1833,7 +2164,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 42,
+        "score": 24,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -1949,11 +2280,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 33,
-    "previousGeneration": 32,
+    "generation": 34,
+    "previousGeneration": 33,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
-    "priorSourceFingerprint": "7b0cdbecd8a51a66201abf4f23788608ed1075960d9788ad0a50e1d3e99a2c36",
+    "sourceFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
+    "priorSourceFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -2206,7 +2537,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 33,
+        "line": 100,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "currentBehavior": "local function initializePlayer(player)",
@@ -2233,7 +2564,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 216,
+        "line": 283,
         "kind": "FUNCTION",
         "symbol": "buildPathTile",
         "currentBehavior": "local function buildPathTile(player)",
@@ -2242,7 +2573,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 54,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "buildThemeParkWorld",
         "currentBehavior": "local function buildThemeParkWorld()",
@@ -2260,7 +2591,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 48,
+        "line": 115,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "currentBehavior": "local function markAction(player, scope, pattern)",
@@ -2269,7 +2600,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 116,
+        "line": 183,
         "kind": "FUNCTION",
         "symbol": "spawnCustomer",
         "currentBehavior": "local function spawnCustomer(player)",
@@ -2414,7 +2745,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+    "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2507,7 +2838,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+    "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "qualityContract": {
@@ -2554,7 +2885,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 33,
+        "line": 100,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
@@ -2590,7 +2921,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 216,
+        "line": 283,
         "kind": "FUNCTION",
         "symbol": "buildPathTile",
         "context": "local function buildPathTile(player)",
@@ -2602,7 +2933,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 54,
+        "line": 121,
         "kind": "FUNCTION",
         "symbol": "buildThemeParkWorld",
         "context": "local function buildThemeParkWorld()",
@@ -2626,7 +2957,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 48,
+        "line": 115,
         "kind": "FUNCTION",
         "symbol": "markAction",
         "context": "local function markAction(player, scope, pattern)",
@@ -2638,7 +2969,7 @@
       },
       {
         "file": "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "line": 116,
+        "line": 183,
         "kind": "FUNCTION",
         "symbol": "spawnCustomer",
         "context": "local function spawnCustomer(player)",
@@ -2772,7 +3103,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a11c7c6ba89cce40ee43f07abf7767b941dcd8373a943b01d08ded9f7c99a464",
+      "sourceTreeFingerprint": "8bece8f693b5f0aa90d317c580c19febee3162ce88b45e344ff692ab5448088f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
@@ -2827,7 +3158,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 34,
+    "nextGeneration": 35,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -2892,5 +3223,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-08T11:50:06.067Z"
+  "generatedAt": "2026-10-09T05:38:16.692Z"
 }
