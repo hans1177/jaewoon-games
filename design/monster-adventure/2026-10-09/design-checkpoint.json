@@ -77,25 +77,39 @@
       "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::8bb5d573096f56b8e0d4ac0ae8b786bb07bd7a8ffed92afb7acbb997edb98c73:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
+      "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
+      "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 433724,
-      "lastMs": 31827,
+      "totalMs": 472151,
+      "lastMs": 38427,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:24:01.591Z"
+      "updatedAt": "2026-10-09T11:24:40.020Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:24:01.591Z",
+  "updatedAt": "2026-10-09T11:24:40.020Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2181,7 +2195,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:24:01.591Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:24:40.020Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
