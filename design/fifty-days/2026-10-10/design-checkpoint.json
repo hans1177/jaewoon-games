@@ -960,25 +960,164 @@
         }
       ],
       "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 중심 역할을 수행함. 퀘스터/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함. 무기/속성 선택은 전투 스타일 및 인식 변화의 깊이를 결정하고, 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함."
+    },
+    "local_authoring_parts::b9aeb85f02080ff47ead23edf73ee85bbcb23defcd50523f15bd25377d9a44b7:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "CORE_LOOP_DESIGN",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "ITEM",
+          "resource": "무기/속성",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "GAME_SEED",
+          "rangeKey": "무기/속성",
+          "costKey": "무기/속성",
+          "cooldownKey": "무기/속성"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "CORE_LOOP_DESIGN",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "ITEM",
+          "resource": "퀘스트/보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "플레이어 경험/레벨 스토리 상승",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "플레이어 경험/레벨 스토리 상승"
+          ],
+          "source": "GAME_SEED",
+          "rangeKey": "퀘스트/보상",
+          "costKey": "퀘스트/보상",
+          "cooldownKey": "퀘스트/보상"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "CORE_LOOP_DESIGN",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "ITEM",
+          "resource": "주제/역사/철학",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "전투 스타일 및 인식 변화",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "전투 스타일 및 인식 변화"
+          ],
+          "source": "GAME_SEED",
+          "rangeKey": "주제/역사/철학",
+          "costKey": "주제/역사/철학",
+          "cooldownKey": "주제/역사/철학"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "플레이어",
+          "humanTool": "A/B/C 상태 교환",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "플레이어 경험/레벨 스토리 상승",
+          "changedChoice": "A/B/C 상태 교환"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "A/B/C 상태 교환",
+          "humanAbilityId": "50일-퀘스트/보상 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "주제/역사/철학 선택",
+          "removedState": "전투 스타일 및 인식 변화",
+          "changedChoice": "A/B/C 상태 교환"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "A/B/C 상태 교환",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-무기/속성 선택",
+          "retainedState": "퀘스트/보상 선택",
+          "removedState": "실시간 속도/강화 기능 증가",
+          "changedChoice": "A/B/C 상태 교환"
+        }
+      ],
+      "regions": [
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "CORE_LOOP_DESIGN"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "traversal": "주제/역사/철학 -> 퀘스트/보상 -> 무기/속성",
+          "riskReward": "주제/역사/철학 선택 -> 퀘스트/보상 선택 -> 무기/속성 선택",
+          "landmark": "전투 스타일과 인식 변화의 깊이",
+          "encounterPattern": "주제/역사/철학 선택 -> 퀘스트/보상 선택 -> 무기/속성 선택",
+          "resourcePressure": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하고, 퀘스트/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "storyContext": "플레이어는 A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다."
+        },
+        {
+          "id": "실시간 속도/강화 기능 증가",
+          "ruleIds": [
+            "CORE_LOOP_DESIGN"
+          ],
+          "name": "실시간 속도/강화 기능 증가",
+          "traversal": "주제/역사/철학 -> 퀘스트/보상 -> 무기/속성",
+          "riskReward": "주제/역사/철학 선택 -> 퀘스트/보상 선택 -> 무기/속성 선택",
+          "landmark": "전투 스타일과 인식 변화의 깊이",
+          "encounterPattern": "주제/역사/철학 선택 -> 퀘스트/보상 선택 -> 무기/속성 선택",
+          "resourcePressure": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하고, 퀘스트/보상 선택은 게임 세계관의 진입 및 경험 상승의 빈도와 강도를 조절해야 함.",
+          "storyContext": "플레이어는 A/B/C 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1333735,
-      "lastMs": 210475,
+      "totalMs": 1500417,
+      "lastMs": 166682,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:46:39.296Z"
+      "updatedAt": "2026-10-09T21:49:25.980Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T21:46:39.296Z",
+  "updatedAt": "2026-10-09T21:49:25.980Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2767,10 +2906,10 @@
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:43:08.817Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "content-rules",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:49:25.980Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
