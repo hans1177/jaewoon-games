@@ -99,15 +99,7 @@
     "finalAcceptanceRequiresPrimaryAiReview": false,
     "workerSelfAcceptanceForbidden": true,
     "reworkMustReferencePriorAssignment": true,
-    "workerMarkers": [
-      "WORKER_ID",
-      "CANONICAL_TASK_ID",
-      "ASSIGNED_OR_AUTONOMOUS_SCOPE",
-      "CHANGED_SCOPE",
-      "VERIFICATION_EVIDENCE",
-      "FAILURE_STAGE",
-      "FAILURE_SIGNATURE"
-    ],
+    "workerMarkers": ["WORKER_ID","CANONICAL_TASK_ID","ASSIGNED_OR_AUTONOMOUS_SCOPE","CHANGED_SCOPE","VERIFICATION_EVIDENCE","FAILURE_STAGE","FAILURE_SIGNATURE"],
     "deterministicMachineGateMayCompleteWithoutPrimaryAi": true,
     "workerMustNotInventPolicy": true,
     "workerMayCompleteCanonicalTaskWhenDeterministicGatePasses": true,
@@ -116,14 +108,7 @@
     "internalVibeAiCollaboration": {
       "version": 1,
       "requiredWhenEscalated": true,
-      "markers": [
-        "PRIMARY_AI_COLLABORATION=REQUESTED|APPLIED|NOT_REQUIRED",
-        "PRIMARY_AI_COLLABORATION_REASON",
-        "PRIMARY_AI_COLLABORATION_TASK",
-        "FAILURE_STAGE",
-        "FAILURE_SIGNATURE",
-        "VERIFICATION_EVIDENCE"
-      ],
+      "markers": ["PRIMARY_AI_COLLABORATION=REQUESTED|APPLIED|NOT_REQUIRED","PRIMARY_AI_COLLABORATION_REASON","PRIMARY_AI_COLLABORATION_TASK","FAILURE_STAGE","FAILURE_SIGNATURE","VERIFICATION_EVIDENCE"],
       "rawPrivateReasoningLogged": false,
       "autonomousCompletionStillAllowed": true,
       "deterministicQaStillAuthoritative": true,
@@ -202,15 +187,7 @@
     "evolutionObservability": {
       "source": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
       "rawPrivateReasoningLogged": false,
-      "requiredDimensions": [
-        "FAILURE_CLASSIFICATION",
-        "WORKER_HANDOFF",
-        "BOTTLENECK_SENSOR",
-        "FOCUSED_CARETAKER",
-        "QA_CONTRACT_DRIFT",
-        "PRIMARY_AI_VIBE_COLLABORATION",
-        "VERIFIED_LEARNING_REUSE"
-      ],
+      "requiredDimensions": ["FAILURE_CLASSIFICATION","WORKER_HANDOFF","BOTTLENECK_SENSOR","FOCUSED_CARETAKER","QA_CONTRACT_DRIFT","PRIMARY_AI_VIBE_COLLABORATION","VERIFIED_LEARNING_REUSE"],
       "structuredEvidenceRequired": true,
       "duplicatePersistentLogForbidden": true,
       "implementationState": "IMPLEMENTED_QA_VERIFIED_ACTIVE_RUNTIME",
@@ -535,15 +512,7 @@
     "ownerChangeRequestScopeEvidenceRequired": true,
     "directResponsibleSystemMutationEvidencePreferred": true,
     "wrapperOrShadowAccumulationEvidenceForbidden": true,
-    "evolutionCycleFields": [
-      "EVOLUTION_CYCLE",
-      "TRIGGER_SIGNAL",
-      "TRIGGER_FINGERPRINT",
-      "AFFECTED_SCOPES",
-      "AFFECTED_INTERNAL_STAGES",
-      "PREVIOUS_GRAPHICS_CHECKPOINT",
-      "NEW_GRAPHICS_CHECKPOINT"
-    ],
+    "evolutionCycleFields": ["EVOLUTION_CYCLE","TRIGGER_SIGNAL","TRIGGER_FINGERPRINT","AFFECTED_SCOPES","AFFECTED_INTERNAL_STAGES","PREVIOUS_GRAPHICS_CHECKPOINT","NEW_GRAPHICS_CHECKPOINT"],
     "sameTriggerFingerprintDuplicateCycleForbidden": true,
     "passAloneIsNotEvolutionTrigger": true,
     "evolutionUsesSameGraphicsProductionRoot": true,
@@ -621,14 +590,7 @@
     ],
     "authoringIntegrity": {
       "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution.detailedBlueprint.authoringIntegrity",
-      "markers": [
-        "DESIGN_SLICE_CONTENT_VALID",
-        "DESIGN_SLICE_CONTENT_REPAIR",
-        "DESIGN_FULL_FLOW_CONTENT_VALID",
-        "DESIGNER_SEED_INPUT_CREATED",
-        "DESIGNER_SEED_AUTHORED",
-        "DESIGN_PRE_GATE=REMOVED"
-      ],
+      "markers": ["DESIGN_SLICE_CONTENT_VALID","DESIGN_SLICE_CONTENT_REPAIR","DESIGN_FULL_FLOW_CONTENT_VALID","DESIGNER_SEED_INPUT_CREATED","DESIGNER_SEED_AUTHORED","DESIGN_PRE_GATE=REMOVED"],
       "evidence": [
         "FAILED_CONTENT_PATH",
         "REPAIR_FIELDS",
@@ -809,16 +771,7 @@
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#continuousLearning24hContract",
     "recordKind": "continuous-learning-24h-evidence",
-    "requiredFields": [
-      "CYCLE_ID",
-      "SCHEDULER_RUN_ID",
-      "LEARNING_QUEUE_DEPTH",
-      "LEARNING_LANE_ACTIVE",
-      "PRODUCTION_LANE_ACTIVE",
-      "NEXT_CYCLE_DISPATCHED",
-      "VERIFIED_INGEST_COUNT",
-      "FAILURE_RETRY_STATE"
-    ],
+    "requiredFields": ["CYCLE_ID","SCHEDULER_RUN_ID","LEARNING_QUEUE_DEPTH","LEARNING_LANE_ACTIVE","PRODUCTION_LANE_ACTIVE","NEXT_CYCLE_DISPATCHED","VERIFIED_INGEST_COUNT","FAILURE_RETRY_STATE"],
     "noLearningPauseMarkerAllowedDuringHealthySchedulerOperation": true,
     "queuedWorkDuringCapacityPressureCountsAsContinuity": true,
     "positiveLearningStillRequiresExistingVerificationGates": true
@@ -926,17 +879,7 @@
           "NAMED_ELITE",
           "HUMANOID_BOSS"
         ],
-        "CREATURE": [
-          "ENEMY",
-          "ELITE",
-          "MINI_BOSS",
-          "CREATURE",
-          "PET",
-          "MOUNT",
-          "SUMMON",
-          "BOSS",
-          "RAID_BOSS"
-        ]
+        "CREATURE": ["ENEMY","ELITE","MINI_BOSS","CREATURE","PET","MOUNT","SUMMON","BOSS","RAID_BOSS"]
       },
       "roleSpecificVisualAndMotionEvidenceRequired": true,
       "npcDiversityEvidence": {
@@ -1035,18 +978,7 @@
     "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract.runtimeLearning",
     "evidenceScope": "PER_GAME_CANDIDATE_AND_STORY_STATE_VERSION",
-    "correlationKeys": [
-      "GAME_ID",
-      "CANDIDATE_SHA",
-      "STORY_STATE_VERSION",
-      "QUEST_ID",
-      "CHARACTER_ID",
-      "THREAD_ID",
-      "FAILURE_SIGNATURE",
-      "FACTION_ID",
-      "FACTION_RELATIONSHIP_KEY",
-      "SOURCE_EVENT_ID"
-    ],
+    "correlationKeys": ["GAME_ID","CANDIDATE_SHA","STORY_STATE_VERSION","QUEST_ID","CHARACTER_ID","THREAD_ID","FAILURE_SIGNATURE","FACTION_ID","FACTION_RELATIONSHIP_KEY","SOURCE_EVENT_ID"],
     "requiredEvidence": [
       "MAIN_STORY_CAUSALITY_RESULT",
       "QUEST_GRAPH_PREREQUISITE_AND_COMPLETION_RESULT",
@@ -1073,17 +1005,7 @@
     "outOfRangeFactionRelationshipStateMustBeLoggedAsFailure": true,
     "causalGameGrammarEvidence": {
       "sourceField": "GAME_SEED.GAMEPLAY_SKETCH.novelGameGrammar",
-      "correlationKeys": [
-        "GAME_ID",
-        "CAUSAL_DNA_ID",
-        "MAIN_SYSTEM",
-        "A_AXIS",
-        "B_AXIS",
-        "c_SUB_ELEMENT",
-        "AT_DELVE_ELEMENT",
-        "WORLD_RULE",
-        "SOURCE_EVENT_ID"
-      ],
+      "correlationKeys": ["GAME_ID","CAUSAL_DNA_ID","MAIN_SYSTEM","A_AXIS","B_AXIS","c_SUB_ELEMENT","AT_DELVE_ELEMENT","WORLD_RULE","SOURCE_EVENT_ID"],
       "expectedEvidence": [
         "SYSTEM_STATE_EXCHANGE",
         "c_CONTEXT_VARIATION",
@@ -1121,16 +1043,7 @@
     "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery.verifiedQueueEvidenceIngress",
     "implementation": "tools/vibe2-learning-motor.mjs",
-    "correlationKeys": [
-      "GAME_ID",
-      "TASK_ID",
-      "RUN_ID",
-      "SPECIALIZED_OUTCOME_ID",
-      "OUTCOME_DIRECTION",
-      "VERIFIED_MARKERS",
-      "TARGET_PLATFORM",
-      "TARGET_ENGINE_QA_REFERENCE"
-    ],
+    "correlationKeys": ["GAME_ID","TASK_ID","RUN_ID","SPECIALIZED_OUTCOME_ID","OUTCOME_DIRECTION","VERIFIED_MARKERS","TARGET_PLATFORM","TARGET_ENGINE_QA_REFERENCE"],
     "requiredEvidence": [
       "TERMINAL_TASK_STATUS",
       "VERIFIED_MARKER_SET",
@@ -1272,15 +1185,7 @@
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#studioQualityEvolution.parallelExecution",
     "scope": "PER_GAME_AND_CROSS_GAME_MAXIMUM_SAFE_PARALLEL_EXECUTION",
-    "correlationKeys": [
-      "GAME_ID",
-      "TASK_ID",
-      "RESPONSIBLE_FILES",
-      "SOURCE_ROOT",
-      "LANE",
-      "RUN_ID",
-      "CANDIDATE_SHA"
-    ],
+    "correlationKeys": ["GAME_ID","TASK_ID","RESPONSIBLE_FILES","SOURCE_ROOT","LANE","RUN_ID","CANDIDATE_SHA"],
     "requiredEvidence": [
       "RESPONSIBLE_FILE_SET",
       "DEPENDENCY_CONFLICT_RESULT",
@@ -1372,15 +1277,7 @@
   "gameSpecificBuildUpDirectiveEvidenceContract": {
     "version": 2,
     "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
-    "requiredCorrelationKeys": [
-      "gameId",
-      "buildUpDirectiveId",
-      "buildUpGeneration",
-      "sourceTreeFingerprint",
-      "previousDirectiveFingerprint",
-      "developmentDepth",
-      "escalationStage"
-    ],
+    "requiredCorrelationKeys": ["gameId","buildUpDirectiveId","buildUpGeneration","sourceTreeFingerprint","previousDirectiveFingerprint","developmentDepth","escalationStage"],
     "requiredEvidence": [
       "DESIGN_SOURCE",
       "CURRENT_SOURCE_OBSERVATIONS",
@@ -1514,13 +1411,7 @@
         "existingGameDesignAndSourceReconstructionFirst": true,
         "existingGameIdentityRewriteRequired": false,
         "requiredWhenSeedV5GrammarExists": true,
-        "creativeRoles": [
-          "MAIN_IDENTITY",
-          "A_SYSTEM_PLUS_CREATIVE_SOURCE",
-          "B_SYSTEM_PLUS_CREATIVE_SOURCE",
-          "C_TWO_THEMES_AND_PRIMARY_SECONDARY_GENRES",
-          "AT_UNBOUNDED_DISCOVERY"
-        ],
+        "creativeRoles": ["MAIN_IDENTITY","A_SYSTEM_PLUS_CREATIVE_SOURCE","B_SYSTEM_PLUS_CREATIVE_SOURCE","C_TWO_THEMES_AND_PRIMARY_SECONDARY_GENRES","AT_UNBOUNDED_DISCOVERY"],
         "primarySecondaryGenreCausalEffectRequired": true
       }
     }
@@ -1813,20 +1704,7 @@
       "UNITY",
       "WEB"
     ],
-    "assetFamilies": [
-      "CHARACTER",
-      "CREATURE",
-      "BUILDING",
-      "ENVIRONMENT",
-      "WEAPON",
-      "SKILL",
-      "MATERIAL",
-      "AUDIO",
-      "VFX",
-      "UI",
-      "MOTION",
-      "PROP"
-    ],
+    "assetFamilies": ["CHARACTER","CREATURE","BUILDING","ENVIRONMENT","WEAPON","SKILL","MATERIAL","AUDIO","VFX","UI","MOTION","PROP"],
     "requiredFields": [
       "ASSET_LOOKUP_EXECUTED",
       "ASSET_FAMILY_APPLICABILITY_MATRIX",
@@ -1873,16 +1751,7 @@
     "version": 5,
     "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
     "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
-    "requiredCorrelationKeys": [
-      "gameId",
-      "buildUpDirectiveId",
-      "buildUpGeneration",
-      "developmentDepth",
-      "studioQualityFocusPillar",
-      "sourceTreeFingerprint",
-      "platformLane",
-      "sourceRoot"
-    ],
+    "requiredCorrelationKeys": ["gameId","buildUpDirectiveId","buildUpGeneration","developmentDepth","studioQualityFocusPillar","sourceTreeFingerprint","platformLane","sourceRoot"],
     "requiredEvidence": [
       "EXISTING_HOLISTIC_BACKFILL_REQUIRED",
       "EXISTING_HOLISTIC_BACKFILL_FOCUS",
@@ -2899,14 +2768,7 @@
       "existingGameRefresh": "FINGERPRINT_OR_MAPPING_VERSION_CHANGE_REQUIRES_REAL_BEHAVIOR_SOURCE_DIFF",
       "preserveExistingEvolutionLoop": true,
       "preserveExistingFloors": true,
-      "requiredEvidence": [
-        "PRINCIPLE",
-        "GAME_SPECIFIC_SEMANTIC_MAPPING",
-        "EXECUTABLE_SOURCE_DIFF",
-        "TEST_RESULT",
-        "SOURCE_COMMIT",
-        "PROMOTION_RESULT"
-      ],
+      "requiredEvidence": ["PRINCIPLE","GAME_SPECIFIC_SEMANTIC_MAPPING","EXECUTABLE_SOURCE_DIFF","TEST_RESULT","SOURCE_COMMIT","PROMOTION_RESULT"],
       "gameDevelopmentSurfaces": [
         "GAMEPLAY",
         "INPUT_FEEDBACK",
@@ -2927,26 +2789,10 @@
         "HUD_UI",
         "AUDIO_VISUAL_TIMING"
       ],
-      "qaOnlySurfaces": [
-        "APK_INSTALLATION",
-        "ANDROID_ABI",
-        "ARTIFACT_INTEGRITY",
-        "HOSTED_EMULATOR",
-        "CI_QA_EVIDENCE",
-        "RUNTIME_INFRASTRUCTURE",
-        "AUTOMATION_INFRASTRUCTURE"
-      ],
+      "qaOnlySurfaces": ["APK_INSTALLATION","ANDROID_ABI","ARTIFACT_INTEGRITY","HOSTED_EMULATOR","CI_QA_EVIDENCE","RUNTIME_INFRASTRUCTURE","AUTOMATION_INFRASTRUCTURE"],
       "serverValidation": {
         "serverFilesAreAssets": false,
-        "onlyWhenAffected": [
-          "DAMAGE_AUTHORITY",
-          "REWARDS",
-          "SAVE",
-          "ECONOMY",
-          "MULTIPLAYER_AUTHORITY",
-          "AUTHORITATIVE_STATE",
-          "EXPLOIT_PREVENTION"
-        ],
+        "onlyWhenAffected": ["DAMAGE_AUTHORITY","REWARDS","SAVE","ECONOMY","MULTIPLAYER_AUTHORITY","AUTHORITATIVE_STATE","EXPLOIT_PREVENTION"],
         "pureClientPresentationRequiresServerRescan": false,
         "exactValidEvidenceReuseRequired": true,
         "sourceIntegrityStillRequired": true
@@ -3182,18 +3028,7 @@
       "conditionalQa",
       "openCloudWorldChecks"
     ],
-    "worldEvidenceFields": [
-      "basePartCount",
-      "spawnCount",
-      "spawnsInBounds",
-      "finiteWorldBounds",
-      "boundsSize",
-      "landmarkCount",
-      "objectiveCount",
-      "terrainPresent",
-      "lightingAtmospherePresent",
-      "streamingEnabled"
-    ],
+    "worldEvidenceFields": ["basePartCount","spawnCount","spawnsInBounds","finiteWorldBounds","boundsSize","landmarkCount","objectiveCount","terrainPresent","lightingAtmospherePresent","streamingEnabled"],
     "unverifiedStateCannotBeLoggedAsPass": true
   },
   "workerSessionPreflightEvidence": {
@@ -3383,17 +3218,7 @@
     "staticQaCannotClaimRuntimeOrDeploymentCompletion": true,
     "noOpSourceCannotEarnBuildUpGrowthCredit": true,
     "robloxValidationProvider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
-    "cloudImageEvidenceFields": [
-      "API_ENDPOINT",
-      "UNIVERSE_ID",
-      "OBSERVED_AT",
-      "IMAGE_URL",
-      "CONTENT_TYPE",
-      "CONTENT_BYTES",
-      "SHA256",
-      "CONTENT_SIGNATURE_MATCHED",
-      "RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"
-    ]
+    "cloudImageEvidenceFields": ["API_ENDPOINT","UNIVERSE_ID","OBSERVED_AT","IMAGE_URL","CONTENT_TYPE","CONTENT_BYTES","SHA256","CONTENT_SIGNATURE_MATCHED","RUNTIME_SCREENSHOT_FALSE_UNLESS_SEPARATELY_PROVEN"]
   },
   "allGamePlayableAccessEvidence": {
     "sourcePolicy": "catalogNormalization.ownerWebAutoIngest.webExposureQuality",
@@ -3431,17 +3256,7 @@
   },
   "robloxStudioProductionEvidence": {
     "sourcePolicy": "robloxStudioProductionFlowContract",
-    "fields": [
-      "gameId",
-      "genreProfile",
-      "conceptIdentity",
-      "selectedIdea.id",
-      "implementationPackages",
-      "sourceTreeFingerprint",
-      "platform",
-      "executionSurface",
-      "qualityContract"
-    ],
+    "fields": ["gameId","genreProfile","conceptIdentity","selectedIdea.id","implementationPackages","sourceTreeFingerprint","platform","executionSurface","qualityContract"],
     "designPlanIsNotImplementationOrRuntimePass": true,
     "ownerRequestIdentity": [
       "requestId",
