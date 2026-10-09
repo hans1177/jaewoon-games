@@ -1236,24 +1236,14 @@ jobs:
               ];
               if(simulationStartCapabilityDenied)console.log('ROBLOX_FIRST_FRAME_SIMULATION_DIAGNOSTIC='+item.gameId+':OPEN_CLOUD_TASK_PLUGIN_CAPABILITY_DENIED');
               item.updatedAt=stamp;changed=true;
-              if(groundingObserved)failed++;else pending++;
-              continue;
+              if(groundingObserved){
+                failed++;
+                continue;
+              }
+              // A non-simulating Open Cloud task cannot observe a game-script-created world.
+              // Continue into the existing exact-version runtime sentinel; do not grant F1 here.
+              console.log('ROBLOX_FIRST_FRAME_HEADLESS_WORLD_UNOBSERVED_RUNTIME_SENTINEL_REQUIRED='+item.gameId+':version='+Number(candidate.versionNumber));
             }
-            if(engineProbe?.imageEvidence?.imageContentPassed!==true){
-              item.robloxRuntimeFoundationPassed=false;
-              item.robloxRuntimePassed=false;
-              item.robloxIndependentQaPassed=false;
-              item.robloxRegressionPassed=false;
-              item.robloxCloudImageEvidence=engineProbe?.imageEvidence||null;
-              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-              item.robloxFailureSignature='ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED';
-              item.routingBlockers=['roblox-cloud-image-content-unverified'];
-              item.updatedAt=stamp;changed=true;pending++;
-              console.log('ROBLOX_CLOUD_IMAGE_RETRY_REQUIRED='+item.gameId);
-              continue;
-            }
-
             let sentinel;
             try{
               sentinel=await fetchRobloxRuntimeFoundationEvidence({
@@ -1268,7 +1258,8 @@ jobs:
                   engineProbe?.engineExecuted===true
                   &&engineProbe?.exactPlace===true
                   &&engineProbe?.exactVersion===true
-                  &&engineProbe?.serverBootObserved===true;
+                  &&engineProbe?.serverBootObserved===true
+                  &&engineProbe?.imageEvidence?.imageContentPassed===true;
                 item.robloxRuntimeRetryCount=attempts;
                 item.robloxRuntimeLastObservationAttemptAt=stamp;
                 item.robloxRuntimeFoundationPassed=false;
@@ -1356,8 +1347,16 @@ jobs:
                   f9Ids.push(item.gameId);
                   console.log(`ROBLOX_OPEN_CLOUD_SERVER_BOOT_PASS_CLIENT_RUNTIME_PENDING=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinel=HTTP_404:studioExact=${exactStudioInternalValidation?'YES':'NO'}`);
                 }else{
-                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
-                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  const unobservedFirstFrame=item.robloxFailureSignature==='ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED'
+                    &&item.robloxFirstFrameGroundingEvidence?.sourceRevision===sourceRevision
+                    &&item.robloxFirstFrameGroundingEvidence?.artifactIdentity===artifactIdentity
+                    &&item.robloxFirstFrameGroundingEvidence?.placeId===String(candidate.placeId)
+                    &&Number(item.robloxFirstFrameGroundingEvidence?.candidateVersionNumber)===Number(candidate.versionNumber);
+                  item.robloxFailureSignature=unobservedFirstFrame
+                    ?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=unobservedFirstFrame
+                    ?['roblox-first-frame-grounding-unobserved','roblox-runtime-foundation-awaiting-observation']
+                    :['roblox-runtime-foundation-awaiting-observation'];
                   console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}:retry=UNLIMITED_CAUSAL_REPAIR`);
                   item.updatedAt=stamp;
                   changed=true;
@@ -1366,6 +1365,23 @@ jobs:
                 continue;
               }
               throw error;
+            }
+
+            // Read the exact server sentinel before thumbnail gating; never use images as F1 runtime proof.
+            // Image content still blocks independent QA and any release acceptance.
+            if(engineProbe?.imageEvidence?.imageContentPassed!==true){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=false;
+              item.robloxRegressionPassed=false;
+              item.robloxCloudImageEvidence=engineProbe?.imageEvidence||null;
+              item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED';
+              item.routingBlockers=['roblox-cloud-image-content-unverified'];
+              item.updatedAt=stamp;changed=true;pending++;
+              console.log('ROBLOX_CLOUD_IMAGE_RETRY_REQUIRED='+item.gameId);
+              continue;
             }
 
             const result=validateRobloxRuntimeFoundationEvidence({

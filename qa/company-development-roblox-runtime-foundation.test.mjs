@@ -454,7 +454,9 @@ test('Open Cloud engine probe binds exact place version without granting runtime
  assert.equal(r.exactPlace,true);
  assert.equal(r.exactVersion,true);
  assert.equal(r.playerCount,0);
- assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootEvidence.observed,false);
  assert.equal(r.serverBootEvidence.headlessServerExecution,true);
  assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  assert.equal(r.serverBootEvidence.legacyFoundationServerBootMarkerObserved,false);
@@ -476,31 +478,34 @@ test('Open Cloud engine probe records headless Luau execution without pretending
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE=false'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=false'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=false'},
-   {message:"JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=The current thread cannot call 'Run' (lacking capability Plugin)"},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR='},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true'},
   ]}]}}
  ];
  const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
  const r=await probeRobloxOpenCloudEngine({universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2});
  assert.equal(r.simulationRunningBefore,false);
- assert.equal(r.simulationStartAttempted,true);
+ assert.equal(r.simulationStartAttempted,false);
  assert.equal(r.simulationStartSucceeded,false);
- assert.equal(r.simulationStartError,"The current thread cannot call 'Run' (lacking capability Plugin)");
- assert.equal(r.simulationStartCapabilityDenied,true);
+ assert.equal(r.simulationStartError,null);
  assert.equal(r.simulationRunning,false);
- assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootEvidence.observed,false);
  assert.equal(r.serverBootEvidence.headlessServerExecution,true);
  assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
- assert.equal(r.serverBootEvidence.simulationStartAttempted,true);
+ assert.equal(r.serverBootEvidence.simulationStartAttempted,false);
+ assert.equal(r.serverBootEvidence.simulationStartSupported,false);
  assert.equal(r.serverBootEvidence.simulationStartSucceeded,false);
- assert.equal(r.serverBootEvidence.simulationStartCapabilityDenied,true);
- assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
+ assert.equal(r.serverBootEvidence.legacyFoundationServerBootMarkerObserved,true);
+ assert.equal(r.serverBootObserved,false,'boot marker alone cannot prove gameplay started in non-simulating Luau context');
  const body=JSON.parse(calls[0].init.body);
  assert.match(body.script,/RunService:IsRunning\(\)/);
- assert.match(body.script,/pcall\(function\(\) RunService:Run\(\) end\)/);
+ assert.doesNotMatch(body.script,/RunService:Run\(\)/);
+ assert.match(body.script,/local simulationStartAttempted=false/);
  assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED/);
  assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED/);
  assert.match(body.script,/JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING/);
@@ -1308,7 +1313,10 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_DUPLICATE_IDS/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_RESOURCE_PROMPTS_ENABLED/);
   assert.match(body.script,/item:GetAttribute\("WorldObjectId"\)/);
-  assert.match(body.script,/pcall\(function\(\) RunService:Run\(\) end\)/);
+  assert.doesNotMatch(body.script,/RunService:Run\(\)/);
+  assert.match(body.script,/local simulationStartAttempted=false/);
+  assert.equal(result.exactLuauTaskObserved,false,'test omits a server context marker');
+  assert.equal(result.serverBootObserved,false,'scene inspection is not actual game boot');
   assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
   assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY/);
@@ -1496,4 +1504,104 @@ test('survival anchored world ground contains the camp, resources and enemy spaw
   assert.match(source,/spawnHit\.Position\.Y \+ nativeFoundationSpawn\.Size\.Y \* 0\.5 \+ 0\.05/);
   assert.doesNotMatch(source,/spawnHit\.Position\.Y - nativeFoundationSpawn\.Size\.Y \* 0\.5/);
   assert.match(source,/params\.ExcludeInstances = \{character, nativeFoundationSpawn\}/);
+});
+
+
+/* ── F1: 비시뮬레이션 관측과 실제 런타임 센티널 분리 ── */
+test('headless first frame must read actual runtime sentinel but proven unsupported spawn remains blocked',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const first=workflow.indexOf("            if(engineProbe?.engineExecuted===true&&engineProbe?.exactPlace===true&&engineProbe?.exactVersion===true\n              &&(engineProbe?.worldEvidence?.spawnGroundingObserved!==true");
+ const sentinel=workflow.indexOf('            let sentinel;',first);
+ const next=workflow.indexOf("            if(engineProbe?.imageEvidence?.imageContentPassed!==true){",sentinel);
+ const validation=workflow.indexOf('            const result=validateRobloxRuntimeFoundationEvidence({',next);
+ assert.ok(first>=0&&sentinel>first&&next>sentinel&&validation>next,
+   'the exact runtime sentinel must be checked before the unchanged image/release gate');
+ const control=workflow.slice(first,sentinel);
+ const run=new Function('engineProbe',`const item={gameId:'canary'},candidate={placeId:'42',versionNumber:11};
+ const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64),stamp='2026-10-09T00:00:00Z';
+ let failed=0,pending=0,changed=false,reachedSentinel=false;
+ const console={log(){}};
+ for(let i=0;i<1;i++){ ${control} reachedSentinel=true; }
+ return {item,failed,pending,reachedSentinel};`);
+ const base={
+   engineExecuted:true,exactPlace:true,exactVersion:true,
+   serverBootObserved:false,serverContextExecuted:true,
+   serverBootEvidence:{simulationRunningAfter:false,simulationStartSucceeded:false},
+   worldEvidence:{observed:true,basePartCount:1,spawnCount:0,
+     runtimeWorldReady:false,spawnGroundingObserved:false,
+     unsupportedSpawns:0,floatingSpawns:0}
+ };
+ const unobserved=run(base);
+ assert.equal(unobserved.reachedSentinel,true,'a headless world scan is not game-script boot failure');
+ assert.equal(unobserved.item.robloxRuntimeFoundationPassed,false,'sentinel is still required before F1 PASS');
+ assert.equal(unobserved.item.robloxFailureSignature,'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED');
+ assert.equal(unobserved.pending,0,'do not count pending twice before the actual sentinel');
+ const invalidGround=run({...base,worldEvidence:{...base.worldEvidence,
+   spawnCount:1,spawnGroundingObserved:true,unsupportedSpawns:1}});
+ assert.equal(invalidGround.reachedSentinel,false,'observed unsupported spawn cannot be ignored');
+ assert.equal(invalidGround.failed,1);
+ assert.equal(invalidGround.item.robloxRuntimeFoundationPassed,false);
+ const grounded=run({...base,worldEvidence:{...base.worldEvidence,
+   spawnCount:1,spawnGroundingObserved:true}});
+ assert.equal(grounded.reachedSentinel,true);
+ const unavailable=workflow.slice(workflow.indexOf('if(/HTTP_404/.test(message))',sentinel));
+ assert.match(unavailable,/const unobservedFirstFrame=/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.sourceRevision===sourceRevision/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.artifactIdentity===artifactIdentity/);
+ assert.match(unavailable,/item\.robloxFirstFrameGroundingEvidence\?\.placeId===String\(candidate\.placeId\)/);
+ assert.match(unavailable,/unobservedFirstFrame\s*\?'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED':'ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
+ assert.match(unavailable,/engineProbe\?\.imageEvidence\?\.imageContentPassed===true/,
+   'missing images may not authorize internal QA from a sentinel 404');
+ const imageGate=workflow.slice(next,validation);
+ const gate=new Function('engineProbe',`let pending=0,changed=false,reachedValidation=false;
+   const item={gameId:'canary'},stamp='2026-10-09T00:00:00Z',console={log(){}};
+   for(let i=0;i<1;i++){ ${imageGate} reachedValidation=true; }
+   return {item,pending,reachedValidation};`);
+ const imageMissing=gate({imageEvidence:{imageContentPassed:false}});
+ assert.equal(imageMissing.reachedValidation,false);
+ assert.equal(imageMissing.pending,1);
+ assert.equal(imageMissing.item.robloxRuntimeFoundationPassed,false);
+ assert.equal(imageMissing.item.robloxRuntimePassed,false);
+ assert.equal(imageMissing.item.robloxIndependentQaPassed,false);
+ assert.equal(imageMissing.item.robloxRegressionPassed,false);
+ assert.equal(imageMissing.item.robloxFailureSignature,'ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED');
+ const imageValid=gate({imageEvidence:{imageContentPassed:true}});
+ assert.equal(imageValid.reachedValidation,true);
+ assert.equal(imageValid.pending,0);
+});
+
+
+/* ── 과거 Open Cloud 권한 오류 관측은 보존하되, 현재 실행에서는 특권 호출 금지 ── */
+test('legacy Open Cloud Plugin capability denial remains diagnostic rather than a server boot proof',async()=>{
+ const calls=[];
+ const responses=[
+  {path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'},
+  {state:'COMPLETE'},
+  {luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=false'},
+   {message:"JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=The current thread cannot call 'Run' (lacking capability Plugin)"},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'}
+  ]}]}
+ ];
+ const r=await probeRobloxOpenCloudEngine({
+   universeId:'1',placeId:'2',versionNumber:20,apiKey:'test-key',
+   pollIntervalMs:0,maxPolls:2,
+   fetchImpl:async(url,init={})=>{
+     calls.push({url,init});
+     const body=responses.shift();
+     return {ok:true,status:200,text:async()=>JSON.stringify(body)};
+   }
+ });
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.simulationStartCapabilityDenied,true);
+ assert.equal(r.serverBootEvidence.simulationStartCapabilityDenied,true);
+ assert.equal(r.serverBootEvidence.simulationRunningAfter,false);
+ const script=JSON.parse(calls[0].init.body).script;
+ assert.doesNotMatch(script,/RunService:Run\(\)/);
 });
