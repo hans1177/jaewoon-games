@@ -52,25 +52,41 @@
       "name": "SINGLE_DEFENSE_STRATEGY",
       "purpose": "A cyclic loop where players choose a main strategy and adapt it through various systems to achieve new outcomes.",
       "playerChoice": "CHOOSE A PRIMARY DEFENSIVE ACTION, THEN USE RESOURCES TO REFINE IT BEFORE PRESSURE INCREASES, AND FINALIZE WITH A HARDER DEFENSE OPTION BASED ON ENEMY RESPONSE."
+    },
+    "local_authoring_parts::cf99873eea3b51b0b8858c1ba24484f42967c494c480772ea19df7a3696540a0:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+      ],
+      "stateOutputs": [
+        "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+        "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+      ],
+      "name": "RESOURCE_REINFLECTION",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 도구",
+      "playerChoice": "REINFORCE MAIN STRATEGY WITH RESOURCE UPGRADES OR NEW CONFIGURATIONS BEFORE PRESSURE INCREASES"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 156263,
-      "lastMs": 25468,
+      "totalMs": 179567,
+      "lastMs": 23304,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:31:58.525Z"
+      "updatedAt": "2026-10-09T14:32:21.830Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:31:58.525Z",
+  "updatedAt": "2026-10-09T14:32:21.830Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1776,7 +1792,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:31:58.525Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:32:21.830Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
