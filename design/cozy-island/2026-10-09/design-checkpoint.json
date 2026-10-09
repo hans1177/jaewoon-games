@@ -27,25 +27,32 @@
       "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감을 느끼게 된다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병력을 강화해 다른 지역에 진군할 수 있다. 이 과정에서는 각 지역별 특성과 보상을 가진 5개 거점이 순차적으로 점령되어, 최종적으로 대형 섬이나 왕국을 정복하게 되는 구조이다.",
       "playerFantasy": "플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병력을 강화해 다른 지역에 진군할 수 있다. 이 과정에서는 각 지역별 특성과 보상을 가진 5개 거점이 순차적으로 점령되어, 최종적으로 대형 섬이나 왕국을 정복하게 되는 구조이다.",
       "coreFun": "나무와 식량을 직접 채집하여 주민을 고용하고 생산성을 증대시키며 병력을 강화해 다른 지역에 진군하는 과정에서, 각 지역별 특성과 보상을 가진 5개 거점이 순차적으로 점령되어 최종적으로 대형 섬이나 왕국을 정복하게 되는 구조이다."
+    },
+    "local_authoring_parts::17b2119113f778004716f7d599dd127c4f93c746acae28237b9055ebd3865240:coreLoop": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → SELECT: 주민 영입/벌목/농업 자동화 → OUTPUT: 생산성 증대/병력 강화 → STATE CHANGE: 자원 확보/병력 집중 → REWARD: 점령 보상/협동 지원 → NEXT ACTION: 다음 자원 거점 선택",
+        "INPUT: 자원 거점 선택 → SELECT: 병력 전환/전투 계획 → OUTPUT: 병력 확충/전투 성공 → STATE CHANGE: 거점 점령/병력 레벨 상승 → REWARD: 지역 확보/협동 지원 향상 → NEXT ACTION: 다음 거점 공략",
+        "INPUT: 협동 지원 요청 → SELECT: 병력 합산/전투 계획 → OUTPUT: 병력 확충/전투 효과 증가 → STATE CHANGE: 공동 적 웨이브 처리/자원 확보 → REWARD: 왕국 정복/보상 증대 → NEXT ACTION: 최종 왕국 정복"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 186138,
-      "lastMs": 25534,
+      "totalMs": 235071,
+      "lastMs": 48933,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:00:01.173Z"
+      "updatedAt": "2026-10-09T15:00:50.109Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:56:55.012Z",
-  "updatedAt": "2026-10-09T15:00:01.174Z",
+  "updatedAt": "2026-10-09T15:00:50.110Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -540,7 +547,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:00:01.174Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:00:50.110Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
