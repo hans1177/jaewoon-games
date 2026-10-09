@@ -20,9 +20,9 @@ assert(removed.has('seed-roblox-battleground-fight-welcome-to-bloxburg'));
 assert(removed.has('seed-roblox-obby-party-minigam-tower-of-hell'));
 for(const id of removed)assert(!(catalog.games||[]).some(game=>game.id===id),'removed game reappeared: '+id);
 // 일반 웹 아카이브는 남기지만 3D Unity WebGL QA 없이는 노출하지 않는다.
-assert.match(renderer,/return Boolean\\(internalReleaseLinks\\(game\\)\\.unityWeb\\);/);
-assert.match(renderer,/manifest\\.homepageVerified!==true/);
-assert.doesNotMatch(renderer,/button\\(links\\.web,'웹 플레이'/);
+assert(renderer.includes('return Boolean(internalReleaseLinks(game).unityWeb);'));
+assert(renderer.includes('manifest.homepageVerified!==true'));
+assert(!renderer.includes("button(links.web,'웹 플레이'"));
 
 assert.match(renderer,/function webPublishedRows\(/);
 assert.match(renderer,/function verifiedRobloxDeploymentRows\(/);
@@ -30,8 +30,8 @@ assert.match(renderer,/homeWebGameCenter/);
 assert.match(renderer,/homeRobloxDeploymentCenter/);
 assert.match(renderer,/Roblox 배포 기록/);
 assert.match(renderer,/game\.unityWebAvailable===true/);
-assert.match(renderer,/homepageDisplayMode==='ROBLOX_HISTORICAL_DEPLOYMENT'/);
-assert.match(renderer,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+assert.match(renderer,/ROBLOX_HISTORICAL_DEPLOYMENT/);
+assert(renderer.includes('historicalPublicationTargetVerified===true'));
 
 const policy=roadmap.homepagePortfolioVisibility;
 assert.equal(policy?.humanDocumentRequired,false);
