@@ -281,7 +281,8 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
   if(!designGames.length)throw new Error('NO_DESIGN_ONLY_GAMES_IN_CATALOG');
   const state=readJson(path.join(root,seedFile),{version:2,policyDocument:'company-learning/platform-release-roadmap.json',seeds:[]});
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
-  const catalogIds=new Set(designGames.map(game=>clean(game.id)).filter(Boolean));
+  // 설계 초기화 대상과 무관하게, 정식 카탈로그에 있는 개발 진행 게임은 일시정지시키지 않는다.
+  const catalogIds=new Set((catalog.games||[]).map(game=>clean(game?.id)).filter(Boolean));
   const existingByGame=new Map();
   for(const seed of state.seeds){const id=clean(seed?.gameId);if(id&&!existingByGame.has(id))existingByGame.set(id,seed);}
   let created=0,reactivated=0,paused=0;
