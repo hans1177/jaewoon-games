@@ -36,25 +36,38 @@
         "ACTION: 다음 단계로 전환하며, 플레이어의 선택이 월드 상태에 영향을 미칩니다.",
         "NEXT: 플레이어는 새롭게 생성된 월드 상태에서 다시 시작할 수 있습니다."
       ]
+    },
+    "local_authoring_parts::8b4f10881f5b8bae74e3438bef8ef8b448503043b011ebf5cc923ebc31cdfa54:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 월드 상태"
+      ],
+      "name": "기초 게임 맵 시스템",
+      "purpose": "게임 맵에 새로운 상태를 생성하여 플레이어의 선택 결과를 반영합니다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 461533,
-      "lastMs": 72850,
+      "totalMs": 559659,
+      "lastMs": 98126,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:39:25.726Z"
+      "updatedAt": "2026-10-09T15:41:03.854Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:39:25.726Z",
+  "updatedAt": "2026-10-09T15:41:03.854Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1644,7 +1657,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:39:25.726Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:41:03.854Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
