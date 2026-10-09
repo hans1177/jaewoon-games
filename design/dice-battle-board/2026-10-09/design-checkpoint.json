@@ -34,25 +34,38 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::62d8875b320b7d3ab7d1fe52d5c8b0d893c4c67823a7080d10660620bedf338c:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_OVER"
+      ],
+      "name": "Board State Transition System",
+      "purpose": "Player's initial board setup and state evolution through puzzle-solving.",
+      "playerChoice": "Set a clear goal, limited moves, obstacles, or a visible puzzle constraint on the board."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 352238,
-      "lastMs": 47146,
+      "totalMs": 380423,
+      "lastMs": 28185,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:50:14.971Z"
+      "updatedAt": "2026-10-09T15:50:43.157Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:44:22.707Z",
-  "updatedAt": "2026-10-09T15:50:14.971Z",
+  "updatedAt": "2026-10-09T15:50:43.157Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1537,7 +1550,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:50:14.971Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:50:43.157Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
