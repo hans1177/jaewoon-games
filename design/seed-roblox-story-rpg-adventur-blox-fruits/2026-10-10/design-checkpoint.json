@@ -97,25 +97,34 @@
       },
       "playerFantasy": "A player becomes an explorer in a vast, ever-changing world where every decision shapes the landscape and unlocks new opportunities. They must navigate complex puzzles, manage risks, and earn rewards while maintaining control over the game state. Each play is unique, and the board evolves as players progress, introducing new challenges and surprises.",
       "coreFun": "Board Placement -> Immediate Feedback -> Goal Clearing; Obstacle Configuration -> Risk Assessment -> Survival Reward; Tile Evolution -> Dynamic Risk/Reputation Loop; Player Agency -> Deterministic Rules Conflict; Infinite Possibilities -> Self-Replicating Puzzle System."
+    },
+    "local_authoring_parts::187fb3f8050bc6a157dbc5254d529af2921045283b7a2cac309eb5c9b27724a2:coreLoop": {
+      "coreLoop": [
+        "Board Placement -> Immediate Feedback -> Goal Clearing",
+        "Obstacle Configuration -> Risk Assessment -> Survival Reward",
+        "Tile Evolution -> Dynamic Risk/Reputation Loop",
+        "Player Agency -> Deterministic Rules Conflict",
+        "Infinite Possibilities -> Self-Replicating Puzzle System"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 169775,
-      "lastMs": 169775,
+      "totalMs": 259033,
+      "lastMs": 89258,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:10:08.549Z"
+      "updatedAt": "2026-10-09T20:11:37.809Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:07:18.455Z",
-  "updatedAt": "2026-10-09T20:10:08.549Z",
+  "updatedAt": "2026-10-09T20:11:37.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1705,7 +1714,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:10:08.549Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:11:37.809Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
