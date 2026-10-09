@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 실제 선호하는 공간 활용 패턴을 바탕으로 방어 전략을 설계하고, 이를 통해 방해받는 공간에서의 방어 효과와 전투 상황의 유사성에 대한 이해를 구축하며, 이는 방어 전략의 진화적 투입 시스템을 형성하게 된다.",
       "coreFun": "플레이어가 선호하는 공간 활용 패attern은 방해받는 공간에서의 방어 전략 선택을 바탕으로 하며, 이는 방해 받는 공간의 방어 효과와 전투 상황의 유사성에 대한 이해를 구축하여 방어 전략의 진화적 투입 시스템을 형성하게 된다. 방해 받는 공간의 방어 효과는 플레이어가 경험한 전투 장면의 유사성에 따라 반복 및 변동되며, 이는 방어 전략의 진화적 투입 시스템의 구성 요소로 작용한다."
+    },
+    "local_authoring_parts::88ea27fc0ab1724ff09f174f1f5b4333e61c24e9f12d721428c82ab676146b4f:coreLoop": {
+      "coreLoop": [
+        "입력: 배치 위치 선택 → 상태변화: 방해받는 공간에 따른 방어 효과 증대 또는 감소 → 보상: 방어 전략 재설계 및 다음 선택 결정",
+        "입력: 전투 주제 변경 → 상태변화: 방어 행동 반복 및 결과 변동 → 보상: 새로운 전투 장면 경험 및 방어 효과 재설계",
+        "입력: 배치 위치 및 전투 주제의 관계 변화 → 상태변化: 방어 성능 재설계 → 보상: 실제 세계 상태 변화와 다음 선택 유도"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 225448,
-      "lastMs": 225448,
+      "totalMs": 267911,
+      "lastMs": 42463,
       "lastError": null,
-      "updatedAt": "2026-10-09T19:42:01.353Z"
+      "updatedAt": "2026-10-09T19:42:43.818Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-09T19:42:01.354Z",
+  "updatedAt": "2026-10-09T19:42:43.818Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1817,7 +1824,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T19:42:01.353Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:42:43.818Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
