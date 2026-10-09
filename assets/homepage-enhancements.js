@@ -119,8 +119,7 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
-    // 개발중·미출시라도 실제 실행 경로가 있는 게임만 노출한다. 버튼만 있는 시제품 카드는 제외한다.
-    .filter(hasRunnableHomepageTarget)
+    // 카드의 설계·이미지·진행 상태는 게임 실행 QA와 독립적으로 표시한다.
     .sort((a,b)=>{
       const sa=scoreState(a),sb=scoreState(b);
       if(sa.score!==null||sb.score!==null){
@@ -267,14 +266,12 @@ function internalReleaseRows(catalog,status){
     .filter(activeLifecycle)
     .map(game=>bindVerifiedUnityBuild(game,status))
     .filter(hasInternalRelease)
-    .filter(hasRunnableHomepageTarget)
     .sort(catalogOrderCompare);
 }
 function recentModificationRows(catalog){
   const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(activeLifecycle)
-    .filter(hasRunnableHomepageTarget)
     .map(game=>{
       const work=String(latestWork(game)||'').trim();
       const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
@@ -313,7 +310,7 @@ function buildFocus(catalog,status){
   const allRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
   const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
-  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID&&hasRunnableHomepageTarget(item))||rows[0];
+  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
   const game=mergeGame(row),links=internalReleaseLinks(game);
   const direct=links.unityWeb||links.roblox||links.unity||'';
