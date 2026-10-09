@@ -34,25 +34,38 @@
         "선택: 캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서를 실제 게임 내에서 영향 미친다.",
         "상태 변화: 환경에 빠진 상태에서의 이동, 전투 중의 대응, 그리고 선택 결과로 인해 발생하는 상태 변환."
       ]
+    },
+    "local_authoring_parts::5c1197d9df295d1345ec82da2de8fc92cb5117e8538864f24e87dcd093bfd441:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "environment_state"
+      ],
+      "stateOutputs": [
+        "game_progression"
+      ],
+      "name": "환경 변환 시스템",
+      "purpose": "플레이어가 환경에 빠져 있는 상태로 이동하며, 주변의 적들과 전투를 수행하면서 기존 세계 규칙과 새로운 선택 결과를 바꾼다.",
+      "playerChoice": "캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서를 실제 게임 내에서 영향 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 141622,
-      "lastMs": 21123,
+      "totalMs": 179535,
+      "lastMs": 37913,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:54:19.070Z"
+      "updatedAt": "2026-10-09T06:54:56.984Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T06:51:57.236Z",
-  "updatedAt": "2026-10-09T06:54:19.070Z",
+  "updatedAt": "2026-10-09T06:54:56.984Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T06:54:19.070Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:54:56.984Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
