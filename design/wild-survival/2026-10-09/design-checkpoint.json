@@ -34,25 +34,40 @@
         "선택 후 실제 입력을 수행하여 월드 상태가 변하게 되며, 해당 변화에 따른 보상/위험/다음 목표가 발생합니다.",
         "보상 또는 위험에 따라 다음 지역, 대상, 자원, 혹은 전략 선택이 결정되며, 플레이어는 새로운 목표로 진입합니다."
       ]
+    },
+    "local_authoring_parts::e1e764be1dc7ddb4b2530c732f16fc3f8586c6c4546d3bb8897c7107709e32fa:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "stateOutputs": [
+        "newWorldState",
+        "nextAction"
+      ],
+      "name": "생존 상태 관리 시스템",
+      "purpose": "플레이어가 현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동(예: 이동, 자원 수집, 위협 회피)을 선택하며, 월드 상태와 다음 선택을 바꿉니다.",
+      "playerChoice": "현재 야생 환경의 상태와 목표를 읽고, 생존 핵심 행동을 선택하여 월드 상태를 변환합니다. 해당 변화에 따른 보상/위험/다음 목표가 발생하며, 플레이어는 새로운 목표로 진입합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 208348,
-      "lastMs": 37014,
+      "totalMs": 245609,
+      "lastMs": 37261,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:43:23.067Z"
+      "updatedAt": "2026-10-09T15:44:00.330Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:43:23.067Z",
+  "updatedAt": "2026-10-09T15:44:00.330Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1654,7 +1669,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:43:23.067Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:44:00.330Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
