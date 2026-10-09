@@ -35,25 +35,38 @@
         "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD FEEDBACK TO SOLVE THE CURRENT OBJECTIVE.",
         "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD PATTERNS OR OBSTRUCTION COMBINATIONS."
       ]
+    },
+    "local_authoring_parts::d4de089bc7c0202fd1c8d2aaf19b052bce68d82aa2db75ff0cfd750ca05e135e:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+      ],
+      "stateOutputs": [
+        "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+      ],
+      "name": "BOARD_PATTERN_EDITOR",
+      "purpose": "관리 및 수정하는 게임 내 맵의 기능",
+      "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 421051,
-      "lastMs": 58954,
+      "totalMs": 491777,
+      "lastMs": 70726,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:41:16.624Z"
+      "updatedAt": "2026-10-09T08:42:27.351Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:41:16.624Z",
+  "updatedAt": "2026-10-09T08:42:27.351Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2090,7 +2103,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:41:16.624Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:42:27.351Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
