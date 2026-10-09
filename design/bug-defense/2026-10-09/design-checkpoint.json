@@ -3,864 +3,23 @@
   "gameId": "bug-defense",
   "date": "2026-10-09",
   "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
-  "fingerprint": "98f41482cd5e0b04465ed61eb54363af2e6d28f39d1a21dfd5bf1322dbd12a3e",
-  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
+  "fingerprint": "c79b92b41a92e561544a25bc0a6d2d19e258692d83d03d44153d052cb21c0b35",
+  "policyDigest": "3bae97985d3734f0dd2be83c7447ba4928188d9e542be339dee50932cef38315",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::97301cc111db36ab57ba25cb160a674bafbe853ca946ab042bc1079779b7cdee:identity": {
-      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\nCORE_FUN:\n- Read the incoming insect wave and its threat pattern.\n- Place or adjust defenders and spend limited resources on the highest-value counter.\n- Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\n\nCORE_LOOP:\n1. INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)\n2. STATE CHANGE → REWAD"
-    },
-    "local_authoring_parts::97301cc111db36ab57ba25cb160a674bafbe853ca946ab042bc1079779b7cdee:playerFantasy": {
-      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 세계의 원인과 인과법칙에 따라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 게임 경험을 선보일 수 있다."
-    },
-    "local_authoring_parts::19ccfded35a6557759bccd3ebd2aafaa1e7ad67369c0668446b8b41ad598d7a4:identity,playerFantasy": {
-      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\nCORE_FUN:\n- Read the incoming insect wave and its threat pattern.\n- Place or adjust defenders and spend limited resources on the highest-value counter.\n- Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\n\nCORE_LOOP:\n1. INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)\n2. STATE CHANGE → REWAD",
-      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 세계의 원인과 인과법칙에 따라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 게임 경험을 선보일 수 있다."
-    },
-    "local_authoring_parts::19ccfded35a6557759bccd3ebd2aafaa1e7ad67369c0668446b8b41ad598d7a4:coreFun": {
-      "coreFun": "[INPUT/SELECT] Read the incoming insect wave and its threat pattern.\n[STATE CHANGE] Place or adjust defenders and spend limited resources on the highest-value counter.\n[REWAD] Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
-    },
-    "local_authoring_parts::9c585ca383b888ec43aa32120f796897d4affee3fc6231a2104715ebe33490c2:identity,playerFantasy,coreFun": {
-      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\nCORE_FUN:\n- Read the incoming insect wave and its threat pattern.\n- Place or adjust defenders and spend limited resources on the highest-value counter.\n- Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\n\nCORE_LOOP:\n1. INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)\n2. STATE CHANGE → REWAD",
-      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 세계의 원인과 인과법칙에 따라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 게임 경험을 선보일 수 있다.",
-      "coreFun": "[INPUT/SELECT] Read the incoming insect wave and its threat pattern.\n[STATE CHANGE] Place or adjust defenders and spend limited resources on the highest-value counter.\n[REWAD] Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
-    },
-    "local_authoring_parts::5e49786e6530a3cf95ae03987fb469a4f6b29e6112232daa21a405d61c17209b:coreLoop": {
-      "coreLoop": [
-        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
-        "STATE CHANGE → REWARD",
-        "REWAD"
-      ]
-    },
-    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:0": {
-      "id": "SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "stateOutputs": [
-        "STATE_CHANGE_EFFECT",
-        "NEXT_DEFENSE_PLAN"
-      ],
-      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
-      "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
-    },
-    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:1": {
-      "id": "SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "stateOutputs": [
-        "STATE_CHANGE_EFFECT",
-        "NEXT_DEFENSE_PLAN"
-      ],
-      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
-      "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
-    },
-    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:2": {
-      "id": "SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "stateOutputs": [
-        "STATE_CHANGE_EFFECT",
-        "NEXT_DEFENSE_PLAN"
-      ],
-      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
-      "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
-    },
-    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:3": {
-      "id": "SIGNATURE_SYSTEM_3",
-      "grammarRole": "c",
-      "stateInputs": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "stateOutputs": [
-        "STATE_CHANGE_EFFECT",
-        "NEXT_DEFENSE_PLAN"
-      ],
-      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
-      "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
-    },
-    "local_authoring_parts::2ae7bec587a9142c5826c547f7c445a6793e2bfd54c72ab9d1bdef4d5b6c8969:signatureSystems:4": {
-      "id": "SIGNATURE_SYSTEM_4",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "stateOutputs": [
-        "STATE_CHANGE_EFFECT",
-        "NEXT_DEFENSE_PLAN"
-      ],
-      "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
-      "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
-    },
-    "local_authoring_parts::5e49786e6530a3cf95ae03987fb469a4f6b29e6112232daa21a405d61c17209b:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
-          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
-          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
-          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
-          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
-          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
-        }
-      ]
-    },
-    "local_authoring_parts::590626fd797884e5f3e08e7849fe42c0e067b04c5de435c47b5c4b35e0c99445:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
-        "STATE CHANGE → REWARD",
-        "REWAD"
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
-          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
-          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
-          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
-          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
-          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
-        }
-      ]
-    },
-    "local_authoring_parts::590626fd797884e5f3e08e7849fe42c0e067b04c5de435c47b5c4b35e0c99445:multiplayerMode": {
-      "multiplayerMode": "HYBRID"
-    },
-    "local_authoring_parts::9c585ca383b888ec43aa32120f796897d4affee3fc6231a2104715ebe33490c2:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
-        "STATE CHANGE → REWARD",
-        "REWAD"
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
-          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
-          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
-          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
-          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
-          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
-        }
-      ],
-      "multiplayerMode": "HYBRID"
-    },
-    "designer_draft_slices::identity-core": {
-      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\nCORE_FUN:\n- Read the incoming insect wave and its threat pattern.\n- Place or adjust defenders and spend limited resources on the highest-value counter.\n- Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\n\nCORE_LOOP:\n1. INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)\n2. STATE CHANGE → REWAD",
-      "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 세계의 원인과 인과법칙에 따라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 게임 경험을 선보일 수 있다.",
-      "coreFun": "[INPUT/SELECT] Read the incoming insect wave and its threat pattern.\n[STATE CHANGE] Place or adjust defenders and spend limited resources on the highest-value counter.\n[REWAD] Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
-      "coreLoop": [
-        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
-        "STATE CHANGE → REWARD",
-        "REWAD"
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Plays a central role in the game's core mechanics, representing the dynamic interaction between an incoming insect wave and the player's defensive strategy.",
-          "playerChoice": "Selectively adjust defenders based on the threat pattern to maximize survival and strategic advantage in each wave encounter."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Initiate and guide the player through wave-based defense strategy, incorporating dynamic enemy interactions and adaptive resource allocation.",
-          "playerChoice": "Select a defensive layout that maximizes effectiveness against evolving threats in real-time based on observed patterns of conflict and adaptation."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Encodes the dynamic interplay between environmental threats and adaptive strategies in a single-player tower-defense game.",
-          "playerChoice": "Selectively adjust defender positions and allocate resources to counter evolving wave patterns while preserving strategic depth and progression opportunities."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Player's ability to read the incoming insect wave and its threat pattern, then strategically place or adjust defenders to counter the most dangerous enemy types.",
-          "playerChoice": "To choose which enemies are most threatening and allocate resources accordingly to maximize defense effectiveness."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "stateOutputs": [
-            "STATE_CHANGE_EFFECT",
-            "NEXT_DEFENSE_PLAN"
-          ],
-          "name": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "purpose": "Guides player through the dynamic interplay of enemy patterns and defensive strategies, enabling emergent gameplay and strategic depth.",
-          "playerChoice": "The player must dynamically adjust defenses based on real-time threat patterns, using resource allocation to optimize survival and future strategy development."
-        }
-      ],
-      "multiplayerMode": "HYBRID"
-    },
-    "local_authoring_parts::09aa49383812a975134583718c44dbcb3568881ae9abb283ac40be3c2edbdcd1:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
-    },
-    "local_authoring_parts::09aa49383812a975134583718c44dbcb3568881ae9abb283ac40be3c2edbdcd1:toSystem,trigger,stateChange": {
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:0": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::ed36f6d045b54886926b4aea15d69c7b717d740440af21f46f48e2dc307d3dc7:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
-    },
-    "local_authoring_parts::ed36f6d045b54886926b4aea15d69c7b717d740440af21f46f48e2dc307d3dc7:toSystem,trigger,stateChange": {
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:1": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::83df3f911c0d8c899ec4f4964def001c6b9458d681c8b67e3d4a01507c404ec5:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
-    },
-    "local_authoring_parts::83df3f911c0d8c899ec4f4964def001c6b9458d681c8b67e3d4a01507c404ec5:toSystem,trigger,stateChange": {
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:2": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::61a7c9e613fbcfb8004db12c49ffde4606b846cdf6a1e7ffdb5317d9061b57a5:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
-    },
-    "local_authoring_parts::61a7c9e613fbcfb8004db12c49ffde4606b846cdf6a1e7ffdb5317d9061b57a5:toSystem,trigger,stateChange": {
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:3": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::06a491e790a8d1b3accd482b452a0ab43b3da8f94fb276f5323a279d9bb7f131:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
-    },
-    "local_authoring_parts::06a491e790a8d1b3accd482b452a0ab43b3da8f94fb276f5323a279d9bb7f131:toSystem,trigger,stateChange": {
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:4": {
-      "fromId": "INSECT_WAVE_PATTERN",
-      "toId": "DEFENDER_LAYOUT",
-      "stateKeys": [
-        "INSECT_WAVE_PATTERN",
-        "DEFENDER_LAYOUT"
-      ],
-      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-      "trigger": "INSECT_WAVE_PATTERN",
-      "stateChange": "STATE_CHANGE_EFFECT"
-    },
-    "local_authoring_parts::c6cc95692c970ec76d0d55c1edb2e341d046d3cf2a32580e22f4b6128e798156:systemInterconnections": {
-      "systemInterconnections": [
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        }
-      ]
-    },
-    "local_authoring_parts::c6cc95692c970ec76d0d55c1edb2e341d046d3cf2a32580e22f4b6128e798156:progressionDirection": {
-      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION"
-    },
-    "local_authoring_parts::5cd18f4ccc72c8a2cd585f3387b28e51e63ad923d8352881328f61d697e39e94:systemInterconnections,progressionDirection": {
-      "systemInterconnections": [
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        }
-      ],
-      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION"
-    },
-    "local_authoring_parts::9d469d22e50cee6215e9bf126db130e64022355395a0c1ec9934a8e4b1e8fb0e:progressionLoop,resourceFlow": {
-      "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-      "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\""
-    },
-    "local_authoring_parts::9d469d22e50cee6215e9bf126db130e64022355395a0c1ec9934a8e4b1e8fb0e:balanceRules": {
-      "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
-    },
-    "local_authoring_parts::553a7831e6a592970ed1e606aaf69aae37ed28a9f3fdf6532d97926a6e418ea8:progressionEconomyBalance": {
-      "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-      "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
-      "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
-    },
-    "local_authoring_parts::5cd18f4ccc72c8a2cd585f3387b28e51e63ad923d8352881328f61d697e39e94:progressionEconomyBalance": {
-      "progressionEconomyBalance": {
-        "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-        "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
-        "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
-      }
-    },
-    "local_authoring_parts::d6650237314ef36a63b5ed117b6f0291ae8f1cb1650ab4f29b39940ed1ee8313:systemInterconnections,progressionDirection,progressionEconomyBalance": {
-      "systemInterconnections": [
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        },
-        {
-          "fromId": "INSECT_WAVE_PATTERN",
-          "toId": "DEFENDER_LAYOUT",
-          "stateKeys": [
-            "INSECT_WAVE_PATTERN",
-            "DEFENDER_LAYOUT"
-          ],
-          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
-          "trigger": "INSECT_WAVE_PATTERN",
-          "stateChange": "STATE_CHANGE_EFFECT"
-        }
-      ],
-      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION",
-      "progressionEconomyBalance": {
-        "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-        "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
-        "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
-      }
-    },
-    "local_authoring_parts::d6650237314ef36a63b5ed117b6f0291ae8f1cb1650ab4f29b39940ed1ee8313:contentExpansionPlan,failureRetryRisk": {
-      "contentExpansionPlan": [
-        {
-          "milestone": "DISCOVERABLE_CLUE",
-          "newGameplay": "Discover the incoming insect wave pattern and its threat hierarchy.",
-          "systemImpact": "Enhances player awareness of enemy behavior through real-time observation and analysis."
-        },
-        {
-          "milestone": "EXPERIMENT_OR_MASTERY_CHOICE",
-          "newGameplay": "Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.",
-          "systemImpact": "Encourages strategic experimentation, allowing players to explore diverse defensive strategies."
-        },
-        {
-          "milestone": "COST_AND_COUNTERPLAY",
-          "newGameplay": "Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.",
-          "systemImpact": "Promotes thoughtful decision-making by balancing immediate rewards against long-term benefits."
-        },
-        {
-          "milestone": "NEW_ACTION",
-          "newGameplay": "Implement a new defensive layout that maximizes survival and strategic advantage in real-time.",
-          "systemImpact": "Enables dynamic adjustments to defense plans based on evolving threats and player insights."
-        },
-        {
-          "milestone": "NEXT_OPEN_QUESTION",
-          "newGameplay": "Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-          "systemImpact": "Fosters continuous learning and strategic growth by prompting reflective gameplay."
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "INSECT_WAVE_PATTERN",
-          "DEFENDER_LAYOUT"
-        ],
-        "retryFlow": "Player can re-evaluate defender layouts or adjust resource allocations based on observed threat patterns.",
-        "riskPressure": "Players may face repeated losses due to misjudged enemy types or inefficient resource use.",
-        "recoveryRules": "Allow for iterative refinement of strategies through experimentation and observation."
-      }
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 24,
-      "failures": 3,
-      "timeouts": 3,
-      "jsonFailures": 0,
-      "totalMs": 2552826,
-      "lastMs": 121203,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T12:03:33.754Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T12:03:33.764Z",
+  "createdAt": "2026-10-09T14:59:25.113Z",
+  "updatedAt": "2026-10-09T14:59:25.128Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 121,
-    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "version": 122,
+    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
     "inventoryCount": 717,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -868,7 +27,7 @@
     "platforms": {
       "WEB": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -885,119 +44,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1064,34 +143,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1103,33 +154,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -1396,30 +423,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1458,17 +465,13 @@
           },
           {
             "family": "CREATURE",
-            "action": "ADAPT",
-            "assetId": "roblox-common-creature-part-insect-head",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "insect"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1499,18 +502,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-item-silver-ingot",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource",
-                "material"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1566,7 +564,7 @@
       },
       "UNITY": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1583,119 +581,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1762,34 +680,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1801,33 +691,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -2094,30 +960,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2156,17 +1002,13 @@
           },
           {
             "family": "CREATURE",
-            "action": "ADAPT",
-            "assetId": "roblox-common-creature-part-insect-head",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "insect"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2197,18 +1039,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-item-silver-ingot",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource",
-                "material"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2264,7 +1101,7 @@
       },
       "ROBLOX": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -2281,119 +1118,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -2460,34 +1217,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -2499,33 +1228,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -2792,30 +1497,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2854,17 +1539,13 @@
           },
           {
             "family": "CREATURE",
-            "action": "USE",
-            "assetId": "roblox-common-creature-part-insect-head",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "insect"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2895,18 +1576,13 @@
           },
           {
             "family": "PROP",
-            "action": "USE",
-            "assetId": "roblox-common-item-silver-ingot",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource",
-                "material"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2962,27 +1638,6 @@
       }
     },
     "assetFacts": {
-      "roblox-common-creature-part-insect-head": {
-        "family": "CREATURE",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "insect"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "INSECT_HEAD",
-        "sourcePath": "/assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 837.8,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
       "roblox-common-motion-place-ground": {
         "family": "MOTION",
         "roleEvidence": {
@@ -2999,28 +1654,6 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-item-silver-ingot": {
-        "family": "PROP",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "resource",
-            "material"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "RESOURCE",
-        "sourcePath": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 892.4,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -3049,383 +1682,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "04ddadfb2997b2bcfd844adacbea60380b675133c92a728a0bdb7a9029783a81"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::systems-progression": [
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "STATE_CHANGE_EFFECT"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "STATE_CHANGE_EFFECT"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "STATE_CHANGE_EFFECT"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "STATE_CHANGE_EFFECT"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "STATE_CHANGE_EFFECT"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "EXPERIMENT_OR_MASTERY_CHOICE"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "COST_AND_COUNTERPLAY"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[4].milestone",
-          "value": "NEXT_OPEN_QUESTION"
-        },
-        "requiredAction": "contentExpansionPlan[4].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "INSECT_WAVE_PATTERN"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: INSECT_WAVE_PATTERN→DEFENDER_LAYOUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
-        },
-        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::systems-progression": {
-      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION",
-      "progressionEconomyBalance": {
-        "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
-        "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
-        "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
-      }
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:03:33.757Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "designerSeed": {
-    "file": "design/bug-defense/2026-10-09/design-seed.json",
-    "contentDigest": "e4b5d5e0064fede95480635fe978fb30197b1bda64a436091b0a24094ff18681",
-    "authorModel": "ollama:qwen3:1.7b",
-    "status": "AUTHORED_CANDIDATE"
-  },
-  "localAuthoringSplits": {
-    "d6650237314ef36a63b5ed117b6f0291ae8f1cb1650ab4f29b39940ed1ee8313": true,
-    "5cd18f4ccc72c8a2cd585f3387b28e51e63ad923d8352881328f61d697e39e94": true,
-    "c6cc95692c970ec76d0d55c1edb2e341d046d3cf2a32580e22f4b6128e798156": true
   }
 }
