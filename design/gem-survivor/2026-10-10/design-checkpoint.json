@@ -460,25 +460,40 @@
         }
       ],
       "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::3ae2c701f7e871b733971d95cfae9a4eb415449888f4e3a6abf8e55e96f79462:signatureSystems:0": {
+      "id": "coreLoop_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "진입 단계"
+      ],
+      "stateOutputs": [
+        "적의 증가",
+        "위협 유형 변환",
+        "성장 가능성이 있는 장비/선택"
+      ],
+      "name": "생존 및 전투 시스템",
+      "purpose": "플레이어의 숙련도 증가와 새로운 선택 기회 제공",
+      "playerChoice": "A/B 상태 교환에 의해 실제 선택이 결정되며, 이는 세계 상태 변화로 표현됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1322513,
-      "lastMs": 90705,
+      "totalMs": 1424498,
+      "lastMs": 101985,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:59:49.296Z"
+      "updatedAt": "2026-10-09T21:01:31.292Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:37:46.738Z",
-  "updatedAt": "2026-10-09T20:59:49.305Z",
+  "updatedAt": "2026-10-09T21:01:31.292Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2322,10 +2337,10 @@
   "localAuthoringSplits": {
     "f9e24080ff37b4cdc4d643a8cf35985a30c9468e7de3beea6c94ffed7e1cb43f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:59:49.298Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:01:31.292Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
