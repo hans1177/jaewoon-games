@@ -49,25 +49,38 @@
       "name": "기초 게임 맵 시스템",
       "purpose": "게임 맵에 새로운 상태를 생성하여 플레이어의 선택 결과를 반영합니다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::8b4f10881f5b8bae74e3438bef8ef8b448503043b011ebf5cc923ebc31cdfa54:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 월드 상태"
+      ],
+      "name": "심층 탐험 시스템",
+      "purpose": "플레이어가 선택 결과에 따라 새로운 월드 상태를 생성하여 게임 세계의 진입 및 발전을 촉진합니다.",
+      "playerChoice": "플레이어는 현재 월드 상태에서 새로운 문제, 장애물, 혹은 도전을 선택하며, 이 선택은 다음 월드 상태로 전환됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 559659,
-      "lastMs": 98126,
+      "totalMs": 659602,
+      "lastMs": 99943,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:41:03.854Z"
+      "updatedAt": "2026-10-09T15:42:43.798Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:41:03.854Z",
+  "updatedAt": "2026-10-09T15:42:43.798Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1657,7 +1670,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:41:03.854Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:42:43.798Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
