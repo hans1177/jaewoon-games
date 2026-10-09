@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다. 이는 ACTION_SURVIVAL_ROGUELITE 게임의 핵심 재미 확보 및 시스템 연결 강화에 기반하며, 플레이어 선택에 따른 상태 변화와 보상 제공을 포함한다.",
       "coreFun": "진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화, 양방향 실제 상태 교환 발생, 실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와 RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간 유사성, 보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의"
+    },
+    "local_authoring_parts::8f73d917fa9233883a523f8a1713d44f866f56cd0bc9612f3d558b70a2603e17:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+        "선택: 진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화",
+        "상태 변화: 양방향 실제 상태 교환 발생, 보석 생존전의 핵심 재미와 시스템 연결 강화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1503440,
-      "lastMs": 109597,
+      "totalMs": 1603316,
+      "lastMs": 99876,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:39:52.924Z"
+      "updatedAt": "2026-10-09T17:41:32.804Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:49.445Z",
-  "updatedAt": "2026-10-09T17:39:52.926Z",
+  "updatedAt": "2026-10-09T17:41:32.804Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2271,7 @@
     "69d2f7a48bf76da14e13c8f875083ffc9887d0932eda7acdf9554d9c95adfdfa": true,
     "70adc167046cdeb77006a3f5903f6e2d6469af161d45c65df1e002968984b5cd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:39:52.926Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:41:32.804Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
