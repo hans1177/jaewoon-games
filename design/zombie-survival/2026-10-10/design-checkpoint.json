@@ -387,25 +387,98 @@
           "playerChoice": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주며, 이는 다음 사건의 시작점이다"
         }
       ]
+    },
+    "local_authoring_parts::fa5762b3a32d0dcf7d4842584fc4bad7e2a1cc0698c3e1998924c995fd5beda3:multiplayerMode": {
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::eb533ce609a5933659044cab1bc553eff6888872f18cf3e97bb71cbe70706e22:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 주도하는 단일 캐릭터의 탈출",
+        "실시간 스타트업 루프를 생성하여 전투 방식 및 장비 선택을 통해 진입 시 흐름에 맞춘 게임 진행",
+        "보상/위험/다음 선택을 통해 플레이어의 전략적 결정과 환경/지역 변화 간 인과적 연결"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "플레이어의 숙련된 전략적 결정",
+            "실제 상황에서 발생한 위협"
+          ],
+          "stateOutputs": [
+            "장비/기술 선택",
+            "환경/지역 변화"
+          ],
+          "name": "실시간 스타트업 루프 시스템",
+          "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출 및 실시간 전투 방식 변경을 위한 인과적 연결",
+          "playerChoice": "장비/기술 선택 → 환경/지역 변화 → 보상/위험/다음 선택의 연속적인 인과적 변화를 생성함으로써 게임 진행 속도와 전략적 결정이 조절됨"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "플레이어의 숙련된 전략적 결정",
+            "실제 상황에서 발생한 위협"
+          ],
+          "stateOutputs": [
+            "장비/기술 선택",
+            "환경/지역 변화"
+          ],
+          "name": "실시간 스타트업 루프 시스템",
+          "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출 및 실시간 스타트업 루프 생성",
+          "playerChoice": "플레이어의 숙련된 전략적 결정과 실제 상황에서 발생한 위협에 대한 반응을 통해 새로운 장비/기술 선택 또는 환경/지역 변화를 유도함으로써 게임 진행 방향을 재설계하여 진입 시 흐름에 맞춘 전투 방식을 형성하고, 이는 보상/위험/다음 선택으로 연결되어야 함을 의미합니다."
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "플레이어의 숙련된 전략적 결정",
+            "실제 상황에서 발생한 위협"
+          ],
+          "stateOutputs": [
+            "장비/기술 선택",
+            "환경/지역 변화"
+          ],
+          "name": "실시간 스타트업 루프 시스템",
+          "purpose": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응을 통해 장비/기술 선택 및 환경/지역 변화를 생성하여 게임 진행에 영향을 미친다.",
+          "playerChoice": "플레이어의 전략적 결정이 실제 세계 상태 변화와 인과적으로 연결되어 다음 사건의 시작점이 되며, 이는 새로운 게임 규칙 형성의 원천이다."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어의 숙련된 전략적 결정",
+            "실제 상황에서 발생한 위협"
+          ],
+          "stateOutputs": [
+            "장비/기술 선택",
+            "환경/지역 변화"
+          ],
+          "name": "실시간 스타트업 루프 시스템",
+          "purpose": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응을 인과적으로 연결하여 실제 세계 상태 변화와 다음 사건의 시작점을 형성함",
+          "playerChoice": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주며, 이는 다음 사건의 시작점이다"
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1118783,
-      "lastMs": 102435,
+      "totalMs": 1207455,
+      "lastMs": 88672,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:35:30.655Z"
+      "updatedAt": "2026-10-09T21:36:59.331Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T21:35:30.658Z",
+  "updatedAt": "2026-10-09T21:36:59.342Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2111,15 +2184,147 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems_0",
+            "signatureSystems_1",
+            "signatureSystems_2",
+            "signatureSystems_3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "좀비 생존기: 선택형 생존 게임, 진입 시 흐름에 맞춘 실시간 스타트업 루프, 플레이어가 주도하는 단일 캐릭터의 탈출",
+      "creativeGrammar": {
+        "mainIdentity": "생존 및 전투 기반의 실시간 스케줄링 게임",
+        "a": {
+          "system": "선택적 장비/기술",
+          "material": "플레이어의 숙련된 전략적 결정과 새로운 도구의 결합",
+          "materialDomain": "전술적 자원 확보와 사용 가능성 증대",
+          "stateChange": "장비/기술 선택 -> 상태 변화 -> 보상/위험/다음 선택"
+        },
+        "b": {
+          "system": "주변 환경/지역",
+          "material": "실제 상황에서 발생한 위협 또는 대응 방식",
+          "materialDomain": "환경 조건과 플레이어의 반응을 통해 인과적으로 연결된 세계 규칙",
+          "stateChange": "환경/지역 변화 -> 상태 변화 -> 보상/위험/다음 선택"
+        },
+        "abCausality": "장비/기술 선택 → 환경/지역 변화 → 보상/위험/다음 선택 양방향 교환",
+        "abEvolution": {
+          "aChangesB": "장비/기술 선택이 환경/지역 변화에 영향을 미치는 경우, 보상/위험/다음 선택도 함께 변동한다.",
+          "bChangesA": "환경/지역 변화가 장비/기술 선택에 영향을 주는 경우, 보상/위험/다음 선택도 함께 변동한다.",
+          "lateGameChange": "중후반에서는 새로운 시스템 및 게임 규칙으로 인해 A/B 상태 간 관계가 재정의된다."
+        },
+        "materialFusion": {
+          "contrast": "플레이어의 숙련된 전략적 결정과 실제 상황에서 발생한 위협 또는 대응 방식의 융합",
+          "causalBridge": "장비/기술 선택 → 환경/지역 변화 → 보상/위험/다음 선택의 연속적인 인과적 연결",
+          "removalConsequence": "C의 두 창작 소재와 메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응",
+          "characterConflict": "실제 세계 상태 변화와 플레이어의 선택이 서로 인과적으로 연결되어야 한다.",
+          "playerChoice": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주며, 이는 다음 사건의 시작점이다.",
+          "worldChange": "플레이어의 선택이 실제 세계 상태를 변화시켜 새로운 게임 규칙을 형성한다.",
+          "nextEvent": "플레이어의 선택이 실제 세계 상태 변화를 통해 다음 사건을 유도한다."
+        },
+        "cThemes": [
+          {
+            "name": "전투",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 다양한 전투 방식과 장비로 스타트업 루프를 생성"
+          },
+          {
+            "name": "환경",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 환경 조건과 위협을 해석하여 전략적 결정을 내리게 된다"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전술적 자원 확보 및 사용 가능성 증대",
+            "gameplayEffect": "장비/기술 선택 -> 상태 변화 -> 보상/위험/다음 선택"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "실제 상황에서 발생한 위협 또는 대응 방식",
+            "gameplayEffect": "환경/지역 변화 -> 상태 변화 -> 보상/위험/다음 선택"
+          }
+        ],
+        "cGenreInterlock": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응은 서로 인과적으로 연결되어야 하며, 이는 실제 세계 상태 변화와 다음 사건의 시작점이 되어야 한다.",
+        "cWorldAndGameplayEffect": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주고, 이는 새로운 게임 규칙을 형성한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어의 숙련된 전략적 결정",
+            "discovery": "장비/기술 선택으로 인해 실시간 스타트업 루프가 생성됨",
+            "newChoice": "환경/지역 변화로 인해 새로운 전술적 결정이 가능하다"
+          },
+          {
+            "clue": "실제 상황에서 발생한 위협",
+            "discovery": "환경/지역 변화로 인해 플레이어의 전략적 결정이 재정의된다",
+            "newChoice": "장비/기술 선택으로 인해 보상/위험/다음 선택이 변동된다"
+          },
+          {
+            "clue": "중후반의 새로운 시스템 및 게임 규칙",
+            "discovery": "플레이어의 선택이 실제 세계 상태를 변화시켜 새로운 게임 규칙을 형성함",
+            "newChoice": "플레이어의 선택이 다음 사건의 시작점을 제공함"
+          },
+          {
+            "clue": "플레이어의 선택과 실제 세계 상태 변화의 연속적인 인과적 연결",
+            "discovery": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주고, 이는 다음 사건의 시작점이다",
+            "newChoice": "플레이어의 선택이 새로운 게임 규칙을 형성함"
+          }
+        ],
+        "delveGrowthRule": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응은 중후반에서 새로운 시스템 및 게임 규칙으로 인해 계속적으로 발전한다.",
+        "finalGameIdentity": "플레이어의 숙련된 전략적 결정과 실질적 상황 반응이 서로 인과적으로 연결되어야 하며, 이는 실제 세계 상태 변화와 다음 사건의 시작점이 되어야 한다."
+      },
+      "playerFantasy": "플레이어가 주도하는 단일 캐릭터의 탈출",
+      "coreFun": "플레이어의 숙련된 전략적 결정과 새로운 도구의 결합",
+      "coreLoop": [
+        "플레이어가 주도하는 단일 캐릭터의 탈출",
+        "실시간 스타트업 루프를 생성하여 전투 방식 및 장비 선택을 통해 진입 시 흐름에 맞춘 게임 진행",
+        "보상/위험/다음 선택을 통해 플레이어의 전략적 결정과 환경/지역 변화 간 인과적 연결"
+      ],
+      "multiplayerMode": "COMPETITIVE"
+    }
+  },
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:35:30.658Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T21:36:59.335Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
