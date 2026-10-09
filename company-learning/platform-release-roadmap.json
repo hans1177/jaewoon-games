@@ -1,5 +1,5 @@
 {
-  "version": 562,
+  "version": 563,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -7081,7 +7081,13 @@
       "homepageLinkLegacyProbeRequiredBundleComponents": [],
       "developmentLaneAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
       "deploymentAuthority": false,
-      "homepageTestLinkIsNotDeploymentOrRelease": true
+      "homepageTestLinkIsNotDeploymentOrRelease": true,
+      "ownerPlayableTestRoute": "web-games/<gameId>/unity/",
+      "ownerPlayableTestGate": "ACTUAL_UNITY_WEBGL_NATIVE_3D_BROWSER_GAMEPLAY_MOBILE_SAVE_AND_COMPLETE_BUNDLE",
+      "ownerPlayableTestMayPrecedeFinalReadiness": true,
+      "ownerPlayableTestDoesNotGrantNativeReadinessOrPublicRelease": true,
+      "ownerPlayableTestPreservesStableGameUrl": true,
+      "ownerPlayableTestReportsFinalQaStateSeparately": true
     },
     "runtimeCatalogPublication": {
       "source": "company-runtime:game-catalog.json",
@@ -28803,6 +28809,22 @@
     ],
     "homepageCardVisibilityNotBlockedByAbsentArtwork": true,
     "oldWebPrototypeWithdrawalDoesNotHideOwnerGameCard": true,
-    "withdrawnWebPrototypeStillDisablesOldWebPlayLink": true
+    "withdrawnWebPrototypeStillDisablesOldWebPlayLink": true,
+    "ownerPlaytestContract": {
+      "scope": "ALL_DEVELOPMENT_CONFIRMED_REAL_GAME_IDENTITIES_EXCLUDING_CONTROL_ONLY_TEST_SHELLS",
+      "normalGamesCardOnHomepageEvenBeforeBuild": true,
+      "actualWebglTestForEachBuildableCanonicalUnityGame": true,
+      "testLinkActivation": "REAL_WEBGL_BUNDLE_NATIVE_3D_ACTUAL_BROWSER_PLAY_TOUCH_SAVE_RESTORE_AND_NO_FATAL_ERRORS",
+      "testLinkRequiresFinalReleaseQaPass": false,
+      "testLinkNeverClaimsFinalQaPassWhenReadinessFails": true,
+      "pendingBuildCardAction": "DISABLED_UNTIL_VERIFIED_RUNTIME_EXISTS",
+      "testingRoute": "web-games/<gameId>/unity/",
+      "testedReadyGameRoute": "web-games/<gameId>/",
+      "stableOriginalGameUrlAndExistingSaveKeysMustRemainUnchanged": true,
+      "testPublicationUsesExistingUnityWebWorkflow": true,
+      "missingUnitySourceAction": "EXISTING_VIBE_BUILD_UP_TO_UNITY_WEB_3D_SOURCE",
+      "missingExecutableAction": "REPAIR_GAME_SCOPE_UNTIL_ACTUAL_PLAYABLE_EVIDENCE",
+      "forbiddenTestImplementation": "GENERIC_HTML_CANVAS_OR_WRAPPER_SHADOW_GAME"
+    }
   }
 }
