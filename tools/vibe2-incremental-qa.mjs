@@ -567,7 +567,7 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
           /GameObject\.CreatePrimitive\s*\(/i,
           /new\s+GameObject\s*\(/i,
           /(?:Instantiate|Resources\.Load|Addressables\.)\s*[<(]/i,
-          /\b(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer|SpriteRenderer)\b/i,
+          /\b(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer)\b/i,
           /transform\.(?:SetParent|localScale|localPosition|localRotation)|\.transform\./i,
           /\b(?:Material|Shader|Renderer|Light)\b/i
         ])
@@ -583,6 +583,15 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         ?(text.match(/GameObject\.CreatePrimitive\s*\(/gi)||[]).length<=1&&!/(?:new\s+GameObject|Instantiate\s*\(|MeshFilter|SkinnedMeshRenderer|SetParent|sharedMesh)/i.test(text)
         :(text.match(/Instance\.new\s*\(\s*["']Part["']\s*\)/gi)||[]).length<=1&&!/(?:MeshPart|SpecialMesh|Model["']|Attachment|WeldConstraint|Motor6D|SurfaceAppearance|Clone\s*\()/i.test(text);
       require('NATIVE_COMPOSITE_FORM',nativeComposition>=3);
+      if(target==='unity'){
+        // 기존 ASSET_ADAPTATION 검증에서 2D SpriteRenderer와 빈 메시 컴포넌트는 3D 승격 근거가 아니다.
+        // 실제 최종 합격은 Unity WebGL의 독립 브라우저 메시/삼각형 계측에서 다시 판정한다.
+        const meshRenderer=/\b(?:SkinnedMeshRenderer|MeshRenderer)\b/.test(text);
+        const meshSource=/\bSkinnedMeshRenderer\b|\bMeshFilter\b/.test(text);
+        const sourceMeshBinding=/\bsharedMesh\s*=|\.sharedMesh\b|\bInstantiate\s*\(|\b(?:Resources|Addressables)\.Load/.test(text);
+        require('UNITY_NATIVE_3D_MESH_SOURCE_BINDING',meshRenderer&&meshSource&&sourceMeshBinding);
+        require('UNITY_WORLD_SPRITE_RENDERER_FORBIDDEN',!/\bSpriteRenderer\b/.test(text));
+      }
       if(target==='roblox'){
         const coupledVisual=terms=>new RegExp('(?:'+terms+')[\\s\\S]{0,700}(?:Instance\\.new|Clone\\s*\\(|FindFirstChild|WaitForChild|Color3|BrickColor|Material|SurfaceAppearance|CFrame|\\.Size\\b|\\.Position\\b)|(?:Instance\\.new|Clone\\s*\\(|FindFirstChild|WaitForChild|Color3|BrickColor|Material|SurfaceAppearance|CFrame|\\.Size\\b|\\.Position\\b)[\\s\\S]{0,700}(?:'+terms+')','i').test(text);
         const requiredVisualDomains={
