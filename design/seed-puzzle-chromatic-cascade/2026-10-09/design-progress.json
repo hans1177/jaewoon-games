@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 209,
-  "lastSuccessfulModelCallAt": "2026-10-09T07:18:19.207Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 211,
+  "lastSuccessfulModelCallAt": "2026-10-09T07:20:07.867Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/seed-puzzle-chromatic-cascade/2026-10-09/design-seed.json",
     "contentDigest": "04b11d822f16c695bbac3a81c9fe7dbfd52933931d42aad59bf6c3a017713772",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 149,
-      "successes": 149,
+      "calls": 150,
+      "successes": 150,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11037255,
-      "lastMs": 106564,
+      "totalMs": 11145904,
+      "lastMs": 108649,
       "lastError": null,
-      "updatedAt": "2026-10-09T07:18:19.207Z"
+      "updatedAt": "2026-10-09T07:20:07.858Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T07:18:19.209Z"
+  "updatedAt": "2026-10-09T07:20:07.885Z"
 }
