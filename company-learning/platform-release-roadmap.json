@@ -1,5 +1,5 @@
 {
-  "version": 559,
+  "version": 560,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6779,7 +6779,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 11,
+    "version": 12,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6974,13 +6974,13 @@
         "actualGameFileSourceMetadataPreserved": true,
         "canonicalNormalizationRequiredBeforeHomepagePublication": true,
         "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
-        "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
-        "cardVisibilityRequiresRunnableTarget": true,
-        "titleOnlyCardExposureForbidden": true,
+        "playableWebCompanionMissingEntryState": "SHOW_CATALOG_CARD_WITH_UNVERIFIED_PLAY_LINK_DISABLED",
+        "cardVisibilityRequiresRunnableTarget": false,
+        "titleOnlyCardExposureForbidden": false,
         "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
         "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess",
         "playableWebCompanionMayBeDirectLaunchFallback": false,
-        "unityWebOnlyGameCardVisibility": true
+        "unityWebOnlyGameCardVisibility": false
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -28740,10 +28740,10 @@
     "retainGameIdAndPublicUrl": true,
     "legacyWebGameplayEmbeddingOrWrapperForbidden": true,
     "existingCanonicalBuildQaRegressPromotionRequired": true,
-    "onlyExposeWhen": "ACTUAL_DEPLOYED_UNITY_WEBGL_BUNDLE_AND_3D_BROWSER_QA_PASS",
-    "homepageGameCardRequiresUnityWeb": true,
+    "onlyExposeWhen": "UNITY_WEB_PLAY_LINK_ONLY_AFTER_ACTUAL_DEPLOYED_WEBGL_AND_3D_BROWSER_QA_PASS",
+    "homepageGameCardRequiresUnityWeb": false,
     "legacyWebPlayButtonForbidden": true,
-    "platformsOtherThanUnityWebDoNotMakeGameCardVisible": true,
+    "platformsOtherThanUnityWebDoNotMakeGameCardVisible": false,
     "webglFullscreenButtonRequired": true,
     "mobileViewportFitsEntireGame": true,
     "mobileBrowserOverscrollSuppressedWhenAllowed": true,
@@ -28778,7 +28778,8 @@
       "cardMaximumBytes": 49152,
       "heroMaximumBytes": 143360,
       "compressionMayNotDestroyFineDetailsOrText": true,
-      "publicationWithoutNewActualArtwork": "REPAIR_REQUIRED"
+      "publicationWithoutNewActualArtwork": "REPAIR_REQUIRED",
+      "cardArtworkQualityGateIndependentOfGameRuntime": true
     },
     "description": {
       "location": "DIRECTLY_BELOW_GAME_TITLE",
@@ -28789,6 +28790,9 @@
     },
     "noShadowWrapperTemporaryBypass": true,
     "independentQaBeforeCompletion": true,
-    "allGamesMigrationViaExistingCanonicalUnityWebWorkflow": true
+    "allGamesMigrationViaExistingCanonicalUnityWebWorkflow": true,
+    "homepageCardRendering": "CANONICAL_ACTIVE_GAME_CATALOG_WITH_UNIQUE_GAME_TITLE_ART_AND_CURRENT_DESCRIPTION",
+    "gameCardRenderingDoesNotRequireGameRuntimeQa": true,
+    "unverifiedGamePlaybackLinkMustRemainDisabled": true
   }
 }
