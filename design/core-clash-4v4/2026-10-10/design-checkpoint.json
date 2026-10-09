@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 통해 새로운 행동·경로·조합·관계·발견 또는 대응법을 열며, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 가진 ACTION_SURVIVAL_ROGUELITE 장르의 월드에서 플레이합니다. 이는 주체인 플레이어가 '전장 4대4'라는 이름의 중심 행동을 수행하며, 선택 결과가 다음 상태와 접근 가능성을 바꾸는 시그니처 상호작용을 통해 진화합니다.",
       "coreFun": "플레이어는 단순한 반복보다는 새로운 행동·경로·조합·관계·발견 또는 대응법을 열고, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 가진 ACTION_SURVIVAL_ROGUELITE 장르의 월드에서 '진행·위험·보상'이 서로 연결되어 있는 반복 가능한 핵심 루프를 통과합니다. 이 루프는 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 순서를 따라 진행되며, 각 단계에서는 실제 상태 변화와 즉각적 결과를 명확히 합니다."
+    },
+    "local_authoring_parts::49b39770090730e60dd9f38d51924d08bd964c5566f62e7aecc3210bd7b4897e:coreLoop": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1381038,
-      "lastMs": 120520,
+      "totalMs": 1476882,
+      "lastMs": 95844,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:18:53.540Z"
+      "updatedAt": "2026-10-09T18:20:29.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:52.465Z",
-  "updatedAt": "2026-10-09T18:18:53.542Z",
+  "updatedAt": "2026-10-09T18:20:29.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,7 +2271,7 @@
     "7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c": true,
     "84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:18:53.542Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:20:29.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
