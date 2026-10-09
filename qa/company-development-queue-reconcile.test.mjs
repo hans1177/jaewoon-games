@@ -246,6 +246,7 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.doesNotMatch(workflow,/Checkout main engine[\s\S]*fetch-depth:\s*0/);
   const source=fs.readFileSync('tools/company-development-queue-reconcile.mjs','utf8');
   assert.match(workflow,/id:\s*queue_state/);
+  assert.match(workflow,/git checkout -f -B development-queue-reconcile-runtime/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
   assert.match(source,/game-seed-state\.json/);
