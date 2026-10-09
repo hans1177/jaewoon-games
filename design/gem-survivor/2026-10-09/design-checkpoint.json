@@ -499,25 +499,40 @@
     },
     "local_authoring_parts::d7bda3b1d07b6fe67d2dcab5fa56309bde42748b5611dfe1a7f19da6a24107ad:trigger": {
       "trigger": "플레이어가 실험적 플레이나 숙련을 통해 새로운 콘텐츠와 경로를 개발하여 게임의 깊이를 증진시키는 데 사용된다."
+    },
+    "local_authoring_parts::d7bda3b1d07b6fe67d2dcab5fa56309bde42748b5611dfe1a7f19da6a24107ad:stateChange": {
+      "stateChange": "플레이어가 실험적 플레이나 숙련을 통해 새로운 콘텐츠와 경로를 개발하여 게임의 깊이를 증진시키는 데 사용된다."
+    },
+    "local_authoring_parts::349c6f25b1e84696f1d5210dd983f5ef1eed7854f6c9baf64be1d7f8b39fe598:systemInterconnections:2": {
+      "fromId": "RUN_RESULT",
+      "toId": "PROGRESSION_CHOICE",
+      "stateKeys": [
+        "RUN_RESULT",
+        "PROGRESSION_CHOICE"
+      ],
+      "fromSystem": "RUN_RESULT",
+      "toSystem": "PROGRESSION_CHOICE",
+      "trigger": "플레이어가 실험적 플레이나 숙련을 통해 새로운 콘텐츠와 경로를 개발하여 게임의 깊이를 증진시키는 데 사용된다.",
+      "stateChange": "플레이어가 실험적 플레이나 숙련을 통해 새로운 콘텐츠와 경로를 개발하여 게임의 깊이를 증진시키는 데 사용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2089958,
-      "lastMs": 63263,
+      "totalMs": 2152262,
+      "lastMs": 62304,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:22:28.312Z"
+      "updatedAt": "2026-10-09T15:23:30.617Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:47:38.208Z",
-  "updatedAt": "2026-10-09T15:22:28.312Z",
+  "updatedAt": "2026-10-09T15:23:30.619Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2372,7 +2387,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:22:28.312Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:23:30.619Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
