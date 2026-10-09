@@ -482,25 +482,43 @@
         "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::d148940039fa82978557a35fba3e21d943126cd9951bd7431251c85da3a773d3:toSystem,trigger,stateChange": {
+      "toSystem": "DEFENSIVE_ADAPTATION",
+      "trigger": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+      "stateChange": "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+    },
+    "local_authoring_parts::d7c65ee7cb8c62746963826ac979b1b255e8c19a827d425312083e6f8b4c69da:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "DEFENSIVE_ADAPTATION_REINFLECTION",
+      "stateKeys": [
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "DEFENSIVE_ADAPTATION",
+      "trigger": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+      "stateChange": "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 561085,
-      "lastMs": 34864,
+      "totalMs": 592757,
+      "lastMs": 31672,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:38:43.366Z"
+      "updatedAt": "2026-10-09T14:39:15.040Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:38:43.366Z",
+  "updatedAt": "2026-10-09T14:39:15.042Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2351,7 +2369,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:38:43.366Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:39:15.042Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
