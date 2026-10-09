@@ -718,7 +718,13 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   });
   const resolvedCreatureRole=explicitCreatureRole&&creatureRoleMotionClips[normalizedRole]?normalizedRole:null;
   const requiredCreatureMotionClips=resolvedCreatureRole?freezeList(creatureRoleMotionClips[resolvedCreatureRole]):freezeList([]);
-  const animationNames=(inv.animations||[]).map(row=>clean(row?.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
+  // 모션 · 이름만 ATTACK/HIT/DEATH인 클립을 실재 관절 모션으로 취급하지 않는다.
+  // 해당 클립 자체에 유효한 리그 관절 채널과 두 개 이상 시간 샘플이 있어야 역할 커버리지에 포함한다.
+  const articulatedRoleAnimations=(inv.animations||[]).filter(row=>row?.valid===true
+    &&Number(row.animatedJointCount)>0
+    &&Array.isArray(row.channels)
+    &&row.channels.some(channel=>channel.valid===true&&channel.jointTarget===true&&Number(channel.inputCount)>=2));
+  const animationNames=articulatedRoleAnimations.map(row=>clean(row.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
   const clipAliases=clip=>{
     const key=clean(clip).toUpperCase();
     const map={
@@ -770,6 +776,13 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     roleMotionContractRequired:explicitCharacterRole||explicitCreatureRole,roleMotionRole:resolvedNpcRole||resolvedCreatureRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
     creatureRoleMotionRequired:explicitCreatureRole,requiredCreatureMotionClips,missingCreatureRoleMotionClips:freezeList(missingCreatureRoleMotionClips),
     attachmentSocketBasisRequired:explicitCharacterRole,attachmentSocketCoverage:freeze(attachmentSocketCoverage),missingAttachmentSocketBasis:freezeList(missingAttachmentSocketBasis),
+    roleAnimationEvidence:freeze({
+      requiredArticulatedPerRole:true,
+      minimumJointKeyframeTimes:2,
+      eligibleClipNames:freezeList(articulatedRoleAnimations.map(row=>row.name)),
+      rejectedClipNames:freezeList((inv.animations||[]).filter(row=>!articulatedRoleAnimations.includes(row)).map(row=>row.name)),
+      nativeRigAndPlatformRuntimeStillUnverified:true
+    }),
     platformNativeBindingStillRequired:true,runtimeVerificationStillRequired:true,
     primitivePartAssemblyPrototypeOnly:true
   });
