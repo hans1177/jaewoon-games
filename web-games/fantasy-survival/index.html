@@ -682,10 +682,10 @@ const MUSIC_THEMES={
  desert:{bpm:58,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,1,-1,2,0,-2,1,-1],style:'desert'},
  underground:{bpm:46,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,2,0,-3,1],style:'underground'},
  questcave:{bpm:50,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,2,0,-1,1,-3],style:'questcave'},
- battle1:{bpm:112,mode:'minor',root:110,progression:[0,6,5,3,0,1,6,5],riff:[0,3,1,4,2,5,3,1],style:'battle1'},
- battle2:{bpm:120,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,4,2,5,1,3,5,2],style:'battle2'},
- battle3:{bpm:104,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,3,2,5,1,4,2,0],style:'battle3'},
- boss:{bpm:84,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,2,4,1,5,2,1,-1],style:'boss'}
+ battle1:{bpm:134,mode:'minor',root:110,progression:[0,5,3,4,0,6,5,4],riff:[0,3,1,4,2,5,3,1],style:'battle1',leadOffset:9,phraseA:[0,2,4,null,5,4,2,0,3,5,7,5,4,2,0,null],phraseB:[4,5,7,9,7,5,4,null,2,4,5,7,5,4,2,0]},
+ battle2:{bpm:146,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,4,2,5,1,3,5,2],style:'battle2',leadOffset:8,phraseA:[0,4,5,7,5,4,2,null,0,2,4,7,9,7,5,4],phraseB:[7,9,11,9,7,5,4,null,2,4,7,5,4,2,0,null]},
+ battle3:{bpm:126,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,3,2,5,1,4,2,0],style:'battle3',leadOffset:9,phraseA:[0,null,0,2,3,5,3,null,2,0,-1,2,4,3,2,null],phraseB:[4,5,7,null,5,3,2,0,2,4,5,4,2,0,-1,null]},
+ boss:{bpm:114,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,2,4,1,5,2,1,-1],style:'boss',leadOffset:12,phraseA:[0,null,3,4,5,null,4,3,2,0,3,null,5,4,3,null],phraseB:[5,null,7,8,7,5,4,3,2,null,5,7,8,7,5,3]}
 };
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false};
 function initMusicNoiseDeferred(){
@@ -807,30 +807,47 @@ function scheduleBandBeat(key,t,beat,at){
    longPad(.034,650);if(b===0)lowDrum(at,64,.058,beatDur*.78);if(b===1||b===3)noiseBrush(at,beatDur*.46,.006,1150);if(b===2)smoothVoice(lead,at,beatDur*1.8,.010,'sine',980,.38);break;
   case'underground':case'questcave':
    longPad(t.style==='questcave'?.039:.043,t.style==='questcave'?430:500);if(b===0)lowDrum(at,t.style==='questcave'?54:50,.052,beatDur*.95);if(b===3)noiseBrush(at,beatDur*.75,.006,620);break;
-  case'battle1':
-   if(b===0){padVoice(root,at,beatDur*4,.040,620);lowDrum(at,86,.135,beatDur*.62)}
-   if(b===2)lowDrum(at,62,.080,beatDur*.48);
-   if(b===1||b===3)noiseBrush(at,beatDur*.28,.013,1250);
-   if(b===3)smoothVoice(lead,at,beatDur*1.35,.018,'sine',1200,.16);
+  // 전투 음악: 2마디 주선율·응답 선율, 전개에 따라 달라지는 리듬과 저음.
+  case'battle1':case'battle2':case'battle3':case'boss':{
+   const boss=t.style==='boss',heavy=t.style==='battle3',fast=t.style==='battle2';
+   const section=Math.floor(bar/4)%4,rise=section>=2?1.10:1;
+   const melody=section%2===0?t.phraseA:t.phraseB;
+   if(b===0){
+    padVoice(root*2,at,beatDur*3.72,(boss?.030:.024)*rise,boss?720:1280);
+    padVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*3.65,(boss?.014:.011)*rise,boss?820:1680);
+   }
+   // 킥·스네어·하이햇: 빠른 전투는 질주, 보스는 묵직한 전진 리듬.
+   if(b===0||b===2||(fast&&b===3&&bar%2===1))
+    lowDrum(at, boss?70:fast?94:heavy?77:86,(boss?.137:heavy?.112:.106)*rise*(b===0?1:.64),beatDur*(boss?.57:.43));
+   if(b===1||b===3)
+    noiseBrush(at,beatDur*.21,(boss?.020:.015)*rise,boss?1080:heavy?1720:2450);
+   if(!boss||b===2)
+    noiseBrush(at+beatDur*.50,beatDur*.18,(fast?.008:.0058)*rise,boss?1750:3900);
+   // 음이 끊기지 않는 베이스와 강세를 살린 코드 반주.
+   if(b===0||b===2||(heavy&&b===3))
+    smoothVoice(root*2,at,beatDur*(b===0?.88:.60),(boss?.040:.030)*rise,
+     heavy||boss?'sawtooth':'triangle',boss?680:1020,.014);
+   if(b===1&&((bar%4)===3||boss))
+    smoothVoice(scaleFreq(t.root,ch+2,minor,0),at,beatDur*.48,.015*rise,'triangle',1250,.016);
+   // 쉼표가 있는 선율과 후반 4마디의 응답 선율.
+   for(let sub=0;sub<2;sub++){
+    const note=melody[(beat%8)*2+sub];
+    if(note===null)continue;
+    const onset=at+beatDur*.5*sub;
+    const pitch=scaleFreq(t.root,ch+t.leadOffset+note,minor,0);
+    const emphasis=(sub===0&&b===0)?1.28:1;
+    smoothVoice(pitch,onset,beatDur*(sub===0?.48:.40),(.0195+(boss?.002:0))*rise*emphasis,
+     boss||fast?'sawtooth':heavy?'triangle':'sawtooth',boss?1720:fast?2400:2200,.012);
+    if(sub===0&&b===0&&bar%2===0)
+     smoothVoice(pitch*.5,onset,beatDur*.55,.008*rise,'triangle',930,.018);
+   }
+   // 프레이즈 끝에서만 짧은 필인으로 반복감을 낮춘다.
+   if(b===3&&bar%4===3){
+    noiseBrush(at+beatDur*.36,beatDur*.14,(boss?.016:.012)*rise,1640);
+    if(section>=2)lowDrum(at+beatDur*.70,boss?83:98,.055,beatDur*.17);
+   }
    break;
-  case'battle2':
-   if(b===0){padVoice(root,at,beatDur*4,.043,680);lowDrum(at,92,.145,beatDur*.58)}
-   if(b===2)lowDrum(at,66,.086,beatDur*.45);
-   noiseBrush(at+beatDur*.48,beatDur*.24,.012,1500);
-   if(b===1||b===3)smoothVoice(lead,at,beatDur*1.1,.017,'sine',1350,.14);
-   break;
-  case'battle3':
-   if(b===0){padVoice(root,at,beatDur*4,.048,520);padVoice(root*.5,at,beatDur*4,.024,360);lowDrum(at,78,.155,beatDur*.72)}
-   if(b===2)lowDrum(at,54,.092,beatDur*.55);
-   if(b===1||b===3)noiseBrush(at,beatDur*.36,.014,920);
-   if(b===3)smoothVoice(lead,at,beatDur*1.4,.016,'sine',980,.2);
-   break;
-  case'boss':
-   if(b===0){padVoice(root,at,beatDur*4,.058,360);padVoice(root*.5,at,beatDur*4,.032,260);lowDrum(at,62,.180,beatDur*.92)}
-   if(b===2)lowDrum(at,44,.110,beatDur*.72);
-   if(b===1||b===3)noiseBrush(at,beatDur*.62,.020,620);
-   if(b===3)smoothVoice(lead,at,beatDur*1.8,.020,'sine',720,.32);
-   break;
+  }
  }
 }
 function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.10;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}if(music.nextAt<now-.25)music.nextAt=now+.04;let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;while(music.nextAt<now+.08&&scheduled<maxPerFrame){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur;scheduled++}}
