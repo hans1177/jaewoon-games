@@ -34,25 +34,41 @@
         "SELECT: 'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.' 또는 'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.' 두 가지 선택지를 합니다.",
         "OUTPUT: 상태 변화(예: 생명력 감소, 경험 점수 증가, 새로운 빌드 생성) 및 다음 선택의 가능성입니다."
       ]
+    },
+    "local_authoring_parts::1cb9a94345b6558a114c33fcd0fff83f10c9ad3da212b42d641fea706cc115ad:signatureSystems:0": {
+      "id": "VAMPIRE_SURVIVORS",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "LIFE_POINTS",
+        "EXPERIENCE",
+        "RUN_REWARD"
+      ],
+      "stateOutputs": [
+        "NEW_BUILD",
+        "NEXT_PROGRESSION_CHOICE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 단순한 콘텐츠를 반복적으로 수행하며 즉각적인 결과와 위험/보상을 얻는 루프를 만든다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. OR Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 237555,
-      "lastMs": 51907,
+      "totalMs": 299448,
+      "lastMs": 61893,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:24:18.601Z"
+      "updatedAt": "2026-10-09T15:25:20.497Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:20:21.023Z",
-  "updatedAt": "2026-10-09T15:24:18.601Z",
+  "updatedAt": "2026-10-09T15:25:20.497Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1762,7 +1778,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:24:18.601Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:25:20.497Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
