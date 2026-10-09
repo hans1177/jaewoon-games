@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 121,
-  "lastSuccessfulModelCallAt": "2026-10-09T03:13:59.665Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 122,
+  "lastSuccessfulModelCallAt": "2026-10-09T05:09:08.080Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/crystal-defense/2026-10-09/design-seed.json",
     "contentDigest": "5e7aa5c53e1b57285d23e5db78da4eb1c76102f5f8d20c60092910504e03559c",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 89,
-      "successes": 89,
+      "calls": 90,
+      "successes": 90,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8230375,
-      "lastMs": 96448,
+      "totalMs": 8297891,
+      "lastMs": 67516,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:13:59.661Z"
+      "updatedAt": "2026-10-09T05:09:08.080Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T05:08:00.561Z"
+  "updatedAt": "2026-10-09T05:09:08.082Z"
 }
