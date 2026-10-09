@@ -215,21 +215,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 738210,
-      "lastMs": 101258,
+      "totalMs": 835968,
+      "lastMs": 97758,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:34:50.385Z"
+      "updatedAt": "2026-10-09T21:36:28.144Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:22:32.145Z",
-  "updatedAt": "2026-10-09T21:34:50.385Z",
+  "updatedAt": "2026-10-09T21:36:28.146Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,23 +1933,26 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:0": [
+    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:1": [
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "enemy-wave-adaptation-strategic-placement"
+        ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:0": 1
+    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:0": 1,
+    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:1": 1
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "4ce9d12d0af54940f27554d54912002107868427038af7a3d8d7f9858acf8061": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:34:50.385Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T21:36:28.144Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
