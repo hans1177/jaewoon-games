@@ -35,25 +35,42 @@
         "RESULT/REWARD: 인물/몬스터 역할 선호 선택",
         "NEXT STEP: 감염 후 고유 능력 확장"
       ]
+    },
+    "local_authoring_parts::574407b20bbf408b663344b48b78551175ab14c1e6e25e995865831f21a5b8d6:signatureSystems:0": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+      "playerChoice": "인간4/몬스터4 배정, 빈자리 AI 충원, 감염 후 고유 능력 확장, 캐릭터별 정화 공격, 몬스터 감感染 공격에 따른 인간 전환, 방금 전 동료가 가진 고유 감염 스킬로 이어지는 긴장감 강화, 감염 공격과 정화 공격 모두 실제 플레이어와 AI로 실행, 감염 전환 시기와 방법, 감염 후 고유 능력 세트 확장, 각 캐릭터는 다양한 도구와 대시를 통해 생존 가능, 감염된 인간은 직업별 고유 스킬 사용, 몬스터 감 infection 공격으로 인간을 전환하며 라운드에서 제거, 한 진영이 0명이 되면 즉각 승패, 240초까지 양팀 남으면 무승부, 감염 전환의 원리 및 조건, 감염 공격의 비용·범위·쿨다운 시간, 정화 공격의 비용·범위·쿨다운 시간"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 437871,
-      "lastMs": 49605,
+      "totalMs": 560271,
+      "lastMs": 122400,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:06:03.000Z"
+      "updatedAt": "2026-10-09T12:08:05.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:58:45.107Z",
-  "updatedAt": "2026-10-09T12:06:03.000Z",
+  "updatedAt": "2026-10-09T12:08:05.401Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -770,7 +787,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:06:03.000Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:08:05.401Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
