@@ -1517,25 +1517,41 @@
         "BOARD_STATE"
       ],
       "fromSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF"
+    },
+    "local_authoring_parts::80d6f8e2150fdacf3d3d6d5b0925436505670ddfd39abb01ca484e24885a2101:toSystem,trigger,stateChange": {
+      "toSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "trigger": "START_GAME→BOARD_STATE",
+      "stateChange": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축"
+    },
+    "local_authoring_parts::e73f72086832dd3da821293cec68ff56caa0bacd9c9b76200e7a3c344aa17ee6:systemInterconnections:1": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "toSystem": "SYSTEM_0_PRIMARY_LOOP_MAIN_START_GAME_TO_BOARD_STATE_EXCHANGE_12345678901234567890ABCDEF09876543210XYZABCD1234567890UVWXYVZUWVXUTSRQPOINMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGF",
+      "trigger": "START_GAME→BOARD_STATE",
+      "stateChange": "게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 166,
-      "successes": 166,
+      "calls": 167,
+      "successes": 167,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12414802,
-      "lastMs": 38050,
+      "totalMs": 12453520,
+      "lastMs": 38718,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:40:41.348Z"
+      "updatedAt": "2026-10-09T06:41:20.067Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:40:41.348Z",
+  "updatedAt": "2026-10-09T06:41:20.069Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3718,7 +3734,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:40:41.348Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:41:20.069Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
