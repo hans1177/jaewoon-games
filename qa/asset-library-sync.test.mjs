@@ -93,9 +93,18 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  assert.match(e('selectedInfo').textContent,/원본 경로: \/assets\/ui.svg/);
  assert.match(e('selectedInfo').textContent,/동일 경로 등록 2개/);
  assert.match(e('selectedInfo').textContent,/실제 중복 여부는 별도 확인 필요/);
- assert.match(e('selectedInfo').textContent,/등록 버전: v2/);
+ assert.match(e('selectedInfo').textContent,/자산 버전: v2/);
  e('sourceFilter').value='unique';e('sourceFilter').listeners.change();
  assert.ok(e('assetList').children.every(item=>!['ui-a','ui-b'].includes(item.dataset.id)));
+ // 계층형 폴더도 원본 경로를 훼손하지 않고 조회한다.
+ registryRevision=4;
+ registry.assets.push({id:'ui-nested',title:'공용 UI 소스',category:'UI',platform:'ROBLOX',path:'/assets/roblox/common-ui-v1/RobloxCommonUI.luau'});
+ await intervals[0]();await settle();
+ e('sourceFilter').value='';e('sourceFilter').listeners.change();
+ assert.ok(e('folderFilter').options.some(option=>option.value==='assets/roblox/common-ui-v1'));
+ e('folderFilter').value='assets/roblox/common-ui-v1';e('folderFilter').listeners.change();
+ assert.equal(e('assetList').children.length,1);
+ assert.equal(e('assetList').children[0].dataset.id,'ui-nested');
 });
 
 
