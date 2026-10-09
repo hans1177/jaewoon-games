@@ -607,25 +607,41 @@
         "월드 상태"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::642398c91c42671ff07114e0dfa88aeb7141f6c98b15aea55e37fadaf0208d94:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEMS[4]",
+      "trigger": "월드 상태",
+      "stateChange": "새로운 사건 생성"
+    },
+    "local_authoring_parts::239f7958dad280e71ef6df9fa1438f2e0b1533db1a341f06c01d025e9ca6bba2:systemInterconnections:2": {
+      "fromId": "MAIN",
+      "toId": "SIGNATURE_SYSTEMS[4]",
+      "stateKeys": [
+        "월드 상태"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "SIGNATURE_SYSTEMS[4]",
+      "trigger": "월드 상태",
+      "stateChange": "새로운 사건 생성"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 774997,
-      "lastMs": 31257,
+      "totalMs": 805499,
+      "lastMs": 30502,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:18:54.455Z"
+      "updatedAt": "2026-10-09T18:19:24.958Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:18:54.455Z",
+  "updatedAt": "2026-10-09T18:19:24.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2514,7 +2530,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:18:54.455Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:19:24.959Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
