@@ -493,6 +493,51 @@ test('all game development scans the full internal registry and removes family a
   }
 });
 
+test('every game can select the hundred midnight creatures without game-pack ownership gates',()=>{
+  const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const organization=library.internalAssetStandard.sharedOrganization;
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  assert.equal(organization.version,2);
+  assert.deepEqual(organization.familyOrder,families);
+  assert.deepEqual(organization.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
+  assert.equal(organization.gameExclusivePacks,false);
+  assert.equal(organization.originalGameNamedPacksAreSourceLineageOnly,true);
+  const creatures=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
+  assert.equal(creatures.length,100);
+  assert.equal(new Set(creatures.map(row=>row.skinId)).size,100);
+  for(const creature of creatures){
+    assert.equal(creature.companyCommonBase,true,creature.id);
+    assert.equal(creature.gameExclusive,false,creature.id);
+    assert.equal(creature.reuseScope,'COMPANY_COMMON_BASE',creature.id);
+    assert.equal(creature.productionVerified,false,creature.id);
+  }
+  const expectedIds=new Set(creatures.map(row=>row.id));
+  for(const target of ['roblox','unity','web']){
+    const fromMidnight=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
+    const fromSurvival=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
+    assert.deepEqual(fromMidnight.libraryOrder,families);
+    assert.deepEqual(fromMidnight.librarySortKeys,organization.sortKeys);
+    assert.equal(fromMidnight.allCompatibleGamesEligible,true);
+    assert.equal(fromMidnight.sourcePackIdIsLineageOnly,true);
+    const a=fromMidnight.familyCandidates.CREATURE.filter(row=>expectedIds.has(row.assetId));
+    const b=fromSurvival.familyCandidates.CREATURE.filter(row=>expectedIds.has(row.assetId));
+    assert.equal(a.length,100,target);
+    assert.deepEqual(a,b,target+': candidate access must not depend on game pack name');
+    assert.ok(a.every(row=>row.sourcePackId==='roblox-world-ghost-skins-v1'));
+    assert.ok(a.every(row=>row.applicationMode===(target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE')));
+    assert.equal(fromMidnight.evaluatedAssetCount,library.assets.length);
+  }
+  const fixture={version:1,assets:[
+    {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX'},
+    {id:'u',family:'UI',title:'가',license:'CC0',platform:'ROBLOX'},
+    {id:'a',family:'CREATURE',subfamily:'A',title:'나',license:'CC0',platform:'ROBLOX'},
+    {id:'c',family:'CHARACTER',title:'다',license:'CC0',platform:'ROBLOX'},
+    {id:'b',family:'CREATURE',subfamily:'A',title:'가',license:'CC0',platform:'ROBLOX'}
+  ]};
+  const sorted=buildAllGameDynamicLibraryBindingPlan({companyRegistry:fixture,target:'roblox',gameId:'any-existing-game'});
+  assert.deepEqual(sorted.evaluatedAssets.map(row=>row.assetId),['c','b','a','z','u']);
+});
+
 test('full library scan preserves low quality assets but rejects unsafe corrupt or forbidden assets',()=>{
   const assets=[
     {id:'low-quality',category:'UI',license:'CC0',internalAuditScore:0},
