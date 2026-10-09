@@ -2289,7 +2289,9 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const volume=d?.designedGameVolume||{};
   const authoredItems=Array.isArray(volume.items)?volume.items:[];
   const focus=clean(d.primaryFocus).toUpperCase();
-  const volumeApplicable=['CORE_FUN','PROGRESSION'].includes(focus)&&volume.mode!=='SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION';
+  const volumeApplicable=['CORE_FUN','PROGRESSION'].includes(focus)
+    &&volume.mode==='APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION'
+    &&clean(d?.designImplementationContext?.preservationContract?.mode).toUpperCase()!=='PRESERVATION_PRESENTATION_UPGRADE';
   const volumePreferred=focus==='PROGRESSION'
     ?authoredItems.filter(row=>/CONTENT_MILESTONE|VARIETY_REGIONS|VARIETY_OBJECTIVES|NARRATIVE_QUESTSTATES|SYSTEM_CONNECTION/.test(clean(row.family)))
     :authoredItems.filter(row=>/CORE_LOOP|SIGNATURE_SYSTEM|SYSTEM_CONNECTION|VARIETY_ENEMIESORCHALLENGES|VARIETY_ABILITIES/.test(clean(row.family)));
