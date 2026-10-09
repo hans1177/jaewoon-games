@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::78e317063d0f92e403485560a87abf444a8fac8e32cae9a01cda9eab98e1e3d0:identity": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장성과 지역 기지의 단일 점령을 중심으로 설계됨. 총체적인 플레이어 역할은 '주민', '병사', '전투기'로 구분되어 있으며, 이들의 행동과 선택은 진입→자원 수집→자동화→병력 강화→거점 공격 순서에 따라 진행됨. 각 단계에는 실제 상태 변화와 보상이 포함되며, 최종적으로는 왕국 정복 및 해전 등 대규모 결과가 발생함."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 137778,
+      "lastMs": 137778,
+      "lastError": null,
+      "updatedAt": "2026-10-09T08:37:14.254Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:56.457Z",
-  "updatedAt": "2026-10-09T08:34:56.471Z",
+  "updatedAt": "2026-10-09T08:37:14.254Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -564,5 +580,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T08:37:14.254Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
