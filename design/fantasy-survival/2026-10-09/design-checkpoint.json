@@ -68,25 +68,42 @@
       "name": "worldRuleSystem2",
       "purpose": "Establishes the core rules governing the interaction between the world and player actions.",
       "playerChoice": "Player selects new behaviors, relationships, rewards, and risks based on current world state and previous actions."
+    },
+    "local_authoring_parts::e0938ca09e9fb5c87cb1213d77cedc142c1c5fdb3eb0dc0da90350a79f3346a1:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "worldState",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "newBehavior",
+        "newRelationship",
+        "reward",
+        "risk"
+      ],
+      "name": "worldRuleSystem3",
+      "purpose": "기존 세계 인과법칙에 기반하여 새로운 행동, 관계, 보상 및 위험을 생성하는 시스템",
+      "playerChoice": "플레이어의 선택에 따라 시스템 내에서 조건별로 변화된 대안과 결과를 경험하게 된다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 629631,
-      "lastMs": 90261,
+      "totalMs": 725391,
+      "lastMs": 95760,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:36:07.121Z"
+      "updatedAt": "2026-10-09T02:37:42.883Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T02:25:37.455Z",
-  "updatedAt": "2026-10-09T02:36:07.121Z",
+  "updatedAt": "2026-10-09T02:37:42.883Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2285,7 +2302,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T02:36:07.121Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:37:42.883Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
