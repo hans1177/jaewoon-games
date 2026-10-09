@@ -921,25 +921,40 @@
       "name": "체스 기반 전략적 판타지 게임 - A 역할",
       "purpose": "전략적 선택에 따른 전장 위치 선정 및 정보 접근의 변화를 반영한 실제 선택으로 구현됨",
       "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
+    },
+    "local_authoring_parts::0efb367e3269d78c1b669ddd8efdcbba34670dbf655aeb8125a0e2134f6020c4:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "{\"type\": \"ACTION\", \"name\": \"체스판 상태 변화\", \"value\": \"기초적인 전략적 판단\"}",
+        "{\"type\": \"ACTION\", \"name\": \"전략적 선택\", \"value\": \"전장 위치 선정 및 정보 접근\"}"
+      ],
+      "stateOutputs": [
+        "{\"type\": \"ACTION\", \"name\": \"전략적 연결\", \"value\": \"AI 전략 도입 후 전장 목표 재설계\"}",
+        "{\"type\": \"ACTION\", \"name\": \"보조 장르와의 인과적 연관성 강화\", \"value\": \"실질적인 인과 변화 발생\"}"
+      ],
+      "name": "체스 기반 전략적 판타지 게임 - B 역할",
+      "purpose": "다른 시스템과 전략적 선택 창작 소재를 통해 전략적 연결과 다음 선택 가능성 확률을 조절하고, 보조 장르와의 인과적 연관성을 강화하는 데 활용됨.",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 22,
+      "calls": 25,
+      "successes": 23,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2642664,
-      "lastMs": 117096,
+      "totalMs": 2765510,
+      "lastMs": 122846,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:24:09.268Z"
+      "updatedAt": "2026-10-09T23:26:12.115Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T23:24:09.268Z",
+  "updatedAt": "2026-10-09T23:26:12.115Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2713,7 +2728,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:24:09.268Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:26:12.115Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
