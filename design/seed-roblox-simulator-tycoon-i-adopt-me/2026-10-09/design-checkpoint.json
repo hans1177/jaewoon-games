@@ -527,25 +527,28 @@
       "toSystem": "CORE-02→CORE-03",
       "trigger": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
       "stateChange": "CORE-01의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::f7c3a8f6ab9c61a37382307274351307f052812081e9cca1b36d7821c202308a:fromId": {
+      "fromId": "CORE-01→CORE-02"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 26,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1112183,
-      "lastMs": 34166,
+      "totalMs": 1142574,
+      "lastMs": 30391,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:59:43.992Z"
+      "updatedAt": "2026-10-09T12:00:14.386Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:59:43.993Z",
+  "updatedAt": "2026-10-09T12:00:14.386Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3297,7 +3300,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:59:43.993Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:00:14.386Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
