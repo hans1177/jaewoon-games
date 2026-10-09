@@ -216,25 +216,41 @@
         "보스 첫 처치로 AI 동료 해금",
         "15마리 파티사냥 및 기여도 보상"
       ]
+    },
+    "local_authoring_parts::aaf4e3161c4238327e98ad9defab57d17279955bd8b75ce3f1ceb86ce941e589:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동"
+      ],
+      "stateOutputs": [
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥 및 기여도 보상"
+      ],
+      "name": "포탈 전투",
+      "purpose": "5개 포탈 사냥터 이동, 15마리 처치 시 종료하고 기여도에 따라 XP/골드 보상",
+      "playerChoice": "AI 동료 선택 및 파티 구성, 보스 격파 후 기여도 보상 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 684416,
-      "lastMs": 81253,
+      "totalMs": 785247,
+      "lastMs": 100831,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:23:09.255Z"
+      "updatedAt": "2026-10-09T18:24:50.087Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:11:44.815Z",
-  "updatedAt": "2026-10-09T18:23:09.255Z",
+  "updatedAt": "2026-10-09T18:24:50.087Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1985,7 +2001,7 @@
   "localAuthoringSplits": {
     "ec1f95b50f7df77bd509cae95439756b649ee416795b4d83e99efaba7bbbf230": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:23:09.255Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:24:50.087Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
