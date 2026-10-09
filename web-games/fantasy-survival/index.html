@@ -951,7 +951,7 @@ function initWorld(){
   state.crystals=Array.from({length:16},(_,i)=>makeNode('crystal',i));
   state.carrots=Array.from({length:360},(_,i)=>makeNode('carrot',i));
   state.poisonStones=Array.from({length:5},(_,i)=>makeNode('poisonstone',i));
-  state.sunstones=Array.from({length:9},(_,i)=>makeNode('sunstone',i));
+  state.sunstones=Array.from({length:8},(_,i)=>makeNode('sunstone',i));
   for(let i=0;i<4;i++){const p=randomSwampPoint(260);state.poisonStones.push({id:'swamppois'+i,kind:'poisonstone',x:p.x,y:p.y,hp:5,maxHp:5,dead:false,respawnAt:0})}
   state.swampTrees=Array.from({length:9},(_,i)=>{const p=randomSwampPoint(220);return{id:'swamptree'+i,kind:'swamptree',x:p.x,y:p.y,hp:8,maxHp:8,dead:false,respawnAt:0}});
   state.enemies=[];
@@ -1116,8 +1116,8 @@ function pay(cost){const p=state.player,c=normalizeCost(cost);for(const [k,v] of
 function costText(cost){const c=normalizeCost(cost),out=[],baseNames={wood:'나무',stone:'돌',fiber:'섬유',ironOre:'철광석',ironIngot:'구운철',goldOre:'화산 금',goldIngot:'구운금',essence:'정수'};for(const [k,v] of Object.entries(c))if(v)out.push((baseNames[k]||DROP_MATERIAL_NAMES[k]||k)+' '+v);return out.join(' · ')||'재료 없음'}
 function lootMaterialHtml(){return Object.entries(DROP_MATERIAL_NAMES).map(([k,n])=>state.knownMaterials[k]?'<div class="mat">'+n+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>').join('')}
 function materialInventoryRow(k,name){return state.knownMaterials[k]?'<div class="mat">'+name+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>'}
-function structureInventoryRow(id,placed){if(!placed)return'';const r=item(id);return '<div class="mat">'+(r?.name||id)+' <b>설치됨</b></div>'}
-function structureCountRow(name,count){const n=Math.max(0,Number(count)||0);return n?'<div class="mat">'+name+' <b>'+n+'개</b></div>':''}
+function structureInventoryRow(id,placed){if(!placed)return '<div class="mat">??? <b>?</b></div>';const r=item(id);return '<div class="mat">'+(r?.name||id)+' <b>설치됨</b></div>'}
+function structureCountRow(name,count){const n=Math.max(0,Number(count)||0);return n?'<div class="mat">'+name+' <b>'+n+'개</b></div>':'<div class="mat">??? <b>?</b></div>'}
 function nearStructure(s,range=155){return state.area==='surface'&&!!s&&dist(state.player.x,state.player.y,s.x,s.y)<range}function nearBench(){return nearStructure(state.bench)}function nearIronBench(){return nearStructure(state.ironBench)}function nearGoldBench(){return nearStructure(state.goldBench)}
 function nearJungleBench(){return nearStructure(state.jungleBench)}function nearSunstoneBench(){return nearStructure(state.sunstoneBench)}function nearAnvil(){return nearStructure(state.blacksmithAnvil,175)}function nearFurnace(){return nearStructure(state.furnace,175)}function nearCookingStation(){return nearStructure(state.cookingStation,175)}
 function recalcPlayerMaxHp(){const p=state.player;p.maxHp=100+effectiveStat(p.armor,'maxHp')+effectiveStat(p.weapon,'maxHp');p.hp=Math.min(p.hp,p.maxHp)}
@@ -2561,7 +2561,7 @@ function applyWorldSnapshot(w){
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];if(Array.isArray(w.mummyGases))state.mummyGases=w.mummyGases.map(g=>({x:Number(g.x)||0,y:Number(g.y)||0,r:Number(g.r)||126,until:Number(g.until)||0,nextPlayerTick:0,nextHealTick:Infinity,sourceId:g.sourceId||null}));
- if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
+ if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).slice(0,8).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(Array.isArray(w.swampTrees))state.swampTrees=w.swampTrees.filter(n=>n&&String(n.kind||'swamptree')==='swamptree'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).map((n,i)=>({id:String(n.id||('swamptree'+i)),kind:'swamptree',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:Math.max(1,Number(n.maxHp)||8),dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
  if(w.structures&&typeof w.structures==='object'){
   state.bench=sharedStructurePos(w.structures.bench);
