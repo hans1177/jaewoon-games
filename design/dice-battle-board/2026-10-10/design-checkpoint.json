@@ -209,25 +209,40 @@
       "name": "Matchmaking Logic",
       "purpose": "Governs puzzle state transitions through predefined action rules",
       "playerChoice": "Player selects initial puzzle state to initiate progression sequence"
+    },
+    "local_authoring_parts::4b8f73ad3210bb3ab9f51eca8df621f4e24903958047c7cf34c56ebe88fe75c5:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "puzzleState",
+        "riskRewardPattern"
+      ],
+      "stateOutputs": [
+        "nextPuzzleState",
+        "newRiskRewardPattern"
+      ],
+      "name": "Material Interaction",
+      "purpose": "Player's choice of puzzle state influences the next action",
+      "playerChoice": "The player must choose between different puzzle states to achieve their goal in a dynamic risk-reward environment with evolving game mechanics and feedback loops that shape the gameplay experience through material interaction and progression direction."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 833641,
-      "lastMs": 79504,
+      "totalMs": 917828,
+      "lastMs": 84187,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:39:51.894Z"
+      "updatedAt": "2026-10-09T17:41:16.083Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:25:58.203Z",
-  "updatedAt": "2026-10-09T17:39:51.894Z",
+  "updatedAt": "2026-10-09T17:41:16.083Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1820,7 +1835,7 @@
   "localAuthoringSplits": {
     "7525cde9178d38c1015766c5d8d24f7ca639dad5c25b0943de6a36b092ebceb5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:39:51.894Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:41:16.083Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
