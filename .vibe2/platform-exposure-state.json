@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-09T01:58:10.485Z",
+  "updatedAt": "2026-10-09T02:13:19.790Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -2167,14 +2167,14 @@
         },
         {
           "platform": "UNITY",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": false,
+            "technicalReady": true,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -2195,8 +2195,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "13db33900c2cd87dd46f9af6eaafe8aa0b026cdc",
+            "artifactIdentity": "sha256:50dba7800d57799b64c9a159a00f92014f82fdd00ed20296179fa07ef220682d",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -3299,8 +3299,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "181b343ec42bbf90726ba65a0a7415633da580ee",
-            "artifactIdentity": "sha256:498fa851905fac008b2cde4581f59b2e6637a5cf4fa5d0a0219025d5c043cf84",
+            "sourceRevision": "be1b401175ea0708d46e4b14027612b31e98347d",
+            "artifactIdentity": "sha256:1cce053b97ae008a3981379d317a5414c59adea8f3c860173642082573170768",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
