@@ -187,25 +187,47 @@
       },
       "playerFantasy": "플레이어는 게임 세계관 형성이 필요로 하는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다.",
       "coreFun": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택 순환 구조가 핵심 루프로 작용하여 게임 정체성과 세계관을 재정립한다."
+    },
+    "local_authoring_parts::ce93f0f74aa39373fe11f198571e02984bd9adc074785e2482dbde60f967e4f0:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택 순환 구조가 핵심 루프로 작용하여 게임 정체성과 세계관을 재정립한다.",
+        "게임 세계관 형성이 필요로 하는 새로운 플레이어 선택이 즉각적으로 결정되며, 실제 세계의 사건이 생성된다.",
+        "플레이어 선택에 따른 즉각적 결과 및 상태 변화는 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 확립하며, 다음 사건이 생성됨."
+      ]
+    },
+    "local_authoring_parts::9125caf8069879dce33e2ec54505647d6363cfbef991e760a9fe696ed07f3c2b:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어 선택",
+        "시그니처 세계 규칙"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택",
+        "게임 세계관 형성"
+      ],
+      "name": "플레이어 선택",
+      "purpose": "게임 정체성과 세계관 재정립에 기여하는 필수 조건",
+      "playerChoice": "플레이어 선택으로 실제 세계 상태 변화가 발생하며, 다음 사건이 생성됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 601415,
-      "lastMs": 65049,
+      "totalMs": 740042,
+      "lastMs": 69225,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:37:12.248Z"
+      "updatedAt": "2026-10-09T20:39:30.880Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T20:37:12.250Z",
+  "updatedAt": "2026-10-09T20:39:30.880Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1940,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:37:12.250Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:39:30.880Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
