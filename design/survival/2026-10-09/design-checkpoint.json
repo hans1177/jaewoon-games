@@ -1244,25 +1244,28 @@
     },
     "local_authoring_parts::2a55f679b90006834c5b2c5b03a9ce0be6d705abb9e2e8901bd5eeab73589b23:toSystem": {
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::2a55f679b90006834c5b2c5b03a9ce0be6d705abb9e2e8901bd5eeab73589b23:trigger": {
+      "trigger": "시스템 간 상태 교환을 위한 조건 및 선택이 설정되어 있으며, SURVIVAL_01_SIGNATURE_SYSTEM에서 생성된 RUN_REWARDS와 UPGRADES 값이 SURVIVAL_02_SIGNATURE_SYSTEM으로 전달된다. 이 과정에서는 주어진 자원과 능력을 기반으로 하여 다음 단계로 전환하는 데 사용되며, 플레이어의 선택 결과가 시스템 내 다양한 경로와 상태 변화에 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 112,
-      "successes": 112,
+      "calls": 113,
+      "successes": 113,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6620362,
-      "lastMs": 29325,
+      "totalMs": 6654597,
+      "lastMs": 34235,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:17:17.738Z"
+      "updatedAt": "2026-10-09T03:17:51.974Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T03:17:17.738Z",
+  "updatedAt": "2026-10-09T03:17:51.974Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3777,7 +3780,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:17:17.738Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:17:51.974Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
