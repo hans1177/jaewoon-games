@@ -60,13 +60,15 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
-test('owner policy defines exactly three platform targets on existing adapters and Unity Web floor',()=>{
+test('owner policy counts only Roblox and Unity Web development while retaining legacy native adapters',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const direct=roadmap.directNativeDualPlatformDevelopment;
   const targets=direct.platformCountingPolicy;
   assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-09');
-  assert.equal(targets.targetCount,3);
-  assert.deepEqual(targets.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.equal(targets.targetCount,2);
+  assert.deepEqual(targets.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(targets.ownerHeldTargets,['UNITY_ANDROID']);
+  assert.equal(targets.unityAndroidDevelopmentPaused,true);
   assert.deepEqual(targets.existingExecutionBindings,{
     ROBLOX:'ROBLOX',UNITY_ANDROID:'UNITY',UNITY_WEB:'UNITY_WEB_FLOOR'
   });
@@ -87,7 +89,9 @@ test('owner policy defines exactly three platform targets on existing adapters a
   assert.equal(roadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
   assert.equal(direct.unityWebDevelopmentLane.nativeReleaseGateAuthority,false);
   assert.equal(targets.noNewAdapterWorkflowOrShadowPipeline,true);
+  // Historical change records remain immutable; the current owner directive supersedes their active target count.
   assert.equal(roadmap.changeRecord.ownerThreePlatformTargets20261009.targetCount,3);
+  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
 });
 
 test('obsolete Roblox runtime v8 migration helpers are removed',()=>{
@@ -102,7 +106,7 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime gates new Roblox and Unity work on Unity Web readiness',()=>{
+test('central production runtime keeps independent Roblox and Unity Web QA without a Roblox admission dependency',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,file+' must exist');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -116,7 +120,9 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   assert.equal(direct.webDevelopmentStageRemoved,false);
   assert.equal(direct.unityWebEnabled,true);
   assert.equal(direct.unityWebRequired,true);
-  assert.equal(direct.unityWebGateRequired,true);
+  assert.equal(direct.unityWebGateRequired,false);
+  assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
+  assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
   assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
@@ -183,7 +189,8 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
   assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
   assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
-  assert.doesNotMatch(central,/ownerExcludedGameIds/);
+  // Explicit, centrally authorized per-game exclusions are allowed; no hardcoded horror exclusion is.
+  assert.match(central,/developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds/);
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
@@ -487,7 +494,9 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/active-roblox-native-runs\.json/);
   assert.match(development,/active-unity-native-runs\.json/);
   assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(development,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
@@ -893,7 +902,9 @@ test('stage-scoped native dedupe closes duplicate races without whole-game seria
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
 
   assert.equal(change?.status,'SUPERSEDED_BY_STAGE_SCOPED_DEDUPE_2026_10_04');
   assert.equal(change?.workflowLevelGameIdConcurrencyRemoved,true);
