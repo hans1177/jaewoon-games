@@ -95,25 +95,204 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
       "purpose": "Establishes the causal relationship between player choices and progression in a survival run, ensuring that each decision leads to a new state of play.",
       "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build, leading to a new progression choice based on contextual actions and outcomes."
+    },
+    "local_authoring_parts::a2ea789384d881deffa2afaaea2e28d3011f7b575239fb04ebe2b978c7af3832:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "NextProgressionChoice"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+      "purpose": "Establishes the causal relationship between player choices and progression in a survival roguelite game.",
+      "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
+    },
+    "local_authoring_parts::d3571087eec8ac5d79cc9d7e8f89592856e53a740c9a80ba685fc93ba3db4131:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player-driven progression through escalating survival challenges with contextual actions and reward-based decision-making",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice via contextual actions and reward systems"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player choice and progression in survival run with enemy pressure",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and subsequent progression in the game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival run, ensuring that each decision leads to a new state of play.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build, leading to a new progression choice based on contextual actions and outcomes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival roguelite game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
+        }
+      ]
+    },
+    "local_authoring_parts::3f923316157fbd79142003b7487f59c8427949404eb98596d333491b290cedae:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEW CHOICE",
+        "PLAYER FIGHTS AN EASILY STARTED SURVIVAL RUN WITH ASCENDING HORDE AND ENEMY PRESSURE",
+        "CHOOSES UPDATES, PERKS, WEAPONS, SKILLS TO IMPROVE BUILD AND CONTINUE THE RUN",
+        "CONVERTS RUN RESULT INTO NEXT PROGRESSION CHOICE THROUGH CONTEXTUAL ACTIONS"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player-driven progression through escalating survival challenges with contextual actions and reward-based decision-making",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice via contextual actions and reward systems"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Player choice and progression in survival run with enemy pressure",
+          "playerChoice": "Choose upgrades, perks, weapons, or skills to improve build and continue the run"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and subsequent progression in the game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build to continue the run and convert the result into the next progression choice through contextual actions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival run, ensuring that each decision leads to a new state of play.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills that change the current build, leading to a new progression choice based on contextual actions and outcomes."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "HumanCount",
+            "MonsterCount",
+            "EliminatedCount"
+          ],
+          "stateOutputs": [
+            "NextProgressionChoice"
+          ],
+          "name": "ACTION_SURVIVAL_ROGUELITE_CORE_SYSTEM",
+          "purpose": "Establishes the causal relationship between player choices and progression in a survival roguelite game.",
+          "playerChoice": "Player chooses upgrades, perks, weapons, or skills to improve their build and continue the run."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 889934,
-      "lastMs": 101020,
+      "totalMs": 989217,
+      "lastMs": 99283,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:04:26.995Z"
+      "updatedAt": "2026-10-09T16:06:06.280Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:49:37.027Z",
-  "updatedAt": "2026-10-09T16:04:26.995Z",
+  "updatedAt": "2026-10-09T16:06:06.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1823,7 +2002,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T16:04:26.995Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:06:06.283Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
