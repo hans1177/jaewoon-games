@@ -1139,25 +1139,40 @@
     },
     "local_authoring_parts::ef0f4ff4907cee6c8f624575018ac985dae3492f755f3debbc3cb83d0d0f449f:trigger": {
       "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다."
+    },
+    "local_authoring_parts::ef0f4ff4907cee6c8f624575018ac985dae3492f755f3debbc3cb83d0d0f449f:stateChange": {
+      "stateChange": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다."
+    },
+    "local_authoring_parts::5dc17258867369ee2d17fd7f88e80ae410b2a25dd85ffabaa941e907e49a5007:systemInterconnections:0": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다.",
+      "stateChange": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 92,
-      "successes": 92,
+      "calls": 93,
+      "successes": 93,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6021879,
-      "lastMs": 31866,
+      "totalMs": 6053312,
+      "lastMs": 31433,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:07:19.224Z"
+      "updatedAt": "2026-10-09T03:07:50.659Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T03:07:19.224Z",
+  "updatedAt": "2026-10-09T03:07:50.660Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3672,7 +3687,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:07:19.224Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:07:50.660Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
