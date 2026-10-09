@@ -27,25 +27,32 @@
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매 차례에 새로운 전략을 개발하며, 이전의 방식보다 더 복잡하게 진입할 수 있는 세계를 만든다. 주체는 팀이나 개인이며, 모든 선택은 즉시 피드백을 받는 반복 가능한 루프로 구성된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백 형태로 설계되어 있다.",
       "playerFantasy": "천상의 보루에서 플레이어는 매 차례에 새로운 전략을 개발하며, 이전의 방식보다 더 복잡하게 진입할 수 있는 세계를 만든다. 주체는 팀이나 개인이며, 모든 선택은 즉시 피드백을 받는 반복 가능한 루프로 구성된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백 형태로 설계되어 있다.",
       "coreFun": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매 차례에 새로운 전략을 개발하며, 이전의 방식보다 더 복잡하게 진입할 수 있는 세계를 만든다. 주체는 팀이나 개인이며, 모든 선택은 즉시 피드백을 받는 반복 가능한 루프로 구성된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백 형태로 설계되어 있다."
+    },
+    "local_authoring_parts::e5deaf6a95e7c7ac066888868c381cf60a87a0a1eb26ada37e3b5eb755942f80:coreLoop": {
+      "coreLoop": [
+        "INPUT: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "SELECT: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "OUTPUT: The world state is transformed into a more complex defensive configuration."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 97240,
-      "lastMs": 16206,
+      "totalMs": 111782,
+      "lastMs": 14542,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:42:49.030Z"
+      "updatedAt": "2026-10-09T15:43:03.574Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:41:11.726Z",
-  "updatedAt": "2026-10-09T15:42:49.031Z",
+  "updatedAt": "2026-10-09T15:43:03.574Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1751,7 +1758,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:42:49.031Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:43:03.574Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
