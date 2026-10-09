@@ -610,25 +610,28 @@
         "TOWER_PLACEMENT",
         "RESOURCE_POOL"
       ]
+    },
+    "local_authoring_parts::fb8c56bc02d032bed492d6d9718deb13ab30ff6ef15539a23551f4ec5a5ed6ab:fromSystem": {
+      "fromSystem": "ENEMY_WAVE→DEFENSE_UPGRADE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1792407,
-      "lastMs": 129588,
+      "totalMs": 1918975,
+      "lastMs": 126568,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T15:53:15.953Z"
+      "updatedAt": "2026-10-09T15:55:22.523Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:23:23.460Z",
-  "updatedAt": "2026-10-09T15:53:15.953Z",
+  "updatedAt": "2026-10-09T15:55:22.523Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2492,7 +2495,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:53:15.953Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:22.523Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
