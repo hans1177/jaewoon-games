@@ -27,25 +27,32 @@
       "identity": "퇴마 사무소: 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다.",
       "playerFantasy": "퇴마 사무소에서 플레이어는 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다.",
       "coreFun": "퇴마 사무소: 시작 즉시 단순 한 손 tap 또는 swipe 입력 후 점수, 거리, 혹은 짧은 세션 목표로 이루어진 CASUAL 게임의 중심 행동과 선택을 바탕으로 세계 상태와 다음 선택을 실제적으로 연결하는 플레이 공간의 다음 상태와 접근 가능성을 확정합니다. 이는 기존 시스템의 인과법칙과 MAIN×A×B×c의 관계에 따라 재해석되어야 하며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 새로운 콘텐츠를 다르게 사용하게 합니다."
+    },
+    "local_authoring_parts::1a241244a4e8122378baa8df8e9242c9a9de78f6ef80a7421efeb052da2dac65:coreLoop": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 287750,
-      "lastMs": 42120,
+      "totalMs": 331286,
+      "lastMs": 43536,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:01:18.686Z"
+      "updatedAt": "2026-10-09T13:02:02.226Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:01:18.688Z",
+  "updatedAt": "2026-10-09T13:02:02.226Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1969,7 +1976,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:01:18.688Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:02:02.226Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
