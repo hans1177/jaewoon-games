@@ -1118,13 +1118,54 @@ export function createMotionCompatibilityGraph({nodes=[],edges=[]}={}){
   });
 }
 
-export function buildSkillMotionSequence({prepare='PREPARE',charge='CHARGE',aim='AIM',release='RELEASE',impact='IMPACT_RESPONSE',recovery='RECOVERY',hold=null,cancel=null}={}){
+export function buildSkillMotionSequence({
+  prepare='PREPARE',charge='CHARGE',aim='AIM',release='RELEASE',impact='IMPACT_RESPONSE',recovery='RECOVERY',
+  hold=null,cancel=null,combatTraditions=[],weaponFamily='UNARMED',terrainMaterial='UNSPECIFIED',
+  effectMaterial='PHYSICAL',artisticIntent=''
+}={}){
   const phases=[prepare,charge,hold,aim,release,impact,recovery,cancel].filter(Boolean).map(upper);
+  // 메인: 유파는 연출만 바꾼다. 기존 공격·이동·스킬의 판정과 시점은 변경하지 않는다.
+  const aliases={BUSHIDO:'SAMURAI',IAIDO:'SAMURAI',MURIM:'WUXIA',MARTIAL_HERO:'WUXIA',MAGIC:'FANTASY',SPELLBLADE:'FANTASY',SHINOBI:'NINJA',PALADIN:'KNIGHT'};
+  const traditions=unique((Array.isArray(combatTraditions)?combatTraditions:[combatTraditions]).map(value=>aliases[upper(value)]||upper(value))).filter(Boolean);
+  if(!traditions.length)traditions.push('GAME_SPECIFIC');
+  const styles=Object.freeze({
+    SAMURAI:Object.freeze({prepare:'STILLNESS_AND_SHEATH_THUMB',body:'PLANTED_FOOT_PELVIS_TURN_SHOULDER_FOLLOWS',release:'DRAW_CUT_FROM_REAL_BLADE',impact:'THIN_CONFIRMED_BLADE_CONTACT_FLASH',settle:'CLOTH_LAG_AND_CONTROLLED_RESHEATH'}),
+    WUXIA:Object.freeze({prepare:'BREATH_AND_QI_GATHER_FROM_STANCE',body:'HEEL_HIP_SPINE_FLOW',release:'SLEEVE_TRAIL_AND_FOOT_CONTACT_DUST',impact:'QI_RIPPLE_ON_CONFIRMED_HIT',settle:'SLEEVE_INERTIA_AND_ROOT_LOCKED_LANDING'}),
+    FANTASY:Object.freeze({prepare:'CASTER_GESTURE_AND_RUNE_PREPARE',body:'BODY_WEIGHT_SHIFT_AND_GAZE',release:'HAND_OR_WEAPON_SOCKET_DRIVES_ELEMENTAL_ARC',impact:'ELEMENTAL_CONTACT_BURST_AND_SURFACE_RESPONSE',settle:'RUNE_FADE_EQUIPMENT_LAG_AND_BREATH'}),
+    NINJA:Object.freeze({prepare:'LOW_SILHOUETTE_AND_TARGET_READ',body:'QUIET_FOOT_TRANSFER_AND_TORSO_COIL',release:'SHORT_REAL_WEAPON_SOCKET_ARC',impact:'NARROW_CONTACT_FLASH_AND_SHADOW_STREAK',settle:'CLOAK_OVERLAP_AND_SOFT_LANDING'}),
+    KNIGHT:Object.freeze({prepare:'GUARD_SET_AND_BODY_MASS_COMMIT',body:'BOOT_PLANT_SHIELD_COUNTERBALANCE',release:'WEIGHTED_ARC_WITH_UNBROKEN_GRIP',impact:'METAL_OR_STONE_CONTACT_ONLY',settle:'ARMOR_INERTIA_AND_SHOULDER_RECOVERY'})
+  });
+  const styleLayers=freezeList(traditions.map((tradition,index)=>Object.freeze({
+    tradition,index,direction:styles[tradition]||Object.freeze({
+      prepare:'GAME_CHARACTER_SPECIFIC_TELL',body:'RIG_SPECIFIC_WEIGHT_TRANSFER',
+      release:'SOURCE_MOTION_DRIVEN_ACTION_ARC',impact:'CONFIRMED_CONTACT_ONLY_VFX',settle:'DAMPED_SECONDARY_OVERLAP'
+    }),
+    nativeClipRequired:true,runtimeVerified:false
+  })));
+  const smoothness=Object.freeze({
+    interpolation:'POSE_AND_VELOCITY_MATCHED_HERMITE_OR_ENGINE_EQUIVALENT_WITHIN_LOCKED_CLIP',
+    transition:'MATCH_CURRENT_POSE_VELOCITY_FOOT_PHASE_AND_CONTACT',
+    timing:'READ_EXISTING_NATIVE_CLIP_AND_SERVER_EVENT_MARKERS',
+    beats:freezeList(['INTENT_GAZE','FOOT_PRESSURE','PELVIS_SPINE_TRANSFER','HAND_WEAPON_RELEASE','CONFIRMED_CONTACT_RESPONSE','SECONDARY_LAG_SETTLE']),
+    avoid:freezeList(['ROOT_ONLY_MANNEQUIN','JOINT_LINEAR_POP','FOOT_SLIDE','GRIP_OFFSET','CONTACT_EVENT_DESYNC','FAKE_SMOOTHNESS_PASS']),
+    measuredQa:freezeList(['POSE_DISCONTINUITY','ROOT_VELOCITY_DELTA','FOOT_PLANT_DRIFT','JOINT_ANGULAR_VELOCITY','WEAPON_SOCKET_DRIFT','IMPACT_EVENT_OFFSET','INTERRUPTION_AND_LOOP_SEAMS','MOBILE_P95_FRAME_MS']),
+    authoredCurvesAndNativeRuntimeEvidenceRequired:true,sourceMetadataCannotProveMotionQuality:true,betterThanReferenceQualityNotYetVerified:true
+  });
   return Object.freeze({
     grammar:'SKILL',
     phases:Object.freeze(phases),
     requiredCore:Object.freeze(['PREPARE','RELEASE','RECOVERY']),
     valid:['PREPARE','RELEASE','RECOVERY'].every(required=>phases.includes(required)),
+    creativeChoreography:Object.freeze({
+      traditions:freezeList(traditions),weaponFamily:upper(weaponFamily),
+      terrainMaterial:upper(terrainMaterial),effectMaterial:upper(effectMaterial),artisticIntent:text(artisticIntent),
+      styleLayers,
+      fusion:'COMPOSE_STAGING_AND_ARTICULATION_FROM_STYLE_LAYERS_WITHOUT_ADDING_GAMEPLAY_ACTIONS',
+      visualChannels:freezeList(['BLADE_HAND_TRAIL','CONTACT_FLASH','SURFACE_DEBRIS','LOCAL_LIGHT_RESPONSE','CLOTH_ARMOR_LAG']),
+      vfxTriggers:Object.freeze({weaponTrail:'EXISTING_RELEASE_MOTION',contact:'CONFIRMED_GAMEPLAY_HIT_ONLY',miss:'NO_CONTACT_BURST',environment:'VISUAL_ONLY_WITH_AUTHORIZED_SURFACE'}),
+      smoothness,nativeArtifactsRequired:true,productionVerified:false,runtimeVerified:false,
+      preserve:freezeList(['DAMAGE','HITBOX','ATTACK_SPEED','COOLDOWN','COMBO_WINDOW','CONTACT_EVENT','ROOT_MOVEMENT','SAVE','MULTIPLAYER_SERVER_AUTHORITY'])
+    }),
     gameplayTimingAuthority:false
   });
 }
