@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 전투 상태 변화에 따라 캐릭터 인물을 선택하고, 그 선택은 전략적 전투 상태 변화와 함께 다음 전투 단계 결정에 영향을 미친다. 캐릭터 인물은 전투 상태 변화에 따라 상호작용하며, 그 변화는 플레이어 행동에 기반하여 새로운 게임 상태로 이어지도록 설계된다.",
       "coreFun": "입력/선택 -> 전략적 전투 상태 변환 및 목표 설정 -> 보상/위험/다음 선택의 연결이 포함된 최소 3개의 실제 플레이 단계를 통해 구현한다. 각 단계에서 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과가 명시되고, 정체성 문장과 같은 플레이 약속이 증명되어야 하며, 전체 항목 공통: 임시 식별자·같은 문장 반복으로 내용을 채우지 않는다."
+    },
+    "local_authoring_parts::01b5d4a7e2845286cfbd76c6faa7391dc4fd0e4850def13954cea0ab8506e803:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 전략적 전투 상태 변환 및 목표 설정 -> 보상/위험/다음 선택",
+        "캐릭터 선택 → 전투 상태 변화 → 인물 변화 → 다음 전투 결정",
+        "전투 상태 변화 → 캐릭터 선택 → 인물 변화 → 다음 전투 단계 결정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 234114,
-      "lastMs": 234114,
+      "totalMs": 328636,
+      "lastMs": 94522,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:18:41.166Z"
+      "updatedAt": "2026-10-09T17:20:15.690Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:47.033Z",
-  "updatedAt": "2026-10-09T17:18:41.166Z",
+  "updatedAt": "2026-10-09T17:20:15.690Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:18:41.166Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:20:15.690Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
