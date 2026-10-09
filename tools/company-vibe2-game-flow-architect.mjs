@@ -467,7 +467,8 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
     const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
     return{...enriched,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
   }
-  const seed=stableInt(`${gameId}|${genre}|${(inventory||[]).map(x=>`${x?.path||''}:${x?.label||''}`).join('|')}`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
+  // 실제 소스 목록은 재사용 판단에만 사용한다. 소스 추가로 기존 게임의 흐름 선택이 바뀌면 안 된다.
+  const seed=stableInt(`${gameId}|${genre}|`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
   const returnModes=['HUB_RETURN','CONTINUOUS_FORWARD','EXTRACTION_DECISION','MULTI_BASE_ROTATION'];
   const failureModes=['HARD_FAILURE_RETRY','PARTIAL_RESOURCE_LOSS','WORLD_STATE_SETBACK','RELATIONSHIP_OR_ACCESS_COST','TIME_OR_OPPORTUNITY_COST','FORCED_ROUTE_CHANGE'];
   const victoryModes=['BOSS_OR_THREAT_RESOLUTION','ESCAPE_OR_EXTRACTION','ECONOMIC_OR_BUILD_TARGET','TERRITORY_OR_WORLD_CONTROL','MYSTERY_OR_SYSTEM_SOLVED','RELATIONSHIP_OR_SOCIAL_RESOLUTION','SURVIVAL_OR_DURATION_TARGET'];
