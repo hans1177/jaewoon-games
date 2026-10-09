@@ -47,25 +47,38 @@
       "name": "START_GAME",
       "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
       "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::b8f70b07fc3292073787aeb63a513951d6e7c18a1409ed0de3f7f4a749b6241c:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_STATUS"
+      ],
+      "name": "MATCH_GAME",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 291134,
-      "lastMs": 42857,
+      "totalMs": 325150,
+      "lastMs": 34016,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:52:05.803Z"
+      "updatedAt": "2026-10-09T11:52:39.821Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:52:05.803Z",
+  "updatedAt": "2026-10-09T11:52:39.822Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2102,7 +2115,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:52:05.803Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:52:39.821Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
