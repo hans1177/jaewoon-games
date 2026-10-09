@@ -2934,7 +2934,12 @@ function crossGameActorVisualIdentity(asset,gameDna={},usage={},family=''){
   const rule=INTERNAL_ASSET_REUSE_POLICY.crossGenre3dActorReuse;
   const structural=axes.some(axis=>rule.structuralAxes.includes(axis));
   const motion=axes.some(axis=>rule.motionAxes.includes(axis));
+  const baselineCapture=text(evidence.baselineCaptureId),candidateCapture=text(evidence.candidateCaptureId);
+  const nativeRuntimeEvidenceId=text(evidence.nativeRuntimeEvidenceId);
   const verified=required&&text(evidence.gameId)===gameId&&text(evidence.assetId)===text(asset.id)
+    &&text(evidence.platform).toUpperCase()===upper(gameDna.targetPlatform||gameDna.platform)
+    &&baselineCapture&&candidateCapture&&baselineCapture!==candidateCapture
+    &&nativeRuntimeEvidenceId&&text(evidence.candidateRevision)
     &&evidence.runtimeBeforeAfterPass===true&&evidence.nativePlatformPass===true
     &&axes.length>=rule.minimumDistinctAxes&&structural&&motion;
   return Object.freeze({required,verified,gameId:gameId||null,
