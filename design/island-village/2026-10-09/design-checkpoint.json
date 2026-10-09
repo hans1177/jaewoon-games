@@ -443,25 +443,45 @@
     },
     "local_authoring_parts::e0952b56e5815430f70b8cd17ca224d76f51c7997a972fd98174957d7e4015e4:toSystem": {
       "toSystem": "GATHER_RESOURCES"
+    },
+    "local_authoring_parts::e0952b56e5815430f70b8cd17ca224d76f51c7997a972fd98174957d7e4015e4:trigger": {
+      "trigger": "Gather a focused set of island resources, then use them to build or improve one village function. This process involves selecting specific resources and determining how they will be utilized for development purposes."
+    },
+    "local_authoring_parts::e0952b56e5815430f70b8cd17ca224d76f51c7997a972fd98174957d7e4015e4:stateChange": {
+      "stateChange": "Gather a focused set of island resources, then use them to build or improve one village function. This process involves selecting specific resources and determining how they will be utilized for development purposes."
+    },
+    "local_authoring_parts::044e0874a9e1b5cb2d7a55e1653c41ca297151c728408120a5aa12f10d994335:systemInterconnections:0": {
+      "fromId": "GATHER_RESOURCES",
+      "toId": "UNLOCK_RESIDENT",
+      "stateKeys": [
+        "RESOURCE_COLLECTION",
+        "FUNCTION_IMPROVEMENT",
+        "NEW_RESIDENT_UNLOCKING",
+        "NEXT_GOAL_SELECTION"
+      ],
+      "fromSystem": "GATHER_RESOURCES",
+      "toSystem": "GATHER_RESOURCES",
+      "trigger": "Gather a focused set of island resources, then use them to build or improve one village function. This process involves selecting specific resources and determining how they will be utilized for development purposes.",
+      "stateChange": "Gather a focused set of island resources, then use them to build or improve one village function. This process involves selecting specific resources and determining how they will be utilized for development purposes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1499470,
-      "lastMs": 89106,
+      "totalMs": 1682487,
+      "lastMs": 92371,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:22:32.203Z"
+      "updatedAt": "2026-10-09T09:25:35.223Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:57:32.662Z",
-  "updatedAt": "2026-10-09T09:22:32.203Z",
+  "updatedAt": "2026-10-09T09:25:35.224Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2857,7 +2877,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:22:32.203Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:25:35.224Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
