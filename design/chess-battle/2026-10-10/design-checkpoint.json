@@ -28,25 +28,77 @@
         "stateChange": "전략적 연결 및 다음 선택의 가능성 확률 변화"
       },
       "abCausality": "양방향 실제 상태 교환: A→B와 B→A 모두 가능하며, 전략적 판단과 전장 관리를 통해 실질적인 결과가 발생함으로써 인과적 연관성이 강화됨."
+    },
+    "local_authoring_parts::ec2df9aa03b51ef5cebcddfc198a5b64744dd811cad442b025103fec3cd7446a:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "전략적 선택에 따른 전장 위치 선정 및 정보 접근의 변화",
+        "bChangesA": "AI 전략, 블록체인 등 다른 시스템의 도입으로 전략적 판단의 확대",
+        "lateGameChange": "전략적 연결과 다음 선택 가능성 확률의 균형 유지"
+      },
+      "materialFusion": {
+        "contrast": "역사, 문화, 체스 전략, 전장 위치 선정 vs AI 전략, 블록체인, 디지털 전투, 인공 지능",
+        "causalBridge": "전략적 판단과 전장 관리로 인해 실제 결과가 발생하여 인과적 연관성이 강화됨",
+        "removalConsequence": "보조 장르(주제와 관련된 요소)의 실질적인 인과 변화를 통해 MAIN의 대표 행동이 확대됨"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어는 체스판 상태 변화를 통해 전략적 판단을 수행하고, 이에 따라 전장 목표를 설정한다.",
+        "characterConflict": "전략적 선택과 상황별 위험/보상 갈등에서 플레이어는 실제 선택을 내린다.",
+        "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다.",
+        "worldChange": "전략적 연결 및 다음 선택 가능성 확률 변화로 세계가 변형된다.",
+        "nextEvent": "발견 단서와 새로운 실제 선택이 있는 초기 사례로 이어지는 과정"
+      }
+    },
+    "local_authoring_parts::cd62077e4806d3981a71601751f030b630196274ad7b9d81e5b3830352a777c4:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "체스 기반 전략적 판타지 게임",
+      "a": {
+        "system": "전략적 선택 + 전장 목표 창작 소재",
+        "material": "역사, 문화, 체스 전략, 전장 위치 선정",
+        "materialDomain": "PRIMARY",
+        "stateChange": "전략적 판단 및 전장 관리 상태 변화"
+      },
+      "b": {
+        "system": "다른 시스템 + 전략적 선택 창작 소재",
+        "material": "AI 전략, 블록체인, 디지털 전투, 인공 지능",
+        "materialDomain": "SECONDARY",
+        "stateChange": "전략적 연결 및 다음 선택의 가능성 확률 변화"
+      },
+      "abCausality": "양방향 실제 상태 교환: A→B와 B→A 모두 가능하며, 전략적 판단과 전장 관리를 통해 실질적인 결과가 발생함으로써 인과적 연관성이 강화됨.",
+      "abEvolution": {
+        "aChangesB": "전략적 선택에 따른 전장 위치 선정 및 정보 접근의 변화",
+        "bChangesA": "AI 전략, 블록체인 등 다른 시스템의 도입으로 전략적 판단의 확대",
+        "lateGameChange": "전략적 연결과 다음 선택 가능성 확률의 균형 유지"
+      },
+      "materialFusion": {
+        "contrast": "역사, 문화, 체스 전략, 전장 위치 선정 vs AI 전략, 블록체인, 디지털 전투, 인공 지능",
+        "causalBridge": "전략적 판단과 전장 관리로 인해 실제 결과가 발생하여 인과적 연관성이 강화됨",
+        "removalConsequence": "보조 장르(주제와 관련된 요소)의 실질적인 인과 변화를 통해 MAIN의 대표 행동이 확대됨"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어는 체스판 상태 변화를 통해 전략적 판단을 수행하고, 이에 따라 전장 목표를 설정한다.",
+        "characterConflict": "전략적 선택과 상황별 위험/보상 갈등에서 플레이어는 실제 선택을 내린다.",
+        "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다.",
+        "worldChange": "전략적 연결 및 다음 선택 가능성 확률 변화로 세계가 변형된다.",
+        "nextEvent": "발견 단서와 새로운 실제 선택이 있는 초기 사례로 이어지는 과정"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 916952,
-      "lastMs": 82892,
+      "totalMs": 1014379,
+      "lastMs": 97427,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:55:51.386Z"
+      "updatedAt": "2026-10-09T19:57:28.814Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T19:55:51.386Z",
+  "updatedAt": "2026-10-09T19:57:28.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1690,7 +1742,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:55:51.386Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:57:28.815Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
