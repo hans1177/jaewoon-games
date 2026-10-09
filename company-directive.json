@@ -139,13 +139,13 @@
       "actualGameFileSourceMetadataPreserved": true,
       "canonicalNormalizationRequiredBeforeHomepagePublication": true,
       "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
-      "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
-      "cardVisibilityRequiresRunnableTarget": true,
-      "titleOnlyCardExposureForbidden": true,
+      "playableWebCompanionMissingEntryState": "SHOW_CATALOG_CARD_WITH_UNVERIFIED_PLAY_LINK_DISABLED",
+      "cardVisibilityRequiresRunnableTarget": false,
+      "titleOnlyCardExposureForbidden": false,
       "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
       "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess",
       "playableWebCompanionMayBeDirectLaunchFallback": false,
-      "unityWebOnlyGameCardVisibility": true
+      "unityWebOnlyGameCardVisibility": false
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
