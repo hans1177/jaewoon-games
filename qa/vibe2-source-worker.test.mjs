@@ -18,7 +18,7 @@ import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tool
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
 import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -1601,6 +1601,81 @@ test('full-file candidates compare against their actual source before earning gr
   const candidate={replaceFiles:[{path:'game.js',content:'const score = 1; /* claimed build-up */\n'}]};
   assert.equal(evaluateCandidateSelfReview({candidate,sourceRoot,order:{target:'web'}}).pass,false);
   assert.equal(evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:{phase:'BUILD_UP',requiredConnectedImprovements:{min:1}}}).pass,false);
+});
+
+test('rejected patch fingerprint ignores prose and records only exact source interventions',()=>{
+  const a={
+    summary:'first explanation',tests:['check one'],
+    edits:[{path:'index.html',find:'let gold=0;',replace:'let gold=999;'}],
+    newFiles:[],replaceFiles:[]
+  };
+  const b={
+    tests:['different self-reported test'],expectedEffect:'different claim',
+    edits:[{replace:'let gold=999;',find:'let gold=0;',path:'index.html'}],
+    summary:'second explanation'
+  };
+  const c={...b,edits:[{path:'index.html',find:'let gold=0;',replace:'let gold=1;'}]};
+  assert.match(rejectedSourcePatchFingerprint(a),/^[a-f0-9]{64}$/);
+  assert.equal(rejectedSourcePatchFingerprint(a),rejectedSourcePatchFingerprint(b));
+  assert.notEqual(rejectedSourcePatchFingerprint(a),rejectedSourcePatchFingerprint(c));
+  assert.equal(rejectedSourcePatchFingerprint({summary:'no code changes',edits:[]}),null);
+});
+
+test('repeat-rejected source candidates produce one changed implementation and causal retry telemetry',async()=>{
+  const cwd=tempRoot(),root='web-games/demo',relative='index.html';
+  const source=[
+    'function handlePointer(event){ return event.x; }',
+    'function awardGold(){ return 100; }'
+  ].join('\n')+'\n';
+  const sourceRoot=path.join(cwd,root);
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return strict JSON.',
+    'Engine: web',
+    'Goal: fix handlePointer without changing player rewards',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    source
+  ].join('\n');
+  const first=path.join(cwd,'repeat-bad-first.json');
+  const second=path.join(cwd,'repeat-bad-second.json');
+  const third=path.join(cwd,'repeat-good-third.json');
+  const badEdit={
+    path:relative,
+    find:'function handlePointer(event){ return event.x; }',
+    replace:'function handlePointer(event){ gold += 999; return event.x; }'
+  };
+  write(first,JSON.stringify({summary:'first bad patch',tests:['none'],edits:[badEdit]}));
+  write(second,JSON.stringify({summary:'different words but same failed patch',edits:[badEdit],tests:['claimed smoke test']}));
+  // Attempt 3 is the existing focused retry, rotated once after the repeated patch.
+  const focused=focusedReplaceOnlySpec(prompt,{
+    responsibleFiles:[relative],sourceRoot,anchorIndex:1
+  });
+  assert.ok(focused?.find,'existing focused retry must select an exact writable anchor');
+  const replacement=focused.find.replace('event.x','Math.round(event.x)');
+  write(third,JSON.stringify({replace:replacement===focused.find?focused.find+'\n;':replacement}));
+  let validationCalls=0;
+  const result=await generateCandidateWithRecovery({
+    prompt,model:'qwen3:1.7b',responseFiles:[first,second,third],allowFullRewrite:false,
+    target:'web',responsibleFiles:[relative],sourceRootRelative:root,sourceRoot,
+    candidateValidator(candidate){
+      validationCalls+=1;
+      if((candidate.edits||[]).some(row=>String(row.replace||'').includes('gold += 999'))){
+        throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY');
+      }
+      return{pass:true};
+    }
+  });
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.repeatedRejectedPatchCount,1);
+  assert.equal(result.generation.repeatedRejectedPatchGuidanceCount,1);
+  assert.equal(result.generation.repeatedRejectedPatchStrategyShifts,1);
+  assert.equal(result.generation.rejectedPatchFingerprintCount,1);
+  assert.equal(result.generation.focusedReplaceAnchorRotations>=1,true);
+  assert.deepEqual(result.generation.failureHistory,['SEMANTIC_DIFF_BUDGET','SEMANTIC_DIFF_BUDGET']);
+  assert.equal(validationCalls,3);
+  assert.equal(result.candidate.edits.some(row=>row.replace.includes('gold += 999')),false);
+  assert.equal(result.candidateValidation.pass,true);
 });
 
 test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
