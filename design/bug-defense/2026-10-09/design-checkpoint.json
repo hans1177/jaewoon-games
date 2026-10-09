@@ -710,25 +710,29 @@
         }
       ],
       "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION"
+    },
+    "local_authoring_parts::9d469d22e50cee6215e9bf126db130e64022355395a0c1ec9934a8e4b1e8fb0e:progressionLoop,resourceFlow": {
+      "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
+      "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\""
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 21,
+      "calls": 25,
+      "successes": 22,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2284241,
-      "lastMs": 48127,
+      "totalMs": 2366638,
+      "lastMs": 82397,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T11:59:05.158Z"
+      "updatedAt": "2026-10-09T12:00:27.559Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T11:59:05.159Z",
+  "updatedAt": "2026-10-09T12:00:27.559Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2929,7 +2933,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:59:05.159Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:00:27.559Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
