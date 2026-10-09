@@ -27,25 +27,50 @@
       "identity": "놀이공원 타이쿤을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.', ",
       "playerFantasy": "타이쿤의 놀이공원에서 플레이어는 즉시 시작할 수 있는 간단한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 주체로 되어 세계 상태와 다음 선택을 바꾼다.",
       "coreFun": "플레이어는 즉시 시작할 수 있는 간단한 한 손 tap 또는 swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표가 주체로 되어 세계 상태와 다음 선택을 바꾼다."
+    },
+    "local_authoring_parts::e6f2c9eb6e00172edb69ccd4fbe437f63cff8033f779f95ca579b2f036b12561:coreLoop": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ]
+    },
+    "local_authoring_parts::94a63d5ebe679971da5f05182f2d20949958640da0001d61031ff014e1f52e92:signatureSystems:0": {
+      "id": "CORE_FUN_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_KEY",
+        "DISTANCE_KEY",
+        "SESSION_DURATION_KEY"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_01",
+        "STATE_CHANGE_02",
+        "STATE_CHANGE_03"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 230017,
-      "lastMs": 19746,
+      "totalMs": 297690,
+      "lastMs": 38521,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:21:03.810Z"
+      "updatedAt": "2026-10-09T09:22:11.488Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:21:03.811Z",
+  "updatedAt": "2026-10-09T09:22:11.488Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1969,7 +1994,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:21:03.811Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:22:11.488Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
