@@ -1189,25 +1189,35 @@
         "riskPressure": "The system encourages players to explore multiple paths while maintaining a balance between risk and reward, ensuring that failure does not lead to permanent loss but rather to learning and adaptation.",
         "recoveryRules": "If a player fails, they receive immediate feedback about what went wrong and can attempt again with adjusted strategies. The system also provides hints or alternative approaches to help them succeed."
       }
+    },
+    "local_authoring_parts::ed78924d2ba82d07f41c1c2ee28cc40dc173f4e8a691438e7042388d9c597d46:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[0]",
+      "stateKeys": [
+        "goal_clearance",
+        "reward_acquisition",
+        "new_board_pattern"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 15,
+      "calls": 19,
+      "successes": 16,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2431443,
-      "lastMs": 95708,
+      "totalMs": 2492108,
+      "lastMs": 60665,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:05:06.355Z"
+      "updatedAt": "2026-10-09T18:06:07.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:24:34.778Z",
-  "updatedAt": "2026-10-09T18:05:06.381Z",
+  "updatedAt": "2026-10-09T18:06:07.048Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2947,10 +2957,10 @@
     "37b4da1226a761b0f9d6b13cb7e699817596b8d8c93ff80b585c2838a68946e5": true,
     "0c18e7ff994e846afd46c8a03e7a4fd973549c4a0c259ba7483a51edf50d499f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:05:06.356Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:06:07.048Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
