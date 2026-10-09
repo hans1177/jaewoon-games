@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::e379060d72c37a4cc10fa4d435f4f97e6c8bbf5386b0a76f6b482247197f9914:identity": {
+      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 115033,
+      "lastMs": 115033,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:45:25.642Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T12:43:30.604Z",
+  "updatedAt": "2026-10-09T12:45:25.642Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2067,5 +2083,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:45:25.642Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
