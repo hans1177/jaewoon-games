@@ -242,25 +242,181 @@
           "playerChoice": "보드 상태를 변경하여 다음 단계로 진입하거나, 기존 상태와 다른 방식으로 진행할 수 있는 선택을 제공함으로써 게임의 루프를 연속적으로 유지합니다."
         }
       ]
+    },
+    "local_authoring_parts::ba1cd0511752c60962ff856168d3f3b503752627f3af58b97616100eeb5629cb:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::87bfe9f351c4a0431df7c893df92ca7552d59702b89c0d7f4c5aada89f9b14da:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+        "MAIN의 결과가 A/B/c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "보조 요소 COMBO는 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "START_GAME",
+          "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "MATCH_GAME",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "MATCH_GAME",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in a dynamic board state that evolves with each play session and region transition."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "COMBO_GAME",
+          "purpose": "MAIN/A/B의 관계를 상황별로 변주하며 독립된 대축처럼 전체 루프를 소유하지 않지만, 발견·숙련·재방문 깊이로 역할을 구분하는 보조 요소",
+          "playerChoice": "Create combos or use immediate board feedback to solve the current objective and generate new game states through combination of existing rules and patterns in the board state"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "UNLOCK_LEVEL",
+          "purpose": "게임의 중심 행동인 START 이후, 플레이어가 세계 상태를 바꾸며 새로운 선택을 하도록 유도하는 시그니처 활동.",
+          "playerChoice": "보드 상태를 변경하여 다음 단계로 진입하거나, 기존 상태와 다른 방식으로 진행할 수 있는 선택을 제공함으로써 게임의 루프를 연속적으로 유지합니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "파티 RPG을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 START, 두 대축은 MATCH/DELVE, 보조 요소는 COMBO이며, 발견·숙련·재방문은 @로 역할을 구분한다. 이 결과가 design-seed.json이며 뒤의 상세 설계는 같은 시드를 확장한다.",
+      "playerFantasy": "파티 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 START, 두 대축은 MATCH/DELVE, 보조 요소는 COMBO이며, 발견·숙련·재방문은 @로 역할을 구분한다.",
+      "coreFun": "파티 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 START, 두 대축은 MATCH/DELVE, 보조 요소는 COMBO이며, 발견·숙련·재방문은 @로 역할을 구분한다.",
+      "coreLoop": [
+        "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+        "MAIN의 결과가 A/B/c 서브요소가 읽고 변형할 수 있는 실제 게임 상태를 만든다.",
+        "보조 요소 COMBO는 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "START_GAME",
+          "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "MATCH_GAME",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "MATCH_GAME",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in a dynamic board state that evolves with each play session and region transition."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "COMBO_GAME",
+          "purpose": "MAIN/A/B의 관계를 상황별로 변주하며 독립된 대축처럼 전체 루프를 소유하지 않지만, 발견·숙련·재방문 깊이로 역할을 구분하는 보조 요소",
+          "playerChoice": "Create combos or use immediate board feedback to solve the current objective and generate new game states through combination of existing rules and patterns in the board state"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_STATUS"
+          ],
+          "name": "UNLOCK_LEVEL",
+          "purpose": "게임의 중심 행동인 START 이후, 플레이어가 세계 상태를 바꾸며 새로운 선택을 하도록 유도하는 시그니처 활동.",
+          "playerChoice": "보드 상태를 변경하여 다음 단계로 진입하거나, 기존 상태와 다른 방식으로 진행할 수 있는 선택을 제공함으로써 게임의 루프를 연속적으로 유지합니다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 453063,
-      "lastMs": 43082,
+      "totalMs": 480326,
+      "lastMs": 27263,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:54:47.739Z"
+      "updatedAt": "2026-10-09T11:55:15.006Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:54:47.742Z",
+  "updatedAt": "2026-10-09T11:55:15.016Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2293,12 +2449,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:54:47.742Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:55:15.009Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/party-rpg/2026-10-09/design-seed.json",
+    "contentDigest": "330b2672bed4e3334a04ad06a155bb62fab32e06ce548ad9822cc5a0856bc3e2",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
