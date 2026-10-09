@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 휴먼 GO에서 탐험하는 공간 내에서 다른 플레이어와의 관계를 수집하며, 이를 바탕으로 새로운 활동이나 콘텐츠를 발견하여 게임 진행에 영향을 미친다.",
       "coreFun": "플레이어는 휴먼 GO에서 작은 활동 공간 내에서 인물, 작업 또는 콘텐츠를 발견하여 그 결과로 다음 전략 및 경로가 달라지는 경험을 반복하게 된다. 이 과정에서는 사회적 관계와 발견이 중요한 역할을 하며, 이러한 상태 변화는 게임의 진화에 기여한다."
+    },
+    "local_authoring_parts::edf8e5c6ca8b47072ac1d95a330cedf347506d96bb3aafaa3191c21191cc4516:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택",
+        "숙련된 활동 -> 새로운 가능성이 실제로 달라지는 경험 반복"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1420067,
-      "lastMs": 101461,
+      "totalMs": 1514183,
+      "lastMs": 94116,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:02:49.525Z"
+      "updatedAt": "2026-10-09T18:04:23.646Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T18:02:49.527Z",
+  "updatedAt": "2026-10-09T18:04:23.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2068,7 +2075,7 @@
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:02:49.527Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:04:23.646Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
