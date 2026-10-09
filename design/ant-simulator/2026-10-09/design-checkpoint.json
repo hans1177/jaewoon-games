@@ -556,21 +556,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 426159,
-      "lastMs": 39026,
+      "totalMs": 678505,
+      "lastMs": 252346,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:50:36.787Z"
+      "updatedAt": "2026-10-09T12:54:49.146Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T12:50:36.798Z",
+  "updatedAt": "2026-10-09T12:54:49.151Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2625,15 +2625,159 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "8a517f2fbd2fb6f9f96b89ccab00f469c8d1befeae0d0d1f6162878610d6610f"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:50:36.790Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "선형 진화",
+      "progressionEconomyBalance": {
+        "progressionLoop": "발견 -> 숙련 -> 재방문",
+        "resourceFlow": "자원 획득 -> 소비 -> 해금",
+        "balanceRules": "기존 수치·보상·저장 의미는 보존한다"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1번 발견 단서",
+          "newGameplay": "월드 상태, 자원, 위험, 목표를 읽고 장르 핸 루트 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
+          "systemImpact": "플레이어의 선택에 따라 월드 상태와 자원/위험/진행 상태가 변화함"
+        },
+        {
+          "milestone": "2번 발견 단서",
+          "newGameplay": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
+          "systemImpact": "월드 상태 변화로 인해 다음 목표·지역·상호작용·전략 선택이 결정됨"
+        },
+        {
+          "milestone": "3번 발견 단서",
+          "newGameplay": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다.",
+          "systemImpact": "기존 수치·보상·저장 의미는 보존한다"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "월드 상태 변화 없음",
+          "자원 소비 완료",
+          "위험 대응 실패"
+        ],
+        "retryFlow": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다.",
+        "riskPressure": "자원 압박 및 위험 감소를 통해 플레이어의 선택에 영향을 주고, 다음 목표·지역·상호작용·전략 선택을 결정함",
+        "recoveryRules": "기존 수치·보상·저장 의미는 보존한다"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T12:54:49.146Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
