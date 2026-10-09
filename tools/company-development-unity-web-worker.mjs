@@ -207,17 +207,34 @@ if(mode==='result'){
         &&qaMarkers.some(marker=>marker.includes(' CORE_FUN ')&&marker.includes('status=PASS'))
         &&qa?.gameplay?.progressObserved===true
         &&qa?.gameplay?.coreActionObserved===true;
-      // 유니티 메시/삼각형의 실제 브라우저 측정 없이 이전 2D 결과를 재사용하지 않는다.
-      const native3dVerified=qa?.spatialGameplay?.pass===true
+      // 메인: 기존 게임을 포함해 실제 브라우저에서 관찰된 3D 입체 메시를 최종 단계에서 재확인한다.
+      const nativeMeshMarker=qaMarkers.slice().reverse().find(marker=>marker.includes(' MESH_INTEGRITY ')
+        &&marker.includes(`game=${gameId}`)&&marker.includes('source=UNITY_MESH_FILTER'))||'';
+      const nativeMeshMetric=key=>{
+        const token=nativeMeshMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+        return token===undefined?null:Number(token.slice(key.length+1));
+      };
+      const actualMeshProof=qa?.visualQa?.nativeUnityMesh?.metrics||{};
+      const native3dVerified=qa?.pass===true
+        &&qa?.spatialGameplay?.pass===true
         &&qa?.spatialGameplay?.requiredDimension==='3D'
-         &&qa?.spatialGameplay?.depthPass===true
-         &&qa?.spatialGameplay?.perspectiveCamera===true
-         &&Number(qa?.spatialGameplay?.gameplayActors3d)>=1
-         &&Number(qa?.spatialGameplay?.worldMeshes3d)>=2
-         &&qa?.spatialGameplay?.spriteGameplayActors===0
+        &&qa?.spatialGameplay?.depthPass===true
+        &&qa?.spatialGameplay?.perspectiveCamera===true
+        &&Number(qa?.spatialGameplay?.worldDepthCm)>=50
+        &&Number(qa?.spatialGameplay?.gameplayActors3d)>=1
+        &&Number(qa?.spatialGameplay?.worldMeshes3d)>=2
+        &&qa?.spatialGameplay?.spriteGameplayActors===0
         &&Number(qa?.spatialGameplay?.observedMeshCount)>0
         &&Number(qa?.spatialGameplay?.observedTriangles)>0
-        &&qa?.visualQa?.nativeUnityMesh?.pass===true;
+        &&Number(qa?.spatialGameplay?.observedVolumetricMeshes)>0
+        &&qa?.visualQa?.nativeUnityMesh?.pass===true
+        &&nativeMeshMarker.includes('status=PASS')
+        &&nativeMeshMetric('inspected')===actualMeshProof.inspected
+        &&nativeMeshMetric('validMeshes')===actualMeshProof.validMeshes
+        &&nativeMeshMetric('triangles')===qa.spatialGameplay.observedTriangles
+        &&nativeMeshMetric('volumetricMeshes')===qa.spatialGameplay.observedVolumetricMeshes
+        &&nativeMeshMetric('volumetricMeshes')===actualMeshProof.volumetricMeshes
+        &&nativeMeshMetric('materialPass')===1&&nativeMeshMetric('texturePass')===1;
       const gate={
         native3d:native3dVerified,
         boot:build?.bootSmoke==='PASS'&&qa?.boot?.pass===true,
