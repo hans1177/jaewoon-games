@@ -45,6 +45,29 @@ test('incomplete auto-enrolled V5 seeds do not force invented names and causal D
   assert.match(scorer,/pendingIntakeV5=seedV5/);
   assert.match(scorer,/pendingSeedStillRequiresCreativeDesign:pendingIntakeV5/);
   assert.match(scorer,/validateDesignAuthoringContent\(\{/);
+  const contextStart=design.indexOf('const seedDesignDepthContext=');
+  const contextEnd=design.indexOf('// 원본 구현 수치는',contextStart);
+  assert.ok(contextStart>=0&&contextEnd>contextStart);
+  const expression=design.slice(contextStart,contextEnd)+'\nseedDesignDepthContext';
+  const input={
+    seedGameplaySketchVersion:5,
+    pendingSeedGrammarNotAuthored:true,
+    advancedSeedDesignDepth:true,
+    seedGameplaySketch:{identityCore:{oneLineFantasy:'자동 임시 정체성'},novelGameGrammar:{emergentGenre:{name:'자동 임시 장르'}}},
+    seedFlowArchitecture:{flowDNA:[],phaseArc:[]},
+    seedFlowSystemBlueprint:{requiredSystems:[],expansionSystems:[],novelGrammarContract:{formula:'PLACEHOLDER'}},
+    seedFlowAssetRequirements:[],
+    clean:value=>String(value??'').trim()
+  };
+  const pending=runInNewContext(expression,input);
+  assert.equal(pending.compatibilityMode,'V5_DESIGNER_AUTHORING_PENDING_INPUT');
+  assert.equal(pending.identityCore,null);
+  assert.equal(pending.novelGameGrammar,null);
+  assert.equal(pending.flowArchitecture.systemBlueprint.novelGrammarContract,null);
+  const authored=runInNewContext(expression,{...input,pendingSeedGrammarNotAuthored:false});
+  assert.equal(authored.compatibilityMode,'V5_OWNER_CREATIVE_GRAMMAR_INPUT');
+  assert.equal(authored.novelGameGrammar.emergentGenre.name,'자동 임시 장르');
+  assert.equal(authored.flowArchitecture.systemBlueprint.novelGrammarContract.formula,'PLACEHOLDER');
 });
 
 // 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
