@@ -80,25 +80,53 @@
         "worldChange": "전략적 연결 및 다음 선택 가능성 확률 변화로 세계가 변형된다.",
         "nextEvent": "발견 단서와 새로운 실제 선택이 있는 초기 사례로 이어지는 과정"
       }
+    },
+    "local_authoring_parts::ec1c30e3f36c1046201162924ce297df8d4021425794e3c99bec232db58ce171:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "체스 전략",
+          "kind": "GENRE",
+          "gameplayEffect": "전략적 판단, 정보 접근, 전장 관리"
+        },
+        {
+          "name": "디지털 전투",
+          "kind": "GENRE",
+          "gameplayEffect": "AI 전략, 블록체인, 디지털 전투"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략적 게임 주제",
+          "gameplayEffect": "전략적 판단, 정보 접근, 전장 관리"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "전략적 선택 창작 소재",
+          "gameplayEffect": "전략적 연결 및 다음 선택 가능성 확률 변화"
+        }
+      ],
+      "cGenreInterlock": "전략적 판단과 전장 관리를 통해 실제 결과가 발생하여 인과적 연관성이 강화됨",
+      "cWorldAndGameplayEffect": "전략적 판단과 전장 관리는 세계를 변형하고, 전략적 연결은 다음 선택의 가능성을 결정함으로써 플레이어에게 명확한 판타지를 제공함으로써 인과적 연관성 강화됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1014379,
-      "lastMs": 97427,
+      "totalMs": 1101426,
+      "lastMs": 87047,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:57:28.814Z"
+      "updatedAt": "2026-10-09T19:58:55.872Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T19:57:28.815Z",
+  "updatedAt": "2026-10-09T19:58:55.872Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1742,7 +1770,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:57:28.815Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:58:55.872Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
