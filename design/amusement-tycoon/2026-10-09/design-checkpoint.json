@@ -596,25 +596,39 @@
     },
     "local_authoring_parts::8d78eabdf9249380a58d16c881ac233b70fd1ed796132b330a22ef712d6bfe1c:trigger": {
       "trigger": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다."
+    },
+    "local_authoring_parts::8d78eabdf9249380a58d16c881ac233b70fd1ed796132b330a22ef712d6bfe1c:stateChange": {
+      "stateChange": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다."
+    },
+    "local_authoring_parts::40ca604e7e0e43588b2e9b30d0c5904f7929ddd1ff64b8ce134b101babe16333:systemInterconnections:0": {
+      "fromId": "systemInterconnections[0]",
+      "toId": "START_STATE",
+      "stateKeys": [
+        "START_STATE -> END_STATE"
+      ],
+      "fromSystem": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+      "toSystem": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+      "trigger": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다.",
+      "stateChange": "게임은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 20,
+      "calls": 23,
+      "successes": 21,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2513890,
-      "lastMs": 86425,
+      "totalMs": 2600580,
+      "lastMs": 86690,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T13:10:32.005Z"
+      "updatedAt": "2026-10-09T13:11:58.696Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T13:10:32.005Z",
+  "updatedAt": "2026-10-09T13:11:58.697Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2784,7 +2798,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:10:32.005Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:11:58.697Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
