@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef:identity": {
       "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 수행하며, 이 행동은 진입 시점에서 즉시 상태 변화를 만든다. 선택은 기존의 전략적 자원 배분과 새로운 위험/보상 구조에 따라 변주된다. 이 게임은 단순한 방어 전략만 아니라, 성장 과정에서 새로운 행동 조합과 경로를 열어 다양한 플레이 경험을 제공한다."
+    },
+    "local_authoring_parts::f4a446c10d8095093c895e1867ea60855d673698748094a3ca4247e3a96a48bf:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "a": {
+        "system": "RESOURCE_MANAGEMENT",
+        "material": "ENEMY_RESOURCES",
+        "materialDomain": "ECONOMY",
+        "stateChange": "resources_acquired_and_spent"
+      },
+      "b": {
+        "system": "DEFENSE_STRATEGY",
+        "material": "ENEMY_TYPES_AND_WAVE_COMPOSITION",
+        "materialDomain": "POLITICS",
+        "stateChange": "defense_strategy_updated"
+      },
+      "abCausality": "ENEMY_TYPE_CHANGE → DEFENSE_STRATEGY_UPDATE → RESOURCE_SPENDING_PATTERN_CHANGE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 839026,
-      "lastMs": 238823,
+      "totalMs": 885245,
+      "lastMs": 46219,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:35:39.277Z"
+      "updatedAt": "2026-10-09T18:36:25.499Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:40.225Z",
-  "updatedAt": "2026-10-09T18:35:39.277Z",
+  "updatedAt": "2026-10-09T18:36:25.499Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,7 +1756,7 @@
     "282e07c4f86efbe0d3307ad28126c011786c503d2f3ffea4b364808e760ff761": true,
     "82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:35:39.277Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:36:25.499Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
