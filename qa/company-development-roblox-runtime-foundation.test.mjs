@@ -1512,12 +1512,12 @@ test('headless first frame must read actual runtime sentinel but proven unsuppor
  const sentinel=workflow.indexOf('            let sentinel;',next);
  assert.ok(first>=0&&next>first&&sentinel>next,'the existing first frame must feed the canonical exact runtime sentinel');
  const control=workflow.slice(first,next);
- const run=new Function('engineProbe',\`const item={gameId:'canary'},candidate={placeId:'42',versionNumber:11};
+ const run=new Function('engineProbe',`const item={gameId:'canary'},candidate={placeId:'42',versionNumber:11};
  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64),stamp='2026-10-09T00:00:00Z';
  let failed=0,pending=0,changed=false,reachedSentinel=false;
  const console={log(){}};
- for(let i=0;i<1;i++){ \${control} reachedSentinel=true; }
- return {item,failed,pending,reachedSentinel};\`);
+ for(let i=0;i<1;i++){ ${control} reachedSentinel=true; }
+ return {item,failed,pending,reachedSentinel};`);
  const base={
    engineExecuted:true,exactPlace:true,exactVersion:true,
    serverBootObserved:false,serverContextExecuted:true,
