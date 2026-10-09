@@ -34,25 +34,40 @@
         "플레이어가 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다.",
         "성장, 위험, 보상, 재방문 등 다양한 요소들이 서로 연결되어 진입 가능한 세계로 발전한다."
       ]
+    },
+    "local_authoring_parts::98f09a368015143bbc8f483191d2d003625c194ff259b662d0227b8ed528c57c:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT",
+        "STATE CHANGE",
+        "REWARD/RISK/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "GAMEPLAY_SKETCH_V4_EMERGENT_GRAMMAR"
+      ],
+      "name": "FIGHT_THROUGH_AN_ELEVATING_HORDE_IN_A_SHORT_REAL_TIME_SURVIVAL_RUN_WHILE_POSITIONING_AROUND_ENEMY_PRESSURE",
+      "purpose": "플레이어가 매일 새로운 환경에서 생존하며, 적의 압박 속에서도 자원을 수집하고, 강화된 전략을 통해 자신을 더 나아가야 한다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 102325,
-      "lastMs": 15673,
+      "totalMs": 123217,
+      "lastMs": 20892,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:53:54.364Z"
+      "updatedAt": "2026-10-09T14:54:15.283Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:52:12.002Z",
-  "updatedAt": "2026-10-09T14:53:54.364Z",
+  "updatedAt": "2026-10-09T14:54:15.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1762,7 +1777,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:53:54.364Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:54:15.283Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
