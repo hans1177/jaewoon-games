@@ -108,6 +108,12 @@ function developmentFloorRecoveryCase(task={},playbook={}) {
   if(playbook.applied!==true)return null;
   const signature=failureSignature(task)||'';
   const cases={
+    ROBLOX_BUILD_PREFLIGHT_BLOCKED:{
+      stage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+      hypotheses:['CONCURRENT_PLATFORM_MODE_ADMISSION_MISMATCH','EXACT_SOURCE_PACKAGE_OR_SHARED_MODEL_PREFLIGHT_FAILURE'],
+      next:'Verify selectedPlatform, canonical dual-platform execution mode and explicit ROBLOX/UNITY targets against exact built source/artifact evidence. Retry only the existing preflight stage after the responsible contract repair.',
+      preserve:'Do not reset verified F0 or runtime checkpoints for the same immutable source/artifact, and do not treat an invalid preflight as PASS.'
+    },
     ROBLOX_F0_SOURCE_PREFLIGHT_FAILED:{
       stage:'F0_SOURCE_PREFLIGHT',
       hypotheses:['PACKAGE_SOURCE_REVISION_OR_ARTIFACT_MISMATCH','EXACT_LUAU_OR_ROJO_PREFLIGHT_FAILURE'],

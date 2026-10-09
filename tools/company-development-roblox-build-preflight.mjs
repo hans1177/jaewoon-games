@@ -25,9 +25,14 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const {leads,distinct,pool,sharedModel,minDistinct}=configuredLeads(directive);
   const secondary=secondaryOwnerFocus===true;
   const directRoblox=upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX';
-  const concurrentRoblox=upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
+  // 기존 Unity Web 선행 개발 상태도 검증된 Roblox·Unity 동시 실행 대상이면 같은 정규 경로로 인정한다.
+  const concurrentRoblox=[
+    'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'
+  ].includes(upper(item.platformExecutionMode))
     &&Array.isArray(item.concurrentTargetPlatforms)
-    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX');
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX')
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='UNITY');
   const robloxLaneEligible=directRoblox||concurrentRoblox;
   const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);
   const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);
