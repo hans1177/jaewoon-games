@@ -260,25 +260,193 @@
           "playerChoice": "Expand the game's progression through dynamic content expansion and layered experience design based on current state and causal rules"
         }
       ]
+    },
+    "local_authoring_parts::303f65e3fbcd13a09b56c84890eb01fdefb56798fd3fd7207eb340e89893a3ba:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::48a276f575e9e9cc4e8deb2f4961c38c4eb97ebeeeba7a5befd3a3ae77a87a02:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어가 흉기로 타협 없이 진입하여 전투에 참여해야 한다.",
+        "적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "V1_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's core action and progression driver, driving immediate state change through combat and resource management.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "V1_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "V1_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player must actively select from a variety of upgrade options to alter their gameplay strategy and progression.",
+          "playerChoice": "Select from a list of available upgrades, including but not limited to: weapon enhancements, skill trees, perk combinations, and resource management strategies that directly impact the player's survival efficiency and long-term viability in combat scenarios."
+        },
+        {
+          "id": "V1_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Expand the game's progression through dynamic content expansion and layered experience design",
+          "purpose": "Introduce new gameplay layers, narrative depth, and player-driven progression through curated content expansion",
+          "playerChoice": "Curate and expand the game's content through strategic layering and adaptive progression systems that evolve with player choice and context-aware design decisions"
+        },
+        {
+          "id": "V1_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Expand the game's progression through dynamic content expansion and layered experience design",
+          "purpose": "Player-driven content evolution that aligns with causal laws and system interdependencies",
+          "playerChoice": "Expand the game's progression through dynamic content expansion and layered experience design based on current state and causal rules"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "휴먼 GO!은 기존 구현의 점수나 관문을 승계하지 않고, 플레이어가 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다.",
+      "playerFantasy": "플레이어는 휴먼 GO!에서 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다.",
+      "coreFun": "플레이어는 휴먼 GO!에서 '진행·위험·보상'을 서로 연결하는 반복 가능한 핵심 루프를 중심으로 재설계된다. 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 주체인 플레이어는 흉기로 타협 없이 진입하여 전투에 참여해야 한다. 이 과정에서 적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어가 흉기로 타협 없이 진입하여 전투에 참여해야 한다.",
+        "적·아이템·NPC는 세계 인과법칙에 따라 생겨나며, 성장은 단순한 수치 증가보다는 새로운 행동·경로·조합 등도 열어준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "V1_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "purpose": "Player's core action and progression driver, driving immediate state change through combat and resource management.",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        },
+        {
+          "id": "V1_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        },
+        {
+          "id": "V1_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "purpose": "Player must actively select from a variety of upgrade options to alter their gameplay strategy and progression.",
+          "playerChoice": "Select from a list of available upgrades, including but not limited to: weapon enhancements, skill trees, perk combinations, and resource management strategies that directly impact the player's survival efficiency and long-term viability in combat scenarios."
+        },
+        {
+          "id": "V1_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "Expand the game's progression through dynamic content expansion and layered experience design",
+          "purpose": "Introduce new gameplay layers, narrative depth, and player-driven progression through curated content expansion",
+          "playerChoice": "Curate and expand the game's content through strategic layering and adaptive progression systems that evolve with player choice and context-aware design decisions"
+        },
+        {
+          "id": "V1_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Expand the game's progression through dynamic content expansion and layered experience design",
+          "purpose": "Player-driven content evolution that aligns with causal laws and system interdependencies",
+          "playerChoice": "Expand the game's progression through dynamic content expansion and layered experience design based on current state and causal rules"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 494817,
-      "lastMs": 43209,
+      "totalMs": 512510,
+      "lastMs": 17693,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:29:11.035Z"
+      "updatedAt": "2026-10-09T08:29:28.732Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:29:11.038Z",
+  "updatedAt": "2026-10-09T08:29:28.741Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2473,12 +2641,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:29:11.038Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:29:28.736Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/human-go-temp/2026-10-09/design-seed.json",
+    "contentDigest": "8850f2ce6cfed51d8f60dbf9ad9d7776f2eb5f08965d0615412e9ccc6791eeab",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
