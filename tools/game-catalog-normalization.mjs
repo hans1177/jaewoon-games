@@ -174,7 +174,7 @@ function ownerWebTitle(filesystem,indexFile,fallback){
     return title||fallback;
   }catch{return fallback;}
 }
-export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootDir=''}={}){
+export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootDir='',unityProjectRoot='unity-games'}={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
   const policy=normalizationPolicy()?.ownerWebAutoIngest||{};
   if(policy.enabled!==true)return{catalog,added:[],updated:[],disabled:[],ignored:[]};
@@ -209,62 +209,103 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       if(excluded.has(id)){valid=false;sourceState='NON_GAME_SURFACE';}
       else if(clickOnlyGenreShell||list(quality.withdrawnEntryTitles).includes(title)||scripts.some(src=>list(quality.withdrawnRuntimeScripts).includes(src))||list(quality.withdrawnImplementationMarkers).some(marker=>html.includes(marker))||quality.withdrawnEntrySha256?.[id]===crypto.createHash('sha256').update(html.trim()).digest('hex')){valid=false;sourceState='WITHDRAWN_SIMPLE_PROTOTYPE';}
     }
-    if(valid){
-      // 기존 카탈로그 정규화 흐름 안에서 일반 웹/Unity WebGL을 실제 산출물과 QA로 구분한다.
-      const html=filesystem.readFileSync(indexFile,'utf8');
-      if(!/createUnityInstance\s*\(/.test(html)){
-        valid=false;
-        sourceState='LEGACY_WEB_REFERENCE_ONLY';
-      }else{
-        const evidenceFile=name=>{
-          try{return JSON.parse(filesystem.readFileSync(dir+'/'+name,'utf8'));}
-          catch{return null;}
-        };
-        const manifest=evidenceFile('unity-web-deploy-manifest.json');
-        const groups=manifest?.requiredGroups||{};
-        const bundleComplete=manifest?.engine==='UNITY_WEB'&&manifest?.gameId===id
-          &&manifest?.bundleComplete===true
-          &&['loader','data','framework','wasm'].every(key=>
-            Array.isArray(groups[key])&&groups[key].length>0
-            &&groups[key].every(filename=>{
-              if(!/^Build\/[a-zA-Z0-9_.-]+$/.test(filename))return false;
-              try{const file=dir+'/'+filename;return filesystem.statSync(file).isFile()&&filesystem.statSync(file).size>0;}catch{return false;}
-            })
-          );
-        if(!bundleComplete){
-          valid=false;
-          sourceState='UNITY_WEB_BUNDLE_INCOMPLETE';
-        }else{
-          const play=evidenceFile('unity-web-gameplay-validation.json');
-          const independent=evidenceFile('unity-web-independent-qa.json');
-          const regression=evidenceFile('unity-web-regression.json');
-          const readiness=evidenceFile('upper-platform-development-readiness.json');
-          const valid3d=row=>row?.pass===true&&row?.spatialGameplay?.pass===true
-            &&row?.spatialGameplay?.requiredDimension==='3D'
-            &&row?.visualQa?.nativeUnityMesh?.pass===true;
-          valid=valid3d(play)&&valid3d(independent)&&valid3d(regression)
-            &&play?.mobile?.pass===true
-            &&readiness?.gameId===id&&readiness?.pass===true
-            &&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY';
-          sourceState=valid?'UNITY_WEB_VERIFIED':'UNITY_WEB_QA_REQUIRED';
+    // 기존 HTML은 게임 데이터와 저장 호환성을 위해 그대로 보존한다.
+    // 플레이 등록은 기존 공식 Unity WebGL 빌드·실제 브라우저 3회·3D/모바일/저장 QA로만 한다.
+    const archivePresent=valid;
+    let verifiedRoot='',verifiedHref='';
+    const project=''+unityProjectRoot.replace(/\/+$/,'')+'/'+id;
+    const scriptsRoot=project+'/Assets/Scripts';
+    let nativeCsharp=false;
+    try{
+      const settings=filesystem.statSync(project+'/ProjectSettings/ProjectVersion.txt');
+      const stack=[scriptsRoot];
+      while(settings.isFile()&&stack.length>0&&!nativeCsharp){
+        const root=stack.pop();
+        for(const item of filesystem.readdirSync(root,{withFileTypes:true})){
+          if(item.isDirectory())stack.push(root+'/'+item.name);
+          else if(item.isFile()&&item.name.endsWith('.cs')){nativeCsharp=true;break;}
         }
       }
+    }catch{}
+    if(nativeCsharp){
+      for(const candidate of [dir+'/unity',dir]){
+        try{
+          const htmlFile=candidate+'/'+entryFile;
+          if(!filesystem.existsSync(htmlFile)||filesystem.statSync(htmlFile).size<minBytes)continue;
+          const html=filesystem.readFileSync(htmlFile,'utf8');
+          if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
+          const manifest=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-deploy-manifest.json','utf8'));
+          const build=JSON.parse(filesystem.readFileSync(candidate+'/unity-web-build.json','utf8'));
+          const readiness=JSON.parse(filesystem.readFileSync(candidate+'/upper-platform-development-readiness.json','utf8'));
+          const qa=['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json']
+            .map(file=>JSON.parse(filesystem.readFileSync(candidate+'/'+file,'utf8')));
+          const hash64=/^[a-f0-9]{64}$/,hash40=/^[a-f0-9]{40}$/;
+          if(manifest.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true
+             ||manifest.homepageVerified!==true||manifest.requiredDimension!=='3D'
+             ||manifest.canonicalSourceRoot!=='unity-games/'+id
+             ||!hash64.test(manifest.unitySourceTreeSha256||'')
+             ||!hash64.test(manifest.buildTreeSha256||'')
+             ||!hash40.test(manifest.sourceCommit||''))continue;
+          const groups=manifest.requiredGroups||{};
+          if(!['loader','data','framework','wasm'].every(key=>
+            Array.isArray(groups[key])&&groups[key].length>0
+            &&groups[key].every(ref=>{
+              if(typeof ref!=='string'||!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+              try{return filesystem.statSync(candidate+'/'+ref).isFile()&&filesystem.statSync(candidate+'/'+ref).size>0;}catch{return false;}
+            })))continue;
+          if(build.engine!=='UNITY_WEB'||build.gameId!==id||build.canonicalSourceRoot!=='unity-games/'+id
+             ||build.bootSmoke!=='PASS'||build.actualBrowserPlay!=='PASS'
+             ||build.independentQa!=='PASS'||build.regression!=='PASS'||build.upperPlatformGateCandidate!==true
+             ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+             ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit)continue;
+          if(readiness.gameId!==id||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness.pass!==true
+             ||readiness.sourceCommit!==manifest.sourceCommit
+             ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+             ||readiness.buildTreeSha256!==manifest.buildTreeSha256
+             ||readiness.criteria?.graphics?.native3dVerified!==true
+             ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true)continue;
+          if(!qa.every(e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
+             &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
+             &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
+             &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
+             &&e.mobile?.realGameTouchHandlerObserved===true&&e.performance?.pass===true
+             &&e.noCriticalRuntimeError===true&&e.spatialGameplay?.pass===true
+             &&e.spatialGameplay?.requiredDimension==='3D'
+             &&e.spatialGameplay?.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+             &&e.spatialGameplay?.perspectiveCamera===true&&e.spatialGameplay?.depthPass===true
+             &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+             &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+             &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+             &&e.visualQa?.nativeUnityMesh?.pass===true
+             &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION'))continue;
+          verifiedRoot=candidate;
+          verifiedHref='/'+canonicalRoot+'/'+id+(candidate===dir?'/':'/unity/');
+          break;
+        }catch{}
+      }
     }
+    // 별도 테스트 빌드는 검증된 원본을 참고하되 기존 공개 주소 및 저장 데이터를 유지한다.
+    if(verifiedRoot===dir+'/unity'){
+      verifiedRoot='';
+      sourceState='UNITY_WEB_TEST_ROUTE_SEPARATE';
+    }
+    valid=Boolean(verifiedRoot);
+    if(valid)sourceState='UNITY_WEB_VERIFIED';
+    else if(sourceState==='CURRENT_OWNER_BASELINE')
+      sourceState=archivePresent?'UNITY_WEB_VERIFICATION_REQUIRED':'ENTRY_MISSING_OR_INVALID';
     if(!valid){
       if(existing){
         existing.homepageWebPlayable=false;
-        // 실제 레거시 파일·세이브 참고 원본은 보존하고 플레이 허용 상태만 끈다.
-        if(sourceState!=='LEGACY_WEB_REFERENCE_ONLY')existing.hasWebArchive=false;
-        existing.ownerWebSourceState=sourceState==='CURRENT_OWNER_BASELINE'?'ENTRY_MISSING_OR_INVALID':sourceState;
-        if(existing.canonical?.sources?.web){existing.canonical.sources.web.playable=false;existing.canonical.sources.web.archive=existing.hasWebArchive===true;existing.canonical.sources.web.state=existing.ownerWebSourceState;}
+        existing.hasWebArchive=archivePresent;
+        existing.ownerWebSourceState=sourceState;
+        if(existing.homepageDisplayMode==='WEB_PUBLISHED')existing.homepageDisplayMode='';
+        if(existing.canonical?.sources?.web){existing.canonical.sources.web.playable=false;existing.canonical.sources.web.archive=archivePresent;existing.canonical.sources.web.state=sourceState;}
         disabled.push(id);
       }else ignored.push(id);
       continue;
     }
-    // 새 게임은 기존 통합 개발·카탈로그 등록 흐름에서만 생성한다. HTML 업로드만으로 신규 등록 금지.
-    if(!existing){ignored.push(id);continue;}
-    const canonicalPath=`/${canonicalRoot}/${id}/`;
-    const fingerprint=webTreeFingerprint(filesystem,dir);
+    const canonicalPath=verifiedHref;
+    const fingerprint=webTreeFingerprint(filesystem,verifiedRoot);
     if(existing){
       const prior=clean(existing.ownerWebSourceRevision);
       existing.webPath=canonicalPath;
@@ -274,34 +315,13 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
       existing.ownerDirectWebUpload=true;
       existing.ownerWebSourceState='UNITY_WEB_VERIFIED';
       existing.ownerWebSourceRevision=fingerprint;
-      existing.ownerWebEntryFile=`${canonicalRoot}/${id}/${entryFile}`;
+      existing.ownerWebEntryFile=verifiedHref.slice(1)+entryFile;
       if(prior!==fingerprint)existing.webDevelopmentResetRequired=true;
       updated.push(id);
       continue;
     }
-    const game={
-      id,
-      name:ownerWebTitle(filesystem,indexFile,id),
-      description:'사용자 직접 업로드 웹게임',
-      genre:[],
-      image:'',
-      webPath:canonicalPath,
-      hasWebArchive:true,
-      homepageWebPlayable:true,
-      homepageOfficialCard:false,
-      homepageTestCandidate:false,
-      homepageDisplayMode:'WEB_PUBLISHED',
-      lifecycleState:'ACTIVE',
-      productionClass:'DESIGN_ONLY',
-      productionClassSource:'OWNER_WEB_DIRECT_UPLOAD',
-      homepageCategory:'design-only',
-      ownerDirectWebUpload:true,
-      ownerWebSourceState:'CURRENT_OWNER_BASELINE',
-      ownerWebSourceRevision:fingerprint,
-      ownerWebEntryFile:`${canonicalRoot}/${id}/${entryFile}`,
-      webDevelopmentResetRequired:false
-    };
-    catalog.games.push(game);byId.set(id,game);added.push(id);
+    // 새로운 정식 게임은 기존 개발 카탈로그에서 등록한다. 파일 단독 등록은 금지한다.
+    ignored.push(id);
   }
   return{catalog,added,updated,disabled,ignored};
 }
