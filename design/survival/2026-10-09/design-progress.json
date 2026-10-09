@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 113,
-  "lastSuccessfulModelCallAt": "2026-10-09T01:05:27.834Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 115,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:06:56.908Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/survival/2026-10-09/design-seed.json",
     "contentDigest": "76256216b9f6fd86662415c6d407d17d9b7f95d2cc861b655b65e014f327ca46",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 85,
-      "successes": 85,
+      "calls": 86,
+      "successes": 86,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5749775,
-      "lastMs": 91288,
+      "totalMs": 5838845,
+      "lastMs": 89070,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:05:27.834Z"
+      "updatedAt": "2026-10-09T01:06:56.905Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T01:05:27.835Z"
+  "updatedAt": "2026-10-09T01:06:56.915Z"
 }
