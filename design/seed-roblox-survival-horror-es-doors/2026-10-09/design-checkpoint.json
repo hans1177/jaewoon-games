@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::0980780b4e4e16d9269f46a57c722352450102aebfa7f75c36852934ad519b31:identity": {
+      "identity": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다. 이 과정에서 성장의 가능성과 새로운 행동 조합이 열린다. 주체는 실제 플레이어 역할로, 즉각적인 피드백과 위험/보상 관계에 참여하며 게임의 핵심 루프를 형성한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 192352,
+      "lastMs": 192352,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:02:13.164Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T11:59:00.807Z",
+  "updatedAt": "2026-10-09T12:02:13.164Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2046,5 +2062,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:02:13.164Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
