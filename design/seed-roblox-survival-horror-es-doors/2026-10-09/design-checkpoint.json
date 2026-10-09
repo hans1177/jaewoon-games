@@ -1338,25 +1338,28 @@
         "riskPressure": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다.",
         "recoveryRules": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다. 이 과정에서는 현재 판 상태에 따른 플레이어의 선택이 다음 패턴 생성에 직접 영향을 미칩니다. 시스템은 즉각적인 피드백을 통해 새로운 레벨 또는 패턴을 생성하며, 이는 게임의 재미와 유연성에 기여합니다."
       }
+    },
+    "local_authoring_parts::0960a57daee18f60b26d6619038344f4a52321909e0bc954e85fec9133648ded:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 141,
-      "successes": 141,
+      "calls": 142,
+      "successes": 142,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4798496,
-      "lastMs": 149310,
+      "totalMs": 4886512,
+      "lastMs": 88016,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:43:01.902Z"
+      "updatedAt": "2026-10-09T02:44:29.927Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T02:43:01.908Z",
+  "updatedAt": "2026-10-09T02:44:29.927Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3563,10 +3566,10 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:43:01.902Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:44:29.927Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
