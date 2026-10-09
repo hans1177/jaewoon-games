@@ -64,25 +64,38 @@
       "name": "엘도리아 연대기 시그니처 체계 2: 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾼 STORY_COMPLETE_RPG 게임입니다.",
       "purpose": "플레이어의 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핸드폰 루프를 구현하는 주요 인과축 역할을 수행합니다.",
       "playerChoice": "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+    },
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:2": {
+      "id": "ELDORIA_CORE_SIGNATURE_3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "STORY_PROGRESS_STATUS"
+      ],
+      "stateOutputs": [
+        "GAME_OVER_STATUS"
+      ],
+      "name": "엘도리아 연대기 시그니처 체계 3: 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾼 STORY_COMPLETE_RPG 게임입니다.",
+      "purpose": "선택의 결과가 월드 상태를 바꾸며, 이 과정에서 플레이어는 새로운 경로와 위험, 보상, 자원을 경험하게 된다.",
+      "playerChoice": "선택의 결과가 다음 세계 상태를 바꾸는 반복 가능한 핸들링을 수행하며, 이 과정에서는 상황별로 다양한 조건이 적용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 433793,
-      "lastMs": 57628,
+      "totalMs": 493142,
+      "lastMs": 59349,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:50:35.865Z"
+      "updatedAt": "2026-10-09T15:51:35.215Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:43:21.699Z",
-  "updatedAt": "2026-10-09T15:50:35.865Z",
+  "updatedAt": "2026-10-09T15:51:35.215Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1825,7 +1838,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:50:35.865Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:51:35.215Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
