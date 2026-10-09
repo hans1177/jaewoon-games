@@ -598,25 +598,28 @@
     },
     "local_authoring_parts::c6f0b9de253ff93c8dc7d67e30fc9d0da0e7b1037db57e262994e3b863ac1f3f:toSystem": {
       "toSystem": "RUN_INPUT"
+    },
+    "local_authoring_parts::c6f0b9de253ff93c8dc7d67e30fc9d0da0e7b1037db57e262994e3b863ac1f3f:trigger": {
+      "trigger": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2336334,
-      "lastMs": 86256,
+      "totalMs": 2424493,
+      "lastMs": 88159,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:56:10.190Z"
+      "updatedAt": "2026-10-09T09:57:38.350Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:56:10.190Z",
+  "updatedAt": "2026-10-09T09:57:38.350Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2965,7 +2968,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:56:10.190Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:57:38.350Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
