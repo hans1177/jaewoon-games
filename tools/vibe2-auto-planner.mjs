@@ -434,7 +434,13 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
       &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
       &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
-    if(!existingRobloxRuntime)continue;
+    // Roblox F0를 통과한 기존 소스는 Unity Web 3D 재개발과 독립적으로 계속 계획한다.
+    // F0는 런타임 PASS가 아니므로 runtimeVerified로 승격하지 않는다.
+    const robloxSourcePath=posix(item?.robloxProjectPath);
+    const independentlyStartedRoblox=item?.robloxFoundationF0Passed===true
+      &&/^roblox-games\/[a-zA-Z0-9._-]+$/.test(robloxSourcePath)
+      &&fs.existsSync(path.join(repoRoot,robloxSourcePath));
+    if(!existingRobloxRuntime&&!independentlyStartedRoblox)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
@@ -1333,8 +1339,8 @@ JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    // 기존 게임 2D·2.5D 표현의 실제 책임 소스도 동일한 Unity Web 수리 작업으로 연결한다.
-    // UI용 2D 자료는 보존하고 월드/액터 SpriteRenderer의 3D 전환만 요구한다.
+    // 기존 Unity 게임의 2D·2.5D 게임플레이 표현은 원본 시각 책임 파일에서 직접 3D로 교체한다.
+    // 관련 없는 UI 스프라이트와 저장·전투 로직은 그대로 둔다.
     const nativeVisualSource=readText(sourceFile(repoRoot,nativeVisualRel));
     const nativeVisualNeeded=Boolean(nativeVisualSource)
       &&(readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
@@ -3868,7 +3874,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       deferredSmallPackages.push({gameId:project.gameId,taskIds:packageTasks.map(task=>task.id),workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
       continue;
     }
-    const acceptedTasks=pkg.tasks;
+    // 기존 소유자 재개발은 작업 패키징 이후에도 무제한 인과 재시도 계약을 보존한다.
+    const acceptedTasks=project.ownerResumableBuildUp===true
+      ?pkg.tasks.map(task=>({...task,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
+      :pkg.tasks;
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});

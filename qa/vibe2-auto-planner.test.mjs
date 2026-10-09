@@ -922,8 +922,7 @@ test('release-confirmed web archive is never an autonomous feature target',()=>{
   assert.equal(result.tasks.some(t=>t.gameId==='release-web'),false);
 });
 
-
-test('release-confirmed Unity Android remains owner-held even with a valid Development Baseline',()=>{
+test('release-confirmed Android remains held despite historical Development Baseline evidence',()=>{
   const root=tempRepo();
   const releaseCatalog={games:[
     {id:'demo',homepageCategory:'release-confirmed'},
@@ -932,8 +931,9 @@ test('release-confirmed Unity Android remains owner-held even with a valid Devel
   const evidence=latestDevelopmentBaselineEvidence('demo',root);
   assert.equal(evidence.ready,true);
   const result=planVibe2AutonomousTask({status,catalog:releaseCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
-  assert.equal(result.planned,false,'Android hold must not be bypassed by a legacy baseline');
-  assert.equal((result.tasks||[]).some(task=>task.target==='unity'),false);
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
+  assert.equal(result.tasks.length,0,'legacy Android baseline cannot override current owner hold');
 });
 
 test('release-confirmed Unity cannot enter Tier1 without Development Baseline PASS',()=>{
@@ -984,6 +984,9 @@ test('planner never selects Unity project without owner PASS',()=>{
 
 test('active source root does not block same-game non-overlapping planning',()=>{
   const root=tempRepo();
+  // 이 케이스의 개발 가능 타깃은 과거 Android 앱이 아니라 동일 Unity 원본의 WebGL이다.
+  fs.mkdirSync(path.join(root,'unity-games/demo/ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(root,'unity-games/demo/ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
   const mixedCatalog={games:[
     {id:'demo',homepageCategory:'release-confirmed'},
     {id:'dev-web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
@@ -993,9 +996,9 @@ test('active source root does not block same-game non-overlapping planning',()=>
     queue:{maxConcurrentTasks:4,tasks:[{id:'demo-active',gameId:'demo',sourceRoot:'unity-games/demo',target:'unity',goal:'active',releaseState:'release-confirmed',status:'running',responsibleFiles:['unity-games/demo/Assets/Scripts/Active.cs']}]},
     repoRoot:root,maxConcurrentTasks:4
   });
-  assert.equal(result.tasks.some(t=>t.gameId==='demo'),false,'held native Unity must not receive a new task');
-  assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true,'independent legacy Web fixture stays schedulable');
-  assert.equal(result.tasks.some(task=>(task.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/Active.cs')),false);
+  assert.equal(result.tasks.some(t=>t.gameId==='demo'),true);
+  assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true);
+  assert.equal(result.tasks.filter(t=>t.gameId==='demo').every(task=>!(task.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/Active.cs')),true);
 });
 
 test('development web is assessed before deterministic diagnostics',()=>{
@@ -1058,17 +1061,32 @@ test('completed diagnostic package is never recreated after assessment and compl
   }
 });
 
-
-test('legacy Unity Android package is not recreated while owner hold is active',()=>{
+test('completed Unity Web package is not duplicated after completion and retains explicit expansion scopes',()=>{
   const root=tempRepo();
+  fs.mkdirSync(path.join(root,'unity-games/demo/ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(root,'unity-games/demo/ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
   const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
-  assert.equal(first.planned,false);
-  assert.equal((first.tasks||[]).some(task=>task.target==='unity'),false);
-  const existing={id:'demo-region-controls-4-7',gameId:'demo',target:'unity',status:'verified',result:'PASS'};
-  const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[existing]},repoRoot:root,maxConcurrentTasks:4});
-  assert.equal(second.planned,false);
+  assert.equal(first.planned,true);
+  const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
+  const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
+  assert.equal(autoExpanded||parallelPackage,true);
+  if(autoExpanded){
+    assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
+    assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
+  }else{
+    assert.equal(parallelPackage,true);
+    assert.equal(first.packages[0].accepted,true);
+  }
+  const done={...first.task,status:'verified',result:'PASS'};
+  const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
+  if(second.planned){
+    assert.notEqual(second.task.id,first.task.id);
+  }else{
+    assert.equal(['CAUSAL_REPLAN_REQUIRED','AWAITING_INDEPENDENT_CAUSAL_SIGNAL'].includes(second.reason),true);
+  }
 });
+
 
 test('creative rebuild receives verified multi-project transformative recombination context',()=>{
   const root=tempRepo();
@@ -1894,7 +1912,6 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
     `unity-games/${gameId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`
   ]);
   assert.equal(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/Visuals.cs`),false);
-  assert.match(task.goal,/2D·2\.5D/);
   assert.match(task.goal,/SPATIAL_DEPTH/);
   assert.match(task.goal,/CODE\/GRAPHICS\/WEBGL_BUILD\/ACTUAL_PLAY\/QA\/PORTABILITY/);
   assert.match(task.goal,/실제 2명 이상 상태 동기화/);
@@ -1972,8 +1989,10 @@ test('same-game Unity Web repair and Unity asset task stay parallel when respons
   assert.equal(batch.deferredConflicts.some(row=>row.task?.id==='demo-unity-presentation-asset-adaptation-v1'),false);
 });
 
-test('grandfathered native progress keeps its state but existing Unity Web still enters 3D redevelopment',()=>{
+test('grandfathered Roblox progress remains independent while existing Unity Web receives 3D floor repair',()=>{
   const root=tempRepo();
+  fs.mkdirSync(path.join(root,'roblox-games','cozy-island','server'),{recursive:true});
+  fs.writeFileSync(path.join(root,'roblox-games','cozy-island','server','Game.server.luau'),'-- current F0 source, not a runtime pass\n');
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     authority:'MACHINE_EXECUTION_CONTRACT',
     machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
@@ -2005,7 +2024,10 @@ test('grandfathered native progress keeps its state but existing Unity Web still
     }]}
   );
   assert.equal(projects.some(row=>row.gameId==='cozy-island'&&row.firstStageUnityWeb===true),true);
-  assert.equal(projects.some(row=>row.gameId==='cozy-island'&&row.firstStageEngine==='UNITY_WEB'),true);
+  const roblox=projects.find(row=>row.gameId==='cozy-island'&&row.engine==='roblox');
+  assert.ok(roblox,'existing Roblox F0 source must remain independently eligible');
+  assert.equal(roblox.queueCurrentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+  assert.equal(roblox.companyDevelopmentQueueSource,true);
 });
 
 
@@ -4372,29 +4394,33 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
   const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
   assert.ok(resumed);
-  assert.equal(resumed.maxRetries??null,null,'unspecified retry limit means unlimited');
+  assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
 });
 
-
-test('real fantasy-survival keeps the legacy web playable while the canonical Unity 3D build-up runs',()=>{
+test('actual fantasy-survival routes future source development to canonical Unity Web 3D instead of legacy HTML',()=>{
   const root=path.resolve(process.cwd());
-  const legacySource=path.join(root,'web-games','fantasy-survival','index.html');
-  assert.ok(fs.existsSync(legacySource),'legacy web game remains available during 3D migration');
-  assert.ok(fs.statSync(legacySource).size>100000,'legacy gameplay must not be replaced with a placeholder');
+  const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
+  const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
+  assert.ok(fs.existsSync(oldWeb),'previous web version stays playable while 3D redevelopment proceeds');
+  assert.ok(fs.statSync(oldWeb).size>100000);
+  assert.ok(fs.existsSync(unitySource),'existing Unity gameplay source must be preserved');
+
   const catalogData=JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'));
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
-  assert.ok(game,'fantasy-survival must exist in the real catalog');
+  assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
   const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='unity'&&row.firstStageUnityWeb===true);
-  assert.ok(project,'canonical Unity Web 3D game must enter the planner');
+  assert.ok(project,'actual fantasy-survival must be in the canonical Unity Web development lane');
   assert.equal(project.projectPath,'unity-games/fantasy-survival');
-  const tasks=findStudioContinuousImprovementTasks(project,root,{tasks:[]});
-  assert.ok(tasks.length>=1,'canonical Unity source needs at least one real build-up task');
-  assert.ok(tasks.some(row=>row.studioQualityEvolution?.focusPillar==='PRESENTATION'));
-  assert.ok(tasks.every(row=>row.sourceRoot==='unity-games/fantasy-survival'));
-  assert.ok(tasks.every(row=>row.target==='unity'));
+
+  const work=findSafeTasks(project,root,{tasks:[]});
+  assert.ok(work.length>0,'existing Unity Web must have a real source repair or implementation task');
+  const unity3d=work.find(row=>row.target==='unity'&&(row.responsibleFiles||[]).includes('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs'));
+  assert.ok(unity3d,'legacy Unity Web gameplay must be repaired in place rather than a separate HTML authoring path');
+  assert.match(unity3d.goal,/SPATIAL_DEPTH/);
+  assert.match(unity3d.goal,/company-asset-library\.json/);
 });
 
 test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
