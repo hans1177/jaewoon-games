@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad:identity,creativeGrammar": {
+      "identity": "퇴마 사무소 - 진입 단계",
+      "creativeGrammar": {
+        "mainIdentity": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+        "a": {
+          "system": "ACTION_SEQUENCE",
+          "material": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS",
+          "materialDomain": "MOBILE_GAMEPLAY",
+          "stateChange": "INPUT_TO_STATE_CHANGE"
+        },
+        "b": {
+          "system": "DECISION_FLOW",
+          "material": "READABILITY_AND_PLAYABILITY",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "PLAYER_ACTION_TO_DECISION_FLOW"
+        },
+        "abCausality": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+        "abEvolution": {
+          "aChangesB": "YES, REWARD_AND_RISK_CHANGED",
+          "bChangesA": "YES, INPUT_AND_MENU_TRANSITIONS_CHANGED",
+          "lateGameChange": "YES, NEW_ACTION_AND_ROUTE_OPTION_ADDED"
+        },
+        "materialFusion": {
+          "contrast": "SIMPLE_INPUT_AND_REWARD_WITH_SMALL_RISK",
+          "causalBridge": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+          "removalConsequence": "NO, PLAYER_ACTION_IS_THE_PRIMARY_CAUSE"
+        },
+        "storyCausalChain": {
+          "cause": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "characterConflict": "PLAYER_ACTION_TO_DECISION_FLOW",
+          "playerChoice": "INPUT_AND_MENU_TRANSITION",
+          "worldChange": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+          "nextEvent": "NEW_ACTION_AND_ROUTE_OPTION_ADDED"
+        },
+        "cThemes": [
+          {
+            "name": "ACTION_SEQUENCE",
+            "kind": "GENRE",
+            "gameplayEffect": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS"
+          },
+          {
+            "name": "DECISION_FLOW",
+            "kind": "GENRE",
+            "gameplayEffect": "READABILITY_AND_PLAYABILITY"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "MOBILE_GAMEPLAY",
+            "gameplayEffect": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_READABLE_FEEDBACK_WITH_REWARD_AND_SMALL_RISK_CHOICE_BEFORE_RUN_ENDS"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "GAMEPLAY",
+            "gameplayEffect": "READABILITY_AND_PLAYABILITY"
+          }
+        ],
+        "cGenreInterlock": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK_CHANGED_IN_LATE_GAME",
+        "cWorldAndGameplayEffect": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK_CHANGED_IN_LATE_GAME",
+        "delveDiscoveries": [
+          {
+            "clue": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+            "discovery": "PLAYER_ACTION_IS_THE_PRIMARY_CAUSE",
+            "newChoice": "INPUT_AND_MENU_TRANSITION"
+          },
+          {
+            "clue": "INPUT_TO_STATE_CHANGE_TO_DECISION_FLOW_TO_REWARD_AND_RISK",
+            "discovery": "NEW_ACTION_AND_ROUTE_OPTION_ADDED",
+            "newChoice": "ACTION_SEQUENCE_AND_DECISION_FLOW"
+          },
+          {
+            "clue": "REWARD_AND_RISK_CHANGED",
+            "discovery": "CONNECTION_OF_PLAYER_ACTION_TO_WORLD_STATE_CHANGED",
+            "newChoice": "DECISION_FLOW_AND_REWARD_RISK"
+          },
+          {
+            "clue": "INPUT_AND_MENU_TRANSITION_CHANGED",
+            "discovery": "CONNECTION_OF_PLAYER_ACTION_TO_WORLD_STATE_CHANGED",
+            "newChoice": "ACTION_SEQUENCE_AND_DECISION_FLOW"
+          }
+        ],
+        "delveGrowthRule": "PLAYER_ACTION_IS_THE_PRIMARY_CAUSE_AND_CONSEQUENCE",
+        "finalGameIdentity": "START_TOUCH_10_MINUTES_SIMPLE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL_WITH_PLAYER_ACTION_AS_PRIMARY_CAUSE_AND_CONSEQUENCE_AND_NEW_ACTION_AND_ROUTE_OPTION_ADDED_IN_LATE_GAME"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 239949,
-      "lastMs": 239949,
+      "totalMs": 366819,
+      "lastMs": 126870,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T21:00:48.386Z"
+      "updatedAt": "2026-10-09T21:02:55.257Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:56:48.393Z",
-  "updatedAt": "2026-10-09T21:00:48.386Z",
+  "updatedAt": "2026-10-09T21:02:55.258Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1505,5 +1592,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T21:02:55.257Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
