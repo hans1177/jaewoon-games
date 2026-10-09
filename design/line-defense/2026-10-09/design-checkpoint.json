@@ -1324,25 +1324,51 @@
       "toSystem": "SIGNATURE_SYSTEM_1",
       "trigger": "Enemy wave detected",
       "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::b300d48efe0a4f1881768946e411fa132f84f6c243e10ac53fa97d8f59309517:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::b300d48efe0a4f1881768946e411fa132f84f6c243e10ac53fa97d8f59309517:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::fb601c5283c1211f92c3e7e654e21d1f8e60699084e88f25edd53c6860cfcd09:systemInterconnections:1": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 97,
-      "successes": 97,
+      "calls": 99,
+      "successes": 99,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5788996,
-      "lastMs": 22780,
+      "totalMs": 5884272,
+      "lastMs": 46831,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:04:29.122Z"
+      "updatedAt": "2026-10-09T03:06:04.404Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T03:04:29.124Z",
+  "updatedAt": "2026-10-09T03:06:04.406Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3683,7 +3709,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:04:29.124Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:06:04.406Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
