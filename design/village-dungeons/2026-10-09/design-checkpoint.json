@@ -477,25 +477,44 @@
         "memory"
       ],
       "fromSystem": "systemInterconnections"
+    },
+    "local_authoring_parts::92685f83181f2dfdf79f592f5b4f346cd4d91ce785c0c415d3633faf363940a1:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections",
+      "trigger": "player_action",
+      "stateChange": "world_state_changes"
+    },
+    "local_authoring_parts::8a41de6a732710a6c48383ed715e9781ca99e991b712c3c9660465c83e95516a:systemInterconnections:2": {
+      "fromId": "world_state",
+      "toId": "new_world_state",
+      "stateKeys": [
+        "ecosystem",
+        "fate",
+        "politics",
+        "memory"
+      ],
+      "fromSystem": "systemInterconnections",
+      "toSystem": "systemInterconnections",
+      "trigger": "player_action",
+      "stateChange": "world_state_changes"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 15,
+      "calls": 19,
+      "successes": 16,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2363159,
-      "lastMs": 76525,
+      "totalMs": 2434653,
+      "lastMs": 71494,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T13:13:41.511Z"
+      "updatedAt": "2026-10-09T13:14:53.007Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:34:18.260Z",
-  "updatedAt": "2026-10-09T13:13:41.511Z",
+  "updatedAt": "2026-10-09T13:14:53.009Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2574,7 +2593,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:13:41.511Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:14:53.009Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
