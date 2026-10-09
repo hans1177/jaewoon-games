@@ -164,25 +164,203 @@
       "name": "Enemy Type & Wave Composition Adaptation",
       "purpose": "Player chooses defense placements based on enemy types and wave compositions to protect objectives and clear stages.",
       "playerChoice": "Player selects defensive positions that adapt to current enemy composition and future risk/reward patterns."
+    },
+    "local_authoring_parts::a2f780bbcf1b84104d14cb817772acb61a86f7ebed46e58b5cca80ddd278f5ce:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "DefensesPlaced"
+      ],
+      "stateOutputs": [
+        "ResourcesEarned",
+        "StrategyAdapted",
+        "ObjectiveProtected"
+      ],
+      "name": "Enemy Type & Wave Composition Adaptation",
+      "purpose": "Player adapts defense strategies based on enemy types and wave compositions",
+      "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+    },
+    "local_authoring_parts::520488c4f9f3240117360437c104b6a1e525f3e1df2aedb2260b013ebc7ecc2d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Resource Management & Strategic Placement",
+          "purpose": "Player chooses where to place defenses based on current state and future risk/reward",
+          "playerChoice": "Player selects defense positions considering enemy type, wave composition, and resource availability for optimal strategy adaptation and objective protection"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Resource Management & Strategic Placement",
+          "purpose": "Player's initial action of placing defenses triggers core loop state changes.",
+          "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player adapts defense strategies based on enemy types and wave compositions to protect objectives and clear stages.",
+          "playerChoice": "Player chooses defensive placements that align with current enemy type and wave composition for optimal protection and strategic advantage."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player chooses defense placements based on enemy types and wave compositions to protect objectives and clear stages.",
+          "playerChoice": "Player selects defensive positions that adapt to current enemy composition and future risk/reward patterns."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player adapts defense strategies based on enemy types and wave compositions",
+          "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+        }
+      ]
+    },
+    "local_authoring_parts::a9396bd81ac9160dc419095ffed6a8265df4fce85b852477f1cd65d7d215eb56:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Input: Player places defenses on lanes or positions to cover the threatened route.",
+        "State Change: Resources are earned from defeated enemies and spent on upgrades, new placements, or tactical changes before pressure increases.",
+        "Reward: Players adapt defense strategies based on enemy types and wave compositions, protecting objectives and clearing stages."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Resource Management & Strategic Placement",
+          "purpose": "Player chooses where to place defenses based on current state and future risk/reward",
+          "playerChoice": "Player selects defense positions considering enemy type, wave composition, and resource availability for optimal strategy adaptation and objective protection"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Resource Management & Strategic Placement",
+          "purpose": "Player's initial action of placing defenses triggers core loop state changes.",
+          "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player adapts defense strategies based on enemy types and wave compositions to protect objectives and clear stages.",
+          "playerChoice": "Player chooses defensive placements that align with current enemy type and wave composition for optimal protection and strategic advantage."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player chooses defense placements based on enemy types and wave compositions to protect objectives and clear stages.",
+          "playerChoice": "Player selects defensive positions that adapt to current enemy composition and future risk/reward patterns."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "DefensesPlaced"
+          ],
+          "stateOutputs": [
+            "ResourcesEarned",
+            "StrategyAdapted",
+            "ObjectiveProtected"
+          ],
+          "name": "Enemy Type & Wave Composition Adaptation",
+          "purpose": "Player adapts defense strategies based on enemy types and wave compositions",
+          "playerChoice": "Player chooses where to place defenses based on current state and future risk/reward"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 356831,
-      "lastMs": 37630,
+      "totalMs": 394287,
+      "lastMs": 37456,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:26:12.829Z"
+      "updatedAt": "2026-10-09T17:26:50.287Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:15.929Z",
-  "updatedAt": "2026-10-09T17:26:12.830Z",
+  "updatedAt": "2026-10-09T17:26:50.289Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1888,7 +2066,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:26:12.829Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:26:50.289Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
