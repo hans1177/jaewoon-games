@@ -132,25 +132,39 @@
       "name": "MONSTER_CAPTURE_SYSTEM",
       "purpose": "실제 세계 상태 변화 및 다음 사건 연결",
       "playerChoice": "플레이어 선택에 따른 원인 갈등 발생, 시그니처 세계 규칙과 실제 상태 변화 일치, 무한 발전 규칙으로 이어지게 된다"
+    },
+    "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "MONSTER_COUNT",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "WORLD_CHANGE"
+      ],
+      "name": "MONSTER_CAPTURE_SYSTEM",
+      "purpose": "실제 선택 및 전술 수행",
+      "playerChoice": "플레이어가 포획 결과에 따라 월드 상태 변화와 비용/위험/보상 연결을 결정하는 선택 과정입니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 345463,
-      "lastMs": 35482,
+      "totalMs": 380784,
+      "lastMs": 35321,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:41:20.879Z"
+      "updatedAt": "2026-10-09T17:41:56.208Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:35:35.348Z",
-  "updatedAt": "2026-10-09T17:41:20.886Z",
+  "updatedAt": "2026-10-09T17:41:56.208Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1727,8 +1741,8 @@
     "local_authoring_parts::b28aa12135e3af11ba282c4db43e07acad94bf56f2dcdf3ad1f58045d278a8e5:signatureSystems:2": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:41:20.879Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T17:41:56.208Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
