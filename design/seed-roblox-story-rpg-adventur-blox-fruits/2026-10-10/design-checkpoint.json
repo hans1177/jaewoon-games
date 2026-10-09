@@ -104,25 +104,38 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::1b16c0b4e0d40b1fd70787d823885bdf5ef4867583644b54979c84fef256b56f:signatureSystems:0": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_PATTERN_CHANGE"
+      ],
+      "stateOutputs": [
+        "REWARD_TYPE_SHIFT"
+      ],
+      "name": "Board Game -> Reward System: Matchmaking Logic → Level Completion Reward",
+      "purpose": "Establish Clear Link Between Objectives and Rewards",
+      "playerChoice": "Re-evaluate Objective and Adjust Rewards in Response to Goal Ambiguity and Reward Uncertainty"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 180150,
-      "lastMs": 35332,
+      "totalMs": 216417,
+      "lastMs": 36267,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:30:29.891Z"
+      "updatedAt": "2026-10-09T18:31:06.160Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:27:29.696Z",
-  "updatedAt": "2026-10-09T18:30:29.891Z",
+  "updatedAt": "2026-10-09T18:31:06.160Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1712,7 +1725,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:30:29.891Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:31:06.160Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
