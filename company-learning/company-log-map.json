@@ -1487,40 +1487,18 @@
       "allGenreApplicationRequired": true,
       "genericFeatureCountCannotProveIdentityGrowth": true,
       "causalGameGrammarEvidence": {
-        "requiredWhenSeedV4GrammarExists": true,
+        "requiredWhenSeedV5GrammarExists": true,
         "formula": "MAIN × A × B × C + @ = EMERGENT_COMPOSITE_GENRE",
         "requiredEvidence": [
           "CAUSAL_GRAMMAR_EVIDENCE",
           "CAUSAL_GRAMMAR_BUILD_UP_RULE",
-          "EXISTING_GAME_MAIN_A_B_c_AT_MAP",
-          "APPROVED_CAUSAL_GAME_GRAMMAR_PRESERVED_OR_MUTATED_WITH_REAL_STATE_EFFECT",
-          "MAIN_A_B_MAJOR_AXES_AND_c_SUB_ELEMENTS_ROLE_PRESERVED",
-          "AT_DELVE_LAYER_IS_NOT_GENERAL_SYSTEM_AXIS",
+          "A_B_SOURCED_SYSTEM_CAUSAL_REPLAY",
           "C_PRIMARY_SECONDARY_GENRE_GAMEPLAY_INTERLOCK",
-          "A_B_DISTINCT_CREATIVE_MATERIAL_AND_MUTUAL_EFFECT",
-          "AT_EACH_DISCOVERY_REAL_PLAYER_CHOICE_AND_SOURCE_EVIDENCE"
+          "AT_UNBOUNDED_DISCOVERY_PLAYER_EFFECT"
         ],
-        "existingGameReconstructionRequiredWhenApplicable": true,
-        "cThirdMajorAxisEvidenceInvalid": true,
-        "atGeneralSystemAxisEvidenceInvalid": true,
-        "decorativeLoreCannotSatisfy": true,
-        "parallelFeatureStackCannotSatisfy": true,
+        "existingGameDesignRewriteRequired": true,
+        "sourceAndRuntimeProofRequired": true,
         "designGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED",
-        "aAndBOnlyMajorAxes": true,
-        "cIsSubordinateElements": true,
-        "atIsDelveLayerNotSystem": true,
-        "gameCategoryRoutingHintOnly": true,
-        "emergentGenreFinalIdentity": true,
-        "existingGameDesignAndSourceReconstructionFirst": true,
-        "existingGameIdentityRewriteRequired": false,
-        "requiredWhenSeedV5GrammarExists": true,
-        "creativeRoles": [
-          "MAIN_IDENTITY",
-          "A_SYSTEM_PLUS_CREATIVE_SOURCE",
-          "B_SYSTEM_PLUS_CREATIVE_SOURCE",
-          "C_TWO_THEMES_AND_PRIMARY_SECONDARY_GENRES",
-          "AT_UNBOUNDED_DISCOVERY"
-        ],
         "primarySecondaryGenreCausalEffectRequired": true
       }
     }
