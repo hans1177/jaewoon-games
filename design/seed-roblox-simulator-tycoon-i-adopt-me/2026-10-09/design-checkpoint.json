@@ -584,25 +584,35 @@
       "toSystem": "DEFENSIVE_ADAPTATION",
       "trigger": "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
       "stateChange": "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+    },
+    "local_authoring_parts::5ad1194c20b33a29221ca8abae81ebc9f50a6a7bec2cac095e968c180d8dabbc:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "DEFENSIVE_ADAPTATION_REINFLECTION",
+      "stateKeys": [
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0', "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 793370,
-      "lastMs": 31638,
+      "totalMs": 828016,
+      "lastMs": 34646,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:42:35.663Z"
+      "updatedAt": "2026-10-09T14:43:10.311Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:42:35.664Z",
+  "updatedAt": "2026-10-09T14:43:10.311Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2453,7 +2463,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:42:35.664Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:43:10.311Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
