@@ -88,25 +88,43 @@
       "name": "FIGHT_SYSTEM_3",
       "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계됨",
       "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다고 명시됨"
+    },
+    "local_authoring_parts::eea9696803851dc4030a7b16d4812c3acb2a37f0b267f4e0e43cc78c1ad7eb02:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ENTITY_ID",
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS"
+      ],
+      "stateOutputs": [
+        "ACTION_SEQUENCE",
+        "STATE_TRANSITION",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "FIGHT_SYSTEM_4",
+      "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+      "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 890018,
-      "lastMs": 110185,
+      "totalMs": 993198,
+      "lastMs": 103180,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:10:44.782Z"
+      "updatedAt": "2026-10-09T11:12:27.963Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:55:54.572Z",
-  "updatedAt": "2026-10-09T11:10:44.782Z",
+  "updatedAt": "2026-10-09T11:12:27.963Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2305,7 +2323,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:10:44.782Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:12:27.963Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
