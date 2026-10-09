@@ -756,25 +756,270 @@
           "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
         }
       ]
+    },
+    "local_authoring_parts::06fa61f3ee0edaaec1a0ff3299694cd2a46512b1c8cb8cb232c87c69795a783a:multiplayerMode": {
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::298e0937cf9b6daf81944d2e10feb64c40d710ee69a3dfa24d0cc367ff96031f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험/다음 선택",
+        "선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "게임 종료 시 보상 및 재방문 기회 제공"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력",
+            "선택"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정",
+          "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+          "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어의 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등을 유도하여 선택의 중요성을 강조함으로써 게임 진행 동기를 부여함"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+          "playerChoice": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 게임의 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환에 기반하여 보상을 제공하는 데 사용되는 전술",
+          "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "creativeGrammar": {
+        "mainIdentity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "a": {
+          "system": "플레이어 입력 시스템",
+          "material": "즉시 시작 가능한 단순한 터치/스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+          "materialDomain": "게임 초기 설정",
+          "stateChange": "입력 -> 상태변화 -> 보상/위험/다음 선택"
+        },
+        "b": {
+          "system": "세계 상태 관리 시스템",
+          "material": "플레이어의 행동에 따른 세계 상태 변환",
+          "materialDomain": "게임 내 환경 변화",
+          "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+        },
+        "abCausality": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+        "abEvolution": {
+          "aChangesB": "플레이어 선택 → 세계 상태 변환 → 보상/위험/다음 선택",
+          "bChangesA": "세계 상태 변환 → 플레이어 선택 → 보상/위험/다음 선택",
+          "lateGameChange": "게임 종료 시 보상 및 진입 후 재방문 기회 제공"
+        },
+        "materialFusion": {
+          "contrast": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환",
+          "causalBridge": "선택 -> 상태변화 -> 보상/위험/다음 선택의 순차적 연결",
+          "removalConsequence": "보상 피드백 포함하여 선택에 대한 즉각적인 반응 제공"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 입력 시스템의 사용으로 인한 세계 상태 변화",
+          "characterConflict": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등",
+          "playerChoice": "플레이어 선택을 통해 실질적 세계 상태 변화를 유도하는 결정",
+          "worldChange": "세계 상태 변화로 인해 다음 월드 상태와 새로운 선택 가능성을 생성",
+          "nextEvent": "새로운 선택이 이루어지면 다음 사건이 발생하며 게임은 계속 진행됨"
+        },
+        "cThemes": [
+          {
+            "name": "플레이어 선택",
+            "kind": "GENRE",
+            "gameplayEffect": "선택에 따른 세계 상태 변환 및 보상 제공"
+          },
+          {
+            "name": "세계 상태 변환",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어 행동에 따라 새로운 월드 상태 생성"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "게임 초기 설정",
+            "gameplayEffect": "즉시 시작 가능한 단순 입력 및 명확한 점수/거리/짧은 세션 목표"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "세계 상태 관리",
+            "gameplayEffect": "플레이어의 행동에 따른 환경 변화 및 상태 전환"
+          }
+        ],
+        "cGenreInterlock": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+        "cWorldAndGameplayEffect": "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택, 세계 상태 변환 -> 플레이어 선택 -> 보상/위험/다음 선택, 게임 종료 시 보상 및 재방문 기회 제공",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어 입력 시스템의 사용로 인한 세계 상태 변화",
+            "discovery": "게임 시작 시 단순한 터치 또는 스크롤 입력을 통해 세계 상태가 변환되며, 이는 게임의 핵심 재미를 제공하는 데 기여함.",
+            "newChoice": "플레이어 선택에 따라 새로운 월드 상태가 생성되고, 이는 다음 선택에 영향을 미침."
+          },
+          {
+            "clue": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등",
+            "discovery": "세계 상태 변환 과정에서 플레이어와 세계 사이의 갈등이 생기며, 이는 선택의 중요성을 강조함.",
+            "newChoice": "갈등 해결 후 새로운 월드 상태가 생성되어, 이는 다음 선택에 영향을 미침."
+          },
+          {
+            "clue": "보상 및 위험의 유도",
+            "discovery": "플레이어 선택과 세계 상태 변환 모두 보상을 포함하며, 이는 게임 진행의 동기를 부여함.",
+            "newChoice": "보상/위험/다음 선택은 게임의 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+          },
+          {
+            "clue": "재방문 기회 제공 시점",
+            "discovery": "게임 종료 시 보상 및 재방문 기회가 제공됨으로써, 플레이어는 다시 시작할 수 있으며, 이는 게임의 반복 가능한 핵심 루프를 형성함.",
+            "newChoice": "재방문 기회 제공으로 인해, 플레이어는 다시 선택하여 세계 상태와 다음 선택이 바뀌고, 이는 게임의 계속된 진행을 가능하게 함."
+          }
+        ],
+        "delveGrowthRule": "플레이어 선택 → 세계 상태 변환 → 보상/위험/다음 선택, 세계 상태 변환 → 플레이어 선택 → 보상/위험/다음 선택, 게임 종료 시 보상 및 재방문 기회 제공",
+        "finalGameIdentity": "놀이공원 타이쿤은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+      },
+      "playerFantasy": "플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험/다음 선택",
+        "선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "게임 종료 시 보상 및 재방문 기회 제공"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력",
+            "선택"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정",
+          "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+          "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등 유도 및 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "세계 상태 관리",
+          "purpose": "플레이어의 행동에 따른 세계 상태 변환 및 상태 전환",
+          "playerChoice": "세계 상태 변환 과정에서 발생하는 플레이어-세계 갈등을 유도하여 선택의 중요성을 강조함으로써 게임 진행 동기를 부여함"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+          "playerChoice": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 게임의 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 함."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "플레이어 선택",
+            "세계 상태 변환"
+          ],
+          "stateOutputs": [
+            "보상/위험/다음 선택"
+          ],
+          "name": "게임 초기 설정 및 세계 상태 관리 혼합",
+          "purpose": "플레이어 선택과 세계 상태 변환에 기반하여 보상을 제공하는 데 사용되는 전술",
+          "playerChoice": "플레이어의 선택을 통해 세계 상태가 변환되며, 이는 게임 진행의 동기를 부여함으로써 다양한 행동·경로·조합·관계·발견·대응법을 열어 콘텐츠를 다르게 사용하게 함"
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2044960,
-      "lastMs": 101611,
+      "totalMs": 2133891,
+      "lastMs": 88931,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:56:03.338Z"
+      "updatedAt": "2026-10-09T18:57:32.273Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:56:03.341Z",
+  "updatedAt": "2026-10-09T18:57:32.284Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2492,9 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
@@ -2255,8 +2502,16 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:56:03.341Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:57:32.276Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/amusement-tycoon/2026-10-10/design-seed.json",
+    "contentDigest": "40d936b93c4b24521bce3f22ca3ebeb8a21a7a97228a5e666ccccf131cf675eb",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
