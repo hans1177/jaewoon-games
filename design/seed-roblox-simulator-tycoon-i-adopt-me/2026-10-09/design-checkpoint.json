@@ -48,25 +48,40 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+    },
+    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:1": {
+      "id": "CORE-02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "ENEMY_WAVE_COMPLETED",
+        "RESOURCE_GAINED"
+      ],
+      "stateOutputs": [
+        "UPGRADE_AVAILABLE",
+        "NEW_PLACEMENT_OPPORTUNITY"
+      ],
+      "name": "Enemy Wave Completion and Resource Gain",
+      "purpose": "Player evaluates the cost, risk, and reward of completing an enemy wave and gaining resources, then re-evaluates their strategy to open new paths.",
+      "playerChoice": "Reevaluate strategy based on previous costs, risks, and rewards, opening new paths through upgrades or placements."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 193697,
-      "lastMs": 21212,
+      "totalMs": 279168,
+      "lastMs": 85471,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:44:25.457Z"
+      "updatedAt": "2026-10-09T11:45:50.930Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:44:25.457Z",
+  "updatedAt": "2026-10-09T11:45:50.930Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2261,7 +2276,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:44:25.457Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:45:50.930Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
