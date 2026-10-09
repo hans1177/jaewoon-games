@@ -1824,25 +1824,28 @@
     },
     "local_authoring_parts::42e8ef50ce87a2729268961bb248b97853ca08a985b296cc17f86866dcb88c6c:toSystem": {
       "toSystem": "START_STATE → RUN_STATE"
+    },
+    "local_authoring_parts::42e8ef50ce87a2729268961bb248b97853ca08a985b296cc17f86866dcb88c6c:trigger": {
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 124,
-      "successes": 121,
+      "calls": 125,
+      "successes": 122,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8574859,
-      "lastMs": 97989,
+      "totalMs": 8675579,
+      "lastMs": 100720,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:05:36.227Z"
+      "updatedAt": "2026-10-09T05:07:16.948Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T05:05:36.227Z",
+  "updatedAt": "2026-10-09T05:07:16.948Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3996,7 +3999,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:05:36.227Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:07:16.948Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
