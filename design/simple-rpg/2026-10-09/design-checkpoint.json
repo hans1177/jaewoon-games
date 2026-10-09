@@ -406,25 +406,107 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::89ee484be379a4a519aa507e19dc58df01c019ee2f572f28625fd11f67e3ca81:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "GAME_SEED",
+          "toId": "SYSTEM_INTERCONNECTION_1",
+          "stateKeys": [
+            "GAME_STATE",
+            "PLAYER_CHOICE"
+          ],
+          "fromSystem": "GAME_SEED",
+          "toSystem": "SYSTEM_INTERCONNECTION_1",
+          "trigger": "PLAYER_SELECTION_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        {
+          "fromId": "SYSTEM_INTERCONNECTION_1",
+          "toId": "GAME_SEED",
+          "stateKeys": [
+            "NEW_WORLD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "SYSTEM_INTERCONNECTION_1",
+          "toSystem": "GAME_SEED",
+          "trigger": "ACTION_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_GAME"
+        },
+        {
+          "fromId": "GAME_SEED",
+          "toId": "SYSTEM_INTERCONNECTION_2",
+          "stateKeys": [
+            "GAME_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "GAME_SEED",
+          "toSystem": "SYSTEM_INTERCONNECTION_2",
+          "trigger": "ACTION_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        {
+          "fromId": "SYSTEM_INTERCONNECTION_2",
+          "toId": "GAME_SEED",
+          "stateKeys": [
+            "NEW_WORLD_STATE",
+            "PLAYER_CHOICE"
+          ],
+          "fromSystem": "SYSTEM_INTERCONNECTION_2",
+          "toSystem": "GAME_SEED",
+          "trigger": "CHOICE_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_WORLD"
+        },
+        {
+          "fromId": "GAME_SEED",
+          "toId": "SYSTEM_INTERCONNECTION_3",
+          "stateKeys": [
+            "GAME_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "GAME_SEED",
+          "toSystem": "SYSTEM_INTERCONNECTION_3",
+          "trigger": "ACTION_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        {
+          "fromId": "SYSTEM_INTERCONNECTION_3",
+          "toId": "GAME_SEED",
+          "stateKeys": [
+            "NEW_WORLD_STATE",
+            "PLAYER_CHOICE"
+          ],
+          "fromSystem": "SYSTEM_INTERCONNECTION_3",
+          "toSystem": "GAME_SEED",
+          "trigger": "CHOICE_TRIGGER",
+          "stateChange": "STATE_CHANGE_TO_WORLD"
+        }
+      ],
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "UNIFORM",
+        "balanceRules": "BALANCED"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1358299,
-      "lastMs": 300048,
+      "totalMs": 1655471,
+      "lastMs": 297172,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T15:54:22.514Z"
+      "updatedAt": "2026-10-09T15:59:19.687Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:54:22.514Z",
+  "updatedAt": "2026-10-09T15:59:19.687Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2016,7 +2098,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:49:22.457Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:59:19.687Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
