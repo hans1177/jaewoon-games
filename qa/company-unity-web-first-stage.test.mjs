@@ -103,8 +103,8 @@ test('2D source detector uses a single literal word boundary and preserves 3D an
   assert.ok(line.startsWith('const forbidden2dComponents=/\\b(?:Rigidbody2D'));
   assert.ok(line.endsWith(')\\b/u;'));
   assert.equal(line.includes('\\\\b'),false,'double escaping would match a literal backslash instead of C# boundaries');
-  assert.match(script,/walk\\(path\\.join\\(sourceRoot,'Assets'\\)\\)/);
-  assert.match(script,/entry\\.name!==\x27Editor\x27&&entry\\.name!==\x27Tests\x27/);
+  assert.match(script,/walk\(path\.join\(sourceRoot,'Assets'\)\)/);
+  assert.match(script,/entry\.name!=='Editor'&&entry\.name!=='Tests'/);
 });
 
 test('source preflight requires the central existing-game and all-spatial-assets 3D contract',()=>{
