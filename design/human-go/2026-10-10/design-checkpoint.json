@@ -648,25 +648,40 @@
       "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
       "purpose": "To enable the player to interact with the figure and acquire resources in a dynamic environment.",
       "playerChoice": "The player chooses whether to engage with the figure or avoid it based on their current goals and environmental conditions."
+    },
+    "local_authoring_parts::e37f9161cbf315f0e0452bf0df5809f0c4463f546313048896aebf3138f08ec3:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_EXPLODING",
+        "ENVIRONMENT_CHANGED"
+      ],
+      "stateOutputs": [
+        "FIGURE_INTERACTED",
+        "RESOURCE_ACQUIRED"
+      ],
+      "name": "Explore a compact activity space and discover a person, task or collectible opportunity.",
+      "purpose": "To provide players with an immersive experience of exploring a small area, discovering people, tasks, or collectibles, while maintaining social interaction and environmental influence.",
+      "playerChoice": "Players choose whether to engage with the figure or avoid it based on their current goals and the environment's state changes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1957030,
-      "lastMs": 68109,
+      "totalMs": 2028456,
+      "lastMs": 71426,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:15:17.973Z"
+      "updatedAt": "2026-10-09T23:16:29.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:21:32.840Z",
-  "updatedAt": "2026-10-09T23:15:17.973Z",
+  "updatedAt": "2026-10-09T23:16:29.406Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2212,7 +2227,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3
+    "designer_draft_slices::identity-core": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2313,10 +2328,10 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:15:17.973Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:16:29.402Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
