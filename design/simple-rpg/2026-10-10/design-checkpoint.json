@@ -567,25 +567,39 @@
       "name": "보드게임 - 보물 찾기",
       "purpose": "플레이어가 다양한 장소, 적, 시스템과 상호작용하며 새로운 선택의 가능성을 제공하는 게임 규칙",
       "playerChoice": "플레이어는 보물 위치 및 적의 행동 패턴을 선택하여 즉각적인 피드백을 받고 다음 질문으로 이어진다"
+    },
+    "local_authoring_parts::c6d4f403d64db3c93afbacd6259be86d3c953158c048576f97bcb982b5297b82:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "플레이어 선택"
+      ],
+      "stateOutputs": [
+        "보물 위치 변경",
+        "적 행동 변동"
+      ],
+      "name": "보드게임 - 보물 찾기",
+      "purpose": "플레이어의 선택에 따라 보드게임의 보물 위치와 시뮬레이션의 적의 행동 패턴을 동시에 결정하며, 즉각적인 피드백을 제공하여 게임 진행을 촉진합니다.",
+      "playerChoice": "플레이어는 보물 위치 및 적의 전략적 대응 방식을 선택하여, 즉각적인 보상이나 위험/보상이 제공되어 다음 선택에 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1482648,
-      "lastMs": 69644,
+      "totalMs": 1556699,
+      "lastMs": 74051,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:08:45.739Z"
+      "updatedAt": "2026-10-09T21:09:59.791Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:44:02.586Z",
-  "updatedAt": "2026-10-09T21:08:45.739Z",
+  "updatedAt": "2026-10-09T21:09:59.792Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2179,7 +2193,7 @@
     "18174e9c67b388ca517bee8f4c614af03d50b3e0df957542621a8f03e2ef1dcc": true,
     "5284d587a66e7d02194e45181c1b95b02e2b08050fa8910a927441757ed85c21": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:08:45.739Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:09:59.791Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
