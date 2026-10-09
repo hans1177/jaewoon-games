@@ -132,25 +132,39 @@
       "name": "Resource Allocation System",
       "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
       "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
+    },
+    "local_authoring_parts::7b4be175cbe65f923ce339fe89b063e640db4d842ff801e378c35cadc2562a55:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "defender_configuration",
+        "resource_cost"
+      ],
+      "stateOutputs": [
+        "next_defense_plan"
+      ],
+      "name": "Experience-Based Planning System",
+      "purpose": "Experience gain tracking and survival outcome inference",
+      "playerChoice": "Plan for adaptive deployment based on past experiences"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 261796,
-      "lastMs": 34766,
+      "totalMs": 296808,
+      "lastMs": 35012,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:54:05.747Z"
+      "updatedAt": "2026-10-09T17:54:40.767Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T17:54:05.747Z",
+  "updatedAt": "2026-10-09T17:54:40.767Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1823,7 +1837,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:54:05.747Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:54:40.767Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
