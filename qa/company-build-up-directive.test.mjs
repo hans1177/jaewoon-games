@@ -913,7 +913,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
     platformProfiles:{
       ROBLOX:{platform:'ROBLOX'},
       UNITY:{platform:'UNITY',unityWebSpatialPresentation:{
-        dimension:'2.5D',worldDepth:'실제 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 월드에 놓인다',
+        dimension:'3D',worldDepth:'실제 3D 메시 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 월드에 놓인다',
         cameraAndOcclusion:'월드 높이별 카메라 오클루전과 캐릭터 앞뒤 물체 가림을 구현한다',
         lightingAndMaterials:'게임 월드 재질과 방향 광원을 사용해 캐릭터 발밑의 접지 그림자와 배경 높이차를 실제 장면에 구현한다',
         mobileWebglEvidence:'모바일 Unity WebGL 두 클라이언트에서 조명·깊이·공동 전투·재접속을 실행하여 촬영한다'
