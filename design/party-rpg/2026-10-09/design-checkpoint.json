@@ -1314,25 +1314,40 @@
     },
     "local_authoring_parts::431f901ca97b0a38ee1b3ca36bfe389771505c996c43fb1d988fb01f7a20c5db:trigger": {
       "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환"
+    },
+    "local_authoring_parts::431f901ca97b0a38ee1b3ca36bfe389771505c996c43fb1d988fb01f7a20c5db:stateChange": {
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
+    },
+    "local_authoring_parts::f9d3f821423fe63b1886fa7665c8a46eb469f36e50664e6519541565628fe351:systemInterconnections:0": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "{\"from\": \"START_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임 시작 후 목표 설정 및 초기 상태 전환",
+        "playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use\n"
+      ],
+      "fromSystem": "START_GAME",
+      "toSystem": "BOARD_STATE",
+      "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환",
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 134,
-      "successes": 134,
+      "calls": 135,
+      "successes": 135,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10656560,
-      "lastMs": 87750,
+      "totalMs": 10747199,
+      "lastMs": 90639,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:58:05.181Z"
+      "updatedAt": "2026-10-09T04:59:35.822Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T04:58:05.181Z",
+  "updatedAt": "2026-10-09T04:59:35.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3600,7 +3615,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:58:05.181Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:59:35.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
