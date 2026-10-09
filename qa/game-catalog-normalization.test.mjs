@@ -267,13 +267,15 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   assert.equal(vm.runInContext("hasInternalRelease({id:'native-test',unityBuildVerified:true})",context),false);
   assert.equal(vm.runInContext("internalReleaseLinks({id:'native-test',unityBuildUrl:'https://example.test/unverified.apk'}).unity",context),'');
   assert.equal(vm.runInContext("playableWebHref({id:'old',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/old/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'})",context),'');
+  vm.runInContext('platformExposure={unityWebEnabled:true,games:[]}',context);
   const visible=vm.runInContext(`developmentRows({games:[
     {id:'click-only',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/click-only/',ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE'},
     {id:'no-build',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'},
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
-    {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
+    {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'},
+    {id:'verified-unity',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',unityWebAvailable:true,unityWebTestUrl:'/web-games/verified-unity/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'publication classification must not hide real playable builds or expose click-only shells');
+  assert.deepEqual([...visible].sort(),['verified-unity'],'only actual Unity Web links should appear on homepage');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
