@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a:identity": {
       "identity": "Harbor Days은 플레이어가 기존의 점수나 관문을 승계하지 않고, 단순 반복을 거쳐 새로운 행동·경로·관계·발견을 열어주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주제는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 핵심 재미는 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 루프이다. 세계 규칙은 플레이어의 행동과 선택이 MAIN×A×B×C와 같은 인과법칙에 따라 실제 상태 변화로 연결되어 있다."
+    },
+    "local_authoring_parts::e9df9e23a50a9e268cd40c9e972adc622df9d6813338302d5820e6844a3426b1:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Survival, Resource Management, Risk Assessment",
+        "materialDomain": "Real-Time",
+        "stateChange": "Player's action leads to state change of resource allocation and risk assessment."
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Progression, Build Customization, Strategic Planning",
+        "materialDomain": "Dynamic Progression",
+        "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
+      },
+      "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 822944,
-      "lastMs": 222744,
+      "totalMs": 869587,
+      "lastMs": 46643,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:06:08.294Z"
+      "updatedAt": "2026-10-09T18:06:54.939Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:06:08.294Z",
+  "updatedAt": "2026-10-09T18:06:54.939Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1744,7 +1760,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:06:08.294Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:06:54.939Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
