@@ -969,7 +969,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             id=="sunstone-scorpion-blade"? .85f:.65f;
         attackCooldown=Time.time+cooldown;
         if(playerCombatAnimation!=null)playerCombatAnimation.Play("attack");
-        if(playerWeaponTrail!=null && weapon!=null)
+        if(playerWeaponTrail!=null && weapon!=null && !sand && !orb)
         {
             playerWeaponTrail.Clear();
             playerWeaponTrail.emitting=true;
