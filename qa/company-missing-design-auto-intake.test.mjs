@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {autoEnrollMissingDesignSeeds,latestUsableDesign,makeAutoMissingDesignSeed,CANONICAL_NOVEL_GRAMMAR_V4_SOURCE} from '../tools/company-all-games-design-reset.mjs';
+import {autoEnrollMissingDesignSeeds,latestUsableDesign,makeAutoMissingDesignSeed,CANONICAL_NOVEL_GRAMMAR_V5_SOURCE} from '../tools/company-all-games-design-reset.mjs';
 import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 function tempRepo(){
@@ -55,45 +55,50 @@ test('active game without design receives one canonical GAME_SEED intake and is 
   const root=tempRepo();
   try{
     const first=autoEnrollMissingDesignSeeds({root,timestamp:'2026-09-25T00:00:00Z'});
-    assert.deepEqual(first.created,['needs-design']);
-    assert.deepEqual(first.designPresent,['already-designed']);
+    // MAIN 소재만 있는 과거 설계는 재사용하지 않고 새 씨앗을 작성 대상으로 올린다.
+    assert.deepEqual(first.created,['needs-design','already-designed']);
+    assert.deepEqual(first.designPresent,[]);
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
-    assert.equal(state.seeds.length,1);
-    const seed=state.seeds[0];
+    assert.equal(state.seeds.length,2);
+    const seed=state.seeds.find(row=>row.gameId==='needs-design');
     assert.equal(seed.gameId,'needs-design');
     assert.equal(seed.generation,'AUTO_MISSING_DESIGN_INTAKE');
     assert.equal(seed.status,'ACTIVE');
-    assert.equal(validateGameSeed(seed).pass,true);
+    assert.equal(validateGameSeed(seed).pass,false);
+    assert.equal(seed.novelGrammarBackfill.authoringPending,true);
     assert.equal(seed.MULTIPLAYER_DESIGN_MODE,'HYBRID');
-    assert.equal(seed.GAMEPLAY_SKETCH.version,4);
-    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula,'MAIN × A × B × c');
+    assert.equal(seed.GAMEPLAY_SKETCH.version,5);
+    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula,'MAIN × A × B × C');
     assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.formulaSuffix,'+ @');
-    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula,'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @');
+    assert.equal(seed.GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
 
     const second=autoEnrollMissingDesignSeeds({root,timestamp:'2026-09-25T00:01:00Z'});
     assert.equal(second.created.length,0);
-    assert.deepEqual(second.alreadySeeded,['needs-design']);
+    assert.deepEqual(second.alreadySeeded,['needs-design','already-designed']);
+    assert.deepEqual(second.grammarPending,['needs-design','already-designed']);
+    assert.equal(second.changed,0);
     const state2=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
-    assert.equal(state2.seeds.length,1);
+    assert.equal(state2.seeds.length,2);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('targeted canonical intake keeps usable design evidence and creates the required GAME_SEED when missing',()=>{
   const root=tempRepo();
   try{
-    assert.ok(latestUsableDesign(root,'already-designed'));
+    assert.equal(latestUsableDesign(root,'already-designed'),null);
     const result=autoEnrollMissingDesignSeeds({root,gameId:'already-designed'});
     assert.deepEqual(result.created,['already-designed']);
-    assert.deepEqual(result.designPresent,['already-designed']);
+    assert.deepEqual(result.designPresent,[]);
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
     const seed=state.seeds.find(row=>row.gameId==='already-designed');
-    assert.equal(seed.GAMEPLAY_SKETCH.version,4);
-    assert.equal(validateGameSeed(seed).pass,true);
+    assert.equal(seed.GAMEPLAY_SKETCH.version,5);
+    assert.equal(validateGameSeed(seed).pass,false);
+    assert.equal(seed.novelGrammarBackfill.authoringPending,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 
-test('active canonical games upgrade legacy GAMEPLAY_SKETCH to v4 without homepage exposure input',()=>{
+test('active canonical games stage V5 authored grammar without recycling legacy game designs',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'canonical-grammar-backfill-'));
   try{
     const legacyGame={
@@ -113,15 +118,16 @@ test('active canonical games upgrade legacy GAMEPLAY_SKETCH to v4 without homepa
     const result=autoEnrollMissingDesignSeeds({root,timestamp:'2026-10-07T07:00:00Z'});
     assert.deepEqual(result.canonicalTargets,['legacy-active','current-active']);
     assert.deepEqual(result.grammarUpgraded,['legacy-active']);
-    assert.deepEqual(result.grammarAlreadyCurrent,['current-active']);
+    assert.deepEqual(result.grammarAlreadyCurrent,[]);
+    assert.deepEqual(result.grammarPending,['current-active']);
 
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
     const upgraded=state.seeds.find(row=>row.gameId==='legacy-active');
     const untouched=state.seeds.find(row=>row.gameId==='current-active');
-    assert.equal(upgraded.GAMEPLAY_SKETCH.version,4);
-    assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula,'MAIN × A × B × c');
+    assert.equal(upgraded.GAMEPLAY_SKETCH.version,5);
+    assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula,'MAIN × A × B × C');
     assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.formulaSuffix,'+ @');
-    assert.equal(upgraded.novelGrammarBackfill.source,CANONICAL_NOVEL_GRAMMAR_V4_SOURCE);
+    assert.equal(upgraded.novelGrammarBackfill.source,CANONICAL_NOVEL_GRAMMAR_V5_SOURCE);
     assert.equal(upgraded.designEvolutionSignals.at(-1).source,'CANONICAL_GAME_SEED');
     assert.equal(untouched.novelGrammarBackfill,undefined);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -130,5 +136,5 @@ test('active canonical games upgrade legacy GAMEPLAY_SKETCH to v4 without homepa
 test('canonical design intake does not depend on homepage web exposure fields',()=>{
   const source=fs.readFileSync(new URL('../tools/company-all-games-design-reset.mjs',import.meta.url),'utf8');
   assert.doesNotMatch(source,/homepageWebPlayable|homepageWebDesignTarget|CURRENT_HOMEPAGE_WEB_GAME|HOMEPAGE_NOVEL_GRAMMAR/);
-  assert.match(source,/CANONICAL_GAME_SEED_NOVEL_GRAMMAR_V4_20261007/);
+  assert.match(source,/CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009/);
 });
