@@ -1075,25 +1075,54 @@
         "resourceFlow": "자원 획득원·소비처·해금이 새 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시하며 기존 수치 및 보상 의미를 보존",
         "balanceRules": "{\"type\": \"BALANCE\", \"description\": \"자원 배분의 질적 및 양적 균형을 결정하는 플레이 약속.\"}"
       }
+    },
+    "local_authoring_parts::329538754814d226677d835a6ab6ff7c56fb8daf32cc730739fb2dd9b393aad6:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "1",
+          "newGameplay": "전선 상태 변화에 따라 단계적으로 발전하며, 자원 배분 및 전략적 동기 부여의 변화를 기반으로 한 파고들기를 촉진",
+          "systemImpact": "전선 변화에 따른 파고들기 진입 방식 및 자원 배분 결과에 대한 영향"
+        },
+        {
+          "milestone": "2",
+          "newGameplay": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화로 진입하여 실제 세계 상태 변화 생성",
+          "systemImpact": "전략적 동기 부여 확장과 실제 세계 상태 변화의 연관성 강조"
+        },
+        {
+          "milestone": "3",
+          "newGameplay": "전략적 동기 부여의 확장과 실제 세계 상태 변화를 통해 새로운 질문이 생겨나게 한다",
+          "systemImpact": "새로운 질문 생성을 위한 인과적 흐름 설계"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전선 상태 변화에 따른 파고들기 실패 시, 자원 배분 결과와 전략적 동기 부여의 조정 필요",
+          "전략적 동기 부여의 약속된 보상으로 인해 재도전 가능성 존재",
+          "보상 중복 수령 및 진행 유실은 검증됨"
+        ],
+        "retryFlow": "재도전 준비 단서 제공, 정답 미리 노출 방지, 반복 노동 강제 방지",
+        "riskPressure": "전선 파괴 결정의 위험 요소, 자원 배분 선택의 기회비용, 대응법의 중요성 강조",
+        "recoveryRules": "실패 시 자원 분배 재조정, 전략적 동기 부여 재구성, 새 행동/경로/세계관계 도입"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 27,
+      "calls": 32,
+      "successes": 28,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 3961153,
-      "lastMs": 91712,
+      "totalMs": 4092403,
+      "lastMs": 131250,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:39:39.656Z"
+      "updatedAt": "2026-10-09T23:41:50.912Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T23:39:39.661Z",
+  "updatedAt": "2026-10-09T23:41:50.921Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2625,25 +2654,168 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "127136bc8cdaa8f6bffa01ced55a0f6b6e843f9fc19ccb4851eeba5066eb69d2"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: identity-core→signatureSystems-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
     "local_authoring_parts::2874d366d46805cf234d953cab76997151d7fa45c6aa3a0d8a9a2cf859ea592c:signatureSystems:1": 1,
     "designer_draft_slices::identity-core": 1,
-    "local_authoring_parts::25a8f2cccccb6b8f837e574120f4f1f2d6cd7d28f9804fa97c1e032e2ecba4c5:signatureSystems:1": 1
+    "local_authoring_parts::25a8f2cccccb6b8f837e574120f4f1f2d6cd7d28f9804fa97c1e032e2ecba4c5:signatureSystems:1": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "전선 변화에 따라 단계적으로 발전하며, 자원 배분 및 전략적 동기 부여의 변화를 기반으로 한 파고들기를 촉진",
+      "progressionEconomyBalance": {
+        "progressionLoop": "입력: 전선 상태 변화, 자원 배분 결과, 전략적 동기 부여 → 상태변화 발생\n선택: 전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화 → 실제 세계 상태 변화 생성\n보상: 전략적 동기 부여 확장, 새로운 질문 생성",
+        "resourceFlow": "자원 획득원·소비처·해금이 새 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것을 명시하며 기존 수치 및 보상 의미를 보존",
+        "balanceRules": "{\"type\": \"BALANCE\", \"description\": \"자원 배분의 질적 및 양적 균형을 결정하는 플레이 약속.\"}"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1",
+          "newGameplay": "전선 상태 변화에 따라 단계적으로 발전하며, 자원 배분 및 전략적 동기 부여의 변화를 기반으로 한 파고들기를 촉진",
+          "systemImpact": "전선 변화에 따른 파고들기 진입 방식 및 자원 배분 결과에 대한 영향"
+        },
+        {
+          "milestone": "2",
+          "newGameplay": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화로 진입하여 실제 세계 상태 변화 생성",
+          "systemImpact": "전략적 동기 부여 확장과 실제 세계 상태 변화의 연관성 강조"
+        },
+        {
+          "milestone": "3",
+          "newGameplay": "전략적 동기 부여의 확장과 실제 세계 상태 변화를 통해 새로운 질문이 생겨나게 한다",
+          "systemImpact": "새로운 질문 생성을 위한 인과적 흐름 설계"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "전선 상태 변화에 따른 파고들기 실패 시, 자원 배분 결과와 전략적 동기 부여의 조정 필요",
+          "전략적 동기 부여의 약속된 보상으로 인해 재도전 가능성 존재",
+          "보상 중복 수령 및 진행 유실은 검증됨"
+        ],
+        "retryFlow": "재도전 준비 단서 제공, 정답 미리 노출 방지, 반복 노동 강제 방지",
+        "riskPressure": "전선 파괴 결정의 위험 요소, 자원 배분 선택의 기회비용, 대응법의 중요성 강조",
+        "recoveryRules": "실패 시 자원 분배 재조정, 전략적 동기 부여 재구성, 새 행동/경로/세계관계 도입"
+      }
+    }
+  },
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true,
     "329538754814d226677d835a6ab6ff7c56fb8daf32cc730739fb2dd9b393aad6": true,
     "e3991c91af100edb3449564f0fd5cdb1d6b7611be364ff8e8ee43cd3c66c82e3": true,
     "6590538dd7d43630a2db0bc448a401acf5e0771c40df0c9d596698a6a3dd0908": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:39:39.661Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:41:50.915Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
