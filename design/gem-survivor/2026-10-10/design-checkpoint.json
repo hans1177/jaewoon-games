@@ -28,25 +28,77 @@
         "stateChange": "즉각적 보상 및 선택에 따른 상태 변화"
       },
       "abCausality": "양방향 실제 상태 교환은 진입 후 반복 선택과 보상 기반의 상호작용에서 일어난다."
+    },
+    "local_authoring_parts::ff98b1fba18c003696d334103d00117a41ce532400ba2253e130f256e8b6af9f:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+        "bChangesA": "즉각적 보상 및 선택에 따른 상태 변화로 인해 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+        "lateGameChange": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다."
+      },
+      "materialFusion": {
+        "contrast": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+        "causalBridge": "실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와, RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간의 유사성",
+        "removalConsequence": "기존의 주제/장르/시스템은 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 피하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+      },
+      "storyCausalChain": {
+        "cause": "플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임",
+        "characterConflict": "플레이어의 행동과 세계 상태 변화 사이의 갈등",
+        "playerChoice": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+        "worldChange": "실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+        "nextEvent": "플레이어의 선택이 다음 사건에 영향을 미치며, 이는 주제/장르/시스템의 인과적 연결을 강화하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+      }
+    },
+    "local_authoring_parts::327223a4f003224a4bac8ff9c9679570c1d171331615eb8885abdeee5a9810fd:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "보석 생존전은 플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+        "materialDomain": "RPG,생존,액션,수집",
+        "stateChange": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "모바일에서도 즉시 이해되는 입력과 피드백",
+        "materialDomain": "실시간 진행 및 위험 조절",
+        "stateChange": "즉각적 보상 및 선택에 따른 상태 변화"
+      },
+      "abCausality": "양방향 실제 상태 교환은 진입 후 반복 선택과 보상 기반의 상호작용에서 일어난다.",
+      "abEvolution": {
+        "aChangesB": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+        "bChangesA": "즉각적 보상 및 선택에 따른 상태 변화로 인해 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+        "lateGameChange": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다."
+      },
+      "materialFusion": {
+        "contrast": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+        "causalBridge": "실시간 진행 및 위험 조절 과 점수/관문 승계 없이 단순한 입력/피드백으로 이루어진 게임 구조와, RPG식 시스템을 강제하지 않는 ACTION_SURVIVAL_ROGUELITE 장르 간의 유사성",
+        "removalConsequence": "기존의 주제/장르/시스템은 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 피하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+      },
+      "storyCausalChain": {
+        "cause": "플레이어가 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정하는 ACTION_SURVIVAL_ROGUELITE 게임",
+        "characterConflict": "플레이어의 행동과 세계 상태 변화 사이의 갈등",
+        "playerChoice": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의하며, 진입 후 반복 선택과 보상 기반의 상호작용에서 양방향 실제 상태 교환 발생",
+        "worldChange": "실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+        "nextEvent": "플레이어의 선택이 다음 사건에 영향을 미치며, 이는 주제/장르/시스템의 인과적 연결을 강화하고, 발전 규칙에 따라 무한 보상 악용이나 진행 막힘 등을 확인한다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 978515,
-      "lastMs": 115442,
+      "totalMs": 1124283,
+      "lastMs": 145768,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:31:07.986Z"
+      "updatedAt": "2026-10-09T17:33:33.755Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:49.445Z",
-  "updatedAt": "2026-10-09T17:31:07.986Z",
+  "updatedAt": "2026-10-09T17:33:33.756Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +1812,7 @@
     "69d2f7a48bf76da14e13c8f875083ffc9887d0932eda7acdf9554d9c95adfdfa": true,
     "70adc167046cdeb77006a3f5903f6e2d6469af161d45c65df1e002968984b5cd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:31:07.986Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:33:33.756Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
