@@ -2044,25 +2044,43 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "MAIN"
+    },
+    "local_authoring_parts::1aa109345c5eb067614c3f7ebaec1098e55d967c3135e047f80ac3641cd62e3f:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "사용자가 플레이 중간에 발견 가능한 단서를 통해 조합·숙련·탐험 실험을 수행하고, 위험·기회비용을 평가하여 대응법을 결정한다.",
+      "stateChange": "선택 결과가 다음 월드 상태를 바꾸며, 사용자는 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::bce6f3929c81467ed2e5a384021bb9b0df1d84d2d8f365365c58bbe40226db4f:systemInterconnections:3": {
+      "fromId": "RUN_STATE",
+      "toId": "RESULT_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "MAIN",
+      "toSystem": "A",
+      "trigger": "사용자가 플레이 중간에 발견 가능한 단서를 통해 조합·숙련·탐험 실험을 수행하고, 위험·기회비용을 평가하여 대응법을 결정한다.",
+      "stateChange": "선택 결과가 다음 월드 상태를 바꾸며, 사용자는 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환시키며, 결과에 따라 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 154,
-      "successes": 151,
+      "calls": 155,
+      "successes": 152,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10501270,
-      "lastMs": 61004,
+      "totalMs": 10570829,
+      "lastMs": 69559,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T07:24:54.708Z"
+      "updatedAt": "2026-10-09T07:26:04.268Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T07:24:54.708Z",
+  "updatedAt": "2026-10-09T07:26:04.270Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4131,7 +4149,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:24:54.708Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:26:04.270Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
