@@ -552,25 +552,38 @@
       "name": "별길 개척자 - 월드 상태 변환 시스템",
       "purpose": "플레이어의 선택/결정에 따라 월드 상태가 바뀌며, 이 상태 변화는 새로운 문제 생성으로 이어진다.",
       "playerChoice": "플레이어는 매 레벨 시작 시 명확한 목표, 제한된 이동, 장애물 또는 시각적 퀴즈를 설정하며, 선택에 따라 월드 상태가 바뀌고, 이 상태 변화는 새로운 문제 생성으로 이어지며, 재방문 과정에서는 월드 상태 변화와 새로운 문제 해결이 필요해짐."
+    },
+    "local_authoring_parts::3cd0742576f418d2a68e1db5318f47239b3f8ad791e3b0f29e81eaecceda8d21:signatureSystems:1": {
+      "id": "signatureSystems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 문제 생성"
+      ],
+      "name": "별길 개척자 - 월드 상태 변환 시스템",
+      "purpose": "플레이어의 선택에 따라 월드 상태가 바뀌며, 이 상태 변화는 새로운 문제 생성으로 이어진다.",
+      "playerChoice": "선택 시스템에서 월드 상태 변화로 인해 새로운 갈등 발생 및 문제 해결 필요함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1606976,
-      "lastMs": 105012,
+      "totalMs": 1705796,
+      "lastMs": 98820,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:39:07.594Z"
+      "updatedAt": "2026-10-09T18:40:46.416Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:12:20.577Z",
-  "updatedAt": "2026-10-09T18:39:07.594Z",
+  "updatedAt": "2026-10-09T18:40:46.416Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2059,7 +2072,7 @@
     "7152648a695f3a3e80288876175094f85558d9bb2f4d50069bf247448899fc60": true,
     "91fc9141695613a090c370f3ef17ba68f342004feac6994305acfa09aacbcf7b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:39:07.594Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:40:46.416Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
