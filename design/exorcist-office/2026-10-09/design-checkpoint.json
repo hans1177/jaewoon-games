@@ -421,25 +421,42 @@
     },
     "local_authoring_parts::70ff1232f25f492fa2a94636323a8b059fee32833bd5fcc513333fb19986b02e:trigger": {
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "local_authoring_parts::70ff1232f25f492fa2a94636323a8b059fee32833bd5fcc513333fb19986b02e:stateChange": {
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
+    },
+    "local_authoring_parts::7bdf5bc118659870bf7e75785ba6a1dd6555e5a8e2863430eebdd2f8d8f9bbeb:systemInterconnections:0": {
+      "fromId": "CORE_FUN_01",
+      "toId": "NEXT_WORLD_STATE",
+      "stateKeys": [
+        "START_INPUT",
+        "RUN_INPUT",
+        "RUN_RESULT",
+        "NEXT_WORLD_STATE"
+      ],
+      "fromSystem": "CORE_FUN_01",
+      "toSystem": "NEXT_WORLD_STATE",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "플레이어는 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 542049,
-      "lastMs": 31963,
+      "totalMs": 575579,
+      "lastMs": 33530,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:59:15.488Z"
+      "updatedAt": "2026-10-09T15:59:49.019Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:59:15.488Z",
+  "updatedAt": "2026-10-09T15:59:49.020Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2087,7 +2104,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:59:15.488Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:59:49.020Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
