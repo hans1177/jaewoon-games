@@ -97,25 +97,35 @@
       },
       "playerFantasy": "플레이어는 작은 섬에서 나무와 식량을 직접 모으고 주민을 고용해 자원을 확보하며 병사를 모집하고 5개 거점을 점령하는 협동 왕국 성장을 거쳐 힘을 얻는 역할을 수행한다. 이 과정에서는 생명력을 증가시키며 무한히 파고드는 발견과 숙련된 선택을 통해 진입자에게 새로운 기회를 제공한다.",
       "coreFun": "직접 채집 → 주민 고용 → 병사 모집 → 거점 선택 → 자동전투 → 점령 보상의 순차적 플레이 단계에 따라 게임이 진행된다. 각 단계에서 즉각적인 결과와 관찰 가능한 상태 변화가 발생하며, 최종적으로 협동 지원으로 강한 거점 공략을 시작하게 된다. 이 과정은 생존·성장·협력의 세 가지 핵심 요소를 포함하며, 플레이어는 무한히 파고드는 발견, 숙련된 선택, 재방문 계층 형성을 경험하게 된다.', "
+    },
+    "local_authoring_parts::91d8f251429e52318ea9e61014112c4bea0387e50a9f45b59a7f42da037f7b54:coreLoop": {
+      "coreLoop": [
+        "직접 채집",
+        "주민 자동화",
+        "병영 강화",
+        "거점 선택",
+        "자동전투",
+        "협동 지원"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296423,
-      "lastMs": 296423,
+      "totalMs": 342325,
+      "lastMs": 45902,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:00:02.241Z"
+      "updatedAt": "2026-10-09T20:00:48.145Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:55:05.739Z",
-  "updatedAt": "2026-10-09T20:00:02.242Z",
+  "updatedAt": "2026-10-09T20:00:48.145Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1525,7 +1535,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:00:02.241Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:00:48.145Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
