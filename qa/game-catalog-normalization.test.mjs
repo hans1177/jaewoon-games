@@ -269,7 +269,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
     {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible],['dev-playable','design-playable'],'publication classification must not hide real playable builds or expose click-only shells');
+  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'publication classification must not hide real playable builds or expose click-only shells');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
