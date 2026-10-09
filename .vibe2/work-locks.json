@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ab9mo9",
+      "worker": "vibe2",
+      "taskId": "internal-motion-barghest-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/barghest/init.luau"
+      ],
+      "baseSha": "5b17a46b826dc675b2c21e34b919cc76c2da589a",
+      "runId": "37973219726",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-09T19:21:51.966Z",
+      "expiresAt": "2026-10-09T20:06:51.966Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-barghest-walk-v1"
+      ]
+    }
+  ]
 }
