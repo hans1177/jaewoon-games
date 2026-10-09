@@ -11,109 +11,114 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "61d865a75c656e7dd65b00b5a8f4b318d04fc844614af819425edb89d8baaff4",
+  "fingerprint": "184ab9cf485bca1be3b6ad256db563c5dec07ae931b6a8b06fabb7e96e26b8c1",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "ed6e12058279b81d8ff4da2e4abb35ce72a2a514654a6434c03e9a7be1177f45",
+  "contentDigest": "210a81487a70b2426ca05b2aca208199a4e5a6c02309f1a0977267dbb1cef1fe",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
-    "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져들고, 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 이 과정에서 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
-    "coreFun": "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
+    "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다. 게임은 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 통해 플레이어가 즉각적인 상태 변화를 일으키며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 플레이어는 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다. 각 선택은 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다. 게임은 기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다. 캐릭터의 이동, 채집, 제작, 전투, 퀘스트, 연구소 스토리의 인과와 저장 의미는 바뀌지 않고 피드백 품질을 높인다. Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환은 모바일에서도 끊김 없이 연결되어야 한다.",
+    "playerFantasy": "플레이어는 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현된다. 플레이어는 주로 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 통해 즉각적인 상태 변화를 일으켜, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 플레이어는 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다. 각 선택은 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+    "coreFun": "플레이어는 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현되며, 주요 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이라는 중심 행동을 통해 즉각적인 상태 변화를 일으킴으로써 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 플레이어는 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다. 각 선택은 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
     "coreLoop": [
-      "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다.",
-      "선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
-      "주변의 적·아이템·NPC와 플레이어의 선택이 서로 영향을 미치며, 시스템 내에서 조건별로 변화된 대안과 결과를 경험하게 된다."
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     ],
     "signatureSystems": [
       {
         "id": "signatureSystems[0]",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "environment",
-          "playerAction"
+          "ENTITY_ID",
+          "PLAYER_FRICTION",
+          "INFORMATION_HIERARCHY",
+          "CONTEXTUAL_ACTIONS"
         ],
         "stateOutputs": [
-          "newBehavior",
-          "newRelationship",
-          "reward",
-          "risk"
+          "ACTION_SEQUENCE",
+          "STATE_TRANSITION",
+          "PROGRESSION_CHOICE"
         ],
-        "name": "worldRuleSystem",
-        "purpose": "enforce causal relationships between player actions and environmental responses",
-        "playerChoice": "select new behavior, relationship, reward, or risk based on current state and rules"
+        "name": "FIGHT_SYSTEM",
+        "purpose": "Player's core survival action and progression mechanism",
+        "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure, collect rewards, upgrade builds, survive waves/bosses, and convert results into progression choices with contextual actions and friction management for immersive gameplay experience."
       },
       {
         "id": "signatureSystems[1]",
         "grammarRole": "A",
         "stateInputs": [
-          "worldState",
-          "playerAction"
+          "ENTITY_ID",
+          "PLAYER_FRICTION",
+          "INFORMATION_HIERARCHY",
+          "CONTEXTUAL_ACTIONS"
         ],
         "stateOutputs": [
-          "newBehavior",
-          "newRelationship",
-          "reward",
-          "risk"
+          "ACTION_SEQUENCE",
+          "STATE_TRANSITION",
+          "PROGRESSION_CHOICE"
         ],
-        "name": "worldRuleSystem2",
-        "purpose": "Establishes the core rules governing the interaction between the world and player actions.",
-        "playerChoice": "Player selects new behaviors, relationships, rewards, and risks based on current world state and previous actions."
+        "name": "FIGHT_SYSTEM_2",
+        "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+        "playerChoice": "플레이어는 주요 행동 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 통해 즉각적인 상태 변화를 일으키며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
       },
       {
         "id": "signatureSystems[2]",
         "grammarRole": "B",
         "stateInputs": [
-          "worldState",
-          "playerAction"
+          "ENTITY_ID",
+          "PLAYER_FRICTION",
+          "INFORMATION_HIERARCHY",
+          "CONTEXTUAL_ACTIONS"
         ],
         "stateOutputs": [
-          "newBehavior",
-          "newRelationship",
-          "reward",
-          "risk"
+          "ACTION_SEQUENCE",
+          "STATE_TRANSITION",
+          "PROGRESSION_CHOICE"
         ],
-        "name": "worldRuleSystem3",
-        "purpose": "기존 세계 인과법칙에 기반하여 새로운 행동, 관계, 보상 및 위험을 생성하는 시스템",
-        "playerChoice": "플레이어의 선택에 따라 시스템 내에서 조건별로 변화된 대안과 결과를 경험하게 된다"
+        "name": "FIGHT_SYSTEM_3",
+        "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계됨",
+        "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다고 명시됨"
       },
       {
         "id": "signatureSystems[3]",
         "grammarRole": "c",
         "stateInputs": [
-          "worldState",
-          "playerAction"
+          "ENTITY_ID",
+          "PLAYER_FRICTION",
+          "INFORMATION_HIERARCHY",
+          "CONTEXTUAL_ACTIONS"
         ],
         "stateOutputs": [
-          "newBehavior",
-          "newRelationship",
-          "reward",
-          "risk"
+          "ACTION_SEQUENCE",
+          "STATE_TRANSITION",
+          "PROGRESSION_CHOICE"
         ],
-        "name": "worldRuleSystem4",
-        "purpose": "설명 가능한 세계 인과법칙",
-        "playerChoice": "플레이어가 주변의 적·아이템·NPC와 선택에 따라 새로운 행동·관계·보상을 생성해 나간다."
+        "name": "FIGHT_SYSTEM_4",
+        "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+        "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
       },
       {
         "id": "signatureSystems[4]",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "worldState",
-          "playerAction"
+          "ENTITY_ID",
+          "PLAYER_FRICTION",
+          "INFORMATION_HIERARCHY",
+          "CONTEXTUAL_ACTIONS"
         ],
         "stateOutputs": [
-          "newBehavior",
-          "newRelationship",
-          "reward",
-          "risk"
+          "ACTION_SEQUENCE",
+          "STATE_TRANSITION",
+          "PROGRESSION_CHOICE"
         ],
-        "name": "worldRuleSystem5",
-        "purpose": "설계된 세계 인과법칙의 확장 및 시스템 내 상태 교환",
-        "playerChoice": "플레이어가 주변의 적·아이템·NPC와의 관계를 선택하여 새로운 행동·관계·보상·위험을 생성하게 된다."
+        "name": "FIGHT_SYSTEM_5",
+        "purpose": "플레이어가 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+        "playerChoice": "플레이어는 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
       }
     ],
     "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-09T04:09:48.660Z"
+  "updatedAt": "2026-10-09T11:15:29.685Z"
 }
