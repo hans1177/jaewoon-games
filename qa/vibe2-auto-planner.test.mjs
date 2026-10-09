@@ -2020,7 +2020,10 @@ test('grandfathered Roblox progress remains independent while existing Unity Web
     }]}
   );
   assert.equal(projects.some(row=>row.gameId==='cozy-island'&&row.firstStageUnityWeb===true),true);
-  assert.equal(projects.some(row=>row.gameId==='cozy-island'&&row.engine==='roblox'),true);
+  const roblox=projects.find(row=>row.gameId==='cozy-island'&&row.engine==='roblox');
+  assert.ok(roblox,'existing Roblox F0 source must remain independently eligible');
+  assert.equal(roblox.queueCurrentStep,'TARGET_PLATFORM_RUNTIME_FOUNDATION');
+  assert.equal(roblox.companyDevelopmentQueueSource,true);
 });
 
 
