@@ -104,25 +104,40 @@
         "입력: 퀘스트/보상 선택, 상태변화: 플레이어 경험/레벨 스토리 상승, 보상: 주제/역사/철학 선택",
         "입력: 주제/역사/철학 선택, 상태변화: 전투 스타일 및 인식 변화, 보상: 새로운 전략 경로"
       ]
+    },
+    "local_authoring_parts::d032e8b40339731dfc7ea17a1e7ff6ba106fd8bdeffc5e9ab39c438c1efac725:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "무기/속성 선택",
+        "퀘스트/보상 선택"
+      ],
+      "stateOutputs": [
+        "실시간 속도/강화 기능 증가",
+        "플레이어 경험/레벨 스토리 상승"
+      ],
+      "name": "생존 전략 교환 시스템",
+      "purpose": "플레이어는 무기/속성 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을, 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하여 새로운 전략 경로를 연다",
+      "playerChoice": "A/B 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 239924,
-      "lastMs": 38051,
+      "totalMs": 282577,
+      "lastMs": 42653,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:28:25.449Z"
+      "updatedAt": "2026-10-09T21:29:08.104Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T21:28:25.449Z",
+  "updatedAt": "2026-10-09T21:29:08.104Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1847,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:28:25.449Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:29:08.104Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
