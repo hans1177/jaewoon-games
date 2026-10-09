@@ -91,25 +91,194 @@
       "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
       "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
       "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
+    },
+    "local_authoring_parts::8bb5d573096f56b8e0d4ac0ae8b786bb07bd7a8ffed92afb7acbb997edb98c73:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE_DELVE",
+      "purpose": "게임 내에서 시그니처 세계 규칙과 관련된 복잡한 상태 변환 및 재방문 기능을 수행합니다.",
+      "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
+    },
+    "local_authoring_parts::4f0cdb7b7fc8966660ea3ff5a5554c3b4cab9c25bcaa3bc62511547bb0cfd77e:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "POINT_SCORE_CONNECTION",
+          "purpose": "시그니처 세계 규칙인 점수, 거리, 선택의 연결에 기반하여 이루어진다.",
+          "playerChoice": "점수/거리/세션 목표 설정 후 세계 상태 변경 및 다음 선택 결정"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION",
+          "purpose": "설명: 입력 및 선택에 따라 세션 길이와 보상을 연결하는 주요 시스템.",
+          "playerChoice": "세션 길이 설정 후, 보상 또는 위험을 선택하여 다음 상태로 전환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
+          "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
+          "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE_DELVE",
+          "purpose": "게임 내에서 시그니처 세계 규칙과 관련된 복잡한 상태 변환 및 재방문 기능을 수행합니다.",
+          "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::8f34bb037c9b4f6ffb22f9ff517edf9c39dc955e005143d3ef937a0e70f0a6e2:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 1 손 tap 또는 swipe",
+        "점수/거리/세션 목표 설정",
+        "세계 상태 변경 및 다음 선택 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "POINT_SCORE_CONNECTION",
+          "purpose": "시그니처 세계 규칙인 점수, 거리, 선택의 연결에 기반하여 이루어진다.",
+          "playerChoice": "점수/거리/세션 목표 설정 후 세계 상태 변경 및 다음 선택 결정"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION",
+          "purpose": "설명: 입력 및 선택에 따라 세션 길이와 보상을 연결하는 주요 시스템.",
+          "playerChoice": "세션 길이 설정 후, 보상 또는 위험을 선택하여 다음 상태로 전환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE",
+          "purpose": "게임 내에서 입력/선택을 통해 시간 및 보상을 동시에 증가시키며, 플레이어에게 새로운 선택 기회를 제공하는 보조 요소.",
+          "playerChoice": "시간 또는 보상의 양이 동시에 증가하여, 다음 선택에 영향을 미치는 방식으로 진행된다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE"
+          ],
+          "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_ADVANTAGE_DELVE",
+          "purpose": "게임 내에서 시그니처 세계 규칙과 관련된 복잡한 상태 변환 및 재방문 기능을 수행합니다.",
+          "playerChoice": "플레이어는 입력 후 선택을 통해 게임의 진입 단계와 점수, 거리, 세션 목표에 대한 이해를 바탕으로 다음 선택을 결정해야 합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 472151,
-      "lastMs": 38427,
+      "totalMs": 714440,
+      "lastMs": 242289,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:24:40.020Z"
+      "updatedAt": "2026-10-09T11:28:42.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:24:40.020Z",
+  "updatedAt": "2026-10-09T11:28:42.313Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2195,7 +2364,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:24:40.020Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:28:42.313Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
