@@ -1764,25 +1764,51 @@
       "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
       "trigger": "RUN_REWARDS",
       "stateChange": "PROGRESSION_CHOICE"
+    },
+    "local_authoring_parts::add45a36296e5abe39f740efa4d0a8fc9ceaf05192faaaadd36ed11e1173fe45:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM"
+    },
+    "local_authoring_parts::add45a36296e5abe39f740efa4d0a8fc9ceaf05192faaaadd36ed11e1173fe45:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS",
+      "stateChange": "PROGRESSION_CHOICE"
+    },
+    "local_authoring_parts::6f03ee4984bcddbafea67ff4578cae6ba4c0a8fa7f9d48c75a01ed4f8945c471:systemInterconnections:1": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS",
+      "stateChange": "PROGRESSION_CHOICE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 178,
-      "successes": 178,
+      "calls": 180,
+      "successes": 180,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 10400073,
-      "lastMs": 32598,
+      "totalMs": 10468670,
+      "lastMs": 33832,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:45:20.546Z"
+      "updatedAt": "2026-10-09T06:46:29.153Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T06:45:20.548Z",
+  "updatedAt": "2026-10-09T06:46:29.155Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4127,7 +4153,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:45:20.548Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:46:29.155Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
