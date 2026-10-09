@@ -11,16 +11,16 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "31da879648445110474dc750c6c22d237a07dfab01b82f73b640110a29dfd3b7",
+  "fingerprint": "771855d80920f33d08f9955f72807c67bd7ca5802b646cd02d8aad7302fc9c94",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "aa288a459ca8a04577d8cd422579d361da52b6607dafce00808f963cb8275120",
+  "contentDigest": "871093c6deb458547102b78473746de269714dd7d87b68cb120225d012e020c3",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.\n\n플레이어는 Read the current border pressure and choose one territory objective.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n영토전쟁에서 플레이어는 Read the current border pressure and choose one territory objective.을 주체가 되어 세계 상태와 다음 선택을 바꾼다.\n\nRead the current border pressure and choose one territory objective.는 영토전쟁의 핵심 행동이며, 이는 단일 대축인 MAIN으로부터 두 대축 A/B 및 보조 요소 c와 파고들기 @에 연결되어 상호작용하며, 각각의 상태 변화와 위험/보상이 서로 영향을 줄 수 있다.",
-    "playerFantasy": "영토전쟁에서 플레이어는 Read the current border pressure and choose one territory objective.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n플레이어는 영토의 경계 압박을 읽고, 그에 따라 지역 특성과 전선 변화를 결합하여 새로운 전략을 세워야 한다.\n\n이 과정에서는 단일 대축 MAIN을 중심으로 두 대축 A/B 및 보조 요소 c와 파고들기 @가 서로 영향을 주며, 각각의 상태 변화와 위험/보상이 서로 연결되어 있다.",
-    "coreFun": "{\"type\": \"ACTION\", \"name\": \"Read the current border pressure and choose one territory objective\",\n\"description\": \"플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다.\",\n\"stateChanges\": [\n \"경계 압박 상태가 변형됨\",\n \"주체 역할이 변경됨\",\n \"전략 및 경로 선택이 확정됨\"\n],\n\"reward\": \"새로운 전략, 경로, 성장 가능성이 열린다\",\n\"risk\": \"기존 전략의 한계나 자원 부족 가능성\",\n\"nextAction\": \"Commit units or resources to attack, reinforce or expand economy\"}",
+    "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력 읽고 영토 목표 선택, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+    "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+    "coreFun": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
     "coreLoop": [
       "Read the current border pressure and choose one territory objective.",
       "Commit units or resources to attack, reinforce or expand economy.",
@@ -28,87 +28,87 @@
     ],
     "signatureSystems": [
       {
-        "id": "SIGNATURE_SYSTEM_0",
+        "id": "territory-war-signature-systems-0",
         "grammarRole": "MAIN",
         "stateInputs": [
           "border_pressure",
           "territory_objective"
         ],
         "stateOutputs": [
-          "new_strategy",
-          "updated_front_line",
-          "expanded_resources"
+          "units_deployed",
+          "resources_allocated",
+          "front_line_shifted"
         ],
-        "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
-        "purpose": "Player chooses territory objective based on current border pressure and regional characteristics.",
-        "playerChoice": "Read the current border pressure, combine it with regional features, and select a new strategy that aligns with the front line and resource allocation goals."
+        "name": "Border Pressure Dynamics System",
+        "purpose": "Establishes causal relationships between player decisions and game state changes in a single-defense strategy game.",
+        "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and territory objective selection criteria."
       },
       {
-        "id": "SIGNATURE_SYSTEM_1",
+        "id": "territory-war-signature-systems-1",
         "grammarRole": "A",
         "stateInputs": [
           "border_pressure",
-          "territory_characteristic"
+          "territory_objective"
         ],
         "stateOutputs": [
-          "new_strategy",
-          "updated_front_line",
-          "expanded_resources"
+          "units_deployed",
+          "resources_allocated",
+          "front_line_shifted"
         ],
-        "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
-        "purpose": "Read the current border pressure and choose one territory objective based on regional characteristics",
-        "playerChoice": "Select a territory objective that aligns with regional features and strategic goals in real-time gameplay progression and decision-making processes within the game's core loop system."
+        "name": "Territory Expansion Dynamics System",
+        "purpose": "Plays a central role in the game's core mechanics, governing how players read border pressure and choose territory objectives, while also influencing resource deployment, economic expansion, and strategic front-line shifts.",
+        "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and chosen territory objective, with outcomes that reflect both immediate consequences and long-term strategic implications."
       },
       {
-        "id": "SIGNATURE_SYSTEM_2",
+        "id": "territory-war-signature-systems-2",
         "grammarRole": "B",
         "stateInputs": [
           "border_pressure",
-          "territory_characteristic"
+          "territory_objective"
         ],
         "stateOutputs": [
-          "new_strategy",
-          "updated_front_line",
-          "expanded_resources"
+          "units_deployed",
+          "resources_allocated",
+          "front_line_shifted"
         ],
-        "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
-        "purpose": "플레이어는 현재 경계 압박과 지역 특성을 결합하여 새로운 전략을 세운다.",
-        "playerChoice": "영토의 경계 압박을 읽고, 그에 따라 지역 특성과 전선 변화를 결합하여 새로운 전략을 결정한다."
+        "name": "Territory Expansion and Adaptation System",
+        "purpose": "Adapt to border pressure by deploying units, allocating resources, and shifting the front line.",
+        "playerChoice": "Deploy units based on territory objective, allocate resources strategically, shift front line according to new conditions."
       },
       {
-        "id": "SIGNATURE_SYSTEM_3",
+        "id": "territory-war-signature-systems-3",
         "grammarRole": "c",
         "stateInputs": [
           "border_pressure",
-          "territory_characteristic"
+          "territory_objective"
         ],
         "stateOutputs": [
-          "new_strategy",
-          "updated_front_line",
-          "expanded_resources"
+          "units_deployed",
+          "resources_allocated",
+          "front_line_shifted"
         ],
-        "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
-        "purpose": "Read the current border pressure and choose one territory characteristic to guide strategy and front line adaptation.",
-        "playerChoice": "Select a territory characteristic that reflects the current border pressure and aligns with long-term goals and resource allocation strategies."
+        "name": "Territory Expansion and Adaptation Depth System",
+        "purpose": "Adapt the next plan to the new front line while maintaining territorial expansion depth",
+        "playerChoice": "Choose a territory objective that reflects both current border pressure and long-term strategic goals, with adaptive resource allocation and unit deployment based on evolving battlefield conditions and player mastery of gameplay mechanics."
       },
       {
-        "id": "SIGNATURE_SYSTEM_4",
+        "id": "territory-war-signature-systems-4",
         "grammarRole": "DELVE",
         "stateInputs": [
           "border_pressure",
-          "territory_characteristic"
+          "territory_objective"
         ],
         "stateOutputs": [
-          "new_strategy",
-          "updated_front_line",
-          "expanded_resources"
+          "units_deployed",
+          "resources_allocated",
+          "front_line_shifted"
         ],
-        "name": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
-        "purpose": "Read border pressure and choose territory characteristic to drive strategy and front line adaptation",
-        "playerChoice": "Select territory characteristic that aligns with current border pressure and strategic goals"
+        "name": "Territory Expansion and Adaptation Depth System",
+        "purpose": "Resolve territorial change and adapt to new front line through depth of expansion and adaptation",
+        "playerChoice": "Choose expansion strategy that balances immediate gain with long-term stability and flexibility"
       }
     ],
     "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-09T06:17:38.809Z"
+  "updatedAt": "2026-10-09T08:35:25.404Z"
 }

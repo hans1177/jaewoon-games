@@ -287,25 +287,211 @@
           "playerChoice": "Choose expansion strategy that balances immediate gain with long-term stability and flexibility"
         }
       ]
+    },
+    "local_authoring_parts::6e796451b1b5c04291984081ff3051a2e0ea171d1fa7ce5235766335f3b4fa5b:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::cec26b121e4ca1d801ccdd905538e82d51fd767c7462976f449a3b49e1f1cf49:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Read the current border pressure and choose one territory objective.",
+        "Commit units or resources to attack, reinforce or expand economy.",
+        "Resolve the territorial change and adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "territory-war-signature-systems-0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Border Pressure Dynamics System",
+          "purpose": "Establishes causal relationships between player decisions and game state changes in a single-defense strategy game.",
+          "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and territory objective selection criteria."
+        },
+        {
+          "id": "territory-war-signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion Dynamics System",
+          "purpose": "Plays a central role in the game's core mechanics, governing how players read border pressure and choose territory objectives, while also influencing resource deployment, economic expansion, and strategic front-line shifts.",
+          "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and chosen territory objective, with outcomes that reflect both immediate consequences and long-term strategic implications."
+        },
+        {
+          "id": "territory-war-signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation System",
+          "purpose": "Adapt to border pressure by deploying units, allocating resources, and shifting the front line.",
+          "playerChoice": "Deploy units based on territory objective, allocate resources strategically, shift front line according to new conditions."
+        },
+        {
+          "id": "territory-war-signature-systems-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation Depth System",
+          "purpose": "Adapt the next plan to the new front line while maintaining territorial expansion depth",
+          "playerChoice": "Choose a territory objective that reflects both current border pressure and long-term strategic goals, with adaptive resource allocation and unit deployment based on evolving battlefield conditions and player mastery of gameplay mechanics."
+        },
+        {
+          "id": "territory-war-signature-systems-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation Depth System",
+          "purpose": "Resolve territorial change and adapt to new front line through depth of expansion and adaptation",
+          "playerChoice": "Choose expansion strategy that balances immediate gain with long-term stability and flexibility"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력 읽고 영토 목표 선택, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+      "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+      "coreFun": "영토전쟁에서 플레이어는 현재 경계 압력 읽고 영토 목표 선택을 숙련하며, 단순 행동에서 성장 가능성이 실제 플레이에 열린다. 시그니처 세계 규칙은 MAIN/A/B/c/@ 역할로 기존 인과법칙과 상태 교환을 거친다. 영토전쟁의 핵심 재미는 최우선이며, 복잡한 용어나 반복은 깊이로 대체된다.",
+      "coreLoop": [
+        "Read the current border pressure and choose one territory objective.",
+        "Commit units or resources to attack, reinforce or expand economy.",
+        "Resolve the territorial change and adapt the next plan to the new front line."
+      ],
+      "signatureSystems": [
+        {
+          "id": "territory-war-signature-systems-0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Border Pressure Dynamics System",
+          "purpose": "Establishes causal relationships between player decisions and game state changes in a single-defense strategy game.",
+          "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and territory objective selection criteria."
+        },
+        {
+          "id": "territory-war-signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion Dynamics System",
+          "purpose": "Plays a central role in the game's core mechanics, governing how players read border pressure and choose territory objectives, while also influencing resource deployment, economic expansion, and strategic front-line shifts.",
+          "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and chosen territory objective, with outcomes that reflect both immediate consequences and long-term strategic implications."
+        },
+        {
+          "id": "territory-war-signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation System",
+          "purpose": "Adapt to border pressure by deploying units, allocating resources, and shifting the front line.",
+          "playerChoice": "Deploy units based on territory objective, allocate resources strategically, shift front line according to new conditions."
+        },
+        {
+          "id": "territory-war-signature-systems-3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation Depth System",
+          "purpose": "Adapt the next plan to the new front line while maintaining territorial expansion depth",
+          "playerChoice": "Choose a territory objective that reflects both current border pressure and long-term strategic goals, with adaptive resource allocation and unit deployment based on evolving battlefield conditions and player mastery of gameplay mechanics."
+        },
+        {
+          "id": "territory-war-signature-systems-4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "border_pressure",
+            "territory_objective"
+          ],
+          "stateOutputs": [
+            "units_deployed",
+            "resources_allocated",
+            "front_line_shifted"
+          ],
+          "name": "Territory Expansion and Adaptation Depth System",
+          "purpose": "Resolve territorial change and adapt to new front line through depth of expansion and adaptation",
+          "playerChoice": "Choose expansion strategy that balances immediate gain with long-term stability and flexibility"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 11,
+      "successes": 10,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 800348,
-      "lastMs": 68342,
-      "lastError": null,
-      "updatedAt": "2026-10-09T08:34:28.396Z"
+      "totalMs": 1157442,
+      "lastMs": 300100,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-09T08:40:25.505Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:34:28.398Z",
+  "updatedAt": "2026-10-09T08:40:25.505Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2325,12 +2511,25 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:34:28.398Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:35:25.397Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/territory-war/2026-10-09/design-seed.json",
+    "contentDigest": "871093c6deb458547102b78473746de269714dd7d87b68cb120225d012e020c3",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
+  "localAuthoringSplits": {
+    "9accac6c28b19cf6507d2a8679a973122174e11be8adbcfe1d838c1115f782f3": true
+  }
 }
