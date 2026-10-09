@@ -1099,25 +1099,28 @@
     },
     "local_authoring_parts::d79b705723215b4e2d1b81bebe0b301317ec861f7d68752e4a73b9d2acb19e16:fromSystem": {
       "fromSystem": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+    },
+    "local_authoring_parts::d79b705723215b4e2d1b81bebe0b301317ec861f7d68752e4a73b9d2acb19e16:toSystem": {
+      "toSystem": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 102,
-      "successes": 102,
+      "calls": 103,
+      "successes": 103,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8560482,
-      "lastMs": 64120,
+      "totalMs": 8624016,
+      "lastMs": 63534,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:31:23.785Z"
+      "updatedAt": "2026-10-09T06:32:27.320Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T06:31:23.785Z",
+  "updatedAt": "2026-10-09T06:32:27.320Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3629,7 +3632,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:31:23.785Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:32:27.320Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
