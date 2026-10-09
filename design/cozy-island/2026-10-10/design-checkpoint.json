@@ -80,25 +80,53 @@
         "worldChange": "협동 지원으로 강한 거점 공략 → 협동 지원으로 강한 거점 확장",
         "nextEvent": "협동 지원으로 강한 거점 확장 → 왕국 정복 시작"
       }
+    },
+    "local_authoring_parts::1edea492c994c1b845a6215c8e238a21b674e4749e503f33b7fd9bb7f6c3ac78:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "인물",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 주민 자동화에 참여하여 생산성 향상"
+        },
+        {
+          "name": "예술",
+          "kind": "MATERIAL",
+          "gameplayEffect": "주민 고용 시 예술 소품으로 역할 식별"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "협동 지원 게임",
+          "gameplayEffect": "다른 플레이어의 병력과 전투력을 합산하여 강화"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "자원 거점 확보",
+          "gameplayEffect": "5개 서로 다른 적과 보상을 가진 거점을 순차적으로 점령"
+        }
+      ],
+      "cGenreInterlock": "인물/예술 <-> 자원 거점 확보, 각각 다른 메인 장르(ROLE=PRIMARY)와 보조 장르(ROLE=SECONDARY)",
+      "cWorldAndGameplayEffect": "직접 채집 -> 주민 고용 -> 병영 강화 -> 다음 자원 거점 선택 -> 보이는 자동전투 -> 협동 지원로 강한 거점 공략, 모든 상태 변화는 실제 세계에 반영됨, 인물·대사·장면은 복제되지 않음, 규칙은 일관되어야 하며 보상은 발견과 이해에 맞게 약속됨, 진행은 OPENING → DEVELOPMENT → RESOLUTION 순서로 확장됨, 실패·중단·재접속·저장은 원본 의미를 보존함, 씨앗: '작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임' 최초 사례: '나무·식량 직접 채집', '주민 고용과 벌목/농업 자동화', '병영 강화와 본사 모집', '다음 자원 거점 선택', '보이는 자동전투와 점령 보상', '협동 지원으로 강한 거점 공략'"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 834559,
-      "lastMs": 71260,
+      "totalMs": 947596,
+      "lastMs": 113037,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:21:27.484Z"
+      "updatedAt": "2026-10-09T17:23:20.524Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:07:32.737Z",
-  "updatedAt": "2026-10-09T17:21:27.486Z",
+  "updatedAt": "2026-10-09T17:23:20.524Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1512,7 +1540,7 @@
     "e8df166333f3847595a0c47cae7984b1d70ae5bf3ca41b1cdd0380008fe4f10b": true,
     "984307432df21cc9fa083075c9bf0d8802739226c685109d1498f04260e7075f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:21:27.486Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:23:20.524Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
