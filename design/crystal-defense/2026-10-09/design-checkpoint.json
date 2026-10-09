@@ -1031,25 +1031,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP"
+    },
+    "local_authoring_parts::af71f4ecb4273b26c591eea622186223d28a37defc32a0bd1925b6f43b0029c1:toSystem,trigger,stateChange": {
+      "toSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE 상태 교환"
+    },
+    "local_authoring_parts::9a62e871cd5ab9ef02b988df138700e2b7e79883e2ce91c76d4d57cb87c05101:systemInterconnections:1": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "toSystem": "GAME_SYSTEM_BASELINE_016_CHARACTERS_MINIMUM_16_CHARS_MAXIMIZE_24_CHARS_OVERALL_DEFAULT_16_CHARS_MINIMUM_24_CHARS_TRIGGER_STATE_CHANGE_24_CHARS_MINIMUM_24_CHARS_TRIGGER_NAME_ATTACKP",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE 상태 교환"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 72,
-      "successes": 72,
+      "calls": 73,
+      "successes": 73,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6677613,
-      "lastMs": 96495,
+      "totalMs": 6771119,
+      "lastMs": 93506,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:48:06.843Z"
+      "updatedAt": "2026-10-09T02:49:40.351Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T02:48:06.843Z",
+  "updatedAt": "2026-10-09T02:49:40.353Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3385,7 +3403,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:48:06.843Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:49:40.352Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
