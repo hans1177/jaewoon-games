@@ -28,25 +28,77 @@
         "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
       },
       "abCausality": "A <-> B: The state of the game is exchanged between the two systems through the player's choices."
+    },
+    "local_authoring_parts::2a75df34c4d4e9ed3e9340d41a744f461890378c581e0beed94b56b6ea6b0190:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "A → B: Player makes a choice that directly affects the state of system A, leading to changes in system B.",
+        "bChangesA": "B → A: Player makes a choice that directly affects the state of system B, leading to changes in system A.",
+        "lateGameChange": "Late game, when systems are deeply interdependent, choices can have cascading effects across multiple systems."
+      },
+      "materialFusion": {
+        "contrast": "Contrast between action and survival elements in gameplay.",
+        "causalBridge": "The causal bridge connects player choices to game states through the interaction of systems.",
+        "removalConsequence": "Removing one system may disrupt the causal chain if it is essential for maintaining balance or progression."
+      },
+      "storyCausalChain": {
+        "cause": "Player's initial decision to fight through an escalating horde",
+        "characterConflict": "The conflict between survival pressure and the desire for progress",
+        "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build",
+        "worldChange": "The transformation of the run result into the next progression choice",
+        "nextEvent": "The emergence of new play options based on the previous event"
+      }
+    },
+    "local_authoring_parts::33f5c4c6c66aade4759df590b5c44a5d9685ab3417625cf0653a13567a4a2aef:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Combine upgrades into a stronger build, survive harder waves or bosses, then convert the run result into the next progression choice.",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT -> STATECHANGE -> OUTPUT"
+      },
+      "abCausality": "A <-> B: The state of the game is exchanged between the two systems through the player's choices.",
+      "abEvolution": {
+        "aChangesB": "A → B: Player makes a choice that directly affects the state of system A, leading to changes in system B.",
+        "bChangesA": "B → A: Player makes a choice that directly affects the state of system B, leading to changes in system A.",
+        "lateGameChange": "Late game, when systems are deeply interdependent, choices can have cascading effects across multiple systems."
+      },
+      "materialFusion": {
+        "contrast": "Contrast between action and survival elements in gameplay.",
+        "causalBridge": "The causal bridge connects player choices to game states through the interaction of systems.",
+        "removalConsequence": "Removing one system may disrupt the causal chain if it is essential for maintaining balance or progression."
+      },
+      "storyCausalChain": {
+        "cause": "Player's initial decision to fight through an escalating horde",
+        "characterConflict": "The conflict between survival pressure and the desire for progress",
+        "playerChoice": "Choosing upgrades, weapons, or skills that alter the current build",
+        "worldChange": "The transformation of the run result into the next progression choice",
+        "nextEvent": "The emergence of new play options based on the previous event"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 916153,
-      "lastMs": 58822,
+      "totalMs": 1032713,
+      "lastMs": 116560,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:11:08.643Z"
+      "updatedAt": "2026-10-09T18:13:05.204Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:55:52.465Z",
-  "updatedAt": "2026-10-09T18:11:08.643Z",
+  "updatedAt": "2026-10-09T18:13:05.205Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +1812,7 @@
     "7ddd6db310705a52524c49e80bc574706e8dfa1f3e91a2689409ebb09c1bc05c": true,
     "84ed9a64cbb624a1c81e9398dad730523e10241283f1e712ea3c843152614be8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:11:08.643Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:13:05.205Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
