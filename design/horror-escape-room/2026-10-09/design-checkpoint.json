@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::40e2a349a986a1de550a7673c5227d07d5f417464c574a18b36e173148a52832:identity": {
+      "identity": "인간4명과 몬스터4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임 정체성: 감염 전환, 인물 전환, 스킬 사용, 이벤트 발생, 결과 결정. 플레이어 역할: 감염 대응, 전투, 정화, 스킬 활용, 이벤트 관리. 시그니처 세계: 감염, 정화, 전쟁, 이벤트, 결과. 기능 약속: 감염 공격, 정화, 스킬 사용, 이벤트 발생, 결과 결정."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 110054,
+      "lastMs": 110054,
+      "lastError": null,
+      "updatedAt": "2026-10-09T08:30:54.266Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:29:03.964Z",
-  "updatedAt": "2026-10-09T08:29:04.041Z",
+  "updatedAt": "2026-10-09T08:30:54.266Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -726,5 +742,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T08:30:54.266Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
