@@ -19,25 +19,33 @@
     "local_authoring_parts::a9f8389c3b568f7296a7d41b9f11e4dc3c169cb7cb112d013789e4f3a8ec35ef:identity,playerFantasy": {
       "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
       "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져 있는 상태로 이동하며, 주변의 적들과 전투를 수행하면서 기존 세계 규칙과 새로운 선택 결과를 바꾼다. 이 과정에서는 캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서가 실제 게임 내에서 영향을 미친다."
+    },
+    "local_authoring_parts::a9f8389c3b568f7296a7d41b9f11e4dc3c169cb7cb112d013789e4f3a8ec35ef:coreFun": {
+      "coreFun": "플레이어는 환경에 빠져 있는 상태로 이동하며, 주변의 적들과 전투를 수행하면서 기존 세계 규칙과 새로운 선택 결과를 바꾼다. 이 과정에서는 캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서가 실제 게임 내에서 영향을 미친다."
+    },
+    "local_authoring_parts::293d2dd8c982c5ed52fcbd147a5f80f70dd7de26f09aa82dab026c65db2d526f:identity,playerFantasy,coreFun": {
+      "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+      "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져 있는 상태로 이동하며, 주변의 적들과 전투를 수행하면서 기존 세계 규칙과 새로운 선택 결과를 바꾼다. 이 과정에서는 캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서가 실제 게임 내에서 영향을 미친다.",
+      "coreFun": "플레이어는 환경에 빠져 있는 상태로 이동하며, 주변의 적들과 전투를 수행하면서 기존 세계 규칙과 새로운 선택 결과를 바꾼다. 이 과정에서는 캐릭터의 행동 패턴, 위험·보상, 그리고 다음 선택의 순서가 실제 게임 내에서 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 104834,
-      "lastMs": 14692,
+      "totalMs": 120499,
+      "lastMs": 15665,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:53:42.278Z"
+      "updatedAt": "2026-10-09T06:53:57.945Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T06:51:57.236Z",
-  "updatedAt": "2026-10-09T06:53:42.279Z",
+  "updatedAt": "2026-10-09T06:53:57.946Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T06:53:42.279Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:53:57.946Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
