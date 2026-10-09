@@ -62,25 +62,38 @@
       "name": "저주 인과법칙",
       "purpose": "세계에 저주를 주는 존재로, 생태·저주·정치·기억 중 하나로 구체화된 플레이어 생성 시스템입니다.",
       "playerChoice": "플레이어가 특정 지역의 저주를 선택하여 세계 상태를 변화시킵니다. 이 선택은 새로운 경로, 위험 및 보상을 제공합니다."
+    },
+    "local_authoring_parts::db90b86aa91a21a02196321a286e39178bb43fb12293e24b5727446a9623177d:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "world_state"
+      ],
+      "stateOutputs": [
+        "new_world_state"
+      ],
+      "name": "진행 인과법칙",
+      "purpose": "기존 진행 기반의 상태 변화를 유도하며, 플레이어의 숙련 및 대응에 따라 새로운 경로와 관계가 생성된다.",
+      "playerChoice": "플레이어는 현재 진행 단계에서 선택 결과를 통해 세계의 상태 변화를 직접적으로 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 748826,
-      "lastMs": 94962,
+      "totalMs": 841330,
+      "lastMs": 92504,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:46:47.131Z"
+      "updatedAt": "2026-10-09T12:48:19.637Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:34:18.260Z",
-  "updatedAt": "2026-10-09T12:46:47.131Z",
+  "updatedAt": "2026-10-09T12:48:19.637Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,7 +2170,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:46:47.131Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:48:19.637Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
