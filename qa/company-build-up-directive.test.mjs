@@ -1247,6 +1247,48 @@ test('large authored game content volume keeps all entries without cloning a ful
   assert.ok(prompt.length<75000,'content index should not repeat the full implementation blueprint for every item');
 });
 
+
+test('volume index retains every approved item beyond existing compact context budgets',()=>{
+  const approved=design();
+  approved.content.coreLoop=Array.from({length:15},(_,index)=>'단계 '+index);
+  approved.content.signatureSystems=Array.from({length:18},(_,index)=>({
+    id:'system-'+index,name:'게임 시스템 '+index,
+    purpose:'현재 상태로 동작',playerChoice:'현재 선택 보존'
+  }));
+  approved.content.systemInterconnections=Array.from({length:27},(_,index)=>({
+    fromId:'system-'+(index%18),toId:'system-'+((index+1)%18),
+    fromSystem:'시스템 '+index,toSystem:'시스템 '+(index+1),
+    trigger:'기존 상태 전환',stateChange:'연결된 상태 전환'
+  }));
+  approved.content.contentExpansionPlan=Array.from({length:14},(_,index)=>({
+    milestone:'구간 '+index,newGameplay:'기존 조건에 연결된 구간',
+    systemImpact:'기존 목표 이어가기'
+  }));
+  approved.content.implementationTraceability=Array.from({length:20},(_,index)=>({
+    designElement:'게임 시스템 '+index,responsibleSystem:'기존 상태 책임',
+    validationEvidence:'실제 행동 결과와 재접속 확인'
+  }));
+  const owner='roblox-games/volume-full/server/Game.server.luau';
+  const sourceObservation={sourceRoot:'roblox-games/volume-full',sourceTreeFingerprint:'f'.repeat(64),
+    fileCount:1,sourceAnchors:[],topFiles:[{file:owner,score:10}],observations:[],
+    signals:{combat:1,progression:1,content:1,save:1}};
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'volume-full',platform:'ROBLOX',designRecord:approved,
+    sourceObservation,responsibleFiles:[owner]
+  });
+  const volume=directive.designedGameVolume;
+  assert.equal(volume.authoredCounts.CORE_LOOP,15);
+  assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,18);
+  assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,27);
+  assert.equal(volume.authoredCounts.CONTENT_MILESTONE,14);
+  assert.equal(volume.authoredCounts.IMPLEMENTATION_TRACE,20);
+  assert.equal(volume.items.find(row=>row.ref==='CORE_LOOP[14]').title,'단계 14');
+  assert.equal(volume.items.find(row=>row.ref==='IMPLEMENTATION_TRACE[19]').title,'게임 시스템 19');
+  assert.ok(volume.items.every(row=>row.implementationVerified===false&&row.runtimeVerified===false));
+  assert.match(directivePrompt(directive),/CONTENT_MILESTONE\\[13\\]/);
+  assert.match(directivePrompt(directive),/IMPLEMENTATION_TRACE\\[19\\]/);
+});
+
 test('preservation-only approved design keeps all volume entries but forbids new gameplay',()=>{
   const approved=design();
   approved.content.preservationContract={

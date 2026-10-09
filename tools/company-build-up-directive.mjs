@@ -1873,7 +1873,20 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,design,platform,sourceRoot,sourceObservation:source,
     responsibleFiles:topFiles,repoRoot,multiplayerRequired
   });
-  const designedGameVolume=buildDesignedGameVolume({design,source,safeDesignlessMode});
+  // 전체 볼륨 인덱스는 기존 요약 컨텍스트의 8~24개 제한에 의해 설계 항목이 누락되지 않게 한다.
+  // 다른 코딩/계획 컨텍스트의 기존 요약 예산과 원본 게임 규칙은 그대로 유지한다.
+  const authoredDesign=designRecord?.content&&typeof designRecord.content==='object'
+    ?designRecord.content:(designRecord||{});
+  const designedGameVolume=buildDesignedGameVolume({
+    design:{
+      ...design,
+      coreLoop:Array.isArray(authoredDesign.coreLoop)?authoredDesign.coreLoop:design.coreLoop,
+      signatureSystems:Array.isArray(authoredDesign.signatureSystems)?authoredDesign.signatureSystems:design.signatureSystems,
+      systemInterconnections:Array.isArray(authoredDesign.systemInterconnections)?authoredDesign.systemInterconnections:design.systemInterconnections,
+      contentExpansionPlan:Array.isArray(authoredDesign.contentExpansionPlan)?authoredDesign.contentExpansionPlan:design.contentExpansionPlan,
+      implementationTraceability:Array.isArray(authoredDesign.implementationTraceability)?authoredDesign.implementationTraceability:design.implementationTraceability
+    },source,safeDesignlessMode
+  });
   const robloxNativeExecution=Object.freeze({
     version:1,
     required:true,
