@@ -50,7 +50,9 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 5
     concurrency:
-      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}
+      # Admission is read-only; run-scoped groups avoid GitHub replacing pending batch wakes.
+      # The existing oldest-active-batch scan still dedupes the actual planning action.
+      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
