@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
+import {runOwnerAllGamesDesignReset} from '../tools/company-all-games-design-reset.mjs';
 
 test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
   const queue=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
@@ -85,6 +86,9 @@ test('design reset runtime checkout tolerates dirty CI-only Unity LFS files with
     pass('commit','-qm','main asset');
     pass('checkout','-qb','company-runtime');
     pass('rm','-q',filename);
+    const runtimeState=JSON.stringify({seeds:[{gameId:'x',status:'ACTIVE',stage:'F4',saveSchemaVersion:3}]});
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),runtimeState);
+    pass('add','game-seed-state.json');
     pass('commit','-qm','runtime state only');
     pass('checkout','-q','main');
     fs.writeFileSync(asset,'modified CI checkout asset');
@@ -92,6 +96,35 @@ test('design reset runtime checkout tolerates dirty CI-only Unity LFS files with
     pass('checkout','-f','-B','owner-all-games-design-reset-runtime','company-runtime');
     assert.equal(fs.existsSync(asset),false);
     assert.equal(pass('branch','--show-current').stdout.trim(),'owner-all-games-design-reset-runtime');
+    assert.equal(pass('show',`main:${filename}`).stdout,'committed Unity asset','canonical main asset must remain in Git history');
+    assert.equal(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'),runtimeState,'runtime state must survive branch change');
+    assert.equal(pass('show','company-runtime:game-seed-state.json').stdout,runtimeState,'runtime ref content must remain unchanged');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('all-games reset preserves active developed games and existing seed save metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-developed-'));
+  try{
+    const catalog={games:[
+      {id:'design-game',name:'Design',productionClass:'DESIGN_ONLY'},
+      {id:'developed-game',name:'Developed',productionClass:'DEVELOPMENT_CONFIRMED'}
+    ]};
+    const target={gameId:'design-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',saveSchemaVersion:7,checkpoint:{wave:5}};
+    const developed={gameId:'developed-game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',development:{stage:'F4'},saveSchemaVersion:9,checkpoint:{wave:19}};
+    const removed={gameId:'removed-game',status:'ACTIVE',productionClass:'DESIGN_ONLY'};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({version:2,seeds:[target,developed,removed]}));
+    const result=runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T00:00:00.000Z'});
+    assert.equal(result.count,1);
+    const updated=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
+    const find=id=>updated.seeds.find(seed=>seed.gameId===id);
+    assert.equal(find('design-game').productionClass,'DESIGN_ONLY');
+    assert.equal(find('design-game').ownerResetRevision,'OWNER-ALL-GAMES-DESIGN-RESET-20260917-1');
+    assert.equal(find('design-game').saveSchemaVersion,7);
+    assert.deepEqual(find('design-game').checkpoint,{wave:5});
+    assert.deepEqual(find('developed-game'),developed,'active developed game and F0-F9 stage must not be touched');
+    assert.equal(find('removed-game').status,'PAUSED','only noncatalog state may be paused');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')),catalog);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
