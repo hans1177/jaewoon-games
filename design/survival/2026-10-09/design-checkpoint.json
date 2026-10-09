@@ -1651,25 +1651,40 @@
     },
     "local_authoring_parts::76d00b140d66c86e41b2e6e0f139c085e644cd2f7aaf532ad99ccf9b9e17cdc1:trigger": {
       "trigger": "RUN_REWARDS 및 UPGRADES의 입력 상태가 시스템 내에서 정확히 반영되어야 하며, 이로 인해 SURVIVAL_01_SIGNATURE_SYSTEM의 OUTPUT인 PROGRESSION_CHOICE가 SURVIVAL_02_SIGNATURE_SYSTEM의 INPUT으로 전달된다."
+    },
+    "local_authoring_parts::76d00b140d66c86e41b2e6e0f139c085e644cd2f7aaf532ad99ccf9b9e17cdc1:stateChange": {
+      "stateChange": "RUN_REWARDS 및 UPGRADES의 입력 상태가 시스템 내에서 정확히 반영되어야 하며, 이로 인해 SURVIVAL_01_SIGNATURE_SYSTEM의 OUTPUT인 PROGRESSION_CHOICE가 SURVIVAL_02_SIGNATURE_SYSTEM의 INPUT으로 전달된다."
+    },
+    "local_authoring_parts::9dccd6dea3fa9c494339b2f823e34a6a7afa126afebb7cf52d2b5fdf4b0ea584:systemInterconnections:2": {
+      "fromId": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toId": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "stateKeys": [
+        "RUN_REWARDS",
+        "UPGRADES"
+      ],
+      "fromSystem": "SURVIVAL_01_SIGNATURE_SYSTEM",
+      "toSystem": "SURVIVAL_02_SIGNATURE_SYSTEM",
+      "trigger": "RUN_REWARDS 및 UPGRADES의 입력 상태가 시스템 내에서 정확히 반영되어야 하며, 이로 인해 SURVIVAL_01_SIGNATURE_SYSTEM의 OUTPUT인 PROGRESSION_CHOICE가 SURVIVAL_02_SIGNATURE_SYSTEM의 INPUT으로 전달된다.",
+      "stateChange": "RUN_REWARDS 및 UPGRADES의 입력 상태가 시스템 내에서 정확히 반영되어야 하며, 이로 인해 SURVIVAL_01_SIGNATURE_SYSTEM의 OUTPUT인 PROGRESSION_CHOICE가 SURVIVAL_02_SIGNATURE_SYSTEM의 INPUT으로 전달된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 161,
-      "successes": 161,
+      "calls": 162,
+      "successes": 162,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9847547,
-      "lastMs": 34427,
+      "totalMs": 9881283,
+      "lastMs": 33736,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:36:07.970Z"
+      "updatedAt": "2026-10-09T06:36:41.711Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:43:07.484Z",
-  "updatedAt": "2026-10-09T06:36:07.970Z",
+  "updatedAt": "2026-10-09T06:36:41.713Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4184,7 +4199,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:36:07.970Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:36:41.713Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
