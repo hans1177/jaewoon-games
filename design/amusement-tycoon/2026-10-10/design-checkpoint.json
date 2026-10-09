@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
       "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표를 가진 주체로 존재하며, 세계 상태와 다음 선택을 바꾼다. 이는 핵심 재미와 시스템 연결의 최초 단계이며, 진입부터 성장까지 다양한 행동·경로·조합·관계·발견·대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다."
+    },
+    "local_authoring_parts::76a72d384caca896d302ea0d935e5413158f4d6eb42f7fadb4e291b74f2bd930:coreLoop": {
+      "coreLoop": [
+        "입력 -> 상태변화 -> 보상/위험/다음 선택",
+        "선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "게임 종료 시 보상 및 재방문 기회 제공"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1445950,
-      "lastMs": 112442,
+      "totalMs": 1539928,
+      "lastMs": 93978,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:46:04.314Z"
+      "updatedAt": "2026-10-09T18:47:38.296Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:46:04.316Z",
+  "updatedAt": "2026-10-09T18:47:38.296Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2031,7 +2038,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:46:04.316Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:47:38.296Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
