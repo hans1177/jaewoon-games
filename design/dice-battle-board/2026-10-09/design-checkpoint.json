@@ -242,25 +242,181 @@
           "playerChoice": "Player selects a new puzzle pattern or theme to expand the game world."
         }
       ]
+    },
+    "local_authoring_parts::24c15b00f3247a33317b0a4ad431bf3d99af80837d822963a49f2a1ee512b8b1:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::5794d99813c57ecfaec83b8bf4162d4212c22c5b3954b5bb842e6eb86c3ef81e:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Player's initial board setup and state evolution through puzzle-solving.",
+          "playerChoice": "Set a clear goal, limited moves, obstacles, or a visible puzzle constraint on the board."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "게임 내 상태 전환 메커니즘을 정의하여 플레이어 선택에 따른 월드 상태 변환을 관리합니다.",
+          "playerChoice": "보드 상태를 새로운 패턴 또는 장애물로 교체하여 게임을 진행하게 됩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System B",
+          "purpose": "게임 내 주사위 전투 보드 레벨에서 선택 결과가 다음 월드 상태로 인해 게임을 진행하게 되는 시스템입니다.",
+          "playerChoice": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 합니다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 됩니다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공합니다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성되었습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Facilitates content expansion through discovery, mastery, and reiteration.",
+          "playerChoice": "Discover new content, master existing elements, or revisit previously explored areas to deepen gameplay experience."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Content Expansion System - DELVE",
+          "purpose": "Facilitates content expansion through emergent gameplay and player choice.",
+          "playerChoice": "Player selects a new puzzle pattern or theme to expand the game world."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "주사위 전투 보드은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n플레이어는 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서 플레이어는 단순한 패턴 탐색보다는 진입/진출/성공/실패의 순환적인 구조와 함께 위험/보상의 균형을 유지하며 게임을 진행하게 된다.\n\n게임의 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
+      "playerFantasy": "플레이어는 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 된다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
+      "coreFun": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 된다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "Player's initial board setup and state evolution through puzzle-solving.",
+          "playerChoice": "Set a clear goal, limited moves, obstacles, or a visible puzzle constraint on the board."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System",
+          "purpose": "게임 내 상태 전환 메커니즘을 정의하여 플레이어 선택에 따른 월드 상태 변환을 관리합니다.",
+          "playerChoice": "보드 상태를 새로운 패턴 또는 장애물로 교체하여 게임을 진행하게 됩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "GAME_OVER"
+          ],
+          "name": "Board State Transition System B",
+          "purpose": "게임 내 주사위 전투 보드 레벨에서 선택 결과가 다음 월드 상태로 인해 게임을 진행하게 되는 시스템입니다.",
+          "playerChoice": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 합니다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 됩니다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공합니다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성되었습니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Content Expansion System",
+          "purpose": "Facilitates content expansion through discovery, mastery, and reiteration.",
+          "playerChoice": "Discover new content, master existing elements, or revisit previously explored areas to deepen gameplay experience."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION"
+          ],
+          "name": "Content Expansion System - DELVE",
+          "purpose": "Facilitates content expansion through emergent gameplay and player choice.",
+          "playerChoice": "Player selects a new puzzle pattern or theme to expand the game world."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 783587,
-      "lastMs": 93146,
+      "totalMs": 869485,
+      "lastMs": 85898,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:57:26.325Z"
+      "updatedAt": "2026-10-09T15:58:52.226Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:44:22.707Z",
-  "updatedAt": "2026-10-09T15:57:26.327Z",
+  "updatedAt": "2026-10-09T15:58:52.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1741,12 +1897,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:57:26.327Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:58:52.228Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/dice-battle-board/2026-10-09/design-seed.json",
+    "contentDigest": "ee80108de32f389b5f016b7ff995230305a13197d6d4ecdab5a03ae682489d03",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }

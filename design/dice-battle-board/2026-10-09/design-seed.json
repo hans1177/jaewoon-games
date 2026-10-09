@@ -11,16 +11,16 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "82e5b687aa984f18ed4d1970a6a85218d4efa8b0ea9c400de2bdc162a683b388",
+  "fingerprint": "d8028ea437c61258c727cd6659ffabb300079ecf7a8637bff56c4437d478b7f8",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "292fbf2130ad7f26262faffea660e2169daac620c7905d25c4a3b082ebe5f4e3",
+  "contentDigest": "ee80108de32f389b5f016b7ff995230305a13197d6d4ecdab5a03ae682489d03",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "주사위 전투 보드는 시작 단계부터 재설계하여 핵심 재미와 시스템 연결을 확정하는 게임입니다. 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-    "playerFantasy": "주사위 전투 보드에서 플레이어는 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-    "coreFun": "주사위 전투 보드는 플레이어가 주사위로 레벨을 시작하며, 선택 결과가 다음 월드 상태에 영향을 미칩니다. 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
+    "identity": "주사위 전투 보드은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n플레이어는 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서 플레이어는 단순한 패턴 탐색보다는 진입/진출/성공/실패의 순환적인 구조와 함께 위험/보상의 균형을 유지하며 게임을 진행하게 된다.\n\n게임의 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
+    "playerFantasy": "플레이어는 주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 된다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
+    "coreFun": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 한다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 된다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공한다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성하였다.",
     "coreLoop": [
       "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
@@ -31,89 +31,69 @@
         "id": "SIGNATURE_SYSTEM_0",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "LEVEL_START",
-          "MATCH_RESULT",
-          "GOAL_CLEAR"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_BOARD_PATTERN",
-          "REWARD_GAINED",
-          "NEW_LEVEL_COMPLETED"
+          "GAME_OVER"
         ],
-        "name": "BOARD_STATE_TRANSITION",
-        "purpose": "플레이어가 주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
-        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과로 다음 월드 상태와 접근 가능성을 바꾼다."
+        "name": "Board State Transition System",
+        "purpose": "Player's initial board setup and state evolution through puzzle-solving.",
+        "playerChoice": "Set a clear goal, limited moves, obstacles, or a visible puzzle constraint on the board."
       },
       {
         "id": "SIGNATURE_SYSTEM_1",
         "grammarRole": "A",
         "stateInputs": [
-          "BOARD_PATTERN",
-          "MATCH_RESULT",
-          "GOAL_CLEAR"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_BOARD_PATTERN",
-          "REWARD_GAINED",
-          "NEW_LEVEL_COMPLETED"
+          "GAME_OVER"
         ],
-        "name": "BOARD_STATE_TRANSITION",
-        "purpose": "Main axis: Main action is to transition between board patterns, reward gains, and level completion.",
-        "playerChoice": "Select a new board pattern, gain rewards, or complete the level to proceed to the next stage."
+        "name": "Board State Transition System",
+        "purpose": "게임 내 상태 전환 메커니즘을 정의하여 플레이어 선택에 따른 월드 상태 변환을 관리합니다.",
+        "playerChoice": "보드 상태를 새로운 패턴 또는 장애물로 교체하여 게임을 진행하게 됩니다."
       },
       {
         "id": "SIGNATURE_SYSTEM_2",
         "grammarRole": "B",
         "stateInputs": [
-          "BOARD_PATTERN",
-          "MATCH_RESULT",
-          "GOAL_CLEAR"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_BOARD_PATTERN",
-          "REWARD_GAINED",
-          "NEW_LEVEL_COMPLETED"
+          "GAME_OVER"
         ],
-        "name": "BOARD_STATE_TRANSITION_B",
-        "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
-        "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
+        "name": "Board State Transition System B",
+        "purpose": "게임 내 주사위 전투 보드 레벨에서 선택 결과가 다음 월드 상태로 인해 게임을 진행하게 되는 시스템입니다.",
+        "playerChoice": "주사위로 시작하는 보드 레벨에서 명확한 목표를 설정하여 제한된 이동 횟수, 장애물, 또는 다른 시각적 퀴즈를 해결해야 합니다. 이 과정에서는 진입/진출/성공/실패의 순환적인 구조와 위험/보상의 균형을 유지하며 게임을 진행하게 됩니다. 핵심 재미는 '선택 → 상태 변화 → 보상'이라는 반복 루프에 기반하고 있으며, 각 단계에서는 새로운 행동 조합이나 관계를 열어 다양한 플레이 경험을 제공합니다. 특히, 콘텐츠의 복잡성을 줄이고 즉시 피드백이 가능한 인터페이스를 설계함으로써 모바일 플랫폼에서도 직관적으로 이해할 수 있도록 구성되었습니다."
       },
       {
         "id": "SIGNATURE_SYSTEM_3",
         "grammarRole": "c",
         "stateInputs": [
-          "BOARD_PATTERN",
-          "MATCH_RESULT",
-          "GOAL_CLEAR"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_BOARD_PATTERN",
-          "REWARD_GAINED",
-          "NEW_LEVEL_COMPLETED"
+          "CONTENT_EXPANSION"
         ],
-        "name": "BOARD_STATE_TRANSITION_C",
-        "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
-        "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
+        "name": "Content Expansion System",
+        "purpose": "Facilitates content expansion through discovery, mastery, and reiteration.",
+        "playerChoice": "Discover new content, master existing elements, or revisit previously explored areas to deepen gameplay experience."
       },
       {
         "id": "SIGNATURE_SYSTEM_4",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "BOARD_PATTERN",
-          "MATCH_RESULT",
-          "GOAL_CLEAR"
+          "BOARD_STATE"
         ],
         "stateOutputs": [
-          "NEXT_BOARD_PATTERN",
-          "REWARD_GAINED",
-          "NEW_LEVEL_COMPLETED"
+          "CONTENT_EXPANSION"
         ],
-        "name": "BOARD_STATE_TRANSITION_DELVE",
-        "purpose": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다.",
-        "playerChoice": "게임 내에서 선택 결과가 다음 월드 상태에 영향을 미치며, 성장은 새로운 행동·경로·조합 등으로 이루어져 있으며, 이는 기존의 점수나 관문을 승계하지 않고 새롭게 설계됩니다."
+        "name": "Content Expansion System - DELVE",
+        "purpose": "Facilitates content expansion through emergent gameplay and player choice.",
+        "playerChoice": "Player selects a new puzzle pattern or theme to expand the game world."
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-09T10:58:15.172Z"
+  "updatedAt": "2026-10-09T15:58:52.235Z"
 }
