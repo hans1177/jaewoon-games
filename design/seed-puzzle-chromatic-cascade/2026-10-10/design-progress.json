@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 20,
-  "lastSuccessfulModelCallAt": "2026-10-09T18:30:39.289Z",
+  "cachedTaskCount": 23,
+  "lastSuccessfulModelCallAt": "2026-10-09T18:32:05.716Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-puzzle-chromatic-cascade/2026-10-10/design-seed.json",
+    "contentDigest": "f6eadf37bd685427b89c2af58bd41c237e4c03d8a41b54c0d8d6893791ca7451",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1956196,
-      "lastMs": 94994,
+      "totalMs": 2042618,
+      "lastMs": 86422,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:30:39.286Z"
+      "updatedAt": "2026-10-09T18:32:05.712Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T18:30:39.290Z"
+  "updatedAt": "2026-10-09T18:32:05.728Z"
 }
