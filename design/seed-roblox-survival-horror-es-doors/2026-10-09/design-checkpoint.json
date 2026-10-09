@@ -27,25 +27,34 @@
       "identity": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여, 한 번의 선택에 따라 월드 상태가 변화하며, 이 과정에서 성장이 발생해 새로운 행동과 경로를 열어간다. 이 시스템은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 재미는 핵심 루프와 반복적인 선택 사이에서 형성된다.",
       "playerFantasy": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여, 한 번의 선택에 따라 월드 상태가 변화하며, 이 과정에서 성장이 발생해 새로운 행동과 경로를 열어간다. 이 시스템은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 재미는 핵심 루프와 반복적인 선택 사이에서 형성된다.",
       "coreFun": "Last Lantern은 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여, 한 번의 선택에 따라 월드 상태가 변화하며, 이 과정에서 성장이 발생해 새로운 행동과 경로를 열어간다. 이 시스템은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 재미는 핵심 루프와 반복적인 선택 사이에서 형성된다."
+    },
+    "local_authoring_parts::5e029c1d5f510dd922c49513483a7fce942e20ea20d4fa2bc7bfc37c90e7fbda:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어가 시작 단계에서 명확한 목표를 설정하여, 한 번의 선택에 따라 월드 상태가 변화하며, 이 과정에서 성장이 발생해 새로운 행동과 경로를 열어간다.",
+        "SELECT: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "OUTPUT: 월드 상태가 변화하고, 플레이어는 새로운 행동과 경로를 선택할 수 있도록 독립적인 대축(A)와 보조 요소(c)를 통해 시스템을 확장한다.",
+        "STATE CHANGE: 주요 인물의 목표·두려움·비밀이 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.",
+        "REWARD/RISE: 성장이 기반으로 새로운 행동 조합·경로·관계·발견·대응법이 열리며, 재미는 반복 가능한 학문적 루프로 형성된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 282879,
-      "lastMs": 41030,
+      "totalMs": 348167,
+      "lastMs": 65288,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:48:44.590Z"
+      "updatedAt": "2026-10-09T08:49:49.881Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:44:01.685Z",
-  "updatedAt": "2026-10-09T08:48:44.591Z",
+  "updatedAt": "2026-10-09T08:49:49.881Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2091,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:48:44.591Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:49:49.881Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
