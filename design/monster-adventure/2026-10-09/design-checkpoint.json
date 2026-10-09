@@ -1080,25 +1080,34 @@
       "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
       "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "stateChange": "Transform the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
+    },
+    "local_authoring_parts::d4495fc30146d776275e35ab5cdd6bdad60c31550d9e49a88eb3a299e287508f:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "fromSystem": "systems-progression"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 85,
-      "successes": 85,
+      "calls": 86,
+      "successes": 86,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5001840,
-      "lastMs": 94830,
+      "totalMs": 5040234,
+      "lastMs": 38394,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:47:50.098Z"
+      "updatedAt": "2026-10-09T04:48:28.505Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T04:47:50.108Z",
+  "updatedAt": "2026-10-09T04:48:28.505Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3332,10 +3341,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:47:50.102Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:48:28.505Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
