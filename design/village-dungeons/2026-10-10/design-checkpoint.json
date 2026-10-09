@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다.",
       "coreFun": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다."
+    },
+    "local_authoring_parts::6541a979ef872fb2839ede91d346ec1e3ee9fdd4dd76ee0de4a5154c56874bfd:coreLoop": {
+      "coreLoop": [
+        "INPUT_TO_STATE_CHANGE: 플레이어가 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 바꾼다.",
+        "STATE_CHANGE_TO_RESULT: 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다.",
+        "RESULT_TO_INPUT_REPEAT_CYCLE: 이후 이들 중 하나를 기반으로 게임 진행이 계속된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1373416,
-      "lastMs": 100922,
+      "totalMs": 1468767,
+      "lastMs": 95351,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:57:39.246Z"
+      "updatedAt": "2026-10-09T18:59:14.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:34:45.785Z",
-  "updatedAt": "2026-10-09T18:57:39.247Z",
+  "updatedAt": "2026-10-09T18:59:14.601Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2184,7 +2191,7 @@
     "9e5e1a36f886f185af3ca1f5a6f348364005328acec5a42a0eb6d9dbd09f843a": true,
     "939b48231a002e9614e00a353d23e73524171b852dc1454b83caed4f738bcaa0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:57:39.247Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:59:14.601Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
