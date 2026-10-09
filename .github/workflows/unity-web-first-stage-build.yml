@@ -479,7 +479,7 @@ jobs:
       - name: Run Unity Web actual browser play
         # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -496,7 +496,7 @@ jobs:
       - name: Run Unity Web independent QA
         # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -513,7 +513,7 @@ jobs:
       - name: Run Unity Web regression
         # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -528,6 +528,7 @@ jobs:
             --screenshot="/tmp/unity-web/regression-mobile.png"
 
       - name: Write build evidence
+        id: evidence
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -553,15 +554,16 @@ jobs:
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
             &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
-          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
-            &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
-              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
-              &&e.spatialGameplay.depthPass===true&&e.spatialGameplay.perspectiveCamera===true
-              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
-              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
-              &&e.visualQa?.nativeUnityMesh?.pass===true);
-          if(!gatePass&&gameId!=='daechung-rpg')
-            throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
+          // 개발자 테스트도 실제 3D, 실조작, 모바일 및 저장 증거가 필수다.
+          // 프레임 성능·최종 회귀 실패는 QA 실패로 남기되 테스트 접근을 막지는 않는다.
+          const verified3d=checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
+            &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+            &&e.spatialGameplay.depthPass===true&&e.spatialGameplay.perspectiveCamera===true
+            &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+            &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+            &&e.visualQa?.nativeUnityMesh?.pass===true);
+          if(!verified3d)throw new Error('UNITY_WEB_OWNER_TEST_REQUIRES_REAL_3D_GAMEPLAY');
+          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)&&verified3d;
           const file=root+'/unity-web-build.json';
           console.log('UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE');
           console.log('UNITY_WEB_GAMEPLAY_QA='+(gatePass?'PASS':'REPAIR_REQUIRED'));
@@ -576,6 +578,9 @@ jobs:
             buildTreeSha256:process.env.TREE_SHA,
             bootSmoke:'PASS',
             actualBrowserPlay:gatePass?'PASS':'PLAYABLE_TEST_ONLY',
+            ownerBrowserTestEligible:true,
+            ownerTestRequiresNative3d:true,
+            finalQaPassed:gatePass,
             independentQa:independent.pass===true?'PASS':'REPAIR_REQUIRED',
             regression:regression.pass===true?'PASS':'REPAIR_REQUIRED',
             upperPlatformGateCandidate:gatePass,
@@ -584,6 +589,8 @@ jobs:
             releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString()
           },null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'owner_test_eligible=true\n');
+          console.log('UNITY_WEB_OWNER_TEST_ELIGIBLE=YES');
           NODE
 
       - name: Evaluate upper-platform development readiness
