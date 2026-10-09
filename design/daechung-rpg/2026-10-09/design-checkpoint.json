@@ -39,25 +39,43 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::992653d391ec0837d93f8442c46f0d78b934c483510507602f1d937763007bf7:signatureSystems:0": {
+      "id": "RPG_STYLIZED_TOY_DARK_FANTASY",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RoomCode",
+        "PlayerLevel",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "GameProgression",
+        "SkillSet",
+        "CharacterState"
+      ],
+      "name": "5포탈 지역",
+      "purpose": "초원·협곡·유적·설원·심연의 독립 대형 사냥터.",
+      "playerChoice": "AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG에서 플레이어는 4직업/전직 R15 시각 언어로 게임 내 모든 행동을 수행하며, AI 동료는 격파한 보스의 실루엣 및 핵심 이펙트를 그대로 계승한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 231367,
-      "lastMs": 45756,
+      "totalMs": 291583,
+      "lastMs": 60216,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:47:22.644Z"
+      "updatedAt": "2026-10-09T12:48:22.861Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:31.251Z",
-  "updatedAt": "2026-10-09T12:47:22.644Z",
+  "updatedAt": "2026-10-09T12:48:22.861Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1476,7 +1494,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:47:22.644Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:48:22.861Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
