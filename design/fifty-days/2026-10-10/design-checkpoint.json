@@ -282,25 +282,244 @@
           "playerChoice": "플레이어는 A/B/C의 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다."
         }
       ]
+    },
+    "local_authoring_parts::bcba07551860c5511815668c6141915aa41914352e717d6f8a6243366f64ca2f:multiplayerMode": {
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::ed38ce9c3aa22fc681b774edde45796ff3ccb142063a8d834d4e70cea0851ef7:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 무기/속성 선택, 상태변화: 실시간 속도/강화 기능 증가, 보상: 퀘스트/보상 선택",
+        "입력: 퀘스트/보상 선택, 상태변화: 플레이어 경험/레벨 스토리 상승, 보상: 주제/역사/철학 선택",
+        "입력: 주제/역사/철학 선택, 상태변화: 전투 스타일 및 인식 변화, 보상: 새로운 전략 경로"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "무기/속성 선택",
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "플레이어 경험/레벨 스토리 상승"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어는 무기/속성 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을, 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하여 새로운 전략 경로를 연다",
+          "playerChoice": "A/B 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "玩家通过选择不同主题、历史或哲学，影响战斗风格和认知变化，并与游戏世界产生关联。",
+          "playerChoice": "玩家在选择主题、历史或哲学时，体验到战斗风格的改变及认知层面的深化。这种选择不仅影响当前状态，还引导后续的游戏发展路径。"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "A/B/C 상태 교환축 중 B 역할로, 퀘스트/보상 선택 -> 주제/역사/철학 선택의 인과적 연결 및 실제 플레이 변환",
+          "playerChoice": "플레이어는 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하게 된다음, 새로운 전략 경로를 연다됨, 실시간 속도/강화 기능과 퀘스트/보상 선택 사이의 자유롭게 교환 가능성을 경험함으로써 생존 전략의 유연한 사용 가능성 확보됨, 시간, 공간, 감정 등 다양한 요소가 함께 작용하여 실제 세계 상태 변화를 경험한다음, 중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다음, 총 50일 - 모바일 실시간 생존 러너로서의 정체성 확정됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "퀘스트/보상 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어는 주제/역사/철학 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을 경험하며, 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하게 된다.",
+          "playerChoice": "플레이어는 A/B/C의 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다."
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "50일 - 모바일 실시간 생존 러너",
+      "creativeGrammar": {
+        "mainIdentity": "생존 전략 교환 시스템 | A: 무기/속성 선택, B: 퀘스트/보상 선택, C: 주제/역사/철학 선택",
+        "a": {
+          "system": "무기/속성",
+          "material": "실시간 속도/강화 기능",
+          "materialDomain": "전투",
+          "stateChange": "선택 -> 상태변화 -> 강화/속도 증가"
+        },
+        "b": {
+          "system": "퀘스트/보상",
+          "material": "플레이어 경험/레벨 스토리",
+          "materialDomain": "게임 세계관",
+          "stateChange": "선택 -> 상태변화 -> 경험/레벨 상승"
+        },
+        "abCausality": "A와 B의 선택이 서로 영향을 미친다; C의 선택은 A/B의 변화에 따라 실제 플레이를 바꾼다.",
+        "abEvolution": {
+          "aChangesB": "A의 선택이 B의 상태를 변경한다; B의 선택이 A의 상태를 변경한다",
+          "bChangesA": "B의 선택이 A의 상태를 변경한다; A의 선택이 B의 상태를 변경한다",
+          "lateGameChange": "중후반 두 시스템 간 관계 변화가 실제로 일어난다"
+        },
+        "materialFusion": {
+          "contrast": "주제/역사/철학, 주제/과학/무협 등 다른 장르로 인해 무한 발전 가능",
+          "causalBridge": "발견 → 숙련 → 재방문 계층으로 이어진다; 각 단서는 4개 이상 초기 사례와 무한 발전 규칙을 포함한다",
+          "removalConsequence": "보조 장르 제거 시 플레이 스타일과 세계관이 달라지며 새로운 전략 경로를 연다"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 | effect: 실시간 속도/강화 기능 증가 | nextEvent: 퀘스트/보상 선택 | finalState: 게임 정체성 확정",
+          "characterConflict": "실시간 속도/강화 기능 vs. 퀘스트/보상 선택 갈등",
+          "playerChoice": "플레이어는 A/B의 상태 교환에 참여하며 실제 세계 상태 변화를 경험한다",
+          "worldChange": "A/B/C의 선택이 서로 영향을 미치며 새로운 전략 경로를 연다",
+          "nextEvent": "중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다"
+        },
+        "cThemes": [
+          {
+            "name": "철학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택 -> 상태변화 -> 인식 변화"
+          },
+          {
+            "name": "역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택 -> 상태변화 -> 역사적 맥락 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "무기/속성",
+            "gameplayEffect": "전투 스타일과 강화 기능의 조합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "퀘스트/보상",
+            "gameplayEffect": "플레이어 경험/레벨 상승과 게임 세계관의 연결"
+          }
+        ],
+        "cGenreInterlock": "C의 선택은 A/B의 상태 교환에 따라 실제 플레이를 바꾼다; 보조 장르 제거 시 주제/역사/철학의 변화와 플레이 스타일이 달라지며 새로운 전략 경로를 연다",
+        "cWorldAndGameplayEffect": "C의 선택은 A/B의 상태 교환에 따라 실제 플레이를 바꾼다; 보조 장르 제거 시 주제/역사/철학의 변화와 플레이 스타일이 달라지며 새로운 전략 경로를 연다",
+        "delveDiscoveries": [
+          {
+            "clue": "실시간 속도/강화 기능",
+            "discovery": "플레이어는 무기/속성 선택을 통해 실시간 속도 증가 및 강화 기능의 유연한 사용 가능성을 경험한다",
+            "newChoice": "무기/속성 선택 → 퀘스트/보상 선택 → 주제/역사/철학 선택"
+          },
+          {
+            "clue": "퀘스트/보상 선택과 게임 세계관 연결",
+            "discovery": "플레이어는 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험한다",
+            "newChoice": "무기/속성 선택 → 퀘스트/보상 선택 → 주제/역사/철학 선택"
+          },
+          {
+            "clue": "주제/역사/철학 선택과 전투 스타일 연결",
+            "discovery": "플레이어는 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하며 새로운 전략 경로를 연다",
+            "newChoice": "무기/속성 선택 → 퀘스트/보상 선택 → 주제/역사/철학 선택"
+          },
+          {
+            "clue": "전투 스타일과 보상 연결",
+            "discovery": "플레이어는 전투 스타일과 보상 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을 경험하며 새로운 전략 경로를 연다",
+            "newChoice": "무기/속성 선택 → 퀘스트/보상 선택 → 주제/역사/철학 선택"
+          }
+        ],
+        "delveGrowthRule": "A/B/C의 선택은 각각 다른 장르와 무한 발전이 가능한 주제/소재로 구성되어 있으며, 중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다",
+        "finalGameIdentity": "50일 - 모바일 실시간 생존 러너; 플레이어는 무기/속성 선택을 통해 실시간 속도 증가 및 강화 기능의 유연한 사용 가능성을 경험하며 퀘斯特/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하고 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하며 새로운 전략 경로를 연다"
+      },
+      "playerFantasy": "플레이어는 실시간 속도/강화 기능과 퀘스트/보상 선택 사이에서 자유롭게 교환할 수 있는 전략적 선택을 하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하게 된다. 이 과정에서는 시간, 공간, 감정 등 다양한 요소가 함께 작용하여 실제 세계 상태 변화를 경험한다.",
+      "coreFun": "생존 전략 교환 시스템 | A: 무기/속성 선택, B: 퀘스트/보상 선택, C: 주제/역사/철학 선택 | 입력 -> 상태변화 -> 보상/위험/다음 선택 연결 포함; 각 단서는 4개 이상 초기 사례와 무한 발전 규칙을 포함하며, 중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다.",
+      "coreLoop": [
+        "입력: 무기/속성 선택, 상태변화: 실시간 속도/강화 기능 증가, 보상: 퀘스트/보상 선택",
+        "입력: 퀘스트/보상 선택, 상태변화: 플레이어 경험/레벨 스토리 상승, 보상: 주제/역사/철학 선택",
+        "입력: 주제/역사/철학 선택, 상태변화: 전투 스타일 및 인식 변화, 보상: 새로운 전략 경로"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "무기/속성 선택",
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "플레이어 경험/레벨 스토리 상승"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어는 무기/속성 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을, 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하여 새로운 전략 경로를 연다",
+          "playerChoice": "A/B 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "玩家通过选择不同主题、历史或哲学，影响战斗风格和认知变化，并与游戏世界产生关联。",
+          "playerChoice": "玩家在选择主题、历史或哲学时，体验到战斗风格的改变及认知层面的深化。这种选择不仅影响当前状态，还引导后续的游戏发展路径。"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "A/B/C 상태 교환축 중 B 역할로, 퀘스트/보상 선택 -> 주제/역사/철학 선택의 인과적 연결 및 실제 플레이 변환",
+          "playerChoice": "플레이어는 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하게 된다음, 새로운 전략 경로를 연다됨, 실시간 속도/강화 기능과 퀘스트/보상 선택 사이의 자유롭게 교환 가능성을 경험함으로써 생존 전략의 유연한 사용 가능성 확보됨, 시간, 공간, 감정 등 다양한 요소가 함께 작용하여 실제 세계 상태 변화를 경험한다음, 중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다음, 총 50일 - 모바일 실시간 생존 러너로서의 정체성 확정됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "퀘스트/보상 선택"
+          ],
+          "name": "생존 전략 교환 시스템",
+          "purpose": "플레이어는 주제/역사/철학 선택을 통해 실시간 속도/강화 기능의 유연한 사용 가능성을 경험하며, 퀘스트/보상 선택을 통해 게임 세계관의 진입 및 경험 상승을 경험하게 된다.",
+          "playerChoice": "플레이어는 A/B/C의 상태 교환에 참여하여 실제 세계 상태 변화를 경험한다."
+        }
+      ],
+      "multiplayerMode": "COMPETITIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 411622,
-      "lastMs": 40892,
+      "totalMs": 443635,
+      "lastMs": 32013,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:31:17.153Z"
+      "updatedAt": "2026-10-09T21:31:49.170Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T21:31:17.156Z",
+  "updatedAt": "2026-10-09T21:31:49.180Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2006,12 +2225,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:31:17.156Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:31:49.173Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/fifty-days/2026-10-10/design-seed.json",
+    "contentDigest": "32baafe9134baf37850f147a6ed155433722f358b9a54113c5ebe31c4b5263e9",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
