@@ -766,14 +766,24 @@ function playCombatAudio(kind,weight=.5){return;}
 function playRewardAudio(kind='normal'){return;}
 function pickBattleTheme(){const r=Math.random();return r<.30?'battle1':r<.70?'battle2':'battle3'}
 function playerCombatActive(){
+ // 사망·다른 지역·감지 범위 밖 몬스터는 전투 음악 유지 조건에서 제외한다.
  const p=state.player;
- return state.enemies.some(e=>{if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;if(e.type.boss||e.type.labBoss)return true;const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));return(e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range})
+ return state.enemies.some(e=>{
+  if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;
+  const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));
+  return d<range&&(e.type.boss||e.type.labBoss||e.hostile||e.enemyTarget||state.pet.targetId===e.netId);
+ })
 }
 function desiredMusicTheme(){
- const p=state.player,boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
+ const p=state.player;
+ // 보스가 맵에 존재한다는 이유만으로 전투곡을 계속 재생하지 않는다.
+ const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss)&&dist(e.x,e.y,p.x,p.y)<Math.max(260,Math.min(720,e.type.detect||430)));
  if(boss){music.battleActive=false;music.battleTheme=null;return'boss'}
  if(music.previewUntil>Date.now())return'battle1';
- const battle=playerCombatActive()||performance.now()<(music.combatUntil||0);
+ // 공격 직후 유예시간도 살아 있는 전투 대상이 근처에 있을 때만 유효하다.
+ const nearbyThreat=state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120));
+ if(!nearbyThreat)music.combatUntil=0;
+ const battle=playerCombatActive()||(nearbyThreat&&performance.now()<(music.combatUntil||0));
  if(battle){if(!music.battleActive){music.battleActive=true;music.battleTheme=pickBattleTheme()}return music.battleTheme||'battle2'}
  music.battleActive=false;music.battleTheme=null;
  if(state.area==='storylab1'||state.area==='storylab2')return'underground';
