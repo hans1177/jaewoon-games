@@ -27,25 +27,32 @@
       "identity": "별길 개척자: 시작하는 게임 공간에서 선택, 위험, 보상을 연결하는 PUZZLE 루프의 핵심 정체성입니다. 플레이어는 단순히 퀴즈나 팬텀 코딩처럼 기능적 접근이 아닌 실제 세계 상태 변화로 인해 진입합니다. 이는 복잡한 시스템 관계와 다양한 경로가 동시에 존재할 때도 즉시 이해되는 입력/피드백 형태입니다. 주요 행동은 '보드 또는 그리드 레벨 시작'이며, 대표 선택은 '매트 체크', '지뢰 제거', '조합 생성' 등입니다. 이는 단순한 구조만 아니라 실제 월드 상태 변화에 따라 비용, 위험, 결과가 서로 영향을 미칩니다. 이러한 선택은 다음 상태를 바꾸며, 각각의 상황에 맞춰 다른 조건과 반응을 요구합니다. 이는 한 번의 선택으로 여러 가지 가능성과 새로운 해법을 열어줍니다. 고유한 학문 규칙과 시스템 관계를 통해 게임은 지속적으로 발전하고 있습니다.",
       "playerFantasy": "별길 개척자는 단순한 퀴즈나 팬텀 코딩처럼 기능적 접근이 아닌 실제 세계 상태 변화로 인해 진입합니다. 이는 복잡한 시스템 관계와 다양한 경로가 동시에 존재할 때도 즉시 이해되는 입력/피드백 형태입니다. 주요 행동은 '보드 또는 그리드 레벨 시작'이며, 대표 선택은 '매트 체크', '지뢰 제거', '조합 생성' 등입니다. 이는 단순한 구조만 아니라 실제 월드 상태 변화에 따라 비용, 위험, 결과가 서로 영향을 미칩니다.",
       "coreFun": "별길 개척자: 플레이어는 단순히 퀴즈나 팬텀 코딩처럼 기능적 접근이 아닌 실제 세계 상태 변화로 인해 진입합니다. 이는 복잡한 시스템 관계와 다양한 경로가 동시에 존재할 때도 즉시 이해되는 입력/피드백 형태입니다. 주요 행동은 '보드 또는 그리드 레벨 시작'이며, 대표 선택은 '매트 체크', '지뢰 제거', '조합 생성' 등입니다. 이는 단순한 구조만 아니라 실제 월드 상태 변화에 따라 비용, 위험, 결과가 서로 영향을 미칩니다."
+    },
+    "local_authoring_parts::31daaaa45b30abe9c1b93a1e0769c060f0a4ced4408e2e3a3d67770a317c2d8d:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 302731,
-      "lastMs": 46009,
+      "totalMs": 347945,
+      "lastMs": 45214,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:31:20.725Z"
+      "updatedAt": "2026-10-09T08:32:05.942Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:26:17.971Z",
-  "updatedAt": "2026-10-09T08:31:20.727Z",
+  "updatedAt": "2026-10-09T08:32:05.942Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2082,7 +2089,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:31:20.726Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:32:05.942Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
