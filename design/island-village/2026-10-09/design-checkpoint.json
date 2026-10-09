@@ -1588,25 +1588,34 @@
       "toSystem": "VILLAGE_INFRASTRUCTURE",
       "trigger": "Gather focused island resources",
       "stateChange": "Resource accumulation"
+    },
+    "local_authoring_parts::b189359e106e4e15506cad8c6efac99ea706fe250a1f0e31100aae962a1057df:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "RESOURCE_ACCUMULATION",
+        "INFRASTRUCTURE_UPGRADE"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 141,
-      "successes": 141,
+      "calls": 142,
+      "successes": 142,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9529578,
-      "lastMs": 60291,
+      "totalMs": 9556597,
+      "lastMs": 27019,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:35:36.706Z"
+      "updatedAt": "2026-10-09T06:36:03.736Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T06:35:36.714Z",
+  "updatedAt": "2026-10-09T06:36:03.736Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3837,10 +3846,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:35:36.709Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:36:03.736Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
