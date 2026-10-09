@@ -1415,25 +1415,28 @@
     },
     "local_authoring_parts::277d6f71197b1fbce065c07f60f500bad79838a230df5d5123ea183d3374871e:toSystem": {
       "toSystem": "CORE-4V4-SIGNATURE-2"
+    },
+    "local_authoring_parts::277d6f71197b1fbce065c07f60f500bad79838a230df5d5123ea183d3374871e:trigger": {
+      "trigger": "플레이어가 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 90,
-      "successes": 87,
+      "calls": 91,
+      "successes": 88,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8149653,
-      "lastMs": 90861,
+      "totalMs": 8245579,
+      "lastMs": 95926,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:56:26.992Z"
+      "updatedAt": "2026-10-09T04:58:02.921Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T04:56:26.993Z",
+  "updatedAt": "2026-10-09T04:58:02.921Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3863,7 +3866,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:56:26.993Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:58:02.921Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
