@@ -21,6 +21,8 @@ namespace JaewoonGames.DaechungRpg
         private static readonly string[] InventoryFilters = { "전체", "무기", "방어구" };
         private static readonly string[] ShopFilters = { "무기", "방어구" };
         private int _inventoryFilter;
+        private string _inventorySearch = string.Empty;
+        private bool _inventorySortByName;
         private int _shopFilter;
         private float _qaMenuWindowAt;
         private int _menuPage;
@@ -343,13 +345,26 @@ namespace JaewoonGames.DaechungRpg
             var player = _core.Player;
             GUILayout.Label($"장비 인벤토리  ·  무기 {player.ownedWeapons.Count}개 / 방어구 {player.ownedArmors.Count}개");
             _inventoryFilter = GUILayout.Toolbar(_inventoryFilter, InventoryFilters);
+            // 검색/정렬: 모바일 터치 입력을 받고 원본 보유·저장 목록은 수정하지 않는다.
+            GUILayout.Label("아이템 이름 검색");
+            _inventorySearch = GUILayout.TextField(_inventorySearch, GUILayout.MinHeight(48f));
+            if (GUILayout.Button(_inventorySortByName ? "정렬: 이름순" : "정렬: 보유순"))
+                _inventorySortByName = !_inventorySortByName;
+            var query = _inventorySearch.Trim();
             if (_inventoryFilter != 2)
             {
                 GUILayout.Label("무기");
                 if (player.ownedWeapons.Count == 0) GUILayout.Label("보유 무기 없음");
-                foreach (var id in player.ownedWeapons)
+                var visibleWeapons = new List<string>(player.ownedWeapons);
+                if (_inventorySortByName)
+                    visibleWeapons.Sort((left, right) => string.Compare(
+                        GameCatalog.Weapons.TryGetValue(left, out var a) ? a.displayName : left,
+                        GameCatalog.Weapons.TryGetValue(right, out var b) ? b.displayName : right,
+                        System.StringComparison.CurrentCulture));
+                foreach (var id in visibleWeapons)
                 {
                     if (!GameCatalog.Weapons.TryGetValue(id, out var weapon)) continue;
+                    if (query.Length > 0 && weapon.displayName.IndexOf(query, System.StringComparison.CurrentCultureIgnoreCase) < 0) continue;
                     bool equipped = player.equippedWeaponId == id;
                     GUILayout.BeginVertical(GUI.skin.box);
                     GUILayout.Label($"{weapon.displayName}  ·  공격력 +{weapon.damage}" +
@@ -366,9 +381,16 @@ namespace JaewoonGames.DaechungRpg
             {
                 GUILayout.Label("방어구");
                 if (player.ownedArmors.Count == 0) GUILayout.Label("보유 방어구 없음");
-                foreach (var id in player.ownedArmors)
+                var visibleArmors = new List<string>(player.ownedArmors);
+                if (_inventorySortByName)
+                    visibleArmors.Sort((left, right) => string.Compare(
+                        GameCatalog.Armors.TryGetValue(left, out var a) ? a.displayName : left,
+                        GameCatalog.Armors.TryGetValue(right, out var b) ? b.displayName : right,
+                        System.StringComparison.CurrentCulture));
+                foreach (var id in visibleArmors)
                 {
                     if (!GameCatalog.Armors.TryGetValue(id, out var armor)) continue;
+                    if (query.Length > 0 && armor.displayName.IndexOf(query, System.StringComparison.CurrentCultureIgnoreCase) < 0) continue;
                     bool equipped = player.equippedArmorId == id;
                     GUILayout.BeginVertical(GUI.skin.box);
                     GUILayout.Label($"{armor.displayName}  ·  최대 체력 +{armor.bonusHp}" +

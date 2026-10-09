@@ -275,7 +275,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyWeapon(string weaponId)
         {
-            if (string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
+            if (Player.currentRegionId != "town" || string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
             {
                 return false;
             }
@@ -291,7 +291,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyArmor(string armorId)
         {
-            if (string.IsNullOrEmpty(armorId) || !GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)
+            if (Player.currentRegionId != "town" || string.IsNullOrEmpty(armorId) || !GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)
             {
                 return false;
             }

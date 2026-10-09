@@ -282,8 +282,15 @@ test('real character, owned inventory and shop windows bind to existing Unity Ga
   assert.match(runtime,/DrawShopWindow\(\)/);
   assert.match(runtime,/GameCatalog\.Weapons\.TryGetValue/);
   assert.match(runtime,/GameCatalog\.Armors\.TryGetValue/);
-  assert.match(runtime,/foreach \(var id in player\.ownedWeapons\)/);
-  assert.match(runtime,/foreach \(var id in player\.ownedArmors\)/);
+  assert.match(runtime,/foreach \(var id in visibleWeapons\)/);
+  assert.match(runtime,/foreach \(var id in visibleArmors\)/);
+  assert.match(runtime,/_inventorySearch = GUILayout\.TextField\(_inventorySearch, GUILayout\.MinHeight\(48f\)\)/);
+  assert.match(runtime,/_inventorySortByName = !_inventorySortByName/);
+  assert.match(runtime,/new List<string>\(player\.ownedWeapons\)/);
+  assert.match(runtime,/new List<string>\(player\.ownedArmors\)/);
+  assert.match(runtime,/visibleWeapons\.Sort\(/);
+  assert.match(runtime,/visibleArmors\.Sort\(/);
+  assert.doesNotMatch(runtime,/player\.owned(?:Weapons|Armors)\.(?:Sort|Clear|Add|Remove)\(/);
   for(const method of ['TryEquipWeapon','TryEquipArmor','TryBuyWeapon','TryBuyArmor','TrySellWeapon','TrySellArmor']){
     assert.match(runtime,new RegExp('\\_core\\.'+method+'\\('),'actual menu needs existing owner function: '+method);
     assert.match(core,new RegExp('public bool '+method+'\\('));
@@ -297,6 +304,8 @@ test('real character, owned inventory and shop windows bind to existing Unity Ga
 });
 test('equip and sell reject unowned items, preserve existing prices and do not mutate combat stat authority',()=>{
   const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  const buy=core.slice(core.indexOf('public bool TryBuyWeapon('),core.indexOf('public bool TryEquipWeapon('));
+  assert.equal((buy.match(/Player\.currentRegionId != "town"/g)||[]).length,2,'both purchases must enforce the existing village-only shop rule');
   const equip=core.slice(core.indexOf('public bool TryEquipWeapon('),core.indexOf('public bool TryChangeJob('));
   assert.match(equip,/Player\.ownedWeapons\.Contains\(weaponId\)/);
   assert.match(equip,/Player\.ownedArmors\.Contains\(armorId\)/);
