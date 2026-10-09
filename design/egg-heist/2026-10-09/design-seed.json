@@ -11,9 +11,9 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "d9bd7c62078e0729f89f21db095ff28dbbfa7a96694181586efdca7f5c15c3c1",
+  "fingerprint": "a2636d29ca2046dfb97f0c64b282c5b0026409c462ca3766794ddd3d3d220fff",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "bbd97b7c6f8dd4cf4208fa1613e88ffecb02b21afe767127229551556a0d6646",
+  "contentDigest": "30e8a001df9cfe8bb2b1be6bfa4de2f18247ba346e29be557fc6ed7d1b4aae65",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
@@ -23,77 +23,89 @@
     "coreFun": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
     "coreLoop": [
       "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
-      "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.' 중심으로 플레이어는 알을 훔치거나 이동하여 위험에 노출시키며, 성공 시 보상을 얻고 새로운 경로나 기술을 획득하게 된다.",
-      "플레이어의 선택은 월드 상태를 변경하며, 이는 세계의 역사, 지역, 캐릭터, 아이템 등 다양한 요소와 연결되어 있으며, 탐험, 위험, 성공, 실패, 성장 상태가 일관되게 강화된다."
+      "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+      "플레이어는 알을 훔치고 부화시키는 수집 게임의 코믹 잠입·탈출 요소를 활용하여, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다.",
+      "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다.",
+      "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
     ],
     "signatureSystems": [
       {
-        "id": "signatureSystems[0]",
+        "id": "MAIN_01",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "world_state"
+          "INPUT",
+          "SELECT"
         ],
         "stateOutputs": [
-          "new_world_state"
+          "OUTPUT",
+          "STATE"
         ],
-        "name": "DELVE(@)",
-        "purpose": "게임 내 탐험, 위험, 성공, 실패, 성장 상태의 관리 및 변환",
-        "playerChoice": "플레이어가 탐험, 위험, 성공, 실패, 성장 상태에 대한 선택 또는 대응 전략을 결정함으로써 세계 상태를 변경합니다."
+        "name": "AL_DOODADATE_GAME",
+        "purpose": "PLAYERS MAKE CHOICES THAT CHANGE THE WORLD IN A CASUAL GAME",
+        "playerChoice": "SCOUT AND IDENTIFY TARGET EGG, PATROL RISK"
       },
       {
-        "id": "signatureSystems[1]",
+        "id": "MAIN_02",
         "grammarRole": "A",
         "stateInputs": [
-          "world_state"
+          "INPUT",
+          "SELECT"
         ],
         "stateOutputs": [
-          "new_world_state"
+          "OUTPUT",
+          "STATE"
         ],
-        "name": "DELVE(@)",
-        "purpose": "World exploration and resource acquisition",
-        "playerChoice": "Explore new areas, collect resources, and gain insight into the world's history, geography, and culture through gameplay and interaction with characters, items, and UI elements."
+        "name": "AL_DOODADATE_GAME",
+        "purpose": "게임 내 플레이어의 선택 결과로 다음 월드 상태를 바꾸는 코믹 잠입·탈출 게임 규칙",
+        "playerChoice": "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
       },
       {
-        "id": "signatureSystems[2]",
+        "id": "MAIN_03",
         "grammarRole": "B",
         "stateInputs": [
-          "world_state"
+          "INPUT",
+          "SELECT"
         ],
         "stateOutputs": [
-          "new_world_state"
+          "OUTPUT",
+          "STATE"
         ],
-        "name": "DELVE(@)",
-        "purpose": "世界の歴史・生活・経済・地域機能を基にした探検とリスク管理",
-        "playerChoice": "探索範囲を選定し、目標エッグを見つけ、巡視リスクを評価する選択肢を提供する。"
+        "name": "AL_DOODADATE_GAME",
+        "purpose": "게임 내 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임의 시스템 역할",
+        "playerChoice": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다."
       },
       {
-        "id": "signatureSystems[3]",
+        "id": "c_01",
         "grammarRole": "c",
         "stateInputs": [
-          "world_state"
+          "INPUT",
+          "SELECT"
         ],
         "stateOutputs": [
-          "new_world_state"
+          "OUTPUT",
+          "STATE"
         ],
-        "name": "DELVE(@)",
-        "purpose": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステム",
-        "playerChoice": "世界の原図とプレイルール、ボーナス・情報・関係をつなぐシグニチャシステムの変化を示す選択肢を提供する"
+        "name": "AL_DOODADATE_GAME",
+        "purpose": "기반 플레이어가 타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취하는 코믹 잠입·탈출 요소",
+        "playerChoice": "타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취해야 한다"
       },
       {
-        "id": "signatureSystems[4]",
+        "id": "DELVE_01",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "world_state"
+          "INPUT",
+          "SELECT"
         ],
         "stateOutputs": [
-          "new_world_state"
+          "OUTPUT",
+          "STATE"
         ],
-        "name": "DELVE(@)",
-        "purpose": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステム",
-        "playerChoice": "世界の歴史・生活・経済・地域機能を基にしたシグニチャシステムを通じて、探索・リスク管理・成長を実現するための選択肢を提供する。"
+        "name": "AL_DOODADATE_DELVE",
+        "purpose": "게임 내에서 플레이어가 타겟 알의 위치 및 경비 현황 파악하는 시스템",
+        "playerChoice": "타겟 알의 위치와 경비 상태를 확인하여 전략적 행동을 취해야 한다"
       }
     ],
     "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-09T06:12:12.835Z"
+  "updatedAt": "2026-10-09T15:30:16.656Z"
 }

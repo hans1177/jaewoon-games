@@ -276,25 +276,205 @@
           "playerChoice": "타겟 알의 위치와 경비 상태를 확인하여 전략적 행동을 취해야 한다"
         }
       ]
+    },
+    "local_authoring_parts::67437248eaf9cca68336f0496506f115139ad4c154db00cb2733a99292f8515e:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::fcdec2b263224a74321d154384cc59ca849000b9845039e30f47aa5031e5f970:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "플레이어는 알을 훔치고 부화시키는 수집 게임의 코믹 잠입·탈출 요소를 활용하여, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다.",
+        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다.",
+        "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "PLAYERS MAKE CHOICES THAT CHANGE THE WORLD IN A CASUAL GAME",
+          "playerChoice": "SCOUT AND IDENTIFY TARGET EGG, PATROL RISK"
+        },
+        {
+          "id": "MAIN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "게임 내 플레이어의 선택 결과로 다음 월드 상태를 바꾸는 코믹 잠입·탈출 게임 규칙",
+          "playerChoice": "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+        },
+        {
+          "id": "MAIN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "게임 내 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임의 시스템 역할",
+          "playerChoice": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다."
+        },
+        {
+          "id": "c_01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "기반 플레이어가 타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취하는 코믹 잠입·탈출 요소",
+          "playerChoice": "타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취해야 한다"
+        },
+        {
+          "id": "DELVE_01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_DELVE",
+          "purpose": "게임 내에서 플레이어가 타겟 알의 위치 및 경비 현황 파악하는 시스템",
+          "playerChoice": "타겟 알의 위치와 경비 상태를 확인하여 전략적 행동을 취해야 한다"
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "playerFantasy": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "플레이어는 알을 훔치고 부화시키는 수집 게임의 코믹 잠입·탈출 요소를 활용하여, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다.",
+        "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다.",
+        "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "PLAYERS MAKE CHOICES THAT CHANGE THE WORLD IN A CASUAL GAME",
+          "playerChoice": "SCOUT AND IDENTIFY TARGET EGG, PATROL RISK"
+        },
+        {
+          "id": "MAIN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "게임 내 플레이어의 선택 결과로 다음 월드 상태를 바꾸는 코믹 잠입·탈출 게임 규칙",
+          "playerChoice": "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+        },
+        {
+          "id": "MAIN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "게임 내 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임의 시스템 역할",
+          "playerChoice": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다."
+        },
+        {
+          "id": "c_01",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_GAME",
+          "purpose": "기반 플레이어가 타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취하는 코믹 잠입·탈출 요소",
+          "playerChoice": "타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취해야 한다"
+        },
+        {
+          "id": "DELVE_01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT"
+          ],
+          "stateOutputs": [
+            "OUTPUT",
+            "STATE"
+          ],
+          "name": "AL_DOODADATE_DELVE",
+          "purpose": "게임 내에서 플레이어가 타겟 알의 위치 및 경비 현황 파악하는 시스템",
+          "playerChoice": "타겟 알의 위치와 경비 상태를 확인하여 전략적 행동을 취해야 한다"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 977809,
-      "lastMs": 97331,
+      "totalMs": 1069916,
+      "lastMs": 92107,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:28:44.537Z"
+      "updatedAt": "2026-10-09T15:30:16.647Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:12:26.675Z",
-  "updatedAt": "2026-10-09T15:28:44.539Z",
+  "updatedAt": "2026-10-09T15:30:16.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1738,12 +1918,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:28:44.539Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:30:16.649Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/egg-heist/2026-10-09/design-seed.json",
+    "contentDigest": "30e8a001df9cfe8bb2b1be6bfa4de2f18247ba346e29be557fc6ed7d1b4aae65",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
