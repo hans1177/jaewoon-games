@@ -440,25 +440,117 @@
         "delveGrowthRule": "{\"rule\": \"전선 변화 → 자원 분배 → 전략 실행; 자원 분배 → 전선 이동 → 새 전략 수립\"}",
         "finalGameIdentity": "{\"identity\": \"짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.\"}"
       }
+    },
+    "local_authoring_parts::e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 단순한 전선 이동이나 자원 배분에 빠져 있을 뿐 아니라, 새로운 전선 위치에 대한 자원 재배분 및 전략 수립을 선택해야 한다. 이 과정에서 지역 특성과 전선 변화가 자원 배분 방식에 직접적인 영향을 미친다는 점을 명확히 해야 하며, 이를 기반으로 계속적으로 전략 실행의 변화가 발생할 것이다.",
+      "coreFun": "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계를 구체화한다. 먼저 전선 위치 변경을 통해 자원 할당 결정을 내리고, 이후에는 새로운 전략 수립을 수행하며, 마지막으로 전선 이동 반영을 완료하여 전체 게임 진행이 지속적으로 변환된다."
+    },
+    "local_authoring_parts::3e71e732c9be6e5287690184e357b8ac0961ad7a160a36b952198b943f66a49e:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+        "a": {
+          "system": "게임 시스템 + 해석 축",
+          "material": "영토 전략, 자원 배분, 전선 이동",
+          "materialDomain": "지역 특성, 전선 변화, 자원 우선순위",
+          "stateChange": "전선 위치 변경 → 자원 할당 결정 → 전략 실행"
+        },
+        "b": {
+          "system": "다른 시스템 + 해석 축",
+          "material": "전략적 판단, 리스크 관리, 경제 확대",
+          "materialDomain": "전략적 선택, 리스크 대응, 경제 성장",
+          "stateChange": "전선 변화에 따른 자원 재배분 → 새로운 전략 수립 → 전선 이동 반영"
+        },
+        "abCausality": "양방향 실제 상태 교환: 전선 변화 → 자원 분배 → 전략 실행; 자원 분배 → 전선 이동 → 새 전략 수립",
+        "abEvolution": {
+          "aChangesB": "전선 변화에 따른 자원 재배분 → 새로운 전략 수립",
+          "bChangesA": "자원 분배 → 전선 이동 → 새 전략 수립 및 전선 이동 반영",
+          "lateGameChange": "전선 위치 변경 후, 자원 할당 결정과 전략 실행의 연속적 변화"
+        },
+        "materialFusion": {
+          "contrast": "지역 특성과 전선 변화의 인과적 결합을 통해 자원 배분 방식의 혁신",
+          "causalBridge": "전선 이동 → 자원 분배 → 전략 실행의 순차적 상태 교환",
+          "removalConsequence": "전선 변화와 자원 분배의 상호작용이 전략 실행에 직접적인 영향을 미친다는 점"
+        },
+        "storyCausalChain": {
+          "cause": "전선 변화가 발생함으로써 자원 분배의 우선순위가 재정비됨",
+          "characterConflict": "플레이어는 자원 분배를 기반으로 전략 수립을 선택해야 함",
+          "playerChoice": "전선 이동과 자원 분배의 조화로운 관계를 구축하는 플레이어 선택",
+          "worldChange": "전선 위치의 변화가 새로운 전략 실행의 시작점으로 작용함",
+          "nextEvent": "자원 분배 및 전략 실행의 결과가 다음 단계로 이어지는 것"
+        },
+        "cThemes": [
+          {
+            "name": "지역 특성",
+            "kind": "GENRE",
+            "gameplayEffect": "영지를 확장하는 전략적 자원 배분"
+          },
+          {
+            "name": "전선 변화",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 새로운 전선 위치에 대한 자원 재배분 및 전략 수립"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "영토 전략",
+            "gameplayEffect": "게임의 핵심 전략 구조와 지역 특성을 결합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "자원 관리",
+            "gameplayEffect": "전선 이동 시 자원 분배의 우선순위 조절"
+          }
+        ],
+        "cGenreInterlock": "영토 전략과 자원 관리는 서로 다른 메인 장르로, 그러나 상호작용을 통해 영토 확장을 촉진한다.",
+        "cWorldAndGameplayEffect": "전선 변화는 자원 분배의 우선순위를 재정비하고, 이를 기반으로 새로운 전략 수립이 이루어지며, 이는 플레이어의 선택에 따라 계속적으로 변환된다.",
+        "delveDiscoveries": [
+          {
+            "clue": "짧은 전선 변화와 지역 특성 조합",
+            "discovery": "전선 위치 변경과 자원 할당 결정의 인과적 결합을 통해 새로운 전략 실행 방식을 탐색함",
+            "newChoice": "전선 이동 및 자원 재배분의 조화로운 관계를 구축하는 플레이어 선택"
+          },
+          {
+            "clue": "영지 확장의 핵심 요소",
+            "discovery": "지역 특성과 전선 변화가 자원 배분 방식에 직접적인 영향을 미친다는 점을 확인함",
+            "newChoice": "자원 분배 우선순위 재조정 및 전략 수립의 연속적 변화"
+          },
+          {
+            "clue": "플레이어의 선택 기반 전략",
+            "discovery": "전선 이동과 자원 분배의 상호작용이 전략 실행에 직접적으로 작용한다는 점을 명확히 함",
+            "newChoice": "전선 위치의 변화가 새 전략 실행의 시작점으로 작용하는 것"
+          },
+          {
+            "clue": "시그니처 시스템의 발전",
+            "discovery": "전선 변화와 자원 분배의 상태 교환은 전략 실행에 지속적인 변화를 유발함",
+            "newChoice": "자원 분배 및 전략 실행 결과가 다음 단계로 이어지는 것"
+          }
+        ],
+        "delveGrowthRule": "{\"rule\": \"전선 변화 → 자원 분배 → 전략 실행; 자원 분배 → 전선 이동 → 새 전략 수립\"}",
+        "finalGameIdentity": "{\"identity\": \"짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.\"}"
+      },
+      "playerFantasy": "플레이어는 단순한 전선 이동이나 자원 배분에 빠져 있을 뿐 아니라, 새로운 전선 위치에 대한 자원 재배분 및 전략 수립을 선택해야 한다. 이 과정에서 지역 특성과 전선 변화가 자원 배분 방식에 직접적인 영향을 미친다는 점을 명확히 해야 하며, 이를 기반으로 계속적으로 전략 실행의 변화가 발생할 것이다.",
+      "coreFun": "입력/선택 → 상태변화 → 보상·위험·다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계를 구체화한다. 먼저 전선 위치 변경을 통해 자원 할당 결정을 내리고, 이후에는 새로운 전략 수립을 수행하며, 마지막으로 전선 이동 반영을 완료하여 전체 게임 진행이 지속적으로 변환된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1163624,
-      "lastMs": 127852,
+      "totalMs": 1269524,
+      "lastMs": 105900,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:58:30.888Z"
+      "updatedAt": "2026-10-09T18:00:16.795Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:07.229Z",
-  "updatedAt": "2026-10-09T17:58:30.894Z",
+  "updatedAt": "2026-10-09T18:00:16.796Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1997,7 +2089,7 @@
     "e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2": true,
     "d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:58:30.894Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:00:16.796Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
