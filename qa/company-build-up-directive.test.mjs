@@ -1115,7 +1115,7 @@ test('post-design volume keeps all authored systems, milestones and connected co
   assert.equal(plan.authoredVolume.expansionMilestones,3);
   assert.equal(plan.authoredVolume.contentFamilies.regions,9);
   assert.equal(plan.authoredVolume.contentFamilies.enemiesOrChallenges,1);
-  assert.equal(plan.authoredVolume.totalUnits,51);
+  assert.equal(plan.authoredVolume.totalUnits,50);
   assert.equal(plan.authoredVolume.artificialContentCountCap,null);
   assert.equal(plan.activeUnit.kind,'CORE_LOOP');
   assert.equal(plan.activeUnit.implementationStatus,'PENDING_EXACT_SOURCE_AND_NATIVE_RUNTIME_EVIDENCE');
@@ -1137,8 +1137,12 @@ test('post-design volume keeps all authored systems, milestones and connected co
   assert.equal(recovery.designContentImplementation.activeUnit.id,plan.activeUnit.id,
     'successful foundation repair must not silently finish the deferred content unit');
   const completed=create(recovery,'verified','4'.repeat(64),{runtimeObserved:true,runtimePassed:true});
-  assert.notEqual(completed.designContentImplementation.activeUnit.id,plan.activeUnit.id,
-    'content unit advances only after its own source delta and runtime effect are verified');
+  assert.equal(completed.designContentImplementation.activeUnit,null);
+  assert.notEqual(completed.designContentImplementation.deferredUnit.id,plan.activeUnit.id,
+    'a verified content unit must advance even if the next BUILD_UP focus is stability or presentation');
+  const returned=create(completed,'verified','5'.repeat(64),{runtimeObserved:true,runtimePassed:true});
+  assert.equal(returned.designContentImplementation.activeUnit.id,completed.designContentImplementation.deferredUnit.id,
+    'the next approved content unit resumes after an unrelated verified quality turn');
 });
 
 test('design trace rejects 2.5D as a final Unity Web spatial design even when depth fields exist',()=>{
