@@ -187,7 +187,8 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
   assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
   assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
-  assert.doesNotMatch(central,/ownerExcludedGameIds/);
+  assert.match(central,/perGameFailureIsolation\?\.ownerExcludedGameIds/);
+  // Exclusions must come from owner-owned policy, never from a hardcoded horror-game ban.
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
@@ -491,7 +492,8 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/active-roblox-native-runs\.json/);
   assert.match(development,/active-unity-native-runs\.json/);
   assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(development,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
@@ -897,7 +899,8 @@ test('stage-scoped native dedupe closes duplicate races without whole-game seria
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
 
   assert.equal(change?.status,'SUPERSEDED_BY_STAGE_SCOPED_DEDUPE_2026_10_04');
   assert.equal(change?.workflowLevelGameIdConcurrencyRemoved,true);
