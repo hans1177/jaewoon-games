@@ -1718,13 +1718,21 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   }
   next.internalAssetStandard={
     ...(next.internalAssetStandard||{}),
+    version:2,
     sharedOrganization:{
-      version:1,scope:'ALL_REGISTERED_ASSETS',groupBy:'FAMILY',
+      version:2,scope:'ALL_REGISTERED_ASSETS',groupBy:'FAMILY',
+      familyOrder:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'],
+      sortKeys:['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID'],
+      sortMode:'STABLE_VIEW_AND_SELECTION_NO_SOURCE_REORDER',
       gameExclusivePacks:false,packIdMeaning:'SOURCE_LINEAGE_NOT_GAME_EXCLUSIVITY',
+      originalGameNamedPacksAreSourceLineageOnly:true,originalObjectsAndSourcePathsPreserved:true,
+      allExistingAndFutureGamesEligible:true,consumerGameIdsCannotRestrictOtherGames:true,
+      noAutomaticMonsterSpawnOrGameplayChange:true,
       fileRoles:['authoring','runtimeCode','models','previews','textures','references','catalogs','support'],
       consumerGameIdsMeaning:'ACTUAL_USAGE_HISTORY_NOT_EXCLUSIVE_OWNERSHIP',
       intendedConsumerGameIdsMeaning:'DEMAND_HINT_NOT_USAGE_RESTRICTION',
-      platformCompatibilityRequired:true,sourcePathsPreserved:true,
+      platformCompatibilityRequired:true,roleStyleLicenseAndSecurityCompatibilityRequired:true,
+      crossPlatformNativeAdaptationRequired:true,sourcePathsPreserved:true,
       qualityDisplay:{field:'internalAuditScore',maxScore:1000},
       fileClassificationIsNotRuntimeVerification:true
     }
@@ -2646,6 +2654,17 @@ const UNIVERSAL_ASSET_FAMILIES=Object.freeze([
   'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL',
   'MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
 ]);
+// 공용 자산 순서: 패키지명이나 최초 소비 게임이 아닌 자산군→세부군→명칭→고유 ID.
+function compareStandardLibraryAssets(left={},right={}){
+  const rank=row=>{
+    const index=UNIVERSAL_ASSET_FAMILIES.indexOf(clean(row?.family||row?.category).toUpperCase());
+    return index<0?UNIVERSAL_ASSET_FAMILIES.length:index;
+  };
+  return rank(left)-rank(right)
+    ||clean(left.subfamily).localeCompare(clean(right.subfamily),'ko')
+    ||clean(left.title||left.name).localeCompare(clean(right.title||right.name),'ko')
+    ||clean(left.id||left.assetId).localeCompare(clean(right.id||right.assetId),'en');
+}
 function stableMaterialSeed(value=''){
   let hash=2166136261;
   for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
@@ -2689,7 +2708,7 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
   const familyCandidates=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,[]]));
   const evaluated=[];
   let hardBlockedCount=0,classifiableCount=0,compatibleCandidateCount=0;
-  for(const asset of assets){
+  for(const asset of [...assets].sort(compareStandardLibraryAssets)){
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const hardBlockReason=internalAssetHardBlockReason(asset);
     const applicationMode=internalAssetPlatformApplicationMode(asset,resolved);
@@ -2702,6 +2721,7 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
       const row=freeze({
         assetId:clean(asset?.id),
         family,
+        sourcePackId:clean(asset?.packId)||null,
         subfamily:clean(asset?.subfamily)||null,
         role:clean(asset?.role)||null,
         platform:clean(asset?.platform)||null,
@@ -2737,7 +2757,7 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     version:1,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
     baseMaterialFamilies:Object.fromEntries(Object.entries(baseMaterialFamilies).map(([family,rows])=>[family,[...rows].sort()])),
     candidates:Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
-      family,familyCandidates[family].map(row=>[row.assetId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
+      family,familyCandidates[family].map(row=>[row.assetId,row.sourcePackId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
     ]))
   })).digest('hex');
   return freeze({
@@ -2746,6 +2766,11 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     authority:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract',
     gameId:clean(gameId)||null,
     target:resolved||null,
+    libraryOrder:freezeList(UNIVERSAL_ASSET_FAMILIES),
+    librarySortKeys:freezeList(['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']),
+    allCompatibleGamesEligible:true,
+    sourcePackIdIsLineageOnly:true,
+    intendedConsumerIdsDoNotRestrictEligibility:true,
     platformOrder:freezeList(['ROBLOX','UNITY','WEB']),
     libraryVersion:Number(companyRegistry?.version||0),
     registryAssetCount:assets.length,
