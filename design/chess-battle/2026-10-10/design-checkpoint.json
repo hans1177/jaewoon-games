@@ -132,25 +132,39 @@
       "name": "전략적 전투 상태 변환 및 목표 설정",
       "purpose": "플레이어 선택에 기반하여 전략적 전투 상태를 변경하고, 그 결과로 다음 전투 단계를 결정하는 데 사용됨",
       "playerChoice": "플레이어가 캐릭터 인물을 선택하며, 이 선택은 전략적 전투 상태의 변화와 함께 다음 전투 단계 결정에 영향을 미친다"
+    },
+    "local_authoring_parts::215345615e91f6f2995f12a82841547d0502bac18b23ac5cb47fc70e7abf4208:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "strategyState",
+        "characterChoice"
+      ],
+      "stateOutputs": [
+        "nextBattleStep"
+      ],
+      "name": "캐릭터 선택 및 상호작용 결과 생성",
+      "purpose": "플레이어 선택에 기반하여 캐릭터 인물의 상태 변화와 다음 전투 단계 결정을 생성하는 플레이 약속",
+      "playerChoice": "캐릭터 선택이 실질적으로 영향을 주는 상황에서, 전략적 전투 상태 변화와 함께 새로운 게임 상태로 이어지는 방식으로 진행됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 536681,
-      "lastMs": 101198,
+      "totalMs": 637705,
+      "lastMs": 101024,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:23:43.740Z"
+      "updatedAt": "2026-10-09T17:25:24.767Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:47.033Z",
-  "updatedAt": "2026-10-09T17:23:43.740Z",
+  "updatedAt": "2026-10-09T17:25:24.767Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1790,7 +1804,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:23:43.740Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:25:24.767Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
