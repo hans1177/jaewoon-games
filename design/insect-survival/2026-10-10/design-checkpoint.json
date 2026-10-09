@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 작은 세계에서 살아남는 생존 게임의 중심이 되며, 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 경험을 선호한다. 플레이어는 단순한 수집이나 전투를 넘어, 환경의 변화에 따라 적응하고 진화하는 생존 전략을 숙련하며, 새로운 상황에서 실질적인 선택과 위험을 직접 체험하게 된다.",
       "coreFun": "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택. 각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다. 이러한 과정은 플레이어의 숙련과 성장에 기여하며, 다양한 상황에서 유연한 전략을 적용할 수 있도록 설계된다."
+    },
+    "local_authoring_parts::2886ad51998c74696d6591366a41c1b5a5992b482788cca174bb64d105da75a9:coreLoop": {
+      "coreLoop": [
+        "입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택",
+        "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택.",
+        "각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 151143,
-      "lastMs": 151143,
+      "totalMs": 179842,
+      "lastMs": 28699,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:55:45.674Z"
+      "updatedAt": "2026-10-09T20:56:14.374Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T20:55:45.674Z",
+  "updatedAt": "2026-10-09T20:56:14.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1788,7 +1795,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:55:45.674Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:56:14.374Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
