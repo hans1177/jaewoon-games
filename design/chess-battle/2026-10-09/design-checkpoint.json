@@ -19,25 +19,33 @@
     "local_authoring_parts::608458658352ede8688c08ea29764f492696d6208ae7b83b140809c4d9360cca:identity,playerFantasy": {
       "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다.",
       "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다."
+    },
+    "local_authoring_parts::608458658352ede8688c08ea29764f492696d6208ae7b83b140809c4d9360cca:coreFun": {
+      "coreFun": "Read the board and enemy threat information.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다."
+    },
+    "local_authoring_parts::7b7ecbc75af399a0490eacdef763b7a747bdf705619f8de9522a85010f7e5526:identity,playerFantasy,coreFun": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 Read the board and enemy threat information.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다.",
+      "playerFantasy": "체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다. 기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다.",
+      "coreFun": "Read the board and enemy threat information.의 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다.\n\n체스 배틀에서 플레이어는 Read the board and enemy threat information.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.\n\n기존 게임 원본과 동일한 시그니처 세계 규칙을 유지하며, MAIN/A/B/c/@와 인과문법을 통해 새로운 루프와 진입 방식을 설계한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 203030,
-      "lastMs": 37938,
+      "totalMs": 251175,
+      "lastMs": 48145,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:14:55.305Z"
+      "updatedAt": "2026-10-09T14:15:43.568Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:14:55.307Z",
+  "updatedAt": "2026-10-09T14:15:43.569Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1677,7 +1685,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:14:55.307Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:15:43.569Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
