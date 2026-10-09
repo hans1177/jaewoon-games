@@ -414,6 +414,7 @@ ${nativeWorldRuntime}
         LoadState();
         BuildWorld();
         ${worldData?'RestoreWorldObjects();':''}
+        VerifyNativeMeshIntegrity();
         VerifyNativeSpatialDepth();
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
@@ -430,37 +431,100 @@ ${nativeWorldRuntime}
         LogState();
     }
 
-    // 메인 · 실제 Unity 월드의 메시 깊이와 배우 표현을 측정한다. 전투·밸런스·세이브 권한 없음.
+    // 그래픽 · Unity 런타임의 실제 렌더러에서 메시/삼각형/입체 표면/재질/텍스처를 계측한다.
+    // 임시 Primitive만 있는 경우 텍스처 및 공용 모델 품질을 보장할 수 없으므로 PASS를 만들지 않는다.
+    private void VerifyNativeMeshIntegrity()
+    {
+        int inspected = 0;
+        int validMeshes = 0;
+        int volumetricMeshes = 0;
+        long triangles = 0;
+        bool materialPass = true;
+        bool texturePass = false;
+        foreach (Renderer renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+        {
+            if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
+            Mesh mesh = renderer is SkinnedMeshRenderer skin ? skin.sharedMesh
+                : renderer is MeshRenderer ? renderer.GetComponent<MeshFilter>()?.sharedMesh : null;
+            if (mesh == null) continue;
+            inspected++;
+            long meshTriangles = 0;
+            for (int subMesh = 0; subMesh < mesh.subMeshCount; subMesh++)
+                if (mesh.GetTopology(subMesh) == MeshTopology.Triangles)
+                    meshTriangles += (long)mesh.GetIndexCount(subMesh) / 3L;
+            triangles += meshTriangles;
+            bool materialValid = false;
+            foreach (Material material in renderer.sharedMaterials)
+            {
+                if (material == null || material.shader == null || !material.shader.isSupported) continue;
+                materialValid = true;
+                Texture texture = material.mainTexture;
+                if (texture == null && material.HasProperty("_BaseMap")) texture = material.GetTexture("_BaseMap");
+                if (texture != null && texture.width >= 4 && texture.height >= 4) texturePass = true;
+            }
+            materialPass &= materialValid;
+            Vector3 bounds = renderer.bounds.size;
+            if (mesh.vertexCount >= 3 && meshTriangles > 0 && materialValid) validMeshes++;
+            if (meshTriangles > 0 && bounds.x > 0.02f && bounds.y > 0.02f
+                && bounds.z > 0.02f && materialValid) volumetricMeshes++;
+        }
+        bool pass = inspected > 0 && validMeshes == inspected && triangles > 0
+            && volumetricMeshes > 0 && materialPass && texturePass;
+        Debug.Log("JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=" + GameId
+            + " source=UNITY_MESH_FILTER inspected=" + inspected
+            + " validMeshes=" + validMeshes + " triangles=" + triangles
+            + " volumetricMeshes=" + volumetricMeshes
+            + " materialPass=" + (materialPass ? 1 : 0)
+            + " texturePass=" + (texturePass ? 1 : 0)
+            + " status=" + (pass ? "PASS" : "REPAIR_REQUIRED"));
+    }
+
+    // 메인 · 실제 3D 렌더링 개체와 원근 카메라의 월드 공간 깊이를 검사한다.
     private void VerifyNativeSpatialDepth()
     {
         int worldMeshes3d = 0;
         float zMin = float.PositiveInfinity;
         float zMax = float.NegativeInfinity;
-        foreach (MeshFilter filter in FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
+        foreach (Renderer renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
         {
-            if (filter == null || !filter.gameObject.activeInHierarchy || filter.sharedMesh == null) continue;
-            Vector3 size = filter.sharedMesh.bounds.size;
+            if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
+            Mesh mesh = renderer is SkinnedMeshRenderer skin ? skin.sharedMesh
+                : renderer is MeshRenderer ? renderer.GetComponent<MeshFilter>()?.sharedMesh : null;
+            if (mesh == null || mesh.vertexCount < 3) continue;
+            Bounds bounds = renderer.bounds;
+            Vector3 size = bounds.size;
             if (size.x < 0.02f || size.y < 0.02f || size.z < 0.02f) continue;
             worldMeshes3d++;
-            zMin = Mathf.Min(zMin, filter.transform.position.z);
-            zMax = Mathf.Max(zMax, filter.transform.position.z);
+            zMin = Mathf.Min(zMin, bounds.min.z);
+            zMax = Mathf.Max(zMax, bounds.max.z);
         }
         int gameplayActors3d = 0;
         foreach (GameObject actor in new GameObject[] { player, enemy })
         {
             if (actor == null || !actor.activeInHierarchy) continue;
-            MeshFilter filter = actor.GetComponentInChildren<MeshFilter>();
-            SkinnedMeshRenderer skin = actor.GetComponentInChildren<SkinnedMeshRenderer>();
-            Mesh actorMesh = filter != null ? filter.sharedMesh : (skin != null ? skin.sharedMesh : null);
-            if (actorMesh == null) continue;
-            Vector3 size = actorMesh.bounds.size;
-            if (size.x >= 0.02f && size.y >= 0.02f && size.z >= 0.02f) gameplayActors3d++;
+            bool has3dMesh = false;
+            foreach (Renderer renderer in actor.GetComponentsInChildren<Renderer>(true))
+            {
+                if (!renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
+                Mesh mesh = renderer is SkinnedMeshRenderer skin ? skin.sharedMesh
+                    : renderer is MeshRenderer ? renderer.GetComponent<MeshFilter>()?.sharedMesh : null;
+                if (mesh == null || mesh.vertexCount < 3) continue;
+                Vector3 size = renderer.bounds.size;
+                if (size.x >= 0.02f && size.y >= 0.02f && size.z >= 0.02f)
+                {
+                    has3dMesh = true;
+                    break;
+                }
+            }
+            if (has3dMesh) gameplayActors3d++;
         }
         int spriteGameplayActors = 0;
         foreach (SpriteRenderer sprite in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
-            if (sprite != null && sprite.gameObject.activeInHierarchy) spriteGameplayActors++;
-        int worldDepthCm = worldMeshes3d >= 2 ? Mathf.RoundToInt(Mathf.Max(0f, zMax - zMin) * 100f) : 0;
-        int cameraPerspective = Camera.main != null && !Camera.main.orthographic ? 1 : 0;
+            if (sprite != null && sprite.enabled && sprite.gameObject.activeInHierarchy) spriteGameplayActors++;
+        int worldDepthCm = worldMeshes3d >= 2
+            ? Mathf.RoundToInt(Mathf.Max(0f, zMax - zMin) * 100f) : 0;
+        int cameraPerspective = Camera.main != null && Camera.main.enabled
+            && !Camera.main.orthographic ? 1 : 0;
         bool pass = cameraPerspective == 1 && worldMeshes3d >= 2 && worldDepthCm >= 50
             && gameplayActors3d >= 1 && spriteGameplayActors == 0;
         Debug.Log("JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=" + GameId
