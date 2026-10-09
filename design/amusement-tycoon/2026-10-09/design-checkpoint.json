@@ -19,25 +19,33 @@
     "local_authoring_parts::5f19f60ed6254956bae44d601e31e29e5062d0f7d018b1b6840332a51c1fcc70:identity,playerFantasy": {
       "identity": "놀이공원 타이쿤의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 중심으로 설계됨. 게임 규칙은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어져 있으며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 구축됨. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함.",
       "playerFantasy": "플레이어는 시작 즉시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함."
+    },
+    "local_authoring_parts::5f19f60ed6254956bae44d601e31e29e5062d0f7d018b1b6840332a51c1fcc70:coreFun": {
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 구축됨. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함."
+    },
+    "local_authoring_parts::4990accc65fe1c6f417b82f4bfa70a821f6ca53b4256fbe729ec68886e0cc264:identity,playerFantasy,coreFun": {
+      "identity": "놀이공원 타이쿤의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 중심으로 설계됨. 게임 규칙은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어져 있으며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 구축됨. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함.",
+      "playerFantasy": "플레이어는 시작 즉시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어진 게임 규칙에 참여하며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 진행된다. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함.",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 구축됨. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 243175,
-      "lastMs": 42111,
+      "totalMs": 283151,
+      "lastMs": 39976,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:32:41.238Z"
+      "updatedAt": "2026-10-09T12:33:21.217Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T12:32:41.240Z",
+  "updatedAt": "2026-10-09T12:33:21.218Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1961,7 +1969,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:32:41.240Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:33:21.218Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
