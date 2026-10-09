@@ -80,25 +80,53 @@
         "worldChange": "중후반 두 시스템 간 실제 상태 교환이 발생하고, 이는 플레이어의 선택에 따라 세계가 변화하는 과정이다",
         "nextEvent": "다음 사건은 현재의 상태 변화와 인과적인 연결을 통해 계속되며, 이는 플레이어의 숙련과 발견에 의해 지속된다"
       }
+    },
+    "local_authoring_parts::0a7022ebd285e3341c40e4ea653e18ba2e41ae8954d05a95a72c8d8b50d9f7bb:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "역사",
+          "kind": "MATERIAL",
+          "gameplayEffect": "보드 게임 기반의 선택이 전략적 상호작용으로 변환됨"
+        },
+        {
+          "name": "철학",
+          "kind": "MATERIAL",
+          "gameplayEffect": "전략적 상호작용이 보드 게임 기반의 선택으로 변환됨"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "판타지 보드 게임",
+          "gameplayEffect": "플레이어가 매 단계별로 명확한 목표, 제한된 선택, 장애물 또는 시스템 퀘스트를 해결해야 하는 루프를 경험하는 것을 의미합니다."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "역사와 철학",
+          "gameplayEffect": "주요 행동, 대표 선택, 시그니처 세계 규칙과 직접적으로 연관되어 있는 창작 소재 및 메인/보조 장르 효과를 포함함"
+        }
+      ],
+      "cGenreInterlock": "역사와 철학은 플레이어의 선택에 따라 세계가 변화하며, 이는 주요 행동, 대표 선택, 시그니처 세계 규칙과 전략적 상호작용 사이에서 인과적으로 연결됩니다.",
+      "cWorldAndGameplayEffect": "역사와 철학을 바탕으로 한 보드 게임 기반의 선택이 전략적 상호작용으로 변환됨, 전략적 상호작용이 보드 게임 기반의 선택으로 변환됨, 중후반 두 시스템 간 실제 상태 교환이 실제로 일어나며, 이는 플레이어의 선택에 따라 세계가 변화하는 과정이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1059800,
-      "lastMs": 173170,
+      "totalMs": 1187729,
+      "lastMs": 127929,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:19:07.999Z"
+      "updatedAt": "2026-10-09T20:21:15.931Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:01:27.854Z",
-  "updatedAt": "2026-10-09T20:19:08.000Z",
+  "updatedAt": "2026-10-09T20:21:15.931Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1720,7 @@
     "162bf8034b6d5f91d7ab9018c7feb60bc1bba4a0b287ab44d2fb152c5dcfdd70": true,
     "31b7e9783497ce37cfc0caa8eccb4ec3e083e6cbeddb0776d7322841b2c47af6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:19:08.000Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:21:15.931Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
