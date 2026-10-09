@@ -132,6 +132,42 @@ assert.deepEqual(grammarPass.grammarCarryEvidence.carriedMajorAxes,['증언 네�
 assert.ok(grammarPass.grammarCarryEvidence.carriedSubElements.includes('평판'));
 assert.ok(grammarPass.grammarCarryEvidence.carriedDelveElements.includes('거짓말 연쇄'));
 assert.equal(grammarPass.grammarCarryEvidence.emergentGenreCarried,true);
+const v5Seed=structuredClone(grammarSeed);
+v5Seed.GAMEPLAY_SKETCH.version=5;
+const v5Fusion=v5Seed.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion;
+v5Fusion.formula='MAIN × A × B × C';
+v5Fusion.majorAxes[0].sourceMaterial='희극적 오해';
+v5Fusion.majorAxes[1].sourceMaterial='인식론';
+v5Fusion.themeFusion={
+  themes:[{name:'철학',kind:'MATERIAL'},{name:'엽기',kind:'MATERIAL'}],
+  genres:[{role:'PRIMARY',name:'미스터리'},{role:'SECONDARY',name:'코믹'}]
+};
+const authoredV5=structuredClone(grammarDesign);
+authoredV5.content.creativeGrammar={
+  mainIdentity:'소문을 현실로 바꾸며 그 결과를 추리하는 퍼즐극',
+  a:{system:'증언 네트워크',material:'희극적 오해',materialDomain:'연극',stateChange:'소문의 전달 순서에 따라 사람의 믿음과 공간 상태가 달라진다.'},
+  b:{system:'공간 퍼즐',material:'인식론',materialDomain:'철학',stateChange:'증언의 임계값에 따라 문이 열리고 다시 소문의 신뢰도가 변한다.'},
+  abCausality:'증언이 공간 상태를 바꾸며 바뀐 공간에 따라 새로운 증언과 거짓말의 비용이 달라진다.',
+  cThemes:[{name:'철학',kind:'MATERIAL',gameplayEffect:'진실과 책임의 윤리가 증언 평가 비용을 바꾼다.'},{name:'엽기',kind:'MATERIAL',gameplayEffect:'비정상적인 오해가 숨겨진 경로를 드러낸다.'}],
+  cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'다양한 단서의 진위를 검증하는 추리가 중심 목표를 이룬다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'우스운 오해가 현장 증언과 공간 퍼즐의 해법을 실제로 바꾼다.'}],
+  cGenreInterlock:'진실을 찾는 미스터리 과정에 코믹한 오해를 섞으면 증언의 신뢰와 접근 경로가 바뀐다.',
+  cWorldAndGameplayEffect:'철학과 엽기가 만든 사회적 금기가 탐색, 설득, 공간 전개를 변화시킨다.',
+  delveDiscoveries:Array.from({length:4},(_,i)=>({clue:'증언을 다른 순서로 듣고 반응을 관찰한다 '+i,discovery:'소문의 숨겨진 공통 원인과 연결을 발견한다 '+i,newChoice:'예전에는 없던 우회 통로와 대화 해결법을 선택한다 '+i})),
+  delveGrowthRule:'새 발견과 숙련 단계마다 두 시스템을 교차 응용해 끝없는 고급 운용을 추가한다.',
+  finalGameIdentity:'철학과 엽기 소재, 미스터리와 코믹 장르를 합친 증언 현실변형 퍼즐극'
+};
+const v5Score=scoreDesignGateV2({seed:v5Seed,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(v5Score.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'),false);
+assert.equal(v5Score.grammarCarryEvidence.creativityCarried,true);
+const invalidV5=structuredClone(authoredV5);
+invalidV5.content.creativeGrammar.cGenres[1].name='미스터리';
+const invalidResult=scoreDesignGateV2({seed:v5Seed,designRecord:invalidV5,cycleStatus,robloxGenreProfile:profile});
+assert.ok(invalidResult.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+const noSupportingGenre=structuredClone(authoredV5);
+noSupportingGenre.content.creativeGrammar.cGenres.pop();
+const noSupportingScore=scoreDesignGateV2({seed:v5Seed,designRecord:noSupportingGenre,cycleStatus,robloxGenreProfile:profile});
+assert.ok(noSupportingScore.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+
 const grammarDiluted=scoreDesignGateV2({seed:grammarSeed,designRecord,cycleStatus,robloxGenreProfile:profile});
 assert.ok(grammarDiluted.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
 assert.ok(grammarDiluted.rejectionReasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED'));
