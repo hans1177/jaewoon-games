@@ -1807,25 +1807,43 @@
         "OUTPUT"
       ],
       "fromSystem": "STAGE_GATE_SCORING_V2"
+    },
+    "local_authoring_parts::229d6b919508f14e603c954c2078abd00cbbae8fb96a0f82985c366b8c50f10a:toSystem,trigger,stateChange": {
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
+    },
+    "local_authoring_parts::1c6f3dc76bc33e58b21838f414eadcee3108b0983c783ff482095e2d3a0d231f:systemInterconnections:3": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2",
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "INPUT",
+      "stateChange": "FROM_INPUT_TO_SELECT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 119,
-      "successes": 116,
+      "calls": 120,
+      "successes": 117,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 10720967,
-      "lastMs": 94414,
+      "totalMs": 10810655,
+      "lastMs": 89688,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:50:55.847Z"
+      "updatedAt": "2026-10-09T06:52:25.536Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T06:50:55.847Z",
+  "updatedAt": "2026-10-09T06:52:25.538Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4170,7 +4188,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:50:55.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:52:25.538Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
