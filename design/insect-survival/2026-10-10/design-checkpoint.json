@@ -155,25 +155,191 @@
       "name": "combat strategy, risk evaluation, adaptive behavior",
       "purpose": "to evaluate environmental risks and make strategic decisions based on ecological feedback",
       "playerChoice": "selecting between resource gathering or combat to maximize survival progression through adaptive strategies in a dynamic environment with evolving threats and ecological consequences"
+    },
+    "local_authoring_parts::d61da667a55f6ca3b6b93f714814ce998415a1ea5be45a876837399c413b0548:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT",
+        "CHOICE",
+        "STATE_CHANGE",
+        "REWARD/THREAT",
+        "NEXT_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEXT_STATE"
+      ],
+      "name": "environmental impact → combat strategy → survival progression",
+      "purpose": "player's initial exploration of the habitat",
+      "playerChoice": "selecting between resource gathering or combat"
+    },
+    "local_authoring_parts::2886ad51998c74696d6591366a41c1b5a5992b482788cca174bb64d105da75a9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "to enable player agency in a small-scale ecological system through adaptive decision-making",
+          "playerChoice": "choose between gathering resources or engaging in combat based on environmental context and risk assessment"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "Define the core gameplay mechanics and causal relationships in a survival game focused on ecological adaptation and strategic decision-making.",
+          "playerChoice": "Selecting between gathering resources or engaging in combat based on environmental pressures and adaptive strategies."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "combat strategy, risk evaluation, adaptive behavior",
+          "purpose": "to evaluate environmental risks and make strategic decisions based on ecological feedback",
+          "playerChoice": "selecting between resource gathering or combat to maximize survival progression through adaptive strategies in a dynamic environment with evolving threats and ecological consequences"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "environmental impact → combat strategy → survival progression",
+          "purpose": "player's initial exploration of the habitat",
+          "playerChoice": "selecting between resource gathering or combat"
+        }
+      ]
+    },
+    "local_authoring_parts::95be194467f7da2bad8bc44a2f61930c0d1969a8cc1e4aa473dc17ae0c6ad2f4:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택",
+        "플레이어가 처음 접하는 생존 게임의 핵심은 '작은 세계에서 살아남기'이며, 이는 다음과 같은 상태 변화로 이어진다: 입력 → 선택 → 상태변화 → 보상/위험 → 다음 선택.",
+        "각 단계에서는 플레이어가 주체적으로 행동하여, 환경의 변화에 따른 대응과 새로운 선택을 거쳐, 생존의 깊이를 증대시킨다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "to enable player agency in a small-scale ecological system through adaptive decision-making",
+          "playerChoice": "choose between gathering resources or engaging in combat based on environmental context and risk assessment"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+          "purpose": "Define the core gameplay mechanics and causal relationships in a survival game focused on ecological adaptation and strategic decision-making.",
+          "playerChoice": "Selecting between gathering resources or engaging in combat based on environmental pressures and adaptive strategies."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "combat strategy, risk evaluation, adaptive behavior",
+          "purpose": "to evaluate environmental risks and make strategic decisions based on ecological feedback",
+          "playerChoice": "selecting between resource gathering or combat to maximize survival progression through adaptive strategies in a dynamic environment with evolving threats and ecological consequences"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "CHOICE",
+            "STATE_CHANGE",
+            "REWARD/THREAT",
+            "NEXT_CHOICE"
+          ],
+          "stateOutputs": [
+            "NEXT_STATE"
+          ],
+          "name": "environmental impact → combat strategy → survival progression",
+          "purpose": "player's initial exploration of the habitat",
+          "playerChoice": "selecting between resource gathering or combat"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 289978,
-      "lastMs": 35972,
+      "totalMs": 324427,
+      "lastMs": 34449,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:58:04.514Z"
+      "updatedAt": "2026-10-09T20:58:38.964Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T20:58:04.514Z",
+  "updatedAt": "2026-10-09T20:58:38.967Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1846,7 +2012,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:58:04.514Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:58:38.967Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
