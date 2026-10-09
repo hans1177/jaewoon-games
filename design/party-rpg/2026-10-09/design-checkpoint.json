@@ -1468,25 +1468,42 @@
     },
     "local_authoring_parts::8053839299709b0802f6d444688b2c3b99f2db57d063a21bb0d08aa947f5eb34:trigger": {
       "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환"
+    },
+    "local_authoring_parts::8053839299709b0802f6d444688b2c3b99f2db57d063a21bb0d08aa947f5eb34:stateChange": {
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
+    },
+    "local_authoring_parts::f9d3f821423fe63b1886fa7665c8a46eb469f36e50664e6519541565628fe351:systemInterconnections:4": {
+      "fromId": "START_GAME",
+      "toId": "BOARD_STATE",
+      "stateKeys": [
+        "{\"from\": \"START_GAME\", \"to\": \"BOARD_STATE\", \"purpose\": \"게임 시작 후 목표 설정 및 초기 상태 전환",
+        "playerChoice\": \"Make matches or deliberate puzzle moves, create combos, and use\n",
+        "fromSystem\": \"START_GAME\", \"toSystem\": \"BOARD_STATE\", \"trigger\": \"게임 시작 후 목표 설정및",
+        "stateChange\": \"게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야"
+      ],
+      "fromSystem": "START_GAME",
+      "toSystem": "BOARD_STATE",
+      "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환",
+      "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 162,
-      "successes": 162,
+      "calls": 163,
+      "successes": 163,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12264958,
-      "lastMs": 31357,
+      "totalMs": 12299518,
+      "lastMs": 34560,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:38:11.488Z"
+      "updatedAt": "2026-10-09T06:38:46.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:38:11.488Z",
+  "updatedAt": "2026-10-09T06:38:46.058Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3526,84 +3543,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "NEW_BOARD_STATE"
+          "path": "systemInterconnections",
+          "detail": "START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "NEW_BOARD_STATE"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "NEW_BOARD_STATE"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "NEW_BOARD_STATE"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "NEW_BOARD_STATE"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections: START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3618,9 +3567,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3635,9 +3584,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3652,9 +3601,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3669,26 +3618,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: BOARD_STATE→NEW_BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_GAME→BOARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3715,7 +3647,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 7
+    "designer_draft_slices::systems-progression": 8
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3754,10 +3686,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:38:11.488Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:38:46.054Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
