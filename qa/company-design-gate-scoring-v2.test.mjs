@@ -258,7 +258,7 @@ const authoredSpatialDesign=()=>{
     platformProfiles:{
       UNITY:{
         unityWebSpatialPresentation:{
-          dimension:'2.5D',
+          dimension:'3D',
           worldDepth:'실제 월드 오브젝트를 전경·중경·후경에 분리하고 깊이 정렬과 시차를 지역·이동 반응에 연동한다.',
           cameraAndOcclusion:'등각 투영 카메라가 깊이 좌표를 사용하고 앞쪽 물체가 뒤 캐릭터를 가리는 실제 가림 판정을 적용한다.',
           lightingAndMaterials:'기존 월드 오브젝트의 표면별 재질과 방향 광원, 지면 접지 그림자를 유지해 명암과 높이를 인식시킨다.',
@@ -292,12 +292,28 @@ assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_
 const flatWorld=authoredSpatialDesign();
 flatWorld.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
 assert.ok(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
+const pseudoDepth=authoredSpatialDesign();
+pseudoDepth.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2.5D';
+assert.ok(authoredRejections(pseudoDepth).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),
+  'owner policy rejects 2.5D world as final 3D gameplay');
 const markerOnly=authoredSpatialDesign();
 markerOnly.platformProfiles.UNITY.unityWebSpatialPresentation.worldDepth='2.5D';
 assert.ok(authoredRejections(markerOnly).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
 const true3d=authoredSpatialDesign();
 true3d.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
 assert.equal(authoredRejections(true3d).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+const repeatedWorld={contentVarietyPlan:{regions:[
+  {id:'first',traversal:'동일한 직선 길 하나를 끝까지 걸어간다.',landmark:'형태가 같은 돌 탑 하나가 길 옆에 있다.'},
+  {id:'second',traversal:'동일한 직선 길 하나를 끝까지 걸어간다.',landmark:'형태가 같은 돌 탑 하나가 길 옆에 있다.'}
+]}};
+const regionRejections=plan=>validateDesignAuthoringContent({design:plan,fields:['contentVarietyPlan']});
+assert.ok(regionRejections(repeatedWorld).some(row=>row.code==='DESIGN_REGION_PATH_LANDMARK_MONOTONY'),
+  'repeated straight path and landmark must not count as distinct regions');
+const alternateWorld=structuredClone(repeatedWorld);
+alternateWorld.contentVarietyPlan.regions[1].traversal='계단으로 올라가는 상층 지름길과 지하굴 우회로가 다시 광장에서 합류한다.';
+alternateWorld.contentVarietyPlan.regions[1].landmark='절벽에 매달린 오래된 수차와 그 뒤의 숨겨진 동굴 입구가 목표다.';
+assert.ok(!regionRejections(alternateWorld).some(row=>row.code==='DESIGN_REGION_PATH_LANDMARK_MONOTONY'),
+  'different route topology and distinct landmarks are required design evidence, not runtime proof');
 // 기존 게임의 표현 보존 설계에서도 MAIN/A/B/c/@는 실제 상태 입력과 출력으로 이어야 한다.
 const preserved=authoredSpatialDesign();
 const preservedRoles=preserved.signatureSystems;
