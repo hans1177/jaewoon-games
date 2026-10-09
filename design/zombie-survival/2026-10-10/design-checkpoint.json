@@ -411,25 +411,270 @@
           "playerChoice": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다."
         }
       ]
+    },
+    "local_authoring_parts::da3d5058cc9f3e9f32e4f22552cb1ea5f3a6562632fe284c874bdc09d1ab5739:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::84d59495b5ed99a3e9239db3b20a0a6fa373ca0777e77d395d83d100cc0cc24f:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 → 상태변화(성장 상태 전환 및 자원 확대) → 보상/위험/다음 선택의 연결",
+        "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어 실제 세계 상태 변화가 일어난다.",
+        "생존 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "선택적 진입, 성장 가능성, 심리적 영향 제공",
+          "playerChoice": "주요 행동(생존) 기반의 선택 및 진입 방식 결정"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 주요 행동 및 전술을 정의합니다.",
+          "playerChoice": "주요 행동인 '생존' 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 됩니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 전략적 선택 및 자원 배분 기능",
+          "playerChoice": "업그레이드 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성되고, 다음 사건이 형성된다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템 - 선택적 진입 및 상태 전환",
+          "purpose": "플레이어가 주요 행동인 '생존' 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며, 이는 단순한 선택에서 숙련으로 바뀌고 다음 질문으로 이어지게 된다.",
+          "playerChoice": "업그레이드 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성되고, 다음 사건이 형성된다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템 - 선택적 진입 및 상태 전환",
+          "purpose": "플레이어가 주요 행동인 '생존' 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다.",
+          "playerChoice": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "좀비 생존기은 플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임이다.",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "업그레이드",
+          "material": "보상/확장",
+          "materialDomain": "진행",
+          "stateChange": "성장 상태 전환 및 자원 확대 기회 제공"
+        },
+        "b": {
+          "system": "협력",
+          "material": "전략적 선택",
+          "materialDomain": "선택권",
+          "stateChange": "자원 배분 및 위험 분담 조건 설정이 있는 새로운 선택 가능 구조"
+        },
+        "abCausality": "주요 행동 → 업그레이드 선택 → 협력 선택의 상호작용으로 인해 실제 세계 상태 변화가 일어난다.",
+        "abEvolution": {
+          "aChangesB": "업그레이드 선택이 협력 선택의 우선순위를 바꾸고, 보상과 위험에 대한 기회비용이 달라진다.",
+          "bChangesA": "협력 선택이 업그레이드 선택의 상태와 경로를 바꾼다.",
+          "lateGameChange": "최종 게임 정체성이 주요 행동·업그레이드·협력의 인과 관계를 통해 형성된다."
+        },
+        "materialFusion": {
+          "contrast": "보물함은 단순한 아이템이 아니라 진입 방식, 성장 가능성, 심리적 영향을 포함하는 시스템이다.",
+          "causalBridge": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 세계 상태 변화가 실제로 발생한다.",
+          "removalConsequence": "KARMA_RETURN 인과 제거 시 세계 규칙과 MAIN×A×B×C의 관계가 평범한 기능 조합으로 돌아간다."
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 실제 세계 상태 변화가 일어난다.",
+          "characterConflict": "주요 인물의 목표는 선택에 따라 달라지고, 두려움은 상황별로 변형되며, 이는 플레이어의 선택과 세계 규칙 간의 충돌로 이어진다.",
+          "playerChoice": "업그레이드 선택 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성된다.",
+          "worldChange": "주요 행동 → 업그레이드 → 협력의 인과 관계를 통해 실제 세계 상태 변화가 일어나고, 다음 사건이 형성된다.",
+          "nextEvent": "새로운 선택 및 진입 방식이 제공되고, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통한 새 정체성으로 형성된다."
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택적 진입, 성장 가능성, 심리적 영향"
+          },
+          {
+            "name": "협력",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 배분, 위험 분담, 선택권 확대"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "선택적 진입, 성장 가능성, 심리적 영향"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "협력",
+            "gameplayEffect": "자원 배분, 위험 분담, 선택권 확대"
+          }
+        ],
+        "cGenreInterlock": "생존와 협력을 통한 상호작용은 플레이어의 선택에 따라 달라지고, 보조 장르 제거 시 생존/협력의 순서가 변형되며, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통해 형성된다.",
+        "cWorldAndGameplayEffect": "생존과 협력은 선택적 진입, 성장 가능성, 심리적 영향을 포함하며, 세계 상태 변화는 실제 선택 및 진입 방식으로 이뤄진다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 실제 세계 상태 변화가 일어난다.",
+            "discovery": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다.",
+            "newChoice": "새로운 선택 및 진입 방식이 제공되고, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통한 새 정체성으로 형성된다."
+          },
+          {
+            "clue": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 실제 세계 상태 변화가 일어난다.",
+            "discovery": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다.",
+            "newChoice": "새로운 선택 및 진입 방식이 제공되고, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통한 새 정체성으로 형성된다."
+          },
+          {
+            "clue": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 실제 세계 상태 변화가 일어난다.",
+            "discovery": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다.",
+            "newChoice": "새로운 선택 및 진입 방식이 제공되고, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통한 새 정체성으로 형성된다."
+          },
+          {
+            "clue": "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어, 실제 세계 상태 변화가 일어난다.",
+            "discovery": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다.",
+            "newChoice": "새로운 선택 및 진입 방식이 제공되고, 게임 정체성이 주요 행동, 업그레이드, 협력의 인과 관계를 통한 새 정체성으로 형성된다."
+          }
+        ],
+        "delveGrowthRule": "플레이어는 선택에 따라 진입 방식, 성장 가능성, 심리적 영향을 배우며, 이는 단순한 선택에서 숙련으로 바뀌고, 발견 후 다음 질문으로 이어지게 된다.",
+        "finalGameIdentity": "주요 행동, 업그레이드, 협력의 인과 관계를 통해 형성된 새 정체성이다."
+      },
+      "playerFantasy": "플레이어는 주요 행동인 '생존'을 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며, 이는 단순한 선택에서 숙련으로 바뀌고, 발견 후 다음 질문으로 이어지게 된다.",
+      "coreFun": "주요 행동은 플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임이다. 입력/선택 → 상태변화(성장 상태 전환 및 자원 확대) → 보상/위험/다음 선택의 연결을 포함하며, 인과 관계를 통한 실제 세계 상태 변화가 일어난다.",
+      "coreLoop": [
+        "입력/선택 → 상태변화(성장 상태 전환 및 자원 확대) → 보상/위험/다음 선택의 연결",
+        "플레이어의 선택이 주요 행동, 업그레이드, 협력의 결과로 연결되어 실제 세계 상태 변화가 일어난다.",
+        "생존 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "선택적 진입, 성장 가능성, 심리적 영향 제공",
+          "playerChoice": "주요 행동(생존) 기반의 선택 및 진입 방식 결정"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 주요 행동 및 전술을 정의합니다.",
+          "playerChoice": "주요 행동인 '생존' 기반의 선택적 진입, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 됩니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE",
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템",
+          "purpose": "플레이어가 흐름처럼 빠르게 진입하여, 단순한 죽음에서 생명을 갈아내는 선택형 생존 게임의 전략적 선택 및 자원 배분 기능",
+          "playerChoice": "업그레이드 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성되고, 다음 사건이 형성된다."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템 - 선택적 진입 및 상태 전환",
+          "purpose": "플레이어가 주요 행동인 '생존' 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며, 이는 단순한 선택에서 숙련으로 바뀌고 다음 질문으로 이어지게 된다.",
+          "playerChoice": "업그레이드 또는 협력 선택을 통해 새로운 경로와 위험·보상이 생성되고, 다음 사건이 형성된다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT"
+          ],
+          "stateOutputs": [
+            "RESULT"
+          ],
+          "name": "생존 진입 시스템 - 선택적 진입 및 상태 전환",
+          "purpose": "플레이어가 주요 행동인 '생존' 기반으로, 업그레이드 선택과 협력 선택을 통해 진입 방식, 성장 가능성, 심리적 영향을 배우며 숙련으로 바뀌고 다음 질문으로 이어지게 된다.",
+          "playerChoice": "업그레이드 또는 협력 선택이 새로운 경로와 위험·보상으로 생성되고, 다음 사건이 형성된다."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1449253,
-      "lastMs": 109128,
+      "totalMs": 1543459,
+      "lastMs": 94206,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:38:56.505Z"
+      "updatedAt": "2026-10-09T18:40:30.714Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:14:47.214Z",
-  "updatedAt": "2026-10-09T18:38:56.507Z",
+  "updatedAt": "2026-10-09T18:40:30.725Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2135,7 +2380,9 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::76cef6d2bb744dfb26f82208f68ca706050a6f9fa2ed8ae110221a7705b9cecd:signatureSystems:1": 1
@@ -2144,8 +2391,16 @@
   "localAuthoringSplits": {
     "5b1c35ed59e786a73d9f4b30700e88e8d49e4deb1f9ec003b20cce05b9c17bd6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:38:56.507Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:40:30.717Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/zombie-survival/2026-10-10/design-seed.json",
+    "contentDigest": "3437d0592509c903fd5f36df9da55aaddbe85de7db02bf1ceb580e0975b51959",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
