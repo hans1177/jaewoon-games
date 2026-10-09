@@ -3709,6 +3709,22 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'For all three surfaces, keep gameplay-critical tick and hit/health results invariant. Compare exact-revision before/after measurements (CPU/GPU frame time, memory, draw/animation/AI cost where observable) using existing platform runtime QA. If unavailable, report performance UNVERIFIED; never fabricate a runtime/FPS PASS.',
     '[PLATFORM PERFORMANCE SOURCE IMPLEMENTATION END]'
   ].join('\n'):'';
+  // 유니티 웹 3D 제작은 기존 Vibe 코드 생성/학습 경로에서 정밀 책임 함수 수정을 우선한다.
+  // 과거 검증 실패를 같은 책임 함수의 원인별 수리로 연결하고, 가짜 3D 표식으로 통과시키지 않는다.
+  const unityWeb3dCodingBlock=clean(order.target).toLowerCase()==='unity'
+    &&(order.unityWebDevelopment===true||order.selectedTask?.firstStageUnityWeb===true
+      ||(order.evidence||[]).some(value=>clean(value)==='unity-web-first-stage'))?[
+    '[UNITY WEB NATIVE 3D CODING METHOD BEGIN]',
+    'Owner directive 2026-10-09: every new and existing Unity Web game must render real 3D. The canonical project is unity-games/<gameId>, WebGL output is web-games/<gameId>. 2D and 2.5D world rendering cannot pass.',
+    'Read current responsible Unity C# methods and approved design first. Trace the requested behavior and verified same-game failure code to its real owner; edit that method in place. Do not create wrapper overrides, duplicated renderers, shadow asset registries, or alternate Web gameplay codebases.',
+    'Build or preserve genuinely depth-bearing Unity scenes, 3D meshes, 3D camera and world-space objects. Use MeshFilter/MeshRenderer or SkinnedMeshRenderer, Unity 3D colliders, native materials and real mesh triangle topology. Physics2D, Rigidbody2D, SpriteRenderer and Tilemap are not substitutes for the 3D world. UI images/icons, 2D textures and audio may remain support resources.',
+    'For spatial gameplay library assets (characters, creatures, environment, buildings, weapons, props, terrain), reuse only compatible genuine 3D source/derived native assets. Retain original assets, style/license evidence and binding lineage. A flat sprite, billboard, renamed asset, 3D marker or visual-only counter does not satisfy asset authoring.',
+    'Keep game logic, authoritative hit detection, combat timing, progression, rewards, drop rates, economy, multiplayer session authority and save keys/schema unchanged. Convert presentation in the existing scene/renderer, not by replacing GameCore, deleting a save key, or changing physics damage.',
+    'Emit MESH_INTEGRITY only from actual Unity runtime inspection of the rendered MeshFilter meshes and triangle indices/material/texture validity. Every Unity Web game must produce genuine inspected>0, validMeshes=inspected, triangles>0, materialPass=1 and texturePass=1 evidence before browser QA; do not hardcode counts or success.',
+    'When the runtime reveals a missing 3D proof, preserve the exact failure fingerprint, repair the responsible scene/asset binding, rebuild WebGL, and rerun mobile browser input, core gameplay, save-restore and independent QA/regression. Source changes and model claims alone are UNVERIFIED.',
+    'Learn coding methods only from independently verified functional source edits and runtime outcomes. Prefer the latest verified same-game strategy, preserve prior passing methods, and report uncertainty rather than inventing success.',
+    '[UNITY WEB NATIVE 3D CODING METHOD END]'
+  ].join('\n'):'';
   const productionFamilies=motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)];
   const taskRequests=unique([order.selectedTask?.goal,order.selectedTask?.focus]);
   if(!taskRequests.length&&!motionUnit&&Buffer.byteLength(String(order.goal||''),'utf8')<=6000&&clean(order.goal))taskRequests.push(String(order.goal));
@@ -3918,6 +3934,7 @@ productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
 robloxSourceCoaching?.block||'',
+unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
