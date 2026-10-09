@@ -561,25 +561,106 @@
         "DEFENDER_LAYOUT"
       ],
       "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION"
+    },
+    "local_authoring_parts::06a491e790a8d1b3accd482b452a0ab43b3da8f94fb276f5323a279d9bb7f131:toSystem,trigger,stateChange": {
+      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+      "trigger": "INSECT_WAVE_PATTERN",
+      "stateChange": "STATE_CHANGE_EFFECT"
+    },
+    "local_authoring_parts::8e3339eabbcbf7763bc2f53df4a5b5142b25ac56201c7373e8f8acae52429cf2:systemInterconnections:4": {
+      "fromId": "INSECT_WAVE_PATTERN",
+      "toId": "DEFENDER_LAYOUT",
+      "stateKeys": [
+        "INSECT_WAVE_PATTERN",
+        "DEFENDER_LAYOUT"
+      ],
+      "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+      "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+      "trigger": "INSECT_WAVE_PATTERN",
+      "stateChange": "STATE_CHANGE_EFFECT"
+    },
+    "local_authoring_parts::c6cc95692c970ec76d0d55c1edb2e341d046d3cf2a32580e22f4b6128e798156:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 19,
+      "calls": 23,
+      "successes": 20,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2186517,
-      "lastMs": 52446,
+      "totalMs": 2236114,
+      "lastMs": 49597,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T11:57:27.428Z"
+      "updatedAt": "2026-10-09T11:58:17.027Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T11:57:27.428Z",
+  "updatedAt": "2026-10-09T11:58:17.030Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2780,7 +2861,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:57:27.428Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:58:17.030Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
