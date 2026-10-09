@@ -1652,25 +1652,28 @@
       "toSystem": "CORE_LOOP_DESIGN_0_BASELINE_V1_0123456789ABCDEF0123456789ABCDEFABCDEFGHIJKLMNOPQRSTUVWXYZRSTUVWXYZABCD_EF0123456789ABCDFGHIJKL_MNO_PQRS_TUV_WXYZ_1234567890_1234567890_1234567890_12",
       "trigger": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE",
       "stateChange": "FROM_DEFENSE_COVERAGE_LEVEL_X_TO_DEFENSE_COVERAGE_LEVEL_Y, RESOURCE_ACUMULATION_VALUE_INCREMENTED, TACTICAL_FLEXIBILITY_VALUE_INCREMENTED"
+    },
+    "local_authoring_parts::c5286866aced21dc8fb16bc2417ad325a55c7d91c2d015bc5fee8f260babd352:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 102,
-      "successes": 99,
+      "calls": 103,
+      "successes": 100,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7652073,
-      "lastMs": 41218,
+      "totalMs": 7683420,
+      "lastMs": 31347,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:16:26.820Z"
+      "updatedAt": "2026-10-09T05:16:58.176Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T05:16:26.827Z",
+  "updatedAt": "2026-10-09T05:16:58.176Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4095,10 +4098,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:16:26.823Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:16:58.176Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
