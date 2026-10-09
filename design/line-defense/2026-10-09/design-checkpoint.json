@@ -908,25 +908,34 @@
       "toSystem": "SIGNATURE_SYSTEM_1",
       "trigger": "ENEMY_WAVE detected",
       "stateChange": "BATTLE_STATUS updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::6db1331101c3e9dcf30c1dd892baed6bfd8edc009e9e36fecf2866578ece79f6:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 65,
+      "calls": 66,
+      "successes": 66,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4772896,
-      "lastMs": 90035,
+      "totalMs": 4805784,
+      "lastMs": 32888,
       "lastError": null,
-      "updatedAt": "2026-10-08T23:53:54.528Z"
+      "updatedAt": "2026-10-09T01:20:39.607Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T01:20:06.715Z",
+  "updatedAt": "2026-10-09T01:20:39.607Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3267,10 +3276,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-08T23:53:54.531Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:20:39.607Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
