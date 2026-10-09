@@ -180,6 +180,26 @@ const repeatedCTheme=structuredClone(authoredV5);
 repeatedCTheme.content.creativeGrammar.cThemes[1].name='철학';
 assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedCTheme,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
 // V5에는 더 이상 소문자 c 보조 시스템을 강제하지 않는다. C 소재·장르 검증은 별도로 유지한다.
+// 아직 시스템 간에 공통 입출력 키가 없는 V5는 연결 조각 작성 전에 되돌려 수리한다.
+const v5HandoffSeed={GAMEPLAY_SKETCH:{version:5}};
+const noSharedStateRules=['MAIN','A','B','DELVE'].map((grammarRole,index)=>({
+  id:'RULE_'+index,grammarRole,name:'Rule '+index,
+  purpose:'Player choices must affect a connected approved system.',
+  playerChoice:'Choose an action based on current world state.',
+  stateInputs:['ResourceBefore'],stateOutputs:['ResourceAfter']
+}));
+const noHandoffReview=validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']});
+assert.ok(noHandoffReview.some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+const sharedStateRules=noSharedStateRules.map(row=>({...row,stateInputs:['SharedWorldState'],stateOutputs:['SharedWorldState']}));
+assert.equal(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:sharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+const oneWayRules=sharedStateRules.map(row=>({...row}));
+oneWayRules[1]={...oneWayRules[1],stateInputs:['AInput'],stateOutputs:['AOutput']};
+assert.ok(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:oneWayRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+assert.equal(validateDesignAuthoringContent({seed:{GAMEPLAY_SKETCH:{version:4}},design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+
 const withoutLegacyC=structuredClone(authoredV5);
 withoutLegacyC.content.signatureSystems=withoutLegacyC.content.signatureSystems.filter(row=>row.grammarRole!=='c');
 const withoutLegacyCScore=scoreDesignGateV2({seed:v5Seed,designRecord:withoutLegacyC,cycleStatus,robloxGenreProfile:profile});
