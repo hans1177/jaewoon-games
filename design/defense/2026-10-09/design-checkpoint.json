@@ -1690,25 +1690,28 @@
       "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
       "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다.",
       "stateChange": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
+    },
+    "local_authoring_parts::cc04b2e44cf9012c0ce6329682969a951869a94bb393c85eb740933c0c1cc4a6:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 109,
-      "successes": 106,
+      "calls": 110,
+      "successes": 107,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7876846,
-      "lastMs": 35394,
+      "totalMs": 7908671,
+      "lastMs": 31825,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:20:11.616Z"
+      "updatedAt": "2026-10-09T05:20:43.444Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T05:20:11.617Z",
+  "updatedAt": "2026-10-09T05:20:43.444Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4133,7 +4136,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:20:11.617Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:20:43.444Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
