@@ -9,7 +9,7 @@ import {execFileSync} from 'node:child_process';
 
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
-const native3dGameSource='using UnityEngine; public class Game:MonoBehaviour { void Awake(){ Camera sceneCamera=Camera.main; var world=GameObject.CreatePrimitive(PrimitiveType.Cube); world.transform.position=new Vector3(0f,1f,2f); } }\\n';
+const native3dGameSource='using UnityEngine; public class Game:MonoBehaviour { void Awake(){ Camera sceneCamera=Camera.main; var world=GameObject.CreatePrimitive(PrimitiveType.Cube); world.transform.position=new Vector3(0f,1f,2f); } }\n';
 
 
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
@@ -48,6 +48,19 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.f0Native3dSourcePreflight.camera,true);
 
     assert.equal(req.native3dRuntimeMeshQaRequired,true);
+    // 3D 표시만 있는 빈 게임·주석은 F0 통과 근거가 아니다.
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
+      'using UnityEngine; public class Game:MonoBehaviour {} // GameObject.CreatePrimitive(PrimitiveType.Cube) Camera.main new Vector3(0,1,2)\\n');
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
+    fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),native3dGameSource);
+    // 게임플레이 스프라이트가 C#이 아닌 prefab에 숨겨 있어도 차단한다.
+    const prefabDir=path.join(root,'Assets','Prefabs');
+    fs.mkdirSync(prefabDir,{recursive:true});
+    const oldPrefab=path.join(prefabDir,'LegacyWorld.prefab');
+    fs.writeFileSync(oldPrefab,'--- !u!212 &1\\nSpriteRenderer: {}\\n');
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'}),/Command failed/);
+    fs.rmSync(oldPrefab);
+
     // 같은 원본 프로젝트에서 2D 물리를 추가하면 기존 빌드 진입점이 거부해야 한다.
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
       'using UnityEngine; public class Game:MonoBehaviour { Rigidbody2D body; }\\n');
