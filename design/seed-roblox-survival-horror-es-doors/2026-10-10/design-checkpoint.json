@@ -194,25 +194,42 @@
         "타겟을 풀 때는 매칭이나 정교한 패턴 생성, 즉각적인 피드백을 통해 문제를 해결하는 방식으로 플레이어의 선택이 이루어지며, 성공하면 다음 레벨 또는 새로운 매표 형태로 전환된다.",
         "이 과정에서 시간의 흐름, 감정적 반응, 캐릭터 진화 등 다양한 요소들이 영향을 미쳐 게임의 깊이와 재미를 증대시킨다."
       ]
+    },
+    "local_authoring_parts::575f2d8f7bedf1d75ef14d9dbdcb9fb14ecc0602f8ae1561b57c4f783d091011:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "levelGoal",
+        "movesLeft",
+        "obstacles"
+      ],
+      "stateOutputs": [
+        "newLevelState",
+        "rewards",
+        "nextStage"
+      ],
+      "name": "시간 흐름 기반 레벨 진입 시스템",
+      "purpose": "플레이어가 게임 시작 시 맵에 명확한 목표를 설정하고, 제한된 이동 횟수 및 장애물로 구성된 레벨을 선택하여 문제 해결을 위해 타겟을 풀어야 한다.",
+      "playerChoice": "타겟을 풀 때는 매칭이나 정교한 패턴 생성, 즉각적인 피드백을 통해 문제를 해결하는 방식으로 플레이어의 선택이 이루어지며, 성공하면 다음 레벨 또는 새로운 매표 형태로 전환된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 766473,
-      "lastMs": 108412,
+      "totalMs": 877001,
+      "lastMs": 110528,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:44:45.642Z"
+      "updatedAt": "2026-10-09T18:46:36.172Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:31:59.142Z",
-  "updatedAt": "2026-10-09T18:44:45.642Z",
+  "updatedAt": "2026-10-09T18:46:36.172Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1805,7 +1822,7 @@
   "localAuthoringSplits": {
     "d9766de94aa258ed9a14a65adabaab754c98eac49fcc1b39d29d5402bd96b4cf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:44:45.642Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:46:36.172Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
