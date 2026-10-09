@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::f170af6295259dcb6a01566a07d8197fbbc32f0e199970aba39a1b9f68f6740a:identity": {
+      "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 90142,
+      "lastMs": 90142,
+      "lastError": null,
+      "updatedAt": "2026-10-09T06:53:27.585Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T06:51:57.236Z",
-  "updatedAt": "2026-10-09T06:51:57.323Z",
+  "updatedAt": "2026-10-09T06:53:27.585Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T06:53:27.585Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
