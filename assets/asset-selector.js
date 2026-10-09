@@ -276,8 +276,12 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       const axes = unique((Array.isArray(proof.distinctAxes)?proof.distinctAxes:[]).map(v=>text(v).toUpperCase()));
       const structural = ['SILHOUETTE','BODY_PROPORTION','OUTFIT_EQUIPMENT','BODY_PARTS'].some(axis=>axes.includes(axis));
       const motion = ['STANCE_GAIT','SIGNATURE_MOTION'].some(axis=>axes.includes(axis));
-      const verified = text(proof.gameId)===text(gameId)&&proof.runtimeBeforeAfterPass===true
-        &&proof.nativePlatformPass===true&&axes.length>=3&&structural&&motion;
+      const baselineCapture=text(proof.baselineCaptureId),candidateCapture=text(proof.candidateCaptureId);
+      const verified = text(proof.gameId)===text(gameId)
+        &&baselineCapture&&candidateCapture&&baselineCapture!==candidateCapture
+        &&text(proof.nativeRuntimeEvidenceId)&&text(proof.candidateRevision)
+        &&proof.runtimeBeforeAfterPass===true&&proof.nativePlatformPass===true
+        &&axes.length>=3&&structural&&motion;
       return Object.freeze({sourceAssetId:asset.id,gameId:text(gameId),genre:text(genre),
         verified,minimumDistinctAxes:3,structuralAndMotionRequired:true,colorOnlyForbidden:true,
         productionAction:verified?'USE_VERIFIED_GAME_VARIANT':'AUTHOR_AND_QA_VARIANT_FROM_SHARED_3D_MASTER'});
