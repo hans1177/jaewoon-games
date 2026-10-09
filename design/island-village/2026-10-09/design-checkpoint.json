@@ -1202,25 +1202,43 @@
     },
     "local_authoring_parts::16ee0e9393063bc6ce76f983438ec1cb071bc7ffb3713623f804d15a2b573405:toSystem": {
       "toSystem": "Village infrastructure management system"
+    },
+    "local_authoring_parts::16ee0e9393063bc6ce76f983438ec1cb071bc7ffb3713623f804d15a2b573405:trigger": {
+      "trigger": "Player selects specific island resources to gather, initiating the resource accumulation process."
+    },
+    "local_authoring_parts::16ee0e9393063bc6ce76f983438ec1cb071bc7ffb3713623f804d15a2b573405:stateChange": {
+      "stateChange": "Player selects specific island resources to gather, initiating the resource accumulation process. This action triggers the Island resources gathering system to transition into the Resource accumulation state. The player's choice of resources is recorded as the state input for the Island resources gathering system. The system then processes this input to emit"
+    },
+    "local_authoring_parts::7e5f0b3251b16f5113c1656d8aec425fcb092b21ab25ce8620156a649d1a4fea:systemInterconnections:1": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "resource_accumulation",
+        "infrastructure_upgrade"
+      ],
+      "fromSystem": "Island resources gathering system",
+      "toSystem": "Village infrastructure management system",
+      "trigger": "Player selects specific island resources to gather, initiating the resource accumulation process.",
+      "stateChange": "Player selects specific island resources to gather, initiating the resource accumulation process. This action triggers the Island resources gathering system to transition into the Resource accumulation state. The player's choice of resources is recorded as the state input for the Island resources gathering system. The system then processes this input to emit"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 98,
+      "calls": 100,
+      "successes": 100,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5892742,
-      "lastMs": 96198,
+      "totalMs": 6078790,
+      "lastMs": 96083,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:39:49.521Z"
+      "updatedAt": "2026-10-09T02:42:55.573Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T02:39:49.521Z",
+  "updatedAt": "2026-10-09T02:42:55.576Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3621,7 +3639,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:39:49.521Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:42:55.576Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
