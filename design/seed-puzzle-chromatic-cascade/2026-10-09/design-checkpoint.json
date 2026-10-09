@@ -1013,25 +1013,42 @@
         "END_MATCH"
       ],
       "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46"
+    },
+    "local_authoring_parts::da441cc49790f99a270eafb50486575091f1b2ab08362521aae0d77c7d00a6e7:toSystem,trigger,stateChange": {
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02의 상태 교환이 이루어짐"
+    },
+    "local_authoring_parts::353877005d0f5031f865199646a1a78566afc7b0436e70639308d6fb5acecd42:systemInterconnections:0": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02의 상태 교환이 이루어짐"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 81,
-      "successes": 81,
+      "calls": 82,
+      "successes": 82,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4522809,
-      "lastMs": 48014,
+      "totalMs": 4629579,
+      "lastMs": 106770,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:41:27.738Z"
+      "updatedAt": "2026-10-09T01:43:14.509Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T01:41:27.738Z",
+  "updatedAt": "2026-10-09T01:43:14.510Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3214,7 +3231,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:41:27.738Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:43:14.510Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
