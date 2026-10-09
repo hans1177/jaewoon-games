@@ -551,25 +551,42 @@
     },
     "local_authoring_parts::421b114ed7b77e7bda8a4a49c76116d4ae757e0c4c981cf87798c61a29de4ab3:trigger": {
       "trigger": "ENEMY_WAVE 및 TOWER_PLACEMENT의 조합이 다음 월드 상태로 전환됨: 게임 상태는 ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 이전된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::421b114ed7b77e7bda8a4a49c76116d4ae757e0c4c981cf87798c61a29de4ab3:stateChange": {
+      "stateChange": "ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 전환됨: 게임 상태는 ENEMY_WAVE 데이터가 로딩되며, 사용자가 TOWER_PLACEMENT 옵션 중 하나를 선택하여 방어 전략이 생성된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::93b2ce422582fbc73464dc6da56fb877088daa11f2249e22cd2d41c67688ed74:systemInterconnections:2": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRATEGY",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT",
+        "DEFENSE_STRATEGY",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE",
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE 및 TOWER_PLACEMENT의 조합이 다음 월드 상태로 전환됨: 게임 상태는 ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 이전된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다.",
+      "stateChange": "ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 전환됨: 게임 상태는 ENEMY_WAVE 데이터가 로딩되며, 사용자가 TOWER_PLACEMENT 옵션 중 하나를 선택하여 방어 전략이 생성된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 36,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2849093,
-      "lastMs": 101377,
+      "totalMs": 2950361,
+      "lastMs": 101268,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:29:52.097Z"
+      "updatedAt": "2026-10-09T01:31:33.367Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T01:29:52.097Z",
+  "updatedAt": "2026-10-09T01:31:33.368Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3064,7 +3081,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:29:52.097Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:31:33.368Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
