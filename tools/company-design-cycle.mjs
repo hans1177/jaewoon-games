@@ -518,9 +518,26 @@ const CREATIVE_GENRE={type:'object',required:['role','name','gameplayEffect'],pr
   name:{type:'string',minLength:2,maxLength:180},
   gameplayEffect:{type:'string',minLength:16,maxLength:650}
 },additionalProperties:false};
-const CREATIVE_GRAMMAR={type:'object',required:['mainIdentity','a','b','abCausality','cThemes','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity'],properties:{
+const CREATIVE_GRAMMAR={type:'object',required:['mainIdentity','a','b','abCausality','abEvolution','materialFusion','storyCausalChain','cThemes','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity'],properties:{
   mainIdentity:{type:'string',minLength:15,maxLength:700},a:CREATIVE_AXIS,b:CREATIVE_AXIS,
   abCausality:{type:'string',minLength:35,maxLength:900},
+  abEvolution:{type:'object',required:['aChangesB','bChangesA','lateGameChange'],properties:{
+    aChangesB:{type:'string',minLength:25,maxLength:700},
+    bChangesA:{type:'string',minLength:25,maxLength:700},
+    lateGameChange:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  materialFusion:{type:'object',required:['contrast','causalBridge','removalConsequence'],properties:{
+    contrast:{type:'string',minLength:25,maxLength:700},
+    causalBridge:{type:'string',minLength:25,maxLength:700},
+    removalConsequence:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  storyCausalChain:{type:'object',required:['cause','characterConflict','playerChoice','worldChange','nextEvent'],properties:{
+    cause:{type:'string',minLength:20,maxLength:700},
+    characterConflict:{type:'string',minLength:20,maxLength:700},
+    playerChoice:{type:'string',minLength:20,maxLength:700},
+    worldChange:{type:'string',minLength:20,maxLength:700},
+    nextEvent:{type:'string',minLength:20,maxLength:700}
+  },additionalProperties:false},
   cThemes:{type:'array',minItems:2,maxItems:2,items:CREATIVE_THEME},
   cGenres:{type:'array',minItems:2,maxItems:2,items:CREATIVE_GENRE},
   cGenreInterlock:{type:'string',minLength:30,maxLength:900},
@@ -832,7 +849,7 @@ function repairStructureContract(fields){
   if(fields.includes('identity'))rules.push('identity: 공백 포함 최소 60자 이상의 구체적 게임 정체성. 무슨 게임인지와 같은 장르와의 차이를 즉시 읽을 수 있고, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다.');
   if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지. 관찰자 설명이 아니라 플레이어가 실제로 무엇을 하는지 명시.');
   if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명.');
-  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 아무 주제/소재 두 개를 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
+  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 materialFusion에서 A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지·하나를 빼면 사라지는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다. creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 아무 주제/소재 두 개를 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
   if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
   if(fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템. 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상.');
   if(fields.includes('platformProfiles'))rules.push('Unity WebGL은 게임플레이 화면에 2.5D 또는 3D 그래픽을 설계 단계부터 강제한다. platformProfiles.UNITY.unityWebSpatialPresentation.dimension=2.5D 또는 3D를 명시하고 worldDepth에는 전/중/후경 깊이·3D 월드 오브젝트 등 실제 공간 구성, cameraAndOcclusion에는 깊이 카메라와 오브젝트 가림, lightingAndMaterials에는 입체 조명·접지 그림자·재질, mobileWebglEvidence에는 모바일 WebGL 실제 플레이·전후 비교·독립 QA 방법을 구체적으로 적는다. 평면 스프라이트/DOM 카드·CSS 장식·2D 태그만으로 통과할 수 없다. 2D HUD는 허용하고 기존 체력·공격력·경제·세이브는 그대로 유지한다.');
