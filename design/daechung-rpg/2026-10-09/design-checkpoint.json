@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::bc0c5bcdcc938cee791694220c116fd5e3dd45323dfffeb7274afe8fe03f00e8:identity": {
+      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG. 플레이어는 4직업/전직 R15 시각 언어를 사용하며, AI 동료는 격파한 보스의 실루엣 및 핵심 이펙트를 그대로 계승한다. 게임은 로블로X 플랫폼에 맞게 최소 2.5D 이상의 구현이며, 레벨 성장, 무기/방어구 성장, 5포탈 지역 전투 등 기능이 포함된다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 100901,
+      "lastMs": 100901,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:45:12.171Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:43:31.251Z",
-  "updatedAt": "2026-10-09T12:43:31.265Z",
+  "updatedAt": "2026-10-09T12:45:12.171Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1428,5 +1444,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:45:12.171Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
