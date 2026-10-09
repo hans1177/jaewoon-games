@@ -1592,25 +1592,51 @@
       "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
       "trigger": "worldState→targetGoal",
       "stateChange": "worldState → targetGoal"
+    },
+    "local_authoring_parts::dafa209fae2dd497d4ec2403f4ae7b0444d1645e139a34c956e77a4a78b3786f:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "worldState",
+      "toId": "targetGoal",
+      "stateKeys": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "fromSystem": "OPEN_WORLD_ADAPTATION_SYSTEM_A_B_C_D_E_L_V_E_DELVE"
+    },
+    "local_authoring_parts::dafa209fae2dd497d4ec2403f4ae7b0444d1645e139a34c956e77a4a78b3786f:toSystem,trigger,stateChange": {
+      "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
+      "trigger": "worldState→targetGoal",
+      "stateChange": "worldState → targetGoal"
+    },
+    "local_authoring_parts::821a3a2cd29d9541751d5ed701ce6b3530d8a7adb6235a3d533538be1f2a0026:systemInterconnections:4": {
+      "fromId": "worldState",
+      "toId": "targetGoal",
+      "stateKeys": [
+        "newWorldState",
+        "nextTargetGoal"
+      ],
+      "fromSystem": "OPEN_WORLD_ADAPTATION_SYSTEM_A_B_C_D_E_L_V_E_DELVE",
+      "toSystem": "OPEN_WORLD_ADAPTATION_SYSTEM",
+      "trigger": "worldState→targetGoal",
+      "stateChange": "worldState → targetGoal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 99,
-      "successes": 99,
+      "calls": 101,
+      "successes": 101,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3536744,
-      "lastMs": 11510,
+      "totalMs": 3575244,
+      "lastMs": 13601,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:02:34.455Z"
+      "updatedAt": "2026-10-09T05:03:12.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:48:01.443Z",
-  "updatedAt": "2026-10-09T05:02:34.457Z",
+  "updatedAt": "2026-10-09T05:03:12.969Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3775,7 +3801,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 9
+    "designer_draft_slices::systems-progression": 10
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3814,10 +3840,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:02:34.457Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T05:03:12.963Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
