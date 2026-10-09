@@ -27,25 +27,32 @@
       "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN, 두 대축 A/B의 상태 교환, 보조 요소 c, 발견·숙련·재방문 @를 구분한다. 게임 규칙은 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다. 씨앗인 정체성은 공백 포함 최소 60자 이상의 구체적 게임 정체성을 유지하며, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다. 플레이어 판타지는 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지를 유지하고, 관찰자 설명보다 실제 플레이어가 하는 내용을 명시해야 한다. coreFun은 공백 포함 최소 40자 이상의 구체적인 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하며, 정체성 문장과 같은 플레이 약속을 증명해야 한다. coreLoop은 서로 다른 실제 플레이 단계 최소 3개로 구성되며, 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함해야 하며, MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. signatureSystems은 MAIN/A/B/c/DELVE(@) 역할 각각 포함하여 최소 5개 서로 다른 기존 또는 신규 시스템을 사용하며, 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 게임 규칙은 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위를 지향하며, 주요 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서確認",
       "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 확보하며, 환경 위험에 노출되어도 살아남는 데 최선을 다하는 동료들과 함께 활동한다. 플레이어는 숲의 생존자로서, 자원을 찾기 위해 흙길을 걷거나, 적의 존재를 예측하여 안전하게 이동해야 한다. 주체가 되어 세계 상태와 다음 선택을 바꾸며, 단순히 탐험만 아니라 더 복잡한 전략과 대응법을 사용할 수 있다.",
       "coreFun": "숲의 생존자들은 탐험과 협력으로 자원을 확보하며, 환경 위험에 노출되어도 살아남는 데 최선을 다하는 동료들과 함께 활동한다. 플레이어는 숲의 생존자로서, 자원을 찾기 위해 흙길을 걷거나, 적의 존재를 예측하여 안전하게 이동해야 한다. 주체가 되어 세계 상태와 다음 선택을 바꾸며, 단순히 탐험만 아니라 더 복잡한 전략과 대응법을 사용할 수 있다."
+    },
+    "local_authoring_parts::f6578a4f2511b5c02049a0f93a1c87e13229387a28cd09db8eb0da1382c43f09:coreLoop": {
+      "coreLoop": [
+        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change in forest ecosystem, increased survival resources, altered group dynamics.\nACTION: Immediate reward of enhanced survival tools, reduced risk of狩",
+        "Just initiated exploration phase with resource gathering and risk assessment.\nSelected path based on available materials and group cohesion.\nStatus update reflects improved survival conditions and adjusted group roles.\nImmediate reward includes new tools and reduced threat levels from nearby dangers.",
+        "INPUT: Identify key resources and assess risks.\nSELECT: Choose optimal paths and strategies.\nOUTPUT: Enhanced survival capabilities, modified group interactions, expanded territory access.\nACTION: Strategic decision making leading to long-term benefits and new challenges."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 146923,
-      "lastMs": 22718,
+      "totalMs": 176257,
+      "lastMs": 29334,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:19:58.349Z"
+      "updatedAt": "2026-10-09T08:20:27.686Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:31.411Z",
-  "updatedAt": "2026-10-09T08:19:58.350Z",
+  "updatedAt": "2026-10-09T08:20:27.686Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2273,7 +2280,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:19:58.350Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:20:27.686Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
