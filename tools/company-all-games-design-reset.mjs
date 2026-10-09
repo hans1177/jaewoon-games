@@ -153,7 +153,8 @@ function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
   // 기존 MAIN 중심 설계도 새 MAIN/A/B/C/@ 문법으로 재작성한다. 원본 게임 규칙은 별도 보존.
   if(completeNovelGrammarV5(seed))return false;
   // 접수용 임시 V5를 매 실행마다 다시 쓰지 않는다. 디자이너가 고유 소재와 장르를 직접 완성해야 한다.
-  if(seed?.novelGrammarBackfill?.source===CANONICAL_NOVEL_GRAMMAR_V5_SOURCE
+  if(Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5
+    &&seed?.novelGrammarBackfill?.source===CANONICAL_NOVEL_GRAMMAR_V5_SOURCE
     &&seed?.novelGrammarBackfill?.authoringPending===true)return false;
   const normalized=normalizedCanonicalSketch(game,seed);
   seed.GAME_CATEGORY=normalized.category;
