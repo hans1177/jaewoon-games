@@ -1,5 +1,5 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 서버 런타임의 게임정보를 받아 실제 Unity WebGL 게임만 홈페이지에 노출한다.
+// 역할: 단순 버튼 조작 시제품을 제외한 게임 카드를 표시하고 검증된 Unity WebGL 링크만 활성화한다.
 const SYNC_INTERVAL_MS=30000;
 const FEATURED_GAME_ID='daechung-rpg';
 let refreshInFlight=false;
@@ -64,6 +64,8 @@ const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
 const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
 const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
+// 기존 카탈로그가 식별한 단순 버튼 조작 시제품·비게임 화면만 홈페이지에서 제외한다.
+const isHomepageGame=row=>activeLifecycle(row)&&!['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE'].includes(String(sourcesOf(row).web?.state||row?.ownerWebSourceState||'').toUpperCase());
 const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
@@ -111,13 +113,13 @@ function classRank(row){
 }
 function releaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(game=>activeLifecycle(game)&&productionClassOf(game)==='RELEASE_CONFIRMED')
+    .filter(game=>isHomepageGame(game)&&productionClassOf(game)==='RELEASE_CONFIRMED')
     .map(game=>bindVerifiedUnityBuild(game,status))
     .sort(catalogOrderCompare);
 }
 function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
+    .filter(game=>isHomepageGame(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
     // 카드의 설계·이미지·진행 상태는 게임 실행 QA와 독립적으로 표시한다.
     .sort((a,b)=>{
@@ -263,7 +265,7 @@ function hasInternalRelease(game){
 }
 function internalReleaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(activeLifecycle)
+    .filter(isHomepageGame)
     .map(game=>bindVerifiedUnityBuild(game,status))
     .filter(hasInternalRelease)
     .sort(catalogOrderCompare);
@@ -271,7 +273,7 @@ function internalReleaseRows(catalog,status){
 function recentModificationRows(catalog){
   const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(activeLifecycle)
+    .filter(isHomepageGame)
     .map(game=>{
       const work=String(latestWork(game)||'').trim();
       const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
