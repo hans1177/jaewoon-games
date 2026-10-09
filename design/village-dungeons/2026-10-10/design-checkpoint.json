@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "마을 던전 RPG은 RPG의 중심 역할을 수행하며, 3D의 보조 요소로 작용합니다. 이는 플레이어의 행동이 세계 상태를 변화시키고, 그 결과가 새로운 선택과 진입 절차를 생성하는 데 기여합니다.",
       "cWorldAndGameplayEffect": "마을 던전 RPG은 플레이어가 단순한 터치 입력으로 시작하여 점수나 거리 목표를 설정하고, 이를 바탕으로 세계 상태를 변경하는 방식으로 설계되었습니다. 이는 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용됩니다."
+    },
+    "local_authoring_parts::d8dcbab35287f5c1db649fe2656a0a815ea2082f244582e2ee11369a4c66d373:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다.",
+          "newChoice": "새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "짧은 러닝 중 읽기 가능한 피드백을 받고 보상을 수집하며 작은 위험이나 경로 선택을 하게 된다.",
+          "newChoice": "이후 새로운 선택으로 이어지는 게임 진행 과정에서 중요한 역할을 한다."
+        },
+        {
+          "clue": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "discovery": "성공하거나 실패했음에도 불구하고 점수나 보상, 진입 절차의 일부가 나타나며 재시도가 이루어진다.",
+          "newChoice": "재시도 시에는 최소적인 간섭으로 인해 편하게 계속해서 플레이할 수 있다."
+        },
+        {
+          "clue": "The game is designed to be played in a casual manner with simple input and clear goals.",
+          "discovery": "간단한 입력과 명확한 목표를 바탕으로 플레이하는 친근하고 유연한 방식으로 설계되었다.",
+          "newChoice": "플레이어는 이러한 단순함에 맞춰 자신의 행동을 자유롭게 선택하여 즐길 수 있다."
+        }
+      ],
+      "delveGrowthRule": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다.",
+      "finalGameIdentity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+    },
+    "local_authoring_parts::5c80c8428205983f77277a3169a95a8df6a5006d0debf7a51071fa48c180f290:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "마을",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 내에서 플레이어가 주체적으로 움직일 수 있는 공간"
+        },
+        {
+          "name": "던전",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 선택하여 진행할 수 있는 콘텐츠 영역"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "RPG",
+          "gameplayEffect": "플레이어의 역할 및 결정에 기반한 게임 구조"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "3D",
+          "gameplayEffect": "세계의 시각적 표현과 상호작용 가능성"
+        }
+      ],
+      "cGenreInterlock": "마을 던전 RPG은 RPG의 중심 역할을 수행하며, 3D의 보조 요소로 작용합니다. 이는 플레이어의 행동이 세계 상태를 변화시키고, 그 결과가 새로운 선택과 진입 절차를 생성하는 데 기여합니다.",
+      "cWorldAndGameplayEffect": "마을 던전 RPG은 플레이어가 단순한 터치 입력으로 시작하여 점수나 거리 목표를 설정하고, 이를 바탕으로 세계 상태를 변경하는 방식으로 설계되었습니다. 이는 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용됩니다.",
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다.",
+          "newChoice": "새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "짧은 러닝 중 읽기 가능한 피드백을 받고 보상을 수집하며 작은 위험이나 경로 선택을 하게 된다.",
+          "newChoice": "이후 새로운 선택으로 이어지는 게임 진행 과정에서 중요한 역할을 한다."
+        },
+        {
+          "clue": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "discovery": "성공하거나 실패했음에도 불구하고 점수나 보상, 진입 절차의 일부가 나타나며 재시도가 이루어진다.",
+          "newChoice": "재시도 시에는 최소적인 간섭으로 인해 편하게 계속해서 플레이할 수 있다."
+        },
+        {
+          "clue": "The game is designed to be played in a casual manner with simple input and clear goals.",
+          "discovery": "간단한 입력과 명확한 목표를 바탕으로 플레이하는 친근하고 유연한 방식으로 설계되었다.",
+          "newChoice": "플레이어는 이러한 단순함에 맞춰 자신의 행동을 자유롭게 선택하여 즐길 수 있다."
+        }
+      ],
+      "delveGrowthRule": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다.",
+      "finalGameIdentity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+    },
+    "local_authoring_parts::e9d500f24265d1d60d1bfaf5b420f0f4a68c554bfbd75dc5092598549bef0bfe:creativeGrammar": {
+      "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "a": {
+        "system": "ACTION_SYSTEM",
+        "material": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "INPUT_TO_STATE_CHANGE"
+      },
+      "b": {
+        "system": "RESULT_SYSTEM",
+        "material": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+        "materialDomain": "GAMEPLAY",
+        "stateChange": "STATE_CHANGE_TO_RESULT"
+      },
+      "abCausality": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+      "abEvolution": {
+        "aChangesB": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_TO_RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+        "bChangesA": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION_TO_START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+        "lateGameChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+      },
+      "materialFusion": {
+        "contrast": "ACTION_SYSTEM_TO_RESULT_SYSTEM",
+        "causalBridge": "INPUT_TO_STATE_CHANGE_TO_RESULT",
+        "removalConsequence": "STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+      },
+      "storyCausalChain": {
+        "cause": "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+        "characterConflict": "PLAYER_CHOICE_TO_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+        "playerChoice": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+        "worldChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+        "nextEvent": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION"
+      },
+      "cThemes": [
+        {
+          "name": "마을",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 내에서 플레이어가 주체적으로 움직일 수 있는 공간"
+        },
+        {
+          "name": "던전",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 선택하여 진행할 수 있는 콘텐츠 영역"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "RPG",
+          "gameplayEffect": "플레이어의 역할 및 결정에 기반한 게임 구조"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "3D",
+          "gameplayEffect": "세계의 시각적 표현과 상호작용 가능성"
+        }
+      ],
+      "cGenreInterlock": "마을 던전 RPG은 RPG의 중심 역할을 수행하며, 3D의 보조 요소로 작용합니다. 이는 플레이어의 행동이 세계 상태를 변화시키고, 그 결과가 새로운 선택과 진입 절차를 생성하는 데 기여합니다.",
+      "cWorldAndGameplayEffect": "마을 던전 RPG은 플레이어가 단순한 터치 입력으로 시작하여 점수나 거리 목표를 설정하고, 이를 바탕으로 세계 상태를 변경하는 방식으로 설계되었습니다. 이는 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용됩니다.",
+      "delveDiscoveries": [
+        {
+          "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "discovery": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다.",
+          "newChoice": "새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+        },
+        {
+          "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "discovery": "짧은 러닝 중 읽기 가능한 피드백을 받고 보상을 수집하며 작은 위험이나 경로 선택을 하게 된다.",
+          "newChoice": "이후 새로운 선택으로 이어지는 게임 진행 과정에서 중요한 역할을 한다."
+        },
+        {
+          "clue": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "discovery": "성공하거나 실패했음에도 불구하고 점수나 보상, 진입 절차의 일부가 나타나며 재시도가 이루어진다.",
+          "newChoice": "재시도 시에는 최소적인 간섭으로 인해 편하게 계속해서 플레이할 수 있다."
+        },
+        {
+          "clue": "The game is designed to be played in a casual manner with simple input and clear goals.",
+          "discovery": "간단한 입력과 명확한 목표를 바탕으로 플레이하는 친근하고 유연한 방식으로 설계되었다.",
+          "newChoice": "플레이어는 이러한 단순함에 맞춰 자신의 행동을 자유롭게 선택하여 즐길 수 있다."
+        }
+      ],
+      "delveGrowthRule": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다.",
+      "finalGameIdentity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+    },
+    "local_authoring_parts::939b48231a002e9614e00a353d23e73524171b852dc1454b83caed4f738bcaa0:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "a": {
+          "system": "ACTION_SYSTEM",
+          "material": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT_TO_STATE_CHANGE"
+        },
+        "b": {
+          "system": "RESULT_SYSTEM",
+          "material": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "STATE_CHANGE_TO_RESULT"
+        },
+        "abCausality": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+        "abEvolution": {
+          "aChangesB": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_TO_RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "bChangesA": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION_TO_START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "lateGameChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+        },
+        "materialFusion": {
+          "contrast": "ACTION_SYSTEM_TO_RESULT_SYSTEM",
+          "causalBridge": "INPUT_TO_STATE_CHANGE_TO_RESULT",
+          "removalConsequence": "STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+        },
+        "storyCausalChain": {
+          "cause": "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "characterConflict": "PLAYER_CHOICE_TO_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "playerChoice": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+          "worldChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+          "nextEvent": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION"
+        },
+        "cThemes": [
+          {
+            "name": "마을",
+            "kind": "GENRE",
+            "gameplayEffect": "게임 내에서 플레이어가 주체적으로 움직일 수 있는 공간"
+          },
+          {
+            "name": "던전",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 선택하여 진행할 수 있는 콘텐츠 영역"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "RPG",
+            "gameplayEffect": "플레이어의 역할 및 결정에 기반한 게임 구조"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "3D",
+            "gameplayEffect": "세계의 시각적 표현과 상호작용 가능성"
+          }
+        ],
+        "cGenreInterlock": "마을 던전 RPG은 RPG의 중심 역할을 수행하며, 3D의 보조 요소로 작용합니다. 이는 플레이어의 행동이 세계 상태를 변화시키고, 그 결과가 새로운 선택과 진입 절차를 생성하는 데 기여합니다.",
+        "cWorldAndGameplayEffect": "마을 던전 RPG은 플레이어가 단순한 터치 입력으로 시작하여 점수나 거리 목표를 설정하고, 이를 바탕으로 세계 상태를 변경하는 방식으로 설계되었습니다. 이는 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용됩니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+            "discovery": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다.",
+            "newChoice": "새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+          },
+          {
+            "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+            "discovery": "짧은 러닝 중 읽기 가능한 피드백을 받고 보상을 수집하며 작은 위험이나 경로 선택을 하게 된다.",
+            "newChoice": "이후 새로운 선택으로 이어지는 게임 진행 과정에서 중요한 역할을 한다."
+          },
+          {
+            "clue": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+            "discovery": "성공하거나 실패했음에도 불구하고 점수나 보상, 진입 절차의 일부가 나타나며 재시도가 이루어진다.",
+            "newChoice": "재시도 시에는 최소적인 간섭으로 인해 편하게 계속해서 플레이할 수 있다."
+          },
+          {
+            "clue": "The game is designed to be played in a casual manner with simple input and clear goals.",
+            "discovery": "간단한 입력과 명확한 목표를 바탕으로 플레이하는 친근하고 유연한 방식으로 설계되었다.",
+            "newChoice": "플레이어는 이러한 단순함에 맞춰 자신의 행동을 자유롭게 선택하여 즐길 수 있다."
+          }
+        ],
+        "delveGrowthRule": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다.",
+        "finalGameIdentity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+      }
+    },
+    "local_authoring_parts::9e5e1a36f886f185af3ca1f5a6f348364005328acec5a42a0eb6d9dbd09f843a:identity,creativeGrammar": {
+      "identity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다.",
+      "creativeGrammar": {
+        "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "a": {
+          "system": "ACTION_SYSTEM",
+          "material": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "INPUT_TO_STATE_CHANGE"
+        },
+        "b": {
+          "system": "RESULT_SYSTEM",
+          "material": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "materialDomain": "GAMEPLAY",
+          "stateChange": "STATE_CHANGE_TO_RESULT"
+        },
+        "abCausality": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+        "abEvolution": {
+          "aChangesB": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_TO_RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "bChangesA": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION_TO_START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "lateGameChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+        },
+        "materialFusion": {
+          "contrast": "ACTION_SYSTEM_TO_RESULT_SYSTEM",
+          "causalBridge": "INPUT_TO_STATE_CHANGE_TO_RESULT",
+          "removalConsequence": "STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING"
+        },
+        "storyCausalChain": {
+          "cause": "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_CLEAR_SCORE_DISTANCE_OR_SHORT_SESSION_GOAL",
+          "characterConflict": "PLAYER_CHOICE_TO_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION",
+          "playerChoice": "RUN_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS",
+          "worldChange": "INPUT_TO_STATE_CHANGE_TO_RESULT_TO_INPUT_REPEAT_CYCLE_IN_GAMEPLAY_SEQUENCE_AND_SAVE_PROGRESS_ON_SUCCESSFUL_PLAYING_A_SIMPLE_ACTION_WITH_READABLE_FEEDBACK_AND_SMALL_RISK_OR_ROUTE_CHOICE_BEFORE_THE_RUN_ENDS_AND_CONTINUE_PLAYING_WITH_MINIMAL_FRICITION_AS_A_NEW_CYCLE_OF_PLAYING",
+          "nextEvent": "RECEIVE_SCORE_OR_REWARD_UNLOCK_PROGRESSION_BENEFIT_AND_RETRY_WITH_MINIMAL_FRICITION"
+        },
+        "cThemes": [
+          {
+            "name": "마을",
+            "kind": "GENRE",
+            "gameplayEffect": "게임 내에서 플레이어가 주체적으로 움직일 수 있는 공간"
+          },
+          {
+            "name": "던전",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 선택하여 진행할 수 있는 콘텐츠 영역"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "RPG",
+            "gameplayEffect": "플레이어의 역할 및 결정에 기반한 게임 구조"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "3D",
+            "gameplayEffect": "세계의 시각적 표현과 상호작용 가능성"
+          }
+        ],
+        "cGenreInterlock": "마을 던전 RPG은 RPG의 중심 역할을 수행하며, 3D의 보조 요소로 작용합니다. 이는 플레이어의 행동이 세계 상태를 변화시키고, 그 결과가 새로운 선택과 진입 절차를 생성하는 데 기여합니다.",
+        "cWorldAndGameplayEffect": "마을 던전 RPG은 플레이어가 단순한 터치 입력으로 시작하여 점수나 거리 목표를 설정하고, 이를 바탕으로 세계 상태를 변경하는 방식으로 설계되었습니다. 이는 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용됩니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+            "discovery": "플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다.",
+            "newChoice": "새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+          },
+          {
+            "clue": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+            "discovery": "짧은 러닝 중 읽기 가능한 피드백을 받고 보상을 수집하며 작은 위험이나 경로 선택을 하게 된다.",
+            "newChoice": "이후 새로운 선택으로 이어지는 게임 진행 과정에서 중요한 역할을 한다."
+          },
+          {
+            "clue": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+            "discovery": "성공하거나 실패했음에도 불구하고 점수나 보상, 진입 절차의 일부가 나타나며 재시도가 이루어진다.",
+            "newChoice": "재시도 시에는 최소적인 간섭으로 인해 편하게 계속해서 플레이할 수 있다."
+          },
+          {
+            "clue": "The game is designed to be played in a casual manner with simple input and clear goals.",
+            "discovery": "간단한 입력과 명확한 목표를 바탕으로 플레이하는 친근하고 유연한 방식으로 설계되었다.",
+            "newChoice": "플레이어는 이러한 단순함에 맞춰 자신의 행동을 자유롭게 선택하여 즐길 수 있다."
+          }
+        ],
+        "delveGrowthRule": "플레이어는 시작 즉시 단순한 터치 입력과 점수/거리/세션 목표로 세계 상태를 변경하며, 이 과정에서 새로운 행동·경로·조합·관계·발견 혹은 대응법을 발견한다. 이후 이들 중 하나를 기반으로 게임 진행이 계속된다.",
+        "finalGameIdentity": "마을 던전 RPG은 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 플레이어는 시작 즉시 단순한 터치 입력과 점수, 거리 또는 짧은 세션 목표로 세계 상태를 바꾼다. 이는 주체 역할로서의 플레이어에게 새로운 행동·경로·조합·관계·발견 혹은 대응법을 열어 실제 플레이에 적용된다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1125362,
-      "lastMs": 119852,
+      "totalMs": 1272494,
+      "lastMs": 147132,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:53:31.183Z"
+      "updatedAt": "2026-10-09T18:55:58.317Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:34:45.785Z",
-  "updatedAt": "2026-10-09T18:53:31.184Z",
+  "updatedAt": "2026-10-09T18:55:58.323Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +2092,7 @@
     "9e5e1a36f886f185af3ca1f5a6f348364005328acec5a42a0eb6d9dbd09f843a": true,
     "939b48231a002e9614e00a353d23e73524171b852dc1454b83caed4f738bcaa0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:53:31.183Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:55:58.323Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
