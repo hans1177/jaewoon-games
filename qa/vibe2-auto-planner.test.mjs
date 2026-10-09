@@ -4700,15 +4700,15 @@ test('studio build-up task carries concept-matched survival systems and reusable
   // 다른 디렉터리에 연결된 소스와 라이브러리 링크는 내부 재사용 증거로 채택하지 않는다.
   const externalSource=path.join(root,'untrusted-client.luau');
   const externalLibrary=path.join(root,'untrusted-library.js');
-  fs.writeFileSync(externalSource,'local privateState = true\\n','utf8');
-  fs.writeFileSync(externalLibrary,'export const privateKey = true;\\n','utf8');
+  fs.writeFileSync(externalSource,'local privateState = true\n','utf8');
+  fs.writeFileSync(externalLibrary,'export const privateKey = true;\n','utf8');
   fs.symlinkSync(externalSource,path.join(source,'client','Untrusted.client.luau'));
   fs.unlinkSync(path.join(root,'assets','crafting-recipes.js'));
   fs.symlinkSync(externalLibrary,path.join(root,'assets','crafting-recipes.js'));
   const guarded=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
   assert.ok(guarded);
-  assert.doesNotMatch(guarded.goal,/Untrusted\\.client\\.luau/);
-  const match=guarded.goal.match(/LIBRARY_PATH_CHECK=(\\{.+?\\})\\. 실제 소스/s);
+  assert.doesNotMatch(guarded.goal,/Untrusted\.client\.luau/);
+  const match=guarded.goal.match(/LIBRARY_PATH_CHECK=(\{.+?\})\. 실제 소스/s);
   assert.ok(match,'expected existing library evidence in normal build-up goal');
   const evidence=JSON.parse(match[1]);
   assert.ok(evidence.missing.includes('assets/crafting-recipes.js'));
