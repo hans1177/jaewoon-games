@@ -27,25 +27,32 @@
       "identity": "Harbor Days is a mobile survival-roguelite game where players engage in real-time, short-run battles against escalating horde threats while strategically managing their build and progression through collectible rewards and upgrades. The core gameplay revolves around the action of 'Fight through an escalating horde' with dynamic choices that influence the player's progression, risk, reward, and subsequent state changes. This design aims to create a deep, immersive experience with layered mechanics that evolve as the player grows.",
       "playerFantasy": "Harbor Days is a mobile survival-roguelite game where players engage in real-time, short-run battles against escalating horde threats while strategically managing their build and progression through collectible rewards and upgrades. The core gameplay revolves around the action of 'Fight through an escalating horde' with dynamic choices that influence the player's progression, risk, reward, and subsequent state changes. This design aims to create a deep, immersive experience with layered mechanics that evolve as the player grows.",
       "coreFun": "Harbor Days is a mobile survival-roguelite game where players engage in real-time, short-run battles against escalating horde threats while strategically managing their build and progression through collectible rewards and upgrades. The core gameplay revolves around the action of 'Fight through an escalating horde' with dynamic choices that influence the player's progression, risk, reward, and subsequent state changes. This design aims to create a deep, immersive experience with layered mechanics that evolve as the player grows."
+    },
+    "local_authoring_parts::afc3e3ad091cf819fd33d1c78f27d32c94befa38a56864413a79295cea57d576:coreLoop": {
+      "coreLoop": [
+        "INPUT: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "SELECT: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "OUTPUT: Status changes based on player choices, including increased survivability, new abilities, and progression to the next stage."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 240955,
-      "lastMs": 26703,
+      "totalMs": 273889,
+      "lastMs": 32934,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:52:22.519Z"
+      "updatedAt": "2026-10-09T15:52:55.456Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:48:21.541Z",
-  "updatedAt": "2026-10-09T15:52:22.521Z",
+  "updatedAt": "2026-10-09T15:52:55.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:52:22.521Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:52:55.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
