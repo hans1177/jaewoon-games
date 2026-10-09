@@ -483,25 +483,42 @@
         "playerGoal"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar"
+    },
+    "local_authoring_parts::04774fa3ec758d5255e5c52340d7fa38bc711f7ad40ed007599fef2c631e4542:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
+    },
+    "local_authoring_parts::d46a640820cb6ec2106d3ca6999c10be5f74d89ffe9d494badbc6038d587cc83:systemInterconnections:1": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+      "toSystem": "systemInterconnections",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 843844,
-      "lastMs": 18609,
+      "totalMs": 858603,
+      "lastMs": 14759,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:53:58.594Z"
+      "updatedAt": "2026-10-09T15:54:13.354Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:53:58.594Z",
+  "updatedAt": "2026-10-09T15:54:13.355Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2249,7 +2266,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:53:58.594Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:54:13.355Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
