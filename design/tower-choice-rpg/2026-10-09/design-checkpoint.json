@@ -27,25 +27,34 @@
       "identity": "10층 탑 RPG은 플레이어가 매 순간 빠르게 진입하는 생존 게임이며, 주체로 삼아야 하는 행동은 '진입 과정에서 적에 맞서며 희망적인 결과를 얻기 위해 자원을 수집하거나 전략적 선택을 하면서 상태를 바꾸는 것'이다. 이는 단순한 스토리텔링보다는 실제 플레이의 입력/선택/보상/위험/다음 선택 순환 구조와 직접 연결되어 있다.",
       "playerFantasy": "10층 탑 RPG은 매 순간 빠르게 진입하는 생존 게임이며, 주체로 삼아야 하는 행동은 '진입 과정에서 적에 맞서며 희망적인 결과를 얻기 위해 자원을 수집하거나 전략적 선택을 하면서 상태를 바꾸는 것'이다. 이는 단순한 스토리텔링보다는 실제 플레이의 입력/선택/보상/위험/다음 선택 순환 구조와 직접 연결되어 있다.",
       "coreFun": "플레이어가 매 순간 빠르게 진입하는 생존 게임이며, 주체로 삼아야 하는 행동은 '진입 과정에서 적에 맞서며 희망적인 결과를 얻기 위해 자원을 수집하거나 전략적 선택을 하면서 상태를 바꾸는 것'이다. 이는 단순한 스토리텔링보다는 실제 플레이의 입력/선택/보상/위험/다음 선택 순환 구조와 직접 연결되어 있다."
+    },
+    "local_authoring_parts::ff4214b5fec4e0cc8e1a7ce87ce5f838c1f549ea92e3fbbd5b68387aa1c5b2a5:coreLoop": {
+      "coreLoop": [
+        "INPUT: 진입 과정에서 적에 맞서며 희망적인 결과를 얻기 위해 자원을 수집하거나 전략적 선택을 하면서 상태를 바꾸는 것",
+        "SELECT: 자원 수집 또는 전략적 선택",
+        "OUTPUT: 상태 변화 및 희망적인 결과 획득",
+        "RISK: 적의 압박, 자원 부족, 전략적 결함",
+        "NEXT SELECT: 다음 단계로 이어지는 전략적 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 244202,
-      "lastMs": 42465,
+      "totalMs": 296483,
+      "lastMs": 52281,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:09:59.628Z"
+      "updatedAt": "2026-10-09T13:10:51.912Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T13:05:55.161Z",
-  "updatedAt": "2026-10-09T13:09:59.629Z",
+  "updatedAt": "2026-10-09T13:10:51.912Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2253,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:09:59.629Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:10:51.912Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
