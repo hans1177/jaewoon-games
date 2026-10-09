@@ -1190,25 +1190,40 @@
     },
     "local_authoring_parts::da16360b4b047257fc52d4ecd539f39a0c167f88ba1e076613ad8c0db570e1d7:trigger": {
       "trigger": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::da16360b4b047257fc52d4ecd539f39a0c167f88ba1e076613ad8c0db570e1d7:stateChange": {
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::b06ce7d0f1c37738d005866f5ee6a611d8647b4ec66da8a64f5060e462cb28b6:systemInterconnections:3": {
+      "fromId": "systemInterconnections[3].trigger",
+      "toId": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS"
+      ],
+      "fromSystem": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "toSystem": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "trigger": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다.",
+      "stateChange": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS의 상태 변화는, 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 94,
-      "successes": 93,
+      "calls": 95,
+      "successes": 94,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 6504400,
-      "lastMs": 66767,
+      "totalMs": 6571542,
+      "lastMs": 67142,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:31:18.361Z"
+      "updatedAt": "2026-10-09T02:32:25.505Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T02:31:18.361Z",
+  "updatedAt": "2026-10-09T02:32:25.508Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3637,7 +3652,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:31:18.361Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:32:25.508Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
