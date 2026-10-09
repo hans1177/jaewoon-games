@@ -568,25 +568,28 @@
       "toSystem": "DEFENSE_STRATEGY",
       "trigger": "ENEMY_WAVE 및 TOWER_PLACEMENT의 조합이 다음 월드 상태로 전환됨: 게임 상태는 ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 이전된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다.",
       "stateChange": "ENEMY_WAVE 정보가 입력되고, TOWER_PLACEMENT 선택이 실행되어 DEFENSE_STRATEGY 상태로 전환됨: 게임 상태는 ENEMY_WAVE 데이터가 로딩되며, 사용자가 TOWER_PLACEMENT 옵션 중 하나를 선택하여 방어 전략이 생성된다. 이 과정에서 RESOURCE_ALLOCATIONS 자원이 생성되며, 이후 새로운 월드 상태에서는 해당 자원이 팀 내부의 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::d2410f1e99250298452b5cfd58f58a91f6df014a815343b075f113cf5fee86c0:fromId": {
+      "fromId": "ENEMY_WAVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 37,
+      "calls": 38,
+      "successes": 38,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2950361,
-      "lastMs": 101268,
+      "totalMs": 3038577,
+      "lastMs": 88216,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:31:33.367Z"
+      "updatedAt": "2026-10-09T02:27:50.412Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T02:26:22.192Z",
+  "updatedAt": "2026-10-09T02:27:50.413Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3081,7 +3084,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:31:33.368Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:27:50.412Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
