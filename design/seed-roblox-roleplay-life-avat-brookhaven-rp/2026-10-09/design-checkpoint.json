@@ -843,25 +843,28 @@
     },
     "local_authoring_parts::0b1b04d865ef813f61d656603256fab88e6754d9a49000ac92f9e285848f9113:toSystem": {
       "toSystem": "systemInterconnections[0].stateChange"
+    },
+    "local_authoring_parts::0b1b04d865ef813f61d656603256fab88e6754d9a49000ac92f9e285848f9113:trigger": {
+      "trigger": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 67,
-      "successes": 67,
+      "calls": 68,
+      "successes": 68,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5491105,
-      "lastMs": 30610,
+      "totalMs": 5527617,
+      "lastMs": 36512,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:02:33.822Z"
+      "updatedAt": "2026-10-09T03:03:10.335Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T03:02:33.822Z",
+  "updatedAt": "2026-10-09T03:03:10.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3346,7 +3349,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:02:33.822Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:03:10.335Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
