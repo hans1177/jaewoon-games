@@ -80,25 +80,53 @@
         "worldChange": "New environment emerges from player decisions",
         "nextEvent": "Progression to next challenge in survival run"
       }
+    },
+    "local_authoring_parts::393ccb16268a94d791a17734ec946e47fabf96247ae470b07ad139167dc2e159:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "Environmental Challenges",
+          "kind": "GENRE",
+          "gameplayEffect": "Dynamic terrain with shifting obstacles and resource distribution"
+        },
+        {
+          "name": "Character Development",
+          "kind": "GENRE",
+          "gameplayEffect": "Player builds unique skills and relationships with enemies"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "ROLEPLAY",
+          "gameplayEffect": "Player gains new abilities and strategic insights from interactions"
+        }
+      ],
+      "cGenreInterlock": "Environmental challenges trigger player to adapt strategies; character development influences decision-making in dynamic scenarios",
+      "cWorldAndGameplayEffect": "New environment emerges from player decisions, influencing progression and accessibility"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1062156,
-      "lastMs": 106936,
+      "totalMs": 1174984,
+      "lastMs": 112828,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:38:07.302Z"
+      "updatedAt": "2026-10-09T17:40:00.133Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:20:25.119Z",
-  "updatedAt": "2026-10-09T17:38:07.303Z",
+  "updatedAt": "2026-10-09T17:40:00.133Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "03b26008f6a55b505867f805418255705b83c8c865f5009f5c9bac8b71e40070": true,
     "600483efdcf67bd180436a0b8183fd7914493db159f88200748ed37eb727695b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:38:07.303Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:40:00.133Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
