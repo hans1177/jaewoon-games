@@ -160,25 +160,192 @@
       "name": "Adaptive Defense System",
       "purpose": "Player's desire for survival vs. need to allocate resources",
       "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
+    },
+    "local_authoring_parts::7b4be175cbe65f923ce339fe89b063e640db4d842ff801e378c35cadc2562a55:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "defender_configuration",
+        "resource_cost"
+      ],
+      "stateOutputs": [
+        "next_defense_plan"
+      ],
+      "name": "Adaptive Defense System",
+      "purpose": "Enables dynamic resource allocation based on incoming threats",
+      "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
+    },
+    "local_authoring_parts::d4a0dd5756144cd3f9c925f1737fad195f6f4de9d429359acca814fb88ed5804:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Defender Placement System",
+          "purpose": "Player's choice to configure defenders based on threat pattern and resource availability",
+          "playerChoice": "Adjust defender placement to maximize survival likelihood while managing resource allocation efficiently"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Resource Allocation System",
+          "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
+          "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Experience-Based Planning System",
+          "purpose": "Experience gain tracking and survival outcome inference",
+          "playerChoice": "Plan for adaptive deployment based on past experiences"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Player's desire for survival vs. need to allocate resources",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Enables dynamic resource allocation based on incoming threats",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
+        }
+      ]
+    },
+    "local_authoring_parts::47043bd8b99de9ea664898d2c62cf8a4eb9f8c6e1d48d53a2d25e47c15ab3851:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Input → Defender configuration change → Resource cost → Survival outcome → Next defense plan",
+        "Discovery → Experimentation → Refinement → Evolving strategy",
+        "Adaptive placement → Experience-based planning → Dynamic resource allocation"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Defender Placement System",
+          "purpose": "Player's choice to configure defenders based on threat pattern and resource availability",
+          "playerChoice": "Adjust defender placement to maximize survival likelihood while managing resource allocation efficiently"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Resource Allocation System",
+          "purpose": "Optimize resource distribution based on survival risk and defensive strategy",
+          "playerChoice": "Reallocate resources to maximize survival likelihood and adapt to changing threats"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Experience-Based Planning System",
+          "purpose": "Experience gain tracking and survival outcome inference",
+          "playerChoice": "Plan for adaptive deployment based on past experiences"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Player's desire for survival vs. need to allocate resources",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and experience gain tracking trends in the game state database and risk assessment data from past waves to optimize resource distribution and maximize survival chance over multiple waves of gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defender_configuration",
+            "resource_cost"
+          ],
+          "stateOutputs": [
+            "next_defense_plan"
+          ],
+          "name": "Adaptive Defense System",
+          "purpose": "Enables dynamic resource allocation based on incoming threats",
+          "playerChoice": "Configure defenders or reallocate resources based on previous wave patterns and survival outcomes"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 333392,
-      "lastMs": 36584,
+      "totalMs": 368865,
+      "lastMs": 35473,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:55:17.352Z"
+      "updatedAt": "2026-10-09T17:55:52.827Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T17:55:17.353Z",
+  "updatedAt": "2026-10-09T17:55:52.832Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1851,7 +2018,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:55:17.352Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:55:52.832Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
