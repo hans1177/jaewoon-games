@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 즉시 단순한 한 손가락 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표로 시작하며, 이에 따라 실제 세계 상태가 바뀌는 간단한 게임이다. 플레이어는 선택 결과가 다음 월드 상태를 바꾸며, 중심 행동과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.",
       "coreFun": "플레이어는 즉시 단순한 한 손가락 터치 또는 스ワイ프 입력을 통해 점수나 거리, 혹은 짧은 세션 목표로 시작하며, 이에 따라 실제 세계 상태가 바뀌는 CASUAL 게임이다. 대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다. 성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::f20e5d326ad56e350f739a57456191afe47fad78c61a777c7d31438f80e14bcf:coreLoop": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1316685,
-      "lastMs": 108322,
+      "totalMs": 1409597,
+      "lastMs": 92912,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:03:21.787Z"
+      "updatedAt": "2026-10-09T18:04:54.702Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:41:25.065Z",
-  "updatedAt": "2026-10-09T18:03:21.789Z",
+  "updatedAt": "2026-10-09T18:04:54.702Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2031,7 +2038,7 @@
     "7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70": true,
     "d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:03:21.789Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:04:54.702Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
