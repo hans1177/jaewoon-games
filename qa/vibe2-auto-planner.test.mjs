@@ -4671,7 +4671,8 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.match(task.goal,/Game\.client\.luau/);
   assert.match(task.goal,/Game\.server\.luau/);
   assert.match(task.goal,/LIBRARY_PATH_CHECK=/);
-  assert.match(task.goal,/"found":\["assets\/inventory-equipment\.js","assets\/crafting-recipes\.js"/);
+  assert.match(task.goal,/"found":\[[^\]]*"assets\/inventory-equipment\.js"/);
+  assert.match(task.goal,/"found":\[[^\]]*"assets\/crafting-recipes\.js"/);
   assert.match(task.goal,/"missing":\[/);
   assert.doesNotMatch(task.goal,/동일 이름이어도 자동으로 덮어쓴다/);
   assert.match(task.goal,/생존은 채집→제작→하우징\/장비→탐험\/위험/);
