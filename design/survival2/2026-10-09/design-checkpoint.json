@@ -1285,25 +1285,35 @@
       "toSystem": "SURVIVAL2-MAIN-02",
       "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
+    },
+    "local_authoring_parts::5352e99383efd80b5da79e0326cc01d54e7ac1c729c93218dda15d9b8a3950d2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 70,
-      "successes": 70,
+      "calls": 71,
+      "successes": 71,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5806195,
-      "lastMs": 99122,
+      "totalMs": 5911118,
+      "lastMs": 104923,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:38:10.099Z"
+      "updatedAt": "2026-10-09T02:39:55.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T02:38:10.101Z",
+  "updatedAt": "2026-10-09T02:39:55.027Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3678,7 +3688,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:38:10.101Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:39:55.026Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
