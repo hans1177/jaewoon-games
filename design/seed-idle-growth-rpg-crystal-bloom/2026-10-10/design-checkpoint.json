@@ -735,25 +735,28 @@
     },
     "local_authoring_parts::5fe22a31f74ae4e9015670f1919ba1cfde4b3a628b69a754d744b59ee6274e49:fromSystem": {
       "fromSystem": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다."
+    },
+    "local_authoring_parts::5fe22a31f74ae4e9015670f1919ba1cfde4b3a628b69a754d744b59ee6274e49:toSystem": {
+      "toSystem": "플레이어는 새로운 선택을 직접 결정하며, 즉각적인 결과와 상태 변화에 따라 실제 세계의 사건이 생성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 24,
+      "calls": 26,
+      "successes": 25,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2213560,
-      "lastMs": 58625,
+      "totalMs": 2272011,
+      "lastMs": 58451,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:04:04.452Z"
+      "updatedAt": "2026-10-09T21:05:02.904Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T21:04:04.452Z",
+  "updatedAt": "2026-10-09T21:05:02.905Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2802,7 +2805,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:04:04.452Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:05:02.905Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
