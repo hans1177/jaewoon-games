@@ -1596,7 +1596,7 @@ function tabState(){
 function renderCraft(){
  tabState();const mode=state.craftMode;
  if(!craftStationBuilt(mode)){state.craftMode='hand';tabState();ui.sheetBody.innerHTML='<div class="info"><b>제작대가 아직 없어</b><br>먼저 해당 제작대를 만들어 설치해야 제작 목록이 열려.</div>';return}
- const list=recipes.filter(r=>recipeCraftMode(r)===mode&&(r.id!=='portal'||portalHandUnlocked())).sort((a,b)=>Number(b.id==='portal')-Number(a.id==='portal')||Number(b.kind==='ammo')-Number(a.kind==='ammo'));
+ const list=recipes.filter(r=>recipeCraftMode(r)===mode&&(r.id!=='portal'||portalHandUnlocked()||isCreative())).sort((a,b)=>Number(b.id==='portal')-Number(a.id==='portal')||Number(b.kind==='ammo')-Number(a.kind==='ammo'));
  const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='junglebench'?'jungle-bench':mode==='sunstonebench'?'sunstone-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
  let head=mode==='hand'?(portalHandUnlocked()?'맨손 제작 · 어디서든 제작 가능 · 포탈 해금됨':'맨손 제작 · 어디서든 제작 가능'):mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='junglebench'?(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearSunstoneBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
  const arrowRecipes=list.filter(r=>r.kind==='ammo');
@@ -2581,6 +2581,7 @@ function startRaid(realNow=Date.now()){
  if(target.local)showNotice(raidNo+'차 습격 · 난이도 1배 · '+raidNo+'분 안에 전부 처치');else{showNotice('동료에게 '+raidNo+'차 습격');multiSend('raid-alert',{targetId:target.id,wave:raidNo})}
 }
 function updateRaid(realNow=Date.now()){
+ if(isCreative())return;
  const nextAt=Number(state.raid.nextAt)||0;
  if(!state.raid.active&&nextAt>realNow&&nextAt-realNow<=60000&&state.raid.warnedFor!==nextAt){state.raid.warnedFor=nextAt;showNotice('숲속 마력 생물이 당신을 찾아옵니다.')}
  if(multiplayer.connected&&!multiIsHost())return;const a=state.raid.active;
@@ -3212,7 +3213,7 @@ function enemyDamageTarget(e,n,force=false){
  damagePlayer(n,force,e);return'player'
 }
 function damagePlayer(n,force=false,attacker=null){
- if(isCreative())return;
+ if(isCreative()&&(!attacker||!attacker.creativeOwned||!attacker.creativeAttackPlayer||attacker.type.mood==='harmless'))return;
  const p=state.player,now=performance.now();if(p.downedUntil)return;if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-effectiveStat(p.armor,'reduce');if(now<(p.guardUntil||0))n*=.5;p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));playGameSfx('playerHurt');ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
