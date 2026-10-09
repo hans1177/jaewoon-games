@@ -34,25 +34,38 @@
         "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
         "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
       ]
+    },
+    "local_authoring_parts::7fd31c29f082202ba245e2eb0ecea7b73118ffe2ff53933115bc1f17c55e2ef0:signatureSystems:0": {
+      "id": "wild-survival_signature_system_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "CURRENT_WORLD_STATE"
+      ],
+      "stateOutputs": [
+        "NEXT_ACTION_PLAN"
+      ],
+      "name": "생존 상태 관리 시스템",
+      "purpose": "플레이어가 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며 월드 상태와 다음 선택을 바꾼다.",
+      "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 415953,
-      "lastMs": 72244,
+      "totalMs": 448764,
+      "lastMs": 32811,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:55:39.425Z"
+      "updatedAt": "2026-10-09T12:56:12.237Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:48:43.445Z",
-  "updatedAt": "2026-10-09T12:55:39.425Z",
+  "updatedAt": "2026-10-09T12:56:12.237Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2110,7 +2123,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:55:39.425Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:56:12.237Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
