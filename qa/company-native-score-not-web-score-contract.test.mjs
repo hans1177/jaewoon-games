@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 
-test('Unity Web readiness is required for new native entry but does not replace native completion quality',()=>{
+test('Unity Web is independently verified and cannot substitute for native QA or require prior Roblox admission',()=>{
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
   assert.equal(Object.hasOwn(directive.stageGateScoringV2.currentThresholds,'webPlatformPromotion'),false);
@@ -13,7 +13,8 @@ test('Unity Web readiness is required for new native entry but does not replace 
   assert.equal(directive.stageGateScoringV2.designScoreRole,'PARALLEL_QUALITY_SIGNAL_NOT_DEVELOPMENT_ADMISSION');
 
   const web=roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface;
-  assert.equal(web.requiredForDevelopmentAdmission,true);
+  assert.equal(web.requiredForDevelopmentAdmission,false);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','UNITY_WEB']);
   assert.equal(web.requiredForNativeRuntimePass,false);
   assert.equal(web.requiredForIndependentQa,false);
   assert.equal(web.requiredForRegression,false);

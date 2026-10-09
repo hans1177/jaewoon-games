@@ -113,7 +113,9 @@ test('Vibe context binds coding architecture into the existing canonical patch a
   assert.match(prompt,/PRESERVE_PATCH/);
   assert.match(prompt,/IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS/);
   assert.match(prompt,/STATE_OWNER_ONLY_WRITE/);
-  assert.match(prompt,/FULL_CANONICAL_PROMOTION_VALIDATION/);
+  assert.ok(context.patchPlan.verificationOrder.includes('FULL_CANONICAL_VALIDATION'),
+    'runtime regression remains a mandatory stage after coding architecture micro tests');
+  assert.match(prompt,/FULL_CANONICAL_VALIDATION/);
 });
 
 test('greenfield and recompose modes are visible to the existing patch planner without changing pipeline',()=>{
