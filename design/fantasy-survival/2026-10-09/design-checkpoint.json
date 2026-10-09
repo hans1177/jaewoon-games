@@ -34,25 +34,43 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::eea9696803851dc4030a7b16d4812c3acb2a37f0b267f4e0e43cc78c1ad7eb02:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENTITY_ID",
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS"
+      ],
+      "stateOutputs": [
+        "ACTION_SEQUENCE",
+        "STATE_TRANSITION",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "FIGHT_SYSTEM",
+      "purpose": "Player's core survival action and progression mechanism",
+      "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure, collect rewards, upgrade builds, survive waves/bosses, and convert results into progression choices with contextual actions and friction management for immersive gameplay experience."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 571090,
-      "lastMs": 86745,
+      "totalMs": 670428,
+      "lastMs": 99338,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:05:25.849Z"
+      "updatedAt": "2026-10-09T11:07:05.188Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:55:54.572Z",
-  "updatedAt": "2026-10-09T11:05:25.849Z",
+  "updatedAt": "2026-10-09T11:07:05.188Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2269,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:05:25.849Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:07:05.188Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
