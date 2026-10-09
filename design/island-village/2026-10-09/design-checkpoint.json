@@ -1169,25 +1169,40 @@
     },
     "local_authoring_parts::5c4ae3fd147a17b5ea2b43c7576b86fac8daf850a669517d77471ba8c0cd902c:trigger": {
       "trigger": "Player selects specific island resources to gather, initiating the resource accumulation process."
+    },
+    "local_authoring_parts::5c4ae3fd147a17b5ea2b43c7576b86fac8daf850a669517d77471ba8c0cd902c:stateChange": {
+      "stateChange": "Player selects specific island resources to gather, initiating the resource accumulation process. This action triggers the Island resources gathering system to transition into the Resource accumulation state. The player's choice of resources is recorded as the state input for the Island resources gathering system. The system then processes this input to emit"
+    },
+    "local_authoring_parts::7e5f0b3251b16f5113c1656d8aec425fcb092b21ab25ce8620156a649d1a4fea:systemInterconnections:0": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "resource_accumulation",
+        "infrastructure_upgrade"
+      ],
+      "fromSystem": "Island resources gathering system",
+      "toSystem": "Village infrastructure management system",
+      "trigger": "Player selects specific island resources to gather, initiating the resource accumulation process.",
+      "stateChange": "Player selects specific island resources to gather, initiating the resource accumulation process. This action triggers the Island resources gathering system to transition into the Resource accumulation state. The player's choice of resources is recorded as the state input for the Island resources gathering system. The system then processes this input to emit"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 92,
-      "successes": 92,
+      "calls": 93,
+      "successes": 93,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5343705,
-      "lastMs": 90409,
+      "totalMs": 5438528,
+      "lastMs": 94823,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:30:40.470Z"
+      "updatedAt": "2026-10-09T02:32:15.295Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T02:30:40.470Z",
+  "updatedAt": "2026-10-09T02:32:15.297Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3588,7 +3603,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:30:40.470Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:32:15.296Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
