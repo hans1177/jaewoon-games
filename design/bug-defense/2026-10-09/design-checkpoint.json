@@ -1438,25 +1438,40 @@
     },
     "local_authoring_parts::7ee52eff7ca51ee55c65820402a1b1dfd6787594c3a5a388c8ccfeb94a869bb2:trigger": {
       "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities. This action involves analyzing the incoming wave, adjusting defender positions in real-time, and implementing new strategies based on resource allocation. The state change includes a更新"
+    },
+    "local_authoring_parts::7ee52eff7ca51ee55c65820402a1b1dfd6787594c3a5a388c8ccfeb94a869bb2:stateChange": {
+      "stateChange": "플레이어는 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::2c7c8b70cbaedeb3963e01ea2e14a3d503438cc0ea5297b4fbfb07b498f1c568:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1].trigger",
+      "toId": "INCOMING_INSECT_WAVE→DEFENDER_POSITIONS",
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE",
+        "DEFENDER_POSITIONS"
+      ],
+      "fromSystem": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities.",
+      "toSystem": "플레이어는 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다.",
+      "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities. This action involves analyzing the incoming wave, adjusting defender positions in real-time, and implementing new strategies based on resource allocation. The state change includes a更新",
+      "stateChange": "플레이어는 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 125,
-      "successes": 124,
+      "calls": 126,
+      "successes": 125,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 8478154,
-      "lastMs": 70638,
+      "totalMs": 8553724,
+      "lastMs": 75570,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:21:30.946Z"
+      "updatedAt": "2026-10-09T05:22:46.518Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T05:21:30.946Z",
+  "updatedAt": "2026-10-09T05:22:46.520Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3885,7 +3900,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:21:30.946Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:22:46.520Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
