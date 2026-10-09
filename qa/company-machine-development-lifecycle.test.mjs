@@ -170,7 +170,8 @@ assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 // scan remains responsible for idempotent work rather than GitHub pending replacement.
 const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
 assert.ok(coordinatorGate.length>0);
-assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
+assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ \(github\.event_name == 'workflow_dispatch' && !inputs\.game_id/);
+assert.match(coordinatorGate,/format\('batch-\{0\}', github\.sha\)\) \|\| github\.run_id \}\}/);
 assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
