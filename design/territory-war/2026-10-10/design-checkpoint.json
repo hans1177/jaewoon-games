@@ -539,25 +539,41 @@
         "전선 위치 변경을 통해 자원 할당 결정을 내리고, 이후 새로운 전략 수립을 수행하며, 마지막으로 전선 이동 반영을 완료하여 전체 게임 진행이 지속적으로 변환된다.",
         "플레이어는 지역 특성과 전선 변화의 인과적 결합을 기반으로 자원 배분 방식을 재설계하고, 이를 바탕으로 전략 실행의 연속적인 변화를 경험해야 함"
       ]
+    },
+    "local_authoring_parts::0a9a7af3af8e22e57f6a8a3536bc6676ff5253ea786e1cf8e81f9c2f2f16b66b:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "전선 위치 변경",
+        "자원 할당 결정"
+      ],
+      "stateOutputs": [
+        "자원 재배분",
+        "새 전략 수립",
+        "전선 이동 반영"
+      ],
+      "name": "영토 전략",
+      "purpose": "지역 특성과 전선 변화에 기반하여 자원 배분 방식의 혁신 및 전략 실행의 지속적 변환",
+      "playerChoice": "전선 이동 및 자원 재배분의 조화로운 관계를 구축하는 플레이어 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1368218,
-      "lastMs": 98694,
+      "totalMs": 1467912,
+      "lastMs": 99694,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:01:55.492Z"
+      "updatedAt": "2026-10-09T18:03:35.190Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:07.229Z",
-  "updatedAt": "2026-10-09T18:01:55.492Z",
+  "updatedAt": "2026-10-09T18:03:35.190Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2096,7 +2112,7 @@
     "e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2": true,
     "d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:01:55.492Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:03:35.190Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
