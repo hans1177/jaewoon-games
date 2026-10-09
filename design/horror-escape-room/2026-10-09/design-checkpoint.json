@@ -37,25 +37,42 @@
         "REWARD: 감염 스킬 사용, 이벤트 관리",
         "NEXT STEP: 다음 순간의 감염 스킬 선택"
       ]
+    },
+    "local_authoring_parts::923a2fa3d9508e2494d31a83f1b7fa0a0cdfebb4cb6ceb2c9a13d04b0a78e424:signatureSystems:0": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "InfectAttackCost",
+        "InfectAttackCooldown",
+        "InfectRange"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+      "playerChoice": "인간은 고유 도구·대시·정화로 생존/반격, 몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 231936,
-      "lastMs": 43091,
+      "totalMs": 279098,
+      "lastMs": 47162,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:32:56.154Z"
+      "updatedAt": "2026-10-09T08:33:43.317Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:29:03.964Z",
-  "updatedAt": "2026-10-09T08:32:56.154Z",
+  "updatedAt": "2026-10-09T08:33:43.317Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -772,7 +789,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:32:56.154Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:33:43.317Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
