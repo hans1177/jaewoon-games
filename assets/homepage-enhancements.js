@@ -156,7 +156,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
   };
   const candidates=catalog.games.filter(game=>{
     const id=gameIdOf(game),unity=sourcesOf(game).unity||{};
-    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\\/+|\\/+$/g,'');
+    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
     return Boolean(id)&&projectPath===`unity-games/${id}`;
   });
   const available=new Map();
@@ -177,7 +177,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
         ||readiness?.pass!==true||readiness?.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness?.gameId!==id)return;
       const probes=await Promise.all(['loader','data','framework','wasm'].map(async key=>{
         const ref=String(groups[key][0]||'');
-        if(!/^Build\\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+        if(!/^Build\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
         const response=await probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null);
         return response?.ok===true;
       }));
