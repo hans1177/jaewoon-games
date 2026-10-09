@@ -34,25 +34,38 @@
         "SELECT: 수집 및 경험 획득 또는 업그레이드 선택, 현재 빈도와 기능 병렬 추가로 새로운 건강 상태를 생성.",
         "OUTPUT: 성장의 신호가 발생하여 새 행동·경로·조합 등에 의해 열린다."
       ]
+    },
+    "local_authoring_parts::561ac63275d36e6e1eab8d08c6fba08c5076063d8ff1cb5dcd91c77023b0a924:signatureSystems:0": {
+      "id": "ZOMBIE_SURVIVAL_CORE_FUN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT_STATE"
+      ],
+      "stateOutputs": [
+        "GROWTH_SIGNAL"
+      ],
+      "name": "좀비 생존기의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+      "purpose": "플레이어가 매일 선택을 내리며 30일간 좀비 아포칼립스를 버티는 선택형 생존 게임에서 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'라는 중심 행동을 수행하며, 다양한 선택과 결과에 따라 월드 상태가 변환된다.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 275520,
-      "lastMs": 48705,
+      "totalMs": 324519,
+      "lastMs": 48999,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:16:55.301Z"
+      "updatedAt": "2026-10-09T12:17:44.301Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:12:19.666Z",
-  "updatedAt": "2026-10-09T12:16:55.301Z",
+  "updatedAt": "2026-10-09T12:17:44.301Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:16:55.301Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:17:44.301Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
