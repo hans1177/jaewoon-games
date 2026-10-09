@@ -34,25 +34,40 @@
         "SELECT: Commit a move or ability that changes control of key spaces.",
         "OUTPUT: Status change in the world state, affecting future choices."
       ]
+    },
+    "local_authoring_parts::9abf71923c03022c16e8b0b274cec38f50364ba461193c0d40abc288e12c733b:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE",
+        "ENEMY_THREAT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATUS_CHANGE",
+        "NEXT_CHOICE"
+      ],
+      "name": "KARMA RETURN",
+      "purpose": "Establishes the causal link between player action and world state transformation.",
+      "playerChoice": "Commit a move or ability that changes control of key spaces in response to board state and enemy threat."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 314839,
-      "lastMs": 33873,
+      "totalMs": 348376,
+      "lastMs": 33537,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:28:38.396Z"
+      "updatedAt": "2026-10-09T11:29:11.935Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:23:23.526Z",
-  "updatedAt": "2026-10-09T11:28:38.396Z",
+  "updatedAt": "2026-10-09T11:29:11.935Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2181,7 +2196,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:28:38.396Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:29:11.935Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
