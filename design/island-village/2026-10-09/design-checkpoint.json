@@ -1458,25 +1458,34 @@
       "toSystem": "VILLAGE_B",
       "trigger": "Resource accumulation + Infrastructure upgrade",
       "stateChange": "New population/land added"
+    },
+    "local_authoring_parts::19246e8f9ba588924005dc5c77c4a0672984366fc3735d4b54385fd15b5b7516:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 131,
-      "successes": 131,
+      "calls": 132,
+      "successes": 132,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8920695,
-      "lastMs": 88722,
+      "totalMs": 8980376,
+      "lastMs": 59681,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:53:13.914Z"
+      "updatedAt": "2026-10-09T06:26:27.478Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T06:25:27.764Z",
+  "updatedAt": "2026-10-09T06:26:27.478Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3707,10 +3716,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:53:13.918Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:26:27.478Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
