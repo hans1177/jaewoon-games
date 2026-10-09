@@ -520,25 +520,40 @@
       "name": "Environmental Adaptation",
       "purpose": "Enables players to dynamically adjust their strategies based on ecological changes and resource availability.",
       "playerChoice": "Decide which members should focus on survival tasks based on environmental conditions and resource distribution patterns."
+    },
+    "local_authoring_parts::0098c392a7d4c86083df5fa732149f98a5dfeccf8109caa20843f0100c10d566:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Interdependent goal achievement"
+      ],
+      "name": "Forest Resource Dynamics",
+      "purpose": "Model ecological adaptation through resource distribution and group readiness",
+      "playerChoice": "Prioritize one member over another for survival based on resource availability and environmental risk assessment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1340252,
-      "lastMs": 67298,
+      "totalMs": 1407476,
+      "lastMs": 67224,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:16:14.381Z"
+      "updatedAt": "2026-10-09T22:56:42.407Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T22:55:35.172Z",
+  "updatedAt": "2026-10-09T22:56:42.407Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2377,10 +2392,10 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:16:14.382Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:56:42.407Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
