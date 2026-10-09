@@ -97,25 +97,46 @@
       "name": "CORE_GAMEPLAY_ACTION_SEQUENCE_B",
       "purpose": "플레이어가 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략에 기반하여 복잡한 의사결정을 수행하며, 이는 주요 행동인 '개미의 선택'에서 시작하여 유연하게 변환되는 게임 루프로 구성됩니다.",
       "playerChoice": "실제 입력과 상호작용 결과로 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략이 변화하고, 그 결과로 보상/위험/다음 선택이 결정되며, 이는 다음 목표·지역·상호작용·전략 선택으로 이어집니다."
+    },
+    "local_authoring_parts::eb71e51559b45e1d5eac8fe4d12f41940c86fad22fd3d28f42d4bd25f10a5c66:signatureSystems:3": {
+      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "world_state",
+        "target_choice",
+        "resource_management",
+        "risk_detection",
+        "entry_exit_strategy"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "name": "OPENING_WORLD_STATE_TRANSFORMATION_REVISITATION",
+      "purpose": "플레이어가 기존 월드 상태와 대상 선택에 대한 발견, 숙련 및 재방문을 통해 게임 루프의 깊이를 확대하는 시스템입니다.",
+      "playerChoice": "기존 월드 상태와 대상 선택을 다시 탐험하며, 자원 관리 방식, 위험 감지 전략, 진입/진출 전술을 유연하게 조합하여 새로운 목표와 상호작용을 설정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 308293,
-      "lastMs": 40743,
+      "totalMs": 347193,
+      "lastMs": 38900,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:27:43.375Z"
+      "updatedAt": "2026-10-09T14:28:22.276Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:27:43.375Z",
+  "updatedAt": "2026-10-09T14:28:22.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1717,7 +1738,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:27:43.375Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:28:22.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
