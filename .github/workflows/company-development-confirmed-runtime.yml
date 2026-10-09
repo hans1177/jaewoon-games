@@ -49,8 +49,11 @@ jobs:
     name: Admit one unscoped development coordinator
     runs-on: ubuntu-slim
     timeout-minutes: 5
+    # GitHub replaces an older pending job in a shared concurrency group even when
+    # cancel-in-progress is false. Keep coordinator wakes run-scoped; the
+    # explicit active-batch admission scan below already coalesces duplicate work.
     concurrency:
-      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}
+      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
