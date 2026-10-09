@@ -1063,25 +1063,43 @@
     },
     "local_authoring_parts::9a6e554e2ada4fbee57a480d47f7679adeb893838da0453253e37e19cc25c06e:trigger": {
       "trigger": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::9a6e554e2ada4fbee57a480d47f7679adeb893838da0453253e37e19cc25c06e:stateChange": {
+      "stateChange": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다."
+    },
+    "local_authoring_parts::b11dbb42845670cd1f4abc1ac6abc1eea665d21928e35196ca489d9d412f6754:systemInterconnections:3": {
+      "fromId": "systemInterconnections[3]",
+      "toId": "systemInterconnections[3]",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT",
+        "DEFENSE_CONFIGURATION",
+        "RESOURCE_POOL",
+        "RESOURCE_ALLOCATIONS"
+      ],
+      "fromSystem": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+      "toSystem": "ENEMY_WAVE→DEFENSE_CONFIGURATION의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+      "trigger": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다.",
+      "stateChange": "ENEMY_WAVE 정보가 입력되고, DEFENSE_CONFIGURATION 상태로 전환됨. 이 과정에서 RESOURCE_POOL 자원이 생성되어 팀 내부 방어 구성에 활용된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 97,
-      "successes": 97,
+      "calls": 98,
+      "successes": 98,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8256276,
-      "lastMs": 62059,
+      "totalMs": 8317951,
+      "lastMs": 61675,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:26:19.567Z"
+      "updatedAt": "2026-10-09T06:27:21.244Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T06:26:19.568Z",
+  "updatedAt": "2026-10-09T06:27:21.246Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3593,7 +3611,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:26:19.567Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:27:21.246Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
