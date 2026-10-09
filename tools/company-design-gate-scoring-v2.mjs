@@ -152,8 +152,16 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       reject('DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},'MAIN 게임 정체성 및 A/B 각각의 시스템+소재와 양방향 원인·상태 교환을 다시 설계한다.');
     }
     const c=list(grammar?.cThemes);
-    if(c.length!==2||!c.some(row=>row?.kind==='GENRE')||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
-      reject('DESIGN_C_TWO_TOPICS_ONE_GENRE_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C는 정확히 두 창작 소재를 융합하고 그중 최소 하나는 장르여야 한다. 이름·장식만이 아닌 A/B의 실제 선택과 세계 규칙에 연결한다.');
+    if(c.length!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
+      reject('DESIGN_C_TWO_TOPICS_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C의 두 창작 소재를 실제 세계와 A/B 선택에 인과적으로 결합해야 한다.');
+    }
+    const genres=list(grammar?.cGenres);
+    if(genres.length!==2||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row?.role===role))
+      ||new Set(genres.map(row=>clean(row?.name).toLowerCase())).size!==2
+      ||genres.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16))
+      ||!textReady(grammar?.cGenreInterlock,30)){
+      reject('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
+        'C에는 다른 두 장르가 필수다. 메인 장르가 중심 플레이를 만들고 보조 장르가 실제 규칙·선택·위험을 바꾸는 인과 관계를 작성한다.');
     }
     if(list(grammar?.delveDiscoveries).length<4||list(grammar?.delveDiscoveries).some(row=>!textReady(row?.clue,10)||!textReady(row?.discovery,10)||!textReady(row?.newChoice,15))||!textReady(grammar?.delveGrowthRule,25)){
       reject('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},'초기 파고들기 네 사례 각각 단서·발견·새 선택을 갖추고 이후 숫자 상한 없는 발전 규칙을 설계한다.');
@@ -437,13 +445,19 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const creative=design.creativeGrammar||{};
   const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
   const seedC=seedGrammar?.gameplaySystemFusion?.themeFusion?.themes||[];
+  const seedGenres=seedGrammar?.gameplaySystemFusion?.themeFusion?.genres||[];
   const creativityCarried=!seedV5||(
     textReady(creative.mainIdentity,15)
     &&[0,1].every((index)=>{const key=index?'b':'a',axis=creative[key]||{},seedAxis=list(fusion.majorAxes)[index]||{};
       return textReady(axis.system,2)&&textReady(axis.material,2)&&textReady(axis.stateChange,20)
         &&clean(axis.material).includes(clean(seedAxis.sourceMaterial));})
-    &&list(creative.cThemes).length===2&&list(creative.cThemes).some(row=>row?.kind==='GENRE')
+    &&list(creative.cThemes).length===2
+    &&list(creative.cGenres).length===2
+    &&['PRIMARY','SECONDARY'].every(role=>list(creative.cGenres).some(row=>row?.role===role))
+    &&new Set(list(creative.cGenres).map(row=>clean(row?.name).toLowerCase())).size===2
+    &&textReady(creative.cGenreInterlock,30)
     &&seedC.every(row=>list(creative.cThemes).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.kind)===clean(row?.kind)))
+    &&seedGenres.every(row=>list(creative.cGenres).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.role)===clean(row?.role)))
     &&textReady(creative.abCausality,35)&&textReady(creative.cWorldAndGameplayEffect,30)
     &&list(creative.delveDiscoveries).length>=4&&textReady(creative.delveGrowthRule,25));
   const systemFusionCarryOk=!seedGrammar||(mainCarried&&carriedMajorAxes.length>=Math.min(2,majorAxisNames.length)&&carriedSubElements.length>=Math.min(1,subElementNames.length)&&carriedDelveElements.length>=Math.min(1,delveNames.length)&&emergentGenreCarried&&creativityCarried);
@@ -532,7 +546,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   }
   if(seedGrammar&&!grammarCarryOk){
     hardFailures.push('NOVEL_GRAMMAR_DILUTED');
-    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v5 MAIN×A×B×C+@ 구조로 게임 설계를 전면 재작성한다. MAIN은 정체성, A/B는 각각 시스템과 창작 소재, C는 장르 최소 하나를 포함하는 두 주제, @는 제한 없이 확장되는 발견과 숙련이다.'}));
+    rejectionReasons.push(rejectionReason({code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS',evidenceLevel:evidenceLevels.IDEA_AND_DISTINCTNESS,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried},requiredAction:'GAMEPLAY_SKETCH v5 MAIN×A×B×C+@ 구조로 게임 설계를 전면 재작성한다. MAIN은 정체성, A/B는 각각 시스템과 창작 소재, C는 메인·보조 장르 두 개와 두 창작 주제, @는 제한 없이 확장되는 발견과 숙련이다.'}));
   }
   if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
     hardFailures.push('CORE_FUN_WEAK');
