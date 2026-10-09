@@ -102,25 +102,225 @@
       "name": "PUZZLE_LOOP_C",
       "purpose": "플레이어가 선택 결과와 세계 인과법칙에 따라 새로운 상태 변환 및 재방문 기회를 열어, 게임의 복잡성과 유연성을 강화하는 보조 요소입니다.",
       "playerChoice": "Make strategic decisions that align with the world's causal rules and lead to new board states or reward/risk combinations. These choices should reflect player agency and allow for multiple paths of progression based on different contextual conditions and resource allocations."
+    },
+    "local_authoring_parts::bcd6e9af73b0830ddeed4faf603fe28fb57cb493d4e4f5391692513c44931291:signatureSystems:4": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "REWARD",
+        "RISK",
+        "NEXT_CHOICE"
+      ],
+      "name": "PUZZLE_LOOP_DELVE",
+      "purpose": "플레이어가 선택한 주제나 패턴에 따라 다음 상태와 보상을 결정하는 숨은 운용",
+      "playerChoice": "선택한 주제 또는 패턴의 의미, 구조, 혹은 전략적 대응을 바탕으로 다음 상태를 결정하여 새로운 보상을 얻거나 위험을 감당해야 한다."
+    },
+    "local_authoring_parts::9b32b19152a3a09c5be4c1a3f95e2a577b0b5febd1d3188babf89751c7c53c42:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_CORE",
+          "purpose": "Player's initial board selection and decision-making process that drives the game state change, reward system, risk mechanism, and next choice.",
+          "playerChoice": "Select a board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the objective. Earn rewards or unlock new stages, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_A",
+          "purpose": "Establishes the initial interaction between the player's choice and the board state, creating a dynamic foundation for subsequent gameplay.",
+          "playerChoice": "Select a specific board pattern or obstacle configuration that aligns with the current goal and constraints of the level, while ensuring it is solvable through strategic moves and immediate feedback from the board interface."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_B",
+          "purpose": "A/B 대축으로서, MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination with dynamic risk and reward distribution based on current board state and player strategy selection."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_C",
+          "purpose": "플레이어가 선택 결과와 세계 인과법칙에 따라 새로운 상태 변환 및 재방문 기회를 열어, 게임의 복잡성과 유연성을 강화하는 보조 요소입니다.",
+          "playerChoice": "Make strategic decisions that align with the world's causal rules and lead to new board states or reward/risk combinations. These choices should reflect player agency and allow for multiple paths of progression based on different contextual conditions and resource allocations."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_DELVE",
+          "purpose": "플레이어가 선택한 주제나 패턴에 따라 다음 상태와 보상을 결정하는 숨은 운용",
+          "playerChoice": "선택한 주제 또는 패턴의 의미, 구조, 혹은 전략적 대응을 바탕으로 다음 상태를 결정하여 새로운 보상을 얻거나 위험을 감당해야 한다."
+        }
+      ]
+    },
+    "local_authoring_parts::a9af96e181b37c99be21c8a19bd1b7d57049fe036caee563d6ee2c7f7cb4c831:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_CORE",
+          "purpose": "Player's initial board selection and decision-making process that drives the game state change, reward system, risk mechanism, and next choice.",
+          "playerChoice": "Select a board level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. Make matches or deliberate puzzle moves to solve the objective. Earn rewards or unlock new stages, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_A",
+          "purpose": "Establishes the initial interaction between the player's choice and the board state, creating a dynamic foundation for subsequent gameplay.",
+          "playerChoice": "Select a specific board pattern or obstacle configuration that aligns with the current goal and constraints of the level, while ensuring it is solvable through strategic moves and immediate feedback from the board interface."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_B",
+          "purpose": "A/B 대축으로서, MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+          "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination with dynamic risk and reward distribution based on current board state and player strategy selection."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_C",
+          "purpose": "플레이어가 선택 결과와 세계 인과법칙에 따라 새로운 상태 변환 및 재방문 기회를 열어, 게임의 복잡성과 유연성을 강화하는 보조 요소입니다.",
+          "playerChoice": "Make strategic decisions that align with the world's causal rules and lead to new board states or reward/risk combinations. These choices should reflect player agency and allow for multiple paths of progression based on different contextual conditions and resource allocations."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE",
+            "REWARD",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "PUZZLE_LOOP_DELVE",
+          "purpose": "플레이어가 선택한 주제나 패턴에 따라 다음 상태와 보상을 결정하는 숨은 운용",
+          "playerChoice": "선택한 주제 또는 패턴의 의미, 구조, 혹은 전략적 대응을 바탕으로 다음 상태를 결정하여 새로운 보상을 얻거나 위험을 감당해야 한다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 418018,
-      "lastMs": 42821,
+      "totalMs": 460613,
+      "lastMs": 42595,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:03:13.270Z"
+      "updatedAt": "2026-10-09T13:03:55.867Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:03:13.270Z",
+  "updatedAt": "2026-10-09T13:03:55.870Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,7 +2357,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:03:13.270Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:03:55.870Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
