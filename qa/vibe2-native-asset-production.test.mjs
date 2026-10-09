@@ -13,6 +13,15 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('Unity and shared gameplay libraries mandate real native 3D while keeping UI/audio as support resources',()=>{
+  const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan'});
+  assert.match(guidance,/OWNER 3D SPATIAL ASSET CONTRACT/);
+  assert.match(guidance,/실제 3D 메시\/삼각형\/깊이\/재질/);
+  assert.match(guidance,/2D 스프라이트, 평면 이미지, 카드/);
+  assert.match(guidance,/UI·HUD·아이콘·텍스처·오디오 자체는 2D/);
+  assert.match(guidance,/Unity Web은 원본 Unity 프로젝트/);
+});
+
 test('Vibe genre menu recommendations bind source-backed existing UI without owning economy, save or network',()=>{
   const root=tempRoot();
   try{
