@@ -27,6 +27,24 @@ import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-w
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
+test('Vibe coding method requires native 3D for Unity Web but does not change unrelated platform prompts',()=>{
+  const context={files:[{path:'RuntimeBootstrap.cs',content:'using UnityEngine; public class RuntimeBootstrap {}',editable:true}]};
+  const options={verifiedExternalLearningContract:{block:''}};
+  const order={target:'unity',goal:'기존 2D 게임을 3D로 재개발',selectedTask:{firstStageUnityWeb:true},
+    evidence:['unity-web-first-stage','upper-platform-readiness:READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED']};
+  const webPrompt=buildPrompt(order,context,['RuntimeBootstrap.cs'],options);
+  assert.match(webPrompt,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+  assert.match(webPrompt,/readiness|failure fingerprint/i);
+  assert.match(webPrompt,/inspected>0, validMeshes=inspected, triangles>0/);
+  assert.match(webPrompt,/Do not create wrapper overrides/);
+  assert.match(webPrompt,/save keys\/schema unchanged/);
+  assert.match(webPrompt,/Source changes and model claims alone are UNVERIFIED/);
+  const unityApp=buildPrompt({...order,selectedTask:{firstStageUnityWeb:false},evidence:[],goal:'상점 버튼 수정'},context,['RuntimeBootstrap.cs'],options);
+  assert.doesNotMatch(unityApp,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+  const roblox=buildPrompt({...order,target:'roblox',selectedTask:{},evidence:[]},context,['RuntimeBootstrap.cs'],options);
+  assert.doesNotMatch(roblox,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+});
+
 test('Vibe source performance tasks retain distinct Unity Web, Unity Android and Roblox source/runtime contracts',()=>{
   const context={files:[{path:'GameCore.cs',content:'public void Update() {}',editable:true}]};
   const options={verifiedExternalLearningContract:{block:''}};
