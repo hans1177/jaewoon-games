@@ -122,7 +122,7 @@ function validateGameplaySketch(sketch,errors){
       const fusion=grammar.gameplaySystemFusion;
       if(!fusion||typeof fusion!=='object'||Array.isArray(fusion))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion is required');
       else{
-        if(fusion.formula!=='MAIN × A × B × c')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula must be MAIN × A × B × c');
+        if(fusion.formula!==(version>=5?'MAIN × A × B × C':'MAIN × A × B × c'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula does not match its sketch version');
         if(!fusion.main||!isNonEmptyString(fusion.main.name)||!isNonEmptyString(fusion.main.playerAction)||!isNonEmptyString(fusion.main.stateContribution))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.main is incomplete');
         const axes=Array.isArray(fusion.majorAxes)?fusion.majorAxes:[];
         const keys=axes.map(row=>String(row?.key||'').toUpperCase());
