@@ -139,21 +139,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 254180,
-      "lastMs": 25119,
+      "totalMs": 281799,
+      "lastMs": 27619,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:32:20.457Z"
+      "updatedAt": "2026-10-09T18:32:48.078Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:28:06.257Z",
-  "updatedAt": "2026-10-09T18:32:20.458Z",
+  "updatedAt": "2026-10-09T18:32:48.079Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1752,11 +1752,32 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::7973889b48dd61ed1c4c6c5e438299f07a9b9fb8be056a7f7998c2d6e87d1f0c:signatureSystems:2": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "OPENWORLD_SIMULATION",
+          "ACTION_SURVIVAL_ROGUELITE"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "OPENWORLD_SIMULATION",
+          "ACTION_SURVIVAL_ROGUELITE"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::7973889b48dd61ed1c4c6c5e438299f07a9b9fb8be056a7f7998c2d6e87d1f0c:signatureSystems:2": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:32:20.458Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T18:32:48.078Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
