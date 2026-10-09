@@ -106,25 +106,236 @@
       "name": "FIGHT_SYSTEM_4",
       "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
       "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+    },
+    "local_authoring_parts::eea9696803851dc4030a7b16d4812c3acb2a37f0b267f4e0e43cc78c1ad7eb02:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "ENTITY_ID",
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS"
+      ],
+      "stateOutputs": [
+        "ACTION_SEQUENCE",
+        "STATE_TRANSITION",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "FIGHT_SYSTEM_5",
+      "purpose": "플레이어가 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+      "playerChoice": "플레이어는 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+    },
+    "local_authoring_parts::69bd5cbb34543f1939cde8eb25f557c7923fc90ba39abe5187dbdc54214b2e4b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM",
+          "purpose": "Player's core survival action and progression mechanism",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure, collect rewards, upgrade builds, survive waves/bosses, and convert results into progression choices with contextual actions and friction management for immersive gameplay experience."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_2",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어는 주요 행동 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 통해 즉각적인 상태 변화를 일으키며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_3",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계됨",
+          "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다고 명시됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_4",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_5",
+          "purpose": "플레이어가 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어는 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        }
+      ]
+    },
+    "local_authoring_parts::0dd4032e40428052e27587c8a5c86e5ea8e8ddca9cab70b2e932e5a30f1748e9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM",
+          "purpose": "Player's core survival action and progression mechanism",
+          "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure, collect rewards, upgrade builds, survive waves/bosses, and convert results into progression choices with contextual actions and friction management for immersive gameplay experience."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_2",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어는 주요 행동 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'을 통해 즉각적인 상태 변화를 일으키며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_3",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계됨",
+          "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다. 이 과정에서 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 된다고 명시됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_4",
+          "purpose": "기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어가 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "ENTITY_ID",
+            "PLAYER_FRICTION",
+            "INFORMATION_HIERARCHY",
+            "CONTEXTUAL_ACTIONS"
+          ],
+          "stateOutputs": [
+            "ACTION_SEQUENCE",
+            "STATE_TRANSITION",
+            "PROGRESSION_CHOICE"
+          ],
+          "name": "FIGHT_SYSTEM_5",
+          "purpose": "플레이어가 캐릭터의 움직임, 자원 사용, 전투 전략 등 다양한 상황별 반응을 경험하게 하며, 새로운 행동 조합과 경로를 열어 같은 콘텐츠를 다르게 활용할 수 있도록 설계된다.",
+          "playerChoice": "플레이어는 기존 시스템과의 조건 및 위험/보상 관계를 유지하며, 선택 결과에 따라 다음 상태와 접근 가능성을 바꾼다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 993198,
-      "lastMs": 103180,
+      "totalMs": 1101963,
+      "lastMs": 108765,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:12:27.963Z"
+      "updatedAt": "2026-10-09T11:14:16.730Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:55:54.572Z",
-  "updatedAt": "2026-10-09T11:12:27.963Z",
+  "updatedAt": "2026-10-09T11:14:16.733Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2323,7 +2534,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:12:27.963Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:14:16.733Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
