@@ -220,25 +220,38 @@
       "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
       "purpose": "To model the causal relationship between player decision-making and game state changes, emphasizing adaptive strategy deployment in dynamic environments.",
       "playerChoice": "Player selects an escape route based on current threat level and available resources"
+    },
+    "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:2": {
+      "id": "coreLoop_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "player_choice_of_escape_route"
+      ],
+      "stateOutputs": [
+        "survival_outcomes_and_strategic_options"
+      ],
+      "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+      "purpose": "To represent the player's decision to choose an escape route, which impacts both immediate survival conditions and future strategic planning.",
+      "playerChoice": "The player decides whether to scout or move the egg based on current threat level and available resources in the environment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1185257,
-      "lastMs": 96274,
+      "totalMs": 1281411,
+      "lastMs": 96154,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:12:03.198Z"
+      "updatedAt": "2026-10-09T22:51:19.186Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:52:17.910Z",
-  "updatedAt": "2026-10-09T22:49:43.025Z",
+  "updatedAt": "2026-10-09T22:51:19.186Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1702,8 +1715,8 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:12:03.198Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T22:51:19.186Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
