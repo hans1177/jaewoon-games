@@ -7,48 +7,9 @@
   "mission": "KEEP_THE_COMPANY_UNIVERSE_CLOSED_TO_UNAUTHORIZED_EXTERNAL_CONTROL_AND_DETECT_CONTAIN_RECOVER_LEARN_FROM_SECURITY_THREATS",
   "primaryRole": "VIBE_SECURITY_STEWARD",
   "defaultTrust": "DENY_OR_QUARANTINE_UNTIL_VERIFIED",
-  "protectedSurfaces": [
-    "GITHUB_REPOSITORY",
-    "GITHUB_ACTIONS",
-    "EXTERNAL_AI_INPUT_AND_OUTPUT",
-    "CANDIDATE_BRANCHES_AND_PULL_REQUESTS",
-    "MAIN_AND_RUNTIME_BRANCH_WRITE_PATHS",
-    "DEPENDENCY_AND_INSTALL_PATHS",
-    "SECRETS_AND_CREDENTIAL_REFERENCES",
-    "RECOVERY_AND_LEARNING_STORES",
-    "ROBLOX_GAME_SERVER_AUTHORITY",
-    "ROBLOX_REMOTE_INPUT_BOUNDARIES",
-    "GAME_SAVE_ECONOMY_REWARD_INTEGRITY",
-    "POST_RELEASE_GAME_SECURITY_REVIEW"
-  ],
-  "mainThreatClasses": [
-    "UNAUTHORIZED_REPOSITORY_WRITE",
-    "MALWARE_OR_VIRUS_LIKE_PAYLOAD",
-    "SECRET_OR_TOKEN_EXFILTRATION",
-    "WORKFLOW_PRIVILEGE_ESCALATION",
-    "SUPPLY_CHAIN_OR_UNTRUSTED_INSTALL",
-    "PROMPT_INJECTION_OR_EXTERNAL_INSTRUCTION_OVERRIDE",
-    "COMMAND_INJECTION_OR_SHELL_EXECUTION_CHAIN",
-    "UNAPPROVED_NETWORK_EXFILTRATION",
-    "POLICY_LOG_ARCHITECTURE_TAMPERING",
-    "SECURITY_GATE_BYPASS",
-    "PERSISTENCE_OR_BACKDOOR_BEHAVIOR",
-    "CLIENT_TRUSTED_FOR_SERVER_AUTHORITY",
-    "UNVALIDATED_OR_UNRATE_LIMITED_REMOTE_INPUT",
-    "CLIENT_CONTROLLED_REWARD_DAMAGE_OR_SAVE_AUTHORITY",
-    "GAME_LEVEL_EXPLOIT_OR_DUPLICATION_PATH"
-  ],
-  "responseLifecycle": [
-    "DETECT",
-    "CLASSIFY",
-    "QUARANTINE_OR_REVIEW",
-    "TERMINATE_AFFECTED_UNTRUSTED_EXECUTION_IF_QUARANTINED",
-    "PRESERVE_SANITIZED_IMMUTABLE_EVIDENCE",
-    "ROUTE_TO_SECURITY_RECOVERY",
-    "VERIFY_REMEDIATION",
-    "PRIMARY_AI_DIRECT_REVIEW_FOR_SECURITY_INCIDENT",
-    "PROMOTE_ONLY_VERIFIED_SIGNATURE_AND_RECOVERY_PATTERN_TO_LEARNING"
-  ],
+  "protectedSurfaces": ["GITHUB_REPOSITORY","GITHUB_ACTIONS","EXTERNAL_AI_INPUT_AND_OUTPUT","CANDIDATE_BRANCHES_AND_PULL_REQUESTS","MAIN_AND_RUNTIME_BRANCH_WRITE_PATHS","DEPENDENCY_AND_INSTALL_PATHS","SECRETS_AND_CREDENTIAL_REFERENCES","RECOVERY_AND_LEARNING_STORES","ROBLOX_GAME_SERVER_AUTHORITY","ROBLOX_REMOTE_INPUT_BOUNDARIES","GAME_SAVE_ECONOMY_REWARD_INTEGRITY","POST_RELEASE_GAME_SECURITY_REVIEW"],
+  "mainThreatClasses": ["UNAUTHORIZED_REPOSITORY_WRITE","MALWARE_OR_VIRUS_LIKE_PAYLOAD","SECRET_OR_TOKEN_EXFILTRATION","WORKFLOW_PRIVILEGE_ESCALATION","SUPPLY_CHAIN_OR_UNTRUSTED_INSTALL","PROMPT_INJECTION_OR_EXTERNAL_INSTRUCTION_OVERRIDE","COMMAND_INJECTION_OR_SHELL_EXECUTION_CHAIN","UNAPPROVED_NETWORK_EXFILTRATION","POLICY_LOG_ARCHITECTURE_TAMPERING","SECURITY_GATE_BYPASS","PERSISTENCE_OR_BACKDOOR_BEHAVIOR","CLIENT_TRUSTED_FOR_SERVER_AUTHORITY","UNVALIDATED_OR_UNRATE_LIMITED_REMOTE_INPUT","CLIENT_CONTROLLED_REWARD_DAMAGE_OR_SAVE_AUTHORITY","GAME_LEVEL_EXPLOIT_OR_DUPLICATION_PATH"],
+  "responseLifecycle": ["DETECT","CLASSIFY","QUARANTINE_OR_REVIEW","TERMINATE_AFFECTED_UNTRUSTED_EXECUTION_IF_QUARANTINED","PRESERVE_SANITIZED_IMMUTABLE_EVIDENCE","ROUTE_TO_SECURITY_RECOVERY","VERIFY_REMEDIATION","PRIMARY_AI_DIRECT_REVIEW_FOR_SECURITY_INCIDENT","PROMOTE_ONLY_VERIFIED_SIGNATURE_AND_RECOVERY_PATTERN_TO_LEARNING"],
   "containment": {
     "wholeCompanyStopByDefault": false,
     "isolateOnlyAffectedCandidateOrWorkflow": true,
@@ -72,15 +33,7 @@
   },
   "securityLearning": {
     "verifiedIncidentsAreLearningSources": true,
-    "positiveSecurityLessonRequires": [
-      "THREAT_SIGNATURE_VERIFIED",
-      "AFFECTED_SCOPE_CONTAINED",
-      "ROOT_CAUSE_IDENTIFIED",
-      "REMEDIATION_APPLIED",
-      "EXACT_SECURITY_CHECK_PASS",
-      "REGRESSION_OR_RESCAN_PASS",
-      "PRIMARY_AI_SECURITY_REVIEW_PASS"
-    ],
+    "positiveSecurityLessonRequires": ["THREAT_SIGNATURE_VERIFIED","AFFECTED_SCOPE_CONTAINED","ROOT_CAUSE_IDENTIFIED","REMEDIATION_APPLIED","EXACT_SECURITY_CHECK_PASS","REGRESSION_OR_RESCAN_PASS","PRIMARY_AI_SECURITY_REVIEW_PASS"],
     "storedKnowledge": [
       "GENERALIZED_THREAT_SIGNATURE",
       "DETECTION_RULE",
@@ -115,19 +68,7 @@
     "staleRoadmapExecutionForbidden": true
   },
   "workerSynchronization": {
-    "launcherWorkflows": [
-      ".github/workflows/vibe2-continuous-core.yml",
-      ".github/workflows/vibe2-24h-runner.yml",
-      ".github/workflows/company-system-ai-workers.yml",
-      ".github/workflows/company-security-immune.yml",
-      ".github/workflows/artbook-free-department-bots.yml",
-      ".github/workflows/company-development-confirmed-runtime.yml",
-      ".github/workflows/company-development-unity-runtime.yml",
-      ".github/workflows/company-development-roblox-runtime.yml",
-      ".github/workflows/company-seed-design-runtime.yml",
-      ".github/workflows/director-supervisor.yml",
-      ".github/workflows/homepage-manager.yml"
-    ],
+    "launcherWorkflows": [".github/workflows/vibe2-continuous-core.yml",".github/workflows/vibe2-24h-runner.yml",".github/workflows/company-system-ai-workers.yml",".github/workflows/company-security-immune.yml",".github/workflows/artbook-free-department-bots.yml",".github/workflows/company-development-confirmed-runtime.yml",".github/workflows/company-development-unity-runtime.yml",".github/workflows/company-development-roblox-runtime.yml",".github/workflows/company-seed-design-runtime.yml",".github/workflows/director-supervisor.yml",".github/workflows/homepage-manager.yml"],
     "securityAndRecoveryWorkersUseSameRoadmapContext": true,
     "newChatAndWorkerPreflightRequired": true,
     "latestMainCanonicalSetRequired": true,
@@ -206,13 +147,7 @@
     },
     "roblox": {
       "existingStaticGate": "tools/company-development-roblox-bootstrap.mjs",
-      "existingStaticChecks": [
-        "SERVER_REMOTE_BOUNDARY_REQUIRED",
-        "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
-        "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
-        "SERVER_LOADSTRING_FORBIDDEN",
-        "SERVER_ASSET_REQUIRE_FORBIDDEN"
-      ],
+      "existingStaticChecks": ["SERVER_REMOTE_BOUNDARY_REQUIRED","SERVER_REMOTE_INPUT_VALIDATION_REQUIRED","SERVER_REMOTE_RATE_LIMIT_REQUIRED","SERVER_LOADSTRING_FORBIDDEN","SERVER_ASSET_REQUIRE_FORBIDDEN"],
       "existingRuntimeEvidence": [
         "robloxServerClientBoundaryPassed",
         "robloxIndependentQaPassed",
@@ -223,14 +158,7 @@
       "postRuntimeQa": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
       "releasePromotion": ".github/workflows/company-development-roblox-release-promotion.yml"
     },
-    "checkpoints": [
-      "SOURCE_CANDIDATE_SECURITY_SCAN",
-      "SERVER_AUTHORITY_AND_REMOTE_BOUNDARY_STATIC_GATE",
-      "TARGET_RUNTIME_SERVER_CLIENT_BOUNDARY",
-      "INDEPENDENT_QA_AND_REGRESSION",
-      "FINAL_RELEASE_SECURITY_REVIEW",
-      "POST_RELEASE_SECURITY_FINDING_TRIAGE"
-    ],
+    "checkpoints": ["SOURCE_CANDIDATE_SECURITY_SCAN","SERVER_AUTHORITY_AND_REMOTE_BOUNDARY_STATIC_GATE","TARGET_RUNTIME_SERVER_CLIENT_BOUNDARY","INDEPENDENT_QA_AND_REGRESSION","FINAL_RELEASE_SECURITY_REVIEW","POST_RELEASE_SECURITY_FINDING_TRIAGE"],
     "postReleaseFindingRoute": {
       "confirmedExploitOrSecurityBug": "HOTFIX",
       "releaseBlocking": true,
@@ -787,67 +715,17 @@
       "existingGameRefresh": "FINGERPRINT_OR_MAPPING_VERSION_CHANGE_REQUIRES_REAL_BEHAVIOR_SOURCE_DIFF",
       "preserveExistingEvolutionLoop": true,
       "preserveExistingFloors": true,
-      "requiredEvidence": [
-        "PRINCIPLE",
-        "GAME_SPECIFIC_SEMANTIC_MAPPING",
-        "EXECUTABLE_SOURCE_DIFF",
-        "TEST_RESULT",
-        "SOURCE_COMMIT",
-        "PROMOTION_RESULT"
-      ],
-      "gameDevelopmentSurfaces": [
-        "GAMEPLAY",
-        "INPUT_FEEDBACK",
-        "CHARACTER_MOTION",
-        "ANIMATION",
-        "COMBAT_HIT_FEEDBACK",
-        "SKILL_TELEGRAPH",
-        "SKILL_EFFECTS",
-        "VFX",
-        "PARTICLES",
-        "CAMERA_FEEDBACK",
-        "WORLD_ENVIRONMENT",
-        "OBJECT_PRESENTATION",
-        "PROGRESSION",
-        "RISK_REWARD",
-        "CONTEXTUAL_ONBOARDING",
-        "MOBILE_TOUCH",
-        "HUD_UI",
-        "AUDIO_VISUAL_TIMING"
-      ],
-      "qaOnlySurfaces": [
-        "APK_INSTALLATION",
-        "ANDROID_ABI",
-        "ARTIFACT_INTEGRITY",
-        "HOSTED_EMULATOR",
-        "CI_QA_EVIDENCE",
-        "RUNTIME_INFRASTRUCTURE",
-        "AUTOMATION_INFRASTRUCTURE"
-      ],
+      "requiredEvidence": ["PRINCIPLE","GAME_SPECIFIC_SEMANTIC_MAPPING","EXECUTABLE_SOURCE_DIFF","TEST_RESULT","SOURCE_COMMIT","PROMOTION_RESULT"],
+      "gameDevelopmentSurfaces": ["GAMEPLAY","INPUT_FEEDBACK","CHARACTER_MOTION","ANIMATION","COMBAT_HIT_FEEDBACK","SKILL_TELEGRAPH","SKILL_EFFECTS","VFX","PARTICLES","CAMERA_FEEDBACK","WORLD_ENVIRONMENT","OBJECT_PRESENTATION","PROGRESSION","RISK_REWARD","CONTEXTUAL_ONBOARDING","MOBILE_TOUCH","HUD_UI","AUDIO_VISUAL_TIMING"],
+      "qaOnlySurfaces": ["APK_INSTALLATION","ANDROID_ABI","ARTIFACT_INTEGRITY","HOSTED_EMULATOR","CI_QA_EVIDENCE","RUNTIME_INFRASTRUCTURE","AUTOMATION_INFRASTRUCTURE"],
       "serverValidation": {
         "serverFilesAreAssets": false,
-        "onlyWhenAffected": [
-          "DAMAGE_AUTHORITY",
-          "REWARDS",
-          "SAVE",
-          "ECONOMY",
-          "MULTIPLAYER_AUTHORITY",
-          "AUTHORITATIVE_STATE",
-          "EXPLOIT_PREVENTION"
-        ],
+        "onlyWhenAffected": ["DAMAGE_AUTHORITY","REWARDS","SAVE","ECONOMY","MULTIPLAYER_AUTHORITY","AUTHORITATIVE_STATE","EXPLOIT_PREVENTION"],
         "pureClientPresentationRequiresServerRescan": false,
         "exactValidEvidenceReuseRequired": true,
         "sourceIntegrityStillRequired": true
       },
-      "verifiedPositiveExternalIds": [
-        "external-black-box-block-blast-run-30",
-        "external-black-box-cavern-cravers-run-47",
-        "external-black-box-idle-fantasy-run-42",
-        "external-black-box-luanti-run-10",
-        "external-black-box-revengate-run-59",
-        "external-black-box-sgtpuzzles-run-29",
-        "external-black-box-shattered-pixel-dungeon-run-4"
-      ],
+      "verifiedPositiveExternalIds": ["external-black-box-block-blast-run-30","external-black-box-cavern-cravers-run-47","external-black-box-idle-fantasy-run-42","external-black-box-luanti-run-10","external-black-box-revengate-run-59","external-black-box-sgtpuzzles-run-29","external-black-box-shattered-pixel-dungeon-run-4"],
       "unverifiedUncivEligible": false,
       "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
       "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
@@ -908,6 +786,7 @@
         "mayNotOverrideExistingSaveBalanceEconomyNetworkAuthority": true,
         "mayNotTreatCulturalReferenceAsPermissionToCopyProtectedModernExpression": true,
         "mayNotReplaceExistingGameIdentityWithGenericTemplate": true,
+        "mayNotPromote_c_ToThirdMajorAxis": true,
         "mayNotPromoteAtDelveToGeneralSystemAxis": true,
         "mayNotTreatGameCategoryAsMandatoryFinalGenre": true,
         "mayNotUseDecorativeLoreAsProofOfGameplayGrammar": true,
@@ -915,9 +794,16 @@
         "existingGameIdentityRewriteNotRequired": true,
         "causalMutationMustUseExistingResponsibleSourceAndAuthorizedGameState": true,
         "strictDesignGateMayRejectDilutedGrammarButCannotSelfApproveRelease": true,
+        "aAndBOnlyMajorAxes": true,
+        "cMustRemainSubordinateElements": true,
+        "atMustRemainDelveLayer": true,
         "emergentGenreIsFinalCompositeIdentity": true,
+        "CisGenreFusionNotTechnicalSubelement": true,
         "cRequiresPrimaryAndSecondaryDistinctGenres": true,
-        "aAndBEachRequireSystemAndCreativeSource": true
+        "aAndBEachRequireSystemAndCreativeSource": true,
+        "legacyMainOnlyDesignMustNotPass": true,
+        "genreLabelOnlyMayNotPass": true,
+        "unboundedDelveNoFalseImplementationPass": true
       }
     },
     "designAuthoringIntegrity": {
@@ -949,30 +835,14 @@
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
     "evidenceReuse": {
-      "evidenceKey": [
-        "sourceRevision",
-        "artifactIdentity",
-        "securityScopeFingerprint",
-        "affectedResponsibilities",
-        "pass",
-        "checkedAt"
-      ],
+      "evidenceKey": ["sourceRevision","artifactIdentity","securityScopeFingerprint","affectedResponsibilities","pass","checkedAt"],
       "reuseRequires": [
         "EXACT_SOURCE_REVISION",
         "EXACT_ARTIFACT_IDENTITY",
         "UNCHANGED_RELEVANT_SECURITY_SCOPE",
         "NO_CHANGED_SECURITY_RESPONSIBILITY"
       ],
-      "alwaysInvalidateAffectedEvidenceOn": [
-        "REMOTE_EVENT_OR_REMOTE_FUNCTION_CHANGE",
-        "SERVER_AUTHORITY_CHANGE",
-        "SAVE_OR_DATASTORE_CHANGE",
-        "ECONOMY_OR_REWARD_CHANGE",
-        "DAMAGE_OR_COOLDOWN_AUTHORITY_CHANGE",
-        "INVENTORY_OWNERSHIP_CHANGE",
-        "ANTI_CHEAT_OR_SECURITY_BOUNDARY_CHANGE",
-        "NETWORKING_OR_MULTIPLAYER_AUTHORITY_CHANGE"
-      ],
+      "alwaysInvalidateAffectedEvidenceOn": ["REMOTE_EVENT_OR_REMOTE_FUNCTION_CHANGE","SERVER_AUTHORITY_CHANGE","SAVE_OR_DATASTORE_CHANGE","ECONOMY_OR_REWARD_CHANGE","DAMAGE_OR_COOLDOWN_AUTHORITY_CHANGE","INVENTORY_OWNERSHIP_CHANGE","ANTI_CHEAT_OR_SECURITY_BOUNDARY_CHANGE","NETWORKING_OR_MULTIPLAYER_AUTHORITY_CHANGE"],
       "fullRescanEveryFloor": false,
       "f9UsesCurrentExactEvidenceFanIn": true,
       "newSecurityPipelineForbidden": true,
