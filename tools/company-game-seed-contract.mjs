@@ -143,7 +143,12 @@ function validateGameplaySketch(sketch,errors){
             }
           }
           const c=fusion.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
-          if(themes.length!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind))||!themes.some(row=>row?.kind==='GENRE'))errors.push('GAMEPLAY_SKETCH C requires exactly two creative themes with at least one GENRE');
+          if(themes.length!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind)))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
+          const genres=Array.isArray(c?.genres)?c.genres:[];
+          if(genres.length!==2||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row?.role===role))
+            ||new Set(genres.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2
+            ||genres.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.gameplayEffect))
+            ||!isNonEmptyString(c?.genreInterlock))errors.push('GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay');
           if(!isNonEmptyString(c?.jointWorldRule)||!isNonEmptyString(c?.abGameplayEffect))errors.push('GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world');
           if(!isNonEmptyString(fusion.main?.name)||!isNonEmptyString(fusion.main?.purpose))errors.push('GAMEPLAY_SKETCH MAIN game topic/identity missing');
         }
