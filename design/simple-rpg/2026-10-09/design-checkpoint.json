@@ -488,25 +488,64 @@
         "resourceFlow": "UNIFORM",
         "balanceRules": "BALANCED"
       }
+    },
+    "local_authoring_parts::89ee484be379a4a519aa507e19dc58df01c019ee2f572f28625fd11f67e3ca81:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "기초 게임 맵 시스템",
+          "newGameplay": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint 선택 후, 새로운 월드 상태 생성 및 결과 반영",
+          "systemImpact": "게임 맵에 새로운 상태 생성, 플레이어 선택 영향 전달"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소)",
+          "newGameplay": "플레이어는 현재 월드 상태에서 새로운 문제, 장애물, 혹은 도전을 선택하여 다음 월드 상태로 전환",
+          "systemImpact": "월드 상태 변환, 플레이어 선택 기반의 세계 진입 촉진"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 두 번째 단계",
+          "newGameplay": "플레이어는 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하여 위험, 보상, 그리고 다음 선택에 대한 대응법 결정",
+          "systemImpact": "플레이어 행동과 상호작용 기반의 세계 재구성 및 발전"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 세 번째 단계",
+          "newGameplay": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다",
+          "systemImpact": "세계 역사·생활·경제·지역 기능 구축 및 게임 규칙 확립"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 네 번째 단계",
+          "newGameplay": "플레이어는 월드 상태를 선택하거나 특정 조합이나 관계를 통해 새롭게 생성되는 월드 상태를 결정할 수 있습니다",
+          "systemImpact": "월드 상태 다양화 및 게임 세계 진입 방식 개선"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기본적인 월드 상태 유지",
+          "선택 결과에 따른 새로운 월드 상태 생성",
+          "위험/보상 대응 실패"
+        ],
+        "retryFlow": "플레이어는 위험/보상 대응 실패 후 다시 시작 가능",
+        "riskPressure": "재도전 시 보상 감소 또는 진행 유실 발생 가능성 있음",
+        "recoveryRules": "플레이어는 다음 월드 상태에서 재도전 가능"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1655471,
-      "lastMs": 297172,
+      "totalMs": 1805142,
+      "lastMs": 149671,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T15:59:19.687Z"
+      "updatedAt": "2026-10-09T16:01:49.359Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:59:19.687Z",
+  "updatedAt": "2026-10-09T16:01:49.364Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2093,15 +2132,305 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "cf9b6becb363b525a007934e1dad0727cc2e31be433735c11cbc288f119424e5"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:59:19.687Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "PLAYER_SELECTION_TRIGGER"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "STATE_CHANGE_TO_GAME"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "STATE_CHANGE_TO_WORLD"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "STATE_CHANGE_TO_NEW_WORLD"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[5].stateChange",
+          "value": "STATE_CHANGE_TO_WORLD"
+        },
+        "requiredAction": "systemInterconnections[5].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "GAME_SEED→SYSTEM_INTERCONNECTION_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: GAME_SEED→SYSTEM_INTERCONNECTION_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SYSTEM_INTERCONNECTION_1→GAME_SEED의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SYSTEM_INTERCONNECTION_1→GAME_SEED의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "GAME_SEED→SYSTEM_INTERCONNECTION_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: GAME_SEED→SYSTEM_INTERCONNECTION_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SYSTEM_INTERCONNECTION_2→GAME_SEED의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SYSTEM_INTERCONNECTION_2→GAME_SEED의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "GAME_SEED→SYSTEM_INTERCONNECTION_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: GAME_SEED→SYSTEM_INTERCONNECTION_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SYSTEM_INTERCONNECTION_3→GAME_SEED의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SYSTEM_INTERCONNECTION_3→GAME_SEED의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "REPEATABLE",
+        "resourceFlow": "UNIFORM",
+        "balanceRules": "BALANCED"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "기초 게임 맵 시스템",
+          "newGameplay": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint 선택 후, 새로운 월드 상태 생성 및 결과 반영",
+          "systemImpact": "게임 맵에 새로운 상태 생성, 플레이어 선택 영향 전달"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소)",
+          "newGameplay": "플레이어는 현재 월드 상태에서 새로운 문제, 장애물, 혹은 도전을 선택하여 다음 월드 상태로 전환",
+          "systemImpact": "월드 상태 변환, 플레이어 선택 기반의 세계 진입 촉진"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 두 번째 단계",
+          "newGameplay": "플레이어는 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하여 위험, 보상, 그리고 다음 선택에 대한 대응법 결정",
+          "systemImpact": "플레이어 행동과 상호작용 기반의 세계 재구성 및 발전"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 세 번째 단계",
+          "newGameplay": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다",
+          "systemImpact": "세계 역사·생활·경제·지역 기능 구축 및 게임 규칙 확립"
+        },
+        {
+          "milestone": "심층 탐험 시스템 (보조 요소) - 네 번째 단계",
+          "newGameplay": "플레이어는 월드 상태를 선택하거나 특정 조합이나 관계를 통해 새롭게 생성되는 월드 상태를 결정할 수 있습니다",
+          "systemImpact": "월드 상태 다양화 및 게임 세계 진입 방식 개선"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기본적인 월드 상태 유지",
+          "선택 결과에 따른 새로운 월드 상태 생성",
+          "위험/보상 대응 실패"
+        ],
+        "retryFlow": "플레이어는 위험/보상 대응 실패 후 다시 시작 가능",
+        "riskPressure": "재도전 시 보상 감소 또는 진행 유실 발생 가능성 있음",
+        "recoveryRules": "플레이어는 다음 월드 상태에서 재도전 가능"
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T16:01:49.360Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
