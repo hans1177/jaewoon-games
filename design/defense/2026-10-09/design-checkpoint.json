@@ -1908,25 +1908,43 @@
         "TACTICAL_FLEXIBILITY"
       ],
       "fromSystem": "CORE_LOOP_DESIGN_CORE_LOOP_0_INPUT_0_DEFINITION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE_INPUT_0_DEFENSE_COVERAGE_0_DESCRIPTION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE"
+    },
+    "local_authoring_parts::fa6365e17e2a61a3bd1a277ddf21e4b9841f7376242d33180b6ed74f557a6c28:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_LOOP_DESIGN_CORE_LOOP_1_OUTPUT_0_DEFINITION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE",
+      "trigger": "DEFENSE_COVERAGE_CHANGE_AND_RESOURCE_ACUMULATION_INCREASED_AND_TACTICAL_FLEXIBILITY_INCREMENTAL",
+      "stateChange": "DEFENSE_COVERAGE_INCREMENTAL, RESOURCE_ACUMULATION_INCREMENTAL, TACTICAL_FLEXIBILITY_INCREMENTAL"
+    },
+    "local_authoring_parts::ca536d5f0d01c4af57b11ea638a0573a14253ffc406e9e046fd25576081b7fb5:systemInterconnections:2": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_LOOP_0_INPUT_0_DEFINITION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE_INPUT_0_DEFENSE_COVERAGE_0_DESCRIPTION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE",
+      "toSystem": "CORE_LOOP_DESIGN_CORE_LOOP_1_OUTPUT_0_DEFINITION_0_REFERENCE_HOMAGE_PLAN_0_MAIN_0_STATE",
+      "trigger": "DEFENSE_COVERAGE_CHANGE_AND_RESOURCE_ACUMULATION_INCREASED_AND_TACTICAL_FLEXIBILITY_INCREMENTAL",
+      "stateChange": "DEFENSE_COVERAGE_INCREMENTAL, RESOURCE_ACUMULATION_INCREMENTAL, TACTICAL_FLEXIBILITY_INCREMENTAL"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 142,
-      "successes": 139,
+      "calls": 143,
+      "successes": 140,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 9119976,
-      "lastMs": 65140,
+      "totalMs": 9185903,
+      "lastMs": 65927,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T07:05:14.042Z"
+      "updatedAt": "2026-10-09T07:06:19.971Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T07:05:14.042Z",
+  "updatedAt": "2026-10-09T07:06:19.973Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4266,7 +4284,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:05:14.042Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T07:06:19.973Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
