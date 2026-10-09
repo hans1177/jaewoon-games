@@ -467,25 +467,38 @@
       "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
       "purpose": "플레이어 선택에 따라 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성함",
       "playerChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성한다"
+    },
+    "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "선택"
+      ],
+      "stateOutputs": [
+        "상태 변화"
+      ],
+      "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+      "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성",
+      "playerChoice": "선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1970339,
-      "lastMs": 102669,
+      "totalMs": 2073006,
+      "lastMs": 102667,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:13:19.256Z"
+      "updatedAt": "2026-10-09T22:52:51.259Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T22:51:08.585Z",
+  "updatedAt": "2026-10-09T22:52:51.270Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2224,22 +2237,11 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "signatureSystems_0",
-          "signatureSystems_1",
-          "signatureSystems_2"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::e8cda5d5adf361993951252efc443a56f4e06cefbc815f86107c7a9b355c3702:signatureSystems:2": 1,
-    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::identity-core": 2,
     "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:1": 1,
     "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:2": 1,
     "local_authoring_parts::d7ff60d3ce13830b5abf19e736f2911ac0ae08bfb931be1b83f4392c17ea842f:signatureSystems:3": 1
@@ -2343,10 +2345,10 @@
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:13:19.256Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:52:51.261Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
