@@ -433,25 +433,42 @@
         "GROWTH_PROGRESS"
       ],
       "fromSystem": "IDLE_GROWTH_RPG"
+    },
+    "local_authoring_parts::6d1f381d9d69520fadea44c7a77f2bfd4062501e331363fe99fcd0c06a89ee05:toSystem,trigger,stateChange": {
+      "toSystem": "IDLE_GROWTH_RPG",
+      "trigger": "IDLE_GROWTH_RESOURCE",
+      "stateChange": "GROWTH_PROGRESS"
+    },
+    "local_authoring_parts::05992c3b4247a4865a64f7195bb45bb0234f1f6d0dc98c242e68c7cd43f2bf99:systemInterconnections:1": {
+      "fromId": "IDLE_GROWTH_RESOURCE",
+      "toId": "GROWTH_PROGRESS",
+      "stateKeys": [
+        "IDLE_GROWTH_RESOURCE",
+        "GROWTH_PROGRESS"
+      ],
+      "fromSystem": "IDLE_GROWTH_RPG",
+      "toSystem": "IDLE_GROWTH_RPG",
+      "trigger": "IDLE_GROWTH_RESOURCE",
+      "stateChange": "GROWTH_PROGRESS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1161955,
-      "lastMs": 97567,
+      "totalMs": 1257577,
+      "lastMs": 95622,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:24:26.100Z"
+      "updatedAt": "2026-10-09T12:26:01.723Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:24:26.100Z",
+  "updatedAt": "2026-10-09T12:26:01.725Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2829,7 +2846,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:24:26.100Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:26:01.725Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
