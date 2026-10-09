@@ -242,7 +242,7 @@ test('기존 HTML 게임과 저장 데이터는 검증 없는 Unity 정식 주�
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const publish=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'));
   const originFetch=publish.indexOf('git fetch --no-tags origin main');
-  const migrationGate=publish.indexOf('UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_KEEP_EXISTING_GAME_URL');
+  const migrationGate=publish.indexOf('UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_TEST_ROUTE_ONLY');
   const deleteRuntime=publish.indexOf('rm -rf "$runtime_dir"');
   assert(originFetch>=0&&migrationGate>originFetch&&deleteRuntime>migrationGate,
     '검증 전에 현재 정식 게임 디렉터리를 삭제해서는 안 된다');
@@ -250,7 +250,10 @@ test('기존 HTML 게임과 저장 데이터는 검증 없는 Unity 정식 주�
   const grepLine=publish.split(String.fromCharCode(10)).find(line=>line.includes("grep -Eq 'createUnityInstance"));
   assert(grepLine,'expected native Unity index detection');
   assert.equal([...grepLine].filter(char=>char.charCodeAt(0)===92).length,1,'grep ERE requires exactly one escape before literal parenthesis');
-  assert.match(publish,/exit 1/);
+  assert.match(publish,/build\.legacyRootPreservedForSave=true/);
+  assert.match(publish,/legacy_save_pending=true/);
+  assert.match(publish,/UNITY_WEB_LEGACY_SAVE_REPAIR_REQUIRED=YES/);
+  assert.match(publish,/exit 42/);
   assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
   assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
 });
