@@ -245,25 +245,191 @@
       "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
       "purpose": "Establishes the core gameplay mechanics and their causal relationships.",
       "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility, influencing subsequent decisions and risk management strategies in real-time survival scenarios."
+    },
+    "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:3": {
+      "id": "signature-systems-3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Player choice of build composition",
+        "Threat type shift",
+        "Terrain adaptation"
+      ],
+      "stateOutputs": [
+        "Resource allocation",
+        "Risk management",
+        "Dynamic terrain adjustment"
+      ],
+      "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+      "purpose": "Players' adaptive strategies influence enemy behavior, while environmental factors shape tactical responses.",
+      "playerChoice": "Shift in threat type triggers new gameplay mechanics and dynamic terrain adaptations."
+    },
+    "local_authoring_parts::bebad98da07698ba6d5423c64587a2a5fe9b33e41cf43e739171e0bc03b38b14:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Players must balance resource management and combat efficiency in a dynamic survival environment.",
+          "playerChoice": "Shift in threat type triggers new gameplay mechanics, altering strategy and decision-making."
+        },
+        {
+          "id": "signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "To enable players to dynamically adjust their survival strategy, manage risks, and adapt to changing environments.",
+          "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility."
+        },
+        {
+          "id": "signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Establishes the core gameplay mechanics and their causal relationships.",
+          "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility, influencing subsequent decisions and risk management strategies in real-time survival scenarios."
+        },
+        {
+          "id": "signature-systems-3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Players' adaptive strategies influence enemy behavior, while environmental factors shape tactical responses.",
+          "playerChoice": "Shift in threat type triggers new gameplay mechanics and dynamic terrain adaptations."
+        }
+      ]
+    },
+    "local_authoring_parts::af3e77bf6ac0a3ee6973304855afedfb020ba986fecec6008a2c295bba90ed1f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "플레이어 선택 → 상태 변화 → 새로운 전략/경로/성장 가능성이 생성됨",
+        "무한 발전 규칙: 진입점에서 단순 전투보다는 숨겨진 세계로 이어지는 생존 로그라이트"
+      ],
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Players must balance resource management and combat efficiency in a dynamic survival environment.",
+          "playerChoice": "Shift in threat type triggers new gameplay mechanics, altering strategy and decision-making."
+        },
+        {
+          "id": "signature-systems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "To enable players to dynamically adjust their survival strategy, manage risks, and adapt to changing environments.",
+          "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility."
+        },
+        {
+          "id": "signature-systems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Establishes the core gameplay mechanics and their causal relationships.",
+          "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility, influencing subsequent decisions and risk management strategies in real-time survival scenarios."
+        },
+        {
+          "id": "signature-systems-3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Player choice of build composition",
+            "Threat type shift",
+            "Terrain adaptation"
+          ],
+          "stateOutputs": [
+            "Resource allocation",
+            "Risk management",
+            "Dynamic terrain adjustment"
+          ],
+          "name": "Lost Star's Whisper - A Survival Logryte with Adaptive Strategy",
+          "purpose": "Players' adaptive strategies influence enemy behavior, while environmental factors shape tactical responses.",
+          "playerChoice": "Shift in threat type triggers new gameplay mechanics and dynamic terrain adaptations."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1137594,
-      "lastMs": 99784,
+      "totalMs": 1235731,
+      "lastMs": 98137,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:50:06.028Z"
+      "updatedAt": "2026-10-09T20:51:44.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-09T20:50:06.030Z",
+  "updatedAt": "2026-10-09T20:51:44.169Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1970,19 +2136,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "identity-core",
-          "signature-systems-1",
-          "signature-systems-2"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:1": 1,
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:2": 1,
@@ -1992,8 +2146,8 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:50:06.028Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T20:51:44.169Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
