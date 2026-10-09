@@ -86,25 +86,42 @@
       "name": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
       "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
       "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::94a63d5ebe679971da5f05182f2d20949958640da0001d61031ff014e1f52e92:signatureSystems:3": {
+      "id": "CORE_FUN_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_KEY",
+        "RISK_LEVEL"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_10",
+        "STATE_CHANGE_11",
+        "STATE_CHANGE_12"
+      ],
+      "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+      "purpose": "This state element reveals the hidden interaction between MAIN, A, B, and DELVE(@), allowing players to discover new combinations, mastery, and deeper gameplay layers.",
+      "playerChoice": "Discover a new combination, master a skill, or delve into an unexplored area to gain unique gameplay experiences."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 372148,
-      "lastMs": 38512,
+      "totalMs": 413069,
+      "lastMs": 40921,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:23:25.948Z"
+      "updatedAt": "2026-10-09T09:24:06.870Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:23:25.948Z",
+  "updatedAt": "2026-10-09T09:24:06.870Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2028,7 +2045,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:23:25.948Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:24:06.870Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
