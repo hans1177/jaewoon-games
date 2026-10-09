@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a:identity": {
+      "identity": "퇴마 사무소을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어가 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600196,
-      "lastMs": 300095,
+      "totalMs": 824222,
+      "lastMs": 224026,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:51:25.282Z"
+      "updatedAt": "2026-10-09T17:55:09.309Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:41:25.065Z",
-  "updatedAt": "2026-10-09T17:51:25.282Z",
+  "updatedAt": "2026-10-09T17:55:09.309Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1506,5 +1510,9 @@
   "localAuthoringSplits": {
     "7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70": true,
     "d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T17:55:09.309Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
