@@ -1472,25 +1472,43 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG"
+    },
+    "local_authoring_parts::1ff174afb0ab20e11eefbc4019186d4dbb833bda255cecb0ceb8e3ca76eac7d2:toSystem,trigger,stateChange": {
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE → RUN_STATE: 플레이어의 선택 결과가 다음 월드 상태를 바꾸며, 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
+    },
+    "local_authoring_parts::1aa968260bc3bc5243b315743e22eff19a3972661ea7cd28e3ac7898d14c3673:systemInterconnections:4": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE → RUN_STATE: 플레이어의 선택 결과가 다음 월드 상태를 바꾸며, 새로운 경로, 위험, 보상을 선택하여 재방문 및 숙련을 가능하게 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 91,
-      "successes": 88,
+      "calls": 92,
+      "successes": 89,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5986287,
-      "lastMs": 44177,
+      "totalMs": 6031897,
+      "lastMs": 45610,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:45:57.616Z"
+      "updatedAt": "2026-10-09T02:46:43.228Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T02:45:57.617Z",
+  "updatedAt": "2026-10-09T02:46:43.235Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3475,9 +3493,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "RUN_STATE→RESULT_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: RUN_STATE→RESULT_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3492,9 +3510,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "RUN_STATE→RESULT_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: RUN_STATE→RESULT_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3521,7 +3539,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 4
+    "designer_draft_slices::systems-progression": 5
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3559,10 +3577,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:45:57.616Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T02:46:43.231Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
