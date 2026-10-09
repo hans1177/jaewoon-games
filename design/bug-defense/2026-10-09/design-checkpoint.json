@@ -27,25 +27,32 @@
       "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.\n\n플레이어 역할: 곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.\n\n대표 행동: Read the incoming insect wave and its threat pattern.\n\n대표 선택: Place or adjust defenders and spend limited resources on the highest-value counter.\n\n시그니처 세계 규칙: 플레이어의 Read the incoming insect wave and its threat pattern.와 선택이 SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\nCORE_FUN:\n- Read the incoming insect wave and its threat pattern.\n- Place or adjust defenders and spend limited resources on the highest-value counter.\n- Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.\n\nCORE_LOOP:\n1. INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)\n2. STATE CHANGE → REWAD",
       "playerFantasy": "곤충 디펜스에서 플레이어는 Read the incoming insect wave and its threat pattern.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 세계의 원인과 인과법칙에 따라 새로운 행동·경로·관계·발견·대응법을 열어 다양한 게임 경험을 선보일 수 있다.",
       "coreFun": "[INPUT/SELECT] Read the incoming insect wave and its threat pattern.\n[STATE CHANGE] Place or adjust defenders and spend limited resources on the highest-value counter.\n[REWAD] Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+    },
+    "local_authoring_parts::5e49786e6530a3cf95ae03987fb469a4f6b29e6112232daa21a405d61c17209b:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT → STATE CHANGE (Read the incoming insect wave and its threat pattern. / Place or adjust defenders and spend limited resources on the highest-value counter.)",
+        "STATE CHANGE → REWARD",
+        "REWAD"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 263077,
-      "lastMs": 33862,
+      "totalMs": 295330,
+      "lastMs": 32253,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:25:23.933Z"
+      "updatedAt": "2026-10-09T11:25:56.189Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T11:25:23.935Z",
+  "updatedAt": "2026-10-09T11:25:56.189Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,7 +2251,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:25:23.935Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:25:56.189Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
