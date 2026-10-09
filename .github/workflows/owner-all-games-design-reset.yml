@@ -29,8 +29,10 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - name: Validate reset synchronizer
-        run: node --check tools/company-all-games-design-reset.mjs
+      - name: Validate reset synchronizer and canonical QA
+        run: |
+          node --check tools/company-all-games-design-reset.mjs
+          node --test qa/owner-design-reset.test.mjs qa/company-shared-context.test.mjs
       - name: Persist canonical DESIGN_ONLY seed state
         shell: bash
         run: |
