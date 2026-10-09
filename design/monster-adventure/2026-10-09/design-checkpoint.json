@@ -27,25 +27,32 @@
       "identity": "몬스터 어드벤처는 시작 단계부터 즉시 이해되는 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 플레이어는 이 입력을 통해 세계 상태가 바뀌며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다.",
       "playerFantasy": "몬스터 어드벤처에서 플레이어는 시작 단계부터 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 이 입력은 세계 상태를 바꾸며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다.",
       "coreFun": "몬스터 어드벤처는 시작 단계부터 즉시 이해되는 간단한 입력(1 손 tap 또는 swipe)과 명확한 점수, 거리, 혹은 짧은 세션 목표로 구성되어 있는 CASUAL 게임이다. 플레이어는 이 입력을 통해 세계 상태가 바뀌며 다음 선택을 결정하게 된다. 주체는 '플레이어'이며, 중심 행동은 'Start immediately...'이고, 대축 A/B는 'Play a brief run...' 및 'Finish or fail...'로, 보조 요소 c는 'Collect rewards...'와 관련된다. 시그니처 세계 규칙은 '점수', '거리', '선택'의 연결에 기반하여 이루어진다."
+    },
+    "local_authoring_parts::4f0cdb7b7fc8966660ea3ff5a5554c3b4cab9c25bcaa3bc62511547bb0cfd77e:coreLoop": {
+      "coreLoop": [
+        "입력: 1 손 tap 또는 swipe",
+        "점수/거리/세션 목표 설정",
+        "세계 상태 변경 및 다음 선택 결정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 292505,
-      "lastMs": 43879,
+      "totalMs": 334294,
+      "lastMs": 41789,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:21:40.363Z"
+      "updatedAt": "2026-10-09T11:22:22.155Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:21:40.364Z",
+  "updatedAt": "2026-10-09T11:22:22.155Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2131,7 +2138,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:21:40.364Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:22:22.155Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
