@@ -2460,12 +2460,19 @@ const COMPANY_CATEGORY_TYPES=freeze({
   ENVIRONMENT:freeze(['background','prop']),
   VFX:freeze(['effect']),
   UI:freeze(['ui']),
-  WEAPON:freeze(['item'])
+  WEAPON:freeze(['item']),
+  BUILDING:freeze(['background','prop']),
+  PROP:freeze(['prop','item','background']),
+  MATERIAL:freeze(['background','effect']),
+  SKILL:freeze(['effect','item']),
+  AUDIO:freeze(['audio'])
 });
 
 function verifiedCompanyManifestAssets(registry={}){
   return (Array.isArray(registry?.assets)?registry.assets:[])
-    .filter(asset=>asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase())||asset?.crossPlatformMasterSource===true)
+    // 공용 등록 자산 전체를 평가하고 공간 오브젝트는 실제 3D 원본이 있을 때만 배포 후보로 둔다.
+    .filter(asset=>!internalAssetHardBlockReason(asset))
+    .filter(asset=>clean(asset?.id)&&Boolean(clean(asset?.path)||clean(asset?.masterGlb)||(asset?.nativeArtifacts||[]).length))
     .map(asset=>({
       ...asset,
       id:clean(asset.id),
@@ -2473,7 +2480,7 @@ function verifiedCompanyManifestAssets(registry={}){
       types:Array.isArray(asset.types)&&asset.types.length?asset.types:(COMPANY_CATEGORY_TYPES[clean(asset.category).toUpperCase()]||[]),
       tags:Array.isArray(asset.tags)?asset.tags:[clean(asset.title),clean(asset.category)].filter(Boolean),
       platforms:Array.isArray(asset.platforms)?asset.platforms:(clean(asset.platform)&&!/^SHARED|WEB_/i.test(clean(asset.platform))?[clean(asset.platform).toLowerCase()]:[]),
-      downloaded:true,
+      downloaded:asset?.downloaded!==false,
       companyVerified:asset?.verifiedCompanyReusable===true||/^VERIFIED_COMPANY_/.test(clean(asset?.status).toUpperCase()),
       crossPlatformMasterSource:asset?.crossPlatformMasterSource===true,
       source:clean(asset.source)||'COMPANY_ASSET_LIBRARY'
@@ -2482,9 +2489,10 @@ function verifiedCompanyManifestAssets(registry={}){
 }
 
 function mergeManifestWithCompanyLibrary(manifest={},registry={}){
-  const rows=[...(Array.isArray(manifest?.assets)?manifest.assets:[])];
-  const byId=new Map(rows.map(asset=>[clean(asset?.id),asset]));
-  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,{...(byId.get(asset.id)||{}),...asset});
+  // 외부 매니페스트는 연구 및 내부 라이브러리 수급 단계에만 사용한다.
+  // 게임 후보는 회사 내부 등록자산에서만 구성한다.
+  const byId=new Map();
+  for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,asset);
   return {...manifest,assets:[...byId.values()]};
 }
 
@@ -2504,6 +2512,10 @@ function assetTargetCompatible(asset={},target=''){
   const assetPath=clean(asset.path).replaceAll('\\\\','/');
   const masterGlb=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath).replaceAll('\\\\','/');
   if(asset?.crossPlatformMasterSource===true&&/\.glb$/i.test(masterGlb))return ['roblox','unity','web'].includes(resolvedTarget);
+  const spatialFiles=[assetPath,masterGlb,...(asset?.nativeArtifacts||[]),...(asset?.fileRoles?.models||[])];
+  // 플랫폼별 네이티브 재제작을 전제로 공용 3D 모델은 게임/장르/원본 플랫폼과 무관하게 후보로 둔다.
+  if(asset?.companyCommonBase===true&&spatialFiles.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
+    return ['roblox','unity','web'].includes(resolvedTarget);
   const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   const researchTargets=(Array.isArray(asset.platformResearchTargets)?asset.platformResearchTargets:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
   if(resolvedTarget==='web'){
@@ -2530,7 +2542,7 @@ function assetTargetCompatible(asset={},target=''){
 function matchedForType(selector={},type='',manifest={},target='',repoRoot=process.cwd()){
   const assets=Array.isArray(manifest?.assets)?manifest.assets:[];
   const byId=new Map(assets.map(asset=>[clean(asset?.id),asset]));
-  const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type));
+  const selectedRows=(selector.matched||[]).filter(row=>clean(row.type)===clean(type)&&byId.has(clean(row.id)));
   const selectedIds=new Set(selectedRows.map(row=>clean(row.id)).filter(Boolean));
   const licenseBlocked=asset=>{
     const value=clean(asset?.license||asset?.policy),lower=value.toLowerCase();
@@ -2621,7 +2633,7 @@ function matchedForType(selector={},type='',manifest={},target='',repoRoot=proce
   const authoringBases=assets
     .filter(asset=>!selectedIds.has(clean(asset.id)))
     .filter(asset=>declaredFor(asset).includes(clean(type).toLowerCase()))
-    .filter(asset=>!licenseBlocked(asset))
+    .filter(asset=>!licenseBlocked(asset)&&!internalAssetHardBlockReason(asset))
     .filter(asset=>assetTargetCompatible(asset,target))
     .filter(asset=>asset?.crossPlatformMasterSource===true||(asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase())))
     .map(asset=>normalize(asset,true));
@@ -2669,6 +2681,13 @@ function internalAssetHardBlockReason(asset={}){
   if(/EXPLICIT_INTERNAL_USE_FORBIDDEN|USE_FORBIDDEN/.test(status))return'EXPLICIT_INTERNAL_USE_FORBIDDEN';
   if(/NON.?COMMERCIAL|\bNC\b|FORBIDDEN|NO_DERIVATIVES/.test(license))return'LICENSE_FORBIDDEN';
   if(!license||/UNKNOWN|UNVERIFIED|출처 불명/.test(license))return'LICENSE_METADATA_MISSING';
+  const family=clean(asset?.family||asset?.category).toUpperCase();
+  if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
+    const models=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
+      ...(asset?.nativeArtifacts||[]),...(asset?.sourceFiles||[]),...(asset?.fileRoles?.models||[])];
+    if(!models.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file))))
+      return'SPATIAL_3D_SOURCE_REQUIRED';
+  }
   return'';
 }
 function internalAssetPlatformApplicationMode(asset={},target=''){
@@ -2759,6 +2778,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     allTwelveFamiliesEvaluated:UNIVERSAL_ASSET_FAMILIES.every(family=>Object.hasOwn(familyCandidates,family)),
     noArtificialAssetCountCap:true,
     noArtificialFamilyCountCap:true,
+    internalRegisteredAssetsOnly:true,
+    spatialFamiliesRequire3dGeometrySource:true,
+    crossGameAndGenreReuseUnrestricted:true,
+    crossPlatformReuseRequiresNativeReauthoring:true,
     auditScoreIsUsageGate:false,
     lowScoreCompatibleAssetUseAllowed:true,
     baseMaterialAtomCount,
