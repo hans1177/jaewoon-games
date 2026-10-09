@@ -27218,7 +27218,7 @@
         "tools/company-build-up-directive.mjs"
       ],
       "novelCausalGameGrammar": {
-        "version": 3,
+        "version": 4,
         "status": "OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_CANONICAL",
         "authority": "OWNER_DIRECTIVE_2026-10-06",
         "purpose": "START_WITH_MAIN_GAME_TOPIC_AND_IDENTITY; BIND_EACH_A_AND_B_SYSTEM_TO_ITS_OWN_CREATIVE_SOURCE; CAUSALLY_FUSE_TWO_C_THEMES_WITH_AT_LEAST_ONE_GENRE; EXTEND_UNBOUNDED_DELVE_IN_VERIFIED_GAMEPLAY",
@@ -27327,7 +27327,7 @@
             "creativeMaterialMustChangePlayerActionOrState": true,
             "mustExchangeStateWith": "MAIN_AND_A"
           },
-          "crossSystemRule": "MAIN_DEFINES_IDENTITY; A_AND_B_EACH_MUST_HAVE_SYSTEM_PLUS_CREATIVE_SOURCE; A_AND_B_MUTUALLY_CHANGE_CAUSE_COST_RISK_REWARD_OR_STATE; C_TWO_THEMES_ONE_MANDATORY_GENRE_CHANGES_THE_WHOLE_CAUSAL_GAME",
+          "crossSystemRule": "MAIN_GAME_IDENTITY; A_AND_B_SEPARATELY_BIND_SYSTEM_PLUS_CREATIVE_MATERIAL_AND_CAUSALLY_EXCHANGE_STATE; C_CREATIVE_MATERIAL_PAIR_PLUS_PRIMARY_AND_SECONDARY_GENRE_CAUSALLY_CHANGE_REAL_GAMEPLAY",
           "parallelFeatureStackingDoesNotCount": true,
           "majorAxesExactlyTwo": true,
           "onlyMajorAxes": [
@@ -27335,11 +27335,18 @@
             "B"
           ],
           "C": {
-            "role": "TWO_CREATIVE_THEMES_FUSED_WITH_GAMEPLAY",
-            "themeCount": 2,
-            "genreMinimum": 1,
-            "genreMayBeEitherTheme": true,
-            "secondThemeDomainOpen": true,
+            "role": "TWO_CREATIVE_MATERIALS_PLUS_TWO_DISTINCT_CAUSAL_GENRES",
+            "creativeThemeCount": 2,
+            "sourceMaterialDomains": "UNBOUNDED",
+            "genreCount": 2,
+            "genreRoles": [
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "primaryGenre": "DEFINES_DOMINANT_PLAYER_EXPERIENCE_AND_MAIN_GAME_RISK_GOALS",
+            "secondaryGenre": "MUST_CAUSALLY_CHANGE_PLAYER_DECISIONS_STORY_ENCOUNTERS_OR_SYSTEM_BEHAVIOR_NOT_DECORATIVE",
+            "distinctGenreNamesRequired": true,
+            "genreChoiceListClosed": false,
             "genreExamplesOnly": [
               "HORROR",
               "COMEDY",
@@ -27360,8 +27367,8 @@
               "SCIENCE",
               "SOCIAL_CULTURE"
             ],
-            "mustChange": "A_B_PLAYER_DECISIONS_WORLD_RULES_STORY_CONFLICT_OR_CONSEQUENCES",
-            "genreCannotBeDecorativeOnly": true,
+            "genreFusionIrreducibilityRequired": true,
+            "genreRolesAreNotSystemAxes": true,
             "notATertiaryMechanicalAxis": true
           },
           "CisCreativeThemeFusionNotMinorMechanic": true
@@ -27412,7 +27419,10 @@
             "A_SYSTEM_AND_CREATIVE_SOURCE",
             "B_SYSTEM_AND_CREATIVE_SOURCE",
             "A_B_BIDIRECTIONAL_CAUSAL_EFFECT",
-            "C_TWO_THEMES_AT_LEAST_ONE_GENRE",
+            "C_TWO_CREATIVE_MATERIALS",
+            "C_PRIMARY_GENRE",
+            "C_SECONDARY_DISTINCT_GENRE",
+            "C_GENRE_INTERACTION_CHANGES_PLAYER_CHOICE",
             "STORY_WORLD_CAUSAL_CONFLICT",
             "AT_DELVE_UNBOUNDED_EXPANSION",
             "EMERGENT_GAME_IDENTITY",
@@ -27438,9 +27448,11 @@
           "redesignFromCurrentPlayableGameAndOwnerIntent": true,
           "coreGameSourceAndSavePreservedUntilApprovedReplacement": true,
           "requireExplicitSystemMaterialForEachAB": true,
-          "requireCAtLeastOneGenre": true,
+          "requireCAtLeastOneGenre": false,
           "requireUnboundedDelvePlan": true,
-          "priorVerifiedDesignMustBeReevaluatedForNewGrammar": true
+          "priorVerifiedDesignMustBeReevaluatedForNewGrammar": true,
+          "requireCPrimaryAndSecondaryGenre": true,
+          "requireCGenreInterlock": true
         },
         "designAndGate": {
           "existingDesignFieldsRemainCanonical": true,
@@ -27462,8 +27474,10 @@
             "A_SYSTEM_PLUS_SOURCE",
             "B_SYSTEM_PLUS_SOURCE",
             "AB_CAUSALITY",
-            "C_TWO_THEMES",
-            "C_GENRE_AT_LEAST_ONE",
+            "C_TWO_CREATIVE_THEMES",
+            "C_PRIMARY_GENRE",
+            "C_SECONDARY_GENRE",
+            "C_GENRE_CAUSAL_INTERLOCK",
             "AT_INITIAL_FOUR_UNBOUNDED_GROWTH",
             "STORY_WORLD_PLAYER_CHOICE",
             "EMERGENT_GAME_IDENTITY"
@@ -27471,7 +27485,8 @@
           "strictGateFailureCodeWhenDiluted": "NOVEL_GRAMMAR_DILUTED",
           "cMustNotBePromotedToThirdMajorAxis": true,
           "atMustNotBePromotedToGeneralSystem": true,
-          "oldMainOnlyDesignsMustReenterDesignCycle": true
+          "oldMainOnlyDesignsMustReenterDesignCycle": true,
+          "cTwoGenresDistinctAndNondecorativeRequired": true
         },
         "expansionRule": {
           "rule": "DEEPEN_A_B_AND_C_CAUSAL_RELATIONSHIPS_AND_GROW_UNBOUNDED_AT_DISCOVERY_BEFORE_ADDING_DISCONNECTED_FEATURES",
@@ -27506,8 +27521,9 @@
           "reconstructExistingGameGrammarEveryRelevantBuildUp": true,
           "currentSourceAndDesignEvidenceRequired": true,
           "genericFeatureCountCannotProveGrammarGrowth": true,
-          "mainTopicAndBothAxisMaterialsAndCGenreRequired": true,
-          "neverClaimRealPlayFromDesignOnly": true
+          "mainTopicAndBothAxisMaterialsAndCGenreRequired": false,
+          "neverClaimRealPlayFromDesignOnly": true,
+          "mainAndBothAxisMaterialsAndCPrimarySecondaryGenresRequired": true
         },
         "bindings": [
           "tools/game-seed-state.mjs",
