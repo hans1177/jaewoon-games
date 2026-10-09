@@ -809,25 +809,51 @@
       "toSystem": "DEFENSE_STRATEGY",
       "trigger": "ENEMY_WAVE_INPUT",
       "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::e31390d5f860b1b7b23cdc70fef402962d1fab8f3bcd5f0f1edb805fda18103b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_CONFIGURATION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE"
+    },
+    "local_authoring_parts::e31390d5f860b1b7b23cdc70fef402962d1fab8f3bcd5f0f1edb805fda18103b:toSystem,trigger,stateChange": {
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::16ff234e9a603c1d6516c443aa0ba6c372b41eddd18614012e8a63393defdb39:systemInterconnections:1": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_CONFIGURATION",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE",
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 62,
-      "successes": 62,
+      "calls": 64,
+      "successes": 64,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5271989,
-      "lastMs": 88117,
+      "totalMs": 5457059,
+      "lastMs": 92469,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:05:03.880Z"
+      "updatedAt": "2026-10-09T03:08:08.955Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T03:05:03.882Z",
+  "updatedAt": "2026-10-09T03:08:08.957Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3169,7 +3195,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:05:03.882Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:08:08.957Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
