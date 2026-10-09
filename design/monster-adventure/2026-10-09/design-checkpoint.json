@@ -34,25 +34,40 @@
         "점수/거리/세션 목표 설정",
         "세계 상태 변경 및 다음 선택 결정"
       ]
+    },
+    "local_authoring_parts::8bb5d573096f56b8e0d4ac0ae8b786bb07bd7a8ffed92afb7acbb997edb98c73:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "POINT_SCORE_CONNECTION",
+      "purpose": "시그니처 세계 규칙인 점수, 거리, 선택의 연결에 기반하여 이루어진다.",
+      "playerChoice": "점수/거리/세션 목표 설정 후 세계 상태 변경 및 다음 선택 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 334294,
-      "lastMs": 41789,
+      "totalMs": 369138,
+      "lastMs": 34844,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:22:22.155Z"
+      "updatedAt": "2026-10-09T11:22:57.001Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:22:22.155Z",
+  "updatedAt": "2026-10-09T11:22:57.001Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2138,7 +2153,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:22:22.155Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:22:57.001Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
