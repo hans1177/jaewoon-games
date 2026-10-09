@@ -1480,25 +1480,34 @@
       "encounterPattern": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
       "resourcePressure": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
       "storyContext": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가"
+    },
+    "local_authoring_parts::02c83ad7eac2c84a6da3dbafa784f097a25d844423e4461ad612df9e2401fcc1:id,ruleIds,name,traversal,riskReward": {
+      "id": "50일-주제/역사/철학 선택",
+      "ruleIds": [
+        "signatureSystems[2]"
+      ],
+      "name": "주제/역사/철학 선택",
+      "traversal": "주제/역사/철학 선택 → 실시간 속도/강화 기능 증가 → 퀘스트/보상 선택",
+      "riskReward": "주제/역사/철학 선택 → 전투 스탠드 및 인식 변화 → 실시간 속도/강화 기능 증가"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 15,
+      "calls": 20,
+      "successes": 16,
       "failures": 4,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2600988,
-      "lastMs": 53129,
+      "totalMs": 2652827,
+      "lastMs": 51839,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:29:16.882Z"
+      "updatedAt": "2026-10-09T23:30:08.724Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T23:29:16.884Z",
+  "updatedAt": "2026-10-09T23:30:08.724Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3287,7 +3296,7 @@
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:29:16.884Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:30:08.724Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
