@@ -121,21 +121,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 359323,
-      "lastMs": 71285,
+      "totalMs": 405768,
+      "lastMs": 46445,
       "lastError": null,
-      "updatedAt": "2026-10-09T20:30:57.597Z"
+      "updatedAt": "2026-10-09T20:31:44.044Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:24:58.251Z",
-  "updatedAt": "2026-10-09T20:30:57.597Z",
+  "updatedAt": "2026-10-09T20:31:44.046Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1734,11 +1734,23 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::dd733d3f676373388b95a855065c59bbcee01c891f2dbf0350150616ef574d9e:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "ACTION_SURVIVAL_ROGUELITE_WITH_BIODETENTION_AND_RESILIENCE_UPGRADE_ANNOTATED_BY"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::dd733d3f676373388b95a855065c59bbcee01c891f2dbf0350150616ef574d9e:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T20:30:57.597Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T20:31:44.044Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
