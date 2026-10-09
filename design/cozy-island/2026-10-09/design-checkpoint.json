@@ -34,25 +34,41 @@
         "선택 → 상태 변화 → 보상/위험 → 다음 선택",
         "자동 전투 및 점령 보상 → 협동 지원 → 거점 확보"
       ]
+    },
+    "local_authoring_parts::08b37ff4c6a38c324a495efe8893d782a1ade36939149d20adf8a744547e8ad5:signatureSystems:0": {
+      "id": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "진입",
+        "선택"
+      ],
+      "stateOutputs": [
+        "자동 전투 및 점령 보상",
+        "협동 지원",
+        "거점 확보"
+      ],
+      "name": "협동 지원",
+      "purpose": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다.",
+      "playerChoice": "참가자별 병사와 본영 보너스의 합산, 서버 권한으로 인한 협동 지원 계산, RemoteEvent로 모두 동기화됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 237048,
-      "lastMs": 34416,
+      "totalMs": 271373,
+      "lastMs": 34325,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:38:53.529Z"
+      "updatedAt": "2026-10-09T08:39:27.856Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:56.457Z",
-  "updatedAt": "2026-10-09T08:38:53.529Z",
+  "updatedAt": "2026-10-09T08:39:27.856Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -607,7 +623,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:38:53.529Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:39:27.856Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
