@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 29,
-  "lastSuccessfulModelCallAt": "2026-10-09T09:29:09.684Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 31,
+  "lastSuccessfulModelCallAt": "2026-10-09T09:30:43.424Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/wild-survival/2026-10-09/design-seed.json",
     "contentDigest": "08fdce2a7428f553103303812e9ea15635da0c4cf9c5e9f18a84881552742d8f",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1137897,
-      "lastMs": 158986,
+      "totalMs": 1231633,
+      "lastMs": 93736,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:29:09.684Z"
+      "updatedAt": "2026-10-09T09:30:43.421Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T09:29:09.685Z"
+  "updatedAt": "2026-10-09T09:30:43.431Z"
 }

@@ -586,25 +586,42 @@
         "player_input"
       ],
       "fromSystem": "wild-survival_signature_systems_4"
+    },
+    "local_authoring_parts::69112939200f29026ae7e49793d367d771bc482d12f088be82a9a0679777ebaf:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_0",
+      "trigger": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+      "stateChange": "월드 상태와 자원에 따라 새로운 상태가 생성되고, 발굴된 정보를 바탕으로 전략 수정하여 게임 진행에 영향을 미칩니다."
+    },
+    "local_authoring_parts::3edbf8394d99ef20b2b52329bb34713e61fe38a6584dbff0494cb98c13d7d579:systemInterconnections:4": {
+      "fromId": "wild-survival_signature_systems_4",
+      "toId": "wild-survival_signature_systems_0",
+      "stateKeys": [
+        "world_state",
+        "player_input"
+      ],
+      "fromSystem": "wild-survival_signature_systems_4",
+      "toSystem": "wild-survival_signature_systems_0",
+      "trigger": "플레이어가 월드 상태와 자원을 관리하며, 발견 후 숙련 및 재방문 과정에서 전략적 선택을 결정합니다.",
+      "stateChange": "월드 상태와 자원에 따라 새로운 상태가 생성되고, 발굴된 정보를 바탕으로 전략 수정하여 게임 진행에 영향을 미칩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1137897,
-      "lastMs": 158986,
+      "totalMs": 1231633,
+      "lastMs": 93736,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:29:09.684Z"
+      "updatedAt": "2026-10-09T09:30:43.421Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:10:11.715Z",
-  "updatedAt": "2026-10-09T09:29:09.684Z",
+  "updatedAt": "2026-10-09T09:30:43.429Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2689,9 +2706,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "wild-survival_signature_systems_1→wild-survival_signature_systems_2의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: wild-survival_signature_systems_1→wild-survival_signature_systems_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2706,9 +2723,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "wild-survival_signature_systems_2→wild-survival_signature_systems_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: wild-survival_signature_systems_2→wild-survival_signature_systems_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: wild-survival_signature_systems_0→wild-survival_signature_systems_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2769,7 +2786,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2808,10 +2825,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:29:09.684Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T09:30:43.424Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
