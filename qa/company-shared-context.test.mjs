@@ -68,6 +68,39 @@ test('roadmap-first shared context validates registered worker launcher',()=>{
   }finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
+test('central shared context rejects Codex reactivation and keeps the current Vibe local Ollama alternative',()=>{
+  const cwd=root(),f=fixtures(),previous=process.cwd(),oldRole=process.env.VIBE2_CODEX_ROLE;
+  f.policyJson.developmentLifecycleMachine.developmentToolAuthority={
+    codex:{role:'DISABLED',allowedScopes:[],allUseForbidden:true},
+    gameSourceGenerationProvider:'LOCAL_OLLAMA',
+    gameSourceWritePolicy:{allowedWorker:'tools/vibe2-source-worker.mjs'},
+    enforcement:{requiredEnvironment:{VIBE2_CODEX_ROLE:'DISABLED',VIBE2_CODEX_GAME_SOURCE_WRITE:'FORBIDDEN'}}
+  };
+  f.archJson.workerRoles.CODEX='DISABLED';
+  f.archJson.forbidden=['CODEX_ANY_SCOPE'];
+  setup(cwd,f);process.chdir(cwd);
+  try{
+    process.env.VIBE2_CODEX_ROLE='DISABLED';
+    assert.equal(validateSharedWorkerContext().pass,true);
+    f.policyJson.developmentLifecycleMachine.developmentToolAuthority.codex.allowedScopes=['WORKFLOW_AND_CI_TOOLING'];
+    writeJson(path.join(cwd,f.policy),f.policyJson);
+    assert.throws(()=>validateSharedWorkerContext(),/CODEX_NO_USE_POLICY_DRIFT/);
+    f.policyJson.developmentLifecycleMachine.developmentToolAuthority.codex.allowedScopes=[];
+    writeJson(path.join(cwd,f.policy),f.policyJson);
+    f.archJson.workerRoles.CODEX='SYSTEM_TOOLING_CI_TEST_INFRA_ONLY';
+    writeJson(path.join(cwd,f.arch),f.archJson);
+    assert.throws(()=>validateSharedWorkerContext(),/CODEX_NO_USE_ARCHITECTURE_DRIFT/);
+    f.archJson.workerRoles.CODEX='DISABLED';
+    writeJson(path.join(cwd,f.arch),f.archJson);
+    process.env.VIBE2_CODEX_ROLE='ENABLED';
+    assert.throws(()=>validateSharedWorkerContext(),/CODEX_RUNTIME_ROLE_FORBIDDEN/);
+  }finally{
+    if(oldRole===undefined)delete process.env.VIBE2_CODEX_ROLE;
+    else process.env.VIBE2_CODEX_ROLE=oldRole;
+    process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
 test('registered launcher without shared-context gate is blocked',()=>{
   const cwd=root(),f=fixtures();setup(cwd,f);writeText(path.join(cwd,f.launcher),"steps:\n  - run: echo unsafe\n");const previous=process.cwd();process.chdir(cwd);
   try{assert.throws(()=>validateSharedWorkerContext(),/WORKER_LAUNCHER_NOT_SYNCHRONIZED/);}

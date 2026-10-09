@@ -989,83 +989,105 @@ function RobloxCommonUI.CreateDialogueHistory(options)
 end
 
 function RobloxCommonUI.CreateNpcInteractionPrompt(options)
-  options = options or {}
-  local theme = cloneTheme(options.theme)
-  local root = Instance.new("Frame")
-  root.Name = options.name or "NpcInteractionPrompt"
-  root.Size = options.size or UDim2.fromOffset(300, 64)
-  root.BackgroundColor3 = theme.Panel
-  root.BackgroundTransparency = 0.06
-  root.BorderSizePixel = 0
-  tag(root, "NPC_INTERACTION_PROMPT")
-  corner(root, 14)
-  stroke(root, theme.BorderBright, 1.3, 0.10)
-  gradient(root, theme.PanelRaised, theme.Panel, 90)
-
-  local key = commonText(root, "Key", options.keyText or "E", UDim2.fromOffset(10, 10), UDim2.fromOffset(44, 44), theme.Text, 16, true)
-  key.TextXAlignment = Enum.TextXAlignment.Center
-  key.BackgroundColor3 = theme.Primary
-  key.BackgroundTransparency = 0
-  corner(key, 11)
-  stroke(key, theme.PrimaryTop, 1, 0.05)
-
-  local title = commonText(root, "Title", options.title or "대화하기", UDim2.fromOffset(66, 9), UDim2.new(1, -76, 0, 24), theme.Text, 14, true)
-  local subtitle = commonText(root, "Subtitle", options.subtitle or "", UDim2.fromOffset(66, 32), UDim2.new(1, -76, 0, 18), theme.MutedText, 11, false)
-  root:SetAttribute("PresentationRole", "NPC_INTERACTION_PROMPT")
-  root:SetAttribute("InteractionId", tostring(options.interactionId or ""))
-  root:SetAttribute("OwnsInteractionAuthority", false)
-  return root, key, title, subtitle
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root=Instance.new("Frame")
+  root.Name=options.name or "NpcInteractionPrompt"
+  root.Size=options.size or UDim2.fromOffset(300,64)
+  root.BackgroundColor3=theme.Panel
+  root.BackgroundTransparency=0.06;root.BorderSizePixel=0
+  tag(root,"NPC_INTERACTION_PROMPT")
+  corner(root,14);stroke(root,theme.BorderBright,1.3,0.10)
+  gradient(root,theme.PanelRaised,theme.Panel,90)
+  local key=commonText(root,"Key",options.keyText or "E",
+    UDim2.fromOffset(10,10),UDim2.fromOffset(44,44),theme.Text,16,true)
+  key.TextXAlignment=Enum.TextXAlignment.Center
+  key.BackgroundColor3=theme.Primary;key.BackgroundTransparency=0;corner(key,11);stroke(key,theme.PrimaryTop,1,0.05)
+  local title=commonText(root,"Title",options.title or "상호작용",
+    UDim2.fromOffset(66,9),UDim2.new(1,-76,0,24),theme.Text,14,true)
+  local subtitle=commonText(root,"Subtitle",options.subtitle or "",
+    UDim2.fromOffset(66,32),UDim2.new(1,-76,0,18),theme.MutedText,11,false)
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    key.Text=tostring(state.keyText or options.keyText or "E")
+    title.Text=tostring(state.title or options.title or "상호작용")
+    subtitle.Text=tostring(state.subtitle or state.reason or options.subtitle or "")
+    local enabled=state.available~=false
+    subtitle.TextColor3=enabled and theme.MutedText or theme.Warning
+    root:SetAttribute("InteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("InteractionKind",tostring(state.kind or "NPC"))
+    root:SetAttribute("InteractionAvailable",enabled)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("PresentationRole","NPC_INTERACTION_PROMPT")
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,key,title,subtitle,sync
 end
 
 function RobloxCommonUI.CreateNpcInteractionMenu(options)
-  options = options or {}
-  local theme = cloneTheme(options.theme)
-  local root, inner = RobloxCommonUI.CreatePanel({
-    name = options.name or "NpcInteractionMenu",
-    size = options.size or UDim2.fromOffset(330, 300),
-    theme = theme,
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "NpcInteractionMenu",
+    size=options.size or UDim2.new(1,-24,1,-24),theme=theme
   })
-  tag(root, "NPC_INTERACTION_MENU")
-
-  commonText(inner, "Title", options.title or "상호작용", UDim2.fromOffset(12, 8), UDim2.new(1, -24, 0, 26), theme.Text, 17, true)
-  commonText(inner, "NpcName", options.npcName or "", UDim2.fromOffset(12, 34), UDim2.new(1, -24, 0, 18), theme.Accent, 12, true)
-
-  local list = Instance.new("Frame")
-  list.Name = "Actions"
-  list.Position = UDim2.fromOffset(12, 62)
-  list.Size = UDim2.new(1, -24, 1, -74)
-  list.BackgroundTransparency = 1
-  list.Parent = inner
-  commonList(list, false, 7)
-
-  local buttons = {}
-  for index, action in ipairs(options.actions or {
-    {id="TALK", label="대화"},
-    {id="QUEST", label="의뢰"},
-    {id="TRADE", label="거래"},
-    {id="GIVE_ITEM", label="아이템 전달"},
-  }) do
-    local button = RobloxCommonUI.CreateDialogueChoice({
-      name = tostring(action.id or ("Action" .. index)),
-      text = tostring(action.label or action.id or "상호작용"),
-      theme = theme,
-      size = UDim2.new(1, 0, 0, 46),
-    })
-    button.LayoutOrder = index
-    button.Parent = list
-    button:SetAttribute("InteractionActionId", tostring(action.id or index))
-    button:SetAttribute("Locked", action.locked == true)
-    if action.locked == true then
-      button.TextColor3 = theme.MutedText
-      button.BackgroundTransparency = 0.45
+  tag(root,"NPC_INTERACTION_MENU")
+  local title=commonText(inner,"Title",options.title or "상호작용",
+    UDim2.fromOffset(12,8),UDim2.new(1,-24,0,26),theme.Text,17,true)
+  local npc=commonText(inner,"NpcName",options.npcName or "",
+    UDim2.fromOffset(12,34),UDim2.new(1,-24,0,18),theme.Accent,12,true)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Actions";list.Position=UDim2.fromOffset(12,62);list.Size=UDim2.new(1,-24,1,-74)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.Active=true;list.Parent=inner
+  local layout=commonList(list,false,7)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local buttons,rows={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    rows=type(state.actions)=="table"and state.actions or {}
+    title.Text=tostring(state.title or options.title or "상호작용")
+    npc.Text=tostring(state.npcName or options.npcName or "")
+    for index,row in ipairs(rows)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateDialogueChoice({
+          name="NpcAction"..index,text="",size=UDim2.new(1,0,0,48),theme=theme
+        })
+        button.LayoutOrder=index;button.Parent=list;buttons[index]=button
+        local captured=index
+        button.Activated:Connect(function()
+          local selected=rows[captured]
+          if not selected or selected.available==false then return end
+          if type(options.onSelect)=="function"then options.onSelect(selected.id,selected)end
+        end)
+      end
+      local button=buttons[index]
+      button.Text=tostring(row.label or row.id or "상호작용")
+      button.Name="NpcAction"..index
+      button.LayoutOrder=index;button.Visible=true
+      button.Active=row.available~=false
+      button.AutoButtonColor=row.available~=false
+      button.TextColor3=row.available==false and theme.MutedText or theme.Text
+      button:SetAttribute("InteractionActionId",tostring(row.id or index))
+      button:SetAttribute("Locked",row.available==false)
+      button:SetAttribute("MinimumTouchHeight",48)
     end
-    buttons[index] = button
+    for index=#rows+1,#buttons do buttons[index].Visible=false end
+    root:SetAttribute("InteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("BoundInteractionActionCount",#rows)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
   end
-  root:SetAttribute("PresentationRole", "NPC_INTERACTION_MENU")
-  root:SetAttribute("OwnsInteractionAuthority", false)
-  root:SetAttribute("OwnsQuestAuthority", false)
-  root:SetAttribute("OwnsTradeAuthority", false)
-  return root, inner, list, buttons
+  sync(options.interaction or {actions=options.actions or {}})
+  root:SetAttribute("PresentationRole","NPC_INTERACTION_MENU")
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsQuestAuthority",false)
+  root:SetAttribute("OwnsTradeAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,inner,list,buttons,sync
 end
 
 function RobloxCommonUI.CreateNpcRelationshipCard(options)
@@ -1806,100 +1828,354 @@ function RobloxCommonUI.CreateInventoryFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"INVENTORY_FULL_SCREEN","INVENTORY_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme})
+  local search=RobloxCommonUI.CreateSearchField({
+    size=UDim2.new(0.42,0,0,48),theme=theme,placeholder="보유 아이템 검색"
+  })
   search.Parent=body
-  local sort=RobloxCommonUI.CreateSortControl({size=UDim2.fromOffset(170,48),theme=theme})
-  sort.AnchorPoint=Vector2.new(1,0)
-  sort.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({size=UDim2.new(1,0,0,52),theme=theme})
+  local sort=RobloxCommonUI.CreateSortControl({
+    size=UDim2.fromOffset(170,48),theme=theme,text="정렬: 기본순"
+  })
+  sort.AnchorPoint=Vector2.new(1,0);sort.Parent=body
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=options.filters or {"전체"},size=UDim2.new(1,0,0,52),theme=theme
+  })
   filters.Parent=body
-
-  -- 실제 아이템 슬롯은 기존 공용 Grid 그대로 두고, 내용 높이에 따라 스크롤만 동기화한다.
   local scroll=Instance.new("ScrollingFrame")
-  scroll.Name="InventoryScroll"
-  scroll.BackgroundTransparency=1
-  scroll.BorderSizePixel=0
-  scroll.ScrollBarThickness=4
+  scroll.Name="InventoryScroll";scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4
   scroll.ScrollingDirection=Enum.ScrollingDirection.Y
-  scroll.CanvasSize=UDim2.fromOffset(0,0)
-  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
-  scroll.Active=true
-  scroll.Parent=body
-
-  local grid,cellLayout=RobloxCommonUI.CreateInventoryGrid({
-    name="FullInventoryGrid",columns=options.columns or 6,slotCount=options.slotCount or 30,
+  scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.Active=true;scroll.Parent=body
+  local grid,cellLayout,slots=RobloxCommonUI.CreateInventoryGrid({
+    name="FullInventoryGrid",columns=options.columns or 6,
+    slotCount=options.slotCount or (options.items and #options.items or 1),
     size=UDim2.new(1,-8,0,160),theme=theme
   })
   grid.Parent=scroll
-
+  -- 기존 실제 게임 소유 목록은 그대로 유지하고, 화면에서 보이는 결과만 분류한다.
+  local rows,shown,filterNames={},{},{}
+  local selectedId=nil
+  local currentFilter="전체"
+  local sortByName=false
+  local refresh
   local function resizeGrid()
     local available=scroll.AbsoluteSize.X-8
     if available<=0 then return end
     local desired=math.max(2,math.floor((available-20+8)/76))
-    local columns=math.clamp(math.min(desired,tonumber(options.columns) or 6),2,6)
+    local columns=math.clamp(math.min(desired,tonumber(options.columns)or 6),2,6)
     local cell=math.max(52,math.floor((available-20-(columns-1)*8)/columns))
     cellLayout.CellSize=UDim2.fromOffset(cell,cell)
     grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
   end
-
   local function placePanels()
     local compact=body.AbsoluteSize.X<560
     if compact then
       search.Size=UDim2.new(1,0,0,48)
       sort.AnchorPoint=Vector2.new(0,0)
-      sort.Position=UDim2.fromOffset(0,56)
-      sort.Size=UDim2.new(1,0,0,48)
+      sort.Position=UDim2.fromOffset(0,56);sort.Size=UDim2.new(1,0,0,48)
       filters.Position=UDim2.fromOffset(0,112)
-      scroll.Position=UDim2.fromOffset(0,172)
-      scroll.Size=UDim2.new(1,0,1,-172)
+      scroll.Position=UDim2.fromOffset(0,172);scroll.Size=UDim2.new(1,0,1,-172)
     else
       search.Size=UDim2.new(0.42,0,0,48)
       sort.AnchorPoint=Vector2.new(1,0)
-      sort.Position=UDim2.new(1,0,0,0)
-      sort.Size=UDim2.fromOffset(170,48)
+      sort.Position=UDim2.new(1,0,0,0);sort.Size=UDim2.fromOffset(170,48)
       filters.Position=UDim2.fromOffset(0,58)
-      scroll.Position=UDim2.fromOffset(0,116)
-      scroll.Size=UDim2.new(1,0,1,-116)
+      scroll.Position=UDim2.fromOffset(0,116);scroll.Size=UDim2.new(1,0,1,-116)
     end
     root:SetAttribute("MobileStackedLayout",compact)
     resizeGrid()
   end
+  local function updateFilters()
+    filterNames={}
+    if type(options.filters)=="table"and #options.filters>0 then
+      for _,name in ipairs(options.filters)do filterNames[#filterNames+1]=tostring(name)end
+    else
+      filterNames[1]="전체"
+      local found={["전체"]=true}
+      for _,row in ipairs(rows)do
+        local category=tostring(row.category or "")
+        if category~=""and not found[category]then
+          filterNames[#filterNames+1]=category;found[category]=true
+        end
+      end
+    end
+    if not table.find(filterNames,currentFilter)then currentFilter=filterNames[1]or"전체"end
+    for i,name in ipairs(filterNames)do
+      if not filterButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Filter"..i,text=name,size=UDim2.fromOffset(96,48),theme=theme
+        })
+        button.LayoutOrder=i;button.Parent=filters
+        filterButtons[i]=button
+        button.Activated:Connect(function()
+          local selected=filterNames[index]
+          if selected then currentFilter=selected;refresh()end
+        end)
+      end
+      local button=filterButtons[i]
+      button.Text=name;button.Visible=true
+      button:SetAttribute("FilterIndex",i)
+      button:SetAttribute("Selected",name==currentFilter)
+      button.BackgroundColor3=name==currentFilter and theme.Primary or theme.PanelRaised
+    end
+    for i=#filterNames+1,#filterButtons do filterButtons[i].Visible=false end
+  end
+  -- 이미 생성된 최초 필터 버튼도 이후 분류가 바뀌어도 최신 결과를 선택한다.
+  for i,button in ipairs(filterButtons)do
+    local index=i
+    button.Activated:Connect(function()
+      local selected=filterNames[index]
+      if selected then currentFilter=selected;refresh()end
+    end)
+  end
+  refresh=function()
+    updateFilters()
+    shown={}
+    local query=string.lower(tostring(search.Text or ""))
+    for _,row in ipairs(rows)do
+      local category=tostring(row.category or "")
+      local name=string.lower(tostring(row.name or row.title or row.id or ""))
+      if (currentFilter=="전체"or currentFilter==category)
+        and (query==""or string.find(name,query,1,true))then
+        shown[#shown+1]=row
+      end
+    end
+    if sortByName then
+      table.sort(shown,function(left,right)
+        local a=string.lower(tostring(left.name or left.title or left.id or ""))
+        local b=string.lower(tostring(right.name or right.title or right.id or ""))
+        return a==b and tostring(left.id or "")<tostring(right.id or "") or a<b
+      end)
+    end
+    for i,row in ipairs(shown)do
+      if not slots[i]then
+        local slot=RobloxCommonUI.CreateInventorySlot({name="Slot"..i,theme=theme})
+        slot.LayoutOrder=i;slot.Parent=grid;slots[i]=slot
+      end
+      local slot=slots[i]
+      if not slot:GetAttribute("InventoryInputBound")then
+        slot:SetAttribute("InventoryInputBound",true)
+        local index=i
+        slot.Activated:Connect(function()
+          local current=shown[index]
+          if not current or current.id==nil or current.locked==true then return end
+          selectedId=current.id
+          refresh()
+          if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+        end)
+      end
+      slot.Visible=true
+      slot.Name="Slot"..i;slot.LayoutOrder=i
+      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
+      slot:SetAttribute("BoundFromGameState",true)
+      local icon=slot:FindFirstChild("Icon")
+      local quantity=slot:FindFirstChild("Quantity")
+      local highlight=slot:FindFirstChild("SelectedRing")
+      if icon then icon.Image=tostring(row.image or "")end
+      if quantity then quantity.Text=tostring(row.quantity or row.count or "")end
+      if highlight then highlight.Visible=row.selected==true or (selectedId~=nil and selectedId==row.id)end
+      slot.Active=row.id~=nil and row.locked~=true
+    end
+    for i=#shown+1,#slots do slots[i].Visible=false end
+    root:SetAttribute("BoundItemCount",#rows)
+    root:SetAttribute("BoundVisibleItemCount",#shown)
+    root:SetAttribute("CurrentInventoryFilter",currentFilter)
+    root:SetAttribute("InventorySortByName",sortByName)
+    resizeGrid()
+  end
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    refresh()
+  end
+  search:GetPropertyChangedSignal("Text"):Connect(refresh)
+  sort.Activated:Connect(function()
+    sortByName=not sortByName
+    sort.Text=sortByName and "정렬: 이름순"or"정렬: 기본순"
+    refresh()
+  end)
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(placePanels)
   scroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizeGrid)
   cellLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     grid.Size=UDim2.new(1,-8,0,cellLayout.AbsoluteContentSize.Y+20)
   end)
   placePanels()
+  sync(options.items or {})
   root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsInventoryAuthority",false)
-  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,sort=sort,filters=filters,grid=grid,scroll=scroll,
+    slots=slots,Sync=sync}
 end
 
 function RobloxCommonUI.CreateEquipmentFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"EQUIPMENT_FULL_SCREEN","EQUIPMENT_FULL_SCREEN")
-  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterSummary",size=UDim2.new(0.46,-8,1,0),theme=theme});sheet.Parent=body
-  local slots=Instance.new("Frame");slots.Name="EquipmentSlots";slots.Position=UDim2.new(0.46,8,0,0);slots.Size=UDim2.new(0.54,-8,1,0);slots.BackgroundTransparency=1;slots.Parent=body
-  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-6,0,110);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
+  local sheet=RobloxCommonUI.CreateCharacterSheet({
+    name="CharacterSummary",size=UDim2.new(0.46,-8,1,0),theme=theme,
+    characterName=options.characterName,stats=options.stats or {}
+  })
+  sheet.Parent=body
+  -- 모바일: 장비가 많거나 화면 높이가 짧아도 슬롯을 잘라내지 않는다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="EquipmentScroll"
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0
+  scroll.ScrollBarThickness=4;scroll.Active=true
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.Parent=body
+  local slots=Instance.new("Frame")
+  slots.Name="EquipmentSlots";slots.Size=UDim2.new(1,-8,0,0)
+  slots.BackgroundTransparency=1;slots.Parent=scroll
+  local grid=Instance.new("UIGridLayout")
+  grid.CellSize=UDim2.new(0.5,-6,0,110)
+  grid.CellPadding=UDim2.fromOffset(10,10)
+  grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=slots
   local names=options.slots or {"무기","보조","머리","몸","장갑","신발","장신구","특수"}
-  local built={}
-  for i,label in ipairs(names) do local slot=RobloxCommonUI.CreateEquipmentSlot({name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme});slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot end
+  local built,state={},{}
+  for i,label in ipairs(names)do
+    local slot=RobloxCommonUI.CreateEquipmentSlot({
+      name="Equipment"..i,label=label,size=UDim2.new(1,0,1,0),theme=theme
+    })
+    slot.LayoutOrder=i;slot.Parent=slots;built[i]=slot
+    slot.Activated:Connect(function()
+      local row=state[i]
+      if row and row.id and row.locked~=true and type(options.onEquip)=="function"then
+        options.onEquip(row.id,row)
+      end
+    end)
+  end
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    sheet.Visible=not compact
+    if compact then
+      scroll.Position=UDim2.fromOffset(0,0)
+      scroll.Size=UDim2.fromScale(1,1)
+      grid.CellSize=UDim2.new(0.5,-6,0,92)
+    else
+      sheet.Size=UDim2.new(0.46,-8,1,0)
+      scroll.Position=UDim2.new(0.46,8,0,0)
+      scroll.Size=UDim2.new(0.54,-8,1,0)
+      grid.CellSize=UDim2.new(0.5,-6,0,110)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    slots.Size=UDim2.new(1,-8,0,grid.AbsoluteContentSize.Y+10)
+  end)
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+  layout()
+  local function sync(items)
+    state=type(items)=="table"and items or {}
+    for index,slot in ipairs(built)do
+      local row=state[index]or {}
+      slot:SetAttribute("BoundItemId",tostring(row.id or ""))
+      slot:SetAttribute("BoundFromGameState",true)
+      slot.Active=row.id~=nil and row.locked~=true
+      local icon=slot:FindFirstChild("Icon")
+      local caption=slot:FindFirstChild("Quantity")
+      local highlight=slot:FindFirstChild("SelectedRing")
+      if icon then icon.Image=tostring(row.image or "")end
+      if caption then caption.Text=tostring(row.name or names[index] or "")end
+      if highlight then highlight.Visible=row.equipped==true end
+    end
+    root:SetAttribute("BoundEquipmentCount",#state)
+  end
+  sync(options.equipment or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsEquipAuthority",false)
-  return root,{sheet=sheet,slots=built}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  return root,{sheet=sheet,slots=built,scroll=scroll,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCharacterDetailScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CHARACTER_DETAIL_SCREEN","CHARACTER_DETAIL_SCREEN")
-  local sheet=RobloxCommonUI.CreateCharacterSheet({name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,displayName=options.displayName})
-  sheet.Parent=body
-  local details=Instance.new("Frame");details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0);details.Size=UDim2.new(0.42,-8,1,0);details.BackgroundColor3=theme.PanelInset;details.BorderSizePixel=0;details.Parent=body;corner(details,theme.Corner)
+  -- 좁은 화면/가로 모드: 캐릭터 전체 정보와 추가 상태가 한 스크롤 안에 존재한다.
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="CharacterScroll";scroll.Size=UDim2.fromScale(1,1)
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4
+  scroll.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;scroll.CanvasSize=UDim2.fromOffset(0,0)
+  scroll.Active=true;scroll.Parent=body
+  local sheet=RobloxCommonUI.CreateCharacterSheet({
+    name="CharacterDetail",size=UDim2.new(0.58,-8,1,0),theme=theme,
+    characterName=options.displayName,stats=options.stats or {}
+  })
+  sheet.Parent=scroll
+  local details=Instance.new("Frame")
+  details.Name="DetailStats";details.Position=UDim2.new(0.58,8,0,0)
+  details.Size=UDim2.new(0.42,-8,1,0);details.BackgroundColor3=theme.PanelInset
+  details.BorderSizePixel=0;details.Parent=scroll;corner(details,theme.Corner)
   local rows=options.detailRows or {"상태","역할","장비 요약","효과","진행도","최근 획득"}
-  for i,label in ipairs(rows) do commonText(details,"Row"..i,label,UDim2.fromOffset(16,12+(i-1)*44),UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1) end
+  local labels={}
+  for i,name in ipairs(rows)do
+    labels[i]=commonText(details,"Row"..i,name,UDim2.fromOffset(16,12+(i-1)*44),
+      UDim2.new(1,-32,0,36),i==1 and theme.Accent or theme.Text,14,i==1)
+  end
+  local statCount=0
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    local sheetHeight=math.max(330,160+statCount*30)
+    local detailHeight=math.max(72,#rows*44+20)
+    if compact then
+      sheet.Position=UDim2.fromOffset(0,0)
+      sheet.Size=UDim2.new(1,-8,0,sheetHeight)
+      details.Position=UDim2.fromOffset(0,sheetHeight+12)
+      details.Size=UDim2.new(1,-8,0,detailHeight)
+    else
+      local height=math.max(body.AbsoluteSize.Y,sheetHeight,detailHeight)
+      sheet.Position=UDim2.fromOffset(0,0)
+      sheet.Size=UDim2.new(0.58,-8,0,height)
+      details.Position=UDim2.new(0.58,8,0,0)
+      details.Size=UDim2.new(0.42,-8,0,height)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+  local inner=sheet:FindFirstChild("InnerSurface")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    if inner then
+      if inner:FindFirstChild("CharacterName")then inner.CharacterName.Text=tostring(state.name or options.displayName or "캐릭터")end
+      if inner:FindFirstChild("Class")then inner.Class.Text=tostring(state.className or "")end
+      if inner:FindFirstChild("Level")then inner.Level.Text=tostring(state.levelText or "")end
+      local values=inner:FindFirstChild("Stats")
+      if values then
+        local active={}
+        for index,stat in ipairs(state.stats or {})do
+          local id=tostring(stat.id or ("Stat"..index))
+          active[id]=true
+          local row=values:FindFirstChild(id)
+          if not row then
+            row=Instance.new("Frame")
+            row.Name=id;row.Size=UDim2.new(1,0,0,26);row.BackgroundTransparency=1;row.Parent=values
+            commonText(row,"Label","",UDim2.new(),UDim2.new(.58,0,1,0),theme.MutedText,12,false)
+            local value=commonText(row,"Value","",UDim2.new(.58,0,0,0),UDim2.new(.42,0,1,0),theme.Text,12,true)
+            value.TextXAlignment=Enum.TextXAlignment.Right
+          end
+          row.Visible=true;row.LayoutOrder=index
+          if row:FindFirstChild("Label")then row.Label.Text=tostring(stat.label or stat.id or "")end
+          if row:FindFirstChild("Value")then row.Value.Text=tostring(stat.value or "")end
+        end
+        for _,child in ipairs(values:GetChildren())do
+          if child:IsA("Frame")and not active[child.Name]then child.Visible=false end
+        end
+      end
+    end
+    for i,label in ipairs(labels)do label.Text=tostring((state.details or {})[i]or "")end
+    statCount=#(state.stats or {})
+    layout()
+    root:SetAttribute("CharacterStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.character or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsCharacterStats",false)
-  return root,{sheet=sheet,details=details}
+  root:SetAttribute("OwnsProgressionAuthority",false)
+  return root,{sheet=sheet,details=details,scroll=scroll,Sync=sync}
 end
 
 function RobloxCommonUI.CreateMapFullScreen(options)
@@ -1914,29 +2190,174 @@ function RobloxCommonUI.CreateMapFullScreen(options)
   return root,{map=map,legend=legend}
 end
 
+-- 퀘스트/제작 공용창은 게임 책임 소스에서 받은 데이터만 그린다.
+-- 인벤토리/보상/제작 결과를 UI에서 생성하지 않으며, 미확인 퀘스트/제작법 기본 항목은 없다.
 function RobloxCommonUI.CreateQuestLog(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"QUEST_LOG","QUEST_LOG")
-  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"진행중","완료","실패","전체"},size=UDim2.new(1,0,0,48),theme=theme});filters.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="QuestList";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateQuestCard({name="Quest"..i,title="퀘스트 "..i,description="목표와 진행 상태",size=UDim2.new(1,-8,0,92),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local filterNames=options.filters or {"진행중","완료","실패","전체"}
+  local activeFilter=math.clamp(tonumber(options.selectedIndex)or #filterNames,1,math.max(1,#filterNames))
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=filterNames,selectedIndex=activeFilter,size=UDim2.new(1,0,0,52),theme=theme
+  })
+  filters.Parent=body
+  local list=Instance.new("ScrollingFrame")
+  list.Name="QuestList";list.Position=UDim2.fromOffset(0,60);list.Size=UDim2.new(1,0,1,-60)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Active=true;list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyQuests","현재 게임 상태에서 확인된 퀘스트가 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local cards,controls,rows,shown={},{},{},{}
+  local function questState(row)
+    local status=string.upper(tostring(row.status or ""))
+    if status=="ACTIVE"or status=="IN_PROGRESS"or status=="진행중"or row.active==true then return "진행중"end
+    if status=="COMPLETE"or status=="COMPLETED"or status=="DONE"or status=="완료"or row.completed==true then return "완료"end
+    if status=="FAILED"or status=="실패"then return "실패"end
+    return "미확인"
+  end
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local chosen=filterNames[activeFilter]
+    for _,row in ipairs(rows)do
+      if chosen=="전체"or chosen==nil or chosen==questState(row)then shown[#shown+1]=row end
+    end
+    for i,row in ipairs(shown)do
+      if not cards[i]then
+        local card,title,detail,reward=RobloxCommonUI.CreateQuestCard({
+          name="Quest"..i,title="",detail="",rewardText="",size=UDim2.new(1,-8,0,100),theme=theme
+        })
+        local track=RobloxCommonUI.CreatePrimaryButton({
+          name="Track",text="추적",size=UDim2.fromOffset(88,48),minWidth=88,minHeight=48,theme=theme
+        })
+        track.Position=UDim2.new(1,-98,0,8);track.Parent=card
+        local index=i
+        track.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and current.canTrack==true and type(options.onTrack)=="function"then
+            options.onTrack(current.id,current)
+          end
+        end)
+        card.Parent=list;cards[i]=card;controls[i]={title=title,detail=detail,reward=reward,track=track}
+      end
+      local card=cards[i]
+      local view=controls[i]
+      card.Name="Quest"..i;card.LayoutOrder=i+1;card.Visible=true
+      card:SetAttribute("BoundQuestId",tostring(row.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      card:SetAttribute("QuestStatus",questState(row))
+      view.title.Text=tostring(row.title or row.name or "")
+      view.detail.Text=tostring(row.progressText or row.detail or row.description or "")
+      view.reward.Text=tostring(row.rewardText or "")
+      local canTrack=row.id~=nil and row.canTrack==true and type(options.onTrack)=="function"
+      view.track.Visible=canTrack
+      view.track.Active=canTrack
+      view.track.AutoButtonColor=canTrack
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    empty.Visible=#shown==0
+    root:SetAttribute("BoundQuestCount",#shown)
+    root:SetAttribute("SelectedQuestFilter",tostring(chosen or "전체"))
+  end
+  for index,button in ipairs(filterButtons)do
+    local id=index
+    button.Activated:Connect(function()activeFilter=id;sync(rows)end)
+  end
+  sync(options.quests or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsQuestAuthority",false)
-  return root,{filters=filters,cards=cards}
+  root:SetAttribute("OwnsRewardAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{filters=filters,cards=cards,list=list,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCraftingFullScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CRAFTING_FULL_SCREEN","CRAFTING_FULL_SCREEN")
-  local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.45,0,0,48),theme=theme,placeholder="제작법 검색"});search.Parent=body
-  local filters=RobloxCommonUI.CreateFilterBar({filters=options.filters or {"전체","제작 가능","무기","방어구","도구","기타"},size=UDim2.new(1,0,0,48),theme=theme});filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="Recipes";list.Position=UDim2.fromOffset(0,116);list.Size=UDim2.new(1,0,1,-116);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body;commonList(list,false,8)
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 4) do local c=RobloxCommonUI.CreateCraftingRecipeCard({name="Recipe"..i,title="제작 항목 "..i,size=UDim2.new(1,-8,0,96),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local search=RobloxCommonUI.CreateSearchField({
+    size=UDim2.new(1,0,0,48),theme=theme,placeholder="제작법 검색"
+  })
+  search.Parent=body
+  local filterNames=options.filters or {"전체","제작 가능","무기","방어구","도구","기타"}
+  local activeFilter=1
+  local filters,filterButtons=RobloxCommonUI.CreateFilterBar({
+    filters=filterNames,size=UDim2.new(1,0,0,52),theme=theme
+  })
+  filters.Position=UDim2.fromOffset(0,58);filters.Parent=body
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Recipes";list.Position=UDim2.fromOffset(0,118);list.Size=UDim2.new(1,0,1,-118)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Active=true;list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyRecipes","현재 게임 상태에서 확인된 제작법이 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local cards,controls,rows,shown={},{},{},{}
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local query=string.lower(tostring(search.Text or ""))
+    local selected=filterNames[activeFilter]
+    for _,row in ipairs(rows)do
+      local name=tostring(row.name or row.itemName or "")
+      local matchesQuery=query==""or string.find(string.lower(name),query,1,true)
+      local matchesFilter=selected=="전체"or selected==nil
+        or(selected=="제작 가능"and row.craftable==true)
+        or(selected==tostring(row.category or ""))
+      if matchesQuery and matchesFilter then shown[#shown+1]=row end
+    end
+    for i,row in ipairs(shown)do
+      if not cards[i]then
+        local card,icon,action=RobloxCommonUI.CreateCraftingRecipeCard({
+          name="Recipe"..i,itemName="",ingredientsText="",size=UDim2.new(1,-8,0,108),theme=theme
+        })
+        card.Parent=list;cards[i]=card;controls[i]={icon=icon,action=action}
+        local index=i
+        action.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and current.craftable==true and type(options.onCraft)=="function"then
+            options.onCraft(current.id,current)
+          end
+        end)
+      end
+      local card=cards[i]
+      local view=controls[i]
+      card.Name="Recipe"..i;card.LayoutOrder=i+1;card.Visible=true
+      card:SetAttribute("BoundRecipeId",tostring(row.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      local name=card:FindFirstChild("Name")
+      local ingredients=card:FindFirstChild("Ingredients")
+      if name then name.Text=tostring(row.name or row.itemName or "")end
+      if ingredients then ingredients.Text=tostring(row.ingredientsText or row.requirements or "")end
+      view.icon.Image=tostring(row.image or "")
+      local canCraft=row.id~=nil and row.craftable==true and type(options.onCraft)=="function"
+      view.action.Active=canCraft;view.action.AutoButtonColor=canCraft
+      view.action.Text=canCraft and "제작"or"제작 불가"
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    empty.Visible=#shown==0
+    root:SetAttribute("BoundRecipeCount",#shown)
+    root:SetAttribute("SelectedRecipeFilter",tostring(selected or "전체"))
+  end
+  for index,button in ipairs(filterButtons)do
+    local id=index
+    button.Activated:Connect(function()activeFilter=id;sync(rows)end)
+  end
+  search:GetPropertyChangedSignal("Text"):Connect(function()sync(rows)end)
+  sync(options.recipes or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsCraftAuthority",false)
-  return root,{search=search,filters=filters,cards=cards}
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,filters=filters,cards=cards,list=list,Sync=sync}
 end
 
 function RobloxCommonUI.CreateShopFullScreen(options)
@@ -1945,13 +2366,77 @@ function RobloxCommonUI.CreateShopFullScreen(options)
   local root,body=surfaceShell(options,"SHOP_FULL_SCREEN","SHOP_FULL_SCREEN")
   local search=RobloxCommonUI.CreateSearchField({size=UDim2.new(0.42,0,0,48),theme=theme,placeholder="상품 검색"});search.Parent=body
   local sort=RobloxCommonUI.CreateSortControl({text="정렬: 추천순",theme=theme});sort.AnchorPoint=Vector2.new(1,0);sort.Position=UDim2.new(1,0,0,0);sort.Parent=body
-  local list=Instance.new("ScrollingFrame");list.Name="Products";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new();list.Parent=body
-  local grid=Instance.new("UIGridLayout");grid.CellSize=UDim2.new(0.5,-7,0,120);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=list
-  local cards={}
-  for i=1,(tonumber(options.previewCount) or 6) do local c=RobloxCommonUI.CreateShopItemCard({name="Product"..i,title="상품 "..i,size=UDim2.new(1,0,1,0),theme=theme});c.LayoutOrder=i;c.Parent=list;cards[i]=c end
+  local list=Instance.new("ScrollingFrame")
+  list.Name="Products";list.Position=UDim2.fromOffset(0,58);list.Size=UDim2.new(1,0,1,-58)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.new()
+  list.ScrollBarThickness=4;list.Parent=body
+  local grid=Instance.new("UIGridLayout")
+  grid.CellSize=UDim2.new(0.5,-7,0,142);grid.CellPadding=UDim2.fromOffset(10,10);grid.SortOrder=Enum.SortOrder.LayoutOrder;grid.Parent=list
+  local cards,rows,shown={}, {},{}
+  local sortByPrice=false
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    shown={}
+    local query=string.lower(search.Text)
+    for _,item in ipairs(rows)do
+      if query==""or string.find(string.lower(tostring(item.name or item.title or "")),query,1,true)then
+        shown[#shown+1]=item
+      end
+    end
+    if sortByPrice then table.sort(shown,function(a,b)return (tonumber(a.price)or math.huge)<(tonumber(b.price)or math.huge)end)end
+    for i,item in ipairs(shown)do
+      if not cards[i]then
+        local index=i
+        local card,icon,buy=RobloxCommonUI.CreateShopItemCard({
+          name="Product"..i,theme=theme,size=UDim2.new(1,0,1,0)
+        })
+        card.LayoutOrder=i;card.Parent=list;cards[i]=card
+        buy.Activated:Connect(function()
+          local current=shown[index]
+          if not current then return end
+          if current.canSell==true and type(options.onSell)=="function"then options.onSell(current.id,current)
+          elseif current.canBuy==true and type(options.onBuy)=="function"then options.onBuy(current.id,current)end
+        end)
+      end
+      local card=cards[i]
+      card.Visible=true
+      card:SetAttribute("BoundItemId",tostring(item.id or ""))
+      card:SetAttribute("BoundFromGameState",true)
+      card.Name="Product"..i
+      card.LayoutOrder=i
+      local icon=card:FindFirstChild("Icon")
+      local nameText=card:FindFirstChild("Name")
+      local description=card:FindFirstChild("Description")
+      local priceText=card:FindFirstChild("Price")
+      if icon then icon.Image=tostring(item.image or "")end
+      if nameText then nameText.Text=tostring(item.name or item.title or "")end
+      if description then description.Text=tostring(item.description or "")end
+      if priceText then priceText.Text=item.price~=nil and tostring(item.price).."G"or"가격 미확인"end
+      local buy=card:FindFirstChild("Buy")
+      if buy then
+        local enabled=(item.canSell==true and type(options.onSell)=="function")
+          or(item.canBuy==true and type(options.onBuy)=="function")
+        buy.Active=enabled
+        buy.AutoButtonColor=enabled
+        buy.Text=enabled and(item.canSell==true and"판매"or"구매")or"거래 불가"
+      end
+    end
+    for i=#shown+1,#cards do cards[i].Visible=false end
+    root:SetAttribute("BoundShopItemCount",#shown)
+  end
+  local function resize()
+    grid.CellSize=list.AbsoluteSize.X<430 and UDim2.new(1,-8,0,142)or UDim2.new(0.5,-7,0,142)
+  end
+  list:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize)
+  search:GetPropertyChangedSignal("Text"):Connect(function()sync(rows)end)
+  sort.Activated:Connect(function()sortByPrice=not sortByPrice;sort.Text=sortByPrice and"정렬: 가격순"or"정렬: 추천순";sync(rows)end)
+  resize()
+  sync(options.items or {})
   root:SetAttribute("OwnsPurchaseAuthority",false)
   root:SetAttribute("OwnsEconomyAuthority",false)
-  return root,{search=search,sort=sort,cards=cards}
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{search=search,sort=sort,cards=cards,Sync=sync}
 end
 
 function RobloxCommonUI.CreateConfirmDialog(options)
@@ -2250,9 +2735,85 @@ function RobloxCommonUI.CreateMaterialTracker(options)
 end
 
 function RobloxCommonUI.CreateBuySellPanel(options)
-  local root,parts=deepSystemPanel(options,"BUY_SELL_PANEL","BUY_SELL_PANEL","거래",{"구매 탭 / 판매 탭","선택 상품","수량","현재 재화","가격 비교","장바구니"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "BuySellPanel",size=options.size or UDim2.new(1,-24,1,-24),theme=theme
+  })
+  tag(root,"BUY_SELL_PANEL")
+  commonText(inner,"Title",options.title or "장비 매매",UDim2.fromOffset(14,8),UDim2.new(1,-28,0,34),theme.Text,20,true)
+  local buyTab=RobloxCommonUI.CreateTabButton({name="TradeBuyTab",text="구매",selected=true,size=UDim2.new(.5,-4,0,48),theme=theme})
+  buyTab.Position=UDim2.fromOffset(10,44);buyTab.Parent=inner
+  local sellTab=RobloxCommonUI.CreateTabButton({name="TradeSellTab",text="판매",selected=false,size=UDim2.new(.5,-4,0,48),theme=theme})
+  sellTab.Position=UDim2.new(.5,4,0,44);sellTab.Parent=inner
+  local scroll=Instance.new("ScrollingFrame")
+  scroll.Name="TradeItems";scroll.Position=UDim2.fromOffset(10,102);scroll.Size=UDim2.new(1,-20,1,-160)
+  scroll.BackgroundTransparency=1;scroll.BorderSizePixel=0;scroll.ScrollBarThickness=4;scroll.Active=true
+  scroll.AutomaticCanvasSize=Enum.AutomaticSize.Y;scroll.CanvasSize=UDim2.fromOffset(0,0);scroll.Parent=inner
+  local layout=commonList(scroll,false,6)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local action=RobloxCommonUI.CreatePrimaryButton({name="TradeAction",text="상품을 선택해",size=UDim2.new(1,-20,0,48),theme=theme})
+  action.Position=UDim2.new(0,10,1,-52);action.Parent=inner
+  local buttons,items,visible={}, {},{}
+  local mode="BUY"
+  local selected=nil
+  local gold=0
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    items=type(state.items)=="table"and state.items or {}
+    gold=tonumber(state.gold)or 0
+    visible={}
+    for _,item in ipairs(items)do
+      local price=mode=="BUY"and item.price or item.sellPrice
+      if price~=nil then visible[#visible+1]=item end
+    end
+    for index,item in ipairs(visible)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({name="TradeItem"..index,size=UDim2.new(1,-6,0,48),theme=theme})
+        button.LayoutOrder=index;button.Parent=scroll;buttons[index]=button
+        local at=index
+        button.Activated:Connect(function()
+          local itemNow=visible[at]
+          if itemNow then selected=itemNow.id;sync({items=items,gold=gold})end
+        end)
+      end
+      local price=mode=="BUY"and item.price or item.sellPrice
+      buttons[index].Visible=true
+      buttons[index].Text=tostring(item.name or item.id or "아이템").." · "..tostring(price).."G"
+      buttons[index].BackgroundColor3=item.id==selected and theme.Primary or theme.PanelRaised
+      buttons[index]:SetAttribute("BoundItemId",tostring(item.id or ""))
+    end
+    for index=#visible+1,#buttons do buttons[index].Visible=false end
+    local chosen
+    for _,item in ipairs(visible)do if item.id==selected then chosen=item;break end end
+    local enabled=chosen~=nil and ((mode=="BUY"and chosen.canBuy==true and type(options.onBuy)=="function")
+      or(mode=="SELL"and chosen.canSell==true and type(options.onSell)=="function"))
+    action.Active=enabled
+    action.AutoButtonColor=enabled
+    action.Text=enabled and (mode=="BUY"and"구매하기"or"판매하기")or"거래 가능한 상품을 선택해"
+    buyTab.BackgroundColor3=mode=="BUY"and theme.Primary or theme.PanelRaised
+    sellTab.BackgroundColor3=mode=="SELL"and theme.Primary or theme.PanelRaised
+    root:SetAttribute("BoundTradeItemCount",#visible)
+    root:SetAttribute("TradeMode",mode)
+  end
+  buyTab.Activated:Connect(function()mode="BUY";selected=nil;sync({items=items,gold=gold})end)
+  sellTab.Activated:Connect(function()mode="SELL";selected=nil;sync({items=items,gold=gold})end)
+  action.Activated:Connect(function()
+    if not action.Active then return end
+    for _,item in ipairs(visible)do
+      if item.id==selected then
+        if mode=="BUY"and item.canBuy==true and type(options.onBuy)=="function"then options.onBuy(item.id,item)
+        elseif mode=="SELL"and item.canSell==true and type(options.onSell)=="function"then options.onSell(item.id,item)end
+        return
+      end
+    end
+  end)
+  sync({items=options.items or {},gold=options.gold or 0})
   root:SetAttribute("OwnsTradeAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=inner,list=scroll,labels=buttons,buy=buyTab,sell=sellTab,action=action,Sync=sync}
 end
 
 function RobloxCommonUI.CreateBuybackPanel(options)
@@ -2261,16 +2822,144 @@ function RobloxCommonUI.CreateBuybackPanel(options)
   return root,parts
 end
 
+-- 도감: 게임이 실제로 알고 있는 발견 상태만 표시하고 게임의 등록·보상·저장 권한을 유지한다.
 function RobloxCommonUI.CreateCodexScreen(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"CODEX_SCREEN","CODEX_SCREEN")
-  local nav=RobloxCommonUI.CreateSideNavigation({name="CodexCategories",items=options.categories or {"아이템","장비","몬스터","지역","인물","기록"},size=UDim2.new(0.26,-8,1,0),theme=theme});nav.Parent=body
-  local detail=Instance.new("Frame");detail.Name="CodexDetail";detail.Position=UDim2.new(0.26,8,0,0);detail.Size=UDim2.new(0.74,-8,1,0);detail.BackgroundColor3=theme.PanelInset;detail.BorderSizePixel=0;detail.Parent=body;corner(detail,theme.Corner)
-  commonText(detail,"Title",options.entryTitle or "발견한 항목",UDim2.fromOffset(16,12),UDim2.new(1,-32,0,38),theme.Text,20,true)
-  commonText(detail,"Body",options.entryBody or "설명 · 획득처 · 관련 제작 · 관련 퀘스트",UDim2.fromOffset(16,56),UDim2.new(1,-32,1,-72),theme.MutedText,14,false)
+  local categories=Instance.new("ScrollingFrame")
+  categories.Name="CodexCategories";categories.Position=UDim2.fromOffset(0,0)
+  categories.Size=UDim2.new(1,0,0,52);categories.BackgroundTransparency=1;categories.BorderSizePixel=0
+  categories.ScrollingDirection=Enum.ScrollingDirection.X
+  categories.AutomaticCanvasSize=Enum.AutomaticSize.X;categories.CanvasSize=UDim2.fromOffset(0,0)
+  categories.ScrollBarThickness=3;categories.Active=true;categories.Parent=body
+  commonList(categories,true,8)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="CodexEntries";list.BackgroundTransparency=1;list.BorderSizePixel=0
+  list.ScrollBarThickness=4;list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.fromOffset(0,0)
+  list.Active=true;list.Parent=body;commonList(list,false,6)
+  local detail=Instance.new("ScrollingFrame")
+  detail.Name="CodexDetail";detail.BackgroundColor3=theme.PanelInset;detail.BorderSizePixel=0
+  detail.ScrollBarThickness=4;detail.ScrollingDirection=Enum.ScrollingDirection.Y
+  detail.AutomaticCanvasSize=Enum.AutomaticSize.Y;detail.CanvasSize=UDim2.fromOffset(0,0)
+  detail.Active=true;detail.Parent=body;corner(detail,theme.Corner)
+  local title=commonText(detail,"Title","발견 기록 없음",
+    UDim2.fromOffset(12,12),UDim2.new(1,-24,0,36),theme.Text,18,true)
+  local info=commonText(detail,"Body","현재 게임에서 확인된 도감 항목이 없어.",
+    UDim2.fromOffset(12,60),UDim2.new(1,-24,0,140),theme.MutedText,13,false)
+  info.TextYAlignment=Enum.TextYAlignment.Top;info.TextWrapped=true
+  info.AutomaticSize=Enum.AutomaticSize.Y
+  local categoryButtons,entryButtons,shown={},{},{}
+  local entries,filters={},{}
+  local selectedCategory="전체"
+  local selectedId=nil
+  local latestRevision="UNKNOWN"
+  local function renderEntry()
+    local selected=nil
+    for _,row in ipairs(shown)do
+      if row.id==selectedId then selected=row;break end
+    end
+    if not selected then
+      selected=shown[1]
+      selectedId=selected and selected.id or nil
+    end
+    title.Text=selected and (selected.unlocked==true and tostring(selected.name or selected.title or "") or "미발견") or "발견 기록 없음"
+    info.Text=selected and (selected.unlocked==true and tostring(selected.description or selected.details or "") or "아직 발견하지 않은 항목이야.") or "현재 게임에서 확인된 도감 항목이 없어."
+    root:SetAttribute("SelectedCodexEntryId",tostring(selectedId or ""))
+    root:SetAttribute("SelectedCodexEntryUnlocked",selected~=nil and selected.unlocked==true)
+  end
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    entries=type(state.entries)=="table"and state.entries or {}
+    latestRevision=tostring(state.revision or latestRevision)
+    filters={"전체"}
+    local categoriesSeen={["전체"]=true}
+    for _,row in ipairs(entries)do
+      local category=tostring(row.category or "기타")
+      if not categoriesSeen[category]then
+        categoriesSeen[category]=true;filters[#filters+1]=category
+      end
+    end
+    if not categoriesSeen[selectedCategory]then selectedCategory="전체"end
+    for i,category in ipairs(filters)do
+      if not categoryButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({name="CodexCategory"..i,text="",
+          size=UDim2.fromOffset(104,48),theme=theme})
+        button.LayoutOrder=i;button.Parent=categories;categoryButtons[i]=button
+        button.Activated:Connect(function()
+          local chosen=filters[index]
+          if not chosen then return end
+          selectedCategory=chosen;sync({entries=entries,revision=latestRevision})
+        end)
+      end
+      local button=categoryButtons[i]
+      button.Visible=true;button.Text=category
+      button:SetAttribute("CodexCategory",category)
+      button:SetAttribute("Selected",category==selectedCategory)
+      button.BackgroundColor3=category==selectedCategory and theme.Primary or theme.PanelRaised
+    end
+    for i=#filters+1,#categoryButtons do categoryButtons[i].Visible=false end
+    shown={}
+    for _,row in ipairs(entries)do
+      if selectedCategory=="전체"or tostring(row.category or "기타")==selectedCategory then
+        shown[#shown+1]=row
+      end
+    end
+    for i,row in ipairs(shown)do
+      if not entryButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="CodexEntry"..i,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=i;button.Parent=list;entryButtons[i]=button
+        button.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and current.unlocked==true then
+            selectedId=current.id;renderEntry()
+            if type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+          end
+        end)
+      end
+      local button=entryButtons[i]
+      button.Visible=true;button.Name="CodexEntry"..i;button.LayoutOrder=i
+      button.Text=row.unlocked==true and tostring(row.name or row.title or "") or "미발견"
+      button.Active=row.id~=nil and row.unlocked==true
+      button.AutoButtonColor=button.Active
+      button:SetAttribute("BoundCodexEntryId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      button:SetAttribute("Discovered",row.unlocked==true)
+    end
+    for i=#shown+1,#entryButtons do entryButtons[i].Visible=false end
+    renderEntry()
+    root:SetAttribute("BoundCodexEntryCount",#entries)
+    root:SetAttribute("CodexStateRevision",latestRevision)
+  end
+  local function layout()
+    local compact=body.AbsoluteSize.X<560
+    if compact then
+      list.Position=UDim2.fromOffset(0,60)
+      list.Size=UDim2.new(1,0,.42,-60)
+      detail.Position=UDim2.new(0,0,.42,8)
+      detail.Size=UDim2.new(1,0,.58,-8)
+    else
+      list.Position=UDim2.fromOffset(0,60)
+      list.Size=UDim2.new(.4,-6,1,-60)
+      detail.Position=UDim2.new(.4,6,0,60)
+      detail.Size=UDim2.new(.6,-6,1,-60)
+    end
+    root:SetAttribute("MobileStackedLayout",compact)
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+  layout()
+  sync(options.codex or {})
+  root:SetAttribute("TouchScrollable",true)
   root:SetAttribute("OwnsDiscoveryAuthority",false)
-  return root,{nav=nav,detail=detail}
+  root:SetAttribute("OwnsRewardAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{nav=categories,categories=categories,entries=list,detail=detail,Sync=sync}
 end
 
 function RobloxCommonUI.CreateCollectionProgress(options)
@@ -2295,8 +2984,57 @@ end
 
 
 -- 하우징/샌드박스/정착지 시스템 깊이 v6
+-- 타이쿤/건축: 실제 배치 가능한 건축물 목록만 출력한다.
 function RobloxCommonUI.CreateBuildCatalogPanel(options)
-  return deepSystemPanel(options,"BUILD_CATALOG_PANEL","BUILD_CATALOG_PANEL","건축 목록",{"기초","벽/문/창","천장/지붕","계단/난간","가구","제작소","장식"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"BUILD_CATALOG_PANEL","BUILD_CATALOG_PANEL")
+  commonText(body,"Title",options.title or "건축 목록",UDim2.fromOffset(8,4),
+    UDim2.new(1,-16,0,36),theme.Text,18,true)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="BuildCatalog";list.Position=UDim2.fromOffset(0,48);list.Size=UDim2.new(1,0,1,-48)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4
+  list.Active=true;list.ScrollingDirection=Enum.ScrollingDirection.Y
+  list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.CanvasSize=UDim2.fromOffset(0,0)
+  list.Parent=body;commonList(list,false,8)
+  local empty=commonText(list,"EmptyBuilds","이 게임에서 확인된 건축물이 없어.",
+    UDim2.fromOffset(8,0),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local buttons,rows={},{}
+  local function sync(items)
+    rows=type(items)=="table"and items or {}
+    for i,row in ipairs(rows)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Build"..i,text="",size=UDim2.new(1,-8,0,58),theme=theme
+        })
+        button.LayoutOrder=i+1;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=rows[index]
+          if current and current.id~=nil and current.available==true
+            and type(options.onSelect)=="function"then options.onSelect(current.id,current)end
+        end)
+      end
+      local button=buttons[i]
+      button.Name="Build"..i;button.LayoutOrder=i+1;button.Visible=true
+      button.Text=tostring(row.name or "").." · "..tostring(row.costText or row.requirements or "")
+      button:SetAttribute("BoundBuildingId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      local enabled=row.id~=nil and row.available==true and type(options.onSelect)=="function"
+      button.Active=enabled;button.AutoButtonColor=enabled
+    end
+    for i=#rows+1,#buttons do buttons[i].Visible=false end
+    empty.Visible=#rows==0
+    root:SetAttribute("BoundBuildingCount",#rows)
+  end
+  sync(options.buildings or {})
+  root:SetAttribute("TouchScrollable",true)
+  root:SetAttribute("OwnsPlacementAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{list=list,buttons=buttons,Sync=sync}
 end
 
 function RobloxCommonUI.CreateBuildPieceCard(options)
@@ -2444,10 +3182,58 @@ function RobloxCommonUI.CreateSettlementOverview(options)
   return root,parts
 end
 
+-- 농장: 실제 작물·토지·성장 상태를 관찰하고 소유한 게임 함수에만 수확 요청을 전달한다.
 function RobloxCommonUI.CreateFarmPlotPanel(options)
-  local root,parts=deepSystemPanel(options,"FARM_PLOT_PANEL","FARM_PLOT_PANEL","재배 구획",{"씨앗","성장 단계","물/관리","수확","계절/지역 조건"})
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"FARM_PLOT_PANEL","FARM_PLOT_PANEL",
+    options.title or "재배 구획",{})
+  local theme=cloneTheme(options.theme)
+  local fields={
+    {"Seed","씨앗","seedName"},{"Growth","성장 단계","growthText"},
+    {"Water","물/관리","waterText"},{"Harvest","수확 상태","harvestText"},
+    {"Season","계절/환경","seasonText"}
+  }
+  local labels={}
+  for i,spec in ipairs(fields)do
+    local row=Instance.new("Frame")
+    row.Name=spec[1];row.Size=UDim2.new(1,0,0,38);row.LayoutOrder=i
+    row.BackgroundColor3=theme.Panel;row.BackgroundTransparency=.18;row.BorderSizePixel=0
+    row.Parent=parts.list;corner(row,8)
+    local caption=commonText(row,"Label",spec[2],UDim2.fromOffset(10,0),
+      UDim2.new(.45,-10,1,0),theme.MutedText,12,false)
+    local value=commonText(row,"Value","미확인",UDim2.new(.45,0,0,0),
+      UDim2.new(.55,-10,1,0),theme.Text,12,true)
+    value.TextXAlignment=Enum.TextXAlignment.Right
+    labels[i]=value
+  end
+  local harvest=RobloxCommonUI.CreatePrimaryButton({
+    name="Harvest",text="수확",size=UDim2.fromOffset(128,48),theme=theme
+  })
+  harvest.AnchorPoint=Vector2.new(1,1);harvest.Position=UDim2.new(1,-14,1,-12)
+  harvest.Visible=false;harvest.Parent=parts.inner
+  local state={}
+  local function sync(plot)
+    state=type(plot)=="table"and plot or {}
+    for i,spec in ipairs(fields)do
+      local value=state[spec[3]]
+      labels[i].Text=value~=nil and tostring(value)or"미확인"
+    end
+    local available=state.id~=nil and state.canHarvest==true and type(options.onHarvest)=="function"
+    harvest.Visible=available;harvest.Active=available;harvest.AutoButtonColor=available
+    root:SetAttribute("BoundPlotId",tostring(state.id or ""))
+    root:SetAttribute("PlotStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  harvest.Activated:Connect(function()
+    if state.id~=nil and state.canHarvest==true and type(options.onHarvest)=="function"then
+      options.onHarvest(state.id,state)
+    end
+  end)
+  sync(options.plot or {})
   root:SetAttribute("OwnsFarmingAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=labels,harvest=harvest,Sync=sync}
 end
 
 function RobloxCommonUI.CreateAnimalHousingPanel(options)
@@ -3037,42 +3823,130 @@ function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)
   local theme=cloneTheme(options.theme)
   local root=Instance.new("Frame")
   root.Name=options.name or "WorldPropInteractionPrompt"
-  root.Size=options.size or UDim2.fromOffset(280,52)
+  root.Size=options.size or UDim2.fromOffset(280,64)
   root.BackgroundColor3=theme.Panel
   root.BackgroundTransparency=0.08
   root.BorderSizePixel=0
   tag(root,"WORLD_PROP_INTERACTION_PROMPT")
   corner(root,12)
   stroke(root,theme.BorderBright,1,0.18)
-  local action=commonText(root,"Action",options.actionText or "상호작용",UDim2.fromOffset(12,0),UDim2.new(0.46,-12,1,0),theme.Accent,13,true)
-  local target=commonText(root,"Target",options.targetText or "대상",UDim2.new(0.46,4,0,0),UDim2.new(0.54,-16,1,0),theme.Text,13,false)
+  local action=commonText(root,"Action",options.actionText or "상호작용",
+    UDim2.fromOffset(12,2),UDim2.new(.46,-12,0,27),theme.Accent,13,true)
+  local target=commonText(root,"Target",options.targetText or "대상",
+    UDim2.new(.46,4,0,2),UDim2.new(.54,-16,0,27),theme.Text,13,false)
   target.TextXAlignment=Enum.TextXAlignment.Right
+  local status=commonText(root,"Status","",
+    UDim2.fromOffset(12,32),UDim2.new(1,-24,0,23),theme.MutedText,12,false)
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    action.Text=tostring(state.actionText or options.actionText or "상호작용")
+    target.Text=tostring(state.targetText or options.targetText or "대상")
+    status.Text=tostring(state.statusText or state.reason or "")
+    local available=state.available~=false
+    action.TextColor3=available and theme.Accent or theme.Warning
+    status.TextColor3=available and theme.MutedText or theme.Warning
+    root:SetAttribute("BoundInteractionId",tostring(state.id or options.interactionId or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("InteractionAvailable",available)
+    root:SetAttribute("InteractionStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
   root:SetAttribute("InputModes","TOUCH|KEYBOARD_MOUSE|GAMEPAD")
-  return root,{action=action,target=target}
+  return root,{action=action,target=target,status=status,Sync=sync}
 end
 
 function RobloxCommonUI.CreateWorldPropActionWheel(options)
   options=options or {}
-  local actions=options.actions or {"조사","사용","열기","옮기기","수리","취소"}
-  local root,buttons=RobloxCommonUI.CreateRadialMenu({name=options.name or "WorldPropActionWheel",actions=actions,centerText=options.centerText or "상호작용",size=options.size,theme=options.theme})
+  local theme=cloneTheme(options.theme)
+  local root=RobloxCommonUI.CreateRadialMenu({
+    name=options.name or "WorldPropActionWheel",actions={},
+    centerText=options.centerText or "상호작용",size=options.size,theme=theme
+  })
   tag(root,"WORLD_PROP_ACTION_WHEEL")
+  local buttons,actions={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    actions=type(state.actions)=="table"and state.actions or {}
+    for index,row in ipairs(actions)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({
+          name="Action"..index,text="",size=UDim2.fromOffset(92,48),theme=theme
+        })
+        button.Parent=root;buttons[index]=button
+        local captured=index
+        button.Activated:Connect(function()
+          local current=actions[captured]
+          if not current or (type(current)=="table"and current.available==false)then return end
+          local actionId=type(current)=="table"and (current.id or tostring(captured))or tostring(captured)
+          if type(options.onSelect)=="function"then options.onSelect(actionId,current)end
+        end)
+      end
+      local button=buttons[index]
+      local angle=math.rad((index-1)*360/#actions-90)
+      button.AnchorPoint=Vector2.new(.5,.5)
+      button.Position=UDim2.new(.5,math.cos(angle)*125,.5,math.sin(angle)*125)
+      button.Name="Action"..index
+      local name=type(row)=="table"and (row.label or row.id)or row
+      local enabled=type(row)~="table"or row.available~=false
+      button.Text=tostring(name or "상호작용")
+      button.Active=enabled;button.AutoButtonColor=enabled
+      button.Visible=true
+      button:SetAttribute("InteractionActionId",tostring(type(row)=="table"and (row.id or index)or index))
+      button:SetAttribute("MinimumTouchHeight",48)
+    end
+    for index=#actions+1,#buttons do buttons[index].Visible=false end
+    local center=root:FindFirstChild("Center")
+    local label=center and center:FindFirstChild("CenterLabel")
+    if label then label.Text=tostring(state.target or options.centerText or "상호작용")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("BoundActionCount",#actions)
+  end
+  sync(options.interaction or {actions=options.actions or {}})
   root:SetAttribute("OwnsInteractionAuthority",false)
-  return root,buttons
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,buttons,sync
 end
 
 function RobloxCommonUI.CreateInteractionProgress(options)
   options=options or {}
-  local root,controller=RobloxCommonUI.CreateProgressBar({name=options.name or "InteractionProgress",label=options.label or "진행",value=options.value or 0,size=options.size or UDim2.fromOffset(260,40),theme=options.theme})
+  local root,controller=RobloxCommonUI.CreateProgressBar({
+    name=options.name or "InteractionProgress",text=options.label or "진행",
+    ratio=options.ratio or 0,size=options.size or UDim2.fromOffset(260,40),theme=options.theme
+  })
   tag(root,"INTERACTION_PROGRESS")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    if state.ratio~=nil then controller.SetRatio(state.ratio,state.text or state.label)
+    elseif state.text~=nil or state.label~=nil then controller.SetRatio(root:GetAttribute("DisplayedRatio"),state.text or state.label)end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionDuration",false)
-  return root,controller
+  return root,controller,sync
 end
 
 function RobloxCommonUI.CreateInteractionStateCard(options)
-  local root,parts=deepSystemPanel(options,"INTERACTION_STATE_CARD","INTERACTION_STATE_CARD",options and options.title or "상호작용 상태",{"사용 가능","조건","현재 사용 중","결과"})
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"INTERACTION_STATE_CARD","INTERACTION_STATE_CARD",options.title or "상호작용 상태",
+    {"대상","현재 상태","조건","결과"})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target or "",state.status or "",
+      state.requirements or "",state.result or ""}
+    for index,label in ipairs(parts.labels)do label.Text=tostring(values[index] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionKind",tostring(state.kind or "GENERIC"))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+    root:SetAttribute("OwnsInteractionAuthority",false)
+  end
+  sync(options.interaction or {})
   root:SetAttribute("OwnsInteractionAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateSeatInteractionPrompt(options)
@@ -3082,27 +3956,86 @@ end
 
 function RobloxCommonUI.CreateBedInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"BED_INTERACTION_PROMPT","BED_INTERACTION_PROMPT","침대",{"쉬기","재시작 지점 표시","현재 사용 상태","사용 조건"})
+  local root,parts=deepSystemPanel(options,"BED_INTERACTION_PROMPT","BED_INTERACTION_PROMPT","침대",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.action,state.respawnPoint,state.status,state.requirements}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateHarvestInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"HARVEST_INTERACTION_PROMPT","HARVEST_INTERACTION_PROMPT","채집 / 수확",{"대상","필요 도구","진행 상태","예상 분류"})
+  local root,parts=deepSystemPanel(options,"HARVEST_INTERACTION_PROMPT","HARVEST_INTERACTION_PROMPT","채집 / 수확",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.requiredTool,state.progress,state.resourceCategory}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsLootAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateContainerInteractionPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"CONTAINER_INTERACTION_PROMPT","CONTAINER_INTERACTION_PROMPT","보관함",{"열기","현재 상태","용량 표시","권한 표시"})
+  local root,parts=deepSystemPanel(options,"CONTAINER_INTERACTION_PROMPT","CONTAINER_INTERACTION_PROMPT","보관함",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.status,state.capacity,state.access}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateLightControlPrompt(options)
   options=options or {}
-  return deepSystemPanel(options,"LIGHT_CONTROL_PROMPT","LIGHT_CONTROL_PROMPT","조명",{"켜기 / 끄기","현재 상태","연결 장치","조건"})
+  local root,parts=deepSystemPanel(options,"LIGHT_CONTROL_PROMPT","LIGHT_CONTROL_PROMPT","조명",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.action,state.status,state.connection,state.requirements}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("InteractionAvailable",state.available~=false)
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateReadInspectPanel(options)
   options=options or {}
-  return deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"이름 / 종류","설명","관련 정보","다른 시스템 연결"})
+  local root,parts=deepSystemPanel(options,"READ_INSPECT_PANEL","READ_INSPECT_PANEL",options.title or "조사",{"","","",""})
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local values={state.target,state.description,state.status,state.related}
+    for i,label in ipairs(parts.labels)do label.Text=tostring(values[i] or "")end
+    root:SetAttribute("BoundInteractionId",tostring(state.id or ""))
+    root:SetAttribute("BoundInteractionState",tostring(state.state or "UNVERIFIED"))
+    root:SetAttribute("SourceAuthority",tostring(state.source or "UNVERIFIED"))
+  end
+  sync(options.interaction or {})
+  root:SetAttribute("OwnsInteractionAuthority",false)
+  root:SetAttribute("OwnsDiscoveryAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateInventorySmartSortPreview(options)
@@ -3142,9 +4075,78 @@ function RobloxCommonUI.CreateStashTransferQueue(options)
 end
 
 function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)
-  local root,parts=deepSystemPanel(options,"MENU_SYSTEM_SWITCHER_DRAWER","MENU_SYSTEM_SWITCHER_DRAWER","시스템 전환",{"인벤토리","장비","지도","퀘스트","제작","도감"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,inner=RobloxCommonUI.CreatePanel({
+    name=options.name or "MenuSystemSwitcherDrawer",
+    size=options.size or UDim2.new(1,-24,1,-24),theme=theme,clipsDescendants=true
+  })
+  tag(root,"MENU_SYSTEM_SWITCHER_DRAWER")
+  commonText(inner,"Title",options.title or "시스템 전환",UDim2.fromOffset(12,8),
+    UDim2.new(1,-24,0,36),theme.Text,20,true)
+  local scroller=Instance.new("ScrollingFrame")
+  scroller.Name="SystemButtons"
+  scroller.Position=UDim2.fromOffset(10,52)
+  scroller.Size=UDim2.new(1,-20,1,-64)
+  scroller.BackgroundTransparency=1;scroller.BorderSizePixel=0
+  scroller.ScrollBarThickness=4;scroller.Active=true
+  scroller.ScrollingDirection=Enum.ScrollingDirection.Y
+  scroller.CanvasSize=UDim2.fromOffset(0,0)
+  scroller.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  scroller.Parent=inner
+  local layout=commonList(scroller,false,8)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local buttons,rows={},{}
+  local selectedId=tostring(options.selectedId or "")
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    rows=type(state.systems)=="table"and state.systems or {}
+    if state.selectedId~=nil then selectedId=tostring(state.selectedId)end
+    for index,row in ipairs(rows)do
+      if not buttons[index]then
+        local button=RobloxCommonUI.CreateTabButton({
+          name="System"..index,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=index;button.Parent=scroller;buttons[index]=button
+        local capturedIndex=index
+        button.Activated:Connect(function()
+          local current=rows[capturedIndex]
+          if not current then return end
+          local id=type(current)=="table"and tostring(current.id or capturedIndex)or tostring(capturedIndex)
+          if type(current)=="table"and current.enabled==false then return end
+          selectedId=id
+          sync({systems=rows,selectedId=id})
+          if type(options.onSelect)=="function"then options.onSelect(id,current)end
+        end)
+      end
+      local button=buttons[index]
+      local id=type(row)=="table"and tostring(row.id or index)or tostring(index)
+      local title=type(row)=="table"and (row.title or row.label or row.name)or row
+      local enabled=type(row)~="table"or row.enabled~=false
+      button.Name="System"..index
+      button.LayoutOrder=index
+      button.Text=tostring(title or id)
+      button.BackgroundColor3=id==selectedId and theme.Primary or theme.PanelRaised
+      button.Active=enabled
+      button.AutoButtonColor=enabled
+      button.Visible=true
+      button:SetAttribute("SystemId",id)
+      button:SetAttribute("Available",enabled)
+      button:SetAttribute("MinimumTouchHeight",48)
+      local underline=button:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=id==selectedId end
+    end
+    for index=#rows+1,#buttons do buttons[index].Visible=false end
+    root:SetAttribute("CurrentSystemId",selectedId)
+    root:SetAttribute("BoundSystemCount",#rows)
+  end
+  sync({systems=options.systems or {"인벤토리","장비","지도","퀘스트","제작","도감"},selectedId=selectedId})
+  root:SetAttribute("PresentationRole","MENU_SYSTEM_SWITCHER_DRAWER")
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsNavigationAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=inner,list=scroller,labels=buttons,buttons=buttons,Sync=sync}
 end
 
 function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)
@@ -3295,10 +4297,65 @@ function RobloxCommonUI.CreateNpcRelationshipTimeline(options)
   return root,parts
 end
 
+-- 파티창: 기존 게임에서 전달한 멤버/역할/인원 상태만 출력한다.
 function RobloxCommonUI.CreatePartyRoleOverview(options)
-  local root,parts=deepSystemPanel(options,"PARTY_ROLE_OVERVIEW","PARTY_ROLE_OVERVIEW","파티 역할",{"전투 역할","지원 역할","현재 상태","중복/빈 역할"})
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"PARTY_ROLE_OVERVIEW","PARTY_ROLE_OVERVIEW")
+  local title=commonText(body,"Title",options.title or "파티 역할",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,32),theme.Text,18,true)
+  local summary=commonText(body,"Summary","",
+    UDim2.fromOffset(8,39),UDim2.new(1,-16,0,34),theme.MutedText,13,false)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="PartyMembers";list.Position=UDim2.fromOffset(0,82);list.Size=UDim2.new(1,0,1,-82)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body
+  commonList(list,false,8)
+  local empty=commonText(list,"EmptyParty","현재 확인된 파티 구성원이 없어.",
+    UDim2.fromOffset(8,4),UDim2.new(1,-16,0,48),theme.MutedText,13,false)
+  empty.LayoutOrder=1
+  local buttons,members={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    members=type(state.members)=="table"and state.members or {}
+    local capacity=tonumber(state.capacity)
+    summary.Text=capacity and string.format("%d / %d",#members,capacity)or tostring(state.summary or "")
+    if state.summary~=nil then summary.Text=tostring(state.summary)end
+    for i,row in ipairs(members)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({
+          name="PartyMember"..i,text="",size=UDim2.new(1,-8,0,52),theme=theme
+        })
+        button.LayoutOrder=i+1;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=members[index]
+          if current and current.id~=nil and current.canSelect==true and type(options.onSelect)=="function"then
+            options.onSelect(current.id,current)
+          end
+        end)
+      end
+      local button=buttons[i]
+      button.Name="PartyMember"..i;button.LayoutOrder=i+1;button.Visible=true
+      button.Text=tostring(row.name or "").." · "..tostring(row.role or row.status or "")
+      button:SetAttribute("BoundMemberId",tostring(row.id or ""))
+      button:SetAttribute("BoundFromGameState",true)
+      local selectable=row.id~=nil and row.canSelect==true and type(options.onSelect)=="function"
+      button.Active=selectable;button.AutoButtonColor=selectable
+    end
+    for i=#members+1,#buttons do buttons[i].Visible=false end
+    empty.Visible=#members==0
+    root:SetAttribute("BoundPartyMemberCount",#members)
+    root:SetAttribute("PartyStateRevision",tostring(state.revision or "UNKNOWN"))
+  end
+  sync(options.party or {})
+  root:SetAttribute("TouchScrollable",true)
+  root:SetAttribute("OwnsPartyAuthority",false)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=body,list=list,labels=buttons,buttons=buttons,title=title,summary=summary,Sync=sync}
 end
 
 function RobloxCommonUI.CreateRouteRiskPreview(options)
@@ -3319,10 +4376,39 @@ function RobloxCommonUI.CreateBossPhaseStrip(options)
   return root,parts
 end
 
+-- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
 function RobloxCommonUI.CreateWaveForecastRibbon(options)
-  local root,parts=deepSystemPanel(options,"WAVE_FORECAST_RIBBON","WAVE_FORECAST_RIBBON","웨이브 예고",{"현재 웨이브","다음 구성","정예/보스","준비 시간"})
-  root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  options=options or {}
+  local root,parts=deepSystemPanel(options,"WAVE_FORECAST_RIBBON","WAVE_FORECAST_RIBBON",
+    options.title or "웨이브 예고",{})
+  local theme=cloneTheme(options.theme)
+  local fields={
+    {"Current","현재 웨이브","currentWave"},
+    {"Next","다음 구성","nextEnemies"},
+    {"Boss","정예/보스","bossWarning"},
+    {"Prep","준비 시간","prepSeconds"}
+  }
+  local labels={}
+  for i,spec in ipairs(fields)do
+    local label=commonText(parts.list,spec[1],"",UDim2.fromOffset(0,0),
+      UDim2.new(1,0,0,38),theme.Text,13,i==1)
+    label.LayoutOrder=i;labels[i]=label
+  end
+  local function sync(wave)
+    wave=type(wave)=="table"and wave or {}
+    for i,spec in ipairs(fields)do
+      local value=wave[spec[3]]
+      labels[i].Text=spec[2].." · "..(value~=nil and tostring(value)or"미확인")
+    end
+    root:SetAttribute("BoundWaveId",tostring(wave.id or ""))
+    root:SetAttribute("WaveStateRevision",tostring(wave.revision or "UNKNOWN"))
+  end
+  sync(options.wave or {})
+  root:SetAttribute("OwnsWaveAuthority",false)
+  root:SetAttribute("OwnsEconomyAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=labels,Sync=sync}
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)

@@ -27,6 +27,52 @@ function Model.equipment(attributes, config)
  return rows
 end
 
+-- 캐릭터/매매창의 표시 상태는 복제된 서버 속성과 원본 GameConfig만 참조한다.
+function Model.character(attributes,config)
+ attributes=attributes or {};config=config or {}
+ local class=(config.Classes or {})[attributes.ClassId]
+ local weapon=math.max(0,math.floor(tonumber(attributes.WeaponTier)or 0))
+ local armor=math.max(0,math.floor(tonumber(attributes.ArmorTier)or 0))
+ return {
+  className=class and class.Name or "직업 미선택",
+  level=math.max(1,math.floor(tonumber(attributes.Level)or 1)),
+  xp=math.max(0,tonumber(attributes.XP)or 0),
+  gold=math.max(0,tonumber(attributes.Gold)or 0),
+  hp=math.max(0,tonumber(attributes.CurrentHP)or 0),
+  maxHp=math.max(1,tonumber(attributes.MaxHP)or config.BaseMaxHP or 100),
+  attack=math.max(0,tonumber(attributes.AttackPower)or 0),
+  weaponTier=weapon,armorTier=armor,
+  weaponBonus=(config.WeaponBonus or {})[weapon]or 0,
+  armorBonus=(config.ArmorBonus or {})[armor]or 0,
+  advancement=tostring(attributes.AdvancementId or ""),
+  secondaryAdvancement=tostring(attributes.SecondAdvancementId or ""),
+  relic=attributes.RelicId=="NONE"and "없음"or tostring(attributes.RelicId or "없음"),
+ }
+end
+
+-- 상점 표시만 담당한다. 실제 구매 가격·거리·재화 변경은 기존 서버 책임 함수에 남긴다.
+function Model.shop(attributes,config,merchantAccess)
+ attributes=attributes or {};config=config or {}
+ local tierWeapon=math.floor(tonumber(attributes.WeaponTier)or 1)
+ local tierArmor=math.floor(tonumber(attributes.ArmorTier)or 1)
+ local gold=math.max(0,tonumber(attributes.Gold)or 0)
+ local inVillage=(tonumber(attributes.CurrentZone)or 0)==0
+ local function offer(tier,prices,nearMerchant)
+  local maxTier=#prices
+  local nextTier=math.min(maxTier,tier+1)
+  local price=prices[tier+1]
+  local canBuy=inVillage and nearMerchant and price~=nil and gold>=price
+  return {tier=tier,nextTier=nextTier,maxTier=maxTier,price=price,canBuy=canBuy,nearMerchant=nearMerchant}
+ end
+ -- 호출자가 실측한 주변 상인을 알려주면 UI도 그 상태로 잠근다.
+ -- 인자를 넘기지 않는 기존 메뉴/테스트 호출은 종전 표시 계약 그대로 유지한다.
+ local weaponNearby=merchantAccess==nil or merchantAccess.weapon==true
+ local armorNearby=merchantAccess==nil or merchantAccess.armor==true
+ return {gold=gold,inVillage=inVillage,weapon=offer(tierWeapon,config.WeaponPrices or {},weaponNearby),
+  armor=offer(tierArmor,config.ArmorPrices or {},armorNearby),sellSupported=false,
+  proximityObserved=merchantAccess~=nil,source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"}
+end
+
 function Model.filter(rows, category, query)
  local result = {}
  query = string.lower(query or "")

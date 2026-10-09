@@ -1,5 +1,5 @@
 {
-  "version": 553,
+  "version": 554,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -3721,7 +3721,7 @@
       ]
     },
     "developmentToolAuthority": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
       "gameDevelopmentOwner": [
@@ -3766,16 +3766,15 @@
         "openAiPaidApiAllowed": false
       },
       "codex": {
-        "role": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
-        "allowedScopes": [
+        "role": "DISABLED",
+        "allowedScopes": [],
+        "forbiddenScopes": [
           "WORKFLOW_AND_CI_TOOLING",
           "QUEUE_AND_PLANNER_TOOLING",
           "TEST_INFRASTRUCTURE",
           "BOTTLENECK_DIAGNOSIS",
           "COMMON_DEVELOPER_TOOLING",
-          "READ_ONLY_GAME_SOURCE_INSPECTION"
-        ],
-        "forbiddenScopes": [
+          "READ_ONLY_GAME_SOURCE_INSPECTION",
           "DIRECT_GAME_SOURCE_AUTHORING",
           "GAMEPLAY_IMPLEMENTATION",
           "GAME_BALANCE_MUTATION",
@@ -3786,7 +3785,9 @@
         ],
         "gameSourceWriteAllowed": false,
         "unattendedGitHubActionsGameSourceUse": false,
-        "paidApiRequired": false
+        "paidApiRequired": false,
+        "allUseForbidden": true,
+        "replacement": "EXISTING_VIBE2_VIBE3_LOCAL_OLLAMA_OR_EXISTING_DETERMINISTIC_NATIVE_SOURCE"
       },
       "deterministicVerdictAuthority": "DETERMINISTIC_RULES_PLUS_VERIFIED_RUNTIME_QA_REGRESSION_EVIDENCE",
       "enforcement": {
@@ -3797,7 +3798,8 @@
           "VIBE2_GAME_DEVELOPMENT_OWNER": "VIBE2_VIBE3",
           "VIBE2_GAME_SOURCE_PROVIDER": "LOCAL_OLLAMA",
           "VIBE2_CODEX_GAME_SOURCE_WRITE": "FORBIDDEN",
-          "VIBE2_OPENAI_PAID_API_ALLOWED": "false"
+          "VIBE2_OPENAI_PAID_API_ALLOWED": "false",
+          "VIBE2_CODEX_ROLE": "DISABLED"
         }
       }
     },
@@ -6444,7 +6446,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-08T17:08:21.082Z",
+  "updatedAt": "2026-10-08T22:00:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -8690,6 +8692,25 @@
       "unityProjectSharedAndDistinctTargetBuilds": true,
       "noSequenceOrRuntimeReleaseAuthorityChange": true,
       "noNewPipeline": true
+    },
+    "codexNoUseOwnerDirective20261009": {
+      "ownerDirective": "CODEX_NOT_USED_ANY_SCOPE",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.developmentToolAuthority",
+      "canonicalWorkers": [
+        "VIBE2",
+        "VIBE3"
+      ],
+      "sourceProvider": "LOCAL_OLLAMA",
+      "executionAlternatives": [
+        "EXISTING_VIBE2_SOURCE_WORKER_LOCAL_OLLAMA",
+        "EXISTING_DETERMINISTIC_NATIVE_SOURCE",
+        "EXISTING_DETERMINISTIC_QA_AND_RUNTIME_EVIDENCE"
+      ],
+      "codexScopesAllowed": 0,
+      "newPipelineCreated": false,
+      "sequenceLockChanged": false,
+      "gameplaySaveEconomyMultiplayerAuthorityChanged": false,
+      "noPaidOpenAiApiRequired": true
     }
   },
   "vibeExecutionLaneContract": {

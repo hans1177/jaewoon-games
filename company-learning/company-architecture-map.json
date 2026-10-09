@@ -1,5 +1,5 @@
 {
-  "version": 332,
+  "version": 333,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -243,7 +243,7 @@
   },
   "workerRoles": {
     "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_OWNER",
-    "CODEX": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "CODEX": "DISABLED",
     "DETERMINISTIC_QA": "PASS_FAIL_EVIDENCE_AUTHORITY",
     "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
     "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
@@ -287,7 +287,8 @@
     "AI_ROLE_EXPANDS_OWN_AUTHORITY",
     "CODEX_WRITES_GAME_SOURCE",
     "RAW_LOG_AS_PASS_EVIDENCE",
-    "CENTRAL_POLICY_BYPASS"
+    "CENTRAL_POLICY_BYPASS",
+    "CODEX_ANY_SCOPE"
   ],
   "orchestrationTopology": {
     "autonomousBase": [
@@ -4473,7 +4474,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-08T02:14:34.456Z",
+  "updatedAt": "2026-10-08T22:00:00.000Z",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
