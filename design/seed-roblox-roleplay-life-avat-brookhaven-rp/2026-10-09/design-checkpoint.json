@@ -1089,25 +1089,43 @@
         "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
       ],
       "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+    },
+    "local_authoring_parts::89f6d051a76a140752a555b418505bc1f9b2b41c84445205c29d9ef008f91e7b:toSystem,trigger,stateChange": {
+      "toSystem": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "trigger": "FIGHT_THROUGH_ELEVATING_HORDE",
+      "stateChange": "Increased difficulty state generated, new game states created, and progression opportunities established."
+    },
+    "local_authoring_parts::ae1a54be4f074e589e3384bdb729a9dc4521944674486f01dd8f79e422811ba4:systemInterconnections:2": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "FIGHT_THROUGH_ELEVATING_HORDE",
+        "COLLECT_RUN_REWARDS_OR_EXPERIENCE",
+        "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
+      ],
+      "fromSystem": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "toSystem": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "trigger": "FIGHT_THROUGH_ELEVATING_HORDE",
+      "stateChange": "Increased difficulty state generated, new game states created, and progression opportunities established."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 102,
-      "successes": 102,
+      "calls": 103,
+      "successes": 103,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6714579,
-      "lastMs": 35743,
+      "totalMs": 6748997,
+      "lastMs": 34418,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:22:57.378Z"
+      "updatedAt": "2026-10-09T03:23:31.798Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T03:22:57.378Z",
+  "updatedAt": "2026-10-09T03:23:31.799Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3456,7 +3474,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:22:57.378Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:23:31.799Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
