@@ -726,12 +726,13 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
-        if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
+        if: steps.evidence.outputs.owner_test_eligible == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
           READINESS_PASS: ${{ steps.readiness.outputs.pass }}
+          OWNER_TEST_ELIGIBLE: ${{ steps.evidence.outputs.owner_test_eligible }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit || github.sha }}
           BASE_MAIN_SHA: ${{ inputs.base_main_sha }}
           VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
@@ -746,9 +747,13 @@ jobs:
             git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
           done
           candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
-          # 동일 게임 주소에는 실제 Unity WebGL QA가 통과한 빌드만 게시한다.
+          # 정식 QA가 끝난 게임만 기존 주소로 승격한다.
+          # 실제 3D 조작·저장 검증을 통과한 개발 빌드는 같은 게임의 /unity/ 경로에서 시험한다.
+          test "$OWNER_TEST_ELIGIBLE" = "true"
           runtime_dir="web-games/$GAME_ID"
-          test "$READINESS_PASS" = "true"
+          if [ "$READINESS_PASS" != 'true' ]; then
+            runtime_dir="web-games/$GAME_ID/unity"
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -770,6 +775,7 @@ jobs:
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
           git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
+          # 개발 테스트는 기존 /web-games/<gameId>/ 및 저장 키를 건드리지 않는다.
           rm -rf "$runtime_dir"
           mkdir -p "$runtime_dir"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "$runtime_dir"/
@@ -803,14 +809,14 @@ jobs:
           if [ "$READINESS_PASS" = 'true' ]; then
             publication_label='Unity Web readiness'
           else
-            publication_label='Unity Web playable browser test (graphics/performance/multiplayer repair pending)'
+            publication_label='Unity Web owner playable test (final QA repair required)'
           fi
           git commit -m "build: publish $GAME_ID $publication_label"
           release_commit="$(git rev-parse HEAD)"
           git push --force-with-lease origin HEAD:"$branch"
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
             --title "build: publish $GAME_ID $publication_label" \
-            --body "Real Unity WebGL browser-test bundle from workflow run $GITHUB_RUN_ID. Game: $GAME_ID; runtime path: $runtime_dir; source: $SOURCE_COMMIT. Browser boot, real gameplay, browser touch, save/restore and independent QA/regression evidence are required. UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS. If false, this is a PLAYABLE_TEST_ONLY public test with QA REPAIR_REQUIRED (including performance when applicable), NOT a native release. Only verified Unity WebGL replaces the stable /web-games/$GAME_ID/ link; old source remains in Git history.")"
+            --body "Actual Unity WebGL owner test from workflow run $GITHUB_RUN_ID. Game: $GAME_ID; runtime path: $runtime_dir; canonical source: $SOURCE_COMMIT. Browser boot, 3D gameplay, mobile input and save/restore are required for every owner test. UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS. When false, this is PLAYABLE_TEST_ONLY with QA REPAIR_REQUIRED, not final validation or release; /web-games/$GAME_ID/ and its saved data remain unchanged. When true, the validated build uses the established game URL.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo "UNITY_WEB_REVIEWED_PROMOTION_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
