@@ -1881,6 +1881,8 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
     '}'
   ].join('\n'));
   fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','Visuals.cs'),'public class Visuals { public void Animate(){} }\n');
+  fs.writeFileSync(path.join(unityRoot,'Assets','Scripts','PrototypeAnimatedVisuals.cs'),
+    'using UnityEngine; public class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
   fs.writeFileSync(path.join(unityRoot,'Assets','Editor','Build.cs'),'public static class WebBuild { public static void BuildWeb(){} }\n');
   fs.writeFileSync(path.join(unityRoot,'Packages','manifest.json'),'{}\n');
   fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
@@ -1906,9 +1908,11 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
   assert.ok(task.evidence.includes('upper-platform-readiness:READINESS_EVIDENCE_MISSING'));
   assert.deepEqual(task.responsibleFiles,[
     `unity-games/${gameId}/Assets/Scripts/GameCore.cs`,
-    `unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`
+    `unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`,
+    `unity-games/${gameId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`
   ]);
   assert.equal(task.responsibleFiles.includes(`unity-games/${gameId}/Assets/Scripts/Visuals.cs`),false);
+  assert.match(task.goal,/SPATIAL_DEPTH/);
   assert.match(task.goal,/CODE\/GRAPHICS\/WEBGL_BUILD\/ACTUAL_PLAY\/QA\/PORTABILITY/);
   assert.match(task.goal,/실제 2명 이상 상태 동기화/);
 });
