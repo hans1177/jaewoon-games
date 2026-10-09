@@ -585,21 +585,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1918788,
-      "lastMs": 99689,
+      "totalMs": 2017655,
+      "lastMs": 98867,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:24:23.397Z"
+      "updatedAt": "2026-10-09T18:26:02.265Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:24.564Z",
-  "updatedAt": "2026-10-09T18:24:23.397Z",
+  "updatedAt": "2026-10-09T18:26:02.266Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,15 +2302,29 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::ce411c8b65aca6228dd1a3b52b92b56ffbba64297551558f497f307413c27f14:signatureSystems:3": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "c",
+        "previousRuleIds": [
+          "CORE_LOOP_1",
+          "CORE_LOOP_2",
+          "CORE_LOOP_3"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::ce411c8b65aca6228dd1a3b52b92b56ffbba64297551558f497f307413c27f14:signatureSystems:3": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "858d89ae2d06831456fac8eb64ddc860e0275d112d9bedcd74e1c812120b5ea1": true,
     "06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:24:23.397Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T18:26:02.265Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:c",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
