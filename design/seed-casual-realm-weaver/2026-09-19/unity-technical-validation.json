@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-06T01:31:28.210Z",
+  "checkedAt": "2026-10-09T01:53:51.809Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37342530276,
-    "sourceCommit": "db2b8a008b8c67434f96f38eb819a41b60be2213",
-    "sourceTreeSha": "1464fe7bb51e433e40379f8eb9638bb7d8755389",
-    "apkSha256": "8e514488c9418e81a5a5c2ef0aaa2f86e05f34ff7e9c49e5a4402b9d525cab50",
+    "upstreamBuildRunId": 37788234922,
+    "sourceCommit": "94c5b1c7db0724f6c19f3937780ed5302c06754b",
+    "sourceTreeSha": "3553b2b3d371d103eec47dcae54c7a0b9bcb1f8f",
+    "apkSha256": "d5ebaf6596b4e7abe014eaa4adb11f004573e3c2c5158e6d184f33b94dc7a71f",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -115,17 +115,17 @@
       "state": "PASS",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
       "sampleCount": 5,
-      "totalFramesRendered": 124,
+      "totalFramesRendered": 126,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
       "minFps": 10.9,
-      "avgFps": 13.466666666666667,
+      "avgFps": 13.633333333333333,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 53722309,
+      "maxAllocatedMemoryBytes": 53722290,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-casual-realm-weaver-android-cloud-37342530276-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37342530276/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37342530276/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-casual-realm-weaver-android-cloud-37788234922-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37788234922/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37788234922/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-casual-realm-weaver"
   }
 }
