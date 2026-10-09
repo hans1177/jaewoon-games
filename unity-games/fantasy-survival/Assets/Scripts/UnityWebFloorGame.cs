@@ -238,10 +238,12 @@ fear-bear-hunter-armor|공포 곰 사냥갑|junglebench|armor|fearBearHide:6,fea
 monopoly-pick|독점석 곡괭이|junglebench|tool|monopolyIngot:8,goldIngot:4,wood:3|0
 toxic-furnace|독가스 용광로|junglebench|structure|monopolyStone:15,ironIngot:25,goldIngot:17,wood:20|0
 sunstone-pick|태양석 곡괭이|sunstonebench|tool|sunstoneOre:8,monopolyIngot:5,wood:3|0
-sunstone-greatsword|태양석 대검|sunstonebench|weapon|sunstoneIngot:12,monopolyIngot:8,goldIngot:6|0
-sunstone-dagger|태양석 암살 단검|sunstonebench|weapon|sunstoneIngot:10,monopolyIngot:4,goldIngot:4|0
-sunstone-orb|태양석 마법 구슬|sunstonebench|weapon|sunstoneIngot:14,monopolyIngot:6,goldIngot:5|0
-sunstone-scorpion-blade|맹독 전갈검|sunstonebench|weapon|sunstoneOre:10,monopolyIngot:5,goldIngot:4|0
+sunstone-greatsword|태양석 대검|sunstonebench|weapon|sunstoneIngot:12,monopolyIngot:8,goldIngot:6|480
+sunstone-dagger|태양석 암살 단검|sunstonebench|weapon|sunstoneIngot:10,monopolyIngot:4,goldIngot:4|180
+sunstone-orb|태양석 마법 구슬|sunstonebench|weapon|sunstoneIngot:14,monopolyIngot:6,goldIngot:5|300
+sunstone-scorpion-blade|맹독 전갈검|sunstonebench|weapon|sunstoneOre:10,monopolyIngot:5,goldIngot:4|360
+sand-spirit-staff|모래정령 추적 지팡이|sunstonebench|weapon|sunstoneIngot:9,monopolyIngot:5,goldIngot:4|240
+wasteland-mummy-staff|미라 소환 지팡이|sunstonebench|weapon|sunstoneIngot:11,monopolyIngot:7,goldIngot:5|300
 sunstone-scorpion-heavy|맹독 전갈 중갑|sunstonebench|armor|sunstoneOre:12,monopolyIngot:6,flowerLeather:4|0
 sunstone-scorpion-light|맹독 전갈 경갑|sunstonebench|armor|sunstoneOre:10,monopolyIngot:5,flowerLeather:5|0
 cooked-bird-meat|구운 꿩고기|smelt|consumable||0
@@ -275,8 +277,19 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public int runtimeId;
         public Species spec;
         public float hp, nextAttack;
-        public bool creative, attackPlayer;
+        public bool creative, attackPlayer, ally;
+        public float slowedUntil;
+        public int allyTargetId = -1;
         public int opponentId = -1;
+        public GameObject obj;
+    }
+
+    // 투사체 · 유도 공격은 기존 몬스터 체력과 타겟을 직접 사용한다.
+    private sealed class HomingSpell
+    {
+        public int targetId;
+        public float damage, speed, expiresAt;
+        public bool sandEffect;
         public GameObject obj;
     }
 
@@ -344,6 +357,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly List<Species> species = new List<Species>();
     private readonly List<Recipe> recipes = new List<Recipe>();
     private readonly List<Monster> monsters = new List<Monster>();
+    private readonly List<HomingSpell> homingSpells = new List<HomingSpell>();
     private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
     private readonly List<string> crafted = new List<string>();
     private readonly List<BuiltStructure> buildings = new List<BuiltStructure>();
@@ -535,6 +549,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void ClearEntities()
     {
         foreach (Monster m in monsters) if (m.obj != null) Destroy(m.obj);
+        foreach (HomingSpell spell in homingSpells) if (spell.obj != null) Destroy(spell.obj);
+        homingSpells.Clear();
         foreach (BuiltStructure building in buildings) if (building.obj != null) Destroy(building.obj);
         buildings.Clear();
         foreach (SpawnBlock b in blocks) if (b.obj != null) Destroy(b.obj);
@@ -697,63 +713,176 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         SaveCreative();
     }
 
+    // 전투 · 아군 미라는 지정된 적과만 싸우고, 적이 죽으면 즉시 사라진다.
     private void UpdateMonsters(float dt)
     {
         for(int i=monsters.Count-1;i>=0;i--)
         {
             Monster m=monsters[i];
-            if(m.hp<=0){if(m.obj!=null)Destroy(m.obj);monsters.RemoveAt(i);continue;}
-            if(m.creative && m.spec.mood=="harmless"){m.attackPlayer=false;m.opponentId=-1;continue;}
-            Monster opponent=m.creative?FindMonster(m.opponentId):null;
-            if(opponent!=null && opponent.spec.mood=="harmless"){m.opponentId=-1;opponent=null;}
-            Transform target=opponent!=null?opponent.obj.transform:((!m.creative && m.spec.mood=="aggressive") || (m.creative && m.attackPlayer) ? player:null);
+            if(m.ally && FindMonster(m.allyTargetId)==null)m.hp=0f;
+            if(m.hp<=0)
+            {
+                if(m.obj!=null)Destroy(m.obj);
+                monsters.RemoveAt(i);
+                continue;
+            }
+            if(m.creative && m.spec.mood=="harmless")
+            {
+                m.attackPlayer=false;
+                m.opponentId=-1;
+                continue;
+            }
+            Monster opponent=m.ally?FindMonster(m.allyTargetId):(m.creative?FindMonster(m.opponentId):null);
+            if(opponent!=null && opponent.spec.mood=="harmless" && m.creative){m.opponentId=-1;opponent=null;}
+            // 원래 몬스터는 자신과 싸우는 아군 미라를 공격할 수 있다(아군 체력 400).
+            if(!m.creative && !m.ally)
+            {
+                Monster nearbyAlly=null;
+                float nearest=8f;
+                foreach(Monster friend in monsters)
+                {
+                    if(!friend.ally||friend.hp<=0||friend.allyTargetId!=m.runtimeId||friend.obj==null)continue;
+                    float distance=Vector3.Distance(friend.obj.transform.position,m.obj.transform.position);
+                    if(distance<nearest){nearest=distance;nearbyAlly=friend;}
+                }
+                if(nearbyAlly!=null)opponent=nearbyAlly;
+            }
+            Transform target=opponent!=null?opponent.obj.transform:
+                ((!m.creative&&!m.ally&&m.spec.mood=="aggressive") ||
+                 (m.creative&&m.attackPlayer) ? player : null);
             if(target==null)continue;
             Vector3 delta=target.position-m.obj.transform.position;
-            delta.y=0;
-            float d=delta.magnitude;
-            float range=opponent!=null?1.4f:.95f;
-            if(d>range && d < (m.creative?18f:24f))
+            delta.y=0f;
+            float distanceToTarget=delta.magnitude;
+            float reach=opponent!=null?1.4f:.95f;
+            if(distanceToTarget>reach && distanceToTarget < (m.creative?18f:24f))
             {
-                float speed=Mathf.Clamp(m.spec.speed/35f,.75f,5f);
-                m.obj.transform.position += delta.normalized * speed * dt;
-                if(delta.sqrMagnitude>.01f)m.obj.transform.rotation=Quaternion.Slerp(m.obj.transform.rotation,Quaternion.LookRotation(delta),dt*8f);
+                float slowFactor=Time.time<m.slowedUntil?.7f:1f;
+                float move=Mathf.Clamp(m.spec.speed/35f,.75f,5f)*slowFactor;
+                m.obj.transform.position+=delta.normalized*move*dt;
+                if(delta.sqrMagnitude>.01f)
+                    m.obj.transform.rotation=Quaternion.Slerp(m.obj.transform.rotation,Quaternion.LookRotation(delta),dt*8f);
             }
-            else if(d<=range && Time.time>=m.nextAttack)
+            else if(distanceToTarget<=reach && Time.time>=m.nextAttack)
             {
-                m.nextAttack=Time.time + 1f;
+                m.nextAttack=Time.time+(m.ally?2f:1f);
                 if(opponent!=null)HurtMonster(opponent,m.spec.damage);
-                else if (m.spec.damage>0)
+                else if(m.spec.damage>0f)
                 {
-                    currentHp=Mathf.Max(0,currentHp-m.spec.damage);
-                    if(currentHp<=0){player.position=Vector3.zero;currentHp=100;info="쓰러져 시작 위치로 돌아왔어.";}
+                    currentHp=Mathf.Max(0f,currentHp-m.spec.damage);
+                    if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;info="쓰러져 시작 위치로 돌아왔어.";}
                 }
             }
         }
     }
 
-    private void HurtMonster(Monster monster,float amount)
+    // 전투 · 기존 처치/진행 처리는 유지하고 아군 소환수 처치는 제외한다.
+    private void HurtMonster(Monster target,float damage)
     {
-        if(monster==null || monster.hp<=0)return;
-        monster.hp=Mathf.Max(0,monster.hp-Mathf.Max(0,amount));
-        if(monster.hp<=0){if(!creative){progress++;actions++;SaveNormalCounters();}info=monster.spec.name+" 처치";}
+        if(target==null||target.hp<=0f)return;
+        target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
+        if(target.hp<=0f)
+        {
+            if(!target.ally)
+            {
+                if(!creative){progress++;actions++;SaveNormalCounters();}
+                info=target.spec.name+" 처치";
+            }
+            else info="아군 미라가 쓰러졌어.";
+        }
     }
 
+    // 전투 · 모래정령 지팡이와 태양석 구슬은 몬스터 종류 관계없이 가장 가까운 적을 유도 추적한다.
+    private void UpdateHomingSpells(float dt)
+    {
+        for(int i=homingSpells.Count-1;i>=0;i--)
+        {
+            HomingSpell spell=homingSpells[i];
+            Monster target=FindMonster(spell.targetId);
+            if(spell.obj==null || target==null || target.obj==null || Time.time>=spell.expiresAt)
+            {
+                if(spell.obj!=null)Destroy(spell.obj);
+                homingSpells.RemoveAt(i);
+                continue;
+            }
+            Vector3 destination=target.obj.transform.position+Vector3.up*.9f;
+            Vector3 towards=destination-spell.obj.transform.position;
+            float step=spell.speed*dt;
+            if(towards.sqrMagnitude<=step*step || towards.magnitude<=.85f)
+            {
+                HurtMonster(target,spell.damage);
+                if(spell.sandEffect && target.hp>0f && UnityEngine.Random.value<.30f)
+                {
+                    target.slowedUntil=Mathf.Max(target.slowedUntil,Time.time+3f);
+                    info=target.spec.name+" · 모래 폭풍 3초 둔화(30%)";
+                }
+                Destroy(spell.obj);
+                homingSpells.RemoveAt(i);
+            }
+            else
+            {
+                spell.obj.transform.position+=towards.normalized*step;
+                spell.obj.transform.Rotate(0f,350f*dt,0f,Space.World);
+            }
+        }
+    }
+
+    // 메인 · 태양석 무기들은 특정 몬스터에 한정되지 않고 사거리 내 모든 적을 공격한다.
     private void Attack()
     {
-        if(Time.time<attackCooldown)return;
-        attackCooldown=Time.time+.65f;
-        Monster closest=null;
-        float best=2.8f;
+        if(screenMode!=ScreenMode.Playing || panel!=Panel.None || Time.time<attackCooldown)return;
+        Recipe weapon=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+        string id=weapon!=null?weapon.id:"";
+        bool sand=id=="sand-spirit-staff",mummy=id=="wasteland-mummy-staff",orb=id=="sunstone-orb";
+        float cooldown=sand?1.1f:mummy?1.5f:orb?.9f:
+            id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"?.35f:
+            id=="sunstone-scorpion-blade"?.85f:.65f;
+        attackCooldown=Time.time+cooldown;
+        float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
+            id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
+        Monster target=null;
+        float nearest=range;
         foreach(Monster m in monsters)
         {
-            if(m.hp<=0)continue;
+            if(m.hp<=0f||m.ally||m.obj==null)continue;
             float d=Vector3.Distance(player.position,m.obj.transform.position);
-            if(d<best){best=d;closest=m;}
+            if(d<nearest){nearest=d;target=m;}
         }
-        if(closest==null){info="공격 범위에 몬스터가 없어.";return;}
-        int damage=5;
-        foreach(Recipe recipe in recipes)if(recipe.id==equippedWeapon){damage=Mathf.Max(5,recipe.power);break;}
-        HurtMonster(closest,damage);
+        if(target==null){info="공격 범위에 몬스터가 없어.";return;}
+        int damage=weapon!=null?Mathf.Max(5,weapon.power):5;
+        if(sand||orb)
+        {
+            GameObject sphere=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.name=sand?"SandSpirit_Homing":"Sunstone_Homing";
+            sphere.transform.SetParent(worldRoot.transform);
+            sphere.transform.position=player.position+Vector3.up*1.2f;
+            sphere.transform.localScale=Vector3.one*(sand?.55f:.48f);
+            Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
+            Collider collider=sphere.GetComponent<Collider>();
+            if(collider!=null)Destroy(collider);
+            homingSpells.Add(new HomingSpell{targetId=target.runtimeId,
+                damage=damage,speed=sand?18f:21f,expiresAt=Time.time+3.5f,
+                sandEffect=sand,obj=sphere});
+            info=(sand?"모래정령 유도탄":"태양석 유도 구슬")+" 발사 · "+target.spec.name;
+            return;
+        }
+        HurtMonster(target,damage);
+        if(mummy && target.hp>0f && UnityEngine.Random.value<.05f)
+        {
+            // 공격마다 5% · 체력 400, 공격력 70, 공격 간격 2초 · 지정한 적만 추적.
+            Species allyType=new Species{id="friendly-mummy",name="아군 미라",
+                mood="neutral",hp=400f,damage=70f,speed=64f};
+            Vector3 location=player.position+player.right*1.7f;
+            Monster friend=SpawnMonster(allyType,location,false);
+            if(friend!=null)
+            {
+                friend.ally=true;
+                friend.allyTargetId=target.runtimeId;
+                friend.hp=400f;
+                friend.nextAttack=Time.time+2f;
+                info="아군 미라 소환 · "+target.spec.name+" 공격 지원";
+            }
+        }
     }
 
     // 메인 · 조작과 터치 길게 누르기
@@ -773,6 +902,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 player.rotation=Quaternion.Slerp(player.rotation,Quaternion.LookRotation(direct),dt*9f);
             }
             UpdateMonsters(dt);
+            UpdateHomingSpells(dt);
             ReadWorldPointer();
             if(Input.GetKeyDown(KeyCode.Space))Attack();
             if(Input.GetKeyDown(KeyCode.I))panel=Panel.Bag;
