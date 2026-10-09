@@ -194,25 +194,40 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::4b8f73ad3210bb3ab9f51eca8df621f4e24903958047c7cf34c56ebe88fe75c5:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "puzzleState",
+        "riskRewardPattern"
+      ],
+      "stateOutputs": [
+        "nextPuzzleState",
+        "newRiskRewardPattern"
+      ],
+      "name": "Matchmaking Logic",
+      "purpose": "Governs puzzle state transitions through predefined action rules",
+      "playerChoice": "Player selects initial puzzle state to initiate progression sequence"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 754137,
-      "lastMs": 79371,
+      "totalMs": 833641,
+      "lastMs": 79504,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:38:32.387Z"
+      "updatedAt": "2026-10-09T17:39:51.894Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:25:58.203Z",
-  "updatedAt": "2026-10-09T17:38:32.387Z",
+  "updatedAt": "2026-10-09T17:39:51.894Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1805,7 +1820,7 @@
   "localAuthoringSplits": {
     "7525cde9178d38c1015766c5d8d24f7ca639dad5c25b0943de6a36b092ebceb5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:38:32.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:39:51.894Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
