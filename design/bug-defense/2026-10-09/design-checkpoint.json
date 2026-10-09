@@ -35,25 +35,38 @@
         "OUTPUT: Status change in the world system, including increased defense effectiveness, new strategies, and altered resource allocation.",
         "ACTION: The player's choice directly influences the state of the game world, altering the environment and available options for future play."
       ]
+    },
+    "local_authoring_parts::60c69b056a106f6e1e2ee4b9d345f53431f2cae4d3c0dbefd3ef33ee64a64c65:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INCOMING_INSECT_WAVE_PATTERN"
+      ],
+      "stateOutputs": [
+        "ALTERED_WORLD_STATE"
+      ],
+      "name": "WAVES_AND_DEFENSE_STRATEGY",
+      "purpose": "Player's ability to read and respond to insect wave patterns, influencing defense strategy and game state.",
+      "playerChoice": "Adjust defenders based on threat pattern, allocate resources to highest-value countermeasures, and evolve gameplay through strategic decisions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 377319,
-      "lastMs": 52113,
+      "totalMs": 477191,
+      "lastMs": 99872,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:05:42.460Z"
+      "updatedAt": "2026-10-09T15:07:22.334Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:25.113Z",
-  "updatedAt": "2026-10-09T15:05:42.460Z",
+  "updatedAt": "2026-10-09T15:07:22.334Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1726,7 +1739,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:05:42.460Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:07:22.334Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
