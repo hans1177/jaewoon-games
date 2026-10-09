@@ -842,25 +842,44 @@
     },
     "local_authoring_parts::e61be11a0f8afc607bccbe27520ed566a39056ecf710c047aef2e57368e89123:trigger": {
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::e61be11a0f8afc607bccbe27520ed566a39056ecf710c047aef2e57368e89123:stateChange": {
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::5f102ab0c58d242a30992b2eda7677292f2e7c5cd00bec21a968a8181e1fbb7f:systemInterconnections:2": {
+      "fromId": "SIGNATURE_SYSTEM_01",
+      "toId": "SIGNATURE_SYSTEM_01",
+      "stateKeys": [
+        "LEVEL_GOAL_STATE",
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_01",
+      "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
+      "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::7188bf71e0ce593680bc16664f3ae5e6b1136b6a02c564dcb5006435d289815e:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_01"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 81,
-      "successes": 81,
+      "calls": 83,
+      "successes": 83,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2713214,
-      "lastMs": 34153,
+      "totalMs": 2779279,
+      "lastMs": 31940,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:08:31.440Z"
+      "updatedAt": "2026-10-09T00:09:37.509Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:08:31.440Z",
+  "updatedAt": "2026-10-09T00:09:37.509Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3186,7 +3205,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:08:31.440Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:09:37.509Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
