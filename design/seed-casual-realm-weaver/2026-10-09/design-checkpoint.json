@@ -34,25 +34,39 @@
         "INPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nSELECT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nOUTPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or rer",
         "INPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nSELECT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nOUTPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, "
       ]
+    },
+    "local_authoring_parts::1b6c121ed79c77fde8de4deea5f9b03e9a83f7b7958abb5bc32ef39086291578:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_INPUT",
+        "RESULT_STATE"
+      ],
+      "stateOutputs": [
+        "END_RESULT"
+      ],
+      "name": "CASUAL_GAME_FLOW",
+      "purpose": "Player's initial action and its consequence in a casual game environment.",
+      "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 345191,
-      "lastMs": 63183,
+      "totalMs": 382134,
+      "lastMs": 36943,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:11:58.545Z"
+      "updatedAt": "2026-10-09T09:12:35.490Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:13.327Z",
-  "updatedAt": "2026-10-09T09:11:58.545Z",
+  "updatedAt": "2026-10-09T09:12:35.490Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,7 +1990,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:11:58.545Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:12:35.490Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
