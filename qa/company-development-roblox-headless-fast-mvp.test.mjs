@@ -430,12 +430,17 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
  const ordered=markers.slice(0,6).map(marker=>source.indexOf('foundationCheckpoint("'+marker+'"'));
  assert.deepEqual([...ordered].sort((a,b)=>a-b),ordered,'F1-F4 evidence producers must follow actual initialization');
  // 구조물만 만들고 지면 검사를 통과시키지 않는다.
+ assert.match(source,/parkWorld:FindFirstChild\("EntranceCounter"\)/);
+ assert.match(source,/parkWorld:FindFirstChild\("RideBuildPad"\)/);
+ assert.match(source,/parkWorld:FindFirstChild\("StarterPath"\)/);
+ assert.match(source,/if foundationSeen\.WORLD_READY and nativeFoundationSpawn:IsA\("SpawnLocation"\)/);
  assert.match(source,/spawnSupportParams\.FilterDescendantsInstances = \{nativeFoundationSpawn\}/);
  assert.match(source,/spawnSupportParams\.RespectCanCollide = true/);
  assert.match(source,/spawnSupport\.Normal\.Y >= 0\.55/);
  assert.match(source,/math\.abs\(spawnSupport\.Position\.Y - spawnBottom\) <= 0\.6/);
  assert.match(source,/humanoid\.FloorMaterial ~= Enum\.Material\.Air/);
  assert.match(source,/math\.abs\(rootPart\.AssemblyLinearVelocity\.Y\) < 3/);
+ assert.match(source,/if foundationPlayer and foundationSeen\.CHARACTER_READY then/);
  assert.match(source,/foundationCheckpoint\("GROUND_CONTACT", foundationPlayer, \{groundY = contact\.Position\.Y/);
  assert.match(source,/speed > 0\.1 and displacement\.Magnitude > 0\.5/);
  assert.match(source,/foundationCheckpoint\("MOVEMENT_CONFIRMED", foundationPlayer, \{displacement = displacement\.Magnitude\}/);
