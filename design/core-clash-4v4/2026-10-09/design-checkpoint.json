@@ -714,25 +714,115 @@
     "local_authoring_parts::ea45a316a7871ccd461e85bb7e03a9773b07ba5f346755170ec796bed5773e99:progressionLoop,resourceFlow": {
       "progressionLoop": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
       "resourceFlow": "게임 진행에는 단순한 보상 및 위험 비용만 포함되어 있으며, 새로운 행동/경로/조합의 발전이 필요하다. 플레이어는 선택의 결과로 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다."
+    },
+    "local_authoring_parts::ea45a316a7871ccd461e85bb7e03a9773b07ba5f346755170ec796bed5773e99:balanceRules": {
+      "balanceRules": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다."
+    },
+    "local_authoring_parts::2d686f6f657937998eb0724468def8d2ec60d0d0e8910c8c3e734c562c9db17c:progressionEconomyBalance": {
+      "progressionLoop": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+      "resourceFlow": "게임 진행에는 단순한 보상 및 위험 비용만 포함되어 있으며, 새로운 행동/경로/조합의 발전이 필요하다. 플레이어는 선택의 결과로 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+      "balanceRules": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다."
+    },
+    "local_authoring_parts::7ace72ec6324c9bb2c5cbc214bc3ece1bd394b817e11a31db25cd7d5497dc6f5:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "resourceFlow": "게임 진행에는 단순한 보상 및 위험 비용만 포함되어 있으며, 새로운 행동/경로/조합의 발전이 필요하다. 플레이어는 선택의 결과로 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "balanceRules": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다."
+      }
+    },
+    "local_authoring_parts::c5823140941e9afc48d824eaa9bb3888a51a9dc313284b4b75fb08723bd64bda:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "CORE-4V4-SIGNATURE-1",
+          "toId": "CORE-4V4-SIGNATURE-2",
+          "stateKeys": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "INPUT",
+          "stateChange": "RESULT"
+        },
+        {
+          "fromId": "CORE-4V4-SIGNATURE-1",
+          "toId": "CORE-4V4-SIGNATURE-2",
+          "stateKeys": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "INPUT",
+          "stateChange": "RESULT"
+        },
+        {
+          "fromId": "CORE-4V4-SIGNATURE-1",
+          "toId": "CORE-4V4-SIGNATURE-2",
+          "stateKeys": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "INPUT",
+          "stateChange": "RESULT"
+        },
+        {
+          "fromId": "CORE-4V4-SIGNATURE-1",
+          "toId": "CORE-4V4-SIGNATURE-2",
+          "stateKeys": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "INPUT",
+          "stateChange": "RESULT"
+        },
+        {
+          "fromId": "CORE-4V4-SIGNATURE-1",
+          "toId": "CORE-4V4-SIGNATURE-2",
+          "stateKeys": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT"
+          ],
+          "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar",
+          "trigger": "INPUT",
+          "stateChange": "RESULT"
+        }
+      ],
+      "progressionDirection": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "resourceFlow": "게임 진행에는 단순한 보상 및 위험 비용만 포함되어 있으며, 새로운 행동/경로/조합의 발전이 필요하다. 플레이어는 선택의 결과로 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다.",
+        "balanceRules": "플레이어는 '진입'이라는 순간부터 '성장'에 빠지며, 이 과정에서 '보상', '위험', '재방문' 등 다양한 상태 변화를 경험하게 된다. 게임의 핵심 재미는 선택의 결과로 인해 월드 상태가 변환되며, 이는 주체인 플레이어에게 즉각적인 영향을 미친다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 26,
+      "successes": 23,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2576307,
-      "lastMs": 101216,
+      "totalMs": 2671452,
+      "lastMs": 95145,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-08T22:11:45.590Z"
+      "updatedAt": "2026-10-09T00:05:53.278Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-08T22:11:45.590Z",
+  "updatedAt": "2026-10-09T00:05:53.283Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2933,7 +3023,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-08T22:11:45.590Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:05:53.283Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
