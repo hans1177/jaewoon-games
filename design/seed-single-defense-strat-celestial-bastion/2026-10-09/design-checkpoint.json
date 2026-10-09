@@ -48,25 +48,39 @@
       "name": "READ_NEXT_ENEMY_WAVE_AND_PLACE_DEFENSES",
       "purpose": "Player makes strategic decisions that directly affect the world state, increasing in complexity as pressure builds.",
       "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+    },
+    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "ENEMY_TYPE",
+        "DEFENSE_LAYOUT"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "ADAPT_DEFENSE_TO_ENEMY_TYPES",
+      "purpose": "Adapt the defense strategy to enemy types and wave composition, protecting the objective and clearing stages to unlock harder defenses.",
+      "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 676718,
-      "lastMs": 15883,
+      "totalMs": 771307,
+      "lastMs": 29639,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:03:57.086Z"
+      "updatedAt": "2026-10-09T00:05:31.680Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:53:28.090Z",
-  "updatedAt": "2026-10-09T00:03:57.086Z",
+  "updatedAt": "2026-10-09T00:05:31.690Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2259,20 +2273,24 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:0": [
+    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:2": [
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "SIGNATURE_SYSTEM_0",
+          "SIGNATURE_SYSTEM_1"
+        ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:0": 3
+    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:0": 3,
+    "local_authoring_parts::c89a498cae76790b3f0c465e6a55c3e33273a570dd3ed2eae3a11064f06671d6:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T00:03:57.086Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T00:05:31.680Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
