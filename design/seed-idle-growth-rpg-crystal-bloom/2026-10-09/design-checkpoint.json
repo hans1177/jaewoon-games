@@ -321,25 +321,235 @@
           "playerChoice": "플레이어는 새로운 상태와 자원을 획득하며, 이 과정에서 경로, 위험, 보상을 연결해 다양한 결과를 내게 됩니다."
         }
       ]
+    },
+    "local_authoring_parts::28d89ccf428886a07d0051d91c3442d72f031f2ed5aeec7ddf4ea7b3181bb3cf:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::2d7b460cd810e8f85a6779612f3b6be9e0a2080ffaac22915ea91553f09a31d8:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프",
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A)",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프",
+          "playerChoice": "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions (MAIN). Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A). Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). c is a supplementary element that mod"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_A_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프의 핵심 행동 및 대축 기능",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A) - 플레이어는 자원 획득, 능력 강화, 장비 업그레이드, 다음 선택에 대한 결정을 통해 세계 상태를 변환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_B_RULE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 또는 관계 상태로 연결하는 최초의 시스템 규칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_C_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서 발견, 숙련, 재방문의 깊이를 나타내는 시그니처 시스템.",
+          "playerChoice": "Discover hidden patterns in the world and unlock new growth layers through exploration, mastery, or revisiting previously explored areas. This choice directly influences the progression of the game and the availability of new resources and challenges in subsequent rounds."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_DELVE_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서의 발견, 숙련, 재방문을 처리합니다.",
+          "playerChoice": "플레이어는 새로운 상태와 자원을 획득하며, 이 과정에서 경로, 위험, 보상을 연결해 다양한 결과를 내게 됩니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프를 만든다. 중심 행동: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions. 두 대축: Claim rewards, upgrade levels or skills, equip gear, choose which hero or stat path receives the next investment (A), Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). 보조 요소: c. 발견·숙련·재방문 @. 시그니처 시스템: 게임 규칙, 저장 의미, 진행 관계. 원본 규칙 및 수치를 모두 유지하며, 단순 반복보다는 경로·위험·보상이 서로 연결되는 핵심 루프를 설계한다.",
+      "playerFantasy": "플레이어는 세계 속의 주체로 존재하며, 매번 선택을 통해 새로운 상태와 자원을 획득하게 된다. 이 과정에서 진보가 이루어지며, 기존의 단순 반복보다는 경로, 위험, 보상을 모두 연결해 한 번의 선택에 여러 가지 결과를 내게 되는 핵심 루프를 만든다.",
+      "coreFun": "플레이어는 세계 속의 주체로 존재하며, 매번 선택을 통해 새로운 상태와 자원을 획득하게 된다. 이 과정에서 진보가 이루어지며, 기존의 단순 반복보다는 경로, 위험, 보상을 모두 연결해 한 번의 선택에 여러 가지 결과를 내게 되는 핵심 루프를 만든다. 중심 행동: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions. 두 대축: Claim rewards, upgrade levels or skills, equip gear, choose which hero or stat path receives the next investment (A), Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). 보조 요소: c. 발견·숙련·재방문 @. 시그니처 시스템: 게임 규칙, 저장 의미, 진행 관계. 원본 규칙 및 수치를 모두 유지하며, 단순 반복보다는 경로·위험·보상이 서로 연결되는 핵심 루프를 설계한다.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프",
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A)",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_CORE_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프",
+          "playerChoice": "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions (MAIN). Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A). Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). c is a supplementary element that mod"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_A_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프의 핵심 행동 및 대축 기능",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment (A) - 플레이어는 자원 획득, 능력 강화, 장비 업그레이드, 다음 선택에 대한 결정을 통해 세계 상태를 변환합니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_B_RULE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 또는 관계 상태로 연결하는 최초의 시스템 규칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B)"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_C_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서 발견, 숙련, 재방문의 깊이를 나타내는 시그니처 시스템.",
+          "playerChoice": "Discover hidden patterns in the world and unlock new growth layers through exploration, mastery, or revisiting previously explored areas. This choice directly influences the progression of the game and the availability of new resources and challenges in subsequent rounds."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT",
+            "SELECT",
+            "OUTPUT",
+            "STATE"
+          ],
+          "stateOutputs": [
+            "RESULT",
+            "RISK",
+            "NEXT_CHOICE"
+          ],
+          "name": "IDLE_GROWTH_RPG_DELVE_RULE",
+          "purpose": "플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프에서의 발견, 숙련, 재방문을 처리합니다.",
+          "playerChoice": "플레이어는 새로운 상태와 자원을 획득하며, 이 과정에서 경로, 위험, 보상을 연결해 다양한 결과를 내게 됩니다."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 732078,
-      "lastMs": 241743,
+      "totalMs": 820774,
+      "lastMs": 88696,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:55:00.702Z"
+      "updatedAt": "2026-10-09T15:56:29.402Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T15:55:00.705Z",
+  "updatedAt": "2026-10-09T15:56:29.414Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2045,12 +2255,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:55:00.705Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:56:29.405Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-09/design-seed.json",
+    "contentDigest": "c71a420c9b6d4a2d611c22764631a2820fae645e4376a9aa9b987a73b6ea30d0",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
