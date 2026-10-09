@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 자신의 선택과 결과가 세계 규칙과 인과법칙에 의해 실질적으로 변화하는 것을 경험하고, 이는 게임의 학문적 진입점과 플레이어 중심의 인식 기반을 강화하며, 동시에 새로운 사건과 인과 관계를 통해 무한 발전 규칙의 일환으로 작용함.",
       "coreFun": "플레이어의 탐험 행동과 선택 결과가 다음 월드 상태와 위험/보상에 직접적인 연관성을 형성하며, 이는 게임의 학문적 진입점과 플레이어 중심의 인식 기반을 강화하여, 단일 장르의 반복적 플레이가 아닌 다양한 콘텐츠의 혼합을 가능하게 한다."
+    },
+    "local_authoring_parts::9224cd982adcde137a9765f499caf916829b84b63eda2a596dab360c70c16374:coreLoop": {
+      "coreLoop": [
+        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음선택",
+        "탐험 행동 -> 인물 만나기 -> 스토리 진행 -> 정보 획득 -> 월드 상태 변경",
+        "플레이어 선택 -> 세계 규칙 변형 -> 새로운 사건 생성 -> 루프 회복"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 220089,
-      "lastMs": 220089,
+      "totalMs": 253191,
+      "lastMs": 33102,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:09:39.511Z"
+      "updatedAt": "2026-10-09T18:10:12.615Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:59.378Z",
-  "updatedAt": "2026-10-09T18:09:39.511Z",
+  "updatedAt": "2026-10-09T18:10:12.615Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1858,7 +1865,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T18:09:39.511Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:10:12.615Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
