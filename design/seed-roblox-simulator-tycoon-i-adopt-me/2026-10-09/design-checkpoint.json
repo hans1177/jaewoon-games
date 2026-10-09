@@ -286,25 +286,211 @@
           "playerChoice": "Select new defensive placements, upgrade strategies, or tactical changes that respond to enemy adaptability."
         }
       ]
+    },
+    "local_authoring_parts::7712b43be26ea986714a09f6b937e85c6e56785ab8974ad00f596b98b70551e1:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::86f32148f2597f76c7f995f9d975227c88a2933134624faa18abfec447e363b2:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT/OUTPUT/STATE",
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positions that Cover the Threatened Route.",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES.",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE, AND CLEAR THE STAGE OR BOSS TO UNLOCK HARDER DEFENSE CHOICES."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "CHANGE THE WORLD STATE TO A NEW PATH, RISK, OR OUTCOME",
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "A cyclic loop where players choose a main strategy and adapt it through various systems to achieve new outcomes.",
+          "playerChoice": "CHOOSE A PRIMARY DEFENSIVE ACTION, THEN USE RESOURCES TO REFINE IT BEFORE PRESSURE INCREASES, AND FINALIZE WITH A HARDER DEFENSE OPTION BASED ON ENEMY RESPONSE."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "RESOURCE_REINFLECTION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 도구",
+          "playerChoice": "REINFORCE MAIN STRATEGY WITH RESOURCE UPGRADES OR NEW CONFIGURATIONS BEFORE PRESSURE INCREASES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "RESOURCE_REINFLECTION",
+          "purpose": "REINFORCE MAIN STRATEGY THROUGH RESOURCE UPGRADING",
+          "playerChoice": "SPEND RESOURCES TO REINFORCE PRIMARY DEFENSIVE MECHANISM"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "DEFENSIVE_ADAPTATION",
+          "purpose": "ENHANCE STRATEGIC VARIABILITY THROUGH CONTEXTUAL RESPONSES",
+          "playerChoice": "CHOOSE OPTIMAL DEFENSE CONFIGURATION BASED ON REAL-TIME ENEMY ANALYSIS AND RESOURCE ALLOCATION"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "DEFENSIVE_ADAPTATION_REINFLECTION",
+          "purpose": "Adapt defense strategy based on enemy behavior and wave composition to unlock harder challenges.",
+          "playerChoice": "Select new defensive placements, upgrade strategies, or tactical changes that respond to enemy adaptability."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
+      "playerFantasy": "Pocket Foundry은 플레이어가 매번 새로운 전략을 선택해 월드 상태를 바꾸며, 진입·선택·보상·위험·다음 선택의 순환적인 루프를 통해 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
+      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임에서, 진입·선택·보상·위험·다음 선택의 순환적인 루프로 단순 반복에서 다른 경로·위험·결과를 만든다. 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 대표 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'으로 구성된다. 이 시스템은 세계 인과법칙에 따라 MAIN×A×B×c의 관계를 지속적으로 변주하며, 성장은 새 행동·경로·조합·관계·발견·대응법을 열어 다양한 게임 경험을 제공한다.",
+      "coreLoop": [
+        "INPUT/SELECT/OUTPUT/STATE",
+        "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positions that Cover the Threatened Route.",
+        "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES.",
+        "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE, AND CLEAR THE STAGE OR BOSS TO UNLOCK HARDER DEFENSE CHOICES."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "CHANGE THE WORLD STATE TO A NEW PATH, RISK, OR OUTCOME",
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "A cyclic loop where players choose a main strategy and adapt it through various systems to achieve new outcomes.",
+          "playerChoice": "CHOOSE A PRIMARY DEFENSIVE ACTION, THEN USE RESOURCES TO REFINE IT BEFORE PRESSURE INCREASES, AND FINALIZE WITH A HARDER DEFENSE OPTION BASED ON ENEMY RESPONSE."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or Positionsthat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "RESOURCE_REINFLECTION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 도구",
+          "playerChoice": "REINFORCE MAIN STRATEGY WITH RESOURCE UPGRADES OR NEW CONFIGURATIONS BEFORE PRESSURE INCREASES"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "USE RESOURCES TO REINFORCE MAIN STRATEGY",
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "RESOURCE_REINFLECTION",
+          "purpose": "REINFORCE MAIN STRATEGY THROUGH RESOURCE UPGRADING",
+          "playerChoice": "SPEND RESOURCES TO REINFORCE PRIMARY DEFENSIVE MECHANISM"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "DEFENSIVE_ADAPTATION",
+          "purpose": "ENHANCE STRATEGIC VARIABILITY THROUGH CONTEXTUAL RESPONSES",
+          "playerChoice": "CHOOSE OPTIMAL DEFENSE CONFIGURATION BASED ON REAL-TIME ENEMY ANALYSIS AND RESOURCE ALLOCATION"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ THE NEXT ENEMY WAVE AND PLACE TOWERS OR DEFENDERS ON Lanes or PositionsThat",
+            "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS,",
+            "ADAPT THE DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT THE OBJECTIVE,"
+          ],
+          "stateOutputs": [
+            "UNLOCK HARDER DEFENSE CHOICES BASED ON ENEMY ADAPTATION"
+          ],
+          "name": "DEFENSIVE_ADAPTATION_REINFLECTION",
+          "purpose": "Adapt defense strategy based on enemy behavior and wave composition to unlock harder challenges.",
+          "playerChoice": "Select new defensive placements, upgrade strategies, or tactical changes that respond to enemy adaptability."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 344272,
-      "lastMs": 38195,
+      "totalMs": 372833,
+      "lastMs": 28561,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:35:06.538Z"
+      "updatedAt": "2026-10-09T14:35:35.101Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:29:22.055Z",
-  "updatedAt": "2026-10-09T14:35:06.540Z",
+  "updatedAt": "2026-10-09T14:35:35.108Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2006,12 +2192,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:35:06.540Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:35:35.103Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-09/design-seed.json",
+    "contentDigest": "7127bffbc0c46e4e4c02246b4f646bdc8de45f00a8ebdcd0ac5ea453ad3f6fc2",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
