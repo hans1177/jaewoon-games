@@ -520,25 +520,43 @@
         "playerChoices"
       ],
       "fromSystem": "systemInterconnections[3]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin"
+    },
+    "local_authoring_parts::0b9f40cadc2178d6e8735834040654642b3cccb9ed3b387bfccb45d9dcda9264:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections[3]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
+    },
+    "local_authoring_parts::b020caa87598e2c7a9bd6f8e96f7d9b1e078927a6586589c8cfeb114441e00eb:systemInterconnections:4": {
+      "fromId": "worldState",
+      "toId": "newWorldState",
+      "stateKeys": [
+        "boardState",
+        "threats",
+        "playerChoices"
+      ],
+      "fromSystem": "systemInterconnections[3]_fromSystem_16char_min_length_16chars_min_len_16_char_min_len_16_chars_min_len_16_char_min_len_16_chars_min_len_16_charMin",
+      "toSystem": "systemInterconnections[3]",
+      "trigger": "playerChoice",
+      "stateChange": "worldState → newWorldState"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1365104,
-      "lastMs": 65187,
+      "totalMs": 1424493,
+      "lastMs": 59389,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:34:17.564Z"
+      "updatedAt": "2026-10-09T14:35:16.954Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:34:17.564Z",
+  "updatedAt": "2026-10-09T14:35:16.961Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2285,7 +2303,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2323,10 +2341,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:34:17.564Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T14:35:16.957Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
