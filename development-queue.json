@@ -2906,8 +2906,8 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-02T01:24:10.538Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2937,19 +2937,19 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-09T05:55:09.387Z",
-      "robloxSourceCommit": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
-      "robloxSourceBootstrapPassedAt": "2026-10-08T19:54:49.292Z",
+      "updatedAt": "2026-10-09T07:09:25.265Z",
+      "robloxSourceCommit": "50137686c0189b567fd2143f386803b7caef5eaa",
+      "robloxSourceBootstrapPassedAt": "2026-10-09T07:09:25.265Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
-      "robloxBuildArtifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
-      "robloxBuildPassedAt": "2026-10-09T05:02:44.075Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-09T05:02:44.075Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -3000,485 +3000,10 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-09T05:02:44.075Z",
-      "robloxFoundationF0Evidence": {
-        "version": 5,
-        "gameId": "daechung-rpg",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-09T05:02:42.583Z",
-        "sourcePath": "roblox-games/daechung-rpg",
-        "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
-        "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
-        "rebuiltArtifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
-        "artifactRunId": 37879381580,
-        "buildUpAssetSourceUsageFingerprint": "8a86555dfd6c0792b4244bfea59b644182092bcf9abf9487f506a7806a98a3bf",
-        "assetSelectionFingerprint": "948372bb5e6fdd950a197586625b3c0cd26004c2b6734995a34fd69bb1511715",
-        "observedAssetSelectionFingerprint": "948372bb5e6fdd950a197586625b3c0cd26004c2b6734995a34fd69bb1511715",
-        "assetLibraryVersion": 121,
-        "observedAssetLibraryVersion": 121,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "COOP",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "daechung-rpg",
-          "pass": true,
-          "blockers": [],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "QUEST",
-            "BOSS",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": true,
-            "SESSION_FLOW": true,
-            "WORLD": true,
-            "CONTENT_ENTITY": true,
-            "COMBAT": true,
-            "ENEMY_AI": true,
-            "EQUIPMENT": true,
-            "PROGRESSION": true,
-            "QUEST": true,
-            "BOSS": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "마을에서 퀘스트와 장비 준비",
-              "capabilities": [
-                "WORLD",
-                "EQUIPMENT",
-                "QUEST"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "step": "포탈로 사냥터 이동",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "step": "몬스터 직접 전투",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "step": "보스 첫 처치로 AI 동료 해금",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "step": "15마리 파티 사냥과 기여도 보상",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 5,
-              "step": "플레이어 + 보스 동료 최대 3명 편성",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 6,
-              "step": "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 7,
-              "step": "마을 귀환/회복/강화",
-              "capabilities": [
-                "WORLD",
-                "PROGRESSION"
-              ],
-              "pass": true
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "5포탈 지역",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": true
-            },
-            {
-              "index": 1,
-              "name": "레벨 성장",
-              "capabilities": [
-                "COMBAT",
-                "PROGRESSION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 2,
-              "name": "5단계 장비",
-              "capabilities": [
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 3,
-              "name": "1차 전직",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": true
-            },
-            {
-              "index": 4,
-              "name": "파티 토글",
-              "capabilities": [
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 5,
-              "name": "15킬 파티사냥",
-              "capabilities": [
-                "PROGRESSION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 6,
-              "name": "전투 귀환 잠금",
-              "capabilities": [
-                "WORLD",
-                "COMBAT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 7,
-              "name": "어그로/리시",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 8,
-              "name": "막기·완벽 패링",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI"
-              ],
-              "pass": true
-            },
-            {
-              "index": 9,
-              "name": "초원 시드형 로그라이크 런",
-              "capabilities": [
-                "COMBAT"
-              ],
-              "pass": true
-            },
-            {
-              "index": 10,
-              "name": "초원 10종 몬스터·히든 보스",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 11,
-              "name": "초원 런 보스",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 12,
-              "name": "초원 런 보스 봉인",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 13,
-              "name": "Lv.60 만렙·숙련",
-              "capabilities": [
-                "COMBAT",
-                "PROGRESSION"
-              ],
-              "pass": true
-            },
-            {
-              "index": 14,
-              "name": "2차 전직 완성형",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 15,
-              "name": "보스 동료 수집",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "PROGRESSION",
-                "BOSS",
-                "SAVE"
-              ],
-              "pass": true
-            },
-            {
-              "index": 16,
-              "name": "1+3 동료 조합",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "EQUIPMENT",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": true
-            },
-            {
-              "index": 17,
-              "name": "동료 단순 스킬셋",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "BOSS"
-              ],
-              "pass": true
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 4,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 0,
-            "meaningfulGameplayFunctionCount": 17
-          },
-          "studioQualitySheet": {
-            "Core": "PLAYABLE",
-            "Content": "PLAYABLE",
-            "World": "POLISHED",
-            "Combat": "PLAYABLE",
-            "AI": "PLAYABLE",
-            "Progression": "PLAYABLE",
-            "UI": "POLISHED",
-            "Graphics": "POLISHED",
-            "Motion": "POLISHED",
-            "Audio": "PLAYABLE",
-            "Mobile": "POLISHED",
-            "Performance": "PLAYABLE",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": true,
-              "signalCount": 5,
-              "pass": true
-            },
-            "combatFeel": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 5,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 4,
-              "pass": true
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": true
-                },
-                {
-                  "id": "QUEST_TO_PROGRESSION",
-                  "pass": true
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": true
-                }
-              ],
-              "pass": true
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 4,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 0,
-              "meaningfulGameplayFunctionCount": 17
-            },
-            "criticalGaps": [],
-            "f9SourceQualityReady": true
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "36e789fd12a634cad6f2ecca1737738851268d2141a4831a0ce17682029f6528",
-          "antiSkeletonPassed": true,
-          "designGenre": "RPG",
-          "sourceGenre": "RPG",
-          "designPlayMode": "COOP",
-          "sourcePlayMode": "COOP"
-        },
-        "studioQualitySheet": {
-          "Core": "PLAYABLE",
-          "Content": "PLAYABLE",
-          "World": "POLISHED",
-          "Combat": "PLAYABLE",
-          "AI": "PLAYABLE",
-          "Progression": "PLAYABLE",
-          "UI": "POLISHED",
-          "Graphics": "POLISHED",
-          "Motion": "POLISHED",
-          "Audio": "PLAYABLE",
-          "Mobile": "POLISHED",
-          "Performance": "PLAYABLE",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": true,
-          "f0SourceIntegrity": true
-        },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Evidence": null,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "daechung-rpg",
@@ -4008,7 +3533,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": true,
+      "robloxMultiplayerQaPassed": false,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -4025,13 +3550,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-build-package-revalidation-pending"
       ],
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
@@ -4437,9 +3962,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "e5d001d8f8d889bb59e495964885da64dcf4e90b",
-        "newSourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
-        "invalidatedAt": "2026-10-08T19:54:49.292Z"
+        "previousSourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
+        "newSourceRevision": "50137686c0189b567fd2143f386803b7caef5eaa",
+        "invalidatedAt": "2026-10-09T07:09:25.265Z"
       },
       "robloxDedicatedExperience": {
         "version": 2,
@@ -36953,7 +36478,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-09T07:06:48.656Z",
+  "updatedAt": "2026-10-09T07:09:25.265Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
