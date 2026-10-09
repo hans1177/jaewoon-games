@@ -758,6 +758,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
+          # 기존 게임의 HTML·세이브 구조는 자동 마이그레이션 근거 없이 삭제하거나 Unity로 교체하지 않는다.
+          # 이미 검증된 Unity WebGL 정식 주소의 후속 빌드와 새 게임 경로만 이 검사를 통과한다.
+          if [ "$READINESS_PASS" = 'true' ] && git cat-file -e "origin/main:web-games/$GAME_ID/index.html" 2>/dev/null; then
+            existing_entry="$(git show "origin/main:web-games/$GAME_ID/index.html")"
+            if ! grep -Eq 'createUnityInstance[[:space:]]*\\(' <<<"$existing_entry"; then
+              echo 'UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_KEEP_EXISTING_GAME_URL' >&2
+              exit 1
+            fi
+          fi
           git cat-file -e "${SOURCE_COMMIT}^{commit}" 2>/dev/null || { echo 'UNITY_WEB_SOURCE_COMMIT_MISSING' >&2; exit 1; }
           # 이전 Unity 소스로 최신 main 그래픽·아트·멀티 변경을 덮어쓰지 않는다.
           git diff --quiet "$SOURCE_COMMIT" origin/main -- "${candidate_paths[@]}" || {
