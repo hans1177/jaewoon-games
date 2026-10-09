@@ -396,6 +396,7 @@ test('System AI workflow binds canonical distilled advisory knowledge into every
 test('System AI learns two hypotheses for exact Roblox failures without inventing a passed floor',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   for(const [signature,stage] of [
+    ['ROBLOX_BUILD_PREFLIGHT_BLOCKED','VIBE_SHARED_MODEL_BUILD_PREFLIGHT'],
     ['ROBLOX_F0_SOURCE_PREFLIGHT_FAILED','F0_SOURCE_PREFLIGHT'],
     ['ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING','PRIVATE_RUNTIME_CANDIDATE_DEPLOY'],
     ['ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
