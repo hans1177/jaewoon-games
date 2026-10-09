@@ -27,8 +27,12 @@ if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-
 
 // 메인: 중앙정책이 요구하는 Unity Web 3D 전용 빌드 계약을 실제 소스 진입점에서 강제한다.
 const mandatory3d=policy?.ownerUnityWeb3dOnly20261009;
+const mandatory3dFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'];
 if(mandatory3d?.status!=='OWNER_DIRECT_LOCKED'||mandatory3d?.finalGameplayDimension!=='3D'
   ||mandatory3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
+  ||mandatory3d?.twoPointFiveDimensionalFinalPassForbidden!==true
+  ||mandatory3d?.existing2dOr2_5dGameAction!=='MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES'
+  ||!mandatory3dFamilies.every(family=>mandatory3d?.sharedLibraryGameWorldFamilies3dOnly?.includes(family))
   ||contract?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
   throw new Error('UNITY_WEB_NATIVE_3D_ONLY_POLICY_REQUIRED');
 

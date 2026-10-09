@@ -41,6 +41,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.postGateAction,'CONTINUE_INDEPENDENT_UNITY_WEB_DEVELOPMENT');
     assert.equal(req.requiredGameplayDimension,'3D');
     assert.equal(req.native3dRuntimeMeshQaRequired,true);
+    assert.equal(req.existing2dOr2_5dSourceRequiresInPlace3dRebuild,true);
     // 같은 원본 프로젝트에서 2D 물리를 추가하면 기존 빌드 진입점이 거부해야 한다.
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
       'using UnityEngine; public class Game:MonoBehaviour { Rigidbody2D body; }\\n');
@@ -49,6 +50,14 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('source preflight requires the central existing-game and all-spatial-assets 3D contract',()=>{
+  const source=fs.readFileSync(tool,'utf8');
+  assert.match(source,/twoPointFiveDimensionalFinalPassForbidden/);
+  assert.match(source,/MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES/);
+  assert.match(source,/mandatory3dFamilies\.every/);
+  assert.match(source,/sharedLibraryGameWorldFamilies3dOnly/);
 });
 
 test('Unity technical prototype is rejected as canonical first-stage source',()=>{
