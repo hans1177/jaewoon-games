@@ -242,25 +242,181 @@
           "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
         }
       ]
+    },
+    "local_authoring_parts::44d9a095e5613e85c863d445e099ec658bbc0b2da524387ae7678f321ea10139:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::2d7b460cd810e8f85a6779612f3b6be9e0a2080ffaac22915ea91553f09a31d8:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_RESOURCE",
+          "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_AWARD",
+          "purpose": "게임 내에서 선택 결과가 다음 상태로 전환하는 주요 인과축",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_BATTLE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 상태로 연결하는 보조 인과법칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_CROSS_PATH",
+          "purpose": "인물들의 전투와 자원 수집 루프에서 발생하는 새로운 경로, 위험, 및 성장의 조합을 생성하여 플레이어에게 다양한 선택 기회를 제공",
+          "playerChoice": "전투 결과에 따라 다른 경로 또는 자원을 선택하며, 이 선택이 다음 상태 변화와 연결되어 진입부터 반복 가능한 루프를 형성함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_DELVE_PATH",
+          "purpose": "게임 내에서 발견된 새로운 경로, 상태, 또는 대응법을 실제 플레이에 열어 재해석하는 시그니처 세계 규칙",
+          "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다.",
+      "playerFantasy": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다.",
+      "coreFun": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템, 핵심 재미는 진입부터 반복 가능한 루프 및 성장에 따른 새로운 행동·경로·관계 열림, 게임은 단순 반복보다는 경로별 위험·보상·성장의 차이를 가진 IDLE_GROWTH_RPG 형식이다.",
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_RESOURCE",
+          "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_AWARD",
+          "purpose": "게임 내에서 선택 결과가 다음 상태로 전환하는 주요 인과축",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_BATTLE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 상태로 연결하는 보조 인과법칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_CROSS_PATH",
+          "purpose": "인물들의 전투와 자원 수집 루프에서 발생하는 새로운 경로, 위험, 및 성장의 조합을 생성하여 플레이어에게 다양한 선택 기회를 제공",
+          "playerChoice": "전투 결과에 따라 다른 경로 또는 자원을 선택하며, 이 선택이 다음 상태 변화와 연결되어 진입부터 반복 가능한 루프를 형성함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_DELVE_PATH",
+          "purpose": "게임 내에서 발견된 새로운 경로, 상태, 또는 대응법을 실제 플레이에 열어 재해석하는 시그니처 세계 규칙",
+          "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 607833,
-      "lastMs": 39960,
+      "totalMs": 644511,
+      "lastMs": 36678,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:15:11.950Z"
+      "updatedAt": "2026-10-09T12:15:48.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:15:11.953Z",
+  "updatedAt": "2026-10-09T12:15:48.643Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2488,14 +2644,24 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:15:11.953Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:15:48.635Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-09/design-seed.json",
+    "contentDigest": "de13e6e5d0d5a503a3dcf9992140f273e0151e51644be5ce5b83d633fec639cd",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
