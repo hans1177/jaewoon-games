@@ -97,25 +97,32 @@
       },
       "playerFantasy": "주민은 자원을 조절하고 시설을 개선하는 데 참여하며, 새로운 역할과 기능을 선택해 마을의 성장에 영향을 미칩니다. 이는 단순한 플레이어 행동이 아니라 실제 사회적 관계와 경제적 결정을 반영합니다.",
       "coreFun": "자원 분배를 통해 마을의 생존과 발전을 지원하고, 주민의 역할을 바탕으로 새로운 기능을 확정하며, 게임 내에서 중요한 상황 변화를 유도합니다. 이 과정에서는 자원의 효율적인 사용과 플레이어의 의사결정이 서로 연결되어 진실된 게임 경험을 제공합니다."
+    },
+    "local_authoring_parts::e03befabc583bcc646bd26c47e30aada26635ca5493a2bb58272d921011bc22f:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT/OUTPUT/STATE: PLAYER_GATHER_RESOURCES -> RESOURCE_ALLOCATED_TO_VILLAGE -> REWARD_OF_ECONOMIC_STABILITY",
+        "INPUT/SELECT/OUTPUT/STATE: PLAYER_SELECT_NEW_FUNCTION -> PLAYER_ASSIGNS_SOCIAL_ROLES -> REWARD_OF_SOCIAL_CONNECTIVITY",
+        "INPUT/SELECT/OUTPUT/STATE: PLAYER_ANNOUNCES_NEW_GOAL -> VILLAGE_GROWTH_AND_PLAYER_ROLE_MODIFICATION -> REWARD_OF_NEXT_VILLAGE_FUNCTION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 150323,
-      "lastMs": 150323,
+      "totalMs": 223881,
+      "lastMs": 73558,
       "lastError": null,
-      "updatedAt": "2026-10-09T17:31:22.690Z"
+      "updatedAt": "2026-10-09T17:32:36.250Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:28:52.266Z",
-  "updatedAt": "2026-10-09T17:31:22.691Z",
+  "updatedAt": "2026-10-09T17:32:36.251Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1716,7 +1723,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T17:31:22.690Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:32:36.250Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
