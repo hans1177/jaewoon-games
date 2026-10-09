@@ -960,25 +960,60 @@
       "toSystem": "SIGNATURE_SYSTEM_1",
       "trigger": "Enemy wave detected",
       "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::171c26d79eb65f9fd9806efed7027d1b82d72d5279c523f2b5eba8a9c8c73825:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::171c26d79eb65f9fd9806efed7027d1b82d72d5279c523f2b5eba8a9c8c73825:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::fb29d35ac5f15471865a9d27e57d58a8e3bedae505b08ac4f0797ff756674bdd:systemInterconnections:2": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_1",
+      "trigger": "Enemy wave detected",
+      "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::3b018908e8cb7bf9ea20389981db33533c21a38606da20e7f303f21bb48faaa2:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 69,
+      "calls": 72,
+      "successes": 72,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4905901,
-      "lastMs": 33920,
+      "totalMs": 5008619,
+      "lastMs": 35012,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:22:19.730Z"
+      "updatedAt": "2026-10-09T01:24:02.456Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T01:22:19.731Z",
+  "updatedAt": "2026-10-09T01:24:02.456Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3319,7 +3354,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:22:19.731Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:24:02.456Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
