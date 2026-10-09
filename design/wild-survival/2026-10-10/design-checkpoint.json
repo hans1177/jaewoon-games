@@ -194,25 +194,40 @@
         "실제 입력과 상호작용 결과로 월드 상태 변환 및 보상/위험 발생에 영향을 미친다",
         "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표/지역/상호작용/전략 선택으로 이어간다"
       ]
+    },
+    "local_authoring_parts::4f3ed8881363071af13d9427a60e60a7bb414e26f5512e28cf1e2a3f70f23cf0:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "player_choice",
+        "world_state_change"
+      ],
+      "stateOutputs": [
+        "risk_reward_event",
+        "next_goal_location_interaction_strategy"
+      ],
+      "name": "생존 상태 관리 시스템",
+      "purpose": "실제 입력과 상호작용 결과로 월드 상태 변환 및 보상/위험 발생에 영향을 미친다",
+      "playerChoice": "플레이어는 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태, 자원, 위험, 진행 결과에 따라 다음 목표, 지역, 상호작용, 전략을 결정해야 한다. 이 과정에서 실제 입력과 상호작용 결과가 월드 상태 변환 및 보상/위험 발생에 영향을 미친다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 684812,
-      "lastMs": 79657,
+      "totalMs": 729116,
+      "lastMs": 44304,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:43:50.229Z"
+      "updatedAt": "2026-10-09T18:44:34.534Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:25.391Z",
-  "updatedAt": "2026-10-09T18:43:50.229Z",
+  "updatedAt": "2026-10-09T18:44:34.534Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1817,7 +1832,7 @@
   "localAuthoringSplits": {
     "2644f98555f7b27ee294f05839bbc5b91d649cbf739752a7066f586c20e25705": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:43:50.229Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:44:34.534Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
