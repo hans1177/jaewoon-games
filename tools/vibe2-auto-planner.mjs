@@ -1236,7 +1236,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   return out;
 }
 function findUnityWebFirstStageTask(project,repoRoot,queue){
-  if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
+  if(project.firstStageUnityWeb!==true||!['development-confirmed','release-confirmed'].includes(project.releaseState))return null;
   const root=posix(project.projectPath);
   if(root!==`unity-games/${project.gameId}`)return null;
   const readiness=readUpperPlatformReadiness(repoRoot,project.gameId);
@@ -1287,13 +1287,14 @@ Unity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit
 실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로 MOBILE_INPUT을 찍으면 안 된다.
 JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 또는 ATTACK, PROGRESS 또는 REWARD 실제 런타임 증거를 남긴다.
 장르 핵심 루프가 실제 게임 상태로 완료된 순간에만 CORE_FUN status=PASS loop=<genre-specific-loop>를 남긴다. 단순 시작/버튼 클릭/문구 표시만으로 CORE_FUN을 찍지 않는다.
-실제 게임 화면은 placeholder primitive 중심으로 완료 처리하지 않고 기존 저장소 에셋과 권리 명확한 에셋을 우선 사용한다.
+실제 게임 화면은 2D·2.5D나 평면 스프라이트를 최종 장면으로 사용하지 않고 Unity의 3D Scene·MeshFilter/MeshRenderer(또는 SkinnedMeshRenderer)·입체 공간/카메라/조명을 구현한다. placeholder primitive 중심 화면도 완료로 인정하지 않는다. 기존 저장소의 실제 3D 에셋과 권리 명확한 에셋을 우선 사용한다. 2D UI/텍스처/오디오는 보조 자료로만 허용한다.
 시스템이 생성하는 Packages/ProjectSettings/WebBuild.cs는 빌드 뼈대일 뿐 게임 구현이 아니다. 게임플레이 소스는 Vibe가 직접 구현한다.
-Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 사이클을 만든 뒤에만 검증으로 넘긴다.`;
+모든 게임에서 실제 MeshFilter 삼각형·재질을 검사한 Unity 런타임 MESH_INTEGRITY 증거(inspected>0, validMeshes=inspected, triangles>0, materialPass=1, texturePass=1)를 계산해서 출력해야 한다. 숫자 하드코딩·가짜 PASS는 금지한다. Unity Web에서 실제 3D 첫 플레이 사이클을 완성한 뒤 모바일 브라우저/저장/독립 QA·회귀검증으로 넘긴다.`;
     const out=task(id,{...project,engine:'unity',target:'unity'},goal,[coreRel,runtimeRel],'owner-immediate','high',[
       'owner-directive:webgame-first',
       'web-stage:WEB_BASE_IMPLEMENTATION',
       'unity-web-first-stage',
+      'owner-unity-web-native-3d-required',
       'source-root-bootstrap-required',
       'unity-web-source-root-bootstrap-required',
       'canonical-source:unity-games',
@@ -1321,12 +1322,16 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
 이 Unity Web 수리는 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일만 책임진다. Visual/Presentation 전용 C#과 generated native asset은 기존 ASSET_DEVELOPMENT 표현 작업이 병렬로 담당하며 실제 같은 파일이 겹칠 때만 Work Lock 충돌로 직렬화한다.
 필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
 코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
-그래픽: 캐릭터/적/환경/장비 정체성이 실제 화면에서 구분되어야 하고 placeholder primitive 중심 표현은 완성으로 인정하지 않는다. 최소 2.5D/3D 공간 표현, 실제 모션/애니메이션/VFX를 게임 상태에 연결한다.
+그래픽: 기존 2D·2.5D 플레이 화면은 전부 Unity 3D 장면/입체 메시/공간 카메라로 직접 재개발한다. 캐릭터·적·환경·장비에 실제 3D 메시와 고유 모션을 적용하고, 공용 라이브러리는 실제 3D 게임 오브젝트만 재사용한다. 기존 게임 규칙·세이브·보상은 그대로 둔다. Unity 런타임 MESH_INTEGRITY는 실제 MeshFilter 메시/삼각형/재질/텍스처 검사 결과만 기록하고 가짜 계측/PASS는 금지한다.
 브라우저: WebGL 빌드 후 실제 모바일 브라우저 입력·핵심 행동·진행·저장복구가 다시 검증 가능해야 한다.
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+    const nativeVisualRel=`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
+    const nativeVisualNeeded=readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
+      ||readinessReason==='READINESS_CRITERIA_INCOMPLETE';
+    const files=[coreRel,runtimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
+      .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
       const editorDir=sourceFile(repoRoot,`${root}/Assets/Editor`);
       if(fs.existsSync(editorDir)&&fs.statSync(editorDir).isDirectory()){
@@ -1349,6 +1354,7 @@ UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY
       'owner-directive:webgame-first',
       'web-stage:WEB_REPAIR',
       'unity-web-first-stage',
+      'owner-unity-web-native-3d-required',
       'unity-web-development-floor:v1',
       'platform-responsibility-split:unity-web-core-runtime',
       'same-game-cross-platform-parallel:responsible-files-only',
