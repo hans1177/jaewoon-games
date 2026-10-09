@@ -479,25 +479,28 @@
         "SELECT",
         "OUTPUT"
       ]
+    },
+    "local_authoring_parts::6b699dafe87649fb0f561839428ff9c93f43ec906271d1e73ba8b230904a0b83:fromSystem": {
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1231823,
-      "lastMs": 43194,
+      "totalMs": 1275361,
+      "lastMs": 43538,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:41:28.089Z"
+      "updatedAt": "2026-10-09T08:42:11.629Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T08:41:28.089Z",
+  "updatedAt": "2026-10-09T08:42:11.629Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3063,7 +3066,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:41:28.089Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:42:11.629Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
