@@ -48,25 +48,38 @@
       "name": "BOARD_PATTERN_EDITOR",
       "purpose": "관리 및 수정하는 게임 내 맵의 기능",
       "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+    },
+    "local_authoring_parts::d4de089bc7c0202fd1c8d2aaf19b052bce68d82aa2db75ff0cfd750ca05e135e:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+      ],
+      "stateOutputs": [
+        "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD P"
+      ],
+      "name": "BOARD_PATTERN_EDITOR",
+      "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
+      "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 491777,
-      "lastMs": 70726,
+      "totalMs": 560784,
+      "lastMs": 69007,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:42:27.351Z"
+      "updatedAt": "2026-10-09T08:43:36.360Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:42:27.351Z",
+  "updatedAt": "2026-10-09T08:43:36.360Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2103,7 +2116,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:42:27.351Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:43:36.360Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
