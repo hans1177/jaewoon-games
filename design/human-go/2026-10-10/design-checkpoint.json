@@ -1011,25 +1011,33 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::8e8cd412b4d963099ef6e93dd9eb933fcfd15bb8e05e4afee36968232785f7d9:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "playerAction",
+      "toId": "worldState",
+      "stateKeys": [
+        "newPossibility"
+      ],
+      "fromSystem": "MAIN/A/B/c/@_systemInterconnections_0_16_char_minimal_length_from_system_to_system_16_char_maximal_length_24_char_minimal_length_trigger_state_change_24_char_maximal_length_16_char"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 14,
+      "calls": 17,
+      "successes": 15,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2284721,
-      "lastMs": 157528,
+      "totalMs": 2380079,
+      "lastMs": 95358,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:17:14.212Z"
+      "updatedAt": "2026-10-09T18:18:49.577Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T18:17:14.217Z",
+  "updatedAt": "2026-10-09T18:18:49.577Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2693,10 +2701,10 @@
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:17:14.212Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:18:49.577Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
