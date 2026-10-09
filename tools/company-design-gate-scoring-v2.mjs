@@ -438,7 +438,20 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
-  const seedGrammar=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4&&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'?seed.GAMEPLAY_SKETCH.novelGameGrammar:null;
+  // 파일명: company-design-gate-scoring-v2.mjs / 메인: 검증 전 자동접수 V5는 복사할 설계 원본이 아니다.
+  const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
+  const intakeFusion=seed?.GAMEPLAY_SKETCH?.novelGameGrammar?.gameplaySystemFusion;
+  const intakeThemes=intakeFusion?.themeFusion?.themes;
+  const intakeGenres=intakeFusion?.themeFusion?.genres;
+  const intakeAxes=intakeFusion?.majorAxes;
+  const pendingIntakeV5=seedV5&&seed?.novelGrammarBackfill?.authoringPending===true
+    &&(!Array.isArray(intakeAxes)||intakeAxes.length!==2
+      ||intakeAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
+      ||!Array.isArray(intakeThemes)||intakeThemes.length!==2
+      ||!Array.isArray(intakeGenres)||intakeGenres.length!==2);
+  const seedGrammar=!pendingIntakeV5&&Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4
+    &&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'
+    ?seed.GAMEPLAY_SKETCH.novelGameGrammar:null;
   const designText=JSON.stringify(design);
   const grammarIds=distinct(list(seedGrammar?.causalDNAs).map(row=>clean(row?.id)));
   const carriedGrammarIds=grammarIds.filter(id=>id&&designText.includes(id));
@@ -459,7 +472,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const carriedDelveElements=delveNames.filter(name=>designText.includes(name));
   const emergentGenreCarried=!seedGrammar||!emergentGenreName||designText.includes(emergentGenreName);
   const creative=design.creativeGrammar||{};
-  const seedV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
   const seedC=seedGrammar?.gameplaySystemFusion?.themeFusion?.themes||[];
   const seedGenres=seedGrammar?.gameplaySystemFusion?.themeFusion?.genres||[];
   const creativityCarried=!seedV5||(
@@ -597,6 +609,8 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
     grammarCarryEvidence:seedGrammar?{formula:seedV5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',creativityCarried,requiredCausalIds:grammarIds,carriedCausalIds:carriedGrammarIds,primaryVerbCarried,worldRuleCarried,mainName,mainCarried,majorAxisNames,carriedMajorAxes,subElementNames,carriedSubElements,delveNames,carriedDelveElements,emergentGenreName,emergentGenreCarried,categoryRole:seedGrammar?.emergentGenre?.categoryRole||null}:null,
+    pendingSeedGrammarNotAuthored:pendingIntakeV5,
+    pendingSeedStillRequiresCreativeDesign:pendingIntakeV5,
   };
 }
 
