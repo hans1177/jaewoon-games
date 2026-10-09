@@ -60,25 +60,38 @@
       "name": "BOARD_TO_WEAPON",
       "purpose": "플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::173c8f3c83d991f857037640b3294dc7d35140fda12862858b54ff094548ff27:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "WEAPON_SLOT"
+      ],
+      "name": "BOARD_TO_WEAPON",
+      "purpose": "게임 내에서 플레이어가 블드 상태로 전환하여 무기 스택에 추가하는 시스템입니다.",
+      "playerChoice": "플레이어는 블드 상태를 선택하여 무기 스택에 추가할 수 있습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 698301,
-      "lastMs": 252108,
+      "totalMs": 796946,
+      "lastMs": 98645,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:45:14.715Z"
+      "updatedAt": "2026-10-09T12:46:53.361Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:33:36.381Z",
-  "updatedAt": "2026-10-09T12:45:14.715Z",
+  "updatedAt": "2026-10-09T12:46:53.361Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2115,7 +2128,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:45:14.715Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:46:53.361Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
