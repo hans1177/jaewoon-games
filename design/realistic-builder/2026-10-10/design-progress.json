@@ -8,25 +8,25 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 20,
-  "lastSuccessfulModelCallAt": "2026-10-09T19:05:57.392Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 22,
+  "lastSuccessfulModelCallAt": "2026-10-09T19:07:24.978Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT",
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1985805,
-      "lastMs": 96977,
+      "totalMs": 2073386,
+      "lastMs": 87581,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:05:57.389Z"
+      "updatedAt": "2026-10-09T19:07:24.975Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T19:05:57.393Z"
+  "updatedAt": "2026-10-09T19:07:24.986Z"
 }
