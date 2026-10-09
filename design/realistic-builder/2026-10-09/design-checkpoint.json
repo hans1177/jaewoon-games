@@ -53,21 +53,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 347956,
-      "lastMs": 35332,
+      "totalMs": 380085,
+      "lastMs": 32129,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:05:34.115Z"
+      "updatedAt": "2026-10-09T15:06:06.246Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:46.128Z",
-  "updatedAt": "2026-10-09T15:05:34.117Z",
+  "updatedAt": "2026-10-09T15:06:06.255Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1930,13 +1930,6 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::86366b1d37ce2b28d91cb5a47e404543d35b838e74c23589251e62fa18064c72:signatureSystems:1": [
       {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "VAMPIRE_SURVIVORS"
-        ]
-      },
-      {
         "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
         "grammarRole": "A",
         "previousRuleIds": [
@@ -1946,11 +1939,11 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::86366b1d37ce2b28d91cb5a47e404543d35b838e74c23589251e62fa18064c72:signatureSystems:1": 1
+    "local_authoring_parts::86366b1d37ce2b28d91cb5a47e404543d35b838e74c23589251e62fa18064c72:signatureSystems:1": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:05:34.115Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T15:06:06.247Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
