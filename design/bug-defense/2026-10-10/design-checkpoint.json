@@ -628,25 +628,34 @@
       "toSystem": "CORE_LOOP_DESIGN",
       "trigger": "coreFun → signatureSystems[0]",
       "stateChange": "defender_configuration and resource_cost are updated to generate next_defense_plan"
+    },
+    "local_authoring_parts::ebab8ddce41d00097eb850638605da1e3b1fe5db6d9fc5a2d23bc52542ffd99e:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[2]",
+      "stateKeys": [
+        "defender_configuration",
+        "resource_cost"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 693186,
-      "lastMs": 33331,
+      "totalMs": 726766,
+      "lastMs": 33580,
       "lastError": null,
-      "updatedAt": "2026-10-09T18:01:17.191Z"
+      "updatedAt": "2026-10-09T18:01:50.774Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:49:43.882Z",
-  "updatedAt": "2026-10-09T18:01:17.193Z",
+  "updatedAt": "2026-10-09T18:01:50.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2465,7 +2474,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:01:17.193Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:01:50.774Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
