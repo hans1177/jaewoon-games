@@ -1952,7 +1952,7 @@ export function buildGameSpecificBuildUpDirective({
       contentExpansionPlan:Array.isArray(authoredDesign.contentExpansionPlan)?authoredDesign.contentExpansionPlan:design.contentExpansionPlan,
       implementationTraceability:Array.isArray(authoredDesign.implementationTraceability)?authoredDesign.implementationTraceability:design.implementationTraceability
     },source,safeDesignlessMode,previousDirective,previousEffectiveness,depthInfo,runtimeEvidence,
-    focus,platform,gameId:id,designFingerprint:sha(JSON.stringify(authoredDesign)),responsibleFiles:topFiles
+    focus,platform,gameId:id,designFingerprint:sha(JSON.stringify(authoredDesign)),responsibleFiles
   });
   const robloxNativeExecution=Object.freeze({
     version:1,
