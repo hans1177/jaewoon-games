@@ -194,25 +194,40 @@
         "주제/소재 두 개로 인해 실제 상태 교환을 통해 새로운 전략 경로를 연다",
         "역사, 철학 등 다양한 주제와 상호작용을 통해 실질적 인과 변화를 유도하며 플레이어의 선택에 기반한 결과 판타지를 제공"
       ]
+    },
+    "local_authoring_parts::bb2481e0959a6e1b6a90876f48d1f564023012d81b35b6d8431e218d303de2a9:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "worldState",
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "newStrategyPath",
+        "systemConnection"
+      ],
+      "name": "게임 시스템 + 축별 창작 소재",
+      "purpose": "플레이어 선택에 따라 실제 상태 교환을 통해 새로운 전략 경로를 연다",
+      "playerChoice": "플레이어의 선택에 기반한 실제 행동 및 결과 판타지입니다. 역사적 사건이나 철학적 논争 등 실제 세계 상태 변화가 일어나며, 이 선택은 시스템 연결 및 세계 상태 변화에 영향을 미칩니다। 중후반 두 시스템 간 관계 변화가 실제로 일어나는 조건과 피드백이 명확히 정리되어 있습니다。실제 세계 상태 변화와 관련된 새로운 사건 발생으로 인해 플레이어의 다음 선택이 결정됩니다。 게임 규칙과 충돌하지 않도록 설계되었습니다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 713486,
-      "lastMs": 99206,
+      "totalMs": 824685,
+      "lastMs": 111199,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:07:09.589Z"
+      "updatedAt": "2026-10-09T20:09:00.789Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:55:16.078Z",
-  "updatedAt": "2026-10-09T20:07:09.589Z",
+  "updatedAt": "2026-10-09T20:09:00.789Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1700,7 +1715,7 @@
   "localAuthoringSplits": {
     "8919f6c279e69ca4cb46eac76ebe367f23489f2997b2cb861ff5fc71ed8faf2a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:07:09.589Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:09:00.789Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
