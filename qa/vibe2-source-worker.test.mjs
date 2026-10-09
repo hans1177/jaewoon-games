@@ -6185,6 +6185,17 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
       effectivenessMeasurement:{expectedPlayerEffect:'모바일에서 메뉴와 목표 흐름을 즉시 이해'},
       nextActionDecision:{action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM'},
       autonomousContentExpansion:{},
+      designContentImplementation:{
+        authoredVolume:{signatureSystems:17,systemConnections:5,contentFamilies:{regions:9},totalUnits:31},
+        activeUnit:{id:'SYSTEM:1',kind:'SYSTEM',title:'서식지 상성',designOrigin:'content.signatureSystems[0]',
+          playerAction:'서식지 배치 선택',stateChange:'지역 위험 변화',
+          sourceOwnerCandidates:['client/Game.client.luau','server/Unrelated.server.luau'],
+          implementationStatus:'PENDING_EXACT_SOURCE_AND_NATIVE_RUNTIME_EVIDENCE'},
+        nextUnitSelection:'IMPLEMENT_OR_REPAIR_CURRENT_AUTHORED_UNIT_UNTIL_VERIFIED_EFFECT',
+        firstSessionAcceptance:'ENTER -> INPUT -> STATE -> FEEDBACK -> NEXT_GOAL',
+        midLateAcceptance:'UNLOCK -> CHOICE -> CONNECTED_SYSTEM -> REWARD',
+        acceptance:['NATIVE_RUNTIME_REPLAY_REQUIRED']
+      },
       gameplayImplementationDirectives:[],
       progressionContentWorldDirectives:[],
       visualBuildUpDirective:{domains:{}},
@@ -6201,6 +6212,13 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
   assert.match(prompt,/하단 우측 공격 버튼과 뒤로가기 버튼의 역할을 분리/);
   assert.match(prompt,/온실 단서 조사/);
   assert.match(prompt,/메뉴 버튼 상태/);
+  assert.match(prompt,/contentVolume=/);
+  assert.match(prompt,/contentSlice=.*SYSTEM:1/);
+  assert.match(prompt,/contentSlice=.*서식지 상성/);
+  assert.doesNotMatch(prompt,/contentSlice=.*Unrelated.server.luau/);
+  assert.match(prompt,/contentImplementationRule=IMPLEMENT_OR_REPAIR_CURRENT_AUTHORED_UNIT_UNTIL_VERIFIED_EFFECT/);
+  assert.match(prompt,/graphicsContract=.*real native 3D meshes/);
+  assert.match(prompt,/2.5D are not final PASS/);
 
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceAnchors=.*CURRENT=/);
@@ -6220,6 +6238,9 @@ test('game-specific BUILD_UP worker guidance carries detailed verified design in
   assert.match(source,/continuity=/);
   assert.match(source,/derivedRuleEvolution=/);
   assert.match(source,/contentCompletionAcceptance=/);
+  assert.match(source,/contentSlice=/);
+  assert.match(source,/contentVolume=/);
+  assert.match(source,/contentSourceRule=/);
   assert.match(source,/FORTNITE_UEFN/);
 });
 
@@ -6236,6 +6257,10 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'nextVibeAction=CONTINUE_BUILD_UP_CURRENT_SYSTEM',
     'contentExpansionVersion=2 executionBoundary=EXISTING_BUILD_UP_ONLY decisionOwner=VIBE',
     'contentTheme=WORLD_ECOLOGY_STORY_CHAIN themeDepth=1 mode=AUTONOMOUS_CONTENT_BUILD_UP',
+    'contentVolume={"signatureSystems":17,"systemConnections":5,"totalUnits":31}',
+    'contentSlice={"id":"SYSTEM:1","title":"서식지 상성"}',
+    'contentImplementationRule=IMPLEMENT_OR_REPAIR_CURRENT_AUTHORED_UNIT_UNTIL_VERIFIED_EFFECT',
+    'contentSourceRule=Implement the selected approved content unit inside existing source',
     'contentBreadth=covered:2/7 missing:ENEMY_BOSS_COMBAT_ECOLOGY,QUEST_STORY_PROGRESSION_CHAIN leastCovered:ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN',
     'existingCompletenessReview=requiredEveryBuildUp:true weakExistingMayPreempt:true mode:CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE dimensions:CORE_LOOP_COMPLETENESS,QUEST_AND_GOAL_FLOW,WORLD_AND_REGION_FLOW,MONSTER_ENEMY_ROLE_COVERAGE,ITEM_EQUIPMENT_REWARD_PURPOSE,STORY_WORLD_CAUSALITY,GAMEPLAY_RULE_CONNECTIONS',
     'contentBundle=BACKGROUND_ENVIRONMENT_IDENTITY | REGION_NATIVE_ENCOUNTER | REGION_RESOURCE_OR_ITEM | QUEST_EVENT_REASON_TO_ENTER | STORY_AND_WORLD_CAUSALITY | REGION_RULE_OR_HAZARD',
@@ -6274,6 +6299,10 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
   assert.match(focused.prompt,/contentExpansionVersion=2/);
   assert.match(focused.prompt,/contentTheme=WORLD_ECOLOGY_STORY_CHAIN/);
+  assert.match(focused.prompt,/contentVolume=.*signatureSystems/);
+  assert.match(focused.prompt,/contentSlice=.*SYSTEM:1/);
+  assert.match(focused.prompt,/contentImplementationRule=IMPLEMENT_OR_REPAIR_CURRENT_AUTHORED_UNIT/);
+  assert.match(focused.prompt,/contentSourceRule=Implement the selected approved content unit/);
   assert.match(focused.prompt,/contentBreadth=covered:2\/7/);
   assert.match(focused.prompt,/existingCompletenessReview=requiredEveryBuildUp:true/);
   assert.match(focused.prompt,/weakExistingMayPreempt:true/);
