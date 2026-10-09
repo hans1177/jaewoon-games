@@ -454,7 +454,9 @@ test('Open Cloud engine probe binds exact place version without granting runtime
  assert.equal(r.exactPlace,true);
  assert.equal(r.exactVersion,true);
  assert.equal(r.playerCount,0);
- assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootEvidence.observed,false);
  assert.equal(r.serverBootEvidence.headlessServerExecution,true);
  assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  assert.equal(r.serverBootEvidence.legacyFoundationServerBootMarkerObserved,false);
@@ -480,7 +482,7 @@ test('Open Cloud engine probe records headless Luau execution without pretending
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=false'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR='},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true'},
   ]}]}}
  ];
  const fetchImpl=async(url,init={})=>{calls.push({url,init});const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
@@ -490,12 +492,16 @@ test('Open Cloud engine probe records headless Luau execution without pretending
  assert.equal(r.simulationStartSucceeded,false);
  assert.equal(r.simulationStartError,null);
  assert.equal(r.simulationRunning,false);
- assert.equal(r.serverBootObserved,true);
+ assert.equal(r.serverBootObserved,false);
+ assert.equal(r.exactLuauTaskObserved,true);
+ assert.equal(r.serverBootEvidence.observed,false);
  assert.equal(r.serverBootEvidence.headlessServerExecution,true);
  assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  assert.equal(r.serverBootEvidence.simulationStartAttempted,false);
  assert.equal(r.serverBootEvidence.simulationStartSupported,false);
  assert.equal(r.serverBootEvidence.simulationStartSucceeded,false);
+ assert.equal(r.serverBootEvidence.legacyFoundationServerBootMarkerObserved,true);
+ assert.equal(r.serverBootObserved,false,'boot marker alone cannot prove gameplay started in non-simulating Luau context');
  const body=JSON.parse(calls[0].init.body);
  assert.match(body.script,/RunService:IsRunning\(\)/);
  assert.doesNotMatch(body.script,/RunService:Run\(\)/);
