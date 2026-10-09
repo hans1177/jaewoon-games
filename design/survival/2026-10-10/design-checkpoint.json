@@ -821,25 +821,38 @@
         }
       ],
       "multiplayerMode": "COMPETITIVE"
+    },
+    "local_authoring_parts::a8778728e48f9a8c57017c124b887148e6409647f35444753cb30aaac4a43b87:signatureSystems:0": {
+      "id": "coreLoop_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "실시간 전략적 선택"
+      ],
+      "stateOutputs": [
+        "게임 상태 변동"
+      ],
+      "name": "생존 기록과 채집/제작 선택의 인과적 교환",
+      "purpose": "실시간 생존 게임 시스템의 전략적 선택이 다른 스타일 시스템의 경로 및 대응법에 영향을 미친다",
+      "playerChoice": "전략적 선택 -> 전략 교환 -> 위치 변경/위협 감지/자원 소모/성장 가능성 증가"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2140970,
-      "lastMs": 59967,
+      "totalMs": 2222188,
+      "lastMs": 81218,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:24:07.070Z"
+      "updatedAt": "2026-10-09T20:25:28.309Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:48:25.925Z",
-  "updatedAt": "2026-10-09T20:24:07.089Z",
+  "updatedAt": "2026-10-09T20:25:28.309Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2683,10 +2696,10 @@
     "412273fca46df0e7a0a38ff63a262e5f3b3312b3af4f71140902341465c70f9c": true,
     "a8052de121f4f324082a9d2e3c5f4a018c84f938a64c821ebd080628ab0c33d8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:24:07.074Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:25:28.309Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
