@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 전투 중 적들의 종류에 따라 방어 전략을 선택하며, 자원 확보 및 위험 관리를 통해 게임 세계 상태를 직접 영향을 미칩니다. 이 과정에서 플레이어는 단순한 전략 게임이 아닌 실제 세계 상태 변화와 선택 사이의 끝없는 교차 조합을 경험하게 됩니다.",
       "coreFun": "게임에서는 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route'이라는 중심 행동을 기반으로 하여, 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임입니다. 플레이어는 이 행동을 통해 진입 장벽, 자원 확보, 위험 관리 등 다양한 시스템 간의 인과적 연결을 맺게 되며, 이는 단순한 전략 게임이 아니라 실제 세계 상태 변화와 플레이어의 선택 사이에 끝없는 교차 조합이 존재하는 핵심 재미를 가집니다."
+    },
+    "local_authoring_parts::5d3fdc274096de0a54121b3d0457909ab781fed055f909e4fd6f123c9e43b7e5:coreLoop": {
+      "coreLoop": [
+        "Player initiates strategic defense by adapting to enemy types and wave compositions.",
+        "Earns resources from defeated enemies and allocates them strategically.",
+        "Adapts defense based on enemy types and evolves strategies over time."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1256032,
-      "lastMs": 79558,
+      "totalMs": 1317854,
+      "lastMs": 61822,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:14:43.933Z"
+      "updatedAt": "2026-10-09T18:15:45.758Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:53:47.848Z",
-  "updatedAt": "2026-10-09T18:14:43.935Z",
+  "updatedAt": "2026-10-09T18:15:45.758Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,7 +2267,7 @@
     "465ded63957daaf57a5e3eabd8a9310da9606bc4ffe4d6f3d6e34236e3ff469e": true,
     "781fc60926591f2fc5355640421baf6175a705be225803085ac38b733ce72190": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:14:43.935Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:15:45.758Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
