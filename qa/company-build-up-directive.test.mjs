@@ -1128,13 +1128,18 @@ test('design volume tracks every authored system, region, encounter, ability and
   const region=volume.items.find(row=>row.family==='VARIETY_REGIONS');
   assert.equal(region.sourceEvidenceState,'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED');
   assert.equal(region.sourceCandidates[0].file,owner);
+  assert.ok(region.requiredBehavior.includes('NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE'));
+  assert.equal(region.buildUpStatus,'AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED');
   assert.match(region.observableAcceptance,/온실 지역 진입/);
   const enemy=volume.items.find(row=>row.family==='VARIETY_ENEMIESORCHALLENGES');
   assert.equal(enemy.sourceEvidenceState,'EXACT_SOURCE_OWNER_REVIEW_REQUIRED');
   assert.equal(enemy.playerChoice,'행동 전조 때 이동');
+  assert.ok(enemy.requiredBehavior.includes('TELEGRAPH_AND_PLAYER_COUNTERPLAY_OBSERVABLE'));
   const ability=volume.items.find(row=>row.family==='VARIETY_ABILITIES');
   assert.equal(ability.designDetail.cooldownSeconds,5,'authored combat balance must stay unchanged');
   assert.equal(ability.designDetail.cost,2);
+  assert.ok(ability.requiredBehavior.includes('EXACT_APPROVED_OWNER_TRIGGER_RANGE_RESOURCE_COST_COOLDOWN_PRESERVED'));
+  assert.equal(volume.coverageState,'DESIGN_CONTENT_INDEXED_NATIVE_IMPLEMENTATION_AND_RUNTIME_PENDING');
   const prompt=directivePrompt(d);
   assert.match(prompt,/DESIGNED_GAME_VOLUME:.*countsAreNotPass=true/);
   assert.match(prompt,/VARIETY_REGIONS\[0\] 북쪽 온실/);
@@ -1193,6 +1198,8 @@ test('focused game worker keeps one exact approved content item in compact sourc
       authoredItemCount:2,namedSourceCandidateCount:1,sourceReviewRequiredCount:1,runtimeVerifiedCount:0,
       items:[{ref:'VARIETY_REGIONS[0]',family:'VARIETY_REGIONS',title:'북쪽 온실',
         sourceCandidates:[{file:owner}],sourceEvidenceState:'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED',
+        designDetail:{id:'north',name:'북쪽 온실',traversal:'우회 경로',landmark:'온실 지붕',encounterPattern:'매복 해충'},
+        requiredBehavior:['NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE','DISCOVERY_NEXT_OBJECTIVE_AND_RETURN_REASON_CONNECTED'],
         trigger:'우회로 개방',playerChoice:'새 경로 선택',stateChange:'새 전투 개방',
         observableAcceptance:'실제 지역 이동 후 상태 저장 검증'}]}
   };
@@ -1203,4 +1210,7 @@ test('focused game worker keeps one exact approved content item in compact sourc
   const compacted=compact(original,{compact:true,responsiblePaths:[owner]});
   assert.match(compacted,/volumeImplementation=ref:VARIETY_REGIONS\[0\]/);
   assert.match(compacted,/contentVolume=authored:2/);
+  assert.match(compacted,/volumeSpec=WORLD:/);
+  assert.match(compacted,/encounterPattern/);
+  assert.match(compacted,/volumeRequiredBehavior=NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE/);
 });
