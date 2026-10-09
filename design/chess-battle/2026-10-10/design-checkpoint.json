@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 체스판 상태 변화에 따라 전략적 판단을 수행하며, 전장 위치 선정 및 정보 접근을 통해 실질적인 행동과 결과를 명확하게 판타지합니다. 이 과정에서 AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계가 변형되고, 플레이어는 다양한 선택의 가능성 확률을 바탕으로 전술 경로를 개발해야 합니다.",
       "coreFun": "{\"required\":true,\"infection\":false,\"phases\":{\"OPENING\":\"전략적 판단\",\"DEVELOPMENT\":\"전장 관리\",\"RESOLUTION\":\"전략적 연결\"},\"lockedNumbers\":{},\"abilityFacts\":[],\"humanRoster\":[],\"monsterRoster\":[]}"
+    },
+    "local_authoring_parts::ab1672a85eb86866404ced245ffb5f6988ee2a95877c0389bb3c9278482e22ae:coreLoop": {
+      "coreLoop": [
+        "INPUT: 체스판 상태 변화",
+        "PROCESSE: 전략적 판단 및 전장 관리",
+        "OUTPUT: 새로운 전략 경로 개발"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1281737,
-      "lastMs": 76183,
+      "totalMs": 1343221,
+      "lastMs": 61484,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:01:56.231Z"
+      "updatedAt": "2026-10-09T20:02:57.718Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-09T20:01:56.232Z",
+  "updatedAt": "2026-10-09T20:02:57.718Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2194,7 +2201,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:01:56.232Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:02:57.718Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
