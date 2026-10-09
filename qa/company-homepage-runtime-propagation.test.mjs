@@ -233,51 +233,34 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
 
-test('homepage exposes Unity Web as the required pre-native development test surface without release authority',()=>{
+test('homepage exposes only verified Unity WebGL and preserves independent Roblox development',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
   assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
-  assert.equal(policy.serverHomepageIntegration.showWebPlay,true);
-  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.changedGameIdsOnly,false);
-  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.reconcileExistingCatalogGamesEveryStatusSync,true);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.cardVisibilityRequiresRunnableTarget,true);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,true);
+  assert.equal(policy.serverHomepageIntegration.showWebPlay,false);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.requiredForDevelopmentAdmission,true);
   assert.equal(web.releaseStage,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
+  assert.equal(policy.ownerUnityWebHomepageOnly20261010.genericHtmlCssJavascriptCanvasGameAuthoringForbidden,true);
+  assert.equal(policy.ownerUnityWebHomepageOnly20261010.homepageGameCardRequiresUnityWeb,true);
+  const surface=policy.serverHomepageIntegration.unityWebValidationSurface;
+  assert.equal(surface.homepageLinkGate,'UNITY_WEB_3D_QA_AND_COMPLETE_DEPLOYED_BUNDLE');
+  assert.equal(surface.homepageLinkQaPassRequired,true);
+  assert.equal(surface.homepageLinkEvidenceFilesRequired,true);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
-  assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
-  assert.match(renderer,/for\(const href of \[/);
-  assert.match(renderer,/`\/web-games\/\$\{id\}\/unity\/`/);
-  assert.match(renderer,/`\/web-games\/\$\{id\}\/`/);
-  assert.match(renderer,/const expected=`web-games\/\$\{id\}`/);
-  assert.match(renderer,/return raw===expected\?`\/\$\{expected\}\/`:'';/);
-  assert.match(renderer,/probeFetch\(`\$\{href\}index\.html\?ts=/);
-  assert.match(renderer,/bundleGroupsFromUnityIndex/);
-  assert.match(renderer,/renderCatalog\(catalog\);/);
-  assert.match(renderer,/setTimeout\(\(\)=>controller\.abort\(\),2500\)/);
-  assert.match(renderer,/Unity Web Player\|unity-container\|createUnityInstance\|\\\.loader\\\.js/);
+  assert.match(renderer,/bindAvailableUnityWebSurfaces\\(catalog\\)/);
+  assert.match(renderer,/projectPath===`unity-games\\/\\$\\{id\\}`/);
+  assert.match(renderer,/unity-web-deploy-manifest\\.json/);
+  assert.match(renderer,/unity-web-independent-qa\\.json/);
+  assert.match(renderer,/upper-platform-development-readiness\\.json/);
   assert.match(renderer,/method:'HEAD'/);
-  assert.match(renderer,/\['loader','data','framework','wasm'\]/);
   assert.match(renderer,/unityWebAvailable:true/);
-  assert.match(renderer,/Unity Web · 개발중/);
-  assert.match(renderer,/function playableWebHref\(row\)/);
-  assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
-  assert.match(renderer,/웹 플레이/);
-  assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
-  assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
-  assert.match(renderer,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
-  assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
+  assert.match(renderer,/return Boolean\\(links\\.unityWeb\\);/);
+  assert.doesNotMatch(renderer,/button\\(links\\.web,'웹 플레이'/);
+  assert.doesNotMatch(renderer,/bundleGroupsFromUnityIndex/);
 });
 
 test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
