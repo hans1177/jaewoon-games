@@ -1315,25 +1315,28 @@
       "toSystem": "CORE-02",
       "trigger": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인",
       "stateChange": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인"
+    },
+    "local_authoring_parts::62a3eef61f396f182f903c9e3e2db36ae94b0f1066f896b21a142c86aa445883:fromId": {
+      "fromId": "systemInterconnections[4].trigger"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 135,
-      "successes": 135,
+      "calls": 136,
+      "successes": 136,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8919545,
-      "lastMs": 84326,
+      "totalMs": 8987259,
+      "lastMs": 67714,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:02:11.015Z"
+      "updatedAt": "2026-10-09T05:03:18.732Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T05:02:11.016Z",
+  "updatedAt": "2026-10-09T05:03:18.732Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3767,7 +3770,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:02:11.016Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:03:18.732Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
