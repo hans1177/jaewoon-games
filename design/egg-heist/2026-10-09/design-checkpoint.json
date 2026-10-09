@@ -63,25 +63,39 @@
       "name": "Egg Heist Signature System II",
       "purpose": "Player's core action and strategic choice that drives the game state change and generates emergent gameplay.",
       "playerChoice": "Scout a small area and identify the target egg and patrol risk, then select an opening strategy to steal or move the egg while reacting to detection."
+    },
+    "local_authoring_parts::bad13b0f8731661aa930eff44b3ada0c9fcedd85cb46106de844e97b460320c5:signatureSystems:2": {
+      "id": "EGG-HEIST-SIGNATURE-3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "SCOUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "Egg Heist Signature System III",
+      "purpose": "Player's core action and strategic choice that drives the game's emergent gameplay and progression.",
+      "playerChoice": "Strategic decision to either scout, select, or initiate a move that leads to state change and subsequent gameplay development."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 452802,
-      "lastMs": 100647,
+      "totalMs": 551309,
+      "lastMs": 98507,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:24:37.101Z"
+      "updatedAt": "2026-10-09T08:26:15.609Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:04.269Z",
-  "updatedAt": "2026-10-09T08:24:37.101Z",
+  "updatedAt": "2026-10-09T08:26:15.609Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1943,7 +1957,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:24:37.101Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:26:15.609Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
