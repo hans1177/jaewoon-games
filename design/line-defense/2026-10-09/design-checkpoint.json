@@ -34,25 +34,39 @@
         "SELECT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는 진입 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택의 순환적 루프를 통해 플레이어에게 즉각적인 재미와 성장감을 제공합니다.",
         "OUTPUT: 선택 결과가 다음 월드 상태로 바뀌는 SINGLE_DEFENSE_STRATEGY 게임에서는, 경로, 위험, 결과를 다른 방식으로 만듭니다."
       ]
+    },
+    "local_authoring_parts::b1eaf4210eddfdb2d79fa846f27350d8592992c49387f8e3286e057e2242f749:signatureSystems:0": {
+      "id": "KARMA_RETURN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "ENEMY_WAVE",
+        "TOWER_POSITION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE"
+      ],
+      "name": "SINGLE_DEFENSE_STRATEGY",
+      "purpose": "Player selects and executes the core action to influence world state.",
+      "playerChoice": "Place towers or defenders on lanes to affect world state."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 407917,
-      "lastMs": 68024,
+      "totalMs": 441795,
+      "lastMs": 33878,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:53:58.366Z"
+      "updatedAt": "2026-10-09T08:54:32.246Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:47:10.421Z",
-  "updatedAt": "2026-10-09T08:53:58.366Z",
+  "updatedAt": "2026-10-09T08:54:32.246Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2247,7 +2261,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:53:58.366Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:54:32.246Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
