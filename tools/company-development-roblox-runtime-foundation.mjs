@@ -497,15 +497,17 @@ export async function probeRobloxOpenCloudEngine({
   const simulationRunning=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=true');
   const legacyFoundationServerBootMarkerObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
   const serverContextExecuted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true');
-  // Roblox Open Cloud Luau Execution launches a server, loads the exact place version, then executes this task.
-  // Exact task execution is therefore direct server-boot evidence; the legacy workspace marker remains diagnostic only.
-  const serverBootObserved=serverContextExecuted&&exactPlace&&exactVersion;
+  // Open Cloud Luau Execution evaluates the exact place in server context without starting gameplay scripts.
+  // Only an actually running simulation with a game-produced boot marker can prove a server-script boot.
+  const exactLuauTaskObserved=serverContextExecuted&&exactPlace&&exactVersion;
+  const serverBootObserved=exactLuauTaskObserved&&simulationRunning&&legacyFoundationServerBootMarkerObserved;
   const serverBootEvidence=Object.freeze({
     observed:serverBootObserved,
     provider:'ROBLOX_OPEN_CLOUD_LUAU_EXECUTION',
     taskState:state,
     exactPlace,
     exactVersion,
+    exactLuauTaskObserved,
     scriptExecuted:serverContextExecuted,
     headlessServerExecution:true,
     livePlayerSimulationClaimed:false,
@@ -571,7 +573,7 @@ export async function probeRobloxOpenCloudEngine({
     sameLuauExecutionSession:true
   });
   return Object.freeze({
-    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationRunning,serverBootObserved,serverContextExecuted,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
+    available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunningBefore,simulationStartAttempted,simulationStartSucceeded,simulationStartError:simulationStartError||null,simulationRunning,serverBootObserved,serverContextExecuted,exactLuauTaskObserved,serverBootEvidence,legacyFoundationServerBootMarkerObserved,worldEvidence,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
     studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
     expectedStudioAssetSelectionFingerprint:expectedStudioAssetSelectionFingerprint||null,
