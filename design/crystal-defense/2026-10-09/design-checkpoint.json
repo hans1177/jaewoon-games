@@ -1535,25 +1535,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_"
+    },
+    "local_authoring_parts::3abb70ac1a430b323577ea0f455a88accda86fcd368906cd31b47ca26c04b2a2:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE"
+    },
+    "local_authoring_parts::2c3fa5c30c9ec46b4152387a6f7561714898821175ef6b6d4a9ccbdeb4a082b2:systemInterconnections:4": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_",
+      "toSystem": "GAMEPLAY_CORE_LOOP_01A_02B_03C_04D_05E_06F_07G_08H_09I_0A_J_0B_K_0C_L_0D_M_0E_N_0F_O_0G_P_0H_Q_0I_R_0J_S_0K_T_0L_U_0M_V_0N_W_0O_X_0P_Y_0Q_Z_0R_A_0S_B_0T_C_0U_D_0V_E_0W_F_0X_G_0Y_H_",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 108,
-      "successes": 108,
+      "calls": 109,
+      "successes": 109,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9511102,
-      "lastMs": 76354,
+      "totalMs": 9586161,
+      "lastMs": 75059,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:29:21.377Z"
+      "updatedAt": "2026-10-09T05:30:36.438Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T05:29:21.377Z",
+  "updatedAt": "2026-10-09T05:30:36.555Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3851,7 +3869,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3889,10 +3907,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:29:21.377Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T05:30:36.549Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
