@@ -539,25 +539,39 @@
         "플레이어 행동 -> 세계 상태 변화 -> 결과 및 다음 선택",
         "숙련된 활동 -> 새로운 가능성이 실제로 달라지는 경험 반복"
       ]
+    },
+    "local_authoring_parts::ff45dd40bd32aaa158009cb99d57c83a1a8180eeb8a448c6d275e6f11b1c4436:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerAction",
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newPossibility"
+      ],
+      "name": "생활 탐험 진화 시스템",
+      "purpose": "사람들의 행동과 관계를 수집·발现·성장 대상으로 삼는 가벼운 생활 탐험 게임에서 플레이어가 실제 세계 상태 변화에 따라 새로운 가능성 확보 및 진화 진행",
+      "playerChoice": "숙련된 활동 -> 新しい 가능성이 실제로 달라지는 경험 반복의 전략 선택 및 경로 결정 중인 주요 선택지와 구체적 실행 방식 정립 및 이전 설계안과 일관된 진화 과정 제시 및 기존 메커니즘과의 양방향 실제 상태 교환 적용 및 재해석, 재방문, 고급 운용 등 다양한 진화 단계 포함됨으로서 최종 정체성을 형성함을 목표로 함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1514183,
-      "lastMs": 94116,
+      "totalMs": 1624065,
+      "lastMs": 109882,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:04:23.646Z"
+      "updatedAt": "2026-10-09T18:06:13.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:09.420Z",
-  "updatedAt": "2026-10-09T18:04:23.646Z",
+  "updatedAt": "2026-10-09T18:06:13.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2075,7 +2089,7 @@
     "43980ab931859392afe913247ced2231318a6fb08ace4b142ed1303465a3a603": true,
     "922c1560f8ad5ad496376de8d3e46358035880512851b72fb6b28f2e0fd80256": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:04:23.646Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:06:13.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
