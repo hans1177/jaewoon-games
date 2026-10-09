@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4:identity": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600105,
-      "lastMs": 300014,
+      "totalMs": 689837,
+      "lastMs": 89732,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:49:07.360Z"
+      "updatedAt": "2026-10-09T17:50:37.093Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:39:07.229Z",
-  "updatedAt": "2026-10-09T17:49:07.360Z",
+  "updatedAt": "2026-10-09T17:50:37.093Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1564,5 +1568,9 @@
   "localAuthoringSplits": {
     "e1a3b6b9a2b3f1f8214ca55fe34f0cc5c9f64df7030a83b58dbf686b6c42e8e2": true,
     "d3a909252edc6b6d9f5ea4a4c0915f0f7e03495f8bb3995f5b4ff283864619f4": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T17:50:37.093Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
