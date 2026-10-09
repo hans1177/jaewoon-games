@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 실시간 속도/강화 기능과 퀘스트/보상 선택 사이에서 자유롭게 교환할 수 있는 전략적 선택을 하며, 주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하게 된다. 이 과정에서는 시간, 공간, 감정 등 다양한 요소가 함께 작용하여 실제 세계 상태 변화를 경험한다.",
       "coreFun": "생존 전략 교환 시스템 | A: 무기/속성 선택, B: 퀘스트/보상 선택, C: 주제/역사/철학 선택 | 입력 -> 상태변화 -> 보상/위험/다음 선택 연결 포함; 각 단서는 4개 이상 초기 사례와 무한 발전 규칙을 포함하며, 중후반 두 시스템 간 관계 변화가 실제로 일어나고 다음 사건은 보상 및 숙련으로 이어진다."
+    },
+    "local_authoring_parts::9c14eca3896627cc58da8d5d666bfe537e01d90418daf21ff0920168684816f1:coreLoop": {
+      "coreLoop": [
+        "입력: 무기/속성 선택, 상태변화: 실시간 속도/강화 기능 증가, 보상: 퀘스트/보상 선택",
+        "입력: 퀘스트/보상 선택, 상태변화: 플레이어 경험/레벨 스토리 상승, 보상: 주제/역사/철학 선택",
+        "입력: 주제/역사/철학 선택, 상태변화: 전투 스타일 및 인식 변화, 보상: 새로운 전략 경로"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 201873,
-      "lastMs": 201873,
+      "totalMs": 239924,
+      "lastMs": 38051,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:27:47.396Z"
+      "updatedAt": "2026-10-09T21:28:25.449Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T21:27:47.397Z",
+  "updatedAt": "2026-10-09T21:28:25.449Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1825,7 +1832,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:27:47.396Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:28:25.449Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
