@@ -90,25 +90,192 @@
       "name": "ISLAND_RESOURCE_MANAGER_C",
       "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
       "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
+    },
+    "local_authoring_parts::dd3e9341221ddf743dd6fe43ccda8a36ee496999c7bed8803f5442a64fc383d9:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "BUILD_VILLAGE_FUNCTION",
+        "UNLOCK_NEW_ELEMENT"
+      ],
+      "name": "ISLAND_RESOURCE_MANAGER_C",
+      "purpose": "관리 및 자원 활용을 위한 시스템",
+      "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
+    },
+    "local_authoring_parts::d800b12ebadb362a609feddcccd21a0adfe03a7ff2953e9a315311e23127dee9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to drive village development",
+          "playerChoice": "Select resource types to build or improve village functions"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather, where to allocate them, and what function to build or improve next."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_B",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
+          "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 자원 활용을 위한 시스템",
+          "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::546ce550a3b09799536800c987e65e130c41c31265d0e60cc5c6bd6ba3236e10:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Gather a focused set of island resources.",
+        "Use them to build or improve one village function.",
+        "Unlock a new resident, activity or area and choose the next village goal."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and allocate island resources to drive village development",
+          "playerChoice": "Select resource types to build or improve village functions"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather, where to allocate them, and what function to build or improve next."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_B",
+          "purpose": "Manage and distribute island resources to support village development.",
+          "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
+          "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "GATHER_RESOURCES"
+          ],
+          "stateOutputs": [
+            "BUILD_VILLAGE_FUNCTION",
+            "UNLOCK_NEW_ELEMENT"
+          ],
+          "name": "ISLAND_RESOURCE_MANAGER_C",
+          "purpose": "관리 및 자원 활용을 위한 시스템",
+          "playerChoice": "자원 수집 후 주민, 활동 또는 지역 확장 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 725137,
-      "lastMs": 98169,
+      "totalMs": 824176,
+      "lastMs": 99039,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:02:54.933Z"
+      "updatedAt": "2026-10-09T12:04:33.973Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:02:54.933Z",
+  "updatedAt": "2026-10-09T12:04:33.977Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2189,7 +2356,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:02:54.933Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:04:33.977Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
