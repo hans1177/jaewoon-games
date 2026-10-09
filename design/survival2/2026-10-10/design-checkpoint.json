@@ -80,25 +80,53 @@
         "worldChange": "생물 다양성 변화 → 자원 재배포 결정 → 생식 기회 증대;",
         "nextEvent": "자원 분배 최적화 → 빌딩 효율성 개선"
       }
+    },
+    "local_authoring_parts::7be9c6e49c4433ad11acf3d34aad6b942a55bc38c24a352fb323f8c3e264cb14:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "생물 다양성",
+          "kind": "GENRE",
+          "gameplayEffect": "생식 기회 증대, 자원 재배포 결정"
+        },
+        {
+          "name": "환경 위험",
+          "kind": "GENRE",
+          "gameplayEffect": "자원 배분 전략 변경, 생존자 역할 변환"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "협력 생존 시스템",
+          "gameplayEffect": "생물 다양성 및 자원 배분 전략 적용"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "지속 가능한 자원 사용 방안",
+          "gameplayEffect": "자원 간 경쟁 심화, 빌딩 효율성 개선"
+        }
+      ],
+      "cGenreInterlock": "생물 다양성 변화 → 자원 분배 조정; 자원 분배 조정 → 생식 기회 증대",
+      "cWorldAndGameplayEffect": "생물 다양성 변화 → 자원 재배포 결정 → 생식 기회 증대; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1136025,
-      "lastMs": 122013,
+      "totalMs": 1293833,
+      "lastMs": 157808,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:11:20.615Z"
+      "updatedAt": "2026-10-09T18:13:58.425Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:24.564Z",
-  "updatedAt": "2026-10-09T18:11:20.616Z",
+  "updatedAt": "2026-10-09T18:13:58.425Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1808,7 +1836,7 @@
     "858d89ae2d06831456fac8eb64ddc860e0275d112d9bedcd74e1c812120b5ea1": true,
     "06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:11:20.616Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:13:58.425Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
