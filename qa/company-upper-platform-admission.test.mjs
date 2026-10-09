@@ -43,7 +43,12 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
       version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
       unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
       criteria:{
-        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true},webglBuild:{pass:true},
+        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:[
+          ...['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+            stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
+            observedMeshCount:6,observedTriangles:240
+          }))
+        ]},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
       }
     });
@@ -51,6 +56,38 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
     assert.equal(result.state,'UPPER_PLATFORM');
     assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,false);
+    assert.equal(result.web.state,'UNITY_WEB_VERIFIED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('older 2D readiness and boolean-only 3D markers cannot reopen Unity Web development gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-3d-proof-'));
+  try{
+    write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game {}');
+    write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs','namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }');
+    const tree=unitySourceTreeSha256(path.join(root,'unity-games/new-game'));
+    const evidence={
+      version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+      unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
+      criteria:{
+        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true},
+        webglBuild:{pass:true},actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
+      }
+    };
+    write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
+    let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
+    evidence.criteria.graphics={pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:[
+      ...['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+        stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
+        observedMeshCount:0,observedTriangles:0
+      }))
+    ]};
+    write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
+    result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
