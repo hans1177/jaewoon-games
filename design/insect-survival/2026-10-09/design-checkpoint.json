@@ -34,25 +34,40 @@
         "SELECT: Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
         "OUTPUT: Status change based on risk assessment and resource acquisition."
       ]
+    },
+    "local_authoring_parts::0fdea75967b44dd85858c4da1739e62b4c328897e42b9427f3e5f30d77414c45:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "RISK_ASSESSMENT",
+        "RESOURCE_ACQUISITION"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_TOOL_SET",
+        "SAFER_ROUTE_PATH"
+      ],
+      "name": "Material Causal Grammar",
+      "purpose": "Establishes the causal relationship between risk assessment and resource acquisition in a survival game context.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 278604,
-      "lastMs": 31907,
+      "totalMs": 311011,
+      "lastMs": 32407,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:10:47.900Z"
+      "updatedAt": "2026-10-09T09:11:20.309Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:06:09.269Z",
-  "updatedAt": "2026-10-09T09:10:47.900Z",
+  "updatedAt": "2026-10-09T09:11:20.309Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2299,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:10:47.900Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:11:20.309Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
