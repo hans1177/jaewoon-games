@@ -51,25 +51,38 @@
       "name": "엘도리아 연대기 시그니처 체계 1: 세계 속에서 탐험, 인물 만나며 이야기 진척시키는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾸는 STORY_COMPLETE_RPG 게임입니다.",
       "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
       "playerChoice": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.의 결과로 다음 세계 상태와 접근 가능성을 결정합니다."
+    },
+    "local_authoring_parts::23be6d3a062cbeea3e8c76152cc85397a69a5b426ec5c96ad9a421212ca87599:signatureSystems:1": {
+      "id": "ELDORIA_CORE_SIGNATURE_2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "STORY_PROGRESS_STATUS"
+      ],
+      "stateOutputs": [
+        "GAME_OVER_STATUS"
+      ],
+      "name": "엘도리아 연대기 시그니처 체계 2: 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핵심 루프를 통해 시스템과 세계 상태를 바꾼 STORY_COMPLETE_RPG 게임입니다.",
+      "purpose": "플레이어의 선택 결과가 다음 세계 상태를 바꾸는 반복 가능한 핸드폰 루프를 구현하는 주요 인과축 역할을 수행합니다.",
+      "playerChoice": "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 376165,
-      "lastMs": 52972,
+      "totalMs": 433793,
+      "lastMs": 57628,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:49:38.235Z"
+      "updatedAt": "2026-10-09T15:50:35.865Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:43:21.699Z",
-  "updatedAt": "2026-10-09T15:49:38.235Z",
+  "updatedAt": "2026-10-09T15:50:35.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1825,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:49:38.235Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:50:35.865Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
