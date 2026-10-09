@@ -51,25 +51,76 @@
       "name": "월드 상태 변환 시스템 01",
       "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스wipe 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 중심 플레이의 결과가 월드 상태에 영향을 미친다.",
       "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\n\nFinish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::31b9e5094ffb2e784553d979b0e831101d77b6215f2c857cb7fc4f42a56013b0:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_DISPLAY",
+        "RISK_EVALUATION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE_02",
+        "PROGRESSION_BONUS",
+        "RISK_SELECTION"
+      ],
+      "name": "월드 상태 변환 시스템 02",
+      "purpose": "플레이어가 즉시 시작하여 단순한 터치 또는 스wipe 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하는 플레이어 역할로, 이 선택의 결과가 월드 상태에 영향을 미친다.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::31b9e5094ffb2e784553d979b0e831101d77b6215f2c857cb7fc4f42a56013b0:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_DISPLAY",
+        "RISK_EVALUATION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE_03",
+        "PROGRESSION_BONUS",
+        "RISK_SELECTION"
+      ],
+      "name": "월드 상태 변환 시스템 03",
+      "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축, 선택의 비용·위험·보상에 대한 정책을 제시합니다.",
+      "playerChoice": "Run with reward display and risk evaluation to unlock progression bonus before final state change."
+    },
+    "local_authoring_parts::31b9e5094ffb2e784553d979b0e831101d77b6215f2c857cb7fc4f42a56013b0:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_DISPLAY",
+        "RISK_EVALUATION"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE_04",
+        "PROGRESSION_BONUS",
+        "RISK_SELECTION"
+      ],
+      "name": "월드 상태 변환 시스템 04",
+      "purpose": "작업 중인 시스템 내에서 다른 인과법칙과 관계를 통해 계속적으로 확장되고 진화하게 된다.",
+      "playerChoice": "플레이어는 단순한 터치 또는 스wipe 입력을 통해 점수나 거리, 혹은 짧은 세션 목표를 설정하며, 이 선택의 결과가 월드 상태에 영향을 미친다. 하지만 이 선택은 시스템 내에서 다른 인과법칙과 관계를 통해 계속적으로 확장되고 진화하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 414541,
-      "lastMs": 74196,
+      "totalMs": 959532,
+      "lastMs": 104416,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:46:25.025Z"
+      "updatedAt": "2026-10-09T15:55:30.024Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:30.454Z",
-  "updatedAt": "2026-10-09T15:46:25.025Z",
+  "updatedAt": "2026-10-09T15:55:30.031Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1696,11 +1747,26 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::31b9e5094ffb2e784553d979b0e831101d77b6215f2c857cb7fc4f42a56013b0:signatureSystems:4": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "SIGNATURE_SYSTEM_01",
+          "SIGNATURE_SYSTEM_02",
+          "SIGNATURE_SYSTEM_03",
+          "SIGNATURE_SYSTEM_04"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::31b9e5094ffb2e784553d979b0e831101d77b6215f2c857cb7fc4f42a56013b0:signatureSystems:4": 2
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:46:25.025Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:30.024Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
