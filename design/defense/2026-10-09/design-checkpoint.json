@@ -1674,25 +1674,41 @@
     },
     "local_authoring_parts::c5286866aced21dc8fb16bc2417ad325a55c7d91c2d015bc5fee8f260babd352:trigger": {
       "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다."
+    },
+    "local_authoring_parts::c5286866aced21dc8fb16bc2417ad325a55c7d91c2d015bc5fee8f260babd352:stateChange": {
+      "stateChange": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
+    },
+    "local_authoring_parts::72a31b0aa0fe6fa33e722bc94af196bb40a58d05c51590f6836eda3ee27cbaca:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE",
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성합니다.",
+      "stateChange": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 108,
-      "successes": 105,
+      "calls": 109,
+      "successes": 106,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7841452,
-      "lastMs": 32874,
+      "totalMs": 7876846,
+      "lastMs": 35394,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:19:36.220Z"
+      "updatedAt": "2026-10-09T05:20:11.616Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T05:19:36.220Z",
+  "updatedAt": "2026-10-09T05:20:11.617Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4117,7 +4133,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:19:36.220Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:20:11.617Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
