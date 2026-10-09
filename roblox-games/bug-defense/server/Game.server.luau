@@ -31,6 +31,9 @@ end
 -- 플레이어 상태
 local lastAction = {}
 local sessions = {}
+-- 검증된 읽기 세션만 기존 DataStore를 덮어쓸 수 있다.
+local verifiedSaveRead = {}
+local playerLoadStarted = {}
 
 local function readNumber(player, name, fallback)
   local value = player:GetAttribute(name)
@@ -48,6 +51,9 @@ local function initializeTransientState(player)
   player:SetAttribute("WaveActive", false)
   player:SetAttribute("SessionActive", false)
   player:SetAttribute("TutorialHint", "ANALYZE_WAVE")
+  -- 기존 저장 필드에 들어가지 않는 협동 세션 상태.
+  player:SetAttribute("CoopAssists", 0)
+  player:SetAttribute("LastCoopAssistedUserId", 0)
   if Config.LearningContext and Config.LearningContext.Applied then
     player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
     player:SetAttribute("LastLearningPattern", "")
@@ -63,17 +69,34 @@ local function initializePlayer(player)
 end
 
 local function savePlayer(player)
-  if not store then return end
+  if not store or verifiedSaveRead[player] ~= true then
+    warn("BUG_DEFENSE_SAVE_WRITE_SKIPPED_UNVERIFIED_READ")
+    return false
+  end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do
     snapshot[key] = readNumber(player, key, fallback)
   end
-  pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function()
-      return snapshot
+  local blockedRecord = false
+  local ok = pcall(function()
+    store:UpdateAsync("player:" .. player.UserId, function(current)
+      if current ~= nil and typeof(current) ~= "table" then
+        blockedRecord = true
+        return nil
+      end
+      blockedRecord = false
+      local merged = typeof(current) == "table" and table.clone(current) or {}
+      for key, value in pairs(snapshot) do merged[key] = value end
+      return merged
     end)
   end)
+  if not ok or blockedRecord then
+    warn("BUG_DEFENSE_SAVE_WRITE_REPAIR_REQUIRED")
+    return false
+  end
+  return true
 end
+
 
 local function recordAction(player, scopeId, learningPattern, scoreDelta, progressDelta)
   player:SetAttribute("LastApprovedScope", scopeId)
@@ -89,18 +112,23 @@ end
 
 
 -- 기본 멀티 동기화
-local function multiplayerSnapshot(changedPlayer)
+local function multiplayerSnapshot(changedPlayer, excludedPlayer)
   local participants = {}
   for _, participant in ipairs(Players:GetPlayers()) do
-    table.insert(participants, {
-      UserId = participant.UserId,
-      Name = participant.Name,
-      Level = readNumber(participant, "Level", 1),
-      Wave = readNumber(participant, "Wave", 1),
-      BaseHealth = readNumber(participant, "BaseHealth", 100),
-      SessionActive = participant:GetAttribute("SessionActive") == true,
-    })
+    if participant ~= excludedPlayer then
+      table.insert(participants, {
+        UserId = participant.UserId,
+        Name = participant.Name,
+        Level = readNumber(participant, "Level", 1),
+        Wave = readNumber(participant, "Wave", 1),
+        BaseHealth = readNumber(participant, "BaseHealth", 100),
+        EnemyHealth = readNumber(participant, "EnemyHealth", 0),
+        CoopAssists = readNumber(participant, "CoopAssists", 0),
+        SessionActive = participant:GetAttribute("SessionActive") == true,
+      })
+    end
   end
+  table.sort(participants, function(a, b) return a.UserId < b.UserId end)
   return {
     Version = 1,
     ParticipantCount = #participants,
@@ -110,9 +138,10 @@ local function multiplayerSnapshot(changedPlayer)
   }
 end
 
-local function broadcastMultiplayerSync(changedPlayer)
-  remote:FireAllClients("MULTIPLAYER_SYNC", multiplayerSnapshot(changedPlayer))
+local function broadcastMultiplayerSync(changedPlayer, excludedPlayer)
+  remote:FireAllClients("MULTIPLAYER_SYNC", multiplayerSnapshot(changedPlayer, excludedPlayer))
 end
+
 
 -- 월드
 local function makeWorldPart(parent, name, size, position, color, material)
@@ -578,6 +607,43 @@ local function placeOrUpgradePredator(player)
   recordAction(player, "scope-coreloop-1-d43c3d2506", "progression-difficulty", 12, 8)
 end
 
+-- 협동: 플레이어가 근처 동료의 실제 교전 중인 해충을 지원한다.
+-- 기존 전투 함수만 호출하고 클라이언트 입력으로 피해·보상을 정하지 않는다.
+local function assistTeammate(player)
+  if #Players:GetPlayers() < 2 then return end
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not root or not humanoid or humanoid.Health <= 0 then return end
+
+  local teammate, target
+  local nearest = 36
+  for _, other in ipairs(Players:GetPlayers()) do
+    local session = sessions[other]
+    local otherCharacter = other.Character
+    local otherRoot = otherCharacter and otherCharacter:FindFirstChild("HumanoidRootPart")
+    local otherHumanoid = otherCharacter and otherCharacter:FindFirstChildOfClass("Humanoid")
+    if other ~= player and session and session.waveActive and otherRoot and otherHumanoid
+      and otherHumanoid.Health > 0 and (root.Position - otherRoot.Position).Magnitude <= 36 then
+      local enemy = findTargetEnemy(other)
+      local enemyRoot = enemy and enemy.PrimaryPart
+      if enemyRoot and enemy.Parent and (tonumber(enemy:GetAttribute("Health")) or 0) > 0 then
+        local distance = (root.Position - enemyRoot.Position).Magnitude
+        if distance <= nearest then nearest, teammate, target = distance, other, enemy end
+      end
+    end
+  end
+  if not target or not sessions[teammate] or not sessions[teammate].enemies[target] then return end
+
+  local defenseType = tostring(target:GetAttribute("EnemyType") or "SWARM")
+  local multiplier = resolveEcologyMultiplier("PHYSICAL", defenseType, "STEM")
+  local level = math.max(1, readNumber(player, "Level", 1))
+  damageEnemy(teammate, target, (12 + level * 2) * multiplier)
+  setNumber(player, "CoopAssists", readNumber(player, "CoopAssists", 0) + 1)
+  player:SetAttribute("LastCoopAssistedUserId", teammate.UserId)
+  player:SetAttribute("ObjectiveHint", "COOP_ASSIST")
+end
+
 -- 플레이어 전투 행동
 local function attackEnemy(player)
   local session = getSession(player)
@@ -647,6 +713,7 @@ local handlers = {
   ["scope-coreloop-2-42423ea982"] = useCombatSkill,
   ["scope-coreloop-3-683fae91c6"] = prepareNextWave,
   ["scope-mobileux-62b476fd93"] = reviewDefenseState,
+  ["coop-assist"] = assistTeammate,
 }
 
 local function restorePredatorTowers(player)
@@ -657,29 +724,30 @@ local function restorePredatorTowers(player)
 end
 
 local function bindPlayer(player)
-  local loaded = false
+  if playerLoadStarted[player] then return end
+  playerLoadStarted[player] = true
+  local readVerified, saved = false, nil
   if store then
-    local ok, saved = pcall(function()
+    local ok, record = pcall(function()
       return store:GetAsync("player:" .. player.UserId)
     end)
-    if ok and typeof(saved) == "table" then
-      for key, fallback in pairs(Config.InitialState) do
-        local value = saved[key]
-        if typeof(value) == "number" then
-          player:SetAttribute(key, value)
-        else
-          player:SetAttribute(key, fallback)
-        end
-      end
-      loaded = true
-    end
+    readVerified = ok and (record == nil or typeof(record) == "table")
+    if readVerified then saved = record end
   end
+  if player.Parent ~= Players then return end
 
-  if not loaded then
-    initializePlayer(player)
-  else
+  verifiedSaveRead[player] = readVerified
+  if typeof(saved) == "table" then
+    for key, fallback in pairs(Config.InitialState) do
+      local value = saved[key]
+      player:SetAttribute(key, typeof(value) == "number" and value or fallback)
+    end
     initializeTransientState(player)
+  else
+    initializePlayer(player)
   end
+  player:SetAttribute("SaveLoadStatus", readVerified and "READY" or "REPAIR_REQUIRED")
+  if not readVerified then warn("BUG_DEFENSE_SAVE_READ_REPAIR_REQUIRED") end
   if readNumber(player, "BaseHealth", 100) <= 0 then setNumber(player, "BaseHealth", 100) end
   getSession(player)
   restorePredatorTowers(player)
@@ -689,28 +757,22 @@ local function bindPlayer(player)
 end
 
 Players.PlayerAdded:Connect(bindPlayer)
-for _, player in ipairs(Players:GetPlayers()) do
-  task.defer(function()
-    if player:GetAttribute("Score") == nil then
-      bindPlayer(player)
-    else
-      initializeTransientState(player)
-      getSession(player)
-      restorePredatorTowers(player)
-    end
-  end)
-end
+for _, player in ipairs(Players:GetPlayers()) do task.defer(bindPlayer, player) end
 task.defer(function() broadcastMultiplayerSync(nil) end)
 
 remote.OnServerEvent:Connect(function(player, actionId)
-  if typeof(actionId) ~= "string" then return end
+  if typeof(actionId) ~= "string" or verifiedSaveRead[player] == nil then return end
   local handler = handlers[actionId]
-  if typeof(handler) ~= "function" then return end
+  if typeof(handler) ~= "function" and actionId ~= "coop-sync" then return end
 
   local now = os.clock()
-  local previous = lastAction[player] or 0
+  local previous = lastAction[player] or -1e6
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
+  if actionId == "coop-sync" then
+    remote:FireClient(player, "MULTIPLAYER_SYNC", multiplayerSnapshot(nil))
+    return
+  end
   handler(player)
   broadcastMultiplayerSync(player)
 end)
@@ -724,7 +786,9 @@ Players.PlayerRemoving:Connect(function(player)
   end
   sessions[player] = nil
   lastAction[player] = nil
-  task.defer(function() broadcastMultiplayerSync(nil) end)
+  verifiedSaveRead[player] = nil
+  playerLoadStarted[player] = nil
+  task.defer(function() broadcastMultiplayerSync(nil, player) end)
 end)
 
 
