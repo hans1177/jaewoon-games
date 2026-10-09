@@ -696,25 +696,40 @@
     },
     "local_authoring_parts::fb09b6312c6f5e995cd4bea078f78fa981f3f371f0b61b5dbacaa8f4f4e8c521:resourceFlow": {
       "resourceFlow": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::fb09b6312c6f5e995cd4bea078f78fa981f3f371f0b61b5dbacaa8f4f4e8c521:balanceRules": {
+      "balanceRules": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::5d7d34a6d0800828b9887f723937de7d0fd590a9ef2b1201c3e99b4ab0fb530a:progressionEconomyBalance": {
+      "progressionLoop": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
+      "resourceFlow": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
+      "balanceRules": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::4361600c34aa19ec4702fdf53ca643629baf815c3ee6fbbddda9c0cea9407b61:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
+        "resourceFlow": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다.",
+        "balanceRules": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2500259,
-      "lastMs": 49619,
+      "totalMs": 2549399,
+      "lastMs": 49140,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:02:36.575Z"
+      "updatedAt": "2026-10-09T09:03:25.716Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T09:02:36.575Z",
+  "updatedAt": "2026-10-09T09:03:25.719Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3280,7 +3295,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:02:36.575Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:03:25.719Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
