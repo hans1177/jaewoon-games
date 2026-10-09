@@ -505,25 +505,40 @@
       "name": "Cooperative Playstyle",
       "purpose": "Enhances group efficiency through shared decision-making",
       "playerChoice": "Decide which members should focus on survival tasks"
+    },
+    "local_authoring_parts::accc3978f90c8cdbf612fcdc9ca9981ac1936909a67c2a0bd7202e9b7a37bc21:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Group coordination"
+      ],
+      "name": "Environmental Adaptation",
+      "purpose": "Enables players to dynamically adjust their strategies based on ecological changes and resource availability.",
+      "playerChoice": "Decide which members should focus on survival tasks based on environmental conditions and resource distribution patterns."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1272954,
-      "lastMs": 64966,
+      "totalMs": 1340252,
+      "lastMs": 67298,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:15:07.081Z"
+      "updatedAt": "2026-10-09T21:16:14.381Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-09T21:15:07.081Z",
+  "updatedAt": "2026-10-09T21:16:14.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2261,7 +2276,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2362,10 +2377,10 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:15:07.081Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T21:16:14.382Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
