@@ -1459,25 +1459,28 @@
         "fromSystem\": \"START_GAME\", \"toSystem\": \"BOARD_STATE\", \"trigger\": \"게임 시작 후 목표 설정및",
         "stateChange\": \"게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야"
       ]
+    },
+    "local_authoring_parts::8053839299709b0802f6d444688b2c3b99f2db57d063a21bb0d08aa947f5eb34:fromSystem": {
+      "fromSystem": "START_GAME"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 159,
-      "successes": 159,
+      "calls": 160,
+      "successes": 160,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 12169833,
-      "lastMs": 38896,
+      "totalMs": 12201488,
+      "lastMs": 31655,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:36:36.358Z"
+      "updatedAt": "2026-10-09T06:37:08.015Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T06:36:36.358Z",
+  "updatedAt": "2026-10-09T06:37:08.015Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3745,7 +3748,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:36:36.358Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:37:08.015Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
