@@ -509,7 +509,10 @@ jobs:
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
             &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
-          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true);
+          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
+            &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
+              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+              &&e.visualQa?.nativeUnityMesh?.pass===true);
           if(!gatePass&&gameId!=='daechung-rpg')
             throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
           const file=root+'/unity-web-build.json';
@@ -576,9 +579,15 @@ jobs:
           const floorSourceFile=path.join(project,'unity-web-floor-source.json');
           let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
           const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+          // 기존 2D 검증 결과와 가짜 표시를 제외하고, 세 번의 브라우저 QA에서 실제 Unity 메시를 확인한다.
+          const native3dVerified=[play,independent,regression].every(e=>
+            e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
+            &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+            &&e.visualQa?.nativeUnityMesh?.pass===true);
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
-            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
+            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png')
+            &&native3dVerified;
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
             &&Boolean(build.buildTreeSha256)
@@ -605,7 +614,7 @@ jobs:
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
-            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
+            graphics:{pass:graphicsPass,native3dVerified,requiredDimension:'3D',assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
