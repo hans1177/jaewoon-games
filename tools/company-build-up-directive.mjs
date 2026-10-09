@@ -1643,7 +1643,9 @@ export function directivePrompt(d={}){
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   const volume=d.designedGameVolume||{};
-  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | trigger='+(row.trigger||'DESIGN_DETAIL_REQUIRED')+' | choice='+(row.playerChoice||'DESIGN_DETAIL_REQUIRED')+' | state='+(row.stateChange||'DESIGN_DETAIL_REQUIRED')+' | accept='+row.observableAcceptance).join('\n');
+  // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
+  // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
+  const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | ruleIds='+(row.linkedRuleIds||[]).join(',')+' | runtime=UNVERIFIED').join('\n');
   const expansion=d.autonomousContentExpansion||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
