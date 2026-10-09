@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-09T08:46:23.020Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T08:50:02.913Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/gem-survivor/2026-10-09/design-seed.json",
     "contentDigest": "286a6d2d67143fd84e6e22e52a1dc821eae4d785a348983017054ec4ed805ed2",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 609811,
-      "lastMs": 88270,
+      "totalMs": 829696,
+      "lastMs": 219885,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:46:23.017Z"
+      "updatedAt": "2026-10-09T08:50:02.913Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T08:46:23.028Z"
+  "updatedAt": "2026-10-09T08:50:02.919Z"
 }
