@@ -475,25 +475,34 @@
       "toSystem": "SURVIVAL_RESOURCES",
       "trigger": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO",
       "stateChange": "FOREST_ECO_SYSTEM → SURVIVAL_RESOURCES"
+    },
+    "local_authoring_parts::0c4eaa12d07b4f26b0181db8c50199d073159162cb844a938dec1f06c97d4e54:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "forest_eco_system",
+      "toId": "survival_resources",
+      "stateKeys": [
+        "FOREST_ECO_SYSTEM",
+        "SURVIVAL_RESOURCES"
+      ],
+      "fromSystem": "ENVIRONMENTAL_RISK_ASSESSMENT_101234567890abcdef1234567890klmnopqrstuvwxyzabcdeffghijklnmopqrs tuvwxyzabcd efghijklmn opqrstuvwxyz abcd efghijklm no pqrst uvwxy z abcdef ghijkl mnO"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 634742,
-      "lastMs": 33777,
+      "totalMs": 668873,
+      "lastMs": 34131,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:28:06.197Z"
+      "updatedAt": "2026-10-09T08:28:40.330Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:31.411Z",
-  "updatedAt": "2026-10-09T08:28:06.198Z",
+  "updatedAt": "2026-10-09T08:28:40.330Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2866,7 +2875,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:28:06.198Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:28:40.330Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
