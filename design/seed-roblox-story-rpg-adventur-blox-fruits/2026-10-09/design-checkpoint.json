@@ -631,25 +631,42 @@
         "PLAYER_ACTION"
       ],
       "fromSystem": "PUZZLE_LOOP_CORE"
+    },
+    "local_authoring_parts::481a53d33626fa53698dcebebe2e6ef400f587c173c7337e814ecb6690bfce0e:toSystem,trigger,stateChange": {
+      "toSystem": "PUZZLE_LOOP_A",
+      "trigger": "BOARD_STATE_CHANGE_TRIGGER",
+      "stateChange": "STATE_TRANSITION_FROM_BOARD_TO_PLAYER"
+    },
+    "local_authoring_parts::d18f41cbd1e491d32e95efc23a095e9396a72a41c2f4515c3550268ec34911d1:systemInterconnections:1": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "fromSystem": "PUZZLE_LOOP_CORE",
+      "toSystem": "PUZZLE_LOOP_A",
+      "trigger": "BOARD_STATE_CHANGE_TRIGGER",
+      "stateChange": "STATE_TRANSITION_FROM_BOARD_TO_PLAYER"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1456978,
-      "lastMs": 91470,
+      "totalMs": 1545803,
+      "lastMs": 88825,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T13:20:32.265Z"
+      "updatedAt": "2026-10-09T13:22:01.091Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:20:32.265Z",
+  "updatedAt": "2026-10-09T13:22:01.093Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2831,7 +2848,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:20:32.265Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:22:01.092Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
