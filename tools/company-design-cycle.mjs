@@ -633,6 +633,33 @@ function enforceOwnerPreservationDesign(value){
 const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','uxAccessibilityPlan','artAudioDirection','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','implementationTraceability'];
 const DESIGN_BASE_FIELDS=DESIGN.required.filter(key=>!DESIGN_GATE_FIELDS.includes(key));
 const designSliceSchema=fields=>({type:'object',required:[...fields],properties:Object.fromEntries(fields.map(key=>[key,DESIGN.properties[key]])),additionalProperties:false});
+// 게임별 실제 signatureSystems에 이미 존재하는 규칙 ID와 상태 입출력만 다음 설계 조각에 전달한다.
+function authoredStateHandoffContract(signatureSystems=[]){
+  const systems=Array.isArray(signatureSystems)?signatureSystems.filter(row=>clean(row?.id)&&Array.isArray(row?.stateInputs)&&Array.isArray(row?.stateOutputs)):[];
+  const ruleIds=systems.map(row=>clean(row.id));
+  if(new Set(ruleIds).size!==ruleIds.length)return{ruleIds:[],handoffs:[],stateKeys:[]};
+  const handoffs=[];
+  for(const from of systems)for(const to of systems){
+    if(from.id===to.id)continue;
+    const keys=uniq(from.stateOutputs.filter(key=>to.stateInputs.includes(key)));
+    if(keys.length)handoffs.push({fromId:from.id,toId:to.id,stateKeys:keys});
+  }
+  return{ruleIds,handoffs,stateKeys:uniq(handoffs.flatMap(edge=>edge.stateKeys))};
+}
+function designSliceSchemaWithAuthoredHandoffs(fields,signatureSystems=[]){
+  const schema=designSliceSchema(fields);
+  if(fields.includes('signatureSystems')||!fields.includes('systemInterconnections'))return schema;
+  const contract=authoredStateHandoffContract(signatureSystems);
+  if(contract.ruleIds.length<4||!contract.handoffs.length)return schema;
+  const system=schema.properties.systemInterconnections,items=system.items;
+  const properties={
+    ...items.properties,
+    fromId:{...items.properties.fromId,enum:contract.ruleIds},
+    toId:{...items.properties.toId,enum:contract.ruleIds},
+    stateKeys:{...items.properties.stateKeys,items:{...items.properties.stateKeys.items,enum:contract.stateKeys}}
+  };
+  return{...schema,properties:{...schema.properties,systemInterconnections:{...system,items:{...items,properties}}}};
+}
 const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
 const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
 const DESIGN_AUTHORING_SLICES=Object.freeze([
@@ -683,7 +710,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   for(const slice of DESIGN_AUTHORING_SLICES){
     // 웹 호환 뷰와 플랫폼 적용 정책은 마지막에 같은 원본에서 투영한다.
     if(slice.derived)continue;
-    const schema=designSliceSchema(slice.fields);
+    const schema=designSliceSchemaWithAuthoredHandoffs(slice.fields,merged.signatureSystems);
     const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
     const taskKey=`${phase}_slices::${slice.id}`;
     const priorRules=Object.fromEntries(['identity','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
@@ -702,10 +729,10 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       const partial=designCheckpoint.slicePartialResults[taskKey]||{};
       const pendingFields=slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(partial,field));
       const requestedFields=pendingFields.length?pendingFields:slice.fields;
-      const callSchema=designSliceSchema(requestedFields);
+      const callSchema=designSliceSchemaWithAuthoredHandoffs(requestedFields,merged.signatureSystems);
       result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
       system,
-      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       callSchema,
       {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
       ));
@@ -871,6 +898,7 @@ function repairStructureContract(fields){
   if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. JS String.length 기준 fromSystem/toSystem은 각각 최소 16자, trigger/stateChange는 각각 최소 24자 이상으로 구체적으로 작성.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('MAIN/A/B/@의 상태 입력과 출력은 실제 게임 상태의 키이며 개별 역할 사이에서 겹쳐야 한다. A→B와 B→A 양방향 경로, MAIN과 모든 역할의 도달 가능한 연결이 있어야 한다. 없는 연결을 뒤 단계에서 가짜 coreFun ID나 임의 상태·보상·저장키로 채우지 말고 지금 역할의 실제 읽기/쓰기 상태를 설계하라.');
   if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 MAIN/A/B는 각 하나, DELVE(@)는 하나 이상이다. 기존 c 보조 시스템은 선택 사항이며 C를 별도 기계축으로 만들지 말고 A/B의 상태·선택 및 creativeGrammar.cGenres에 연결한다. stateInputs/stateOutputs에는 기존 실제 상태 키만 적고 원본 규칙 ID·저장·경제를 보존한다.');
   if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에는 실제 상태 키만 정의한다. coreLoop 문장, INPUT/SELECT/OUTPUT/STATE 설명, 화살표로 연결한 행동 순서를 상태 키에 넣지 않는다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
   if(fields.includes('systemInterconnections'))rules.push('fromId의 stateOutputs와 toId의 stateInputs에 실제로 존재하는 같은 stateKeys를 연결한다. A/B는 양방향으로 값을 주고받고 MAIN/c/DELVE도 연결돼야 한다. fromSystem/toSystem 설명만 같은 것으로 대체하지 않는다.');
