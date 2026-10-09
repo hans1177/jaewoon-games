@@ -65,25 +65,30 @@
         "STATE CHANGE",
         "REWARD/RISE/NEXT CHOICE"
       ]
+    },
+    "local_authoring_parts::5d1ce2dcc2408c32c863c66f12345c2a420bb8b9614868dc840d35bcfddd0ad1:name,purpose,playerChoice": {
+      "name": "FIGHT THROUGH AN ESCALATING HORDE IN A SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE",
+      "purpose": "플레이어가 단순한 생존 게임에서 시작해 점점 어려워지는 전투 루틴을 거쳐 다양한 선택과 결과로 이어지는 반복 가능한 핵심 루프를 가진 ACTION_SURVIVAL_ROGUELITE 게임이다.",
+      "playerChoice": "전투 중심 행동은 '선택'과 '보상/위험' 두 대축 사이에 상태 변화를 일관되게 연결하며, '성장' 보조 요소와 함께 시스템을 진화시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1125408,
-      "lastMs": 257371,
+      "totalMs": 1166792,
+      "lastMs": 41384,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T11:21:23.268Z"
+      "updatedAt": "2026-10-09T11:22:04.654Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:02:37.821Z",
-  "updatedAt": "2026-10-09T11:21:23.268Z",
+  "updatedAt": "2026-10-09T11:22:04.673Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2298,13 +2303,13 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::ffaf7c415359bfc1b54d4864bcbe4a4790c6f8a98390cd93105d4fc0bda46630:signatureSystems:1": 1
+    "local_authoring_parts::ffaf7c415359bfc1b54d4864bcbe4a4790c6f8a98390cd93105d4fc0bda46630:signatureSystems:1": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:21:23.268Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T11:22:04.655Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "localAuthoringSplits": {
     "5d1ce2dcc2408c32c863c66f12345c2a420bb8b9614868dc840d35bcfddd0ad1": true
   }
