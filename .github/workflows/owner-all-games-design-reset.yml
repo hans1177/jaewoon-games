@@ -7,21 +7,38 @@ on:
       - 'game-catalog.json'
       - 'tools/company-game-seed-contract.mjs'
       - '.github/workflows/owner-all-games-design-reset.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-all-games-design-reset.yml'
+      - 'qa/owner-design-reset.test.mjs'
+      - 'tools/company-all-games-design-reset.mjs'
 
 permissions:
   contents: write
   actions: write
 
 concurrency:
-  group: owner-all-games-design-reset
-  cancel-in-progress: true
+  group: owner-all-games-design-reset-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  validate-reset:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify reset regression and shared-context contracts
+        run: |
+          node --check tools/company-all-games-design-reset.mjs
+          node --test qa/owner-design-reset.test.mjs qa/company-shared-context.test.mjs
+
   reset-to-design:
-    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[owner-reset-trigger-scope-only]'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
