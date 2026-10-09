@@ -66,25 +66,40 @@
       "name": "Board Pattern Evolution Engine",
       "purpose": "게임 내에서 사용되는 블록 패턴의 변형 및 확장 메커니즘을 관리합니다.",
       "playerChoice": "보드 패턴을 재설계하여 새로운 선택 기회와 상태 변화를 생성합니다."
+    },
+    "local_authoring_parts::dfe6e7e6fd11d1675d27ffaaa8f2d4c0f7bccb55da39bc8350ff6c2f174e25bf:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_GOAL",
+        "BOARD_PATTERN"
+      ],
+      "stateOutputs": [
+        "WORLD_STATE_CHANGE",
+        "NEW_ACTION_PATH"
+      ],
+      "name": "Board Pattern Evolution Engine",
+      "purpose": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 한 번의 선택에 따라 월드 상태가 변화하며, 이 과정에서 성장이 발생해 새로운 행동과 경로를 열어간다.",
+      "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 422174,
-      "lastMs": 34997,
+      "totalMs": 461235,
+      "lastMs": 39061,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:51:03.892Z"
+      "updatedAt": "2026-10-09T08:51:42.955Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:44:01.685Z",
-  "updatedAt": "2026-10-09T08:51:03.892Z",
+  "updatedAt": "2026-10-09T08:51:42.955Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2121,7 +2136,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:51:03.892Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:51:42.955Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
