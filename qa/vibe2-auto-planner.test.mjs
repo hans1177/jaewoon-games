@@ -1969,6 +1969,44 @@ test('Unity native presentation responsibility excludes gameplay core when a vis
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
 });
 
+test('Unity Web 3D floor repair and independent native asset source can be planned together',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    validationSurfaceOnly:false,
+    canonicalGameSourceRoot:'unity-games/<gameId>/'
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const projectDir=path.join(root,'unity-games','demo');
+  fs.mkdirSync(path.join(projectDir,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(projectDir,'Assets','Editor','Build.cs'),
+    'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const project={
+    gameId:'demo',name:'Demo',engine:'unity',target:'unity',
+    releaseState:'development-confirmed',projectPath:'unity-games/demo',
+    existing:true,firstStageUnityWeb:true
+  };
+  const rows=findSafeTasks(project,root,{tasks:[]});
+  const repair=rows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  const assets=rows.find(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
+  assert.ok(repair,'canonical source repair must continue');
+  assert.ok(assets,'disjoint native graphic authoring must not be serialized behind WebGL readiness');
+  assert.equal(repair.target,'unity');
+  assert.equal(assets.target,'unity');
+  assert.equal(repair.sourceRoot,assets.sourceRoot);
+  assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false,
+    'the existing file conflict guard must remain intact');
+});
+
 test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
     {
