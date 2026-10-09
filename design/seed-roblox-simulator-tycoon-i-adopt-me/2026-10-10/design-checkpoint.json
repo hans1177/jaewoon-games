@@ -194,25 +194,42 @@
         "플레이어는 적의 유형에 따라 타워/방어 위치를 실시간으로 재설정해야 하며, 자원 관리 전략이 동적으로 변환되어야 한다.",
         "보상은 새로운 플레이 스타일 및 방어 전략의 발전을 통해 제공되며, 위험은 전투에서의 진보적 방어 전략에 따른 어려움을 반영한다."
       ]
+    },
+    "local_authoring_parts::04a90e2ecaaa8b5bcce99eba49c427c35b26048bda7329c267246d23beec8546:signatureSystems:0": {
+      "id": "enemy-wave-adaptation-strategic-placement",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemyType",
+        "terrainComposition",
+        "defenseObjective"
+      ],
+      "stateOutputs": [
+        "towerPlacement",
+        "defenderPosition",
+        "resourceAllocationDecision"
+      ],
+      "name": "Enemy Wave Adaptation & Strategic Placement",
+      "purpose": "Player chooses to adapt defense to enemy type, adjust placement based on terrain composition",
+      "playerChoice": "Player decides how to allocate resources for next wave of enemies and adjusts defensive positions accordingly in real-time based on enemy types and terrain features in the battlefield dynamics system."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 636952,
-      "lastMs": 100128,
+      "totalMs": 738210,
+      "lastMs": 101258,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:33:09.125Z"
+      "updatedAt": "2026-10-09T21:34:50.385Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:22:32.145Z",
-  "updatedAt": "2026-10-09T21:33:09.127Z",
+  "updatedAt": "2026-10-09T21:34:50.385Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1931,8 +1948,8 @@
   "localAuthoringSplits": {
     "4ce9d12d0af54940f27554d54912002107868427038af7a3d8d7f9858acf8061": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:33:09.125Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-09T21:34:50.385Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
