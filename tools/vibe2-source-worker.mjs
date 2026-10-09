@@ -2299,6 +2299,21 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const volumeChoices=volumeOwned.length?volumeOwned:volumePool;
   const chosenVolume=volumeApplicable&&volumeChoices.length
     ?volumeChoices[(Math.max(1,Number(d.generation)||1)-1)%volumeChoices.length]:null;
+  // 설계별 지형·행동·보상·비용·쿨다운 원문을 기존 책임 워커에 전달한다.
+  // 상세 항목은 일반화하지 않으며 원본 수치와 규칙을 보존한다.
+  const volumeSpecFields=[
+    ['IDENTITY',['id','name','kind','ownerId','ruleId','role','humanId','humanTool']],
+    ['STATE',['stateInputs','stateOutputs','stateKeys','fromId','toId','ruleIds','retainedState','removedState','changedChoice']],
+    ['TRIGGER',['trigger','range','rangeUnit','resource','cost','cooldownSeconds','telegraph','avoidance','effect']],
+    ['WORLD',['traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext']],
+    ['ENCOUNTER',['behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning']],
+    ['PROGRESSION',['milestone','newGameplay','systemImpact','variation','playerChoice','purpose']]
+  ];
+  const volumeSpecs=chosenVolume?volumeSpecFields.map(([group,keys])=>{
+    const detail=chosenVolume.designDetail||{};
+    const selected=Object.fromEntries(keys.filter(key=>Object.hasOwn(detail,key)).map(key=>[key,detail[key]]));
+    return Object.keys(selected).length?'volumeSpec='+group+':'+JSON.stringify(selected):null;
+  }).filter(Boolean):[];
   const codingTrace=d?.designToPlatformCodingTrace||{};
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
@@ -2355,7 +2370,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
     ...(volume.version===1?[`contentVolume=authored:${Number(volume.authoredItemCount||0)} sourceNamedCandidates:${Number(volume.namedSourceCandidateCount||0)} sourceReview:${Number(volume.sourceReviewRequiredCount||0)} runtimeVerified:${Number(volume.runtimeVerifiedCount||0)} status:DESIGN_SOURCE_AND_RUNTIME_UNVERIFIED`]:[]),
-    ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
+    ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} linkedRules:${(chosenVolume.linkedRuleIds||[]).map(clean).join(',')||'NONE'} sourceOwner:${clean(chosenVolume.designResponsibleSystem)||'REVIEW_ACTUAL_SOURCE_OWNER'} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
+    ...volumeSpecs,
     `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
@@ -2393,7 +2409,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentVolume=','volumeImplementation=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2429,7 +2445,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentVolume=','volumeImplementation=','contentCompletionAcceptance=',
+    'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
@@ -2441,7 +2457,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
     // 각 디자이너 역할은 고유하다. 1개만 남기면 A/B/c/@ 구현 연결이 사라진다.
-    if(prefix==='designCodeRole='){
+    if(prefix==='designCodeRole='||prefix==='volumeSpec='){
       // KEEP EVERY MAIN/A/B/c/@ ROLE in the concise contract.
     }else if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
