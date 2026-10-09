@@ -85,25 +85,41 @@
       "name": "CASUAL_GAME_FLOW_B",
       "purpose": "A/B 대축 중 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    },
+    "local_authoring_parts::decd5553b12c8085cb227559039d667f9831a7c23dd4f3f81ea65f31df30e48a:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_STATE",
+        "DISTANCE_STATE"
+      ],
+      "stateOutputs": [
+        "DELVE_OUTPUT",
+        "PROGRESSION_OUTPUT"
+      ],
+      "name": "DELVE_DEPTH_LAYER",
+      "purpose": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다.",
+      "playerChoice": "Discover a new path or event that aligns with the existing causal rules and offers an unexpected but meaningful experience for the player to explore and master."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 419112,
-      "lastMs": 49480,
+      "totalMs": 473526,
+      "lastMs": 54414,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:18:08.160Z"
+      "updatedAt": "2026-10-09T09:19:02.576Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:09.017Z",
-  "updatedAt": "2026-10-09T09:18:08.160Z",
+  "updatedAt": "2026-10-09T09:19:02.576Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2180,7 +2196,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:18:08.160Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:19:02.576Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
