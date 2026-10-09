@@ -515,25 +515,42 @@
         "REWARD/RISK/ NEXT SELECT"
       ],
       "fromSystem": "OPENING, RESOLUTION, RESOURCE_FLOW"
+    },
+    "local_authoring_parts::abfced824a9060b4ac4ec7df49309e59fd6cc5d5ff9a7328f3b8a075c3b365f6:toSystem,trigger,stateChange": {
+      "toSystem": "RESOLUTION",
+      "trigger": "INPUT/SELECT",
+      "stateChange": "REWARD/RISK/ NEXT SELECT"
+    },
+    "local_authoring_parts::f6254037b705ad3e8a2bbb02b4d5a4e8dad6cfebcaa2fb29dac9136a18c9389d:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "INPUT/SELECT",
+        "REWARD/RISK/ NEXT SELECT"
+      ],
+      "fromSystem": "OPENING, RESOLUTION, RESOURCE_FLOW",
+      "toSystem": "RESOLUTION",
+      "trigger": "INPUT/SELECT",
+      "stateChange": "REWARD/RISK/ NEXT SELECT"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 22,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2180310,
-      "lastMs": 93068,
+      "totalMs": 2270549,
+      "lastMs": 90239,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:18:26.245Z"
+      "updatedAt": "2026-10-09T16:19:56.485Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:05.859Z",
-  "updatedAt": "2026-10-09T16:18:26.245Z",
+  "updatedAt": "2026-10-09T16:19:56.491Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2262,9 +2279,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_1→SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_1→SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2279,9 +2296,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_2→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_2→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2296,9 +2313,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2313,9 +2330,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_4→SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_4→SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2344,7 +2361,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": 1,
     "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:4": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2382,10 +2399,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:18:26.245Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T16:19:56.487Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
