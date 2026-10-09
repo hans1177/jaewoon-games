@@ -76,25 +76,39 @@
       "name": "ISLAND_RESOURCE_MANAGER_B",
       "purpose": "Manage and distribute island resources to support village development.",
       "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
+    },
+    "local_authoring_parts::dd3e9341221ddf743dd6fe43ccda8a36ee496999c7bed8803f5442a64fc383d9:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "BUILD_VILLAGE_FUNCTION",
+        "UNLOCK_NEW_ELEMENT"
+      ],
+      "name": "ISLAND_RESOURCE_MANAGER_C",
+      "purpose": "관리 및 전략적 활용을 위한 시그니처 시스템",
+      "playerChoice": "구체적인 자원 수집 방식, 지역 개발 우선순위, 새로운 요소 선택 전략의 실행 계획을 포함함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 626968,
-      "lastMs": 95118,
+      "totalMs": 725137,
+      "lastMs": 98169,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:01:16.762Z"
+      "updatedAt": "2026-10-09T12:02:54.933Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T12:01:16.762Z",
+  "updatedAt": "2026-10-09T12:02:54.933Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2175,7 +2189,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:01:16.762Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:02:54.933Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
