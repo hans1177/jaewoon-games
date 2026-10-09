@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
       "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops."
+    },
+    "local_authoring_parts::211cc4e754c0198b95ec59ec01ba0ed0004358a32818a4db3732155842dff069:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "Player initiates a survival run with limited resources and risk assessment.",
+          "discovery": "The game presents a new challenge that requires further adaptation and strategy.",
+          "newChoice": "Player chooses to customize their build for future encounters."
+        },
+        {
+          "clue": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+          "discovery": "The world state shifts to reflect the new progression path and modified build.",
+          "newChoice": "Player faces escalating threats that require adaptive strategies."
+        },
+        {
+          "clue": "Player's final decision creates a new causal loop between progression and build, influencing future encounters.",
+          "discovery": "Each run is unique yet connected through causal loops.",
+          "newChoice": "Player continues the run with adjusted resource allocation and risk assessment."
+        },
+        {
+          "clue": "Survival mechanics are contrasted with resource management through dynamic progression.",
+          "discovery": "The game blends action-survival mechanics with strategic planning.",
+          "newChoice": "Player modifies their build to match the new progression direction."
+        }
+      ],
+      "delveGrowthRule": "Players grow by adapting their builds and expanding their understanding of progression paths over time.",
+      "finalGameIdentity": "Harbor Days is an ACTION_SURVIVAL_ROGUELITE game where players open new pathways through iterative choices, blending survival challenges with strategic planning in a dynamic interplay of resource management and adaptive strategy."
+    },
+    "local_authoring_parts::b6fe26561ddda9938623fbbae5dcdcd90a76b8af723309c100e22ac8bf3d055c:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "Survival",
+          "kind": "GENRE",
+          "gameplayEffect": "Player faces escalating threats and must manage resources to survive."
+        },
+        {
+          "name": "Progression",
+          "kind": "GENRE",
+          "gameplayEffect": "Player's choices influence the next challenge and build customization."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Real-time survival with progression and resource management."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "STRATEGIC_PLANNING",
+          "gameplayEffect": "Player uses strategic planning to adapt to challenges."
+        }
+      ],
+      "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
+      "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops.",
+      "delveDiscoveries": [
+        {
+          "clue": "Player initiates a survival run with limited resources and risk assessment.",
+          "discovery": "The game presents a new challenge that requires further adaptation and strategy.",
+          "newChoice": "Player chooses to customize their build for future encounters."
+        },
+        {
+          "clue": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+          "discovery": "The world state shifts to reflect the new progression path and modified build.",
+          "newChoice": "Player faces escalating threats that require adaptive strategies."
+        },
+        {
+          "clue": "Player's final decision creates a new causal loop between progression and build, influencing future encounters.",
+          "discovery": "Each run is unique yet connected through causal loops.",
+          "newChoice": "Player continues the run with adjusted resource allocation and risk assessment."
+        },
+        {
+          "clue": "Survival mechanics are contrasted with resource management through dynamic progression.",
+          "discovery": "The game blends action-survival mechanics with strategic planning.",
+          "newChoice": "Player modifies their build to match the new progression direction."
+        }
+      ],
+      "delveGrowthRule": "Players grow by adapting their builds and expanding their understanding of progression paths over time.",
+      "finalGameIdentity": "Harbor Days is an ACTION_SURVIVAL_ROGUELITE game where players open new pathways through iterative choices, blending survival challenges with strategic planning in a dynamic interplay of resource management and adaptive strategy."
+    },
+    "local_authoring_parts::d45fe6db8c628d264b6dc0d48b40dbef73782324c8bb2309bfe010f5c1647889:creativeGrammar": {
+      "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "a": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Survival, Resource Management, Risk Assessment",
+        "materialDomain": "Real-Time",
+        "stateChange": "Player's action leads to state change of resource allocation and risk assessment."
+      },
+      "b": {
+        "system": "ACTION_SURVIVAL_ROGUELITE",
+        "material": "Progression, Build Customization, Strategic Planning",
+        "materialDomain": "Dynamic Progression",
+        "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
+      },
+      "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+      "abEvolution": {
+        "aChangesB": "Progression path is altered based on player's current build and available resources.",
+        "bChangesA": "Build customization is modified to match the new progression direction.",
+        "lateGameChange": "Player's final decision creates a new causal loop between progression and build, influencing future encounters."
+      },
+      "materialFusion": {
+        "contrast": "Survival mechanics are contrasted with resource management through dynamic progression.",
+        "causalBridge": "Player's choices create a bridge between survival challenges and strategic planning.",
+        "removalConsequence": "Removing a secondary genre removes the corresponding progression path and build modification."
+      },
+      "storyCausalChain": {
+        "cause": "Player initiates a survival run with limited resources and risk assessment.",
+        "characterConflict": "The character faces escalating threats that require adaptive strategies.",
+        "playerChoice": "The player chooses to customize their build for future encounters.",
+        "worldChange": "The world state shifts to reflect the new progression path and modified build.",
+        "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
+      },
+      "cThemes": [
+        {
+          "name": "Survival",
+          "kind": "GENRE",
+          "gameplayEffect": "Player faces escalating threats and must manage resources to survive."
+        },
+        {
+          "name": "Progression",
+          "kind": "GENRE",
+          "gameplayEffect": "Player's choices influence the next challenge and build customization."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Real-time survival with progression and resource management."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "STRATEGIC_PLANNING",
+          "gameplayEffect": "Player uses strategic planning to adapt to challenges."
+        }
+      ],
+      "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
+      "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops.",
+      "delveDiscoveries": [
+        {
+          "clue": "Player initiates a survival run with limited resources and risk assessment.",
+          "discovery": "The game presents a new challenge that requires further adaptation and strategy.",
+          "newChoice": "Player chooses to customize their build for future encounters."
+        },
+        {
+          "clue": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+          "discovery": "The world state shifts to reflect the new progression path and modified build.",
+          "newChoice": "Player faces escalating threats that require adaptive strategies."
+        },
+        {
+          "clue": "Player's final decision creates a new causal loop between progression and build, influencing future encounters.",
+          "discovery": "Each run is unique yet connected through causal loops.",
+          "newChoice": "Player continues the run with adjusted resource allocation and risk assessment."
+        },
+        {
+          "clue": "Survival mechanics are contrasted with resource management through dynamic progression.",
+          "discovery": "The game blends action-survival mechanics with strategic planning.",
+          "newChoice": "Player modifies their build to match the new progression direction."
+        }
+      ],
+      "delveGrowthRule": "Players grow by adapting their builds and expanding their understanding of progression paths over time.",
+      "finalGameIdentity": "Harbor Days is an ACTION_SURVIVAL_ROGUELITE game where players open new pathways through iterative choices, blending survival challenges with strategic planning in a dynamic interplay of resource management and adaptive strategy."
+    },
+    "local_authoring_parts::9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Survival, Resource Management, Risk Assessment",
+          "materialDomain": "Real-Time",
+          "stateChange": "Player's action leads to state change of resource allocation and risk assessment."
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Progression, Build Customization, Strategic Planning",
+          "materialDomain": "Dynamic Progression",
+          "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
+        },
+        "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+        "abEvolution": {
+          "aChangesB": "Progression path is altered based on player's current build and available resources.",
+          "bChangesA": "Build customization is modified to match the new progression direction.",
+          "lateGameChange": "Player's final decision creates a new causal loop between progression and build, influencing future encounters."
+        },
+        "materialFusion": {
+          "contrast": "Survival mechanics are contrasted with resource management through dynamic progression.",
+          "causalBridge": "Player's choices create a bridge between survival challenges and strategic planning.",
+          "removalConsequence": "Removing a secondary genre removes the corresponding progression path and build modification."
+        },
+        "storyCausalChain": {
+          "cause": "Player initiates a survival run with limited resources and risk assessment.",
+          "characterConflict": "The character faces escalating threats that require adaptive strategies.",
+          "playerChoice": "The player chooses to customize their build for future encounters.",
+          "worldChange": "The world state shifts to reflect the new progression path and modified build.",
+          "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "GENRE",
+            "gameplayEffect": "Player faces escalating threats and must manage resources to survive."
+          },
+          {
+            "name": "Progression",
+            "kind": "GENRE",
+            "gameplayEffect": "Player's choices influence the next challenge and build customization."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "Real-time survival with progression and resource management."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "STRATEGIC_PLANNING",
+            "gameplayEffect": "Player uses strategic planning to adapt to challenges."
+          }
+        ],
+        "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
+        "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player initiates a survival run with limited resources and risk assessment.",
+            "discovery": "The game presents a new challenge that requires further adaptation and strategy.",
+            "newChoice": "Player chooses to customize their build for future encounters."
+          },
+          {
+            "clue": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+            "discovery": "The world state shifts to reflect the new progression path and modified build.",
+            "newChoice": "Player faces escalating threats that require adaptive strategies."
+          },
+          {
+            "clue": "Player's final decision creates a new causal loop between progression and build, influencing future encounters.",
+            "discovery": "Each run is unique yet connected through causal loops.",
+            "newChoice": "Player continues the run with adjusted resource allocation and risk assessment."
+          },
+          {
+            "clue": "Survival mechanics are contrasted with resource management through dynamic progression.",
+            "discovery": "The game blends action-survival mechanics with strategic planning.",
+            "newChoice": "Player modifies their build to match the new progression direction."
+          }
+        ],
+        "delveGrowthRule": "Players grow by adapting their builds and expanding their understanding of progression paths over time.",
+        "finalGameIdentity": "Harbor Days is an ACTION_SURVIVAL_ROGUELITE game where players open new pathways through iterative choices, blending survival challenges with strategic planning in a dynamic interplay of resource management and adaptive strategy."
+      }
+    },
+    "local_authoring_parts::613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1:identity,creativeGrammar": {
+      "identity": "Harbor Days은 플레이어가 기존의 점수나 관문을 승계하지 않고, 단순 반복을 거쳐 새로운 행동·경로·관계·발견을 열어주는 ACTION_SURVIVAL_ROGUELITE 게임이다. 주제는 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.'이며, 핵심 재미는 선택 결과가 다음 월드 상태를 바꾸는 반복 가능한 루프이다. 세계 규칙은 플레이어의 행동과 선택이 MAIN×A×B×C와 같은 인과법칙에 따라 실제 상태 변화로 연결되어 있다.",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Survival, Resource Management, Risk Assessment",
+          "materialDomain": "Real-Time",
+          "stateChange": "Player's action leads to state change of resource allocation and risk assessment."
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "Progression, Build Customization, Strategic Planning",
+          "materialDomain": "Dynamic Progression",
+          "stateChange": "Player's choice alters the progression path and modifies the build for future encounters."
+        },
+        "abCausality": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+        "abEvolution": {
+          "aChangesB": "Progression path is altered based on player's current build and available resources.",
+          "bChangesA": "Build customization is modified to match the new progression direction.",
+          "lateGameChange": "Player's final decision creates a new causal loop between progression and build, influencing future encounters."
+        },
+        "materialFusion": {
+          "contrast": "Survival mechanics are contrasted with resource management through dynamic progression.",
+          "causalBridge": "Player's choices create a bridge between survival challenges and strategic planning.",
+          "removalConsequence": "Removing a secondary genre removes the corresponding progression path and build modification."
+        },
+        "storyCausalChain": {
+          "cause": "Player initiates a survival run with limited resources and risk assessment.",
+          "characterConflict": "The character faces escalating threats that require adaptive strategies.",
+          "playerChoice": "The player chooses to customize their build for future encounters.",
+          "worldChange": "The world state shifts to reflect the new progression path and modified build.",
+          "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "GENRE",
+            "gameplayEffect": "Player faces escalating threats and must manage resources to survive."
+          },
+          {
+            "name": "Progression",
+            "kind": "GENRE",
+            "gameplayEffect": "Player's choices influence the next challenge and build customization."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "Real-time survival with progression and resource management."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "STRATEGIC_PLANNING",
+            "gameplayEffect": "Player uses strategic planning to adapt to challenges."
+          }
+        ],
+        "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
+        "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player initiates a survival run with limited resources and risk assessment.",
+            "discovery": "The game presents a new challenge that requires further adaptation and strategy.",
+            "newChoice": "Player chooses to customize their build for future encounters."
+          },
+          {
+            "clue": "Player's decision directly influences the next state, creating a causal loop between progression and build customization.",
+            "discovery": "The world state shifts to reflect the new progression path and modified build.",
+            "newChoice": "Player faces escalating threats that require adaptive strategies."
+          },
+          {
+            "clue": "Player's final decision creates a new causal loop between progression and build, influencing future encounters.",
+            "discovery": "Each run is unique yet connected through causal loops.",
+            "newChoice": "Player continues the run with adjusted resource allocation and risk assessment."
+          },
+          {
+            "clue": "Survival mechanics are contrasted with resource management through dynamic progression.",
+            "discovery": "The game blends action-survival mechanics with strategic planning.",
+            "newChoice": "Player modifies their build to match the new progression direction."
+          }
+        ],
+        "delveGrowthRule": "Players grow by adapting their builds and expanding their understanding of progression paths over time.",
+        "finalGameIdentity": "Harbor Days is an ACTION_SURVIVAL_ROGUELITE game where players open new pathways through iterative choices, blending survival challenges with strategic planning in a dynamic interplay of resource management and adaptive strategy."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1028900,
-      "lastMs": 108685,
+      "totalMs": 1147991,
+      "lastMs": 119091,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:09:34.256Z"
+      "updatedAt": "2026-10-09T18:11:33.349Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:09:34.256Z",
+  "updatedAt": "2026-10-09T18:11:33.354Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,7 +2172,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:09:34.256Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:11:33.354Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
