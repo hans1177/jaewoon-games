@@ -5,32 +5,38 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
-test('개발 Unity WebGL의 /unity/ 경로가 없으면 기존 출력 루트의 실제 4종 빌드 파일을 검사한다',async()=>{
+test('실제 Unity WebGL 3D/모바일/독립 QA를 통과한 동일 주소만 실행 가능하다',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const fetched=[];
+  let independentPass=true;
+  const group={loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']};
+  const valid3d={pass:true,spatialGameplay:{pass:true,requiredDimension:'3D'},visualQa:{nativeUnityMesh:{pass:true}},mobile:{pass:true}};
   const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
     document:{readyState:'loading',addEventListener(){}},
     AbortController,setTimeout,clearTimeout,
     fetch:async(url,options={})=>{
       const location=String(url);
       fetched.push(location);
-      if(location.includes('/unity/index.html'))return{ok:false};
-      if(location.includes('/index.html'))return{ok:true,text:async()=>
-        '<div id="unity-container"></div><script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas, {dataUrl:"Build/demo.data", frameworkUrl:"Build/demo.framework.js", codeUrl:"Build/demo.wasm"});</script>'};
-      if(location.includes('unity-web-deploy-manifest.json'))return{ok:false};
-      if(options.method==='HEAD')return{ok:true};
-      return{ok:false};
+      if(location.includes('index.html'))return{ok:true,text:async()=>'<script>createUnityInstance(canvas,{})</script>'};
+      if(location.includes('unity-web-deploy-manifest.json'))return{ok:true,json:async()=>({engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,requiredGroups:group})};
+      if(location.includes('unity-web-gameplay-validation.json'))return{ok:true,json:async()=>valid3d};
+      if(location.includes('unity-web-independent-qa.json'))return{ok:true,json:async()=>({...valid3d,pass:independentPass})};
+      if(location.includes('unity-web-regression.json'))return{ok:true,json:async()=>valid3d};
+      if(location.includes('upper-platform-development-readiness.json'))return{ok:true,json:async()=>({gameId:'demo',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true})};
+      return{ok:options.method==='HEAD'};
     }
   });
   engine.setExposure({unityWebEnabled:true,games:[]});
-  const result=await engine.bindAvailableUnityWebSurfaces({games:[
-    {id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}
-  ]});
-  assert.equal(result.games[0].unityWebAvailable,true);
-  assert.equal(result.games[0].unityWebTestUrl,'/web-games/demo/');
-  assert.ok(fetched.some(url=>url.includes('/unity/index.html')));
+  const catalog={games:[{id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}]};
+  const ready=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(ready.games[0].unityWebAvailable,true);
+  assert.equal(ready.games[0].unityWebTestUrl,'/web-games/demo/');
   assert.ok(fetched.some(url=>url.includes('/web-games/demo/index.html')));
   assert.equal(fetched.filter(url=>url.includes('/Build/demo.')).length,4);
+  independentPass=false;
+  const blocked=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(blocked.games[0].unityWebAvailable,false,'independent QA failure must hide link');
+  assert.equal(blocked.games[0].unityWebTestUrl,null);
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
@@ -49,7 +55,7 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   const design=base('design-without-release','DESIGN_ONLY');
   const released=base('released-without-build','RELEASE_CONFIRMED');
   const list=api.developmentRows({games:[dev,design,released]},{});
-  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release']);
+  assert.deepEqual(Array.from(list,game=>game.id),[],'Unity WebGL without verified runtime must stay hidden');
   assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
@@ -82,7 +88,7 @@ test('runnable native tests remain accessible before release and survive web-onl
   assert.equal(links.roblox,'https://www.roblox.com/games/123456789');
   assert.equal(links.unity,'https://example.com/access-test.apk');
   assert.equal(links.web,'');
-  assert.equal(api.hasRunnableHomepageTarget(game),true);
+  assert.equal(api.hasRunnableHomepageTarget(game),false,'native execution must remain independent without becoming a Unity Web-only homepage card');
   assert.equal(api.hasInternalRelease(game),false);
 });
 
@@ -251,15 +257,15 @@ test('homepage exposes only verified Unity WebGL and preserves independent Roblo
   assert.equal(surface.homepageLinkQaPassRequired,true);
   assert.equal(surface.homepageLinkEvidenceFilesRequired,true);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(renderer,/bindAvailableUnityWebSurfaces\\(catalog\\)/);
-  assert.match(renderer,/projectPath===`unity-games\\/\\$\\{id\\}`/);
-  assert.match(renderer,/unity-web-deploy-manifest\\.json/);
-  assert.match(renderer,/unity-web-independent-qa\\.json/);
-  assert.match(renderer,/upper-platform-development-readiness\\.json/);
+  assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
+  assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
+  assert.match(renderer,/unity-web-deploy-manifest\.json/);
+  assert.match(renderer,/unity-web-independent-qa\.json/);
+  assert.match(renderer,/upper-platform-development-readiness\.json/);
   assert.match(renderer,/method:'HEAD'/);
   assert.match(renderer,/unityWebAvailable:true/);
-  assert.match(renderer,/return Boolean\\(links\\.unityWeb\\);/);
-  assert.doesNotMatch(renderer,/button\\(links\\.web,'웹 플레이'/);
+  assert.match(renderer,/return Boolean\(links\.unityWeb\);/);
+  assert.doesNotMatch(renderer,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(renderer,/bundleGroupsFromUnityIndex/);
 });
 
