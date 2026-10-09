@@ -101,7 +101,8 @@ jobs:
           for attempt in 1 2 3 4; do
             echo "DEVELOPMENT_QUEUE_RECONCILE_ATTEMPT=${attempt}/4"
             git fetch origin main "$COMPANY_RUNTIME_BRANCH"
-            git checkout -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            # Discard checkout-generated tracked/LFS changes in this disposable CI worktree.
+            git checkout -f -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
             git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
