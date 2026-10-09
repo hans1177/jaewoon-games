@@ -27,25 +27,33 @@
       "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다. 플레이어는 알 도둑 대작전의 실제 플레이 공간에서 'Scout a small area and identify the target egg and patrol risk.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 영향을 주는 시그니처 세계 규칙에 연결된다. 이 과정에서 단순한 탐험이 아닌, 성장과 위험의 균형을 맞추는 전략적 결정이 필요하다.",
       "playerFantasy": "알 도둑 대작전에서는 플레이어가 'Scout a small area and identify the target egg and patrol risk.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 영향을 주는 시그니처 세계 규칙에 연결된다. 이 과정에서 단순한 탐험이 아닌, 성장과 위험의 균형을 맞추는 전략적 결정이 필요하다.",
       "coreFun": "플레이어는 'Scout a small area and identify the target egg and patrol risk.'이라는 중심 행동을 수행하며, 선택 결과가 다음 월드 상태로 영향을 주는 시그니처 세계 규칙에 연결된다. 이 과정에서 단순한 탐험이 아닌, 성장과 위험의 균형을 맞추는 전략적 결정이 필요하다."
+    },
+    "local_authoring_parts::4bdb9326652209133ac480acf31817c766387992ac09b32388c257189827fc4a:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "Scout a small area and identify the target egg and patrol risk.",
+        "Create an opening, steal or move the egg and react to detection.",
+        "Escape with the reward and unlock a trick, route or harder heist."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 121225,
-      "lastMs": 15688,
+      "totalMs": 139310,
+      "lastMs": 18085,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:06:45.404Z"
+      "updatedAt": "2026-10-09T11:07:03.491Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:04:43.965Z",
-  "updatedAt": "2026-10-09T11:06:45.405Z",
+  "updatedAt": "2026-10-09T11:07:03.491Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1907,7 +1915,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:06:45.405Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:07:03.491Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
