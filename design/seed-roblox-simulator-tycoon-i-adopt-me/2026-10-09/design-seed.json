@@ -11,101 +11,98 @@
   "status": "AUTHORED_CANDIDATE",
   "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
   "originalSource": null,
-  "fingerprint": "a06e3c1ea814ac96cffc0334ef51f64b7d05addf11892c2f699aecb13323748a",
+  "fingerprint": "2ef1ad45b4d2fda8884ea8e3bc0e41f53dd0f761f1ecc8c38f2570c3f82df837",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
-  "contentDigest": "7481445655003e061b586083b2ab534ae86244e641a6b8594a89a250e6b01191",
+  "contentDigest": "8b061763e9a3faf424d2662e1b850df5a2b565cddb714c75a94452552b418c3f",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "Pocket Foundry - 단일 전략 게임, 선택적 진입 및 반복 가능한 루프 기반 시뮬레이션 플랫폼, 모바일에서 즉시 이해되는 입력/피드백 중심의 세계 상태 변화 관리 시스템, 주요 행동: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route., 주요 선택: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases., 대축 A: Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices., 대축 B: Main action with state change and risk/reward connection, c: 보조 요소로 사용 가능하며 상황별 변주가 이루어진다., @ 파고들기: 발견, 숙련, 재방문 깊이를 통해 콘텐츠 확장 및 조합 개발을 위한 인과 문법 구현, 시그니처 시스템: MAIN, A, B, C 각각 다른 기존 또는 신규 시스템으로 연결되어 실제 상태 교환을 증명한다. 게임 규칙은 공유 규칙에 따라 유지되며 원본 수치와 규칙은 보존된다. 게임은 단일 장르이며, 멀티 플레이 모드는 기존 COOP/COMPETITIVE/HYBRID 규칙을 따름니다. Unity WebGL 프로필에서는 2.5D 이상의 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획이 포함됩니다. 설계는 학문적 규칙과 관계를 중심으로 하여 진입부터 숙련까지 다양한 선택과 반복이 가능한 루프를 만든다. 주요 행동은 대표적인 선택으로 바뀌어 실제 플레이에서 즉시 이해되는 입력/피드백을 제공하며",
-    "playerFantasy": "Pocket Foundry은 단일 전략 게임, 선택적 진입 및 반복 가능한 루프 기반 시뮬레이션 플랫폼이다. 모바일에서 즉시 이해되는 입력/피드백 중심의 세계 상태 변화 관리 시스템으로, 주요 행동은 'Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.'이며, 주요 선택은 'Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.'로 구성된다. 대축 A는 'Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.'로, 대축 B는 MAIN action with state change and risk/reward connection으로, c는 보조 요소로 사용 가능하며 상황별 변주가 이루어진다. @ 파고들기는 발견, 숙련, 재방문 깊이를 통해 콘텐츠 확장 및 조합 개발을 위한 인과 문법 구현으로, 시그니처 시스템은 MAIN, A, B, C 각각 다른 기존 또는 신규 시스템으로 연결되어 실제 상태 교환을 증명한다. 게임 규칙은 공유 규칙에 따라 유지되며 원본 수치와 규칙은 보존된다. 게임은 단일 장르이며, 멀티 플레이 모드는 기존 COOP/COMPETITIVE/HYBRID 규칙을 따름니다. Unity WebGL 프로필에서는 2.5D 이상의 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증",
-    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임의 핵심 행동과 목표로 실제 월드/시스템 상태 변화를 연결하는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+    "identity": "Pocket Foundry은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다. 세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다. 시스템은 MAIN×A×B×c의 관계를 유지하며, 각 대축은 서로 다른 선택과 결과에 연결되어 있어 게임의 구조적 다양성을 높인다. 콘텐츠는 기존 장르 태그와 복제되지 않고, 상황별로 다르게 해석되며, 인과법칙이 실제 게임 상태 변화에 영향을 미친다. 설계는 원본 규칙과 수치를 모두 존중하고, 점수와 통화 판정은 결정론적 검증기가 담당한다.",
+    "playerFantasy": "Pocket Foundry은 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다. 세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다. 시스템은 MAIN×A×B×c의 관계를 유지하며, 각 대축은 서로 다른 선택과 결과에 연결되어 있어 게임의 구조적 다양성을 높인다. 콘텐츠는 기존 장르 태그와 복제되지 않고, 상황별로 다르게 해석되며, 인과법칙이 실제 게임 상태 변화에 영향을 미친다. 설계는 원본 규칙과 수치를 모두 존중하고, 점수와 통화 판정은 결정론적 검증기가 담당한다.",
+    "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다. 세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다. 시스템은 MAIN×A×B×c의 관계를 유지하며, 각 대축은 서로 다른 선택과 결과에 연결되어 있어 게임의 구조적 다양성을 높인다. 콘텐츠는 기존 장르 태그와 복제되지 않고, 상황별로 다르게 해석되며, 인과법칙이 실제 게임 상태 변화에 영향을 미친다. 설계는 원본 규칙과 수치를 모두 존중하고, 점수와 통화 판정은 결정론적 검증기가 담당한다.",
     "coreLoop": [
-      "INPUT/SELECT -> STATE CHANGE -> REWARD/RISK/NEXT CHOICE",
-      "READ NEXT ENEMY WAVE AND PLACE TOWERS/OR DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE.",
-      "EARN RESOURCES FROM DEFEATED ENEMIES AND SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCREASES."
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.의 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다.",
+      "플레이어는 매번 새로운 전략을 세우며, 이전 선택의 비용, 위험, 보상을 재평가하여 새 행동과 경로를 열어간다.",
+      "세계 규칙은 단순 반복보다는 다양한 위험, 성공, 실패의 조합을 통해 플레이어에게 지속적인 도전감을 주고 있다."
     ],
     "signatureSystems": [
       {
-        "id": "SIGNATURE_SYSTEM_0",
+        "id": "CORE-01",
         "grammarRole": "MAIN",
         "stateInputs": [
-          "READ NEXT ENEMY WAVE",
-          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          "READ_NEXT_ENEMY_WAVE",
+          "PLACE_TOWERS_DEFENDERS"
         ],
         "stateOutputs": [
-          "EARN RESOURCES FROM DEFEATED ENEMIES",
-          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          "CHANGED_WORLD_STATE"
         ],
-        "name": "SINGLE_DEFENSE_STRATEGY",
-        "purpose": "CONNECT MAIN ACTION WITH STATE CHANGE AND RISK/REWARD CONNECTION",
-        "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVES COMPOSITION, PROTECT OBJECTIVE, CLEAR STAGE/BOSSE TO UNLOCK HARDER DEFENCE CHOICES"
+        "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+        "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
       },
       {
-        "id": "SIGNATURE_SYSTEM_1",
+        "id": "CORE-02",
         "grammarRole": "A",
         "stateInputs": [
-          "READ NEXT ENEMY WAVE",
-          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          "ENEMY_WAVE_COMPLETED",
+          "RESOURCE_GAINED"
         ],
         "stateOutputs": [
-          "EARN RESOURCES FROM DEFEATED ENEMIES",
-          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          "UPGRADE_AVAILABLE",
+          "NEW_PLACEMENT_OPPORTUNITY"
         ],
-        "name": "SINGLE_DEFENSE_STRATEGY",
-        "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices.",
-        "playerChoice": "Place towers or defenders on lanes or positions that cover the threatened route before pressure increases."
+        "name": "Enemy Wave Completion and Resource Gain",
+        "purpose": "Player evaluates the cost, risk, and reward of completing an enemy wave and gaining resources, then re-evaluates their strategy to open new paths.",
+        "playerChoice": "Reevaluate strategy based on previous costs, risks, and rewards, opening new paths through upgrades or placements."
       },
       {
-        "id": "SIGNATURE_SYSTEM_2",
+        "id": "CORE-03",
         "grammarRole": "B",
         "stateInputs": [
-          "READ NEXT ENEMY WAVE",
-          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          "ENEMY_WAVE_COMPLETED",
+          "RESOURCE_GAINED"
         ],
         "stateOutputs": [
-          "EARN RESOURCES FROM DEFEATED ENEMIES",
-          "SPEND THEM ON UPGRADES, NEW PLACEMENTS, OR TACTICAL CHANGES BEFORE PRESSURE INCR"
+          "UPGRADE_AVAILABLE",
+          "NEW_PLACEMENT_OPPORTUNITY"
         ],
-        "name": "SINGLE_DEFENSE_STRATEGY",
-        "purpose": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES",
-        "playerChoice": "ADAPT DEFENCE TO ENEMY TYPES AND WAVE COMPOSITION, PROTECT OBJECTIVE, AND CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+        "name": "Enemy Wave Completion and Resource Gain",
+        "purpose": "Player evaluates previous choices, re-evaluates cost, risk, reward, and opens new paths for strategy development.",
+        "playerChoice": "Selects optimal placement and upgrade path based on current resource state and enemy wave progress."
       },
       {
-        "id": "SIGNATURE_SYSTEM_3",
+        "id": "CORE-04",
         "grammarRole": "c",
         "stateInputs": [
-          "READ NEXT ENEMY WAVE",
-          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          "ENEMY_WAVE_COMPLETED",
+          "RESOURCE_GAINED"
         ],
         "stateOutputs": [
-          "ADAPT DEFENSE TO ENEMY TYPES AND WAVE COMPOSITION",
-          "PROTECT OBJECTIVE",
-          "CLEAR STAGE OR BOSS TO UNLOCK HARDER DEFENCE CHOICES"
+          "UPGRADE_AVAILABLE",
+          "NEW_PLACEMENT_OPPORTUNITY"
         ],
-        "name": "ADAPTATION_AND_STRATEGY",
-        "purpose": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defence choices.",
-        "playerChoice": "Choose defensive strategies that align with enemy patterns, prioritize protection of key objectives, and strategically clear obstacles to progress."
+        "name": "Enemy Wave Completion and Resource Gain",
+        "purpose": "Player evaluates the cost, risk, and reward of previous choices to re-evaluate their strategy and open new paths.",
+        "playerChoice": "Reassess prior decisions to generate new actions and routes."
       },
       {
-        "id": "SIGNATURE_SYSTEM_4",
+        "id": "CORE-05",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "READ NEXT ENEMY WAVE",
-          "PLACE TOWERS/DEFENDERS ON LANE/POSITIONS THAT COVER THE THREATENED ROUTE"
+          "ENEMY_WAVE_COMPLETED",
+          "RESOURCE_GAINED"
         ],
         "stateOutputs": [
-          "DISCOVER NEW STRATEGIES AND COMBINATIONS",
-          "EXTEND CONTENT THROUGH EMERGENT SYNTAX",
-          "REFRESH AND REINTERPRET PREVIOUS DECISIONS"
+          "UPGRADE_AVAILABLE",
+          "NEW_PLACEMENT_OPPORTUNITY"
         ],
-        "name": "EMERGENCY_STRATEGY_EXPANSION",
-        "purpose": "Provides the player with new and evolving strategies, combinations, and interpretations of previous decisions through emergent grammar.",
-        "playerChoice": "The player chooses which new strategies to adopt, how to combine them, and what to interpret next in the game's dynamic and evolving landscape."
+        "name": "Enemy Wave Completion and Resource Gain",
+        "purpose": "Player evaluates the cost, risk, and reward of previous choices to adapt their strategy and open new paths.",
+        "playerChoice": "Re-evaluate prior decisions to select new tactics and opportunities for placement or upgrades."
       }
     ],
-    "multiplayerMode": "COOP"
+    "multiplayerMode": "HYBRID"
   },
-  "updatedAt": "2026-10-09T09:38:23.771Z"
+  "updatedAt": "2026-10-09T11:49:48.056Z"
 }
