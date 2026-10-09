@@ -800,25 +800,31 @@
     },
     "local_authoring_parts::53e91bbd8802a925cc20cae1709669e7b32f6c2baafd30a0ba01c11ed211a6a8:toId": {
       "toId": "DELVE"
+    },
+    "local_authoring_parts::53e91bbd8802a925cc20cae1709669e7b32f6c2baafd30a0ba01c11ed211a6a8:stateKeys": {
+      "stateKeys": [
+        "GAME_WORLD",
+        "EVENT"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 37,
-      "successes": 36,
+      "calls": 38,
+      "successes": 37,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2921859,
-      "lastMs": 59357,
+      "totalMs": 2982106,
+      "lastMs": 60247,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:16:48.275Z"
+      "updatedAt": "2026-10-09T23:17:48.524Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T23:16:48.276Z",
+  "updatedAt": "2026-10-09T23:17:48.524Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2867,7 +2873,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:16:48.275Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:17:48.524Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
