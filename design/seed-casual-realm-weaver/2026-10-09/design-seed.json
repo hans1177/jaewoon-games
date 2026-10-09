@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-10-09",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": null,
+  "fingerprint": "15218cb013e1e91d27fce3c825d81e71cbcebea785c62c2ec83684f7b372d01b",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "contentDigest": "62c9166431336e63620ea7ee771ee06aa9d7fc6ac1b6ca0cd2cbe33fabea203b",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "세계의 직조자 - 캐주얼 세계 창조 게임\n플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "playerFantasy": "세계의 직조자는 시작부터 단순한 한 손 tap/swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이어가 선택 결과를 다음 월드 상태로 바꾸는 CASUAL 게임이다. 이 선택은 캐주얼의 핵심 행동과 목표와 실제 월드/시스템 상태 변화에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "coreFun": "플레이어는 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n플레이어의 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.과 선택이 CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.\n\n성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+    "coreLoop": [
+      "INPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nSELECT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nOUTPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry,",
+      "INPUT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nSELECT: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nOUTPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or rer",
+      "INPUT: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nSELECT: Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nOUTPUT: Start immediately with simple one-thumb tap or swipe input and a clear score, "
+    ],
+    "signatureSystems": [
+      {
+        "id": "SIGNATURE_SYSTEM_0",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "START_INPUT",
+          "RESULT_STATE"
+        ],
+        "stateOutputs": [
+          "END_RESULT"
+        ],
+        "name": "CASUAL_GAME_FLOW",
+        "purpose": "Player's initial action and its consequence in a casual game environment.",
+        "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_1",
+        "grammarRole": "A",
+        "stateInputs": [
+          "START_INPUT",
+          "RESULT_STATE"
+        ],
+        "stateOutputs": [
+          "END_RESULT"
+        ],
+        "name": "CASUAL_GAME_FLOW_A",
+        "purpose": "MAIN × A × B × c의 상태 교환을 실제 시스템으로 연결하는 보조 인과법칙",
+        "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nFinish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.\nStart again with the same rules and state to continue the game flow."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_2",
+        "grammarRole": "B",
+        "stateInputs": [
+          "START_INPUT",
+          "RESULT_STATE"
+        ],
+        "stateOutputs": [
+          "END_RESULT"
+        ],
+        "name": "CASUAL_GAME_FLOW_B",
+        "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+        "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.\nStart immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\nPlay a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_3",
+        "grammarRole": "c",
+        "stateInputs": [
+          "START_INPUT",
+          "RESULT_STATE"
+        ],
+        "stateOutputs": [
+          "END_RESULT"
+        ],
+        "name": "CASUAL_GAME_FLOW_C",
+        "purpose": "게임 내에서 MAIN/A/B의 선택 결과를 변주하는 보조 요소로, 발견·숙련·재방문 깊이를 제공합니다.",
+        "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\n\n플레이어는 시작부터 단순한 한 손 tap/swipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표 중심으로 플레이하여 다음 월드 상태를 바꿉니다. 이 선택은 캐주얼의 핵심 행동과 목표와 실제 월드/시스템 상태 변화에 연결되어 있으며, 성장은 수치 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 합니다."
+      },
+      {
+        "id": "SIGNATURE_SYSTEM_4",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "START_INPUT",
+          "RESULT_STATE"
+        ],
+        "stateOutputs": [
+          "END_RESULT"
+        ],
+        "name": "CASUAL_GAME_FLOW_DELVE",
+        "purpose": "Discover, master, and revisit content through gameplay progression.",
+        "playerChoice": "Explore new paths, unlock deeper understanding, or return to previous states through strategic play and discovery."
+      }
+    ],
+    "multiplayerMode": "HYBRID"
+  },
+  "updatedAt": "2026-10-09T09:26:54.740Z"
+}
