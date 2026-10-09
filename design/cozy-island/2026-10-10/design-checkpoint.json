@@ -616,21 +616,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 14,
+      "calls": 17,
+      "successes": 15,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1910874,
-      "lastMs": 80392,
+      "totalMs": 1995947,
+      "lastMs": 85073,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:39:23.826Z"
+      "updatedAt": "2026-10-09T17:40:48.900Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:07:32.737Z",
-  "updatedAt": "2026-10-09T17:39:23.826Z",
+  "updatedAt": "2026-10-09T17:40:48.901Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2038,14 +2038,25 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:3": [
+    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:4": [
       {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "c",
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "DELVE",
         "previousRuleIds": [
           "1",
           "2",
-          "3"
+          "3",
+          "4"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "1",
+          "2",
+          "3",
+          "4"
         ]
       }
     ]
@@ -2053,15 +2064,16 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:1": 1,
     "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:2": 1,
-    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:3": 1
+    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:3": 1,
+    "local_authoring_parts::090823b8d2a3067bab7798525eee469ff1dde41edbe572982af6533926f8624d:signatureSystems:4": 1
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "e8df166333f3847595a0c47cae7984b1d70ae5bf3ca41b1cdd0380008fe4f10b": true,
     "984307432df21cc9fa083075c9bf0d8802739226c685109d1498f04260e7075f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:39:23.826Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T17:40:48.900Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
