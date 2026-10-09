@@ -556,25 +556,60 @@
         "resourceFlow": "BALANCED",
         "balanceRules": "AUTOMATICALLY_ADJUSTED"
       }
+    },
+    "local_authoring_parts::9fea53ce5ec4118097f199889194258835b105b730606753c07f953c0beb49d0:contentExpansionPlan,failureRetryRisk": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_INPUT",
+          "newGameplay": "플레이어가 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다.",
+          "systemImpact": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
+        },
+        {
+          "milestone": "RUN_OUTPUT",
+          "newGameplay": "짧은 실행 후에는 읽기 가능한 피드백을 제공하여 보상을 수집하고, 작은 위험 또는 경로 선택을 포함한 조합 실험을 수행하게 된다.",
+          "systemImpact": "보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다."
+        },
+        {
+          "milestone": "REWARD_STATE",
+          "newGameplay": "실행 결과에 따른 보상은 점수, 거리, 혹은 선택적 장기 숙련으로 표현된다. 이는 플레이어가 재도전 준비를 하며 투자하는 방식으로 설계된 것이다.",
+          "systemImpact": "플레이어는 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다."
+        },
+        {
+          "milestone": "PROGRESSION_STATE",
+          "newGameplay": "재도전 시점에서는 새로운 진입 가능 구조를 생성하여 플레이어의 관심과 숙련 수준에 맞춘 경험을 제공한다.",
+          "systemImpact": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "START_INPUT",
+          "RUN_OUTPUT",
+          "REWARD_STATE",
+          "PROGRESSION_STATE"
+        ],
+        "retryFlow": "실패 후에는 보상 및 진입 기회를 다시 제공하여 재도전을 유도하고, 이 과정은 플레이어가 투자하는 방식으로 설계된 것이다.",
+        "riskPressure": "보상 조건, 비용, 누적 진척, 약속한 확정 보상, 확률 보상의 실제 확률, 중복 보상의 쓰임, 중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다.",
+        "recoveryRules": "실패 시에도 읽기 가능한 피드백과 보상을 제공하며, 재도전 준비는 관련 메뉴에 연결되고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1276638,
-      "lastMs": 244378,
+      "totalMs": 1457148,
+      "lastMs": 180510,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T09:32:25.708Z"
+      "updatedAt": "2026-10-09T09:35:26.220Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:11:09.017Z",
-  "updatedAt": "2026-10-09T09:32:25.708Z",
+  "updatedAt": "2026-10-09T09:35:26.226Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2648,17 +2683,183 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "9f048791092feae967c80994813596f3d4d05b4e225e1c8d9331c7b6f07064ff"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].trigger",
+          "value": "SIMPLE_TAP_OR_SWIPE"
+        },
+        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_INPUT→RUN_OUTPUT의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_INPUT→RUN_OUTPUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_INPUT→REWARD_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_INPUT→REWARD_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_INPUT→PROGRESSION_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_INPUT→PROGRESSION_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_INPUT→DELVE_OUTPUT의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_INPUT→DELVE_OUTPUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "START_INPUT→PROGRESSION_OUTPUT의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: START_INPUT→PROGRESSION_OUTPUT의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "local_authoring_parts::decd5553b12c8085cb227559039d667f9831a7c23dd4f3f81ea65f31df30e48a:signatureSystems:4": 1
+    "local_authoring_parts::decd5553b12c8085cb227559039d667f9831a7c23dd4f3f81ea65f31df30e48a:signatureSystems:4": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:32:25.708Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "COST_EFFICIENT",
+        "resourceFlow": "BALANCED",
+        "balanceRules": "AUTOMATICALLY_ADJUSTED"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "START_INPUT",
+          "newGameplay": "플레이어가 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다.",
+          "systemImpact": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
+        },
+        {
+          "milestone": "RUN_OUTPUT",
+          "newGameplay": "짧은 실행 후에는 읽기 가능한 피드백을 제공하여 보상을 수집하고, 작은 위험 또는 경로 선택을 포함한 조합 실험을 수행하게 된다.",
+          "systemImpact": "보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다."
+        },
+        {
+          "milestone": "REWARD_STATE",
+          "newGameplay": "실행 결과에 따른 보상은 점수, 거리, 혹은 선택적 장기 숙련으로 표현된다. 이는 플레이어가 재도전 준비를 하며 투자하는 방식으로 설계된 것이다.",
+          "systemImpact": "플레이어는 시작 즉시 단순 한 손 가리움치로 입력하며 점수나 거리를 통해 목표를 설정해 세계 상태와 다음 선택을 바꾼다."
+        },
+        {
+          "milestone": "PROGRESSION_STATE",
+          "newGameplay": "재도전 시점에서는 새로운 진입 가능 구조를 생성하여 플레이어의 관심과 숙련 수준에 맞춘 경험을 제공한다.",
+          "systemImpact": "게임 내부의 인과법칙에 따라 진입 시점부터의 모든 행동과 선택이 순차적으로 진행되는 빌드 속에서, 발견·숙련·재방문의 깊이로 새로운 플레이 경로를 열어준다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "START_INPUT",
+          "RUN_OUTPUT",
+          "REWARD_STATE",
+          "PROGRESSION_STATE"
+        ],
+        "retryFlow": "실패 후에는 보상 및 진입 기회를 다시 제공하여 재도전을 유도하고, 이 과정은 플레이어가 투자하는 방식으로 설계된 것이다.",
+        "riskPressure": "보상 조건, 비용, 누적 진척, 약속한 확정 보상, 확률 보상의 실제 확률, 중복 보상의 쓰임, 중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다.",
+        "recoveryRules": "실패 시에도 읽기 가능한 피드백과 보상을 제공하며, 재도전 준비는 관련 메뉴에 연결되고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T09:35:26.221Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
