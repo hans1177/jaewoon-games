@@ -40,13 +40,17 @@ test('village-dungeons consumes the selected VFX family through a live ParticleE
   assert.match(source,/emitter:Emit\(10\)/);
 });
 
-test('survival consumes its selected VFX atoms in server-confirmed native feedback',()=>{
+test('survival consumes selected VFX atoms in the persistent native creature presentation',()=>{
   const source=fs.readFileSync('roblox-games/survival/client/Game.client.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'VFX'),true);
-  assert.ok(source.includes('control == nil and hasStudioAssetAtom("VFX", "IMPACT_FLASH")'));
-  assert.ok(source.includes('particles.LightEmission = hasStudioAssetAtom("VFX", "SHAPE_BURST")'));
-  assert.ok(source.includes('local particles = Instance.new("ParticleEmitter")'));
-  assert.ok(source.includes('particles:Emit(18)'));
+  const start=source.indexOf('local function applySurvivalCreaturePresentation(enemy)');
+  const end=source.indexOf('\ntask.defer(function()',start);
+  assert.ok(start>0&&end>start);
+  const consumer=source.slice(start,end);
+  assert.ok(consumer.includes('hasStudioAssetAtom("VFX", "ELEMENT_DUST")'));
+  assert.ok(consumer.includes('local emitter = Instance.new("ParticleEmitter")'));
+  assert.ok(consumer.includes('emitter:Emit(hasStudioAssetAtom("VFX", "SHAPE_BURST") and 10 or 6)'));
+  assert.ok(consumer.includes('if emitter.Parent then emitter:Destroy() end'));
 });
 
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
