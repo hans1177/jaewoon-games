@@ -10,6 +10,8 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private const string GameId = "fantasy-survival";
     private const string SavePrefix = "fantasy_survival_webfloor_";
     private const string CreativeSaveKey = SavePrefix + "creative_v1";
+    private const string LegacyCreativeSaveKey = SavePrefix + "creative_world_v1";
+    private const string LegacyNormalSaveKey = SavePrefix + "world_v1";
     private const float HoldSeconds = 0.7f;
     private const float DoubleTapSeconds = 0.42f;
 
@@ -284,6 +286,17 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public GameObject obj;
     }
 
+    // 저장 · 기존 3D 저장 구조를 새 크리에이티브 저장 형식으로 안전하게 이관
+    [Serializable] private sealed class LegacyBlock { public float x, z; }
+    [Serializable] private sealed class LegacyMonster { public string id; public float x, z, hp; public int enemyIndex; public bool attackPlayer; }
+    [Serializable] private sealed class LegacyWorld
+    {
+        public float x, z, hp;
+        public int progress, level, resource, actions, wood, stone;
+        public LegacyBlock[] blocks;
+        public LegacyMonster[] monsters;
+    }
+
     [Serializable]
     private sealed class BlockRecord
     {
@@ -344,6 +357,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private Panel panel = Panel.None;
     private bool creative, placingBlock, musicEnabled = true;
     private float musicVolume = 1f, currentHp = 100f, attackCooldown, saveClock;
+    private float cameraDistance = 14f, moveSpeed = 5.8f;
     private int nextId = 1, selectedMonsterId = -1, aggroMonsterId = -1;
     private int selectedSpeciesIndex, spawnCount = 1, speciesPage, craftPage;
     private string spawnCountText = "1", equippedWeapon = "", info = "";
@@ -361,6 +375,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ReadGameData();
         LoadNormalCounters();
+        cameraDistance = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "camera_distance", 14f), 8f, 24f);
+        moveSpeed = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "move_speed", 5.8f), 3f, 9f);
         BuildWorld();
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=SOURCE_READY_3D");
     }
@@ -478,7 +494,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
 
     private void FollowCamera(bool instant)
     {
-        Vector3 pos = player.position + new Vector3(0f, 14f, -15f);
+        Vector3 pos = player.position + new Vector3(0f, cameraDistance, -cameraDistance);
         mainCamera.transform.position = instant ? pos : Vector3.Lerp(mainCamera.transform.position, pos, Time.deltaTime * 7f);
         mainCamera.transform.LookAt(player.position + Vector3.up);
     }
@@ -507,6 +523,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         else
         {
+            LoadNormalWorld();
             for (int i = 0; i < 8; i++)
                 SpawnMonster(species[i % Mathf.Min(8, species.Count)], new Vector3(Mathf.Cos(i*.78f)*13,0f,Mathf.Sin(i*.78f)*13), false);
             info = "일반 모드 · 전투, 채집, 제작";
@@ -676,7 +693,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Vector3 direct=new Vector3(movement.x,0,movement.y);
             if(direct.sqrMagnitude>.02f)
             {
-                player.position+=direct*6f*dt;
+                player.position+=direct*moveSpeed*dt;
                 player.position=new Vector3(Mathf.Clamp(player.position.x,-38f,38f),0,Mathf.Clamp(player.position.z,-38f,38f));
                 player.rotation=Quaternion.Slerp(player.rotation,Quaternion.LookRotation(direct),dt*9f);
             }
@@ -688,7 +705,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         FollowCamera(false);
         saveClock+=dt;
-        if(saveClock>12f){saveClock=0;if(creative)SaveCreative();}
+        if(saveClock>12f){saveClock=0;if(creative)SaveCreative();else SaveNormalCounters();}
     }
 
     private bool OnHud(Vector2 screenPointer)
@@ -851,12 +868,37 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         actions=PlayerPrefs.GetInt(SavePrefix+"actions",0);
     }
 
+    private void LoadNormalWorld()
+    {
+        string raw=PlayerPrefs.GetString(LegacyNormalSaveKey,"");
+        if(raw.Length==0)return;
+        try
+        {
+            LegacyWorld old=JsonUtility.FromJson<LegacyWorld>(raw);
+            if(old==null)return;
+            player.position=new Vector3(Mathf.Clamp(old.x,-38f,38f),0,Mathf.Clamp(old.z,-38f,38f));
+            currentHp=Mathf.Clamp(old.hp,1f,100f);
+            materials["wood"]=Mathf.Max(0,old.wood);
+            materials["stone"]=Mathf.Max(0,old.stone);
+        }
+        catch(Exception){info="기존 일반 저장 읽기 실패 · 새 게임 진행";}
+    }
+
     private void SaveNormalCounters()
     {
         PlayerPrefs.SetInt(SavePrefix+"progress",progress);
         PlayerPrefs.SetInt(SavePrefix+"level",level);
         PlayerPrefs.SetInt(SavePrefix+"resource",resource);
         PlayerPrefs.SetInt(SavePrefix+"actions",actions);
+        LegacyWorld data=new LegacyWorld
+        {
+            x=player.position.x,z=player.position.z,hp=currentHp,
+            progress=progress,level=level,resource=resource,actions=actions,
+            wood=materials.ContainsKey("wood")?materials["wood"]:0,
+            stone=materials.ContainsKey("stone")?materials["stone"]:0,
+            blocks=new LegacyBlock[0],monsters=new LegacyMonster[0]
+        };
+        PlayerPrefs.SetString(LegacyNormalSaveKey,JsonUtility.ToJson(data));
         PlayerPrefs.Save();
     }
 
@@ -875,7 +917,42 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void LoadCreative()
     {
         string saved=PlayerPrefs.GetString(CreativeSaveKey,"");
-        if(saved.Length==0)return;
+        if(saved.Length==0)
+        {
+            string legacy=PlayerPrefs.GetString(LegacyCreativeSaveKey,"");
+            if(legacy.Length==0)return;
+            try
+            {
+                LegacyWorld old=JsonUtility.FromJson<LegacyWorld>(legacy);
+                if(old==null)return;
+                player.position=new Vector3(Mathf.Clamp(old.x,-38f,38f),0,Mathf.Clamp(old.z,-38f,38f));
+                currentHp=Mathf.Clamp(old.hp,1,100);
+                if(old.blocks!=null)foreach(LegacyBlock b in old.blocks)
+                {
+                    if(blocks.Count>=100)break;
+                    PlaceBlock(new Vector3(b.x,0,b.z));
+                }
+                var converted=new List<Monster>();
+                if(old.monsters!=null)foreach(LegacyMonster previous in old.monsters)
+                {
+                    Species type=species.Find(v=>v.id==previous.id);
+                    if(type==null || converted.Count>=150){converted.Add(null);continue;}
+                    Monster m=SpawnMonster(type,new Vector3(previous.x,0,previous.z),true);
+                    if(m!=null){m.hp=Mathf.Clamp(previous.hp,1,m.spec.hp);m.attackPlayer=previous.attackPlayer && m.spec.mood!="harmless";}
+                    converted.Add(m);
+                }
+                if(old.monsters!=null)for(int i=0;i<Mathf.Min(converted.Count,old.monsters.Length);i++)
+                {
+                    Monster m=converted[i];if(m==null || m.spec.mood=="harmless")continue;
+                    int target=old.monsters[i].enemyIndex;
+                    if(target>=0 && target<converted.Count && converted[target]!=null && converted[target].spec.mood!="harmless" && target!=i)
+                        m.opponentId=converted[target].runtimeId;
+                }
+                SaveCreative();
+            }
+            catch(Exception){info="기존 크리에이티브 저장 읽기 실패";}
+            return;
+        }
         CreativeRecord record;
         try{record=JsonUtility.FromJson<CreativeRecord>(saved);}catch(Exception){return;}
         if(record==null)return;
@@ -917,8 +994,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         nextId=maxId;
     }
 
-    private void OnApplicationPause(bool paused){if(paused && creative)SaveCreative();}
-    private void OnApplicationQuit(){if(creative)SaveCreative();}
+    private void OnApplicationPause(bool paused){if(paused){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}}
+    private void OnApplicationQuit(){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}
 
     // 화면 · 모바일 터치 조작과 메뉴
     private void OnGUI()
@@ -969,6 +1046,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(panel==Panel.Options)
         {
             if(GUILayout.Button(musicEnabled?"음악 켜짐":"음악 꺼짐",GUILayout.Height(45))){musicEnabled=!musicEnabled;AudioListener.pause=!musicEnabled;}
+            GUILayout.Label("카메라 거리 "+cameraDistance.ToString("0.0"));
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("가까이",GUILayout.Height(40)))cameraDistance=Mathf.Max(8f,cameraDistance-1f);
+            if(GUILayout.Button("멀리",GUILayout.Height(40)))cameraDistance=Mathf.Min(24f,cameraDistance+1f);
+            GUILayout.EndHorizontal();
+            GUILayout.Label("이동 속도 "+moveSpeed.ToString("0.0"));
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("느리게",GUILayout.Height(40)))moveSpeed=Mathf.Max(3f,moveSpeed-.5f);
+            if(GUILayout.Button("빠르게",GUILayout.Height(40)))moveSpeed=Mathf.Min(9f,moveSpeed+.5f);
+            GUILayout.EndHorizontal();
+            PlayerPrefs.SetFloat(SavePrefix+"camera_distance",cameraDistance);
+            PlayerPrefs.SetFloat(SavePrefix+"move_speed",moveSpeed);
             GUILayout.Label("음량 "+Mathf.RoundToInt(musicVolume*100)+"%");
             musicVolume=GUILayout.HorizontalSlider(musicVolume,0f,1f,GUILayout.Height(35));
             AudioListener.volume=musicVolume;
