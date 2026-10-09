@@ -665,25 +665,50 @@
     },
     "local_authoring_parts::2d8107dd0e9b28d6eba19a444ff648599a3952ec97d4b23a0206211d888225ec:riskPressure": {
       "riskPressure": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다."
+    },
+    "local_authoring_parts::2d8107dd0e9b28d6eba19a444ff648599a3952ec97d4b23a0206211d888225ec:recoveryRules": {
+      "recoveryRules": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다."
+    },
+    "local_authoring_parts::03707135ac3a0a821e5f5b53fc85c9af8f153c508d7dc590c741adc833576969:failureRetryRisk": {
+      "failureStates": [
+        "{coreLoop} generates 1 unit of PROGREGATION_UNITS, which is used to unlock new content and progression opportunities.",
+        "Players receive increasing rewards for completing stages, encouraging them to continue playing and exploring new areas.",
+        "Players experience varying levels of challenge, keeping the game engaging and rewarding throughout their journey."
+      ],
+      "retryFlow": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 이는 기존의 RPG 시스템을 벗어나, 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+      "riskPressure": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+      "recoveryRules": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다."
+    },
+    "local_authoring_parts::f80360b85ccc8a4ed5ee6dc74450354ea4ea429cc7925178bbfd536c132fedf3:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "{coreLoop} generates 1 unit of PROGREGATION_UNITS, which is used to unlock new content and progression opportunities.",
+          "Players receive increasing rewards for completing stages, encouraging them to continue playing and exploring new areas.",
+          "Players experience varying levels of challenge, keeping the game engaging and rewarding throughout their journey."
+        ],
+        "retryFlow": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 이는 기존의 RPG 시스템을 벗어나, 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+        "riskPressure": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+        "recoveryRules": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 54,
+      "calls": 55,
+      "successes": 55,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2162644,
-      "lastMs": 35046,
+      "totalMs": 2198365,
+      "lastMs": 35721,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:43:23.443Z"
+      "updatedAt": "2026-10-09T01:43:59.165Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:43:23.443Z",
+  "updatedAt": "2026-10-09T01:43:59.173Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2772,20 +2797,20 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "END_WORLD_STATE"
+          "path": "systemInterconnections",
+          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
-          "failureRetryRisk"
+          "systemInterconnections"
         ]
       },
       {
@@ -2813,60 +2838,43 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
           "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
         },
         "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: MONSTER_ADVENTURE_CORE_FUN→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1: 시작 즉시 단순한 입력 및명→MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -2895,7 +2903,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": 3,
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2921,13 +2929,23 @@
           "newGameplay": "Adjust difficulty dynamically based on player performance and progress.",
           "systemImpact": "Players experience varying levels of challenge, keeping the game engaging and rewarding throughout their journey."
         }
-      ]
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "{coreLoop} generates 1 unit of PROGREGATION_UNITS, which is used to unlock new content and progression opportunities.",
+          "Players receive increasing rewards for completing stages, encouraging them to continue playing and exploring new areas.",
+          "Players experience varying levels of challenge, keeping the game engaging and rewarding throughout their journey."
+        ],
+        "retryFlow": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 이는 기존의 RPG 시스템을 벗어나, 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+        "riskPressure": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다.",
+        "recoveryRules": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다. 기존의 RPG 시스템을 벗어나 인과법칙에 근거한 간단한 반복과 다른 경로, 위험, 결과를 결합하는 콘텐츠 구조를 만든다."
+      }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:43:23.443Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:43:59.169Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
