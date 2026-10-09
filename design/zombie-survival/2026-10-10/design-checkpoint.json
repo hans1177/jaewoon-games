@@ -579,25 +579,38 @@
       "name": "생존 및 전투 기반의 실시간 스케줄링 게임",
       "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출",
       "playerChoice": "장비/기술 선택 -> 상태 변화 -> 보상/위험/다음 선택"
+    },
+    "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:1": {
+      "id": "signatureSystems_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "환경/지역 변화"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "실시간 스타트업 루프 생성",
+      "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출 및 전략적 결정",
+      "playerChoice": "환경/지역 변화로 인해 새로운 전술적 결정 가능하다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2064821,
-      "lastMs": 28695,
+      "totalMs": 2161694,
+      "lastMs": 96873,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:58:35.829Z"
+      "updatedAt": "2026-10-09T23:00:12.705Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T22:58:35.830Z",
+  "updatedAt": "2026-10-09T23:00:12.705Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2457,10 +2470,10 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:58:35.829Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:00:12.705Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
