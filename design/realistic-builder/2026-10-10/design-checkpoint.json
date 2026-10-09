@@ -599,25 +599,203 @@
       "name": "Delve into the core of reality construction",
       "purpose": "Player chooses to delve into the core of reality construction",
       "playerChoice": "Select discoveries, grow through build combinations, and revisit progressions in a layered manner with advanced play mechanics and narrative depth within the game's core theme of action survival roguelite gameplay."
+    },
+    "local_authoring_parts::935e0a148cf85a5dbd6ab3c71e4721d71e0244ba57da1d1765fe3a22ef40424a:signatureSystems:4": {
+      "id": "signatureSystems[4]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "fightThroughHorde",
+        "collectRewards"
+      ],
+      "stateOutputs": [
+        "delveDiscoveries",
+        "delveGrowthRule"
+      ],
+      "name": "Delve into the core of reality construction",
+      "purpose": "Player chooses to fight through a horde, collect rewards, and combine upgrades to build a stronger structure.",
+      "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build to enhance survival and progression."
+    },
+    "local_authoring_parts::b8a41eec0a4ebefbe6a70ae5f98af4b4ac3a665ec7543b7595b7274522694ffd:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Fight through an escalating horde",
+          "purpose": "Real-time survival run with enemy pressure management",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Collect run rewards or experience",
+          "purpose": "Player chooses to collect run rewards or experience",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Combine upgrades into a stronger build",
+          "purpose": "Player chooses to combine upgrades into a stronger build",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "delveDiscoveries",
+            "delveGrowthRule"
+          ],
+          "name": "Delve into the core of reality construction",
+          "purpose": "Player chooses to delve into the core of reality construction",
+          "playerChoice": "Select discoveries, grow through build combinations, and revisit progressions in a layered manner with advanced play mechanics and narrative depth within the game's core theme of action survival roguelite gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "delveDiscoveries",
+            "delveGrowthRule"
+          ],
+          "name": "Delve into the core of reality construction",
+          "purpose": "Player chooses to fight through a horde, collect rewards, and combine upgrades to build a stronger structure.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build to enhance survival and progression."
+        }
+      ]
+    },
+    "local_authoring_parts::bf587fd26d29beca2bf09f7bb40c607dece0112b8ffff6f91ad15e6fcd0d3043:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태 변화 -> 보상/위험/다음 선택",
+        "반복되는 대표 선택: Collect run rewards or experience, Combine upgrades",
+        "관찰 가능한 상태 변화 및 즉각적 결과"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Fight through an escalating horde",
+          "purpose": "Real-time survival run with enemy pressure management",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Collect run rewards or experience",
+          "purpose": "Player chooses to collect run rewards or experience",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "positionAroundEnemyPressure",
+            "buildCombination"
+          ],
+          "name": "Combine upgrades into a stronger build",
+          "purpose": "Player chooses to combine upgrades into a stronger build",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "delveDiscoveries",
+            "delveGrowthRule"
+          ],
+          "name": "Delve into the core of reality construction",
+          "purpose": "Player chooses to delve into the core of reality construction",
+          "playerChoice": "Select discoveries, grow through build combinations, and revisit progressions in a layered manner with advanced play mechanics and narrative depth within the game's core theme of action survival roguelite gameplay."
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "fightThroughHorde",
+            "collectRewards"
+          ],
+          "stateOutputs": [
+            "delveDiscoveries",
+            "delveGrowthRule"
+          ],
+          "name": "Delve into the core of reality construction",
+          "purpose": "Player chooses to fight through a horde, collect rewards, and combine upgrades to build a stronger structure.",
+          "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build to enhance survival and progression."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1888828,
-      "lastMs": 97785,
+      "totalMs": 1985805,
+      "lastMs": 96977,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:04:20.410Z"
+      "updatedAt": "2026-10-09T19:05:57.389Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T19:04:20.410Z",
+  "updatedAt": "2026-10-09T19:05:57.392Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2484,7 +2662,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:04:20.410Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:05:57.392Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
