@@ -512,6 +512,42 @@ test('per-game F0 evidence is reused only for exact source and package; quality 
   assert.ok(snapshot.actions.includes('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF'));
 });
 
+test('System AI classifies exact legacy dual-platform preflight failure as a shared canary, never as F0 PASS',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const item={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'UNITY',platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:false,robloxFoundationF0Passed:false,
+    robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildPreflightEvidence:{
+      pass:false,blockers:['roblox-platform-required'],
+      facts:{build:{sourceRevision:source,artifactIdentity:artifact},blockers:['roblox-platform-required']}
+    },
+    robloxFailureStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+    robloxFailureSignature:'ROBLOX_BUILD_PREFLIGHT_BLOCKED'
+  };
+  const snapshot=analyzeSystemAiBottlenecks({developmentQueue:{items:[
+    {...item,gameId:'a-game'},
+    {...item,gameId:'b-game'},
+    {...item,gameId:'c-stale',robloxBuildPreflightEvidence:{...item.robloxBuildPreflightEvidence,facts:{build:{sourceRevision:'f'.repeat(40),artifactIdentity:artifact}}}},
+    {...item,gameId:'d-incomplete',robloxBuildArtifactIdentity:null}
+  ]}});
+  assert.equal(snapshot.development.total,4);
+  assert.equal(snapshot.development.exactF0Count,0);
+  assert.equal(snapshot.development.dualPlatformPreflightMismatchCount,2);
+  const rows=snapshot.development.rows;
+  assert.equal(rows[0].stage,'VIBE_SHARED_MODEL_BUILD_PREFLIGHT');
+  assert.equal(rows[0].classification,'DUAL_PLATFORM_PREFLIGHT_MODE_MISMATCH');
+  assert.equal(rows[0].repair,'RETRY_EXISTING_CANONICAL_PREFLIGHT_WITH_EXACT_DUAL_PLATFORM_IDENTITY');
+  assert.equal(rows[2].classification,'SHARED_MODEL_PREFLIGHT_NOT_VERIFIED');
+  assert.equal(rows[3].classification,'BUILD_OR_SOURCE_IDENTITY_INVALID');
+  assert.ok(rows.every(x=>x.automaticPassClaim===false));
+  assert.equal(snapshot.development.commonFailureCohorts[0].size,3);
+  assert.ok(snapshot.actions.includes('DEVELOPMENT_FLOOR_COMMON_FAILURE_CANARY'));
+  assert.ok(snapshot.actions.includes('RETRY_EXACT_DUAL_PLATFORM_PREFLIGHT_AFTER_RESPONSIBLE_FIX'));
+});
+
 test('external Roblox runtime failure preserves same immutable candidate without claiming F9',()=>{
   const source='a'.repeat(40),artifact='sha256:'+'f'.repeat(64);
   const base={
