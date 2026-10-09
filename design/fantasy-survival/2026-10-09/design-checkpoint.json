@@ -19,25 +19,33 @@
     "local_authoring_parts::a9f8389c3b568f7296a7d41b9f11e4dc3c169cb7cb112d013789e4f3a8ec35ef:identity,playerFantasy": {
       "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
       "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져들고, 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 이 과정에서 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다."
+    },
+    "local_authoring_parts::a9f8389c3b568f7296a7d41b9f11e4dc3c169cb7cb112d013789e4f3a8ec35ef:coreFun": {
+      "coreFun": "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다."
+    },
+    "local_authoring_parts::293d2dd8c982c5ed52fcbd147a5f80f70dd7de26f09aa82dab026c65db2d526f:identity,playerFantasy,coreFun": {
+      "identity": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+      "playerFantasy": "마력숲 생존기에서 플레이어는 환경에 빠져들고, 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 이 과정에서 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다.",
+      "coreFun": "플레이어가 환경에 빠져들고 이동하며 캐릭터를 움직여야 하는 살아 있는 상태로 전환된다. 주변의 적·아이템·NPC가 세계 인과법칙에 따라 새로운 행동·관계·보상·위험을 생성해 나간다. 플레이어는 선택을 통해 기존 18000×12000 마력숲 월드의 기본 규칙과 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 유지하면서, 새로운 행동·경로·조합·발견·대응법을 열어 다양한 상황 속에서 생존하고 제작하며 전투하는 게임이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 272033,
-      "lastMs": 72755,
+      "totalMs": 346839,
+      "lastMs": 74806,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:30:09.511Z"
+      "updatedAt": "2026-10-09T02:31:24.320Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T02:25:37.455Z",
-  "updatedAt": "2026-10-09T02:30:09.513Z",
+  "updatedAt": "2026-10-09T02:31:24.322Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T02:30:09.513Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:31:24.322Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
