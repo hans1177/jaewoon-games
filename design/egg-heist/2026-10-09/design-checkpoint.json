@@ -81,25 +81,40 @@
       "name": "AL_DOODADATE_GAME",
       "purpose": "게임 내 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임의 시스템 역할",
       "playerChoice": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다."
+    },
+    "local_authoring_parts::0cb195c837a31a18649e756a69d388aad246538ead660932ea34783e1f3a6e64:signatureSystems:3": {
+      "id": "c_01",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "OUTPUT",
+        "STATE"
+      ],
+      "name": "AL_DOODADATE_GAME",
+      "purpose": "기반 플레이어가 타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취하는 코믹 잠입·탈출 요소",
+      "playerChoice": "타겟 알의 위치 및 경비 현황 파악, 위험에 노출될 수 있는 전략적 행동을 취해야 한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 780555,
-      "lastMs": 101682,
+      "totalMs": 880478,
+      "lastMs": 99923,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:25:27.281Z"
+      "updatedAt": "2026-10-09T15:27:07.205Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:12:26.675Z",
-  "updatedAt": "2026-10-09T15:25:27.281Z",
+  "updatedAt": "2026-10-09T15:27:07.205Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1547,7 +1562,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:25:27.281Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:27:07.205Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
