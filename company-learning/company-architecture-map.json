@@ -1,5 +1,5 @@
 {
-  "version": 334,
+  "version": 335,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4459,6 +4459,13 @@
         "batchLoopForbidden": true,
         "globalWorkflowSerializationForbidden": true,
         "externalProviderCapacityOnlyBoundary": true
+      },
+      "native3dFloorBootstrap": {
+        "required": true,
+        "startsBeforeBuild": true,
+        "canonicalGenerator": "tools/company-unity-web-floor-bootstrap.mjs",
+        "native3dSourceCheck": "tools/company-unity-web-first-stage.mjs",
+        "runtimeMeshQaStillRequired": true
       }
     },
     "gameSpecificBuildUpDirective": {
@@ -4616,6 +4623,16 @@
       "duplicatePerFloorRuntimeVerifierForbidden": true,
       "exactCandidateBindingRequired": true,
       "policyAuthority": false
+    },
+    "native3dSourcePreflight": {
+      "requiredFromStage": "F0_SOURCE_PREFLIGHT_PASS",
+      "targets": [
+        "ROBLOX",
+        "UNITY_WEB"
+      ],
+      "policy": "company-learning/platform-release-roadmap.json#ownerUnityWeb3dOnly20261009",
+      "sourceOnlyNoRuntimePass": true,
+      "existingSequenceUnchanged": true
     }
   },
   "systemAiEvolutionTopology": {
