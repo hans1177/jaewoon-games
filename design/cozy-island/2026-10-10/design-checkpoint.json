@@ -28,25 +28,77 @@
         "stateChange": "반복 노동이 자동화되어 생산성 향상됨"
       },
       "abCausality": "양방향 실제 상태 교환: '다음 자원 거점 선택' → '보이는 자동전투와 점령 보상'"
+    },
+    "local_authoring_parts::6d3c0b823f8f2cd2823d546db5f9e192a468a6a2d427d2c38d5d7402da6603d2:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "다음 자원 거점 선택 -> 보이는 자동전투와 점령 보상",
+        "bChangesA": "보이는 자동전투와 점령 보상 -> 다음 자원 거점 선택",
+        "lateGameChange": "협동 지원으로 강한 거점 공략 -> 협동 지원으로 강한 거점 확장"
+      },
+      "materialFusion": {
+        "contrast": "직접 채집 <-> 주민 자동화, 병영/병사 <-> 자원 거점",
+        "causalBridge": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상",
+        "removalConsequence": "자원 거점 선택 시 '보이는 자동전투'가 실현됨"
+      },
+      "storyCausalChain": {
+        "cause": "나무 및 식량 직접 채집 → 주민 고용과 벌목/농업 자동화",
+        "characterConflict": "주민 자동화의 반복 노동이 생산성 향상",
+        "playerChoice": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상",
+        "worldChange": "협동 지원으로 강한 거점 공략 → 협동 지원으로 강한 거점 확장",
+        "nextEvent": "협동 지원으로 강한 거점 확장 → 왕국 정복 시작"
+      }
+    },
+    "local_authoring_parts::ec8967aef91a9b2ef2e47eb7392a60f7ea22af06100ef6b6c3f7fa0d8b120dfd:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
+      "a": {
+        "system": "직접 채집",
+        "material": "나무 및 식량",
+        "materialDomain": "주민 자동화",
+        "stateChange": "월드 노드에 직접 상호작용하여 획득됨"
+      },
+      "b": {
+        "system": "주민 자동화",
+        "material": "주민 고용",
+        "materialDomain": "벌목/농업 자동화",
+        "stateChange": "반복 노동이 자동화되어 생산성 향상됨"
+      },
+      "abCausality": "양방향 실제 상태 교환: '다음 자원 거점 선택' → '보이는 자동전투와 점령 보상'",
+      "abEvolution": {
+        "aChangesB": "다음 자원 거점 선택 -> 보이는 자동전투와 점령 보상",
+        "bChangesA": "보이는 자동전투와 점령 보상 -> 다음 자원 거점 선택",
+        "lateGameChange": "협동 지원으로 강한 거점 공략 -> 협동 지원으로 강한 거점 확장"
+      },
+      "materialFusion": {
+        "contrast": "직접 채집 <-> 주민 자동화, 병영/병사 <-> 자원 거점",
+        "causalBridge": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상",
+        "removalConsequence": "자원 거점 선택 시 '보이는 자동전투'가 실현됨"
+      },
+      "storyCausalChain": {
+        "cause": "나무 및 식량 직접 채집 → 주민 고용과 벌목/농업 자동화",
+        "characterConflict": "주민 자동화의 반복 노동이 생산성 향상",
+        "playerChoice": "다음 자원 거점 선택 → 보이는 자동전투와 점령 보상",
+        "worldChange": "협동 지원으로 강한 거점 공략 → 협동 지원으로 강한 거점 확장",
+        "nextEvent": "협동 지원으로 강한 거점 확장 → 왕국 정복 시작"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 763299,
-      "lastMs": 59524,
+      "totalMs": 834559,
+      "lastMs": 71260,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:20:16.223Z"
+      "updatedAt": "2026-10-09T17:21:27.484Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:07:32.737Z",
-  "updatedAt": "2026-10-09T17:20:16.223Z",
+  "updatedAt": "2026-10-09T17:21:27.486Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1460,7 +1512,7 @@
     "e8df166333f3847595a0c47cae7984b1d70ae5bf3ca41b1cdd0380008fe4f10b": true,
     "984307432df21cc9fa083075c9bf0d8802739226c685109d1498f04260e7075f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:20:16.223Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:21:27.486Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
