@@ -539,25 +539,39 @@
         "선택 -> 상태변화 -> 보상/위험/다음 선택",
         "게임 종료 시 보상 및 재방문 기회 제공"
       ]
+    },
+    "local_authoring_parts::5e380249f582b8a87171e1af276d1398c0328fd2d07059109e3798bda7402b94:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력",
+        "선택"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "게임 초기 설정",
+      "purpose": "즉시 시작 가능한 단순한 터치 또는 스크롤 입력 및 명확한 점수/거리/짧은 세션 목표",
+      "playerChoice": "플레이어의 행동에 따른 세계 상태 변환 및 보상 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1539928,
-      "lastMs": 93978,
+      "totalMs": 1638936,
+      "lastMs": 99008,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:47:38.296Z"
+      "updatedAt": "2026-10-09T18:49:17.307Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:47:38.296Z",
+  "updatedAt": "2026-10-09T18:49:17.307Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2038,7 +2052,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:47:38.296Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:49:17.307Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
