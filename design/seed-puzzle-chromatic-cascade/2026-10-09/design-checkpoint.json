@@ -483,25 +483,28 @@
     },
     "local_authoring_parts::8148120b4afaaf32ccd17826b32718e2292400767337c37838c573be895f0e81:toSystem": {
       "toSystem": "색채 연쇄 시스템"
+    },
+    "local_authoring_parts::8148120b4afaaf32ccd17826b32718e2292400767337c37838c573be895f0e81:trigger": {
+      "trigger": "플레이어가 선택 결과를 기반으로 현재 상태를 전환하여 다음 단계로 이어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1773312,
-      "lastMs": 56288,
+      "totalMs": 1835608,
+      "lastMs": 62296,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:53:44.246Z"
+      "updatedAt": "2026-10-09T12:54:46.543Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:24:10.768Z",
-  "updatedAt": "2026-10-09T12:53:44.246Z",
+  "updatedAt": "2026-10-09T12:54:46.543Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3041,7 +3044,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:53:44.246Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:54:46.543Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
