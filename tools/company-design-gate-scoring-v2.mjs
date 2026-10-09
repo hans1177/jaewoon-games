@@ -180,18 +180,19 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       reject('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},'초기 파고들기 네 사례 각각 단서·발견·새 선택을 갖추고 이후 숫자 상한 없는 발전 규칙을 설계한다.');
     }
   }
-  // 정식 설계의 MAIN/A/B/c/@는 태그만 붙여서는 안 되고 각각 고유 규칙과 상태 입출력이 있어야 한다.
+  // V5는 MAIN/A/B/@를 실제 규칙으로 검증하고 C를 creativeGrammar의 소재·장르 인과로 검사한다. 옛 c는 선택적이다.
   if(selected.has('signatureSystems')){
     const systems=list(design.signatureSystems);
+    const ownerV5=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5;
     const counts=Object.fromEntries(['MAIN','A','B','c','DELVE'].map(role=>[role,systems.filter(row=>row?.grammarRole===role).length]));
     const ids=systems.map(row=>clean(row?.id));
-    const rolesReady=counts.MAIN===1&&counts.A===1&&counts.B===1&&counts.c>=1&&counts.DELVE>=1;
-    const statesReady=systems.length>=5&&ids.every(Boolean)&&new Set(ids).size===ids.length&&systems.every(row=>
+    const rolesReady=counts.MAIN===1&&counts.A===1&&counts.B===1&&(ownerV5||counts.c>=1)&&counts.DELVE>=1;
+    const statesReady=systems.length>=(ownerV5?4:5)&&ids.every(Boolean)&&new Set(ids).size===ids.length&&systems.every(row=>
       list(row?.stateInputs).length>0&&list(row?.stateOutputs).length>0
     );
-    if(!rolesReady||!statesReady)reject('DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
+    if(!rolesReady||!statesReady)reject(ownerV5?'DESIGN_MAIN_A_B_DELVE_REQUIRED':'DESIGN_MAIN_A_B_c_DELVE_REQUIRED','CORE_LOOP_DESIGN',['signatureSystems'],
       {counts,systemCount:systems.length,statesReady},
-      '메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
+      ownerV5?'MAIN/A/B 각각 하나와 @ 발견·숙련을 실제 규칙 및 상태 입출력으로 작성한다. C의 두 소재·메인 및 보조 장르의 효과는 creativeGrammar에서 따로 인과 검증한다. 기존 c 보조 시스템은 필수가 아니다.':'메인 중심 행동, A/B 서로 다른 두 축, c 보조 변주, @ 발견·숙련을 기존 규칙에 맞춰 최소 5개 고유 시스템과 실제 상태 입력·출력으로 작성한다. 기존 밸런스·저장·진행은 유지한다.');
     // 메인: ID만 달리 붙인 복제 규칙도 실제 MAIN/A/B/c/@ 완성으로 인정하지 않는다.
     for(let i=0;i<systems.length;i++)for(let j=i+1;j<systems.length;j++){
       const left=systems[i],right=systems[j];
@@ -254,7 +255,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const byRule=new Map(systems.map(row=>[row.id,row]));
     const graph=new Map(systems.map(row=>[row.id,[]]));
     const edges=list(design.systemInterconnections);
-    let connected=edges.length>=5&&systems.length>=5;
+    let connected=edges.length>=5&&systems.length>=(Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5?4:5);
     for(const edge of edges){
       const from=byRule.get(edge.fromId),to=byRule.get(edge.toId),keys=list(edge.stateKeys);
       if(!from||!to||!keys.length||keys.some(key=>!list(from.stateOutputs).includes(key)||!list(to.stateInputs).includes(key)))connected=false;

@@ -1788,7 +1788,11 @@ export function buildGameSpecificBuildUpDirective({
   const mainSystem=authoredRole('MAIN'),aSystem=authoredRole('A'),bSystem=authoredRole('B');
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
-  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&cSystems.length&&delveSystems.length);
+  const authoredCreativeC=Array.isArray(design.creativeGrammar?.cThemes)&&design.creativeGrammar.cThemes.length===2
+    &&Array.isArray(design.creativeGrammar?.cGenres)&&design.creativeGrammar.cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>design.creativeGrammar.cGenres.some(row=>row?.role===role))
+    &&clean(design.creativeGrammar?.cGenreInterlock);
+  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length&&(authoredCreativeC||cSystems.length));
   const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
@@ -1847,7 +1851,7 @@ export function buildGameSpecificBuildUpDirective({
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
       formula:'MAIN × A × B × C + @',
       existingGameGrammarMap,
-      rule:'NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
+      rule:'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
