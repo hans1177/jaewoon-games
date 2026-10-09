@@ -4292,6 +4292,138 @@ test('coding retry consumes the exact unrelated function violation instead of re
   assert.match(retry,/ORIGINAL writable source/);
 });
 
+test('semantic diff blocks a top-level reward mutation despite a nearby approved function',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'function handlePointer(e){ pointerState=e; }\nlet gold = 10;\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'let gold = 10;',replace:'let gold = 999;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unownedSourcePaths,['index.html']);
+  assert.match(result.violations.join('|'),/UNOWNED_SOURCE_MUTATION:index\.html/);
+});
+
+test('semantic diff blocks a permitted function change coupled with an unowned global write',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before='function handlePointer(e){ pointerState=e; }\nconst started = true;\n';
+  write(path.join(sourceRoot,'index.html'),before);
+  const after=before.replace('pointerState=e;','pointerState=normalizePointer(e);')
+    .replace('const started = true;','const started = true;\ngold += 999;');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:after}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer']);
+  assert.deepEqual(result.unownedSourcePaths,['index.html']);
+});
+
+test('semantic diff allows a standalone declaration of explicitly owned gameplay state',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'let pointerState = 0;\nfunction handlePointer(e){ pointerState=e; }\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'let pointerState = 0;',replace:'let pointerState = 3;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,true,JSON.stringify(result.violations));
+  assert.deepEqual(result.unownedSourcePaths,[]);
+});
+
+test('semantic diff preserves an unchanged unrelated function between two authorized methods',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before=[
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }',
+    'function moveCamera(){ return cameraX; }'
+  ].join('\n');
+  write(path.join(sourceRoot,'index.html'),before);
+  const after=before.replace('pointerState=e;','pointerState=normalizePointer(e);')
+    .replace('return cameraX;','return cameraX+1;');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:after}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      allowedDependentSymbolsOrSystems:['moveCamera'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY','WORLD'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,true,JSON.stringify(result.violations));
+  assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer','moveCamera']);
+});
+
+test('semantic diff blocks unrelated Luau top-level currency initialization',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'roblox-games/demo');
+  write(path.join(sourceRoot,'server/Game.server.luau'),
+    'local function movePlayer(input)\n  return input.X\nend\nlocal gold = 50\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'server/Game.server.luau',find:'local gold = 50',replace:'local gold = 999'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['movePlayer'],ownedState:['input'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unownedSourcePaths,['server/Game.server.luau']);
+});
+
+test('semantic diff respects a Unity owned field but rejects another field mutation',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'unity-games/demo');
+  const before=[
+    'internal class GameCore {',
+    '  private int playerPosition = 1;',
+    '  private int gold = 50;',
+    '  void HandleMovement(){playerPosition += 1;}',
+    '}'
+  ].join('\n');
+  write(path.join(sourceRoot,'Assets/Scripts/GameCore.cs'),before);
+  const editContract={
+    responsibilityConfidence:'HIGH',primaryTargets:['HandleMovement'],ownedState:['playerPosition'],
+    codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+    semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY','WORLD'],unrelatedSystemMutationForbidden:true}
+  };
+  const allowed=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'playerPosition = 1;',replace:'playerPosition = 2;'}]},
+    editContract,sourceRoot
+  });
+  const rejected=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'gold = 50;',replace:'gold = 999;'}]},
+    editContract,sourceRoot
+  });
+  assert.equal(allowed.pass,true,JSON.stringify(allowed.violations));
+  assert.equal(rejected.pass,false);
+  assert.deepEqual(rejected.unownedSourcePaths,['Assets/Scripts/GameCore.cs']);
+});
+
+test('coding retry uses the exact unowned file evidence instead of repeating the same global patch',()=>{
+  const retry=buildGenerationRetryPrompt([
+    'Engine: web','Goal: repair handlePointer','Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    'function handlePointer(e){ pointerState=e; }','let gold = 10;'
+  ].join('\n'),{
+    error:new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNOWNED_SOURCE_MUTATION:index.html'),
+    responsibleFiles:['index.html'],attempt:2
+  });
+  assert.match(retry,/UNOWNED SOURCE SCOPE REJECTED: index\.html/);
+  assert.match(retry,/outside the primary and explicitly permitted dependent functions/);
+});
+
 test('semantic diff hard gate protects existing save keys from silent removal',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
