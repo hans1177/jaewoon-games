@@ -76,25 +76,39 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "Player action that directly alters the world state by triggering a brief run with feedback, collecting rewards, and making a small risk or route choice before ending.",
       "playerChoice": "Select a target location, obtain a reward, and take a low-risk path to progress in the game."
+    },
+    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:3": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "END_WORLD_STATE"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "purpose": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
+      "playerChoice": "즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 621953,
-      "lastMs": 84980,
+      "totalMs": 713894,
+      "lastMs": 91941,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:17:42.666Z"
+      "updatedAt": "2026-10-09T01:19:14.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:17:42.666Z",
+  "updatedAt": "2026-10-09T01:19:14.608Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2177,24 +2191,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "MONSTER_ADVENTURE_CORE_FUN",
-          "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": 3,
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T01:17:42.666Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:19:14.608Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
