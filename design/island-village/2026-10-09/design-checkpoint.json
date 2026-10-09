@@ -940,25 +940,51 @@
       "toSystem": "VILLAGE_INFRASTRUCTURE",
       "trigger": "Gather focused island resources and use them to build or improve one village function",
       "stateChange": "Resource accumulation → Infrastructure upgrade"
+    },
+    "local_authoring_parts::f5971d105cf8ac6d28906709e77a7896317697275d2d8bc7f31cd7c69cc11657:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
+    },
+    "local_authoring_parts::f5971d105cf8ac6d28906709e77a7896317697275d2d8bc7f31cd7c69cc11657:toSystem,trigger,stateChange": {
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "Gather focused island resources and use them to build or improve one village function",
+      "stateChange": "Resource accumulation → Infrastructure upgrade"
+    },
+    "local_authoring_parts::1b5efa03dfd5899c5142bd2f6333bb4b688eca4d3c61b4009d6c18c541ac9952:systemInterconnections:2": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "Gather focused island resources and use them to build or improve one village function",
+      "stateChange": "Resource accumulation → Infrastructure upgrade"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 70,
-      "successes": 70,
+      "calls": 72,
+      "successes": 72,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3824474,
-      "lastMs": 62903,
+      "totalMs": 3953756,
+      "lastMs": 63261,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:59:57.319Z"
+      "updatedAt": "2026-10-09T01:02:06.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T00:59:57.321Z",
+  "updatedAt": "2026-10-09T01:02:06.610Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3189,7 +3215,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:59:57.321Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:02:06.610Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
