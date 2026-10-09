@@ -414,7 +414,7 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
  // 기존 경제 저장소와 별도의 같은-version 구조화 증거만 저장한다.
  assert.match(source,/GetDataStore\("amusement-tycoon-development-v1"\)/);
  assert.match(source,/GetDataStore\("native-foundation-sentinel-v1"\)/);
- assert.match(source,/foundationStore:UpdateAsync\("latest",function\(previous\)/);
+ assert.match(source,/foundationStore:UpdateAsync\("latest",\s*function\(previous\)/);
  assert.match(source,/data\.requirements\s*=\s*\{/);
  assert.match(source,/saveEnabled\s*=\s*Config\.SaveEnabled == true/);
  assert.match(source,/tostring\(previous\.placeId or ""\) == tostring\(game\.PlaceId\)/);
