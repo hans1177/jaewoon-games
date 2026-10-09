@@ -1571,25 +1571,42 @@
         "Infrastructure upgrade"
       ],
       "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
+    },
+    "local_authoring_parts::6573c8c96c628543cd3be3856e46b8ced4f86b4cca47fcca2b209723a9d4fea4:toSystem,trigger,stateChange": {
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "Gather focused island resources",
+      "stateChange": "Resource accumulation"
+    },
+    "local_authoring_parts::5e8744ea756d21ebd90800ef8c8d64bfb25f8c2764dcd3e3613861bba6fa220f:systemInterconnections:4": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "Resource accumulation",
+        "Infrastructure upgrade"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "Gather focused island resources",
+      "stateChange": "Resource accumulation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 140,
-      "successes": 140,
+      "calls": 141,
+      "successes": 141,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9469287,
-      "lastMs": 63535,
+      "totalMs": 9529578,
+      "lastMs": 60291,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:34:36.413Z"
+      "updatedAt": "2026-10-09T06:35:36.706Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T06:34:36.413Z",
+  "updatedAt": "2026-10-09T06:35:36.714Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3777,7 +3794,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 8
+    "designer_draft_slices::systems-progression": 9
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3820,10 +3837,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:34:36.413Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:35:36.709Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
