@@ -981,25 +981,31 @@
       "toSystem": "BOARD_STATE",
       "trigger": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint.",
       "stateChange": "BOARD_STATE → NEW_BOARD_STATE: 게임의 중심 행동인 START 이후 선택 결과가 다음 상태로 연결되는 두 번째 대축, 플레이어는 Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint."
+    },
+    "local_authoring_parts::4d9a2b4788e1f7e544a5da85e17255c5da99975bd0df0ba0f6bc8ba7c733cc70:fromId": {
+      "fromId": "systemInterconnections[3]"
+    },
+    "local_authoring_parts::4d9a2b4788e1f7e544a5da85e17255c5da99975bd0df0ba0f6bc8ba7c733cc70:toId": {
+      "toId": "NEW_BOARD_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 94,
-      "successes": 94,
+      "calls": 96,
+      "successes": 96,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7047075,
-      "lastMs": 92964,
+      "totalMs": 7221950,
+      "lastMs": 87713,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:39:08.496Z"
+      "updatedAt": "2026-10-09T02:42:03.377Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T02:39:08.498Z",
+  "updatedAt": "2026-10-09T02:42:03.377Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3267,7 +3273,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:39:08.498Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:42:03.377Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
