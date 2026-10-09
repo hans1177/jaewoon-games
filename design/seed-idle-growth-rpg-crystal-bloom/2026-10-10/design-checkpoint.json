@@ -570,25 +570,40 @@
       "name": "IDLE_GROWTH_RPG",
       "purpose": "게임 내에서 지속적으로 진행 가능한 자원 생성 및 상태 변화를 유도하는 심리적 구조",
       "playerChoice": "플레이어가 지속적으로 진행 가능한 자원 생성 및 상태 변화를 유도하는 심리적 구조을 기반으로 한 창작 소재"
+    },
+    "local_authoring_parts::8f7e6c093e49acc67543c91c325ccacf4b048fbb5ec250f2aebd359f841d30fe:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "OUTPUT",
+        "STATE"
+      ],
+      "name": "EMERGENT_GENRE",
+      "purpose": "새로운 게임 주제와 중심 행동을 기반으로 한 창작 소재",
+      "playerChoice": "플레이어가 지속적으로 진행 가능한 자원 생성 및 상태 변화를 유도하는 심리적 구조을 기반으로 한 창작 소재의 선택과 결과를 명시함으로써, 새로운 세계 규칙에 맞서 싸움을 벌이는 방식을 정립함으로써 플레이어의 욕망과 두려움이 충돌하여 새로운 행동·경로·관계·발견·대응법을 생성하게 함으로써 게임의 진전과 발전을 촉진함을 의미함니다। 이는 플레이어의 선택과 세계 상태 변화를 통해 증명되며, 이는 인과 관계를 바탕으로 이루어짐니다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1738481,
-      "lastMs": 100332,
+      "totalMs": 1850469,
+      "lastMs": 111988,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:36:51.125Z"
+      "updatedAt": "2026-10-09T18:38:43.115Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:07:52.598Z",
-  "updatedAt": "2026-10-09T18:36:51.125Z",
+  "updatedAt": "2026-10-09T18:38:43.115Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2302,7 +2317,7 @@
     "fa73b7fccfc66d6333937e0cf9f6b5606644d25cffbebee91d49a0aa02cdfac7": true,
     "757b6ea0caceeb29166c1c903a94f03ba2682147e5cde383f0841458286fa680": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:36:51.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:38:43.115Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
