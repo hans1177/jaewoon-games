@@ -578,25 +578,38 @@
       "name": "색채의 연쇄 - 선택-변화-보상",
       "purpose": "플레이어 선택에 따른 세계 상태 변환 및 보상/위험 관리",
       "playerChoice": "플레이어는 세계 상태를 바꾸며, 이는 보상/위험/다음 선택으로 이어진다 전략적 선택을 하여야 한다 무제한 개발 가능 구조로 설계됨"
+    },
+    "local_authoring_parts::fb54f5f9716d0896fc2657b2bf707d5242f817f25562672ebf7834877bd97379:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "worldStateChange"
+      ],
+      "stateOutputs": [
+        "playerChoice"
+      ],
+      "name": "색채의 연쇄 - 선택-변화-보상",
+      "purpose": "플레이어 선택에 따라 세계 상태가 변환되며, 이는 다음 단계로 이어지는 시그니처 상호작용을 형성한다.",
+      "playerChoice": "플레이어는 시작 단계에서 명확한 목표를 설정하여 제한된 이동 횟수와 장애물, 또는 볼륨 있는 퀘스트 형태로 진행해야 하며, 이를 해결하는 과정에서 즉각적인 피드백을 받게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1761070,
-      "lastMs": 97920,
+      "totalMs": 1861202,
+      "lastMs": 100132,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:27:24.156Z"
+      "updatedAt": "2026-10-09T18:29:04.290Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:58:03.033Z",
-  "updatedAt": "2026-10-09T18:27:24.156Z",
+  "updatedAt": "2026-10-09T18:29:04.290Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2190,7 +2203,7 @@
     "d3b14657e4d878caf2ea031a712e1067eba9d2ba183d0fca7beec6abf77e7c2d": true,
     "2882f8fd473bdadf754d7ed9a9a0b6d14073a8e81d57359e95f0e2f6f80b52ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:27:24.156Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:29:04.290Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
