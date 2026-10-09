@@ -4690,6 +4690,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     ?unique((reason.match(/UNRELATED_SYMBOL:([^|\n]+)/i)?.[1]||'').split(',')
       .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
     :[];
+  const unownedSourcePaths=semanticDiffViolation
+    ?unique((reason.match(/UNOWNED_SOURCE_MUTATION:([^|\n]+)/i)?.[1]||'').split(',')
+      .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
+    :[];
   const unityBootstrapPairFailure=/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(reason);
   const systemCausalTestRequired=/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(reason);
   const systemSyntaxInvalid=/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(reason);
@@ -4866,6 +4870,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         retryBase.includes('[PRE-SUBMIT SELF REVIEW BEGIN]')?'':preSubmitSelfReviewBlockFromPrompt(rawPrompt),
         repeatedFailureShift,
         unapprovedSymbols.length?'OFF-TARGET FUNCTIONS REJECTED: '+unapprovedSymbols.join(', ')+'. Do not edit their declarations or bodies. Rebuild against ORIGINAL writable source; edit only primary or explicitly permitted dependent functions.':'',
+        unownedSourcePaths.length?'UNOWNED SOURCE SCOPE REJECTED: '+unownedSourcePaths.join(', ')+'. Do not add or change executable code outside the primary and explicitly permitted dependent functions; a standalone state binding is permitted only when explicitly owned by the edit contract.':'',
         oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
