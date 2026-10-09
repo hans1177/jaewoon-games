@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::d2988e26c34be4f4ccc1fc8f5d692df8e0660095d92e406c88126cf59833aaf9:identity": {
+      "identity": "수정의 개화 - 방치 성장 RPG, 플레이어가 주체로 세계 상태와 선택을 바꾸며 진보하는 반복 루프를 만든다. 중심 행동: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions. 두 대축: Claim rewards, upgrade levels or skills, equip gear, choose which hero or stat path receives the next investment (A), Push a harder stage or boss with the improved roster, unlock another growth layer, return later to collect the next idle reward cycle (B). 보조 요소: c. 발견·숙련·재방문 @. 시그니처 시스템: 게임 규칙, 저장 의미, 진행 관계. 원본 규칙 및 수치를 모두 유지하며, 단순 반복보다는 경로·위험·보상이 서로 연결되는 핵심 루프를 설계한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 209360,
+      "lastMs": 209360,
+      "lastError": null,
+      "updatedAt": "2026-10-09T15:46:17.970Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:48.590Z",
-  "updatedAt": "2026-10-09T15:42:48.604Z",
+  "updatedAt": "2026-10-09T15:46:17.970Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1719,5 +1735,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T15:46:17.970Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
