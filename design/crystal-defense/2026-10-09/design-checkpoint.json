@@ -1563,25 +1563,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAMEPLAY_CORE_LOOP_01A_B2C_D01_E03_F04_G05_H06_I07_J08_K09_L10_M11_N12_O13_P14_Q15_R16_S17_T18_U19_V20_W21_X22_Y23_Z24_A25_B26_C27_D28_E29_F30_G31_H32_I33_J34_K35_L36_M37_N38_O39_P"
+    },
+    "local_authoring_parts::7ac0562139dd40c6d005d83d39e66018056415f6519093f08d00405429928b27:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_CORE_LOOP_01A_B2C_D01_E03_F04_G05_H06_I07_J08_K09_L10_M11_N12_O13_P14_Q15_R16_S17_T18_U19_V20_W21_X22_Y23_Z24_A25_B26_C27_D28_E29_F30_G31_H32_I33_J34_K35_L36_M37_N38_O39_P",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE: Strategic balance is reconfigured based on current wave patterns, enemy behavior, and resource allocation."
+    },
+    "local_authoring_parts::6573151c5b30891fc6dd7cadbea2b42cee134ac5089a837807cb624050de781c:systemInterconnections:0": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAMEPLAY_CORE_LOOP_01A_B2C_D01_E03_F04_G05_H06_I07_J08_K09_L10_M11_N12_O13_P14_Q15_R16_S17_T18_U19_V20_W21_X22_Y23_Z24_A25_B26_C27_D28_E29_F30_G31_H32_I33_J34_K35_L36_M37_N38_O39_P",
+      "toSystem": "GAMEPLAY_CORE_LOOP_01A_B2C_D01_E03_F04_G05_H06_I07_J08_K09_L10_M11_N12_O13_P14_Q15_R16_S17_T18_U19_V20_W21_X22_Y23_Z24_A25_B26_C27_D28_E29_F30_G31_H32_I33_J34_K35_L36_M37_N38_O39_P",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "PLACEMENT → RESONANCE: Strategic balance is reconfigured based on current wave patterns, enemy behavior, and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 110,
-      "successes": 110,
+      "calls": 111,
+      "successes": 111,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9689395,
-      "lastMs": 103234,
+      "totalMs": 9793078,
+      "lastMs": 103683,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:26:42.955Z"
+      "updatedAt": "2026-10-09T06:28:26.640Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T06:26:42.955Z",
+  "updatedAt": "2026-10-09T06:28:26.642Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3917,7 +3935,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:26:42.955Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:28:26.642Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
