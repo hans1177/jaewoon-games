@@ -55,25 +55,46 @@
       "name": "OPENING_WORLD_STATE_TRANSFORMATION",
       "purpose": "Player-driven world state transformation through target choice, resource management, and risk detection to ensure survival in the simulation.",
       "playerChoice": "Select a target location, manage resources, and assess risks to drive the game forward with strategic decision-making based on current world state and goals."
+    },
+    "local_authoring_parts::eb71e51559b45e1d5eac8fe4d12f41940c86fad22fd3d28f42d4bd25f10a5c66:signatureSystems:1": {
+      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "world_state",
+        "target_choice",
+        "resource_management",
+        "risk_detection",
+        "entry_exit_strategy"
+      ],
+      "stateOutputs": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "name": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+      "purpose": "플레이어가 월드 상태, 대상 선택, 자원 관리, 위험 감지 및 진입/진출 전략을 통해 생존하며, 이는 단순한 행동 선택에서 복잡한 의사결정까지 다양한 측면에서 발전합니다.",
+      "playerChoice": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태를 변환하고, 그 결과로 보상/위험/다음 선택을 결정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 233719,
-      "lastMs": 31148,
+      "totalMs": 267550,
+      "lastMs": 33831,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:26:28.798Z"
+      "updatedAt": "2026-10-09T14:27:02.631Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:26:28.798Z",
+  "updatedAt": "2026-10-09T14:27:02.631Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1675,7 +1696,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:26:28.798Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:27:02.631Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
