@@ -1923,25 +1923,35 @@
       "toSystem": "SYSTEM_0_A_LOOP_INTERACTION",
       "trigger": "Read the current border pressure and choose one territory characteristic",
       "stateChange": "new_strategy, updated_front_line, expanded_resources"
+    },
+    "local_authoring_parts::481f1fb6828f3204ef05e5843cb7a60c784a12bb2dde848a42254f05d442c1da:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
+      "toId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "stateKeys": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "fromSystem": "SYSTEM_0_MAIN_LOOP_INTERACTION_16_CHARACTERS_LESS_THAN_OR_EQUAL_TO_24_CHARS_MORE_THAN_16_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHARS_MORE_THAN_16_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHARS_MORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 166,
-      "successes": 163,
+      "calls": 167,
+      "successes": 164,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 12059094,
-      "lastMs": 63942,
+      "totalMs": 12130949,
+      "lastMs": 71855,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:56:21.568Z"
+      "updatedAt": "2026-10-09T06:57:33.427Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T06:56:21.570Z",
+  "updatedAt": "2026-10-09T06:57:33.427Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4110,7 +4120,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:56:21.570Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:57:33.427Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
