@@ -68,25 +68,42 @@
       "name": "PUZZLE_LOOP_A",
       "purpose": "Establishes the initial interaction between the player's choice and the board state, creating a dynamic foundation for subsequent gameplay.",
       "playerChoice": "Select a specific board pattern or obstacle configuration that aligns with the current goal and constraints of the level, while ensuring it is solvable through strategic moves and immediate feedback from the board interface."
+    },
+    "local_authoring_parts::bcd6e9af73b0830ddeed4faf603fe28fb57cb493d4e4f5391692513c44931291:signatureSystems:2": {
+      "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE",
+        "REWARD",
+        "RISK",
+        "NEXT_CHOICE"
+      ],
+      "name": "PUZZLE_LOOP_B",
+      "purpose": "A/B 대축으로서, MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+      "playerChoice": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination with dynamic risk and reward distribution based on current board state and player strategy selection."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 338630,
-      "lastMs": 33063,
+      "totalMs": 375197,
+      "lastMs": 36567,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:01:53.880Z"
+      "updatedAt": "2026-10-09T13:02:30.448Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:01:53.880Z",
+  "updatedAt": "2026-10-09T13:02:30.448Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2123,7 +2140,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:01:53.880Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:02:30.448Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
