@@ -581,25 +581,39 @@
       "name": "방어 성능 유연성 증대 및 플레이어 선택에 대한 인과적 영향",
       "purpose": "플레이어 선택에 따른 자원 활용 전략 최적화 결정",
       "playerChoice": "업그레이드 경로 내에서 자원 활용 전략의 최적화 결정"
+    },
+    "local_authoring_parts::d1ec8e6617a030a1e4888d405bd4af3e47f2cf500f65cb86ee1fa2740e3287dd:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "성능 변환",
+        "선택 변화"
+      ],
+      "stateOutputs": [
+        "성능 재변화"
+      ],
+      "name": "공명 연결 ↔ 업그레이드 경로의 인과적 결합을 통해 방어 성능의 유연성을 증대시킴",
+      "purpose": "플레이어 선택에 따른 자원 활용 전략 최적화 결정",
+      "playerChoice": "업그레이드 경로 내에서 자원 활용 전략의 최적화 결정 및 새로운 진입 시점 생성 및 방어 성능 재설계"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1658490,
-      "lastMs": 98108,
+      "totalMs": 1758551,
+      "lastMs": 100061,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:33:04.504Z"
+      "updatedAt": "2026-10-09T18:34:44.567Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:05:25.966Z",
-  "updatedAt": "2026-10-09T18:33:04.504Z",
+  "updatedAt": "2026-10-09T18:34:44.567Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2305,7 +2319,7 @@
     "de3a2567b5b3fd56b4cf08b531052b7041f29bdd1150c9c0d56b0b94a44a8dd4": true,
     "12711b18abe72440ff4148e23f91c69697983329cbd118501a815d6ca6c729e8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:33:04.504Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:34:44.567Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
