@@ -432,25 +432,284 @@
           "playerChoice": "Player selects a new puzzle state, triggering material interaction that alters the game world and introduces new risks/rewards for future actions"
         }
       ]
+    },
+    "local_authoring_parts::eca960b1660aab88d42f7b0b3892f85f30ca77d7cad7290717d6e615c29ef2a0:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ef59c677240960ede7a8bba7df1d9752ec8423e9f2a35a5669db37a9df06f759:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Matchmaking Logic",
+          "purpose": "Governs puzzle state transitions through predefined action rules",
+          "playerChoice": "Player selects initial puzzle state to initiate progression sequence"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Interaction",
+          "purpose": "Player's choice of puzzle state influences the next action",
+          "playerChoice": "The player must choose between different puzzle states to achieve their goal in a dynamic risk-reward environment with evolving game mechanics and feedback loops that shape the gameplay experience through material interaction and progression direction."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Interaction",
+          "purpose": "Dynamic Risk-Return Tradeoff via Material Interaction",
+          "playerChoice": "Player selects a new puzzle state to trigger material interaction and influence risk-reward patterns in the next action phase with immediate feedback loop."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Fusion",
+          "purpose": "Introduces dynamic material interaction that evolves through player choices",
+          "playerChoice": "Player selects a new puzzle state and interacts with the environment to create unique risk-reward patterns that influence future actions and transitions"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Fusion",
+          "purpose": "Enables dynamic puzzle state transitions through material interaction and risk-reward dynamics",
+          "playerChoice": "Player selects a new puzzle state, triggering material interaction that alters the game world and introduces new risks/rewards for future actions"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "주사위 전투 보드의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
+      "creativeGrammar": {
+        "mainIdentity": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "a": {
+          "system": "PUZZLE",
+          "material": "Matchmaking Logic",
+          "materialDomain": "ACTION",
+          "stateChange": "Progression Through Puzzle States"
+        },
+        "b": {
+          "system": "PUZZLE",
+          "material": "Risk and Reward Dynamics",
+          "materialDomain": "RESULT",
+          "stateChange": "Dynamic Risk-Return Tradeoff"
+        },
+        "abCausality": "Puzzle State Transition via Matchmaking Logic → Risk-Return Dynamics via Material Interaction",
+        "abEvolution": {
+          "aChangesB": "Matchmaking Logic triggers Dynamic Risk-Return Tradeoff in the next state",
+          "bChangesA": "Risk-Return Dynamics initiate Matchmaking Logic progression in the subsequent action",
+          "lateGameChange": "Final Puzzle State is determined by cumulative risk-reward patterns from all prior states"
+        },
+        "materialFusion": {
+          "contrast": "Material Fusion creates unique puzzle logic that evolves through player choices",
+          "causalBridge": "Matchmaking Logic bridges puzzle states through material interaction",
+          "removalConsequence": "Removing Matchmaking Logic removes puzzle state transition capability"
+        },
+        "storyCausalChain": {
+          "cause": "Player's initial choice of puzzle state triggers the first causal event",
+          "characterConflict": "The character's desire for mastery clashes with the unpredictable nature of puzzle outcomes",
+          "playerChoice": "The player must choose between different puzzle states to achieve their goal",
+          "worldChange": "Each chosen puzzle state alters the game world, introducing new risks and rewards",
+          "nextEvent": "The game continues until the player achieves their objective or faces a new challenge"
+        },
+        "cThemes": [
+          {
+            "name": "Action Mechanics",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Puzzle state transitions are governed by predefined action rules"
+          },
+          {
+            "name": "Risk-Rebate System",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Dynamic risk-return tradeoffs are introduced based on player decisions"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "PUZZLE GAME",
+            "gameplayEffect": "Player progresses through puzzle states using defined mechanics"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "ACTION MECHANICS",
+            "gameplayEffect": "Puzzle state transitions are governed by predefined action rules"
+          }
+        ],
+        "cGenreInterlock": "When the player chooses a new puzzle state, it introduces new risks and rewards that influence future actions. The game world evolves accordingly.",
+        "cWorldAndGameplayEffect": "The game world is shaped by the player's choices, creating an evolving puzzle landscape where each decision affects the next.",
+        "delveDiscoveries": [
+          {
+            "clue": "Matchmaking Logic triggers Dynamic Risk-Return Tradeoff in the next state",
+            "discovery": "Player must choose between different puzzle states to achieve their goal",
+            "newChoice": "New puzzle state selection introduces new risks and rewards"
+          },
+          {
+            "clue": "Risk-Return Dynamics initiate Matchmaking Logic progression in the subsequent action",
+            "discovery": "Player's choice of puzzle state influences the next action",
+            "newChoice": "New puzzle state selection alters the game world"
+          },
+          {
+            "clue": "Final Puzzle State is determined by cumulative risk-reward patterns from all prior states",
+            "discovery": "Player achieves objective or faces new challenge",
+            "newChoice": "Player selects final puzzle state based on accumulated risk-reward data"
+          },
+          {
+            "clue": "Puzzle State Transition via Matchmaking Logic → Risk-Return Dynamics via Material Interaction",
+            "discovery": "Material Fusion creates unique puzzle logic",
+            "newChoice": "Player uses material interaction to transition between puzzle states"
+          }
+        ],
+        "delveGrowthRule": "Each discovery adds a new layer of complexity, influencing future choices through dynamic risk-return interactions.",
+        "finalGameIdentity": "The game world evolves through player choices, introducing new puzzles and challenges that shape the gameplay experience."
+      },
+      "playerFantasy": "플레이어는 주사위 전투 보드에서 매 순간 선택을 통해 게임 세계를 재구성하며, 진입 단계부터 시작하여 다양한 상태 변환과 위험-보상 관계에 맞춰 최종 목적지를 달성해야 한다. 이 과정에서는 플레이어가 직접 만든 새로운 문제와 도전을 생성해 게임 세계를 점진적으로 발전시킨다.",
+      "coreFun": "주사위 전투 보드의 핵심 재미는 실제 플레이 선택을 기반으로 설계되며, 진행·위험·보상이 서로 연결되는 반복 가능한 루프 구조로 구성된다. 이 루프는 입력→판정→상태 변화→보상 및 다음 선택 순서로 정립되어 있으며, 각 단계마다 새로운 문제와 도전을 유도함으로써 게임 세계를 지속적으로 발전시켜 나간다.",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Matchmaking Logic",
+          "purpose": "Governs puzzle state transitions through predefined action rules",
+          "playerChoice": "Player selects initial puzzle state to initiate progression sequence"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Interaction",
+          "purpose": "Player's choice of puzzle state influences the next action",
+          "playerChoice": "The player must choose between different puzzle states to achieve their goal in a dynamic risk-reward environment with evolving game mechanics and feedback loops that shape the gameplay experience through material interaction and progression direction."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Interaction",
+          "purpose": "Dynamic Risk-Return Tradeoff via Material Interaction",
+          "playerChoice": "Player selects a new puzzle state to trigger material interaction and influence risk-reward patterns in the next action phase with immediate feedback loop."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "c",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Fusion",
+          "purpose": "Introduces dynamic material interaction that evolves through player choices",
+          "playerChoice": "Player selects a new puzzle state and interacts with the environment to create unique risk-reward patterns that influence future actions and transitions"
+        },
+        {
+          "id": "signatureSystems[4]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "puzzleState",
+            "riskRewardPattern"
+          ],
+          "stateOutputs": [
+            "nextPuzzleState",
+            "newRiskRewardPattern"
+          ],
+          "name": "Material Fusion",
+          "purpose": "Enables dynamic puzzle state transitions through material interaction and risk-reward dynamics",
+          "playerChoice": "Player selects a new puzzle state, triggering material interaction that alters the game world and introduces new risks/rewards for future actions"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1164247,
-      "lastMs": 83214,
+      "totalMs": 1226307,
+      "lastMs": 62060,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:45:22.507Z"
+      "updatedAt": "2026-10-09T17:46:24.572Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:25:58.203Z",
-  "updatedAt": "2026-10-09T17:45:22.510Z",
+  "updatedAt": "2026-10-09T17:46:24.584Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2036,15 +2295,25 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "7525cde9178d38c1015766c5d8d24f7ca639dad5c25b0943de6a36b092ebceb5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:45:22.510Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:46:24.575Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/dice-battle-board/2026-10-10/design-seed.json",
+    "contentDigest": "3805b29eac9620724fb0478c2c510bf35b466e4949637df080be569fc8af9b03",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
