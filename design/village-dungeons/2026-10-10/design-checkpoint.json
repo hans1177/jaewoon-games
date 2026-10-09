@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG에서 즉시 이해할 수 있는 기본 루프를 선택하며, 이는 진입 시점부터 실질적 인과 변화가 발생하는 경제적 트레이드오프에 기반하여 시작된다.",
       "coreFun": "{system:액션 RPG, material:플레이어가 즉시 이해할 수 있는 입력 및 피드백, 단순한 한 손 tap/swipe, materialDomain:모바일에서 즉시 이해되는 기본 루프, stateChange:첫 성공, 첫 위험/선택, 다음 전략/경로/성장 가능성이 실제로 달라지는 경험}의 양방향 실제 상태 교환 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+    },
+    "local_authoring_parts::03857dfb4e90f184d92dcd73705e18a313be8b608f8f8985fdda637500d303c1:coreLoop": {
+      "coreLoop": [
+        "입력(손 tap/swipe) → 상태변화(첫 성공, 첫 위험/선택) → 보상/위험/다음 선택 연결",
+        "실제 세계 상태 변화에 따라 플레이어가 새로운 전략/경로/성장 가능성이 발생하며, 이는 기존 시스템과 인과적으로 연계됨.",
+        "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백을 통해 게임 진행 방향이 재설계됨."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 616902,
-      "lastMs": 104370,
+      "totalMs": 713531,
+      "lastMs": 96629,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:11:22.907Z"
+      "updatedAt": "2026-10-09T21:12:59.539Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-09T21:11:22.909Z",
+  "updatedAt": "2026-10-09T21:12:59.539Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1838,7 +1845,7 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:11:22.909Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:12:59.539Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
