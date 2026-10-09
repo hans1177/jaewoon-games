@@ -66,25 +66,57 @@
       "name": "Territory Expansion Dynamics System",
       "purpose": "Plays a central role in the game's core mechanics, governing how players read border pressure and choose territory objectives, while also influencing resource deployment, economic expansion, and strategic front-line shifts.",
       "playerChoice": "Deploy units or resources to attack, reinforce, or expand the economy based on current border pressure and chosen territory objective, with outcomes that reflect both immediate consequences and long-term strategic implications."
+    },
+    "local_authoring_parts::4f51f4f86f02c24b06138cea3bdf4f70628c24863f32f6b82689245d263887e6:signatureSystems:2": {
+      "id": "territory-war-signature-systems-2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "stateOutputs": [
+        "units_deployed",
+        "resources_allocated",
+        "front_line_shifted"
+      ],
+      "name": "Territory Expansion and Adaptation System",
+      "purpose": "Adapt to border pressure by deploying units, allocating resources, and shifting the front line.",
+      "playerChoice": "Deploy units based on territory objective, allocate resources strategically, shift front line according to new conditions."
+    },
+    "local_authoring_parts::4f51f4f86f02c24b06138cea3bdf4f70628c24863f32f6b82689245d263887e6:signatureSystems:3": {
+      "id": "territory-war-signature-systems-3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "border_pressure",
+        "territory_objective"
+      ],
+      "stateOutputs": [
+        "units_deployed",
+        "resources_allocated",
+        "front_line_shifted"
+      ],
+      "name": "Territory Expansion and Adaptation Depth System",
+      "purpose": "Adapt the next plan to the new front line while maintaining territorial expansion depth",
+      "playerChoice": "Choose a territory objective that reflects both current border pressure and long-term strategic goals, with adaptive resource allocation and unit deployment based on evolving battlefield conditions and player mastery of gameplay mechanics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 370662,
-      "lastMs": 48515,
+      "totalMs": 732006,
+      "lastMs": 181838,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:27:18.688Z"
+      "updatedAt": "2026-10-09T08:33:20.053Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:27:18.688Z",
+  "updatedAt": "2026-10-09T08:33:20.053Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2108,7 +2140,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:27:18.688Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:33:20.053Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
