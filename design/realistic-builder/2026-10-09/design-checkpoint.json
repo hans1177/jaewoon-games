@@ -34,25 +34,40 @@
         "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이",
         "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       ]
+    },
+    "local_authoring_parts::9d40a5418befda61cd2b010f868094103483ebf85a7e3540ac50a5bf8d73e8c3:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FIGHT_STATE",
+        "RUN_RESULT"
+      ],
+      "stateOutputs": [
+        "SURVIVED_STATE",
+        "PROGRESSION_CHOICE"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 384436,
-      "lastMs": 51729,
+      "totalMs": 420741,
+      "lastMs": 36305,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:19:24.027Z"
+      "updatedAt": "2026-10-09T11:20:00.333Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:12:59.563Z",
-  "updatedAt": "2026-10-09T11:19:24.027Z",
+  "updatedAt": "2026-10-09T11:20:00.333Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2404,7 +2419,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:19:24.027Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:20:00.333Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
