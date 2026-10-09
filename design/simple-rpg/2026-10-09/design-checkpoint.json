@@ -75,25 +75,38 @@
       "name": "심층 탐험 시스템 (보조 요소)",
       "purpose": "플레이어가 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하며, 위험, 보상, 그리고 다음 선택에 대한 대응법을 결정하는 데 사용된다.",
       "playerChoice": "플레이어는 새로운 지역, 캐릭터, 적, 아이템, UI와의 상호작용을 관찰하여, 위험, 보상, 및 다음 선택에 대한 대응법을 결정합니다."
+    },
+    "local_authoring_parts::8b4f10881f5b8bae74e3438bef8ef8b448503043b011ebf5cc923ebc31cdfa54:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "c",
+      "stateInputs": [
+        "월드 상태"
+      ],
+      "stateOutputs": [
+        "새로운 월드 상태"
+      ],
+      "name": "심층 탐험 시스템 (보조 요소)",
+      "purpose": "플레이어가 새로운 월드 상태에 도달했음을 나타내며, 이 상태에서 플레이어는 다양한 선택과 대응법을 통해 세계의 역사·생활·경제·지역 기능을 이해하고 발전시킬 수 있도록 구성된다.",
+      "playerChoice": "플레이어는 새로운 월드 상태에서 지역·캐릭터·적·아이템·UI와의 상호작용을 통해 세계의 원인과 플레이 규칙, 보상·정보·관계를 재구성할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 764486,
-      "lastMs": 104884,
+      "totalMs": 869364,
+      "lastMs": 104878,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:44:28.683Z"
+      "updatedAt": "2026-10-09T15:46:13.562Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:31:44.165Z",
-  "updatedAt": "2026-10-09T15:44:28.683Z",
+  "updatedAt": "2026-10-09T15:46:13.562Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1683,7 +1696,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:44:28.683Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:46:13.562Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
