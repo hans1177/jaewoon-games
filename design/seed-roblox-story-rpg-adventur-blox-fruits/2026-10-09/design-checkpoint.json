@@ -648,25 +648,34 @@
       "toSystem": "PUZZLE_LOOP_A",
       "trigger": "BOARD_STATE_CHANGE_TRIGGER",
       "stateChange": "STATE_TRANSITION_FROM_BOARD_TO_PLAYER"
+    },
+    "local_authoring_parts::da671cf7742df43284652f901d38d363777512f56e93e63eaf749192482f8546:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+      "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "fromSystem": "PUZZLE_LOOP_CORE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1545803,
-      "lastMs": 88825,
+      "totalMs": 1636977,
+      "lastMs": 91174,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T13:22:01.091Z"
+      "updatedAt": "2026-10-09T13:23:32.268Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:22:01.093Z",
+  "updatedAt": "2026-10-09T13:23:32.268Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2848,7 +2857,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:22:01.092Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:23:32.268Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
