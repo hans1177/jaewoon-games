@@ -1663,25 +1663,42 @@
         "END_MATCH"
       ],
       "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR"
+    },
+    "local_authoring_parts::2235c70d8b37489ef1c6f064179876865e7ad192db27b56b693a115c426b1b17:toSystem,trigger,stateChange": {
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
+    },
+    "local_authoring_parts::137eb1f10a18d9356e4bea9dd3687cf819339f8da5398fda35295ce5e2b7bdfe:systemInterconnections:0": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 131,
-      "successes": 131,
+      "calls": 132,
+      "successes": 132,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9306869,
-      "lastMs": 96817,
+      "totalMs": 9405666,
+      "lastMs": 98797,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:49:28.748Z"
+      "updatedAt": "2026-10-09T06:51:07.547Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T06:49:28.748Z",
+  "updatedAt": "2026-10-09T06:51:07.550Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3864,7 +3881,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:49:28.748Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:51:07.550Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
