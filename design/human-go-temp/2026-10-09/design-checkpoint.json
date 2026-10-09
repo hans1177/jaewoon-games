@@ -693,25 +693,28 @@
     },
     "local_authoring_parts::fb09b6312c6f5e995cd4bea078f78fa981f3f371f0b61b5dbacaa8f4f4e8c521:progressionLoop": {
       "progressionLoop": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
+    },
+    "local_authoring_parts::fb09b6312c6f5e995cd4bea078f78fa981f3f371f0b61b5dbacaa8f4f4e8c521:resourceFlow": {
+      "resourceFlow": "플레이어가 흉기로 타협 없이 진입하여 전투에 참여하는 선택을 입력받아, 상태변화가 발생하며, 이 상태 변화는 다음 단계로 이어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 48,
-      "successes": 48,
+      "calls": 49,
+      "successes": 49,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2450640,
-      "lastMs": 49208,
+      "totalMs": 2500259,
+      "lastMs": 49619,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:01:46.955Z"
+      "updatedAt": "2026-10-09T09:02:36.575Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:20:56.185Z",
-  "updatedAt": "2026-10-09T09:01:46.955Z",
+  "updatedAt": "2026-10-09T09:02:36.575Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3277,7 +3280,7 @@
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:01:46.955Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:02:36.575Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
