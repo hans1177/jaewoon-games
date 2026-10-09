@@ -1678,25 +1678,239 @@
           "storyContext": "주제/역사/철학 선택 → 전투 스탠드 및 인식 변화 → 실시간 속도/강화 기능 증가"
         }
       ]
+    },
+    "local_authoring_parts::338907b3bba9abc25b9d208906d40a0c143215c8ea76d2a3788e9071b1b3f40b:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "플레이어는 주제/역사/철학을 통해 전투 스타일과 인식 변화를 경험하며, 이는 실시간 속도/강화 기능 증가로 연결된다.",
+          "counterplay": "전투 스타일 및 인식 변화의 깊이 결정",
+          "positioning": "주제/역사/철학 선택에 따른 전략적 위치 변화",
+          "timing": "주제/역사/철학 선택 후 3초 내에 전투 스타일 변경",
+          "mobility": "주제/역사/철학 선택 시 유연한 전투 방향 변환 가능",
+          "groupRole": "전투 지휘자",
+          "identity": "주제/역사/철학 선택",
+          "rewardMeaning": "전투 스타일 및 인식 변화의 의미 있는 표현"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "MAIN",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 연다"
+        },
+        {
+          "role": "A",
+          "variation": "퀘스트/보상 선택으로 주제/역사/철학 선택을 연다"
+        },
+        {
+          "role": "B",
+          "variation": "퀘스트/보상 선택으로 주제/역사/철학 선택을 연다"
+        },
+        {
+          "role": "C",
+          "variation": "주제/역사/철학 선택으로 실시간 속도/강화 기능 증가를 연다"
+        },
+        {
+          "role": "@",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 연다"
+        }
+      ],
+      "antiMonotonyRule": "{\"name\": \"주제/역사/철학 선택\", \"behavior\": \"플레이어는 다양한 주제, 역사, 철학을 통해 전투 스타일과 인식 변화를 다양하게 경험하고, 이는 실시간 속도/강화 기능 증가로 연결된다.\"}"
+    },
+    "local_authoring_parts::723c304010c74d99885cd4ba06c2e8e93dfa81344e1b96a9b1e1fe6df00fc67f:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[0]",
+          "trigger": "입력: 무기/속성 선택",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "실시간 속도/강화 기능 증가",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "weaponAttribute",
+          "costKey": "speedUpgrade",
+          "cooldownKey": "duration"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[1]",
+          "trigger": "입력: 퀘스트/보상 선택",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "플레이어 경험/레벨 스토리 상승",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "플레이어 경험/레벨 스토리 상승",
+          "stateInputs": [
+            "퀘 quests/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "questReward",
+          "costKey": "experienceLevel",
+          "cooldownKey": "storyProgress"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[2]",
+          "trigger": "입력: 주제/역사/철학 선택",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "전투 스타일 및 인식 변화",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "전투 스타일 및 인식 변화",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "퀘스트/보상 선택"
+          ],
+          "source": "originalAssumption",
+          "rangeKey": "themePhilosophy",
+          "costKey": "combatStyle",
+          "cooldownKey": "perceptionChange"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "플레이어",
+          "humanTool": "A/B/C 상태 교환 축",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-무기/속성 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "무기/속성 선택",
+          "changedChoice": "A"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "B 상태 교환 축",
+          "humanAbilityId": "50일-퀘 quests/보상 선택",
+          "infectedAbilityId": "50일-퀘 quests/보상 선택",
+          "retainedState": "주제/역사/철학 선택",
+          "removedState": "퀘 quests/보상 선택",
+          "changedChoice": "B"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "C 상태 교환 축",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "주제/역사/철학 선택",
+          "changedChoice": "C"
+        }
+      ],
+      "regions": [
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "ruleIds": [
+            "signatureSystems[2]"
+          ],
+          "name": "주제/역사/철학 선택",
+          "traversal": "주제/역사/철학 선택 → 실시간 속도/강화 기능 증가 → 퀘스트/보상 선택",
+          "riskReward": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "resourcePressure": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "storyContext": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "ruleIds": [
+            "signatureSystems[2]"
+          ],
+          "name": "주제/역사/철학 선택",
+          "traversal": "주제/역사/철학 선택 → 실시간 속도/강화 기능 증가 → 퀘스트/보상 선택",
+          "riskReward": "주제/역사/철학 선택 → 전투 스탠드 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택 → 전투 스타일 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "resourcePressure": "주제/역사/철학 선택 → 전투 스탠드 및 인식 변화 → 실시간 속도/강화 기능 증가",
+          "storyContext": "주제/역사/철학 선택 → 전투 스탠드 및 인식 변화 → 실시간 속도/강화 기능 증가"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "플레이어는 주제/역사/철학을 통해 전투 스타일과 인식 변화를 경험하며, 이는 실시간 속도/강화 기능 증가로 연결된다.",
+          "counterplay": "전투 스타일 및 인식 변화의 깊이 결정",
+          "positioning": "주제/역사/철학 선택에 따른 전략적 위치 변화",
+          "timing": "주제/역사/철학 선택 후 3초 내에 전투 스타일 변경",
+          "mobility": "주제/역사/철학 선택 시 유연한 전투 방향 변환 가능",
+          "groupRole": "전투 지휘자",
+          "identity": "주제/역사/철학 선택",
+          "rewardMeaning": "전투 스타일 및 인식 변화의 의미 있는 표현"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "MAIN",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 연다"
+        },
+        {
+          "role": "A",
+          "variation": "퀘스트/보상 선택으로 주제/역사/철학 선택을 연다"
+        },
+        {
+          "role": "B",
+          "variation": "퀘스트/보상 선택으로 주제/역사/철학 선택을 연다"
+        },
+        {
+          "role": "C",
+          "variation": "주제/역사/철학 선택으로 실시간 속도/강화 기능 증가를 연다"
+        },
+        {
+          "role": "@",
+          "variation": "주제/역사/철학 선택으로 전투 스타일 및 인식 변화를 연다"
+        }
+      ],
+      "antiMonotonyRule": "{\"name\": \"주제/역사/철학 선택\", \"behavior\": \"플레이어는 다양한 주제, 역사, 철학을 통해 전투 스타일과 인식 변화를 다양하게 경험하고, 이는 실시간 속도/강화 기능 증가로 연결된다.\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 17,
+      "calls": 22,
+      "successes": 18,
       "failures": 4,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2708432,
-      "lastMs": 55605,
+      "totalMs": 2910134,
+      "lastMs": 201702,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:31:04.331Z"
+      "updatedAt": "2026-10-09T23:34:26.040Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-09T23:31:04.337Z",
+  "updatedAt": "2026-10-09T23:34:26.082Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3410,6 +3624,38 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::content-rules": [
       {
+        "code": "DESIGN_REPEATED_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "name": "주제/역사/철학 선택"
+        },
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_REPEATED_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "name": "주제/역사/철학 선택"
+        },
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
         "code": "DESIGN_ABILITY_CONTRACT_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -3480,15 +3726,15 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::content-rules": 2
+    "designer_draft_slices::content-rules": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:31:04.337Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:34:26.050Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_REPEATED_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
