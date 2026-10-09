@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::afa7b388779cca6864fbc6156fdfdbbe4f32169879c32d568b5555f059d5a32b:identity": {
+      "identity": "색채의 연쇄 - 색채의 연쇄는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 PUZZLE 게임이다. 플레이어는 시작 단계에서 명확한 목표를 설정하여 제한된 이동, 장애물, 또는 흐름 있는 빈 공간을 통해 문제를 해결해야 한다. 선택은 매번 새로운 상태로 전환되며, 성장은 즉각적인 결과와 함께 이루어진다. 이 게임은 모바일에서도 즉시 이해되는 입력과 피드백을 제공하며, 다양한 인과법칙과 시스템 연결을 포함한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 152169,
+      "lastMs": 152169,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:26:42.969Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:24:10.768Z",
-  "updatedAt": "2026-10-09T12:24:10.787Z",
+  "updatedAt": "2026-10-09T12:26:42.969Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2046,5 +2062,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:26:42.969Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
