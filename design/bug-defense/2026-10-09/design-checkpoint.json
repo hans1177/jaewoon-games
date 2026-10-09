@@ -1453,25 +1453,28 @@
       "toSystem": "플레이어는 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다.",
       "trigger": "Read the incoming insect wave and its threat pattern to determine new strategies and expand gameplay possibilities. This action involves analyzing the incoming wave, adjusting defender positions in real-time, and implementing new strategies based on resource allocation. The state change includes a更新",
       "stateChange": "플레이어는 곤충 병종의 위협 패턴을 읽고, 방어 위치를 실시간으로 조정하여 새로운 전략을 실행하는 과정에서 발생합니다. 이 상태 변화는 세계 상태를 변경하고, 다음 선택을 결정하는 데 기여하며, 게임 진행을 촉진합니다."
+    },
+    "local_authoring_parts::2bb3b47e60e40c41b77040af99b51543a30ec6f7e8fb52d436fd113c70f97a4a:fromId": {
+      "fromId": "systemInterconnections[2].trigger"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 126,
-      "successes": 125,
+      "calls": 127,
+      "successes": 126,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 8553724,
-      "lastMs": 75570,
+      "totalMs": 8614870,
+      "lastMs": 61146,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:22:46.518Z"
+      "updatedAt": "2026-10-09T05:23:47.668Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:45:12.936Z",
-  "updatedAt": "2026-10-09T05:22:46.520Z",
+  "updatedAt": "2026-10-09T05:23:47.669Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3900,7 +3903,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:22:46.520Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:23:47.668Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
