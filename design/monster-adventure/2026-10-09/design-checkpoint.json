@@ -90,25 +90,192 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
       "playerChoice": "즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+    },
+    "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:4": {
+      "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "stateOutputs": [
+        "END_WORLD_STATE"
+      ],
+      "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short session goal - DELVE(@)",
+      "purpose": "Player chooses to delve into the world of monsters and explore new paths, combinations, and revelations.",
+      "playerChoice": "Delve into the world of monsters and explore new paths, combinations, and revelations. This action opens up new possibilities for growth and different play routes. It allows players to discover new content, learn from experiences, and revisit previous choices in a more profound way."
+    },
+    "local_authoring_parts::6d7b8db095d05f8ab6fa3d35eaa3ea0706d278fa1996f0f8e413f582c17513f7:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MONSTER_ADVENTURE_CORE_FUN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as an immediate action that transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Player action that directly alters the world state by triggering a brief run with feedback, collecting rewards, and making a small risk or route choice before ending.",
+          "playerChoice": "Select a target location, obtain a reward, and take a low-risk path to progress in the game."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
+          "playerChoice": "즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short session goal - DELVE(@)",
+          "purpose": "Player chooses to delve into the world of monsters and explore new paths, combinations, and revelations.",
+          "playerChoice": "Delve into the world of monsters and explore new paths, combinations, and revelations. This action opens up new possibilities for growth and different play routes. It allows players to discover new content, learn from experiences, and revisit previous choices in a more profound way."
+        }
+      ]
+    },
+    "local_authoring_parts::9076e7f702dab802dc4d4ad394e9f9ab843575f7e37106e8dcbbf26fc9b63555:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MONSTER_ADVENTURE_CORE_FUN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Plays as an immediate action that transforms the world state by initiating the game loop and unlocking progression opportunities through casual gameplay.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "Player action that directly alters the world state by triggering a brief run with feedback, collecting rewards, and making a small risk or route choice before ending.",
+          "playerChoice": "Select a target location, obtain a reward, and take a low-risk path to progress in the game."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다.",
+          "playerChoice": "즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_DISTANCE_SHORT_SESSION"
+          ],
+          "stateOutputs": [
+            "END_WORLD_STATE"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short session goal - DELVE(@)",
+          "purpose": "Player chooses to delve into the world of monsters and explore new paths, combinations, and revelations.",
+          "playerChoice": "Delve into the world of monsters and explore new paths, combinations, and revelations. This action opens up new possibilities for growth and different play routes. It allows players to discover new content, learn from experiences, and revisit previous choices in a more profound way."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 713894,
-      "lastMs": 91941,
+      "totalMs": 799892,
+      "lastMs": 85998,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:19:14.608Z"
+      "updatedAt": "2026-10-09T01:20:40.607Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:19:14.608Z",
+  "updatedAt": "2026-10-09T01:20:40.609Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2197,7 +2364,7 @@
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T01:19:14.608Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:20:40.609Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
