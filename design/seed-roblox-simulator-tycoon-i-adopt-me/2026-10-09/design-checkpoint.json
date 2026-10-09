@@ -78,25 +78,40 @@
       "name": "Enemy Wave Completion and Resource Gain",
       "purpose": "Player evaluates previous choices, re-evaluates cost, risk, reward, and opens new paths for strategy development.",
       "playerChoice": "Selects optimal placement and upgrade path based on current resource state and enemy wave progress."
+    },
+    "local_authoring_parts::471e040f67f91d215e80cb823e39c31232a0e68548673353775a0b2524280f7c:signatureSystems:3": {
+      "id": "CORE-04",
+      "grammarRole": "c",
+      "stateInputs": [
+        "ENEMY_WAVE_COMPLETED",
+        "RESOURCE_GAINED"
+      ],
+      "stateOutputs": [
+        "UPGRADE_AVAILABLE",
+        "NEW_PLACEMENT_OPPORTUNITY"
+      ],
+      "name": "Enemy Wave Completion and Resource Gain",
+      "purpose": "Player evaluates the cost, risk, and reward of previous choices to re-evaluate their strategy and open new paths.",
+      "playerChoice": "Reassess prior decisions to generate new actions and routes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 375421,
-      "lastMs": 96253,
+      "totalMs": 413538,
+      "lastMs": 38117,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:47:27.184Z"
+      "updatedAt": "2026-10-09T11:48:05.302Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:47:27.184Z",
+  "updatedAt": "2026-10-09T11:48:05.302Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2291,7 +2306,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:47:27.184Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:48:05.302Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
