@@ -492,25 +492,40 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP"
+      ],
+      "stateOutputs": [
+        "NEW_ACTION",
+        "NEW_ROUTE"
+      ],
+      "name": "잃어버린 별의 메아리 - 플레이어가 무한히 파고드는 진입점에서, 단순한 전투보다는 숨겨진 세계로 이어지는 생존 로그라이트",
+      "purpose": "플레이어 선택 → 상태 변화 → 새로운 전략/경로/성장 가능성이 생성됨",
+      "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1323965,
-      "lastMs": 88234,
+      "totalMs": 1427059,
+      "lastMs": 103094,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:53:12.404Z"
+      "updatedAt": "2026-10-09T20:54:55.510Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-09T20:53:12.414Z",
+  "updatedAt": "2026-10-09T20:54:55.510Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2356,10 +2371,10 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:53:12.407Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:54:55.510Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
