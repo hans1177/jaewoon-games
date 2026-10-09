@@ -28,25 +28,77 @@
         "stateChange": "defense_strategy_updated"
       },
       "abCausality": "ENEMY_TYPE_CHANGE → DEFENSE_STRATEGY_UPDATE → RESOURCE_SPENDING_PATTERN_CHANGE"
+    },
+    "local_authoring_parts::f4a446c10d8095093c895e1867ea60855d673698748094a3ca4247e3a96a48bf:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "EnemyTypeChange → DefenseStrategyUpdate",
+        "bChangesA": "DefenseStrategyUpdate → ResourceSpendingPatternChange",
+        "lateGameChange": "ResourceSpendingPatternChange → NewPlayOption"
+      },
+      "materialFusion": {
+        "contrast": "EnemyTypeChange ↔ DefenseStrategyUpdate",
+        "causalBridge": "EnemyTypeChange → DefenseStrategyUpdate → ResourceSpendingPatternChange",
+        "removalConsequence": "ResourceSpendingPatternChange → NewPlayOption"
+      },
+      "storyCausalChain": {
+        "cause": "EnemyTypeChange → EffectOnPlayerChoice",
+        "characterConflict": "PlayerChoice → StateChangeInWorld",
+        "playerChoice": "StateChangeInWorld → NextEvent",
+        "worldChange": "NextEvent → FinalGameIdentity",
+        "nextEvent": "FinalGameIdentity → NewPlayOption"
+      }
+    },
+    "local_authoring_parts::8de4e8b8f15f921458cf27fd44aa1eaa6b63f9b42d677e80833628e55f1e7b29:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "a": {
+        "system": "RESOURCE_MANAGEMENT",
+        "material": "ENEMY_RESOURCES",
+        "materialDomain": "ECONOMY",
+        "stateChange": "resources_acquired_and_spent"
+      },
+      "b": {
+        "system": "DEFENSE_STRATEGY",
+        "material": "ENEMY_TYPES_AND_WAVE_COMPOSITION",
+        "materialDomain": "POLITICS",
+        "stateChange": "defense_strategy_updated"
+      },
+      "abCausality": "ENEMY_TYPE_CHANGE → DEFENSE_STRATEGY_UPDATE → RESOURCE_SPENDING_PATTERN_CHANGE",
+      "abEvolution": {
+        "aChangesB": "EnemyTypeChange → DefenseStrategyUpdate",
+        "bChangesA": "DefenseStrategyUpdate → ResourceSpendingPatternChange",
+        "lateGameChange": "ResourceSpendingPatternChange → NewPlayOption"
+      },
+      "materialFusion": {
+        "contrast": "EnemyTypeChange ↔ DefenseStrategyUpdate",
+        "causalBridge": "EnemyTypeChange → DefenseStrategyUpdate → ResourceSpendingPatternChange",
+        "removalConsequence": "ResourceSpendingPatternChange → NewPlayOption"
+      },
+      "storyCausalChain": {
+        "cause": "EnemyTypeChange → EffectOnPlayerChoice",
+        "characterConflict": "PlayerChoice → StateChangeInWorld",
+        "playerChoice": "StateChangeInWorld → NextEvent",
+        "worldChange": "NextEvent → FinalGameIdentity",
+        "nextEvent": "FinalGameIdentity → NewPlayOption"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 885245,
-      "lastMs": 46219,
+      "totalMs": 1145675,
+      "lastMs": 260430,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:36:25.499Z"
+      "updatedAt": "2026-10-09T18:40:45.930Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:40.225Z",
-  "updatedAt": "2026-10-09T18:36:25.499Z",
+  "updatedAt": "2026-10-09T18:40:45.931Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1756,7 +1808,7 @@
     "282e07c4f86efbe0d3307ad28126c011786c503d2f3ffea4b364808e760ff761": true,
     "82d4f131d38a3622c5cdcf0b440d692dbc0d2b4653604337f638775288f0a4ef": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:36:25.499Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:40:45.931Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
