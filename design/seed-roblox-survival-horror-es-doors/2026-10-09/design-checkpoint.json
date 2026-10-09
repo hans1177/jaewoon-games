@@ -91,25 +91,194 @@
       "name": "PUZZLE_WORLD_RULE_SET_C",
       "purpose": "게임 내에서 주체가 성장의 가능성과 새로운 행동 조합을 탐색하며, 발견·숙련·재방문의 깊이로 시스템을 확대하는 보조 요소입니다.",
       "playerChoice": "주체가 세계 상태와 새로운 선택을 통해 게임 루프에 대한 이해를 증진시키며, 이 과정에서 다양한 대안과 경로를 열어줍니다."
+    },
+    "local_authoring_parts::d262f8f52e527b0c62eda1e9a80821365deb4c79b5ed68d5c57cf64343b47d04:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "CONTENT_EXPANSION_PLAN",
+        "PROGRESSION_DIRECTION"
+      ],
+      "name": "PUZZLE_WORLD_RULE_SET_D",
+      "purpose": "게임 내에서 발견된 새로운 상태 변화, 숙련된 선택, 재방문 가능한 경로를 확산하는 데 활용됨.",
+      "playerChoice": "새로운 상태 변화나 숙련된 선택을 통해 게임의 핵심 루프를 다시 형성함."
+    },
+    "local_authoring_parts::d0b908559da90dc65b56a005f57535b5006d4f5328c34501bb134c54a3f210f5:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET",
+          "purpose": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_A",
+          "purpose": "게임 내에서 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
+          "playerChoice": "선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조组合이 열린다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_B",
+          "purpose": "A/B 대축의 선택 결과가 다음 월드 상태와 성장 기회를 연결하는 데 사용된다.",
+          "playerChoice": "Board pattern or obstacle combination that triggers WORLD_STATUS_CHANGE and GROWTH_OPPORTUNITY based on the current state and player strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN",
+            "PROGRESSION_DIRECTION"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_C",
+          "purpose": "게임 내에서 주체가 성장의 가능성과 새로운 행동 조합을 탐색하며, 발견·숙련·재방문의 깊이로 시스템을 확대하는 보조 요소입니다.",
+          "playerChoice": "주체가 세계 상태와 새로운 선택을 통해 게임 루프에 대한 이해를 증진시키며, 이 과정에서 다양한 대안과 경로를 열어줍니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN",
+            "PROGRESSION_DIRECTION"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_D",
+          "purpose": "게임 내에서 발견된 새로운 상태 변화, 숙련된 선택, 재방문 가능한 경로를 확산하는 데 활용됨.",
+          "playerChoice": "새로운 상태 변화나 숙련된 선택을 통해 게임의 핵심 루프를 다시 형성함."
+        }
+      ]
+    },
+    "local_authoring_parts::844dbbd977fa2e9ac61741ae96f752a7583f0561dffdbbb7e3b71a5192f1ede9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "INPUT: 플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다.",
+        "SELECT: 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
+        "OUTPUT: 즉각적인 피드백과 위험/보상 관계에 참여하며 게임의 핵심 루프를 형성한다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET",
+          "purpose": "플레이어가 시작 단계에서 명확한 목표를 설정하여, 제한된 이동 횟수와 장애물을 통한 문제 해결을 통해 세계 상태를 변화시킨다.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_A",
+          "purpose": "게임 내에서 선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조합이 열린다.",
+          "playerChoice": "선택 결과가 다음 월드 상태를 바꾸며, 성장의 가능성과 새로운 행동 조组合이 열린다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "WORLD_STATUS_CHANGE",
+            "GROWTH_OPPORTUNITY"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_B",
+          "purpose": "A/B 대축의 선택 결과가 다음 월드 상태와 성장 기회를 연결하는 데 사용된다.",
+          "playerChoice": "Board pattern or obstacle combination that triggers WORLD_STATUS_CHANGE and GROWTH_OPPORTUNITY based on the current state and player strategy."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN",
+            "PROGRESSION_DIRECTION"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_C",
+          "purpose": "게임 내에서 주체가 성장의 가능성과 새로운 행동 조합을 탐색하며, 발견·숙련·재방문의 깊이로 시스템을 확대하는 보조 요소입니다.",
+          "playerChoice": "주체가 세계 상태와 새로운 선택을 통해 게임 루프에 대한 이해를 증진시키며, 이 과정에서 다양한 대안과 경로를 열어줍니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "CONTENT_EXPANSION_PLAN",
+            "PROGRESSION_DIRECTION"
+          ],
+          "name": "PUZZLE_WORLD_RULE_SET_D",
+          "purpose": "게임 내에서 발견된 새로운 상태 변화, 숙련된 선택, 재방문 가능한 경로를 확산하는 데 활용됨.",
+          "playerChoice": "새로운 상태 변화나 숙련된 선택을 통해 게임의 핵심 루프를 다시 형성함."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 442213,
-      "lastMs": 38268,
+      "totalMs": 478171,
+      "lastMs": 35958,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:06:23.038Z"
+      "updatedAt": "2026-10-09T12:06:58.997Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:59:00.793Z",
-  "updatedAt": "2026-10-09T12:06:23.038Z",
+  "updatedAt": "2026-10-09T12:06:59.000Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2146,7 +2315,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:06:23.038Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:06:59.000Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
