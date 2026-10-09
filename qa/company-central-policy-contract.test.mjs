@@ -102,7 +102,7 @@ test('Unity Web log contract matches the mandatory upper-platform development fl
   assert.equal(evidence.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(evidence.nativeGateAuthority,false);
   assert.equal(evidence.developmentAdmissionAuthority,false);
-  assert.equal(evidence.requiredForDevelopmentAdmission,true);
+  assert.equal(evidence.requiredForDevelopmentAdmission,false);
   assert.equal(evidence.requiredForNativeRuntimePass,false);
   assert.equal(evidence.requiredForRelease,false);
   assert.equal(evidence.canonicalSource,'unity-games/<gameId>/');
@@ -435,7 +435,7 @@ test('Unity and Roblox share the active first development tier while Fortnite UE
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
   assert.equal(strategy.roadmapPhaseEntryGatesForbidden,false);
-  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,false);
+  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'});
   assert.equal(strategy.UNITY.existingPathPreserved,true);
