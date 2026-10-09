@@ -5,38 +5,65 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
-test('실제 Unity WebGL 3D/모바일/독립 QA를 통과한 동일 주소만 실행 가능하다',async()=>{
+test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하고 옛 게임 주소는 유지한다',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const fetched=[];
-  let independentPass=true;
+  let previewMode=false,invalid3d=false,missingWasm=false;
   const group={loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']};
-  const valid3d={pass:true,spatialGameplay:{pass:true,requiredDimension:'3D'},visualQa:{nativeUnityMesh:{pass:true}},mobile:{pass:true}};
+  const evidence=()=>({
+    engine:'UNITY_WEB',gameId:'demo',pass:!previewMode,playableBrowserTest:true,
+    boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},
+    mobile:{pass:true},noCriticalRuntimeError:true,performance:{pass:!previewMode},
+    spatialGameplay:{pass:!invalid3d,requiredDimension:'3D',depthPass:true,perspectiveCamera:true,
+      observedMeshCount:3,observedTriangles:500,worldMeshes3d:2,worldDepthCm:70,
+      gameplayActors3d:1,spriteGameplayActors:0},
+    visualQa:{nativeUnityMesh:{pass:!invalid3d}}
+  });
   const engine=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
     document:{readyState:'loading',addEventListener(){}},
     AbortController,setTimeout,clearTimeout,
     fetch:async(url,options={})=>{
       const location=String(url);
       fetched.push(location);
-      if(location.includes('index.html'))return{ok:true,text:async()=>'<script>createUnityInstance(canvas,{})</script>'};
-      if(location.includes('unity-web-deploy-manifest.json'))return{ok:true,json:async()=>({engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,requiredGroups:group})};
-      if(location.includes('unity-web-gameplay-validation.json'))return{ok:true,json:async()=>valid3d};
-      if(location.includes('unity-web-independent-qa.json'))return{ok:true,json:async()=>({...valid3d,pass:independentPass})};
-      if(location.includes('unity-web-regression.json'))return{ok:true,json:async()=>valid3d};
-      if(location.includes('upper-platform-development-readiness.json'))return{ok:true,json:async()=>({gameId:'demo',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true})};
-      return{ok:options.method==='HEAD'};
+      const preview=location.includes('/unity/');
+      if(location.includes('index.html'))return{ok:preview===previewMode,
+        text:async()=>'<script>createUnityInstance(canvas,{})</script>'};
+      if(preview!==previewMode)return{ok:false};
+      if(location.includes('unity-web-deploy-manifest.json'))return{ok:true,json:async()=>({
+        engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,requiredGroups:group
+      })};
+      if(location.includes('unity-web-build.json'))return{ok:true,json:async()=>({
+        engine:'UNITY_WEB',gameId:'demo',bootSmoke:'PASS',ownerBrowserTestEligible:true,
+        actualBrowserPlay:previewMode?'PLAYABLE_TEST_ONLY':'PASS'
+      })};
+      if(location.includes('unity-web-gameplay-validation.json'))return{ok:true,json:async()=>evidence()};
+      if(location.includes('unity-web-independent-qa.json'))return{ok:true,json:async()=>evidence()};
+      if(location.includes('unity-web-regression.json'))return{ok:true,json:async()=>evidence()};
+      if(location.includes('upper-platform-development-readiness.json'))return{ok:true,json:async()=>({
+        gameId:'demo',state:previewMode?'REPAIR_REQUIRED':'UPPER_PLATFORM_DEVELOPMENT_READY',pass:!previewMode
+      })};
+      return{ok:options.method==='HEAD'&&(!missingWasm||!location.includes('demo.wasm'))};
     }
   });
   engine.setExposure({unityWebEnabled:true,games:[]});
-  const catalog={games:[{id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}]};
+  const catalog={games:[{id:'demo',productionClass:'DEVELOPMENT_CONFIRMED',
+    canonical:{sources:{unity:{projectPath:'unity-games/demo'}},production:{class:'DEVELOPMENT_CONFIRMED'}}}]};
   const ready=await engine.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(ready.games[0].unityWebAvailable,true);
   assert.equal(ready.games[0].unityWebTestUrl,'/web-games/demo/');
-  assert.ok(fetched.some(url=>url.includes('/web-games/demo/index.html')));
+  assert.equal(ready.games[0].unityWebTestOnly,false);
   assert.equal(fetched.filter(url=>url.includes('/Build/demo.')).length,4);
-  independentPass=false;
+  previewMode=true;
+  const preview=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(preview.games[0].unityWebAvailable,true);
+  assert.equal(preview.games[0].unityWebTestUrl,'/web-games/demo/unity/');
+  assert.equal(preview.games[0].unityWebTestOnly,true,'a playable test is not final QA PASS');
+  invalid3d=true;
   const blocked=await engine.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(blocked.games[0].unityWebAvailable,false,'independent QA failure must hide link');
-  assert.equal(blocked.games[0].unityWebTestUrl,null);
+  assert.equal(blocked.games[0].unityWebAvailable,false,'2D and missing native mesh cannot count as an owner test');
+  invalid3d=false;
+  missingWasm=true;
+  const noBundle=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(noBundle.games[0].unityWebAvailable,false,'missing actual WebGL runtime assets blocks the test link');
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
