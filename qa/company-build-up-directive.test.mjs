@@ -1246,3 +1246,45 @@ test('large authored game content volume keeps all entries without cloning a ful
   assert.match(prompt,/VARIETY_ABILITIES\[63\] 전용 행동 63/);
   assert.ok(prompt.length<75000,'content index should not repeat the full implementation blueprint for every item');
 });
+
+test('preservation-only approved design keeps all volume entries but forbids new gameplay',()=>{
+  const approved=design();
+  approved.content.preservationContract={
+    mode:'PRESERVATION_PRESENTATION_UPGRADE',
+    lockedSemantics:['SAVE_KEY_AND_SCHEMA_MEANING','COMBAT_RULES','PROGRESSION','DROPS_AND_REWARDS']
+  };
+  approved.content.contentExpansionPlan=[
+    {milestone:'모션 보정',newGameplay:'새 게임플레이를 추가하지 않고 기존 공격 애니메이션만 개선',
+      systemImpact:'기존 타격 데미지·쿨다운·보상을 유지하면서 모션을 개선한다'}
+  ];
+  const sourceObservation={sourceRoot:'roblox-games/preserve-demo',sourceTreeFingerprint:'a'.repeat(64),
+    fileCount:1,sourceAnchors:[],topFiles:[{file:'roblox-games/preserve-demo/client/Game.client.luau',score:20}],
+    signals:{animation:1,progression:1,combat:1,content:1},observations:[]};
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'preserve-demo',platform:'ROBLOX',designRecord:approved,sourceObservation,
+    responsibleFiles:['roblox-games/preserve-demo/client/Game.client.luau']
+  });
+  assert.equal(d.designedGameVolume.mode,'PRESERVATION_PRESENTATION_MILESTONES_ONLY');
+  assert.equal(d.designImplementationContext.preservationContract.mode,'PRESERVATION_PRESENTATION_UPGRADE');
+  const milestone=d.designedGameVolume.items.find(row=>row.family==='CONTENT_MILESTONE');
+  assert.ok(milestone.requiredBehavior.includes('NO_NEW_GAMEPLAY_RULE_PROGRESSION_BALANCE_SAVE_OR_NETWORK_SEMANTIC'));
+  assert.ok(!milestone.requiredBehavior.includes('NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL'));
+  assert.equal(d.designedGameVolume.runtimeVerifiedCount,0);
+
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const lines=guide({target:'roblox',gameId:'preserve-demo',
+    buildUpDirective:{...d,primaryFocus:'PROGRESSION'}},['roblox-games/preserve-demo/client/Game.client.luau']);
+  assert.match(lines,/contentVolume=authored:/);
+  assert.doesNotMatch(lines,/volumeImplementation=ref:/,
+    'presentation-only preservation must not be executed as a new progression mechanic');
+});
