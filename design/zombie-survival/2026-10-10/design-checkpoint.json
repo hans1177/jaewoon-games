@@ -605,25 +605,38 @@
       "name": "실시간 스타트업 루프 생성",
       "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출을 위한 실시간 전략적 결정 및 환경 반응",
       "playerChoice": "환경/지역 변화에 따라 새로운 전술적 결정 가능하다고 표시됨으로, 장비/기술 선택과 함께 보상/위험/다음 선택이 변동된다."
+    },
+    "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "플레이어의 선택"
+      ],
+      "stateOutputs": [
+        "게임 진행 및 새로운 게임 규칙 형성"
+      ],
+      "name": "발견 · 숙련",
+      "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주며, 이는 다음 사건의 시작점이며, 새로운 게임 규칙을 형성함",
+      "playerChoice": "플레이어의 선택이 실제 세계 상태 변화에 영향을 주고, 이는 다음 사건의 시작점이다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 20,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2186732,
-      "lastMs": 25038,
+      "totalMs": 2284256,
+      "lastMs": 97524,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:00:37.744Z"
+      "updatedAt": "2026-10-09T23:02:15.269Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T23:00:37.744Z",
+  "updatedAt": "2026-10-09T23:02:15.275Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2365,7 +2378,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 3,
+    "designer_draft_slices::identity-core": 4,
     "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:1": 1
   },
   "slicePartialResults": {
@@ -2467,10 +2480,10 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:00:37.744Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T23:02:15.270Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
