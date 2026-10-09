@@ -86,25 +86,181 @@
       "name": "IDLE_GROWTH_CROSS_PATH",
       "purpose": "인물들의 전투와 자원 수집 루프에서 발생하는 새로운 경로, 위험, 및 성장의 조합을 생성하여 플레이어에게 다양한 선택 기회를 제공",
       "playerChoice": "전투 결과에 따라 다른 경로 또는 자원을 선택하며, 이 선택이 다음 상태 변화와 연결되어 진입부터 반복 가능한 루프를 형성함"
+    },
+    "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_05",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "IDLE_GROWTH_RESOURCE"
+      ],
+      "stateOutputs": [
+        "GROWTH_PROGRESS"
+      ],
+      "name": "IDLE_GROWTH_DELVE_PATH",
+      "purpose": "게임 내에서 발견된 새로운 경로, 상태, 또는 대응법을 실제 플레이에 열어 재해석하는 시그니처 세계 규칙",
+      "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
+    },
+    "local_authoring_parts::03c0f2b05cd8f095ed12b17a91e714d20c152d1df0e7783b7e743638490f4bad:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_RESOURCE",
+          "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_AWARD",
+          "purpose": "게임 내에서 선택 결과가 다음 상태로 전환하는 주요 인과축",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_BATTLE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 상태로 연결하는 보조 인과법칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_CROSS_PATH",
+          "purpose": "인물들의 전투와 자원 수집 루프에서 발생하는 새로운 경로, 위험, 및 성장의 조합을 생성하여 플레이어에게 다양한 선택 기회를 제공",
+          "playerChoice": "전투 결과에 따라 다른 경로 또는 자원을 선택하며, 이 선택이 다음 상태 변화와 연결되어 진입부터 반복 가능한 루프를 형성함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_DELVE_PATH",
+          "purpose": "게임 내에서 발견된 새로운 경로, 상태, 또는 대응법을 실제 플레이에 열어 재해석하는 시그니처 세계 규칙",
+          "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
+        }
+      ]
+    },
+    "local_authoring_parts::44d9a095e5613e85c863d445e099ec658bbc0b2da524387ae7678f321ea10139:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_RESOURCE",
+          "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_AWARD",
+          "purpose": "게임 내에서 선택 결과가 다음 상태로 전환하는 주요 인과축",
+          "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_BATTLE",
+          "purpose": "A/B 대축의 선택 결과를 월드/상대/목표 상태로 연결하는 보조 인과법칙",
+          "playerChoice": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_CROSS_PATH",
+          "purpose": "인물들의 전투와 자원 수집 루프에서 발생하는 새로운 경로, 위험, 및 성장의 조합을 생성하여 플레이어에게 다양한 선택 기회를 제공",
+          "playerChoice": "전투 결과에 따라 다른 경로 또는 자원을 선택하며, 이 선택이 다음 상태 변화와 연결되어 진입부터 반복 가능한 루프를 형성함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_05",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "IDLE_GROWTH_RESOURCE"
+          ],
+          "stateOutputs": [
+            "GROWTH_PROGRESS"
+          ],
+          "name": "IDLE_GROWTH_DELVE_PATH",
+          "purpose": "게임 내에서 발견된 새로운 경로, 상태, 또는 대응법을 실제 플레이에 열어 재해석하는 시그니처 세계 규칙",
+          "playerChoice": "Discover a new path, state, or response in the game world that has not been previously explored or reinterpreted. This choice unlocks a novel gameplay mechanic or progression layer that is both meaningful and contextually relevant to the player's experience."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 567873,
-      "lastMs": 62572,
+      "totalMs": 607833,
+      "lastMs": 39960,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:14:31.988Z"
+      "updatedAt": "2026-10-09T12:15:11.950Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:14:31.989Z",
+  "updatedAt": "2026-10-09T12:15:11.953Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2333,26 +2489,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:4": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "SIGNATURE_SYSTEM_01",
-          "SIGNATURE_SYSTEM_02",
-          "SIGNATURE_SYSTEM_03",
-          "SIGNATURE_SYSTEM_04"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:4": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:14:31.988Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-09T12:15:11.953Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
