@@ -69,25 +69,42 @@
       "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
       "purpose": "Establishes the first axis of system interaction by linking the outcome of the main action to the next state through risk/reward/choice",
       "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::94a63d5ebe679971da5f05182f2d20949958640da0001d61031ff014e1f52e92:signatureSystems:2": {
+      "id": "CORE_FUN_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_KEY",
+        "RISK_LEVEL"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_07",
+        "STATE_CHANGE_08",
+        "STATE_CHANGE_09"
+      ],
+      "name": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+      "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+      "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 333636,
-      "lastMs": 35946,
+      "totalMs": 372148,
+      "lastMs": 38512,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:22:47.435Z"
+      "updatedAt": "2026-10-09T09:23:25.948Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:22:47.435Z",
+  "updatedAt": "2026-10-09T09:23:25.948Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2011,7 +2028,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:22:47.435Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:23:25.948Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
