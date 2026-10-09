@@ -124,21 +124,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296497,
-      "lastMs": 34214,
+      "totalMs": 331056,
+      "lastMs": 34559,
       "lastError": null,
-      "updatedAt": "2026-10-09T21:01:28.675Z"
+      "updatedAt": "2026-10-09T21:02:03.235Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:56:32.142Z",
-  "updatedAt": "2026-10-09T21:01:28.675Z",
+  "updatedAt": "2026-10-09T21:02:03.236Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1726,20 +1726,23 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:0": [
+    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:1": [
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "signatureSystems_0"
+        ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:0": 1
+    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:0": 1,
+    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T21:01:28.675Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T21:02:03.235Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
