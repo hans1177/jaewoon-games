@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::1dc67e4681c665ff3b60b3b127da1f1d6ef1aaafdd33666cba2e99e1a939e424:identity": {
+      "identity": "천상의 보루는 Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 SINGLE_DEFENSE_STRATEGY 게임이다. 플레이어는 매 차례마다 새로운 전략과 자원을 창출하며, 이 과정에서 성장과 위험/보상의 균형을 맞추며 세계를 점령해 나간다. 이 게임은 단순한 반복보다는 진입부터 시작하여 다양한 대응법과 경로를 열어 놓았다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 149193,
+      "lastMs": 149193,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:43:35.426Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:41:06.097Z",
-  "updatedAt": "2026-10-09T12:41:06.178Z",
+  "updatedAt": "2026-10-09T12:43:35.426Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2204,5 +2220,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:43:35.426Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
