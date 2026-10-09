@@ -411,25 +411,106 @@
           "playerChoice": "전략적 동기 부여의 확장 및 실제 세계 상태 변화의 실현을 위한 선택이 이루어짐."
         }
       ]
+    },
+    "local_authoring_parts::971b7f5f8ba172a997491182d710459aa782776a02fc6fbe7676c4cd03f70ad2:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::8c1faff4313e9e755c4c0f6ebfdecdb1cf265f3b029f676f38d792adfacbe3ba:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 전선 상태 변화, 자원 배분 결과, 전략적 동기 부여 → 상태변화 발생",
+        "선택: 전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화 → 실제 세계 상태 변화",
+        "보상: 전략적 동기 부여 확장, 새로운 질문 생성"
+      ],
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "전선 파괴 결정",
+            "자원 배분 선택",
+            "전략적 동기 부여 구체화"
+          ],
+          "stateOutputs": [
+            "전략적 동기 부여 확장",
+            "새로운 질문 생성",
+            "실제 세계 상태 변화"
+          ],
+          "name": "영토 전략 기반의 주제",
+          "purpose": "전선 파괴 결정, 자원 배분 선택 및 전략적 동기 부여 구체화의 인과적 연결을 통해 실제 세계 상태 변화가 발생하는 플레이 약속",
+          "playerChoice": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화의 실현이 필요하며, 이 과정에서 실제 세계 상태 변화와 새로운 질문이 생겨나게 된다"
+        },
+        {
+          "id": "signatureSystems-1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "전선 파괴 결정",
+            "자원 배분 선택",
+            "전략적 동기 부여 구체화"
+          ],
+          "stateOutputs": [
+            "전략적 동기 부여 확장",
+            "새로운 질문 생성",
+            "실제 세계 상태 변화"
+          ],
+          "name": "영토 전략 기반의 주제",
+          "purpose": "전략적 동기 부여와 군사적 전선 파괴의 인과적 연결을 통해 실제 세계 상태 변화가 발생하는 플레이 약속",
+          "playerChoice": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화의 실현 및 새로운 질문 생성의 조합이 가능하다고 볼 수 있다."
+        },
+        {
+          "id": "signatureSystems-2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "전선 파괴 결정",
+            "자원 배분 선택",
+            "전략적 동기 부여 구체화"
+          ],
+          "stateOutputs": [
+            "전략적 동기 부여 확장",
+            "새로운 질문 생성",
+            "실제 세계 상태 변화"
+          ],
+          "name": "전략적 동기 부여의 인과적 연결",
+          "purpose": "전선 파괴 결정, 자원 배분 선택 및 전략적 동기 부여 구체화의 인과적 연결을 통해 실제 세계 상태 변화가 발생하는 플레이 약속",
+          "playerChoice": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화의 순차적 실행이 가능하며, 각 단계에서 새로운 질문이 생겨나게 된다"
+        },
+        {
+          "id": "signatureSystems-3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "전선 파괴 결정",
+            "자원 배분 선택",
+            "전략적 동기 부여 구체화"
+          ],
+          "stateOutputs": [
+            "전략적 동기 부여 확장",
+            "새로운 질문 생성",
+            "실제 세계 상태 변화"
+          ],
+          "name": "전략적 동기 부여의 인과적 연결",
+          "purpose": "전략적 동기 부여와 군사적 전선 파괴의 인과적 연결을 나타내며, 실제 세계 상태 변화와 새로운 질문의 발생을 유도함.",
+          "playerChoice": "전략적 동기 부여의 확장 및 실제 세계 상태 변화의 실현을 위한 선택이 이루어짐."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1186150,
-      "lastMs": 102748,
+      "totalMs": 1272237,
+      "lastMs": 86087,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:35:55.869Z"
+      "updatedAt": "2026-10-09T20:37:21.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T20:35:55.872Z",
+  "updatedAt": "2026-10-09T20:37:21.969Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1960,17 +2041,148 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {
-    "local_authoring_parts::2874d366d46805cf234d953cab76997151d7fa45c6aa3a0d8a9a2cf859ea592c:signatureSystems:1": 1
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "slicePartialResults": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "identity-core",
+            "signatureSystems-1",
+            "signatureSystems-2",
+            "signatureSystems-3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::2874d366d46805cf234d953cab76997151d7fa45c6aa3a0d8a9a2cf859ea592c:signatureSystems:1": 1,
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "영토 확장 전략 기반의 주제",
+        "a": {
+          "system": "지역 관리 시스템",
+          "material": "전선 파괴 및 자원 배분 결정",
+          "materialDomain": "군사적, 경제적, 정치적",
+          "stateChange": "전선 상태 변화, 자원 분배 결과, 군대 이동 방향"
+        },
+        "b": {
+          "system": "주요 대응 시스템",
+          "material": "전선 위협 및 병력 투입 선택",
+          "materialDomain": "군사적, 경제적, 정치적",
+          "stateChange": "전선 위협 종료, 병력 배치 결과, 전략적 동기 부여"
+        },
+        "abCausality": "전선 상태 변화 → 자원 분배 결과 → 전략적 동기 부여 양방향 교환",
+        "abEvolution": {
+          "aChangesB": "전선 파괴 → 자원 배분 → 전략적 동기 부여",
+          "bChangesA": "전선 위협 종료 → 병력 배치 → 전략적 동기 부여",
+          "lateGameChange": "전선 상태 변화 → 자원 분배 → 전략적 동기 부여"
+        },
+        "materialFusion": {
+          "contrast": "전선 파괴와 자원 배분 결정의 상호작용을 통해 인과적으로 연결되는 플레이를 적고, 한 측면만 빼면 사라지는 조합을 만든다.",
+          "causalBridge": "전선 파괴 → 자원 배분 → 전략적 동기 부여",
+          "removalConsequence": "전선 파괴가 없으면 자원 배분이 사라지고, 자원 배분이 없으면 전략적 동기 부여도 사라진다."
+        },
+        "storyCausalChain": {
+          "cause": "전선 파괴 및 자원 배분 결정의 실현",
+          "characterConflict": "전략적 동기 부여의 불확실성과 군대 이동 방향의 갈등",
+          "playerChoice": "전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화",
+          "worldChange": "전선 상태 변화, 자원 분배 결과, 전략적 동기 부여 실현",
+          "nextEvent": "전략적 동기 부여의 확장 및 새로운 전선 상태 변화"
+        },
+        "cThemes": [
+          {
+            "name": "전략적 동기 부여",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          },
+          {
+            "name": "군사적 전선 파괴",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략적 동기 부여",
+            "gameplayEffect": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "군사적 전선 파괴",
+            "gameplayEffect": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          }
+        ],
+        "cGenreInterlock": "전략적 동기 부여와 군사적 전선 파괴는 상호작용을 통해 인과적으로 연결되며, 보조 장르 제거 시 전략적 동기 부여가 사라지고 군사적 전선 파괴가 유지된다.",
+        "cWorldAndGameplayEffect": "전략적 동기 부여와 군사적 전선 파괴는 서로 다른 메인 장르로 분류되어 각각 실제 세계 상태 변화를 일관되게 반영한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "전략적 동기 부여의 실현이 필요하다.",
+            "discovery": "전략적 동기 부여의 확장과 실제 세계 상태 변화",
+            "newChoice": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          },
+          {
+            "clue": "전선 파괴 결정은 필수이다.",
+            "discovery": "전략적 동기 부여의 확장과 실제 세계 상태 변화",
+            "newChoice": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          },
+          {
+            "clue": "군사적 전선 파괴는 필수이다.",
+            "discovery": "전략적 동기 부여의 확장과 실제 세계 상태 변화",
+            "newChoice": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          },
+          {
+            "clue": "전략적 동기 부여의 확장은 필수이다.",
+            "discovery": "전략적 동기 부여의 확장과 실제 세계 상태 변화",
+            "newChoice": "전략적 동기 부여의 확장과 실제 세계 상태 변화"
+          }
+        ],
+        "delveGrowthRule": "전략적 동기 부여, 군사적 전선 파괴, 전략적 동기 부여의 확장 및 실제 세계 상태 변화가 무한 발전 규칙으로 적용된다.",
+        "finalGameIdentity": "전략적 동기 부여와 군사적 전선 파괴를 인과적으로 결합한 새 정체성."
+      },
+      "playerFantasy": "플레이어는 영토 확장 전략에서 전선 파괴 결정, 자원 배분 선택 및 전략적 동기 부여 구체화에 참여하며, 이 과정에서 실제 세계 상태 변화와 새로운 질문이 생겨나게 된다.",
+      "coreFun": "{\"type\": \"ACTION\", \"description\": \"전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화의 인과적 연결을 통해 실제 세계 상태 변화가 발생하는 플레이 약속.\"}",
+      "coreLoop": [
+        "입력: 전선 상태 변화, 자원 배분 결과, 전략적 동기 부여 → 상태변화 발생",
+        "선택: 전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화 → 실제 세계 상태 변화",
+        "보상: 전략적 동기 부여 확장, 새로운 질문 생성"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:35:55.872Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T20:37:21.962Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
