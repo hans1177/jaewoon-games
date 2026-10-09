@@ -34,25 +34,40 @@
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::246145399605192c9646fb0b0eeff9d521d4b1d011aee1c24cedf40ffbac0fc8:signatureSystems:0": {
+      "id": "STAR-FRONTIER-MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BOARD_STATE",
+        "PLAYER_ACTION"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN",
+        "REWARD_SYSTEM"
+      ],
+      "name": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+      "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 347945,
-      "lastMs": 45214,
+      "totalMs": 383900,
+      "lastMs": 35955,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:32:05.942Z"
+      "updatedAt": "2026-10-09T08:32:41.899Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:26:17.971Z",
-  "updatedAt": "2026-10-09T08:32:05.942Z",
+  "updatedAt": "2026-10-09T08:32:41.899Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2089,7 +2104,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:32:05.942Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:32:41.899Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
