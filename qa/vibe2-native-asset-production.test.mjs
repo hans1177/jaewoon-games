@@ -2567,6 +2567,38 @@ public class PrototypeAnimatedVisuals:MonoBehaviour {
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('Unity native asset final QA rejects 2D SpriteRenderer even alongside 3D meshes',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/other-game/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class PrototypeAnimatedVisuals:MonoBehaviour {
+  void Build(){
+    var player=Instantiate(Resources.Load<GameObject>("Actors/Hero3D"));
+    var player3d=player.GetComponentInChildren<SkinnedMeshRenderer>();
+    var weapon=Instantiate(Resources.Load<GameObject>("Weapons/Sword3D"));
+    weapon.GetComponent<MeshFilter>().sharedMesh=Resources.Load<Mesh>("Weapons/SwordMesh");
+    weapon.AddComponent<MeshRenderer>().material=new Material(Shader.Find("Standard"));
+    var environment=Instantiate(Resources.Load<GameObject>("Environment/Forest3D"));
+    environment.name="forest ground tree biome";
+    var flatEnemy=new GameObject("enemy monster sprite");
+    flatEnemy.AddComponent<SpriteRenderer>();
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-unity-2d-in-3d.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',changedFiles:[relative],
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'unity-2d-in-3d',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*UNITY_WORLD_SPRITE_RENDERER_FORBIDDEN/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('native asset adaptation accepts composed character weapon environment and style identity',()=>{
   const root=tempRoot();
   try{
@@ -2576,15 +2608,16 @@ test('native asset adaptation accepts composed character weapon environment and 
     fs.writeFileSync(file,`using UnityEngine;
 public class PrototypeAnimatedVisuals:MonoBehaviour {
   void Build(){
-    var body=GameObject.CreatePrimitive(PrimitiveType.Capsule);
-    var head=GameObject.CreatePrimitive(PrimitiveType.Sphere);
-    head.transform.SetParent(body.transform);
-    var weapon=new GameObject("weapon sword blade");
-    weapon.AddComponent<MeshFilter>();
-    var weaponRenderer=weapon.AddComponent<MeshRenderer>();
-    weaponRenderer.material=new Material(Shader.Find("Standard"));
-    weaponRenderer.material.color=new Color(0.3f,0.7f,0.5f);
-    var environment=GameObject.CreatePrimitive(PrimitiveType.Cube);
+    var body=Instantiate(Resources.Load<GameObject>("Actors/Hero3D"));
+    var head=body.transform.Find("Head");
+    var rig=body.GetComponentInChildren<SkinnedMeshRenderer>();
+    var weapon=Instantiate(Resources.Load<GameObject>("Weapons/Sword3D"));
+    weapon.name="weapon sword blade";
+    var weaponMesh=weapon.GetComponent<MeshFilter>();
+    var weaponRenderer=weapon.GetComponent<MeshRenderer>();
+    if(weaponMesh!=null && weaponMesh.sharedMesh!=null)
+       weaponRenderer.sharedMaterial=new Material(Shader.Find("Standard"));
+    var environment=Instantiate(Resources.Load<GameObject>("Environment/Forest3D"));
     environment.name="forest ground tree biome";
     environment.transform.localScale=new Vector3(4,1,4);
   }
@@ -2602,6 +2635,8 @@ public class PrototypeAnimatedVisuals:MonoBehaviour {
     assert.equal(result.outcome,'PASS');
     assert.equal(result.presentationQa.status,'STATIC_PASS');
     assert.ok(result.presentationQa.checks.some(row=>row.name==='NATIVE_COMPOSITE_FORM'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='UNITY_NATIVE_3D_MESH_SOURCE_BINDING'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='UNITY_WORLD_SPRITE_RENDERER_FORBIDDEN'&&row.pass));
     assert.ok(result.presentationQa.checks.some(row=>row.name==='GAME_VISUAL_IDENTITY_DOMAINS'&&row.pass));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
