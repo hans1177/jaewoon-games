@@ -94,25 +94,203 @@
       "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
       "purpose": "플레이어가 주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 기반으로 전략적 대응법과 경로를 창출하며, 이 과정에서 숙련과 발견을 통해 세계를 점령해 나간다.",
       "playerChoice": "주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 바탕으로 전략적 대응법과 경로를 선택하여, 이를 바탕으로 새로운 자원과 전략을 창출하고 위험/보상의 균형을 맞추며 세계를 점령해 나감."
+    },
+    "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "READ_NEXT_ENEMY_WAVE",
+        "PLACE_TOWERS_OR_DEFENDERS"
+      ],
+      "stateOutputs": [
+        "EARN_RESOURCES",
+        "SPEND_ON_UPGRADES"
+      ],
+      "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+      "purpose": "플레이어가 선택 결과와 전술적 대응법을 바탕으로, 적의 행동 방향성과 전략적 반응을 탐색하며 게임 세계를 점령하는 데 사용되는 시그니처 시스템.",
+      "playerChoice": "전략적 대응법 및 적의 전개 패턴을 기반으로 한 새로운 전투 계획을 수립하여, 이전 상태에서 벗어나는 새로운 경로를 열어 나간다."
+    },
+    "local_authoring_parts::3f4e91ed830d2692cf87e7cc898d9295b0cf5ffcfc4a087d15d3eba6d9a3b986:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "플레이어가 매 차례마다 새로운 전략과 자원을 창출하며, 이 과정에서 성장과 위험/보상의 균형을 맞추며 세계를 점령해 나간다.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. followed by earning resources from defeated enemies and spending them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "RESOURCE_MANAGEMENT_AND_STRATEGY_ADAPTATION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 전략적 대응을 수행하며, 자원을 효율적으로 관리하는 시스템입니다.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 기반으로 전략적 대응법과 경로를 창출하며, 이 과정에서 숙련과 발견을 통해 세계를 점령해 나간다.",
+          "playerChoice": "주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 바탕으로 전략적 대응법과 경로를 선택하여, 이를 바탕으로 새로운 자원과 전략을 창출하고 위험/보상의 균형을 맞추며 세계를 점령해 나감."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 선택 결과와 전술적 대응법을 바탕으로, 적의 행동 방향성과 전략적 반응을 탐색하며 게임 세계를 점령하는 데 사용되는 시그니처 시스템.",
+          "playerChoice": "전략적 대응법 및 적의 전개 패턴을 기반으로 한 새로운 전투 계획을 수립하여, 이전 상태에서 벗어나는 새로운 경로를 열어 나간다."
+        }
+      ]
+    },
+    "local_authoring_parts::c119b3c6ebeecc7569e4ec199df1832a8bb515f180bb2e585f38cb4d3393c23f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "선택: Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "상태변화: MAIN의 결과가 A/B와 c 서브요소가 읽고 변형할 수 있는 실제 게임 상태로 바뀐다."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "SINGLE_DEFENSE_STRATEGY",
+          "purpose": "플레이어가 매 차례마다 새로운 전략과 자원을 창출하며, 이 과정에서 성장과 위험/보상의 균형을 맞추며 세계를 점령해 나간다.",
+          "playerChoice": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. followed by earning resources from defeated enemies and spending them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "RESOURCE_MANAGEMENT_AND_STRATEGY_ADAPTATION",
+          "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 적의 종류와 웨이브 구성에 따라 전략적 대응을 수행하며, 자원을 효율적으로 관리하는 시스템입니다.",
+          "playerChoice": "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 기반으로 전략적 대응법과 경로를 창출하며, 이 과정에서 숙련과 발견을 통해 세계를 점령해 나간다.",
+          "playerChoice": "주변 적의 유형, 웨이브 구성, 목적지 및 스테이지를 바탕으로 전략적 대응법과 경로를 선택하여, 이를 바탕으로 새로운 자원과 전략을 창출하고 위험/보상의 균형을 맞추며 세계를 점령해 나감."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "READ_NEXT_ENEMY_WAVE",
+            "PLACE_TOWERS_OR_DEFENDERS"
+          ],
+          "stateOutputs": [
+            "EARN_RESOURCES",
+            "SPEND_ON_UPGRADES"
+          ],
+          "name": "ENEMY_ADAPTATION_AND_STRATEGY_REFLECTION",
+          "purpose": "플레이어가 선택 결과와 전술적 대응법을 바탕으로, 적의 행동 방향성과 전략적 반응을 탐색하며 게임 세계를 점령하는 데 사용되는 시그니처 시스템.",
+          "playerChoice": "전략적 대응법 및 적의 전개 패턴을 기반으로 한 새로운 전투 계획을 수립하여, 이전 상태에서 벗어나는 새로운 경로를 열어 나간다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 743746,
-      "lastMs": 208151,
+      "totalMs": 949923,
+      "lastMs": 206177,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:53:30.008Z"
+      "updatedAt": "2026-10-09T12:56:56.186Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:41:06.097Z",
-  "updatedAt": "2026-10-09T12:53:30.008Z",
+  "updatedAt": "2026-10-09T12:56:56.189Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2304,25 +2482,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "c",
-        "previousRuleIds": [
-          "SIGNATURE_SYSTEM_0",
-          "SIGNATURE_SYSTEM_1",
-          "SIGNATURE_SYSTEM_2"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:0": 1,
     "local_authoring_parts::834923baf29cc0c381e33750c3b5c442584be0fb6c278af847936b72b3042f81:signatureSystems:3": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:53:30.008Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:56:56.189Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
