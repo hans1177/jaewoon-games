@@ -562,25 +562,31 @@
     },
     "local_authoring_parts::8c3dc7c6a80e50bc29b26c03aed49d186a90982a2844f8f43d8821a9919c6c5b:toId": {
       "toId": "DEFENDER_REARRANGEMENT_PLAN"
+    },
+    "local_authoring_parts::8c3dc7c6a80e50bc29b26c03aed49d186a90982a2844f8f43d8821a9919c6c5b:stateKeys": {
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE_PATTERN",
+        "DEFENDER_REARRANGEMENT_PLAN"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 34,
-      "successes": 34,
+      "calls": 35,
+      "successes": 35,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2294172,
-      "lastMs": 55928,
+      "totalMs": 2352010,
+      "lastMs": 57838,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:21:50.120Z"
+      "updatedAt": "2026-10-09T09:22:47.959Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:43:35.755Z",
-  "updatedAt": "2026-10-09T09:21:50.120Z",
+  "updatedAt": "2026-10-09T09:22:47.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2932,7 +2938,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:21:50.120Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:22:47.959Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
