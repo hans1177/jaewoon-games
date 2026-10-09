@@ -48,25 +48,51 @@
       "name": "공격 패턴 예측 시스템",
       "purpose": "플레이어가 다음 공격 패턴을 읽고 크리스트 데미지에 가장 가치 있는 위치를 선택하는 중심 행동을 촉진하기 위해 사용된다.",
       "playerChoice": "공격 패턴의 변화를 기반으로 최적화된 위치, 진동 또는 업그레이드를 선택하라."
+    },
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "REWARD/RISK/ NEXT SELECT"
+      ],
+      "name": "공격 패턴 예측 시스템",
+      "purpose": "플레이어가 다음 공격 패턴을 읽고 크리스트 데미지에 가장 가치 있는 위치를 선택하는 중심 행동을 촉진하며, 자원의 효율적 배치와 진동 최적화를 지원합니다.",
+      "playerChoice": "제한된 자원을 투입하여 위치, 진동 또는 업그레이드를 최적화하라"
+    },
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "REWARD/RISK/ NEXT SELECT"
+      ],
+      "name": "공격 패턴 예측 시스템",
+      "purpose": "공격 패턴의 변화에 따라 플레이어에게 최적 위치 선택을 유도하는 시스템",
+      "playerChoice": "제한된 자원을 투입하여 공격 패턴의 가치 있는 위치를 선택하라"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 580547,
-      "lastMs": 99230,
+      "totalMs": 780278,
+      "lastMs": 98727,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:51:46.438Z"
+      "updatedAt": "2026-10-09T15:55:06.172Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:05.859Z",
-  "updatedAt": "2026-10-09T15:51:46.440Z",
+  "updatedAt": "2026-10-09T15:55:06.172Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1765,23 +1791,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "SIGNATURE_SYSTEM_0"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:51:46.438Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:06.172Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
