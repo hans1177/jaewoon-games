@@ -193,6 +193,18 @@ async function bindAvailableUnityWebSurfaces(catalog){
           return response.ok?response.json():null;
         }));
         const [build,gameplay,independent,regression,readiness]=evidence;
+        // 서로 다른 Unity 소스·번들에 남아 있던 오래된 QA 파일로 실행 링크를 열지 않는다.
+        const expectedSource=String(build?.sourceCommit||'');
+        const expectedBuild=String(build?.buildTreeSha256||'');
+        const expectedUnity=String(build?.unitySourceTreeSha256||'');
+        if(!/^[a-f0-9]{40}$/i.test(expectedSource)
+          || !/^[a-f0-9]{64}$/i.test(expectedBuild)
+          || !/^[a-f0-9]{64}$/i.test(expectedUnity)
+          || readiness?.sourceCommit!==expectedSource
+          || readiness?.buildTreeSha256!==expectedBuild
+          || readiness?.unitySourceTreeSha256!==expectedUnity
+          || build?.canonicalSourceRoot!==`unity-games/${id}`
+          || build?.buildOutputRoot!==`web-games/${id}`)continue;
         const ownerPlayable3d=row=>row?.engine==='UNITY_WEB'&&row?.gameId===id
           &&row?.playableBrowserTest===true&&row?.boot?.pass===true
           &&row?.input?.pass===true&&row?.gameplay?.pass===true&&row?.coreFun?.pass===true
