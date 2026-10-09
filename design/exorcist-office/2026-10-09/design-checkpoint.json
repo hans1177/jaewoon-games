@@ -47,25 +47,38 @@
       "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "purpose": "Plays as the core action that instantly changes the world state by triggering a simple input and a clear objective in a casual game.",
       "playerChoice": "Tap or swipe to initiate the run, receive immediate feedback, collect rewards, and make a small risk or route choice before the run ends."
+    },
+    "local_authoring_parts::805ed275072b6d1d2b1a464a245d2b972c22d03d84a7d29c1db3f8ed3e22bdc9:signatureSystems:1": {
+      "id": "CORE_FUN_02",
+      "grammarRole": "A",
+      "stateInputs": [
+        "RUN_INPUT"
+      ],
+      "stateOutputs": [
+        "RUN_RESULT"
+      ],
+      "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 149512,
-      "lastMs": 16830,
+      "totalMs": 167232,
+      "lastMs": 17720,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:52:42.913Z"
+      "updatedAt": "2026-10-09T15:53:00.634Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T15:52:42.913Z",
+  "updatedAt": "2026-10-09T15:53:00.634Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1542,7 +1555,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:52:42.913Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:53:00.634Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
