@@ -272,25 +272,201 @@
           "playerChoice": "Reinterpret and expand the board pattern or obstacle combination to create new combinations, strategies, and outcomes that reflect player growth and progression."
         }
       ]
+    },
+    "local_authoring_parts::c08a5c021f7a16d22efe1da34de219d2c7ec66ec2b91ae595c8dfe1b69893404:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::390a7e55ce1f43eb3146fa905746b79f563a688b73b0b709dd75cdca8ef7ff38:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "World Rule System - Dynamic Puzzle Evolution",
+          "purpose": "Players' actions directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Dynamic Puzzle Evolution - Player-Driven World State Transformation",
+          "purpose": "Player actions directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Player-Driven World State Transformation - Adaptive Puzzle Evolution",
+          "purpose": "Players' choices directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Make strategic matches, create combos, and use immediate board feedback to solve the current objective and unlock new levels or gain rewards based on player actions and environmental conditions."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Content Expansion - Dynamic Puzzle Reinterpretation",
+          "purpose": "Players revisit past experiences, uncover new strategies, and re-express previous puzzles through dynamic reinterpretations of the board state and player actions.",
+          "playerChoice": "Reinterpret past puzzle states, discover new combinations, and redefine existing rules through dynamic board transformations and strategic choices that evolve with each playthrough."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Dynamic Puzzle Reinterpretation - Player-Driven Content Expansion",
+          "purpose": "Players reinterpret and expand the game content through their choices, creating new strategies and outcomes that evolve with each playthrough.",
+          "playerChoice": "Reinterpret and expand the board pattern or obstacle combination to create new combinations, strategies, and outcomes that reflect player growth and progression."
+        }
+      ],
+      "multiplayerMode": "COOP"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "Shardbound Odyssey - Puzzle Board Game with Dynamic World Rules and Player Growth Pathways\n\nThis game is a reimagined puzzle experience where players take on the role of a protagonist who starts each level with a clear goal, limited moves, obstacles, or a visible puzzle constraint. The core gameplay revolves around solving these puzzles through strategic matches, combo formations, and immediate feedback from the board. Players grow by unlocking new levels, earning rewards, and facing increasingly complex challenges that evolve with each playthrough.\n\nThe game features a unique system where player actions directly influence world state changes, creating a dynamic and interconnected gameplay environment. Each level has its own set of rules, and the progression involves multiple layers of interaction: exploration, mastery, and revisiting past experiences to uncover new strategies and outcomes.\n\nKey elements include:\n- **Player Fantasy**: A player-driven narrative where choices impact both",
+      "playerFantasy": "플레이어는 시작 단계에서 명확한 목표를 설정하여, 제한된 이동, 장애물, 또는 시각적 흐름을 통해 문제를 해결해야 한다. 선택은 즉각적인 피드백을 제공하며, 이를 바탕으로 다음 상태가 어떻게 변할지를 예측할 수 있다. 이러한 과정은 성장의 기반으로 작용하며, 재방문이나 숙련을 통한 새로운 전략과 결과를 생성한다.",
+      "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 결과가 다음 월드 상태로 연결되는 PUZZLE 게임에서 플레이어의 선택이 즉각적인 피드백을 통해 문제 해결 및 성장의 기반으로 작용하며, 이 과정은 재방문이나 숙련을 통한 새로운 전략과 결과 생성에 활용된다.",
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "World Rule System - Dynamic Puzzle Evolution",
+          "purpose": "Players' actions directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Dynamic Puzzle Evolution - Player-Driven World State Transformation",
+          "purpose": "Player actions directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Player-Driven World State Transformation - Adaptive Puzzle Evolution",
+          "purpose": "Players' choices directly influence world state changes, creating a dynamic and interconnected gameplay environment.",
+          "playerChoice": "Make strategic matches, create combos, and use immediate board feedback to solve the current objective and unlock new levels or gain rewards based on player actions and environmental conditions."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Content Expansion - Dynamic Puzzle Reinterpretation",
+          "purpose": "Players revisit past experiences, uncover new strategies, and re-express previous puzzles through dynamic reinterpretations of the board state and player actions.",
+          "playerChoice": "Reinterpret past puzzle states, discover new combinations, and redefine existing rules through dynamic board transformations and strategic choices that evolve with each playthrough."
+        },
+        {
+          "id": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "stateOutputs": [
+            "WORLD_STATE_CHANGE",
+            "GAME_PROGRESS"
+          ],
+          "name": "Dynamic Puzzle Reinterpretation - Player-Driven Content Expansion",
+          "purpose": "Players reinterpret and expand the game content through their choices, creating new strategies and outcomes that evolve with each playthrough.",
+          "playerChoice": "Reinterpret and expand the board pattern or obstacle combination to create new combinations, strategies, and outcomes that reflect player growth and progression."
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 529728,
-      "lastMs": 45280,
+      "totalMs": 571388,
+      "lastMs": 41660,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:43:34.389Z"
+      "updatedAt": "2026-10-09T14:44:16.053Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:34:44.626Z",
-  "updatedAt": "2026-10-09T14:43:34.391Z",
+  "updatedAt": "2026-10-09T14:44:16.063Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1876,12 +2052,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:43:34.391Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:44:16.056Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-09/design-seed.json",
+    "contentDigest": "d8349be482c0a04df3fb92c1bd53216f8cd69b1215cc6026408f3fe695c0fdcc",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
