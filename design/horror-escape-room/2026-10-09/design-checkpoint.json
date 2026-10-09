@@ -12,25 +12,32 @@
   "tasks": {
     "local_authoring_parts::40e2a349a986a1de550a7673c5227d07d5f417464c574a18b36e173148a52832:identity": {
       "identity": "인간4명과 몬스터4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임 정체성: 감염 전환, 인물 전환, 스킬 사용, 이벤트 발생, 결과 결정. 플레이어 역할: 감염 대응, 전투, 정화, 스킬 활용, 이벤트 관리. 시그니처 세계: 감염, 정화, 전쟁, 이벤트, 결과. 기능 약속: 감염 공격, 정화, 스킬 사용, 이벤트 발생, 결과 결정."
+    },
+    "local_authoring_parts::40e2a349a986a1de550a7673c5227d07d5f417464c574a18b36e173148a52832:playerFantasy": {
+      "playerFantasy": "감염 대응자는 명시적 감염 공격에 맞서 인물로 변환되는 몬스터와 함께 추격전을 펼친다. 그들은 전투에서 정화 능력과 대시 기술을 활용해 적들을 제거하며, 감염 스킬을 통해 이벤트를 유도한다. 플레이어는 인간 직업별 고유의 감염 스킬을 사용하여 전략적으로 이벤트를 관리하고, 감염 공격이나 정화 공격에 대한 결과를 결정해야 한다."
+    },
+    "local_authoring_parts::95bf3665649015ea188a45d3a1a68524658620278bf6d50d3550e8681027340b:identity,playerFantasy": {
+      "identity": "인간4명과 몬스터4명이 시작하고, 몬스터의 명시적 감염 공격에 맞은 인간이 즉시 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전. 게임 정체성: 감염 전환, 인물 전환, 스킬 사용, 이벤트 발생, 결과 결정. 플레이어 역할: 감염 대응, 전투, 정화, 스킬 활용, 이벤트 관리. 시그니처 세계: 감염, 정화, 전쟁, 이벤트, 결과. 기능 약속: 감염 공격, 정화, 스킬 사용, 이벤트 발생, 결과 결정.",
+      "playerFantasy": "감염 대응자는 명시적 감염 공격에 맞서 인물로 변환되는 몬스터와 함께 추격전을 펼친다. 그들은 전투에서 정화 능력과 대시 기술을 활용해 적들을 제거하며, 감염 스킬을 통해 이벤트를 유도한다. 플레이어는 인간 직업별 고유의 감염 스킬을 사용하여 전략적으로 이벤트를 관리하고, 감염 공격이나 정화 공격에 대한 결과를 결정해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 110054,
-      "lastMs": 110054,
+      "totalMs": 148813,
+      "lastMs": 38759,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:30:54.266Z"
+      "updatedAt": "2026-10-09T08:31:33.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:29:03.964Z",
-  "updatedAt": "2026-10-09T08:30:54.266Z",
+  "updatedAt": "2026-10-09T08:31:33.027Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -747,7 +754,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:30:54.266Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:31:33.027Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
