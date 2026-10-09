@@ -1788,11 +1788,25 @@ export function buildGameSpecificBuildUpDirective({
   const mainSystem=authoredRole('MAIN'),aSystem=authoredRole('A'),bSystem=authoredRole('B');
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
-  const authoredCreativeC=Array.isArray(design.creativeGrammar?.cThemes)&&design.creativeGrammar.cThemes.length===2
-    &&Array.isArray(design.creativeGrammar?.cGenres)&&design.creativeGrammar.cGenres.length===2
-    &&['PRIMARY','SECONDARY'].every(role=>design.creativeGrammar.cGenres.some(row=>row?.role===role))
-    &&clean(design.creativeGrammar?.cGenreInterlock);
-  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length&&(authoredCreativeC||cSystems.length));
+  const hasOwnerCreativeGrammar=Boolean(clean(design.creativeGrammar?.mainIdentity)
+    ||clean(design.creativeGrammar?.a?.system)||Array.isArray(design.creativeGrammar?.cThemes));
+  const sourcedCreativeAxes=['a','b'].every(key=>clean(design.creativeGrammar?.[key]?.system)
+    &&clean(design.creativeGrammar?.[key]?.material)
+    &&clean(design.creativeGrammar?.[key]?.materialDomain)
+    &&clean(design.creativeGrammar?.[key]?.stateChange));
+  const cThemes=Array.isArray(design.creativeGrammar?.cThemes)?design.creativeGrammar.cThemes:[];
+  const cGenres=Array.isArray(design.creativeGrammar?.cGenres)?design.creativeGrammar.cGenres:[];
+  const authoredCreativeC=cThemes.length===2
+    &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(design.creativeGrammar?.cGenreInterlock)
+    &&clean(design.creativeGrammar?.cWorldAndGameplayEffect);
+  // V5는 오래된 c 태그로 C를 대신할 수 없다. V4 설계만 기존 c 호환 경로를 유지한다.
+  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length
+    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC):cSystems.length));
   const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
