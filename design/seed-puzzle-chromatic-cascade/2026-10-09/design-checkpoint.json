@@ -73,25 +73,194 @@
       "name": "COLOR_CHAIN_EFFECT",
       "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    },
+    "local_authoring_parts::2d1f4a4c181f933e3504b26c481f43b5af68c2be5ead46beda1a70c56ab85c82:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "COLOR_CHAIN_EXPANSION",
+      "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태로 전환하는 보조 요소로서, 다양한 인과법칙과 시스템 연결을 포함하며, 발견·숙련·재방문 깊이를 제공합니다.",
+      "playerChoice": "플레이어는 현재 상태에 따라 새로운 상태를 생성하여 다음 선택 및 진행 방향을 결정해야 합니다. 이 과정에서는 즉각적인 결과와 함께 성장이 이루어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
+    },
+    "local_authoring_parts::2d1f4a4c181f933e3504b26c481f43b5af68c2be5ead46beda1a70c56ab85c82:signatureSystems:4": {
+      "id": "SIGNATURE_SYSTEM_4",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "NEW_BOARD_STATE"
+      ],
+      "name": "COLOR_CHAIN_EXPANSION_DELVE",
+      "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태와 관계를 확대하는 복합적 진입 절차입니다.",
+      "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
+    },
+    "local_authoring_parts::99b15054094976541078a4275cf679b680e6a4616379d5108f2c9c08bfb2cdd9:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_CAUSAL",
+          "purpose": "Plays as the core gameplay mechanism, where players start with a clear goal and limited moves to solve puzzles, leading to new board states through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives, resulting in state transitions that reflect causal relationships between actions and outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "색채의 연쇄에서 선택 결과가 다음 월드 상태로 전환하는 첫 번째 대축.",
+          "playerChoice": "Board state transition with color-based constraints and immediate feedback to determine the next level pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태로 전환하는 보조 요소로서, 다양한 인과법칙과 시스템 연결을 포함하며, 발견·숙련·재방문 깊이를 제공합니다.",
+          "playerChoice": "플레이어는 현재 상태에 따라 새로운 상태를 생성하여 다음 선택 및 진행 방향을 결정해야 합니다. 이 과정에서는 즉각적인 결과와 함께 성장이 이루어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION_DELVE",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태와 관계를 확대하는 복합적 진입 절차입니다.",
+          "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
+        }
+      ]
+    },
+    "local_authoring_parts::195905f974af2a0ce1c92a59c6f5aab07717c739923f5ba09bd648d1135c1617:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_CAUSAL",
+          "purpose": "Plays as the core gameplay mechanism, where players start with a clear goal and limited moves to solve puzzles, leading to new board states through strategic choices.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate feedback to solve objectives, resulting in state transitions that reflect causal relationships between actions and outcomes."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "색채의 연쇄에서 선택 결과가 다음 월드 상태로 전환하는 첫 번째 대축.",
+          "playerChoice": "Board state transition with color-based constraints and immediate feedback to determine the next level pattern or obstacle combination."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EFFECT",
+          "purpose": "A/B 대축에서 MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+          "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태로 전환하는 보조 요소로서, 다양한 인과법칙과 시스템 연결을 포함하며, 발견·숙련·재방문 깊이를 제공합니다.",
+          "playerChoice": "플레이어는 현재 상태에 따라 새로운 상태를 생성하여 다음 선택 및 진행 방향을 결정해야 합니다. 이 과정에서는 즉각적인 결과와 함께 성장이 이루어집니다. 선택은 매번 새로운 상태로 전환되며, 다양한 인과법칙과 시스템 연결을 통해 게임의 재미와 구매 가능성을 높입니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "BOARD_STATE"
+          ],
+          "stateOutputs": [
+            "NEW_BOARD_STATE"
+          ],
+          "name": "COLOR_CHAIN_EXPANSION_DELVE",
+          "purpose": "색채의 연쇄에서 플레이어가 선택 결과를 기반으로 새로운 상태와 관계를 확대하는 복합적 진입 절차입니다.",
+          "playerChoice": "선택된 상태 변화에 따라 다양한 인과법칙과 시스템 연결을 통해 다음 단계로 이어집니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 353905,
-      "lastMs": 29678,
+      "totalMs": 448485,
+      "lastMs": 43512,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:30:04.716Z"
+      "updatedAt": "2026-10-09T12:31:39.298Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:24:10.768Z",
-  "updatedAt": "2026-10-09T12:30:04.716Z",
+  "updatedAt": "2026-10-09T12:31:39.301Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2128,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:30:04.716Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:31:39.301Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
