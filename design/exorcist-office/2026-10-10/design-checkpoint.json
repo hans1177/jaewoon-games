@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a:identity": {
       "identity": "퇴마 사무소을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.\n\n플레이어가 Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.\n\n대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.\n\n성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+    },
+    "local_authoring_parts::093889ab5333664d135e54e4d1f0a308b390d59eb33d26a4e6fca7e0aab6b055:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "a": {
+        "system": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "material": "Readable feedback, rewards, and small risks",
+        "materialDomain": "Feedback & Rewards",
+        "stateChange": "Player gains score, collects rewards, makes a decision"
+      },
+      "b": {
+        "system": "Finish or fail, receive a score, unlock a progression benefit, and retry quickly",
+        "material": "Score, progression benefits, quick retries",
+        "materialDomain": "Progression & Replays",
+        "stateChange": "Player receives score, unlocks progress, re-tries game"
+      },
+      "abCausality": "Input -> State Change -> Outcome/Risk -> Next Selection (Quick Retry)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 824222,
-      "lastMs": 224026,
+      "totalMs": 874362,
+      "lastMs": 50140,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:55:09.309Z"
+      "updatedAt": "2026-10-09T17:55:59.451Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:41:25.065Z",
-  "updatedAt": "2026-10-09T17:55:09.309Z",
+  "updatedAt": "2026-10-09T17:55:59.451Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1511,7 +1527,7 @@
     "7e71ed5cccd7033d288ba9ad4d2347eb7b64abeb5d1a6327d6fb2008bb857f70": true,
     "d20514b6642e9cc0261e9e3cf3d4f870fb1c52c2dfd8b0bfe6b9a3ceae6f0d5a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:55:09.309Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:55:59.451Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
