@@ -1611,25 +1611,53 @@
         "OUTPUT"
       ],
       "fromSystem": "STAGE_GATE_SCORING_V2"
+    },
+    "local_authoring_parts::4bd7d35a27975b24e6e2041a00add045ac7f6fe1899dbbbd3f0d519294afbfc4:toSystem,trigger,stateChange": {
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "systemInterconnections",
+      "stateChange": "CORE-4V4-SIGNATURE-1→CORE-4V4-SIGNATURE-2의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::f74dae797240d2535e190e0930a38fe79cd05906c34536fe3f5a48f8f146d796:systemInterconnections:1": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2",
+      "toSystem": "STAGE_GATE_SCORING_V2",
+      "trigger": "systemInterconnections",
+      "stateChange": "CORE-4V4-SIGNATURE-1→CORE-4V4-SIGNATURE-2의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::6c07bdbf6bb4a8d94570101676c0211aa4508bd1eb169f088d4b6eb2c5843c92:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-4V4-SIGNATURE-1",
+      "toId": "CORE-4V4-SIGNATURE-2",
+      "stateKeys": [
+        "INPUT",
+        "SELECT",
+        "OUTPUT"
+      ],
+      "fromSystem": "STAGE_GATE_SCORING_V2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 105,
-      "successes": 102,
+      "calls": 107,
+      "successes": 104,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 9530983,
-      "lastMs": 93085,
+      "totalMs": 9717070,
+      "lastMs": 93087,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T06:31:05.816Z"
+      "updatedAt": "2026-10-09T06:34:11.909Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:28:49.180Z",
-  "updatedAt": "2026-10-09T06:31:05.816Z",
+  "updatedAt": "2026-10-09T06:34:11.909Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3974,7 +4002,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:31:05.816Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:34:11.909Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
