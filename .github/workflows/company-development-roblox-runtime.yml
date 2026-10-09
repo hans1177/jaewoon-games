@@ -2266,12 +2266,12 @@ jobs:
           echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=DISABLED_HEADLESS_PATH'
           echo 'ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'
 
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=100" > /tmp/roblox-continuation-active-runs.json
-          node <<'NODE' > /tmp/roblox-continuation-active-ids
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=100&head_sha=$current_main" > /tmp/roblox-continuation-active-runs.json
+          CURRENT_MAIN_SHA="$current_main" node <<'NODE' > /tmp/roblox-continuation-active-ids
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
-          const currentSha=String(process.env.GITHUB_SHA||'').trim();
+          const currentSha=String(process.env.CURRENT_MAIN_SHA||'').trim();
           const prefix='Roblox shared preflight · ';
           const ids=new Set();
           for(const run of payload.workflow_runs||[]){
@@ -2295,7 +2295,7 @@ jobs:
             [ -n "$id" ] || continue
             if grep -Fxq "$id" /tmp/roblox-continuation-active-ids; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$GITHUB_SHA"
+              echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$current_main"
               continue
             fi
             gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
