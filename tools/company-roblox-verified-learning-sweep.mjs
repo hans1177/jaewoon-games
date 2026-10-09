@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
 import {robloxLearningProfileFromSource} from './company-development-roblox-gameplay-product-readiness.mjs';
 import {latestVerifiedDesign} from './company-all-games-design-reset.mjs';
@@ -27,6 +28,13 @@ if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+const runtimeRef=String(args['runtime-ref']||'').trim();
+const runtimeQueueFile=String(args['runtime-queue']||'').trim();
+if(Boolean(runtimeRef)!==Boolean(runtimeQueueFile)||runtimeRef&&!/^[A-Za-z0-9][A-Za-z0-9/_-]*$/.test(runtimeRef)){
+  throw new Error('ROBLOX_SWEEP_RUNTIME_DESIGN_INPUT_INVALID');
+}
+const runtimeQueue=runtimeQueueFile?readJson(path.resolve(runtimeQueueFile)):null;
+const runtimeItems=new Map((runtimeQueue?.items||[]).filter(item=>item?.gameId).map(item=>[String(item.gameId),item]));
 const nativeBindingVersion=source=>{
   const match=String(source||'').match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/);
   return Number(match?.[1]||0);
@@ -51,7 +59,30 @@ for(const gameId of gameIds){
   const configSource=fs.readFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'utf8');
   const fallbackProfile=existingRobloxGameLearningProfile(gameId);
   const sourceProfile=robloxLearningProfileFromSource({gameId,config:configSource,fallback:fallbackProfile});
-  const designContext=latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId);
+  // Use the same canonical company-runtime design as exact source reconciliation.
+  // Runtime design baselines are not committed into main.
+  const runtimeItem=runtimeItems.get(gameId);
+  if(runtimeQueue&&requestedGameSet.has(gameId)&&!runtimeItem)throw new Error('ROBLOX_SWEEP_RUNTIME_GAME_NOT_IN_QUEUE:'+gameId);
+  if(runtimeItem&&(String(runtimeItem.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||String(runtimeItem.status||'').toUpperCase()!=='ACTIVE')){
+    if(requestedGameSet.has(gameId))throw new Error('ROBLOX_SWEEP_RUNTIME_GAME_INELIGIBLE:'+gameId);
+    continue;
+  }
+  let runtimeBaseline=null;
+  const baselinePath=String(runtimeItem?.designBaselineSource||'').trim();
+  if(runtimeItem){
+    if(!new RegExp('^design/'+gameId+'/[0-9]{4}-[0-9]{2}-[0-9]{2}/design-revised\\.json$').test(baselinePath)){
+      throw new Error('ROBLOX_SWEEP_RUNTIME_DESIGN_PATH_INVALID:'+gameId);
+    }
+    try{
+      runtimeBaseline=JSON.parse(execFileSync('git',['show',runtimeRef+':'+baselinePath],{
+        cwd:process.cwd(),encoding:'utf8',maxBuffer:4*1024*1024
+      }));
+    }catch{
+      throw new Error('ROBLOX_SWEEP_RUNTIME_DESIGN_BASELINE_UNAVAILABLE:'+gameId);
+    }
+    if(runtimeBaseline?.gameId!==gameId)throw new Error('ROBLOX_SWEEP_RUNTIME_DESIGN_GAME_ID_MISMATCH:'+gameId);
+  }
+  const designContext=runtimeBaseline?{record:runtimeBaseline}:(latestVerifiedDesign(process.cwd(),gameId)||latestMinimumDesign(process.cwd(),gameId));
   const designProfile=designContext?.record?robloxBuildProfileFromBaseline(designContext.record):null;
   const learningProfile=designProfile||sourceProfile;
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
@@ -62,20 +93,20 @@ for(const gameId of gameIds){
   const currentNativeBindingVersion=nativeBindingVersion(currentClientSource);
   let applied;
   if(currentNativeBindingVersion>ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION){
-    const requiredConfigSignals=[
-      `MemoryFingerprint = "${learning.verifiedExternalLearningFingerprint||''}"`,
-      `SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)}`,
-      'GameSpecificSemanticMappings = {',
-      'LearningDispositions = {'
-    ];
-    if(requiredConfigSignals.some(signal=>!configSource.includes(signal))){
+    // Refresh only the managed config and context; do not downgrade game-owned native code.
+    const nativePattern=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END/;
+    const nativeBefore=currentClientSource.match(nativePattern)?.[0]||'';
+    const currentVariant=configSource.match(/SemanticVariant\s*=\s*["']([^"']+)["']/)?.[1]||'';
+    if(!nativeBefore||!currentVariant||currentVariant!==learning.semanticVariant){
       throw new Error('ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT:'+gameId);
     }
-    applied=Object.freeze({
-      changed:false,
-      changedFiles:Object.freeze([]),
-      serverInspection:'PRESERVED_NEWER_NATIVE_BINDING'
-    });
+    const refreshed=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
+    const afterClient=fs.readFileSync(clientFile,'utf8');
+    if(afterClient.match(nativePattern)?.[0]!==nativeBefore
+      ||nativeBindingVersion(afterClient)!==currentNativeBindingVersion){
+      throw new Error('ROBLOX_SWEEP_NEWER_NATIVE_BINDING_CONFIG_DRIFT:'+gameId);
+    }
+    applied=Object.freeze({...refreshed,serverInspection:'PRESERVED_NEWER_NATIVE_BINDING'});
   }else{
     applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
   }
@@ -130,6 +161,7 @@ for(const gameId of gameIds){
     gameSpecificMappingCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
     sourceProfile,
     designProfile,
+    runtimeDesignBaselineSource:runtimeBaseline?baselinePath:null,
     profileMismatch:Boolean(designProfile&&(String(designProfile.genre)!==String(sourceProfile.genre)||String(designProfile.playMode)!==String(sourceProfile.playMode))),
     validationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
     serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING',
