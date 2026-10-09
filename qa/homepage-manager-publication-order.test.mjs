@@ -241,18 +241,41 @@ test('PR creation failure remains a blocking publication failure inside Director
   assert.ok(director.includes('exit 1'));
 });
 
-test('new native development admission requires Unity Web upper-platform readiness',()=>{
+test('independent Roblox and Unity Web development retains the locked 3D and F0-F9 evidence gates',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
   assert.equal(dual.unityWebEnabled,true);
   assert.equal(dual.unityWebRequired,true);
-  assert.equal(dual.unityWebGateRequired,true);
+  assert.equal(dual.unityWebGateRequired,false);
   assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(dual.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
   assert.equal(dual.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformDevelopmentReadinessGate?.allCriteriaRequired,true);
   assert.equal(dual.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
+  assert.equal(dual.upperPlatformAdmissionMigration?.newNativeDevelopmentStartRequiresUnityWebReadiness,false);
   assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_READY');
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.runtimeIndependentQaRegressionRequired,true);
+  const active=roadmap.ownerActiveDevelopmentScope20261009;
+  assert.deepEqual(active?.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(active?.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
+  assert.equal(active?.robloxRequiresUnityWebReadiness,false);
+  assert.equal(active?.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
+  assert.equal(active?.sameResponsibleFileWriteConflictSerializes,true);
+  assert.equal(active?.saveAndBalancePreserved,true);
+  const spatial=roadmap.ownerUnityWeb3dOnly20261009;
+  assert.equal(spatial?.finalGameplayDimension,'3D');
+  assert.equal(spatial?.twoPointFiveDimensionalFinalPassForbidden,true);
+  assert.equal(spatial?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame,true);
+  assert.equal(spatial?.independentBrowserAndMobileRuntimeQaRequired,true);
+  assert.equal(spatial?.gameLogicSaveEconomyProgressionCombatBalancePreserved,true);
+  assert.equal(roadmap.finalDevelopmentLock?.status,'LOCKED');
+  assert.deepEqual(roadmap.finalDevelopmentLock?.sequenceLock?.candidateOrderMustRemain,[
+    'F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
+    'F1_SERVER_BOOT_PASS','F2_WORLD_FOUNDATION_PASS','F3_CHARACTER_FOUNDATION_PASS',
+    'F4_PHYSICS_AND_MOVEMENT_PASS','IMPACT_REQUIRED_F5_TO_F8_PASS',
+    'F9_RELEASE_REGRESSION_PASS','INTERNAL_PLATFORM_RELEASE'
+  ]);
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
