@@ -569,25 +569,40 @@
       "name": "Collect run rewards or experience",
       "purpose": "Player chooses to collect run rewards or experience",
       "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
+    },
+    "local_authoring_parts::935e0a148cf85a5dbd6ab3c71e4721d71e0244ba57da1d1765fe3a22ef40424a:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "fightThroughHorde",
+        "collectRewards"
+      ],
+      "stateOutputs": [
+        "positionAroundEnemyPressure",
+        "buildCombination"
+      ],
+      "name": "Combine upgrades into a stronger build",
+      "purpose": "Player chooses to combine upgrades into a stronger build",
+      "playerChoice": "Select upgrades, perks, weapons, or skills that change the current build"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1695056,
-      "lastMs": 95153,
+      "totalMs": 1791043,
+      "lastMs": 95987,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:01:06.634Z"
+      "updatedAt": "2026-10-09T19:02:42.623Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:32:51.528Z",
-  "updatedAt": "2026-10-09T19:01:06.634Z",
+  "updatedAt": "2026-10-09T19:02:42.623Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2454,7 +2469,7 @@
     "5ead9083d063a99d8e9456584f0b27608317e17284d1b766bb798e9ccc2dad38": true,
     "2309583cb397e1f70398af3676f4562d2c92d9db70acba5caa048171cf4e62a8": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:01:06.634Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T19:02:42.623Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
