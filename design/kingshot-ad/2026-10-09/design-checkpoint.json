@@ -861,25 +861,60 @@
       "toSystem": "DEFENSE_STRATEGY",
       "trigger": "ENEMY_WAVE_INPUT",
       "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::61ea7820aa66094e57e0c3119596019b4c8aa8fafa413cda6d36086999466185:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRATEGY",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE"
+    },
+    "local_authoring_parts::61ea7820aa66094e57e0c3119596019b4c8aa8fafa413cda6d36086999466185:toSystem,trigger,stateChange": {
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::16ff234e9a603c1d6516c443aa0ba6c372b41eddd18614012e8a63393defdb39:systemInterconnections:3": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRATEGY",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE",
+      "toSystem": "DEFENSE_STRATEGY",
+      "trigger": "ENEMY_WAVE_INPUT",
+      "stateChange": "DEFENSE_CONFIGURATION_CREATED"
+    },
+    "local_authoring_parts::393868a2825d4e1bac4d8c8cdacc8cce5cd27d565515bf8525ee3a2d84a20e60:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "DEFENSE_STRATEGY",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "WAVES_AND_DEFENSE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 66,
-      "successes": 66,
+      "calls": 69,
+      "successes": 69,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5635179,
-      "lastMs": 87553,
+      "totalMs": 5905812,
+      "lastMs": 90822,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:56:36.613Z"
+      "updatedAt": "2026-10-09T05:01:07.256Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:47:22.544Z",
-  "updatedAt": "2026-10-09T04:56:36.614Z",
+  "updatedAt": "2026-10-09T05:01:07.256Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3221,7 +3256,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:56:36.614Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:01:07.256Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
