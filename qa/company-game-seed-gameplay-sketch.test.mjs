@@ -275,4 +275,57 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   const fail=validateGameSeed(broken);
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('not a general system axis')));
+
+  // 기존 V4 설계 호환성은 남기되 새로운 V5만 오너 창작 문법으로 인정한다.
+  const v5=structuredClone(seed);
+  v5.GAMEPLAY_SKETCH.version=5;
+  const v5Grammar=v5.GAMEPLAY_SKETCH.novelGameGrammar;
+  v5Grammar.gameplaySystemFusion.formula='MAIN × A × B × C';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].systemFamily='대화';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='희극적 오해';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].sourceDomain='연극';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].materialRule='오해가 쌓일수록 전파자에 따라 설득 비용과 성공 조건이 달라진다.';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].systemFamily='퍼즐';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].sourceMaterial='합의 현실';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].sourceDomain='인식론';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].materialRule='증언의 신뢰도가 높아질수록 문과 장애물의 공간 상태가 바뀐다.';
+  v5Grammar.gameplaySystemFusion.themeFusion={
+    themes:[
+      {name:'철학',kind:'MATERIAL',causalEffect:'거짓말의 책임이 어떤 결과를 초래할지 선택에 영향을 준다.'},
+      {name:'엽기',kind:'MATERIAL',causalEffect:'비정상적인 증언이 특수 동선과 추가 피해 위험을 만든다.'}
+    ],
+    genres:[
+      {role:'PRIMARY',name:'미스터리',gameplayEffect:'단서의 신뢰도를 비교해 진실을 찾아야만 숨겨진 규칙에 접근한다.'},
+      {role:'SECONDARY',name:'코믹',gameplayEffect:'잘못 전달된 농담이 목격자의 증언을 바꾸고 맵 규칙의 반전을 유도한다.'}
+    ],
+    genreInterlock:'미스터리 단서를 추적하는 중 코믹한 오해를 활용하면 접근 방법과 최종 진실이 달라진다.',
+    jointWorldRule:'철학적 윤리와 엽기적 오해가 사람들의 믿음 상태와 공간의 실제 규칙을 뒤바꾼다.',
+    abGameplayEffect:'대화에서 생긴 오해가 퍼즐 지형을 바꾸고 퍼즐의 변화가 대화 상대의 반응을 되돌려 바꾼다.'
+  };
+  v5Grammar.emergentGenre.grammarFormula='MAIN × A × B × C + @';
+  const okV5=validateGameSeed(v5);
+  assert.equal(okV5.pass,true,okV5.errors.join('; '));
+  const v5Flow=buildGameFlowArchitecture({
+    gameId:'emergent-v5-test',genre:v5.GAME_CATEGORY,
+    baseline:{content:{identity:'합의현실 소문 퍼즐극',coreFun:'믿음을 바꾸는 추리 퍼즐',coreLoop:v5.CORE_LOOP,novelGameGrammar:v5Grammar}},
+    inventory:[]
+  });
+  assert.equal(evaluateGameFlowArchitecture(v5Flow).pass,true);
+  const oneGenre=structuredClone(v5);
+  oneGenre.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.genres.pop();
+  assert.equal(validateGameSeed(oneGenre).pass,false);
+  const sameGenre=structuredClone(v5);
+  sameGenre.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.genres[1].name='미스터리';
+  assert.equal(validateGameSeed(sameGenre).pass,false);
+  const noMaterial=structuredClone(v5);
+  noMaterial.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='';
+  assert.equal(validateGameSeed(noMaterial).pass,false);
+  const deep=structuredClone(v5);
+  deep.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements.push(...Array.from({length:12},(_,i)=>({
+    name:'파고들기'+i,discoveryCondition:'서로 다른 두 상태를 고의로 바꾸고 반응 순서를 관찰한다.',
+    masteryOrInsight:'기존 시스템의 조건을 새 방향으로 재해석한다.',
+    gameplayEffect:'새로운 선택·위험·보상 경로를 열고 재방문 의미를 바꾼다.',
+    connectsTo:['MAIN','A','B']
+  })));
+  assert.equal(validateGameSeed(deep).pass,true);
 });
