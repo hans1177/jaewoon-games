@@ -47,25 +47,38 @@
       "name": "TacticalBoardSystem",
       "purpose": "Manages the dynamic state of the board and its evolution through tactical decisions.",
       "playerChoice": "Select a move or ability that alters key spaces on the board and influences future strategies."
+    },
+    "local_authoring_parts::0dda1f08773f6081ee11aaef06656cd199a9d038a76b899ff43c02b124027b69:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "worldState"
+      ],
+      "stateOutputs": [
+        "newWorldState"
+      ],
+      "name": "TacticalBoardSystem",
+      "purpose": "Maintains the core tactical state and enables dynamic board evolution through player choices.",
+      "playerChoice": "Commit a move or ability that changes control of key spaces and reshapes the battlefield strategy for the next turn."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 360516,
-      "lastMs": 63686,
+      "totalMs": 424531,
+      "lastMs": 64015,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:17:32.914Z"
+      "updatedAt": "2026-10-09T14:18:36.931Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:11:32.067Z",
-  "updatedAt": "2026-10-09T14:17:32.914Z",
+  "updatedAt": "2026-10-09T14:18:36.932Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1705,7 +1718,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:17:32.914Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:18:36.931Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
