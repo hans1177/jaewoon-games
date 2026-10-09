@@ -750,25 +750,34 @@
       "toSystem": "systemInterconnections",
       "trigger": "전선 상태 변화",
       "stateChange": "{\"type\": \"ACTION\", \"description\": \"전선 파괴 결정, 자원 배분 선택, 전략적 동기 부여 구체화의 인과적 연결을 통해 실제 세계 상태 변화가 발생하는 플레이 약속.\"}"
+    },
+    "local_authoring_parts::b63874674b96163c641b434bfa3da7d0322380d330a3b5310a67e53f79cc6668:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "identity-core",
+      "toId": "signatureSystems-1",
+      "stateKeys": [
+        "전선 상태 변화",
+        "전략적 동기 부여"
+      ],
+      "fromSystem": "systemInterconnections"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 16,
+      "calls": 21,
+      "successes": 17,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 2926800,
-      "lastMs": 22464,
+      "totalMs": 3019725,
+      "lastMs": 92925,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:22:25.276Z"
+      "updatedAt": "2026-10-09T23:23:58.204Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T23:22:25.278Z",
+  "updatedAt": "2026-10-09T23:23:58.204Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2315,7 +2324,7 @@
     "e3991c91af100edb3449564f0fd5cdb1d6b7611be364ff8e8ee43cd3c66c82e3": true,
     "6590538dd7d43630a2db0bc448a401acf5e0771c40df0c9d596698a6a3dd0908": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:22:25.278Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:23:58.204Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
