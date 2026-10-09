@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 23,
-  "lastSuccessfulModelCallAt": "2026-10-09T18:14:36.672Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T18:17:14.212Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "designerSeed": {
     "file": "design/human-go/2026-10-10/design-seed.json",
     "contentDigest": "5d676d5b97fdc219899856f7951f7b41e74bdf5cb7fed835922ce133cce8ba07",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 13,
+      "calls": 16,
+      "successes": 14,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2127193,
-      "lastMs": 88929,
+      "totalMs": 2284721,
+      "lastMs": 157528,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:14:36.669Z"
+      "updatedAt": "2026-10-09T18:17:14.212Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T18:14:36.683Z"
+  "updatedAt": "2026-10-09T18:17:14.218Z"
 }
