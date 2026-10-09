@@ -546,25 +546,42 @@
     },
     "local_authoring_parts::160d3b1b8b49ba4b430c70c2a211b368f08a2a5c1cf984807b7881588675d5f1:trigger": {
       "trigger": "플레이어가 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현되며, 주요 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'"
+    },
+    "local_authoring_parts::160d3b1b8b49ba4b430c70c2a211b368f08a2a5c1cf984807b7881588675d5f1:stateChange": {
+      "stateChange": "플레이어가 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현되며, 주요 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로 수행된다."
+    },
+    "local_authoring_parts::efe98bfc87a6556f183c224b82232fbea9025a6339899d3c3d278026fb70d400:systemInterconnections:0": {
+      "fromId": "ENTITY_ID",
+      "toId": "ACTION_SEQUENCE",
+      "stateKeys": [
+        "ENTITY_ID",
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS"
+      ],
+      "fromSystem": "ENTITY_ID",
+      "toSystem": "ACTION_SEQUENCE",
+      "trigger": "플레이어가 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현되며, 주요 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'",
+      "stateChange": "플레이어가 기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현되며, 주요 행동은 'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure'로 수행된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1827655,
-      "lastMs": 84833,
+      "totalMs": 1914836,
+      "lastMs": 87181,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:26:22.449Z"
+      "updatedAt": "2026-10-09T11:27:49.631Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:55:54.572Z",
-  "updatedAt": "2026-10-09T11:26:22.449Z",
+  "updatedAt": "2026-10-09T11:27:49.632Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2882,7 +2899,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:26:22.449Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:27:49.632Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
