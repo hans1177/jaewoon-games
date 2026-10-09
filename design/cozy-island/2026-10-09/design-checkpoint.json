@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::78e317063d0f92e403485560a87abf444a8fac8e32cae9a01cda9eab98e1e3d0:identity": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용하며, 움직이는 왕국의 확장감을 느끼게 된다. 플레이어는 단순히 나무와 식량을 채집해 주민을 고용하고, 그로 인해 생산성을 증대시키며, 병력을 강화해 다른 지역에 진군할 수 있다. 이 과정에서는 각 지역별 특성과 보상을 가진 5개 거점이 순차적으로 점령되어, 최종적으로 대형 섬이나 왕국을 정복하게 되는 구조이다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 135758,
+      "lastMs": 135758,
+      "lastError": null,
+      "updatedAt": "2026-10-09T14:59:10.790Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:56:55.012Z",
-  "updatedAt": "2026-10-09T14:56:55.028Z",
+  "updatedAt": "2026-10-09T14:59:10.790Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -504,5 +520,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T14:59:10.790Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
