@@ -558,25 +558,41 @@
     },
     "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:trigger": {
       "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
+    },
+    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:stateChange": {
+      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
+    },
+    "local_authoring_parts::efb3c04a865e1a7669d16def468f832d37a11f70c53cd72c4ae04e960870eab2:systemInterconnections:1": {
+      "fromId": "BOARD_STATE_TRANSITION",
+      "toId": "LEVEL_START",
+      "stateKeys": [
+        "BOARD_PATTERN",
+        "MATCH_RESULT",
+        "GOAL_CLEAR"
+      ],
+      "fromSystem": "BOARD_STATE_TRANSITION",
+      "toSystem": "BOARD_STATE_TRANSITION",
+      "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
+      "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1850081,
-      "lastMs": 90772,
+      "totalMs": 1940051,
+      "lastMs": 89970,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:20:36.874Z"
+      "updatedAt": "2026-10-09T11:22:06.846Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T11:20:36.874Z",
+  "updatedAt": "2026-10-09T11:22:06.858Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2877,7 +2893,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:20:36.874Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:22:06.858Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
