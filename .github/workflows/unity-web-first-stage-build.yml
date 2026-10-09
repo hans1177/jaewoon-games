@@ -512,6 +512,9 @@ jobs:
           const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
             &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
               &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+              &&e.spatialGameplay.depthPass===true&&e.spatialGameplay.perspectiveCamera===true
+              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
               &&e.visualQa?.nativeUnityMesh?.pass===true);
           if(!gatePass&&gameId!=='daechung-rpg')
             throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
@@ -587,13 +590,25 @@ jobs:
             source:e.spatialGameplay?.source||null,
             observedMeshCount:Number(e.spatialGameplay?.observedMeshCount||0),
             observedTriangles:Number(e.spatialGameplay?.observedTriangles||0),
-            pass:e.spatialGameplay?.pass===true&&e.visualQa?.nativeUnityMesh?.pass===true
+            depthPass:e.spatialGameplay?.depthPass===true,
+            perspectiveCamera:e.spatialGameplay?.perspectiveCamera===true,
+            worldMeshes3d:Number(e.spatialGameplay?.worldMeshes3d||0),
+            worldDepthCm:Number(e.spatialGameplay?.worldDepthCm||0),
+            gameplayActors3d:Number(e.spatialGameplay?.gameplayActors3d||0),
+            spriteGameplayActors:Number(e.spatialGameplay?.spriteGameplayActors??-1),
+            pass:e.spatialGameplay?.pass===true&&e.spatialGameplay?.depthPass===true
+              &&e.visualQa?.nativeUnityMesh?.pass===true
               &&e.visualQa?.nativeUnityMesh?.measurementState==='UNITY_RUNTIME_MESH_INSPECTION'
           }));
           const native3dVerified=native3dChecks.every(e=>
-            e.pass&&e.requiredDimension==='3D'&&e.source==='UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF'
+            e.pass&&e.requiredDimension==='3D'&&e.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
             &&Number.isSafeInteger(e.observedMeshCount)&&e.observedMeshCount>0
-            &&Number.isSafeInteger(e.observedTriangles)&&e.observedTriangles>0);
+            &&Number.isSafeInteger(e.observedTriangles)&&e.observedTriangles>0
+             &&e.depthPass===true&&e.perspectiveCamera===true
+             &&Number.isSafeInteger(e.worldMeshes3d)&&e.worldMeshes3d>=2
+             &&Number.isSafeInteger(e.worldDepthCm)&&e.worldDepthCm>=50
+             &&Number.isSafeInteger(e.gameplayActors3d)&&e.gameplayActors3d>=1
+             &&e.spriteGameplayActors===0);
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png')
