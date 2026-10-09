@@ -25,10 +25,10 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private ScreenMode mode = ScreenMode.Title;
     private bool playing { get { return mode == ScreenMode.Normal || mode == ScreenMode.Creative; } }
     private bool creative { get { return mode == ScreenMode.Creative; } }
-    private bool inventoryOpen, craftingOpen, spawnerOpen, aggressionOpen;
+    private bool inventoryOpen, craftingOpen, spawnerOpen, aggressionOpen, titleOptionsOpen;
     private int selectedKind, spawnCount = 1;
     private int progress, level = 1, resource = 10, actions, wood, stone;
-    private float hp = 100f, maxHp = 100f, nextAttackAt, autosaveAt;
+    private float hp = 100f, maxHp = 100f, nextAttackAt, autosaveAt, viewDistance = 14f, moveSpeed = 5.8f;
     private Vector3 touchMotion;
     private GameObject player, heldObject, lastTapped;
     private float pressStartedAt, previousTapAt;
@@ -155,7 +155,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void Update3DCamera(bool instant = false)
     {
         if (player == null || camera3d == null) return;
-        Vector3 target = player.transform.position + new Vector3(0,11.5f,-14f);
+        Vector3 target = player.transform.position + new Vector3(0,viewDistance*.82f,-viewDistance);
         camera3d.transform.position = instant ? target :
             Vector3.Lerp(camera3d.transform.position,target,Mathf.Clamp01(Time.deltaTime*5f));
         camera3d.transform.LookAt(player.transform.position+new Vector3(0,.7f,2.3f));
@@ -168,7 +168,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     {
         ClearDynamicObjects();
         mode = selected;
-        inventoryOpen = craftingOpen = spawnerOpen = aggressionOpen = false;
+        inventoryOpen = craftingOpen = spawnerOpen = aggressionOpen = titleOptionsOpen = false;
         selectedMonster = aggressionMonster = null;
         LoadGame();
         if (!creative && enemies.Count == 0)
@@ -450,7 +450,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         if(move.sqrMagnitude>1f)move.Normalize();
         if(move.sqrMagnitude>.01f)
         {
-            Vector3 next=player.transform.position+move*5.8f*Time.deltaTime;
+            Vector3 next=player.transform.position+move*moveSpeed*Time.deltaTime;
             next.x=Mathf.Clamp(next.x,-35,35);next.z=Mathf.Clamp(next.z,-35,35);
             player.transform.position=next;
             player.transform.rotation=Quaternion.Slerp(player.transform.rotation,Quaternion.LookRotation(move),Time.deltaTime*12f);
@@ -481,10 +481,23 @@ public sealed class UnityWebFloorGame : MonoBehaviour
             Rect panel=new Rect(sx+(sw-panelW)/2,sy+(sh-panelH)/2,panelW,panelH);
             GUI.Box(panel,"");
             GUI.Label(new Rect(panel.x+20,panel.y+18,panelW-40,55),GameName+" · 3D");
+            if(titleOptionsOpen)
+            {
+                GUI.Label(new Rect(panel.x+25,panel.y+65,panelW-50,32),"옵션 · 카메라 거리");
+                if(GUI.Button(new Rect(panel.x+25,panel.y+100,60,buttonHeight),"-"))viewDistance=Mathf.Max(9f,viewDistance-1f);
+                GUI.Label(new Rect(panel.x+100,panel.y+110,panelW-200,buttonHeight),Mathf.RoundToInt(viewDistance).ToString());
+                if(GUI.Button(new Rect(panel.x+panelW-85,panel.y+100,60,buttonHeight),"+"))viewDistance=Mathf.Min(22f,viewDistance+1f);
+                GUI.Label(new Rect(panel.x+25,panel.y+160,panelW-50,32),"이동 속도");
+                if(GUI.Button(new Rect(panel.x+25,panel.y+190,60,buttonHeight),"-"))moveSpeed=Mathf.Max(3f,moveSpeed-.5f);
+                GUI.Label(new Rect(panel.x+100,panel.y+200,panelW-200,buttonHeight),moveSpeed.ToString("0.0"));
+                if(GUI.Button(new Rect(panel.x+panelW-85,panel.y+190,60,buttonHeight),"+"))moveSpeed=Mathf.Min(9f,moveSpeed+.5f);
+                if(GUI.Button(new Rect(panel.x+25,panel.y+panelH-65,panelW-50,buttonHeight),"닫기"))titleOptionsOpen=false;
+                return;
+            }
             if(mode==ScreenMode.Title)
             {
                 if(GUI.Button(new Rect(panel.x+25,panel.y+90,panelW-50,buttonHeight),"플레이"))mode=ScreenMode.Choose;
-                if(GUI.Button(new Rect(panel.x+25,panel.y+100+buttonHeight,panelW-50,buttonHeight),"옵션 · 조작: 방향키 / 화면 버튼"))GUI.FocusControl(null);
+                if(GUI.Button(new Rect(panel.x+25,panel.y+100+buttonHeight,panelW-50,buttonHeight),"옵션"))titleOptionsOpen=true;
             }
             else
             {
