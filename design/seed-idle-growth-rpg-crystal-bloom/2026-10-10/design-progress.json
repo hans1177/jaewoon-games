@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 82,
-  "lastSuccessfulModelCallAt": "2026-10-09T23:44:55.499Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:46:25.429Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN",
   "designerSeed": {
     "file": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-10/design-seed.json",
     "contentDigest": "f5825c74ca85dc66679a4741afdb24af24476cd5a2f36f3270612c63d33b1b2e",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 65,
-      "successes": 64,
+      "calls": 66,
+      "successes": 65,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4609029,
-      "lastMs": 60978,
+      "totalMs": 4698878,
+      "lastMs": 89849,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:44:55.495Z"
+      "updatedAt": "2026-10-09T23:46:25.429Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T23:44:55.580Z"
+  "updatedAt": "2026-10-09T23:46:25.435Z"
 }
