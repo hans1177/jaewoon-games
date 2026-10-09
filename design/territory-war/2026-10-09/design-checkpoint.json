@@ -1403,25 +1403,46 @@
     },
     "local_authoring_parts::fb454298a909d3e62c3b012a1ae1b2b2e213b9a65711aac20dd51ac6fce36b12:trigger": {
       "trigger": "플레이어는 현재 경계 압박과 지역 특성 및 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::fb454298a909d3e62c3b012a1ae1b2b2e213b9a65711aac20dd51ac6fce36b12:stateChange": {
+      "stateChange": "플레이어는 현재 경계 압박과 지역 특성 및 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::2c777c62908b864d8e73e2715cd425b6e5362e46e3824f9e3749df091537c561:systemInterconnections:1": {
+      "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "toId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "stateKeys": [
+        "border_pressure",
+        "territory_characteristic",
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "fromSystem": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "toSystem": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_CHARACTERISTIC",
+      "trigger": "플레이어는 현재 경계 압박과 지역 특성 및 전선 변화를 결합하여 새로운 전략을 세운다.",
+      "stateChange": "플레이어는 현재 경계 압박과 지역 특성 및 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::05b249b841cfc58f58d506abacd433283f4a5d89345a899eb4d526b5163e551b:fromId": {
+      "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 95,
-      "successes": 92,
+      "calls": 97,
+      "successes": 94,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6771595,
-      "lastMs": 89791,
+      "totalMs": 6951197,
+      "lastMs": 89864,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:49:23.396Z"
+      "updatedAt": "2026-10-09T02:52:23.004Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T02:49:23.396Z",
+  "updatedAt": "2026-10-09T02:52:23.004Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3675,7 +3696,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:49:23.396Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:52:23.004Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
