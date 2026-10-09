@@ -1,5 +1,5 @@
 {
-  "version": 557,
+  "version": 558,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -15475,7 +15475,7 @@
       "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
-      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_NATIVE_3D_ONLY",
       "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
       "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
       "characterEnemyAndCoreObjectVisualIdentityRequired": true,
@@ -16077,7 +16077,7 @@
       },
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
       "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
-      "minimumFinalGameplayDimension": "2.5D",
+      "minimumFinalGameplayDimension": "3D",
       "flat2DFinalPresentationForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true
@@ -25386,7 +25386,7 @@
             "GAME_SPECIFIC_CHARACTER_ENEMY_ENVIRONMENT_OR_EQUIPMENT_IDENTITY_VISIBLE",
             "PLACEHOLDER_DOMINATED_PRESENTATION_FORBIDDEN",
             "BASE_MOTION_ANIMATION_AND_VFX_PRESENT",
-            "MINIMUM_2_5D_OR_3D_SPATIAL_PRESENTATION"
+            "NATIVE_3D_SPATIAL_PRESENTATION_WITH_RUNTIME_MESH_EVIDENCE"
           ]
         },
         "webglBuild": {
