@@ -482,25 +482,28 @@
         "END_NEXT_STAGE_STATE",
         "DELVE_CONTENT_EXPANSION_STATE"
       ]
+    },
+    "local_authoring_parts::eca8e77cc0b782dcffacdb773beb826969a8ae50b6769d6081d639a3fecbedb5:fromSystem": {
+      "fromSystem": "CORE-03→CORE-03: Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 28,
+      "calls": 29,
+      "successes": 29,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2403887,
-      "lastMs": 89587,
+      "totalMs": 2495563,
+      "lastMs": 91676,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:29:07.026Z"
+      "updatedAt": "2026-10-09T09:30:38.703Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:49:03.059Z",
-  "updatedAt": "2026-10-09T09:29:07.026Z",
+  "updatedAt": "2026-10-09T09:30:38.703Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2894,7 +2897,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:29:07.026Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:30:38.703Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
