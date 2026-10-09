@@ -487,25 +487,40 @@
     },
     "local_authoring_parts::17922bac512602866629a88e94d2c6c6c967ab05b6cc4fd6e1adec6a7813e052:fromId": {
       "fromId": "INCOMING_INSECT_WAVE_PATTERN"
+    },
+    "local_authoring_parts::17922bac512602866629a88e94d2c6c6c967ab05b6cc4fd6e1adec6a7813e052:toId": {
+      "toId": "DEFENDER_REARRANGEMENT_PLAN"
+    },
+    "local_authoring_parts::17922bac512602866629a88e94d2c6c6c967ab05b6cc4fd6e1adec6a7813e052:stateKeys": {
+      "stateKeys": [
+        "INCOMING_INSECT_WAVE_PATTERN",
+        "DEFENDER_REARRANGEMENT_PLAN"
+      ]
+    },
+    "local_authoring_parts::17922bac512602866629a88e94d2c6c6c967ab05b6cc4fd6e1adec6a7813e052:fromSystem": {
+      "fromSystem": "WAVES_AND_ENVIRONMENTS_SIGNATURE"
+    },
+    "local_authoring_parts::17922bac512602866629a88e94d2c6c6c967ab05b6cc4fd6e1adec6a7813e052:toSystem": {
+      "toSystem": "DEFENDER_REARRANGEMENT_PLAN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1431063,
-      "lastMs": 58386,
+      "totalMs": 1660319,
+      "lastMs": 56776,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:07:26.984Z"
+      "updatedAt": "2026-10-09T09:11:16.247Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:43:35.755Z",
-  "updatedAt": "2026-10-09T09:07:26.984Z",
+  "updatedAt": "2026-10-09T09:11:16.247Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2857,7 +2872,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:07:26.984Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:11:16.247Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
