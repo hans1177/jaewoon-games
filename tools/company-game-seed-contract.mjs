@@ -1,3 +1,4 @@
+// 파일명: tools/company-game-seed-contract.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -129,7 +130,7 @@ function validateGameplaySketch(sketch,errors){
         if(axes.length!==2||new Set(keys).size!==2||!['A','B'].every(key=>keys.includes(key)))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes must be exactly A/B');
         for(const row of axes)if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.purpose)||!isNonEmptyString(row?.playerChoice)||!isNonEmptyString(row?.stateContribution))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion major axis ${row?.key||'?'} is incomplete`);
         const subs=Array.isArray(fusion.subElements)?fusion.subElements:[];
-        if(subs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements requires at least 2 c elements');
+        if(version===4&&subs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements requires at least 2 c elements');
         for(const row of subs){
           const supports=uniq(row?.supports).filter(value=>['MAIN','A','B'].includes(value));
           if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.role)||!isNonEmptyString(row?.variationEffect)||supports.length<1)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion c sub-element ${row?.name||'?'} is incomplete`);
@@ -143,7 +144,7 @@ function validateGameplaySketch(sketch,errors){
             }
           }
           const c=fusion.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
-          if(themes.length!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind)))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
+          if(themes.length!==2||new Set(themes.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind)))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
           const genres=Array.isArray(c?.genres)?c.genres:[];
           if(genres.length!==2||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row?.role===role))
             ||new Set(genres.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2
@@ -159,7 +160,7 @@ function validateGameplaySketch(sketch,errors){
         if(delve.formulaSuffix!=='+ @'||delve.role!=='DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer must be + @ and not a general system axis');
         if(!Array.isArray(delve.elements)||delve.elements.length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements');
         for(const row of delve.elements||[]){
-          const links=uniq(row?.connectsTo).filter(value=>['MAIN','A','B','c'].includes(value));
+          const links=uniq(row?.connectsTo).filter(value=>(version>=5?['MAIN','A','B','C','c']:['MAIN','A','B','c']).includes(value));
           if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.discoveryCondition)||!isNonEmptyString(row?.masteryOrInsight)||!isNonEmptyString(row?.gameplayEffect)||links.length<2)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.delveLayer element ${row?.name||'?'} is incomplete`);
         }
       }

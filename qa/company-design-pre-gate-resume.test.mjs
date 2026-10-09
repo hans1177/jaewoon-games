@@ -20,6 +20,56 @@ import {normalizeWebCanonicalAndExpansionPolicy} from '../tools/company-design-p
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+test('V5 designer instructions require creative C without inventing a legacy c mechanical axis',()=>{
+  const draftStart=design.indexOf('async function generateDesignerDraft(){');
+  const draftEnd=design.indexOf('function scoreCurrentDesign(',draftStart);
+  const draft=design.slice(draftStart,draftEnd);
+  const authorStart=design.indexOf('async function authorDesignInCheckpointedSlices(');
+  const authorEnd=design.indexOf('function ',authorStart+15);
+  const author=design.slice(authorStart,authorEnd);
+  assert.ok(draftStart>=0&&draftEnd>draftStart&&authorStart>=0);
+  assert.match(draft,/MAIN\/A\/B\/C\/@와 상태 변화를 직접 생성한다/);
+  assert.doesNotMatch(draft,/MAIN\/A\/B\/c\/@/);
+  assert.match(draft,/소문자 c 보조 시스템을 필수로 생성하지 않는다/);
+  assert.match(draft,/기존 c 규칙이 실제 원본에 있으면 그대로 보존한다/);
+  assert.match(author,/MAIN\/A\/B\/C\/@와 causalDNA 연결/);
+  assert.doesNotMatch(author,/MAIN\/A\/B\/c\/@/);
+});
+
+
+test('incomplete auto-enrolled V5 seeds do not force invented names and causal DNA into designer authoring',()=>{
+  assert.match(design,/pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5/);
+  assert.match(design,/V5_DESIGNER_AUTHORING_PENDING_INPUT/);
+  assert.match(design,/seedGameplaySketchVersion>=5&&!pendingSeedGrammarNotAuthored&&seedGameplaySketch\?\.novelGameGrammar/);
+  const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(scorer,/pendingIntakeV5=seedV5/);
+  assert.match(scorer,/pendingSeedStillRequiresCreativeDesign:pendingIntakeV5/);
+  assert.match(scorer,/validateDesignAuthoringContent\(\{/);
+  const contextStart=design.indexOf('const seedDesignDepthContext=');
+  const contextEnd=design.indexOf('// 원본 구현 수치는',contextStart);
+  assert.ok(contextStart>=0&&contextEnd>contextStart);
+  const expression=design.slice(contextStart,contextEnd)+'\nseedDesignDepthContext';
+  const input={
+    seedGameplaySketchVersion:5,
+    pendingSeedGrammarNotAuthored:true,
+    advancedSeedDesignDepth:true,
+    seedGameplaySketch:{identityCore:{oneLineFantasy:'자동 임시 정체성'},novelGameGrammar:{emergentGenre:{name:'자동 임시 장르'}}},
+    seedFlowArchitecture:{flowDNA:[],phaseArc:[]},
+    seedFlowSystemBlueprint:{requiredSystems:[],expansionSystems:[],novelGrammarContract:{formula:'PLACEHOLDER'}},
+    seedFlowAssetRequirements:[],
+    clean:value=>String(value??'').trim()
+  };
+  const pending=runInNewContext(expression,input);
+  assert.equal(pending.compatibilityMode,'V5_DESIGNER_AUTHORING_PENDING_INPUT');
+  assert.equal(pending.identityCore,null);
+  assert.equal(pending.novelGameGrammar,null);
+  assert.equal(pending.flowArchitecture.systemBlueprint.novelGrammarContract,null);
+  const authored=runInNewContext(expression,{...input,pendingSeedGrammarNotAuthored:false});
+  assert.equal(authored.compatibilityMode,'V5_OWNER_CREATIVE_GRAMMAR_INPUT');
+  assert.equal(authored.novelGameGrammar.emergentGenre.name,'자동 임시 장르');
+  assert.equal(authored.flowArchitecture.systemBlueprint.novelGrammarContract.formula,'PLACEHOLDER');
+});
+
 // 설계 대상 선정: 일부 게임의 실패와 엔진 검증 표식이 독립 게임을 막지 않는다.
 test('design target selection never waits for three other games to validate the engine',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');

@@ -254,6 +254,64 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
 });
 
+
+test('V5 creative C and individually sourced A/B are required for authored build-up without legacy c',()=>{
+  const base=design();
+  base.content.signatureSystems=['MAIN','A','B','DELVE'].map((role,index)=>({
+    id:'school-rule-'+index,grammarRole:role,name:'학교 운영 '+role,
+    purpose:'현재 초등학교의 건축·대응·조사 결정을 학교 상태에 반영한다.',
+    playerChoice:'학생 안전과 학교 운영 중 어떤 결정을 먼저 할지 선택한다.',
+    stateInputs:['SchoolState'],stateOutputs:['SchoolState']
+  }));
+  base.content.creativeGrammar={
+    mainIdentity:'학생 안전과 학교 시설을 직접 선택하는 학교 만들기 타이쿤',
+    a:{system:'건축',material:'로마 신전 구조',materialDomain:'서양 역사·건축',stateChange:'교실과 복도의 연결이 봉인 조건과 학생 동선을 바꾼다.'},
+    b:{system:'액션',material:'로마 신화 괴물',materialDomain:'서양 신화',stateChange:'괴물 대응 결과가 시설 접근과 학교의 다음 건설 우선순위를 바꾼다.'},
+    abCausality:'건축한 복도 구조가 괴물 대응의 위험과 경로를 바꾸고 괴물 사건의 결과가 다음 교실 배치 선택과 학생 안전 상태를 되돌려 바꾼다.',
+    cThemes:[{name:'철학',kind:'MATERIAL',gameplayEffect:'학생의 증언과 선택 책임이 사건의 원인 판단을 바꾼다.'},{name:'엽기',kind:'MATERIAL',gameplayEffect:'오해가 생긴 시설이 단서와 괴물 출현 조건을 바꾼다.'}],
+    cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'단서를 조사해 사건의 원인을 알아내야 다음 구역을 해금한다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'학생의 오해가 단서의 신뢰도와 대응 경로를 변형한다.'}],
+    cGenreInterlock:'코믹 오해가 미스터리 단서 판정과 괴물 대응 방법을 실제로 바꾼다.',
+    cWorldAndGameplayEffect:'철학과 엽기 사건의 연쇄가 다음 건축·대응·조사 선택을 바꾼다.',
+    delveGrowthRule:'숨겨진 교실 배치와 사건의 조건을 발견해 다양한 해결 경로를 늘린다.'
+  };
+  const sourceObservation={sourceTreeFingerprint:'school-v5',topFiles:[],sourceAnchors:[],observations:[],signals:{}};
+  const args={gameId:'school-v5-grammar',designRecord:base,sourceObservation};
+  const authored=buildGameSpecificBuildUpDirective(args).identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(authored.source,'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS');
+  assert.deepEqual(authored.roleSystemIds.c,[]);
+  assert.equal(authored.cPrimarySecondaryGenres.length,2);
+  const v5Trace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:base.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(v5Trace.roleBindings.map(row=>row.role),['MAIN','A','B','@']);
+  assert.equal(v5Trace.creativeCBinding.designAuthored,true);
+  assert.deepEqual(v5Trace.creativeCBinding.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+  assert.ok(!v5Trace.gapReasons.some(reason=>reason.startsWith('DESIGN_ROLE_NOT_AUTHORED:')||reason.includes('DESIGN_MAIN_A_B_C_AT_INCOMPLETE')));
+  assert.equal(v5Trace.sourceImplementationPassed,false,'authored grammar is never runtime implementation evidence');
+  const broken=structuredClone(base);
+  broken.content.creativeGrammar.cGenres.pop();
+  broken.content.signatureSystems.push({id:'legacy-c',grammarRole:'c',name:'날씨',purpose:'이전 버전의 기계적 상황 변화',playerChoice:'날씨 확인',stateInputs:['SchoolState'],stateOutputs:['SchoolState']});
+  const unverified=buildGameSpecificBuildUpDirective({...args,designRecord:broken}).identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(unverified.source,'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE');
+  const missingGenreTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:broken.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.equal(missingGenreTrace.creativeCBinding.designAuthored,false);
+  assert.ok(missingGenreTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
+  const legacy=structuredClone(base.content);
+  delete legacy.creativeGrammar;
+  legacy.signatureSystems.push({
+    id:'old-weather',grammarRole:'c',name:'기존 날씨 규칙',
+    purpose:'기존 환경 상태를 활용한 선택 제약',playerChoice:'현재 날씨에 맞춰 행동을 선택한다',
+    stateInputs:['SchoolState'],stateOutputs:['SchoolState']
+  });
+  const legacyTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:legacy,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(legacyTrace.roleBindings.map(row=>row.role),['MAIN','A','B','c','@']);
+  assert.ok(!legacyTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
+});
+
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
   const sourceObservation={
     sourceRoot:'roblox-games/sample',
@@ -1021,7 +1079,9 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
     assert.match(worker,/designCodeRole=/);
     assert.match(worker,/designCodeVerification=/);
-    assert.match(worker,/KEEP EVERY MAIN\/A\/B\/c\/@ ROLE/);
+    assert.match(worker,/KEEP EVERY AUTHORED MAIN\/A\/B\/C\/@ ROLE/);
+    assert.match(worker,/designCodeCreativeC=/);
+    assert.match(worker,/Legacy c is optional in V5/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
