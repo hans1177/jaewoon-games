@@ -682,10 +682,11 @@ const MUSIC_THEMES={
  desert:{bpm:58,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,1,-1,2,0,-2,1,-1],style:'desert'},
  underground:{bpm:46,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,2,0,-3,1],style:'underground'},
  questcave:{bpm:50,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,2,0,-1,1,-3],style:'questcave'},
- battle1:{bpm:112,mode:'minor',root:110,progression:[0,6,5,3,0,1,6,5],riff:[0,3,1,4,2,5,3,1],style:'battle1'},
- battle2:{bpm:120,mode:'minor',root:123.47,progression:[0,1,6,4,0,5,1,6],riff:[0,4,2,5,1,3,5,2],style:'battle2'},
- battle3:{bpm:104,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,3,2,5,1,4,2,0],style:'battle3'},
- boss:{bpm:84,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,2,4,1,5,2,1,-1],style:'boss'}
+ // 전투 곡: 독립된 후렴·화성·박자 (탐험 곡은 그대로)
+ battle1:{bpm:152,mode:'minor',root:146.83,progression:[0,5,3,6,0,3,4,5],riff:[0,2,4,5,4,2,3,1,0,3,5,6,5,3,2,4],style:'battle1'},
+ battle2:{bpm:146,mode:'minor',root:123.47,progression:[0,6,4,5,0,3,6,5],riff:[0,4,2,5,4,2,1,3,0,3,5,4,2,5,3,1],style:'battle2'},
+ battle3:{bpm:138,mode:'minor',root:98,progression:[0,1,5,6,0,3,1,5],riff:[0,2,3,1,4,2,5,3,0,3,2,5,4,2,1,3],style:'battle3'},
+ boss:{bpm:132,mode:'minor',root:73.42,progression:[0,5,6,4,0,3,1,5],riff:[0,4,5,3,4,2,1,3,0,5,6,4,5,3,2,4],style:'boss'}
 };
 const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false};
 function initMusicNoiseDeferred(){
@@ -808,28 +809,66 @@ function scheduleBandBeat(key,t,beat,at){
   case'underground':case'questcave':
    longPad(t.style==='questcave'?.039:.043,t.style==='questcave'?430:500);if(b===0)lowDrum(at,t.style==='questcave'?54:50,.052,beatDur*.95);if(b===3)noiseBrush(at,beatDur*.75,.006,620);break;
   case'battle1':
-   if(b===0){padVoice(root,at,beatDur*4,.040,620);lowDrum(at,86,.135,beatDur*.62)}
-   if(b===2)lowDrum(at,62,.080,beatDur*.48);
-   if(b===1||b===3)noiseBrush(at,beatDur*.28,.013,1250);
-   if(b===3)smoothVoice(lead,at,beatDur*1.35,.018,'sine',1200,.16);
+   // 8분음표 현악·브라스풍 멜로디와 강한 스네어.
+   if(b===0){padVoice(root,at,beatDur*3.8,.017,1150);padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*3.8,.009,1450)}
+   if(b===0||b===2)lowDrum(at,b===0?108:84,b===0?.136:.100,beatDur*.38);
+   if(b===1||b===3)noiseBrush(at,beatDur*.23,.028,1950);
+   smoothVoice(root*.5,at,beatDur*.67,.031,'triangle',680,.012);
+   for(let step=0;step<2;step++){
+    const hitAt=at+step*beatDur*.5,note=scaleFreq(t.root,ch+t.riff[(beat*2+step)%t.riff.length],minor,1);
+    smoothVoice(note,hitAt,beatDur*.44,.021,'sawtooth',2500,.012);
+    noiseBrush(hitAt,beatDur*.12,step===0?.006:.004,5400)
+   }
+   if(b===3&&bar%4===3)for(let step=0;step<2;step++)noiseBrush(at+step*beatDur*.5,beatDur*.16,.016,2800);
    break;
   case'battle2':
-   if(b===0){padVoice(root,at,beatDur*4,.043,680);lowDrum(at,92,.145,beatDur*.58)}
-   if(b===2)lowDrum(at,66,.086,beatDur*.45);
-   noiseBrush(at+beatDur*.48,beatDur*.24,.012,1500);
-   if(b===1||b===3)smoothVoice(lead,at,beatDur*1.1,.017,'sine',1350,.14);
+   // 엇박 기타풍 화음과 베이스, 두 번째 전투 후렴.
+   if(b===0){padVoice(root,at,beatDur*3.7,.019,880);padVoice(root*1.5,at,beatDur*3.7,.008,1250)}
+   if(b===0||b===2)lowDrum(at,b===0?100:77,b===0?.145:.105,beatDur*.34);
+   if(b===1||b===3)noiseBrush(at,beatDur*.17,.032,2100);
+   noiseBrush(at+beatDur*.5,beatDur*.10,.005,5900);
+   smoothVoice(root*.5,at,beatDur*.42,.033,'sawtooth',660,.012);
+   smoothVoice(root*.5,at+beatDur*.74,beatDur*.22,.018,'triangle',670,.008);
+   for(let step=0;step<2;step++){
+    if(step===1&&b===3&&bar%2===0)continue;
+    const hitAt=at+step*beatDur*.5,note=scaleFreq(t.root,ch+t.riff[(beat*2+step)%t.riff.length],minor,1);
+    smoothVoice(note,hitAt,beatDur*.40,.021,'sawtooth',2280,.010);
+    if(b===0&&step===0)smoothVoice(note*.75,hitAt,beatDur*.48,.011,'triangle',1150,.018)
+   }
    break;
   case'battle3':
-   if(b===0){padVoice(root,at,beatDur*4,.048,520);padVoice(root*.5,at,beatDur*4,.024,360);lowDrum(at,78,.155,beatDur*.72)}
-   if(b===2)lowDrum(at,54,.092,beatDur*.55);
-   if(b===1||b===3)noiseBrush(at,beatDur*.36,.014,920);
-   if(b===3)smoothVoice(lead,at,beatDur*1.4,.016,'sine',980,.2);
+   // 타악 중심의 묵직한 리프, 단계적으로 강해지는 선율.
+   if(b===0){padVoice(root,at,beatDur*3.8,.024,850);padVoice(root*.5,at,beatDur*3.8,.010,520)}
+   if(b===0||b===2)lowDrum(at,b===0?88:66,b===0?.154:.110,beatDur*.48);
+   if(b===1||b===3)noiseBrush(at,beatDur*.27,.029,1450);
+   for(let step=0;step<2;step++){
+    const hitAt=at+step*beatDur*.5;
+    noiseBrush(hitAt,beatDur*.10,.005,4800);
+    smoothVoice(root*.5,hitAt,beatDur*.34,.029,'sawtooth',610,.009)
+   }
+   if(b===0||b===2||bar%2===1)smoothVoice(scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,1),at,beatDur*.74,.025,'sawtooth',1950,.015);
+   if(b===3&&bar%4===3)for(let step=0;step<2;step++)noiseBrush(at+step*beatDur*.48,beatDur*.20,.018,1750);
    break;
   case'boss':
-   if(b===0){padVoice(root,at,beatDur*4,.058,360);padVoice(root*.5,at,beatDur*4,.032,260);lowDrum(at,62,.180,beatDur*.92)}
-   if(b===2)lowDrum(at,44,.110,beatDur*.72);
-   if(b===1||b===3)noiseBrush(at,beatDur*.62,.020,620);
-   if(b===3)smoothVoice(lead,at,beatDur*1.8,.020,'sine',720,.32);
+   // 보스: 합창풍 코드·브라스 팡파르·전쟁 북·마디 끝 필인.
+   if(b===0){
+    padVoice(root,at,beatDur*3.95,.028,1000);
+    padVoice(scaleFreq(t.root,ch+4,minor,-1),at,beatDur*3.95,.016,1260);
+    padVoice(root*.5,at,beatDur*3.95,.014,570)
+   }
+   if(b===0||b===2)lowDrum(at,b===0?90:71,b===0?.174:.128,beatDur*.56);
+   if(b===1||b===3)noiseBrush(at,beatDur*.25,.039,1850);
+   smoothVoice(root*.5,at,beatDur*.73,.034,'sawtooth',730,.012);
+   noiseBrush(at+beatDur*.5,beatDur*.12,.008,4600);
+   if(b===0||b===2){
+    const note=scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,1);
+    smoothVoice(note,at,beatDur*.90,.036,'sawtooth',2250,.019);
+    smoothVoice(note*.5,at,beatDur*.80,.017,'triangle',1260,.014)
+   }else{
+    const note=scaleFreq(t.root,ch+t.riff[(beat+bar)%t.riff.length],minor,1);
+    smoothVoice(note,at+beatDur*.47,beatDur*.49,.030,'sawtooth',2400,.012)
+   }
+   if(b===3&&bar%4===3)for(let step=0;step<3;step++)noiseBrush(at+step*beatDur/3,beatDur*.13,.022,2350);
    break;
  }
 }
