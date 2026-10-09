@@ -213,6 +213,11 @@ assert.ok(scoreDesignGateV2({seed:placeholderV5,designRecord:pendingMalformed,cy
   .hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
 const flaggedButAuthored=structuredClone(v5Seed);
 flaggedButAuthored.novelGrammarBackfill=structuredClone(placeholderV5.novelGrammarBackfill);
+for(const [index,axis] of flaggedButAuthored.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes.entries()){
+  axis.systemFamily=index?'PUZZLE_STATE':'NPC_INTERACTION';
+  axis.sourceDomain=index?'PHILOSOPHY':'THEATRE';
+  axis.materialRule=index?'증언 신뢰도가 공간 퍼즐의 접근 조건을 바꾼다.':'희극적 오해가 증언 전달과 대화의 다음 선택 비용을 바꾼다.';
+}
 const authoredCarry=scoreDesignGateV2({seed:flaggedButAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
 assert.equal(authoredCarry.pendingSeedGrammarNotAuthored,false);
 assert.ok(authoredCarry.grammarCarryEvidence,'a complete V5 source keeps the authored-seed carry contract');
