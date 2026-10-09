@@ -3,101 +3,18 @@
   "gameId": "ant-simulator",
   "date": "2026-10-09",
   "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
-  "fingerprint": "8b091a0c52514696315a5ce56a2b980126b5146908fc53ac847de52cd8c5786f",
-  "policyDigest": "e52d6ff61e4cec0c252bb23c569e8ece7cfcebb20513b56aff2ac91ee3eff92b",
+  "fingerprint": "6ba34b4d98c730be7289edb6f4ad3274c6b567c81b0b9793a0d7cf819be3800c",
+  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::e379060d72c37a4cc10fa4d435f4f97e6c8bbf5386b0a76f6b482247197f9914:identity": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 | 게임 플레이어는 월드 상태와 다음 선택을 바꾼 주체가 되어 세계를 이끌며, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다. 기존 원본 규칙을 유지하며, 입력→판정→상태 변화→대응→다음 선택의 구조를 따릅니다. 최종적으로는 흥미로운 상황 속에서 플레이어가 새로운 목표를 설정하고, 이를 통해 월드의 복잡성을 증명합니다."
-    },
-    "local_authoring_parts::e379060d72c37a4cc10fa4d435f4f97e6c8bbf5386b0a76f6b482247197f9914:playerFantasy": {
-      "playerFantasy": "플레이어는 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다."
-    },
-    "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:identity,playerFantasy": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 | 게임 플레이어는 월드 상태와 다음 선택을 바꾼 주체가 되어 세계를 이끌며, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다. 기존 원본 규칙을 유지하며, 입력→판정→상태 변화→대응→다음 선택의 구조를 따릅니다. 최종적으로는 흥미로운 상황 속에서 플레이어가 새로운 목표를 설정하고, 이를 통해 월드의 복잡성을 증명합니다.",
-      "playerFantasy": "플레이어는 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다."
-    },
-    "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:coreFun": {
-      "coreFun": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다."
-    },
-    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:identity,playerFantasy,coreFun": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션 | 게임 플레이어는 월드 상태와 다음 선택을 바꾼 주체가 되어 세계를 이끌며, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다. 기존 원본 규칙을 유지하며, 입력→판정→상태 변화→대응→다음 선택의 구조를 따릅니다. 최종적으로는 흥미로운 상황 속에서 플레이어가 새로운 목표를 설정하고, 이를 통해 월드의 복잡성을 증명합니다.",
-      "playerFantasy": "플레이어는 개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다.",
-      "coreFun": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다. 그 중심 행동은 '개미의 선택'이며, 두 대축은 '지역 확장' 및 '자원 관리', 보조 요소는 '위험 감당', 발견·숙련·재방문은 깊이를 나타냅니다."
-    },
-    "local_authoring_parts::8163a5ac1ca42384526cb84fa4fdfec1e630b04e13f10eeb410adbb734178887:coreLoop": {
-      "coreLoop": [
-        "플레이어가 개미 시뮬레이터의 현재 상태와 목표를 읽고, 지역 확장 또는 자원 관리 선택을 하며 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다.",
-        "개미의 선택 중심 행동은 '지역 확장' 및 '자원 관리' 두 대축 간의 교환이며, 위험 감당 보조 요소로 월드의 복잡성을 증명합니다.",
-        "각 단계에서 플레이어는 실제 입력을 수행하며, 월드 상태, 자원, 위험 등이 변화하게 되고, 이를 기반하여 다음 목표, 지점, 상호작용, 전략 선택으로 이어집니다."
-      ]
-    },
-    "local_authoring_parts::6bbaed6384c692cd55b65224031e96d0ac02ab279ef0e46dcdadd0a03a503e29:signatureSystems:0": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_01",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "CURRENT_WORLD_STATE",
-        "PLAYER_CHOICE"
-      ],
-      "stateOutputs": [
-        "NEXT_WORLD_STATE",
-        "GAME_PROGRESS"
-      ],
-      "name": "OPENING_WILDERNESS_EXPANSION",
-      "purpose": "Player initiates exploration of the open wilderness by selecting a region to expand into or manage resources.",
-      "playerChoice": "Select a region to expand into or manage resources in the open wilderness, with the goal of increasing territory and securing vital resources for survival."
-    },
-    "local_authoring_parts::6bbaed6384c692cd55b65224031e96d0ac02ab279ef0e46dcdadd0a03a503e29:signatureSystems:1": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_02",
-      "grammarRole": "A",
-      "stateInputs": [
-        "CURRENT_WORLD_STATE",
-        "PLAYER_CHOICE"
-      ],
-      "stateOutputs": [
-        "NEXT_WORLD_STATE",
-        "GAME_PROGRESS"
-      ],
-      "name": "WILDERNESS_RESOURCE_MANAGEMENT",
-      "purpose": "관리 및 자원 활용 기능",
-      "playerChoice": "지역 확장 또는 자원 관리 선택 중 하나를 하며, 월드 상태와 다음 선택을 바꾼 주체로 세계를 이끌고, 진입 -> 선택 -> 상태 변환 -> 보상/위험/선택 순서로 진행하는 반복 가능한 루프를 실행합니다."
-    },
-    "local_authoring_parts::6bbaed6384c692cd55b65224031e96d0ac02ab279ef0e46dcdadd0a03a503e29:signatureSystems:2": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_03",
-      "grammarRole": "B",
-      "stateInputs": [
-        "CURRENT_WORLD_STATE",
-        "PLAYER_CHOICE"
-      ],
-      "stateOutputs": [
-        "NEXT_WORLD_STATE",
-        "GAME_PROGRESS"
-      ],
-      "name": "WILDERNESS_RISK_MANAGEMENT",
-      "purpose": "위험 감당을 통해 월드의 복잡성을 증명하며, 플레이어가 새로운 목표와 전략을 설정하는 데 기여합니다.",
-      "playerChoice": "위험을 판단하여 자원을 손실하거나 위험을 줄이는 선택을 하며, 이는 다음 목표 및 상태 변환에 영향을 미칩니다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 156138,
-      "lastMs": 13503,
-      "lastError": null,
-      "updatedAt": "2026-10-09T09:14:42.652Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T09:12:06.438Z",
-  "updatedAt": "2026-10-09T09:14:42.653Z",
+  "createdAt": "2026-10-09T12:43:30.589Z",
+  "updatedAt": "2026-10-09T12:43:30.604Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2150,27 +2067,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::6bbaed6384c692cd55b65224031e96d0ac02ab279ef0e46dcdadd0a03a503e29:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "c",
-        "previousRuleIds": [
-          "ANT_SIMULATOR_SIGNATURE_SYSTEM_01",
-          "ANT_SIMULATOR_SIGNATURE_SYSTEM_02",
-          "ANT_SIMULATOR_SIGNATURE_SYSTEM_03"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::6bbaed6384c692cd55b65224031e96d0ac02ab279ef0e46dcdadd0a03a503e29:signatureSystems:3": 1
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:14:42.652Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:c",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
