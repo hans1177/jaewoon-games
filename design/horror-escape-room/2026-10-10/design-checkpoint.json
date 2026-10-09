@@ -187,25 +187,33 @@
       },
       "playerFantasy": "감염 전환 게임에서 인간은 AI 충원 기반 역할 변주로 생존/반격하며, 몬스터는 명시적 감염 공격으로 인간을 전환하는 4대4 감염 추격전에 참여해야 한다. 인간은 정화 공격으로 몬스터를 제거하고, 이는 감염 전환이 완료되는 데 결정적인 요소이다.",
       "coreFun": "AI가 빈 자리 채우는 과정에서 실질적 인과 변화 일어남, 감염 공격과 정화 공격 갈등 발생, AI 충원 → 정화 공격 순차적 상호 작용, 감염 전환 및 정화 공격 모두 완료되면 8인 감염전 종료, 새로운 플레이어 대상 상태 변화 발생."
+    },
+    "local_authoring_parts::cc5c0101938b6ca0300369e72a7534ceee385de500c0de8a7f30b68a40c1634c:coreLoop": {
+      "coreLoop": [
+        "입력: 인간4명/몬스터4명 배정 및 AI 충원",
+        "선택: AI 충원 → 정화 공격 순차적 상호 작용",
+        "상태변化: AI가 빈 자리 채우며 감염 전환 발생, 몬스터 제거 진행 중",
+        "보상: 감염 전환이 완료되면 8인 감염전 종료, 새로운 플레이어 대상 상태 변화 발생"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 565936,
-      "lastMs": 79589,
+      "totalMs": 661281,
+      "lastMs": 95345,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:19:58.220Z"
+      "updatedAt": "2026-10-09T17:21:33.569Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:10:32.263Z",
-  "updatedAt": "2026-10-09T17:19:58.222Z",
+  "updatedAt": "2026-10-09T17:21:33.569Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1810,7 +1818,7 @@
   "localAuthoringSplits": {
     "77008aefbe0aa29ccb831a031df89c9ec590cc61fa97c534c9d8208782340d50": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:19:58.222Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:21:33.569Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
