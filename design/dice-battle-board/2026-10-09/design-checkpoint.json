@@ -85,25 +85,42 @@
       "name": "BOARD_STATE_TRANSITION_B",
       "purpose": "A/B 대축에서 BOARD_PATTERN와 MATCH_RESULT, GOAL_CLEAR 상태가 다음 월드 상태로 변환되는 기반 시스템.",
       "playerChoice": "Board pattern change or goal clearance to gain rewards and unlock new levels with dynamic obstacle combinations."
+    },
+    "local_authoring_parts::ce927920dbf1b24b7eadcdf14f3e8978e33ea907afad046b98a6f33db6cf512b:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_PATTERN",
+        "MATCH_RESULT",
+        "GOAL_CLEAR"
+      ],
+      "stateOutputs": [
+        "NEXT_BOARD_PATTERN",
+        "REWARD_GAINED",
+        "NEW_LEVEL_COMPLETED"
+      ],
+      "name": "BOARD_STATE_TRANSITION_C",
+      "purpose": "게임 내에서 MAIN/A/B의 선택 결과가 서로 영향을 주는 보조 요소로 사용되며, 발견·숙련·재방문 깊이로 역할을 구분합니다.",
+      "playerChoice": "Board pattern change, reward gain, or level completion is the result of Main/A/B choices and serves as a content expansion for deeper gameplay exploration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 384986,
-      "lastMs": 34321,
+      "totalMs": 422646,
+      "lastMs": 37660,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:56:11.732Z"
+      "updatedAt": "2026-10-09T10:56:49.393Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T10:56:11.732Z",
+  "updatedAt": "2026-10-09T10:56:49.393Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2035,7 +2052,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T10:56:11.732Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T10:56:49.393Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
