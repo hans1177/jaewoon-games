@@ -3989,13 +3989,49 @@ function storageContractSnapshot(source=''){
   const raw=String(source??'');
   const literalKeys=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g)].map(match=>match[1]));
   const keyVariables=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)].map(match=>match[1]));
+  // Native persistence identity belongs to the saved game, not the generation model.
+  // Examine key arguments only: payload updates and harmless whitespace are not schema changes.
+  const nativeKeySignatures=[],nativeBindingNames=new Set();
+  const nativeCalls=/\b(PlayerPrefs\s*\.\s*(?:Get(?:String|Int|Float)|Set(?:String|Int|Float)|HasKey|DeleteKey)|GetDataStore|[A-Za-z_$][\w$]*\s*:\s*(?:GetAsync|SetAsync|UpdateAsync))\s*\(/g;
+  for(const call of raw.matchAll(nativeCalls)){
+    const prefix=raw.slice(raw.lastIndexOf('\n',call.index-1)+1,call.index);
+    if(/^\s*(?:\/\/|--|\*)/.test(prefix))continue;
+    let argument='',depth=0,quote='',escaped=false;
+    for(let i=call.index+call[0].length;i<raw.length&&argument.length<800;i++){
+      const ch=raw[i];
+      if(quote){
+        argument+=ch;
+        if(escaped)escaped=false;
+        else if(ch==='\\')escaped=true;
+        else if(ch===quote)quote='';
+        continue;
+      }
+      if(ch==='"'||ch==="'"||ch===String.fromCharCode(96)){quote=ch;argument+=ch;continue;}
+      if(ch==='('){depth++;argument+=ch;continue;}
+      if(ch===')'){
+        if(depth===0)break;
+        depth--;argument+=ch;continue;
+      }
+      if(ch===','&&depth===0)break;
+      argument+=ch;
+    }
+    if(!argument.trim()||quote||depth!==0)continue;
+    const method=call[1].replace(/\s+/g,'').replace(/^[A-Za-z_$][\w$]*:/,'DataStore:');
+    const normalized=argument.trim().replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60)|\s+/g,(value,literal)=>literal||'');
+    nativeKeySignatures.push(method+':'+normalized);
+    const identifiers=argument.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60/g,' ');
+    for(const name of identifiers.match(/[A-Za-z_$][\w$]*/g)||[]){
+      if(/(?:save|store|key|prefix|slot|profile)/i.test(name))nativeBindingNames.add(name);
+    }
+  }
   const variableBindings={};
-  for(const name of keyVariables){
-    const re=new RegExp('\\b(?:const|let|var)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})\\s*;');
-    const match=re.exec(raw);
+  for(const name of unique([...keyVariables,...nativeBindingNames])){
+    const plain=new RegExp('\\b(?:const|let|var|local)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})');
+    const typed=new RegExp('\\b(?:(?:public|private|protected|internal|static|readonly|const)\\s+)*(?:string|String)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})');
+    const match=plain.exec(raw)||typed.exec(raw);
     if(match)variableBindings[name]=clean(match[1]);
   }
-  return{literalKeys,variableBindings};
+  return{literalKeys,variableBindings,nativeKeySignatures:unique(nativeKeySignatures)};
 }
 function storageContractMutationRows({sourceRoot='',edits=[]}={}){
   if(!clean(sourceRoot)||!Array.isArray(edits)||!edits.length)return[];
@@ -4013,7 +4049,7 @@ function storageContractMutationRows({sourceRoot='',edits=[]}={}){
       if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
       const beforeSource=fs.readFileSync(file,'utf8');
       const before=storageContractSnapshot(beforeSource);
-      if(!before.literalKeys.length&&!Object.keys(before.variableBindings).length)continue;
+      if(!before.literalKeys.length&&!Object.keys(before.variableBindings).length&&!before.nativeKeySignatures.length)continue;
       let afterSource=beforeSource,applicable=true;
       for(const edit of rows){
         const find=String(edit?.find??''),replace=String(edit?.replace??'');
@@ -4027,6 +4063,9 @@ function storageContractMutationRows({sourceRoot='',edits=[]}={}){
       }
       for(const [name,expression] of Object.entries(before.variableBindings)){
         if(after.variableBindings[name]!==expression)mutations.push(relative+':binding:'+name);
+      }
+      for(const signature of before.nativeKeySignatures){
+        if(!after.nativeKeySignatures.includes(signature))mutations.push(relative+':native:'+signature);
       }
     }catch{}
   }
