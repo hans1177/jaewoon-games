@@ -37,6 +37,7 @@ test('asset homepage automatically publishes new entries, preserves selection, e
  await settle();
  const e=id=>elements.get(id);
  assert.equal(e('assetCount').textContent,'5');assert.equal(e('allCount').textContent,5);assert.equal(e('monsterCount').textContent,1);
+ assert.equal(e('sourcePathCount').textContent,'2');assert.equal(e('productionMarkCount').textContent,'0');
  assert.equal(e('assetList').children.length,1);assert.equal(e('selectedTitle').textContent,'시험 몬스터');
  assert.equal(e('assetImage').src,'/assets/monster.png');assert.equal(intervals.length,1);
  const registryRequests=()=>requests.filter(row=>row.url.includes('company-asset-library'));
