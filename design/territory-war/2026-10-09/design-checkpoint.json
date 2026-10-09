@@ -659,25 +659,42 @@
         "units_deployed"
       ],
       "fromSystem": "MAIN/A/B/c/@/territory-war-signature-systems-0/territory-war-signature-systems-1/territory-war-signature-systems-0/stateInputs/border_pressure/territory_war_signatures_0_border_p"
+    },
+    "local_authoring_parts::aabb3161e80d63e326966d8d5b47228169180f192269ece1c1fa323dc4400eaf:toSystem,trigger,stateChange": {
+      "toSystem": "A",
+      "trigger": "border_pressure",
+      "stateChange": "units_deployed"
+    },
+    "local_authoring_parts::841a9b0e6043a4702cfd0656d701505f8f785f68fe266283f2bbec238f80c4e1:systemInterconnections:3": {
+      "fromId": "territory-war-signature-systems-0",
+      "toId": "territory-war-signature-systems-1",
+      "stateKeys": [
+        "border_pressure",
+        "units_deployed"
+      ],
+      "fromSystem": "MAIN/A/B/c/@/territory-war-signature-systems-0/territory-war-signature-systems-1/territory-war-signature-systems-0/stateInputs/border_pressure/territory_war_signatures_0_border_p",
+      "toSystem": "A",
+      "trigger": "border_pressure",
+      "stateChange": "units_deployed"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 21,
+      "successes": 20,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1817339,
-      "lastMs": 66375,
+      "totalMs": 1877174,
+      "lastMs": 59835,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T08:51:25.539Z"
+      "updatedAt": "2026-10-09T08:52:25.376Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:21:07.977Z",
-  "updatedAt": "2026-10-09T08:51:25.539Z",
+  "updatedAt": "2026-10-09T08:52:25.378Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2847,7 +2864,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:51:25.539Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:52:25.378Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
