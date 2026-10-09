@@ -33,7 +33,7 @@ test('개발 Unity WebGL의 /unity/ 경로가 없으면 기존 출력 루트의 
   assert.equal(fetched.filter(url=>url.includes('/Build/demo.')).length,4);
 });
 
-test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
+test('실제 실행 경로가 없는 개발 게임은 숨기고 검증된 실행 게임만 노출한다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,buildCard})',{
     document:{readyState:'loading',addEventListener(){}}
@@ -49,7 +49,12 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   const design=base('design-without-release','DESIGN_ONLY');
   const released=base('released-without-build','RELEASE_CONFIRMED');
   const list=api.developmentRows({games:[dev,design,released]},{});
-  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release']);
+  assert.deepEqual(Array.from(list,game=>game.id),[],'title-only cards cannot appear without a real runnable target');
+  const playable=base('dev-with-real-web','DEVELOPMENT_CONFIRMED');
+  playable.canonical.sources.web={playable:true,archive:true,path:'web-games/dev-with-real-web'};
+  const runnable=api.developmentRows({games:[dev,playable,design,released]},{});
+  assert.deepEqual(Array.from(runnable,game=>game.id),['dev-with-real-web']);
+  assert.equal(api.hasRunnableHomepageTarget(playable),true);
   assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
@@ -233,7 +238,7 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
 
-test('homepage exposes Unity Web as the required pre-native development test surface without release authority',()=>{
+test('homepage Unity Web is a separately verified development surface without a Roblox admission gate',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
@@ -245,9 +250,12 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,true);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  assert.equal(policy.ownerActiveDevelopmentScope20261009.robloxRequiresUnityWebReadiness,false);
+  assert.equal(policy.ownerUnityWeb3dOnly20261009.finalGameplayDimension,'3D');
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.requiredForDevelopmentAdmission,true);
+  assert.equal(web.requiredForDevelopmentAdmission,false);
+  assert.equal(policy.ownerActiveDevelopmentScope20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
   assert.equal(web.releaseStage,false);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
@@ -272,7 +280,8 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/function playableWebHref\(row\)/);
   assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
+  assert.match(renderer,/\.filter\(hasRunnableHomepageTarget\)/,'only actual runnable targets may produce development cards');
+  assert.doesNotMatch(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
   assert.match(renderer,/웹 플레이/);
   assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
