@@ -674,25 +674,45 @@
         "adjusted_entry_exit_strategy"
       ],
       "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION"
+    },
+    "local_authoring_parts::8ae62e8523fe45037293e70c165631bdb97f76d6d5be42b28cb851a5c9a0b01c:toSystem,trigger,stateChange": {
+      "toSystem": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+      "trigger": "world_state_transformation_trigger",
+      "stateChange": "new_world_state_transition"
+    },
+    "local_authoring_parts::e17ec00d81071da846d3023defb89f47cc30697d076f58f93cb45a37c1e4fe24:systemInterconnections:2": {
+      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
+      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "new_world_state",
+        "next_target_choice",
+        "updated_resource_management",
+        "modified_risk_detection",
+        "adjusted_entry_exit_strategy"
+      ],
+      "fromSystem": "OPENING_WORLD_STATE_TRANSFORMATION",
+      "toSystem": "CORE_GAMEPLAY_ACTION_SEQUENCE",
+      "trigger": "world_state_transformation_trigger",
+      "stateChange": "new_world_state_transition"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 836816,
-      "lastMs": 24854,
+      "totalMs": 850572,
+      "lastMs": 13756,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:36:31.930Z"
+      "updatedAt": "2026-10-09T14:36:45.687Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:36:31.930Z",
+  "updatedAt": "2026-10-09T14:36:45.689Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2439,7 +2459,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T14:36:31.930Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:36:45.689Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
