@@ -52,25 +52,41 @@
       "name": "CASUAL_GAME_FLOW_RECONFIGURATION",
       "purpose": "Establishes the core gameplay loop through a causal chain of state transitions, ensuring that each step is both intuitive and mechanically grounded in the game's design.",
       "playerChoice": "Select a simple input (tap/swipe) followed by a score, distance, or short session goal to initiate the flow and trigger a series of state changes that reflect the player's actions and goals within the game world."
+    },
+    "local_authoring_parts::00861821e6f5f3eace55b20cc2a5b2cbf8e205a651e87e16a2a29f838b57a925:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "START_INPUT",
+        "SCORE_DISPLAY",
+        "DISTANCE_MEASURE"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE_1",
+        "STATE_CHANGE_2"
+      ],
+      "name": "CASUAL_GAME_FLOW_RECONFIGURATION_A",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 373419,
-      "lastMs": 42133,
+      "totalMs": 407701,
+      "lastMs": 34282,
       "lastError": null,
-      "updatedAt": "2026-10-09T13:02:44.361Z"
+      "updatedAt": "2026-10-09T13:03:18.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:30.910Z",
-  "updatedAt": "2026-10-09T13:02:44.361Z",
+  "updatedAt": "2026-10-09T13:03:18.645Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1994,7 +2010,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:02:44.361Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:03:18.645Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
