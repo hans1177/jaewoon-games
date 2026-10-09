@@ -74,25 +74,38 @@
       "name": "공격 패턴 예측 시스템",
       "purpose": "공격 패턴의 변화에 따라 플레이어에게 최적 위치 선택을 유도하는 시스템",
       "playerChoice": "제한된 자원을 투입하여 공격 패턴의 가치 있는 위치를 선택하라"
+    },
+    "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "INPUT/SELECT"
+      ],
+      "stateOutputs": [
+        "REWARD/RISK/ NEXT SELECT"
+      ],
+      "name": "공격 패턴 예측 시스템",
+      "purpose": "공격 패턴의 변화에 따라 플레이어에게 최적 위치 선택을 유도하여 방어 성능 향상",
+      "playerChoice": "제한된 자원을 투입하여 공격 패턴의 변화에 따른 최적 위치를 선택하라"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 780278,
-      "lastMs": 98727,
+      "totalMs": 878239,
+      "lastMs": 97961,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:55:06.172Z"
+      "updatedAt": "2026-10-09T15:56:44.134Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:42:05.859Z",
-  "updatedAt": "2026-10-09T15:55:06.172Z",
+  "updatedAt": "2026-10-09T15:56:44.134Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1796,7 +1809,7 @@
     "local_authoring_parts::2ce86360e4d3b81f179d88ba7788a284a55165309017e44fbe37af7c730b16f1:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:55:06.172Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:56:44.134Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
