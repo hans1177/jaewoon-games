@@ -211,25 +211,42 @@
       "name": "포탈 전투 및 보스 격파 중심적 역할",
       "purpose": "포탈 전투와 보스 동료 수집의 연관성을 구체화하며, 파티 조합 확장에 대한 진입 및 해금 시점 결정",
       "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화, 별도 장비 노가 다 없음"
+    },
+    "local_authoring_parts::60ba7554a8c7eb7c554c29781f4c15de649ed8b222bd864ca8d2c32e46c59085:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "포탈 전투 선택",
+        "보스 동료 수집 선택",
+        "파티 조합 확장 선택"
+      ],
+      "stateOutputs": [
+        "금빛 큰뿔 등장",
+        "보스 영입",
+        "Lv.40 2차 완성형 생성"
+      ],
+      "name": "포탈 전투 → 보스 동료 수집 → 파티 조합 확장",
+      "purpose": "포탈 전투의 상태변화와 보상에 따라 보스 동료 수집 및 파티 조합 확장의 시작점",
+      "playerChoice": "플레이어 1명 + 해금한 보스 동료 최대 3명으로 4인 파티 구성, 동료 리더 레벨 자동 동기화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1036028,
-      "lastMs": 108035,
+      "totalMs": 1142570,
+      "lastMs": 106542,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:32:58.550Z"
+      "updatedAt": "2026-10-09T20:34:45.094Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:15:42.496Z",
-  "updatedAt": "2026-10-09T20:32:58.550Z",
+  "updatedAt": "2026-10-09T20:34:45.094Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1980,7 +1997,7 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:32:58.550Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:34:45.094Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
