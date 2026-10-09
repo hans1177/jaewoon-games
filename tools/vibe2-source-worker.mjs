@@ -4045,7 +4045,15 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles:[];
   const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles:[];
   const hardGate=confidence==='HIGH'&&developmentMode==='PRESERVE_PATCH'&&primaryTargets.length>0&&allowFullRewrite!==true&&bootstrap!==true&&newFiles.length===0&&replaceFiles.length===0;
-  const touchedSystems=unique(edits.flatMap(edit=>semanticSystemsForText([edit.find,edit.replace].join('\n'))));
+  // 변경되지 않은 주변 코드의 키워드로 정상 후보를 오분류하지 않는다.
+  const touchedSystems=unique(edits.flatMap(edit=>{
+    const before=String(edit.find??''),after=String(edit.replace??'');
+    let prefix=0,suffix=0;
+    while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
+    while(suffix<before.length-prefix&&suffix<after.length-prefix
+      &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
+    return semanticSystemsForText(before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix));
+  }));
   const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
   const editScopeRows=edits.map(edit=>{
     const text=[edit.find,edit.replace].join('\n');
@@ -4065,6 +4073,56 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     }
     return{path:clean(edit.path),touchesAllowedMarker,systems:semanticSystemsForText(text)};
   });
+  // 기존 책임 그래프의 실제 함수 몸체를 비교한다. 근처에 책임 함수명이 있다는 이유로
+  // 옆 함수의 변경을 통과시키지 않는다. 모델의 주장이나 주석은 검증 근거가 아니다.
+  const symbolMutationRows=[];
+  if(hardGate&&clean(sourceRoot)){
+    const grouped=new Map();
+    for(const edit of edits){
+      const relative=clean(edit.path);
+      if(!grouped.has(relative))grouped.set(relative,[]);
+      grouped.get(relative).push(edit);
+    }
+    const ownerRoot=path.resolve(sourceRoot);
+    const allowedSymbols=new Set([...primaryTargets,...dependent]);
+    for(const [relative,rows] of grouped){
+      try{
+        if(!relative||path.isAbsolute(relative)||relative.split(/[\\/]/).includes('..'))continue;
+        const file=path.resolve(ownerRoot,relative);
+        if(!file.startsWith(ownerRoot+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+        const before=fs.readFileSync(file,'utf8');
+        let after=before,exact=true;
+        for(const edit of rows){
+          const find=String(edit.find??''),replace=String(edit.replace??'');
+          if(!find||after.split(find).length!==2){exact=false;break;}
+          after=after.replace(find,replace);
+        }
+        if(!exact)continue; // 기존 exact-edit 검증 단계에서 별도로 거부한다.
+        const existing=inspectSourceFunctions(before),proposed=inspectSourceFunctions(after);
+        if(!existing.length&&!proposed.length)continue; // 미지원 문법은 근거 없이 심볼 PASS를 주장하지 않는다.
+        const existingByName=new Map(existing.map(row=>[row.name,row]));
+        const proposedByName=new Map(proposed.map(row=>[row.name,row]));
+        const changedSymbols=unique([...existingByName.keys(),...proposedByName.keys()].filter(name=>{
+          const oldRow=existingByName.get(name),newRow=proposedByName.get(name);
+          return !oldRow||!newRow||before.slice(oldRow.start,oldRow.end)!==after.slice(newRow.start,newRow.end);
+        }));
+        const unrelatedSymbols=changedSymbols.filter(name=>{
+          if(allowedSymbols.has(name))return false;
+          const row=proposedByName.get(name)||existingByName.get(name);
+          return ![...existing,...proposed].some(owner=>allowedSymbols.has(owner.name)
+            &&owner.start<row.start&&owner.end>=row.end);
+        });
+        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols});
+      }catch{
+        // 소스 검사 자체가 실패한 경우에도 함수 범위를 추측해 PASS로 만들지 않는다.
+      }
+    }
+  }
+  for(const row of editScopeRows){
+    const inspected=symbolMutationRows.find(item=>item.path===row.path);
+    if(inspected?.changedSymbols.length&&!inspected.unrelatedSymbols.length)row.touchesAllowedMarker=true;
+  }
+  const unapprovedSymbols=unique(symbolMutationRows.flatMap(row=>row.unrelatedSymbols.map(name=>row.path+':'+name)));
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
   const saveKeyViolations=[];
@@ -4079,12 +4137,14 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const violations=[];
   if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
+  if(hardGate&&unapprovedSymbols.length)violations.push('UNRELATED_SYMBOL:'+unapprovedSymbols.join(','));
   if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
   if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
     version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
-    unprovenEditPaths:unprovenEdits.map(row=>row.path),protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,
+    protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
     saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
   };
