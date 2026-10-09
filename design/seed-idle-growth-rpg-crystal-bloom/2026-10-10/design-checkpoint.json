@@ -940,25 +940,40 @@
     },
     "local_authoring_parts::c3a02da3730a81b3bdfe08b2d1ec78536e2b3e1e9f2765a2e6af8e271c892ba1:resourceFlow": {
       "resourceFlow": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::c3a02da3730a81b3bdfe08b2d1ec78536e2b3e1e9f2765a2e6af8e271c892ba1:balanceRules": {
+      "balanceRules": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::35cfc1473d65779173fb7d56b66ca418276847f14104a2abd5da44429bedcfa7:progressionEconomyBalance": {
+      "progressionLoop": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택 순환 구조가 핵심 루프로 작용하여 게임 정체성과 세계관을 재정립하며, 실제 세계의 사건이 생성됨.",
+      "resourceFlow": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+      "balanceRules": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+    },
+    "local_authoring_parts::edbc16c83e2e23287cb0c5fc731772f1993852c30d9c350488cdb6c2ba2ab2c3:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택 순환 구조가 핵심 루프로 작용하여 게임 정체성과 세계관을 재정립하며, 실제 세계의 사건이 생성됨.",
+        "resourceFlow": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨.",
+        "balanceRules": "플레이어 선택에 따른 즉각적 결과 및 상태 변화가 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성을 형성하며, 다음 사건이 발생됨."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 50,
+      "calls": 52,
+      "successes": 51,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 3768428,
-      "lastMs": 59261,
+      "totalMs": 3828241,
+      "lastMs": 59813,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:30:54.868Z"
+      "updatedAt": "2026-10-09T23:31:54.682Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T23:30:54.868Z",
+  "updatedAt": "2026-10-09T23:31:54.684Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3007,7 +3022,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:30:54.868Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:31:54.684Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
