@@ -34,25 +34,41 @@
         "상태변화: 자원 확보 -> 시설 개선/추가 -> 새 주민/활동 등록 -> 다음 목표 설정",
         "보상: 새로운 기능 도입, 지역 생활 연결망 강화, 게임 진행 속도 향상"
       ]
+    },
+    "local_authoring_parts::06e45c734c7e3958975d57c42041fafb986930d80fa93103eaa798931d86d067:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resource_gathered",
+        "village_function_improved"
+      ],
+      "stateOutputs": [
+        "new_resident_enrolled",
+        "activity_added",
+        "village_goal_set"
+      ],
+      "name": "Village Expansion System",
+      "purpose": "Establish and manage the expansion of village functions through resource gathering and player interaction.",
+      "playerChoice": "Select which resources to gather, determine which village function to improve, and unlock new residents or activities for the next goal set."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 175022,
-      "lastMs": 35823,
+      "totalMs": 211174,
+      "lastMs": 36152,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:52:02.180Z"
+      "updatedAt": "2026-10-09T14:52:38.334Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:49:07.139Z",
-  "updatedAt": "2026-10-09T14:52:02.180Z",
+  "updatedAt": "2026-10-09T14:52:38.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1653,7 +1669,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:52:02.180Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:52:38.334Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
