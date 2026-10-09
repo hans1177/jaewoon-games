@@ -197,6 +197,7 @@ async function bindAvailableUnityWebSurfaces(catalog){
           &&row?.playableBrowserTest===true&&row?.boot?.pass===true
           &&row?.input?.pass===true&&row?.gameplay?.pass===true&&row?.coreFun?.pass===true
           &&row?.mobile?.pass===true&&row?.saveRestore?.pass===true&&row?.noCriticalRuntimeError===true
+          &&row?.visualQa?.pass===true
           &&row?.spatialGameplay?.pass===true&&row?.spatialGameplay?.requiredDimension==='3D'
           &&row?.spatialGameplay?.depthPass===true&&row?.spatialGameplay?.perspectiveCamera===true
           &&Number(row?.spatialGameplay?.observedMeshCount)>0&&Number(row?.spatialGameplay?.observedTriangles)>0
