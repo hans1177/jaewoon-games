@@ -155,69 +155,34 @@ async function bindAvailableUnityWebSurfaces(catalog){
     finally{clearTimeout(timer);}
   };
   const candidates=catalog.games.filter(game=>{
-    const id=gameIdOf(game);
-    const unity=sourcesOf(game).unity||{};
-    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
+    const id=gameIdOf(game),unity=sourcesOf(game).unity||{};
+    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\\/+|\\/+$/g,'');
     return Boolean(id)&&projectPath===`unity-games/${id}`;
   });
   const available=new Map();
-  const bundleGroupsFromUnityIndex=html=>{
-    const groups={loader:null,data:null,framework:null,wasm:null};
-    const refs=[...String(html||'').matchAll(/["']([^"']+\.(?:loader\.js|data(?:\.(?:br|gz))?|framework\.js(?:\.(?:br|gz))?|wasm(?:\.(?:br|gz))?))["']/gi)]
-      .map(match=>String(match[1]||'').replace(/^\.\//,'').replace(/^\//,''));
-    for(const ref of refs){
-      const file=ref.split('/').pop()||'';
-      if(/\.loader\.js$/i.test(file))groups.loader=ref;
-      else if(/\.data(?:\.(?:br|gz))?$/i.test(file))groups.data=ref;
-      else if(/\.framework\.js(?:\.(?:br|gz))?$/i.test(file))groups.framework=ref;
-      else if(/\.wasm(?:\.(?:br|gz))?$/i.test(file))groups.wasm=ref;
-    }
-    return groups;
-  };
-  const bundleUrl=(href,ref)=>{
-    const cleanRef=String(ref||'').replace(/^\.\//,'').replace(/^\//,'');
-    return cleanRef.startsWith('Build/')?`${href}${cleanRef}`:`${href}Build/${cleanRef}`;
-  };
   await Promise.all(candidates.map(async game=>{
-    const id=gameIdOf(game),stamp=Date.now();
-    if(!id)return;
-    // Keep the playable legacy web game, but prefer the published real Unity WebGL test build.
-    for(const href of [`/web-games/${id}/`,`/web-games/${id}/unity/`]){
+    const id=gameIdOf(game),href=`/web-games/${id}/`,stamp=Date.now();
     try{
-      const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
-      if(!indexResponse.ok)continue;
-      const html=await indexResponse.text();
-      let complete=false;
-      try{
-        const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
-        if(manifestResponse.ok){
-          const manifest=await manifestResponse.json();
-          const groups=manifest?.requiredGroups||{};
-          complete=manifest?.engine==='UNITY_WEB'
-            &&manifest?.gameId===id
-            &&manifest?.bundleComplete===true
-            &&['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0);
-          if(complete){
-            const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
-              probeFetch(`${href}${groups[key][0]}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
-            ));
-            complete=probes.every(response=>response?.ok===true);
-          }
-        }
-      }catch{}
-      if(!complete){
-        const looksLikeUnity=/Unity Web Player|unity-container|createUnityInstance|\.loader\.js/i.test(html);
-        const groups=bundleGroupsFromUnityIndex(html);
-        if(looksLikeUnity&&['loader','data','framework','wasm'].every(key=>Boolean(groups[key]))){
-          const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
-            probeFetch(`${bundleUrl(href,groups[key])}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
-          ));
-          complete=probes.every(response=>response?.ok===true);
-        }
-      }
-      if(complete){available.set(id,href);break;}
+      const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
+      if(!manifestResponse.ok)return;
+      const manifest=await manifestResponse.json(),groups=manifest?.requiredGroups||{};
+      if(manifest?.engine!=='UNITY_WEB'||manifest?.gameId!==id||manifest?.bundleComplete!==true
+        ||!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))return;
+      const evidence=await Promise.all(['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json','upper-platform-development-readiness.json'].map(async file=>{
+        const response=await probeFetch(`${href}${file}?ts=${stamp}`,{cache:'no-store'});
+        return response.ok?response.json():null;
+      }));
+      const [gameplay,independent,regression,readiness]=evidence;
+      if(![gameplay,independent,regression].every(item=>item?.pass===true&&item?.spatialGameplay?.pass===true)
+        ||readiness?.pass!==true||readiness?.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness?.gameId!==id)return;
+      const probes=await Promise.all(['loader','data','framework','wasm'].map(async key=>{
+        const ref=String(groups[key][0]||'');
+        if(!/^Build\\/[a-zA-Z0-9_.-]+$/.test(ref))return false;
+        const response=await probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null);
+        return response?.ok===true;
+      }));
+      if(probes.every(Boolean))available.set(id,href);
     }catch{}
-    }
   }));
   return{
     ...catalog,
