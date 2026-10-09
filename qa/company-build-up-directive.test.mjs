@@ -913,7 +913,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
     platformProfiles:{
       ROBLOX:{platform:'ROBLOX'},
       UNITY:{platform:'UNITY',unityWebSpatialPresentation:{
-        dimension:'2.5D',worldDepth:'실제 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 월드에 놓인다',
+        dimension:'3D',worldDepth:'실제 3D 메시 캐릭터와 배경 지형이 고도와 깊이를 가진 Unity 월드에 놓인다',
         cameraAndOcclusion:'월드 높이별 카메라 오클루전과 캐릭터 앞뒤 물체 가림을 구현한다',
         lightingAndMaterials:'게임 월드 재질과 방향 광원을 사용해 캐릭터 발밑의 접지 그림자와 배경 높이차를 실제 장면에 구현한다',
         mobileWebglEvidence:'모바일 Unity WebGL 두 클라이언트에서 조명·깊이·공동 전투·재접속을 실행하여 촬영한다'
@@ -941,6 +941,7 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.equal(trace.platformCodingPlans.find(x=>x.platform==='UNITY_WEB').canonicalGameSourceRoot,
         trace.platformCodingPlans.find(x=>x.platform==='UNITY_APP').canonicalGameSourceRoot);
       assert.equal(trace.minimumParticipants,2);
+      assert.ok(trace.platformCodingPlans.every(row=>row.minimumRenderedDimension==='3D'));
       assert.equal(trace.sourceImplementationPassed,false);
       assert.equal(trace.actualTwoClientPassed,false);
       assert.equal(trace.independentQaPassed,false);
@@ -1064,4 +1065,268 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
   }
+});
+
+// 설계 → 콘텐츠 분량 → 실제 구현의 항목별 연결은 수량만으로 PASS가 될 수 없다.
+test('design volume tracks every authored system, region, encounter, ability and milestone without pretending runtime PASS',()=>{
+  const approved=design();
+  approved.content.signatureSystems[0].id='habitat-rule';
+  approved.content.signatureSystems[0].stateInputs=['wave'];
+  approved.content.signatureSystems[0].stateOutputs=['habitat'];
+  approved.content.systemInterconnections=[{
+    fromId:'habitat-rule',toId:'predator-rule',fromSystem:'서식지 상성',toSystem:'포식 관계',
+    stateKeys:['habitat'],trigger:'웨이브 시작',stateChange:'배치 상성 상태 변경'
+  }];
+  approved.content.contentExpansionPlan=[
+    {milestone:'온실 해금',newGameplay:'북쪽 경로와 온실 전투가 이어진다',systemImpact:'서식지 선택과 다음 웨이브 상태 연결'}
+  ];
+  approved.content.contentVarietyPlan={
+    regions:[{id:'north-greenhouse',name:'북쪽 온실',traversal:'우회 통로',riskReward:'위험 지역',
+      landmark:'온실 지붕',encounterPattern:'매복 해충',resourcePressure:'회복 자원',storyContext:'곤충 침입'}],
+    enemiesOrChallenges:[
+      {name:'매복 해충',behavior:'은신 후 돌진',counterplay:'행동 전조 때 이동',positioning:'온실 가장자리',
+        timing:'전조 시간',mobility:'빠른 돌진',groupRole:'선봉',identity:'유리창 해충',rewardMeaning:'온실 열쇠'}
+    ],
+    objectives:[{role:'온실 조사',variation:'방어 완료 뒤 조사 가능'}],
+    abilities:[{id:'sting',name:'침 공격',cooldownSeconds:5,cost:2,trigger:'적 접근',
+      effect:'해충 이동 정지',playerChoice:'사용 시점 선택'}],
+    roleTransitions:[{humanId:'keeper',humanTool:'채집 도구',changedChoice:'감염 후 경로 선택'}],
+    antiMonotonyRule:'반복 웨이브마다 위치와 적 역할 차이가 있어야 한다.'
+  };
+  approved.content.narrativeDialoguePlan={applicable:true,questStates:['온실 조사 완료 후 다음 단서 노출'],plotBeats:[],sceneBeats:[]};
+  approved.content.implementationTraceability=[
+    {designElement:'북쪽 온실',responsibleSystem:'기존 지역 상태',validationEvidence:'실제 온실 지역 진입·보상·다음 목표 상태 검수'}
+  ];
+  const owner='roblox-games/volume-demo/server/Game.server.luau';
+  const sourceObservation={
+    sourceRoot:'roblox-games/volume-demo',sourceTreeFingerprint:'c'.repeat(64),fileCount:1,
+    sourceAnchors:[{file:owner,line:24,symbol:'north-greenhouse',kind:'STATE',context:'north-greenhouse',score:18}],
+    topFiles:[{file:owner,score:20}],observations:[],
+    signals:{progression:1,content:1,map:1,combat:1,interaction:1,save:1}
+  };
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'volume-demo',gameName:'정원 방어',platform:'ROBLOX',
+    designRecord:approved,sourceObservation,responsibleFiles:[owner]
+  });
+  const volume=d.designedGameVolume;
+  assert.equal(volume.mode,'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION');
+  assert.equal(volume.authoredCounts.CORE_LOOP,5);
+  assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,2);
+  assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,1);
+  assert.equal(volume.authoredCounts.CONTENT_MILESTONE,1);
+  assert.equal(volume.authoredCounts.VARIETY_REGIONS,1);
+  assert.equal(volume.authoredCounts.VARIETY_ENEMIESORCHALLENGES,1);
+  assert.equal(volume.authoredCounts.VARIETY_OBJECTIVES,1);
+  assert.equal(volume.authoredCounts.VARIETY_ABILITIES,1);
+  assert.equal(volume.authoredCounts.VARIETY_ROLETRANSITIONS,1);
+  assert.equal(volume.authoredCounts.NARRATIVE_QUESTSTATES,1);
+  assert.equal(volume.authoredCounts.IMPLEMENTATION_TRACE,1);
+  assert.equal(volume.authoredItemCount,Object.values(volume.authoredCounts).reduce((a,b)=>a+b,0));
+  assert.equal(volume.implementationVerifiedCount,0);
+  assert.equal(volume.runtimeVerifiedCount,0);
+  assert.equal(volume.noArbitraryContentQuota,true);
+  assert.ok(volume.items.every(row=>row.implementationVerified===false&&row.runtimeVerified===false));
+  const region=volume.items.find(row=>row.family==='VARIETY_REGIONS');
+  assert.equal(region.sourceEvidenceState,'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED');
+  assert.equal(region.sourceCandidates[0].file,owner);
+  assert.ok(region.requiredBehavior.includes('NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE'));
+  assert.equal(region.buildUpStatus,'AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED');
+  assert.match(region.observableAcceptance,/온실 지역 진입/);
+  const enemy=volume.items.find(row=>row.family==='VARIETY_ENEMIESORCHALLENGES');
+  assert.equal(enemy.sourceEvidenceState,'EXACT_SOURCE_OWNER_REVIEW_REQUIRED');
+  assert.equal(enemy.playerChoice,'행동 전조 때 이동');
+  assert.ok(enemy.requiredBehavior.includes('TELEGRAPH_AND_PLAYER_COUNTERPLAY_OBSERVABLE'));
+  const ability=volume.items.find(row=>row.family==='VARIETY_ABILITIES');
+  assert.equal(ability.designDetail.cooldownSeconds,5,'authored combat balance must stay unchanged');
+  assert.equal(ability.designDetail.cost,2);
+  assert.ok(ability.requiredBehavior.includes('EXACT_APPROVED_OWNER_TRIGGER_RANGE_RESOURCE_COST_COOLDOWN_PRESERVED'));
+  assert.equal(volume.coverageState,'DESIGN_CONTENT_INDEXED_NATIVE_IMPLEMENTATION_AND_RUNTIME_PENDING');
+  const prompt=directivePrompt(d);
+  assert.match(prompt,/DESIGNED_GAME_VOLUME:.*countsAreNotPass=true/);
+  assert.match(prompt,/VARIETY_REGIONS\[0\] 북쪽 온실/);
+  assert.match(prompt,/NARRATIVE_QUESTSTATES\[0\]/);
+  assert.ok(d.acceptanceEvidence.includes('DESIGNED_SYSTEM_CONTENT_VOLUME_TRACED_TO_EXACT_SOURCE_AND_PLAY_EVIDENCE'));
+});
+
+test('source-safe designless build-up never invents volume and 2.5D Unity Web design fails the 3D gate',()=>{
+  const owner='unity-games/volume-demo/Assets/Scripts/GameCore.cs';
+  const obs={sourceRoot:'unity-games/volume-demo',sourceTreeFingerprint:'d'.repeat(64),
+    fileCount:1,sourceAnchors:[],topFiles:[{file:owner,score:10}],observations:[],signals:{ui:3}};
+  const safe=buildGameSpecificBuildUpDirective({
+    gameId:'volume-demo',platform:'UNITY_WEB',requestedFocus:'USABILITY',safeDesignlessMode:true,
+    designRecord:design(),sourceObservation:obs,responsibleFiles:[owner]
+  });
+  assert.equal(safe.designedGameVolume.mode,'SOURCE_SAFE_NO_DESIGN_CONTENT_EXPANSION');
+  assert.deepEqual(safe.designedGameVolume.items,[]);
+  const detailed=design().content;
+  detailed.platformProfiles.UNITY.unityWebSpatialPresentation={
+    dimension:'2.5D',worldDepth:'real depth needs verification '.repeat(2),
+    cameraAndOcclusion:'perspective requires proper evidence '.repeat(2),
+    lightingAndMaterials:'mesh materials need evidence '.repeat(2),
+    mobileWebglEvidence:'mobile mesh evidence required '.repeat(2)
+  };
+  const flat=buildDesignToPlatformCodingTrace({
+    gameId:'volume-demo',platform:'UNITY_WEB',design:detailed,
+    sourceRoot:'unity-games/volume-demo',sourceObservation:obs,responsibleFiles:[owner],multiplayerRequired:false
+  });
+  assert.ok(flat.gapReasons.includes('UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING'));
+  assert.equal(flat.platformCodingPlans.find(row=>row.platform==='UNITY_WEB').minimumRenderedDimension,'3D');
+  detailed.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
+  const spatial=buildDesignToPlatformCodingTrace({
+    gameId:'volume-demo',platform:'UNITY_WEB',design:detailed,
+    sourceRoot:'unity-games/volume-demo',sourceObservation:obs,responsibleFiles:[owner],multiplayerRequired:false
+  });
+  assert.ok(!spatial.gapReasons.includes('UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING'));
+  assert.equal(spatial.sourceImplementationPassed,false,'authored 3D design is not executable runtime proof');
+});
+
+test('focused game worker keeps one exact approved content item in compact source instructions',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const owner='roblox-games/game-one/server/Game.server.luau';
+  const row={directiveId:'content-one',gameId:'game-one',generation:1,primaryFocus:'PROGRESSION',
+    gameIdentityAndNonNegotiables:{identity:'정원 방어'},
+    designedGameVolume:{version:1,mode:'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION',
+      authoredItemCount:2,namedSourceCandidateCount:1,sourceReviewRequiredCount:1,runtimeVerifiedCount:0,
+      items:[{ref:'VARIETY_REGIONS[0]',family:'VARIETY_REGIONS',title:'북쪽 온실',
+        sourceCandidates:[{file:owner}],sourceEvidenceState:'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED',
+        designDetail:{id:'north',name:'북쪽 온실',traversal:'우회 경로',landmark:'온실 지붕',encounterPattern:'매복 해충'},
+        requiredBehavior:['NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE','DISCOVERY_NEXT_OBJECTIVE_AND_RETURN_REASON_CONNECTED'],
+        trigger:'우회로 개방',playerChoice:'새 경로 선택',stateChange:'새 전투 개방',
+        observableAcceptance:'실제 지역 이동 후 상태 저장 검증'}]}
+  };
+  const original=guide({target:'roblox',gameId:'game-one',buildUpDirective:row},[owner]);
+  assert.match(original,/contentVolume=authored:2/);
+  assert.match(original,/volumeImplementation=ref:VARIETY_REGIONS\[0\]/);
+  assert.match(original,/flat 2D or 2.5D cannot be a final PASS/);
+  const compacted=compact(original,{compact:true,responsiblePaths:[owner]});
+  assert.match(compacted,/volumeImplementation=ref:VARIETY_REGIONS\[0\]/);
+  assert.match(compacted,/contentVolume=authored:2/);
+  assert.match(compacted,/volumeSpec=WORLD:/);
+  assert.match(compacted,/encounterPattern/);
+  assert.match(compacted,/volumeRequiredBehavior=NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE/);
+});
+
+test('large authored game content volume keeps all entries without cloning a full implementation prompt per item',()=>{
+  const d=design();
+  d.content.contentVarietyPlan={
+    regions:[],enemiesOrChallenges:[],objectives:[],antiMonotonyRule:'기존 규칙을 보존한다',
+    abilities:Array.from({length:64},(_,index)=>({
+      id:'ability-'+index,name:'전용 행동 '+index,kind:'ACTIVE',
+      trigger:'입력 후 기존 조건 확인',cooldownSeconds:index+1,cost:index,
+      effect:'현재 플레이어 행동과 기존 상태를 연결한다'
+    }))
+  };
+  const sourceObservation={
+    sourceRoot:'roblox-games/volume-large',sourceTreeFingerprint:'e'.repeat(64),
+    sourceAnchors:[],topFiles:[{file:'roblox-games/volume-large/server/Game.server.luau',score:10}],
+    observations:[],signals:{combat:1,progression:1,content:1,session:1}
+  };
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'volume-large',platform:'ROBLOX',designRecord:d,sourceObservation,
+    responsibleFiles:['roblox-games/volume-large/server/Game.server.luau']
+  });
+  const abilities=directive.designedGameVolume.items.filter(row=>row.family==='VARIETY_ABILITIES');
+  assert.equal(abilities.length,64);
+  assert.equal(abilities[63].ref,'VARIETY_ABILITIES[63]');
+  assert.equal(abilities[63].designDetail.cooldownSeconds,64);
+  assert.ok(abilities.every(row=>row.runtimeVerified===false));
+  assert.equal(directive.designedGameVolume.noArbitraryContentQuota,true);
+  const prompt=directivePrompt(directive);
+  assert.match(prompt,/VARIETY_ABILITIES\[0\] 전용 행동 0/);
+  assert.match(prompt,/VARIETY_ABILITIES\[63\] 전용 행동 63/);
+  assert.ok(prompt.length<75000,'content index should not repeat the full implementation blueprint for every item');
+});
+
+
+test('volume index retains every approved item beyond existing compact context budgets',()=>{
+  const approved=design();
+  approved.content.coreLoop=Array.from({length:15},(_,index)=>'단계 '+index);
+  approved.content.signatureSystems=Array.from({length:18},(_,index)=>({
+    id:'system-'+index,name:'게임 시스템 '+index,
+    purpose:'현재 상태로 동작',playerChoice:'현재 선택 보존'
+  }));
+  approved.content.systemInterconnections=Array.from({length:27},(_,index)=>({
+    fromId:'system-'+(index%18),toId:'system-'+((index+1)%18),
+    fromSystem:'시스템 '+index,toSystem:'시스템 '+(index+1),
+    trigger:'기존 상태 전환',stateChange:'연결된 상태 전환'
+  }));
+  approved.content.contentExpansionPlan=Array.from({length:14},(_,index)=>({
+    milestone:'구간 '+index,newGameplay:'기존 조건에 연결된 구간',
+    systemImpact:'기존 목표 이어가기'
+  }));
+  approved.content.implementationTraceability=Array.from({length:20},(_,index)=>({
+    designElement:'게임 시스템 '+index,responsibleSystem:'기존 상태 책임',
+    validationEvidence:'실제 행동 결과와 재접속 확인'
+  }));
+  const owner='roblox-games/volume-full/server/Game.server.luau';
+  const sourceObservation={sourceRoot:'roblox-games/volume-full',sourceTreeFingerprint:'f'.repeat(64),
+    fileCount:1,sourceAnchors:[],topFiles:[{file:owner,score:10}],observations:[],
+    signals:{combat:1,progression:1,content:1,save:1}};
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'volume-full',platform:'ROBLOX',designRecord:approved,
+    sourceObservation,responsibleFiles:[owner]
+  });
+  const volume=directive.designedGameVolume;
+  assert.equal(volume.authoredCounts.CORE_LOOP,15);
+  assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,18);
+  assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,27);
+  assert.equal(volume.authoredCounts.CONTENT_MILESTONE,14);
+  assert.equal(volume.authoredCounts.IMPLEMENTATION_TRACE,20);
+  assert.equal(volume.items.find(row=>row.ref==='CORE_LOOP[14]').title,'단계 14');
+  assert.equal(volume.items.find(row=>row.ref==='IMPLEMENTATION_TRACE[19]').title,'게임 시스템 19');
+  assert.ok(volume.items.every(row=>row.implementationVerified===false&&row.runtimeVerified===false));
+  assert.ok(directivePrompt(directive).includes('CONTENT_MILESTONE[13]'));
+  assert.ok(directivePrompt(directive).includes('IMPLEMENTATION_TRACE[19]'));
+});
+
+test('preservation-only approved design keeps all volume entries but forbids new gameplay',()=>{
+  const approved=design();
+  approved.content.preservationContract={
+    mode:'PRESERVATION_PRESENTATION_UPGRADE',
+    lockedSemantics:['SAVE_KEY_AND_SCHEMA_MEANING','COMBAT_RULES','PROGRESSION','DROPS_AND_REWARDS']
+  };
+  approved.content.contentExpansionPlan=[
+    {milestone:'모션 보정',newGameplay:'새 게임플레이를 추가하지 않고 기존 공격 애니메이션만 개선',
+      systemImpact:'기존 타격 데미지·쿨다운·보상을 유지하면서 모션을 개선한다'}
+  ];
+  const sourceObservation={sourceRoot:'roblox-games/preserve-demo',sourceTreeFingerprint:'a'.repeat(64),
+    fileCount:1,sourceAnchors:[],topFiles:[{file:'roblox-games/preserve-demo/client/Game.client.luau',score:20}],
+    signals:{animation:1,progression:1,combat:1,content:1},observations:[]};
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'preserve-demo',platform:'ROBLOX',designRecord:approved,sourceObservation,
+    responsibleFiles:['roblox-games/preserve-demo/client/Game.client.luau']
+  });
+  assert.equal(d.designedGameVolume.mode,'PRESERVATION_PRESENTATION_MILESTONES_ONLY');
+  assert.equal(d.designImplementationContext.preservationContract.mode,'PRESERVATION_PRESENTATION_UPGRADE');
+  const milestone=d.designedGameVolume.items.find(row=>row.family==='CONTENT_MILESTONE');
+  assert.ok(milestone.requiredBehavior.includes('NO_NEW_GAMEPLAY_RULE_PROGRESSION_BALANCE_SAVE_OR_NETWORK_SEMANTIC'));
+  assert.ok(!milestone.requiredBehavior.includes('NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL'));
+  assert.equal(d.designedGameVolume.runtimeVerifiedCount,0);
+
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const lines=guide({target:'roblox',gameId:'preserve-demo',
+    buildUpDirective:{...d,primaryFocus:'PROGRESSION'}},['roblox-games/preserve-demo/client/Game.client.luau']);
+  assert.match(lines,/contentVolume=authored:/);
+  assert.doesNotMatch(lines,/volumeImplementation=ref:/,
+    'presentation-only preservation must not be executed as a new progression mechanic');
 });
