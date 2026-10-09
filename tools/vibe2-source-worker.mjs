@@ -43,17 +43,19 @@ const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
+  const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
   const paidOpenAiAllowed=clean(process.env.VIBE2_OPENAI_PAID_API_ALLOWED||'false').toLowerCase();
   if(owner!=='VIBE2_VIBE3')throw new Error(`GAME_DEVELOPMENT_OWNER_INVALID:${owner||'EMPTY'}`);
   if(provider!=='LOCAL_OLLAMA')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
+  if(codexRole!=='DISABLED')throw new Error(`CODEX_USE_FORBIDDEN:${codexRole||'EMPTY'}`);
   if(codexGameSourceWrite!=='FORBIDDEN')throw new Error(`CODEX_GAME_SOURCE_WRITE_FORBIDDEN:${codexGameSourceWrite||'EMPTY'}`);
   if(paidOpenAiAllowed!=='false')throw new Error(`OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN:${paidOpenAiAllowed||'EMPTY'}`);
   return{
     owner,
     provider,
     model:DEFAULT_MODEL,
-    codexRole:'SYSTEM_TOOLING_CI_TEST_INFRA_ONLY',
+    codexRole:'DISABLED',
     codexGameSourceWrite:'FORBIDDEN',
     paidOpenAiApiAllowed:false,
     directMainWrite:false
@@ -3784,6 +3786,80 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first. Judge quality by explicit axes such as silhouette, proportion, anatomy/structure, face-hands-feet, material response, rig, sockets, motion, secondary motion, LOD and UI states. Keep strong axes and rebuild only failed axes. Other compatible candidates may donate parts, rig structure, material language, sockets, motion, or native variants; recombine them only when compatibility and provenance are preserved. Build detail from GAME_CAMERA to MID_RANGE to CLOSEUP to CONTACT. Random clutter, texture noise, excessive decals, or extra polygons without construction/function/contact cause do not count as detail. Preserve the original asset and gameplay semantics. A verified or production-safe asset is not automatically high visual quality. Spend detail effort first on assets with high screen-space occupancy, player dwell time, interaction frequency, hero/boss/signature role, camera proximity, repeated visibility, or gameplay readability needs. Distant or rare assets may use simpler LOD/material detail. Polygon count, texture size, or verification status alone must not decide visual quality. Full new authoring is last, only when core identity or structural quality remains blocked after targeted derivation and candidate reuse.',
     '[APPLY USABLE ASSETS FIRST END]'
   ].join('\n'):'';
+  // 기존 Vibe 소스 생성 프롬프트 안에서만 UI 추천을 실제 책임 함수에 전달한다.
+  // 다른 파일, 장르 이름만 맞는 가상 기능, 검증되지 않은 상태는 구현 완료로 취급하지 않는다.
+  const existingGenreMenus=order.assetProduction?.genreMenuRecommendations;
+  const menuImplementationRequested=/(?:메뉴|인벤토리|장비|상점|매매|캐릭터|퀘스트|도감|제작|건설|농사|파티|터치|화면|상호작용|오브젝트|조사|열기|제단|상자|포탈|NPC|UI|HUD|MENU|INVENTORY|EQUIPMENT|TRADE|SHOP|QUEST|CHARACTER|INTERACT|INTERACTION|OBJECT|CHEST|PORTAL|CRAFT|FARM|BUILD|DEFENSE|WAVE|CODEX|PARTY)/i.test(craftGoal);
+  // Planner refs are repository-relative; Vibe source edits are rooted at order.source.root.
+  // An exact hash must also match the complete editable file in the selected game root.
+  const currentMenuSourceRoot=posix(order?.source?.root);
+  const resolveMenuRefEditPath=ref=>{
+    const repoPath=posix(ref?.path);
+    if(!repoPath||!ref?.sha256)return null;
+    if(!currentMenuSourceRoot)return repoPath;
+    if(!repoPath.startsWith(currentMenuSourceRoot+'/'))return null;
+    return repoPath.slice(currentMenuSourceRoot.length+1);
+  };
+  const exactMenuRefMatches=ref=>{
+    const editPath=resolveMenuRefEditPath(ref);
+    return Boolean(editPath&&responsibleFiles.includes(editPath)
+      &&context.files.some(file=>file.path===editPath&&file.editable!==false
+        &&file.truncated!==true&&typeof file.content==='string'
+        &&crypto.createHash('sha256').update(file.content).digest('hex')===ref.sha256));
+  };
+  const editableMenuRef=ref=>({...ref,editPath:resolveMenuRefEditPath(ref)});
+  // 메뉴 구현은 정확한 현재 GUI 책임 파일에만 배정한다. 서버의 경제/퀘스트 함수를
+  // 발견했다는 이유만으로 서버 편집 파일에 캐릭터창·상점 GUI 구현을 지시하지 않는다.
+  const exactNativeMenuConsumerMatches=ref=>{
+    if(!exactMenuRefMatches(ref))return false;
+    const repoPath=posix(ref?.path);
+    const editPath=resolveMenuRefEditPath(ref);
+    const file=context.files.find(row=>row.path===editPath);
+    if(!file)return false;
+    const target=clean(order.target).toLowerCase();
+    if(target==='roblox'){
+      return /^roblox-games\/[a-z0-9_-]+\/(?:client|shared)\//i.test(repoPath)
+        &&/(?:Instance\.new\(["'](?:ScreenGui|TextButton|ScrollingFrame)["']\)|Create(?:Panel|TabButton|Shop|Inventory|Character)|GuiService|\.Activated:Connect\s*\()/.test(file.content);
+    }
+    if(target==='unity'){
+      return /^unity-games\/[a-z0-9_-]+\/Assets\/Scripts\/.+\.cs$/i.test(repoPath)
+        &&/(?:\bOnGUI\s*\(|\bGUILayout\.|\bUIDocument\b|\bUnityEngine\.UI\b)/.test(file.content);
+    }
+    return false;
+  };
+  const nativeMenuRoleRefs=row=>[
+    ...(row.existingNativeUiRefs||[]),...(row.nativeUiConsumerRefs||[])
+  ];
+  const sourceBoundGenreMenus=menuImplementationRequested?(existingGenreMenus?.candidateFeatures||[]).filter(row=>
+    row.status!=='IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED'
+    &&(row.gameSystemSourceRefs||[]).length>0
+    &&nativeMenuRoleRefs(row).some(exactNativeMenuConsumerMatches)
+  ).map(row=>({
+    role:row.role,factory:row.factory,
+    companyUiSource:row.companyUiSource,companyUiSourceSha256:row.companyUiSourceSha256,
+    sourceIdeaIds:row.sourceIdeaIds,
+    gameSystemSourceRefs:row.gameSystemSourceRefs,
+    exactGameSourceRefs:nativeMenuRoleRefs(row).filter(exactNativeMenuConsumerMatches)
+      .map(editableMenuRef).filter((ref,index,rows)=>rows.findIndex(other=>other.editPath===ref.editPath)===index),
+    status:row.status,sourceOnlyNotRuntimePass:true
+  })):[];
+  const sourceBoundObjectInteractions=menuImplementationRequested?(existingGenreMenus?.objectInteractions||[]).filter(row=>
+    [...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])].some(exactMenuRefMatches)
+  ).map(row=>({
+    kind:row.kind,factory:row.factory,purpose:row.purpose,
+    status:row.status,
+    sourceRefs:[...(row.gameSourceRefs||[]),...(row.clientConsumerRefs||[])]
+      .filter(exactMenuRefMatches).map(editableMenuRef),
+    nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true
+  })):[];
+  const genreMenuImplementationBlock=sourceBoundGenreMenus.length||sourceBoundObjectInteractions.length?[
+    '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN]',
+    JSON.stringify({target:order.target,sourceRevision:order.sourceRevision||order.assetProduction?.sourceRevision||null,
+      detectedSignals:existingGenreMenus.signals,menuFeatures:sourceBoundGenreMenus,
+      objectInteractions:sourceBoundObjectInteractions,allowedPaths:responsibleFiles}),
+    'Implement only systems already present in current editable game source; modify their existing responsible functions directly, never create a new shadow UI framework, wrapper or synchronization queue. UI source suggestions are presentation examples, not proof of implementation. Check each exact original source hash before editing. Preserve per-object InteractionKind, InteractionId and existing ProximityPrompt / ClickDetector gameplay ownership; observe replicated object/player state, never award loot or gold in GUI. Bind character, inventory, equipment, quest, crafting, shop and trade controls to existing authoritative state, ownership and price validation. Preserve save key/schema, gameplay balance, combat timing, rewards and multiplayer authority. Unknown system or cross-platform incompatible factory remains IDEA_ONLY. Re-test actual mobile touch, safe area, orientation, loading, save and server state after change; static PASS cannot claim runtime PASS.',
+    '[EXISTING GENRE MENU SOURCE SYNCHRONIZATION END]'
+  ].join('\n'):'';
   const precisionProduction=order.assetProduction?.precisionProduction;
   const assetImplementationBlock=order.assetProduction?[
     '[ASSET IMPLEMENTATION CONTRACT BEGIN]',
@@ -3857,6 +3933,7 @@ singleMotionBlock,
 assetTeachingBlock,
 applyFirstBlock,
 assetImplementationBlock,
+genreMenuImplementationBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),

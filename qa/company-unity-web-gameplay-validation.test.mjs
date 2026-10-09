@@ -217,7 +217,7 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
 test('Daechung mobile menu uses responsive safe-area tabs, one visible panel, scroll restoration and a fixed dock',()=>{
   const runtime=daechungUnitySource;
   assert.match(runtime,/Screen\.safeArea/);
-  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "WORLD", "COMBAT", "SOCIAL" \}/);
+  assert.match(runtime,/private static readonly string\[\] MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
   assert.match(runtime,/GUI\.Toolbar\(tabsRect, _menuPage, MenuTabs\)/);
   assert.match(runtime,/_menuScrollPositions\[_menuPage\] = _scroll/);
   assert.match(runtime,/_scroll = _menuScrollPositions\[_menuPage\]/);
@@ -267,4 +267,73 @@ test('compact landscape keeps the original combat action and real scrollable men
     assert.ok(scrollHeight>=65,`menu must remain touch-scrollable at ${width}x${height}, got ${scrollHeight}`);
     assert.ok(scrollY+scrollHeight<=actionY-8,'scroll must end above action dock');
   }
+});
+
+test('real character, owned inventory and shop windows bind to existing Unity GameCore and preserve v1 save',()=>{
+  const runtime=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  assert.match(runtime,/MenuTabs = \{ "월드", "전투", "파티", "캐릭터", "가방", "상점" \}/);
+  assert.match(runtime,/new Vector2\[MenuTabs\.Length\]/);
+  for(const method of ['DrawCharacterWindow','DrawEquipmentInventory','DrawShopWindow']){
+    assert.match(runtime,new RegExp('private void '+method+'\\('));
+  }
+  assert.match(runtime,/DrawCharacterWindow\(\)/);
+  assert.match(runtime,/DrawEquipmentInventory\(\)/);
+  assert.match(runtime,/DrawShopWindow\(\)/);
+  assert.match(runtime,/GameCatalog\.Weapons\.TryGetValue/);
+  assert.match(runtime,/GameCatalog\.Armors\.TryGetValue/);
+  assert.match(runtime,/foreach \(var id in visibleWeapons\)/);
+  assert.match(runtime,/foreach \(var id in visibleArmors\)/);
+  assert.match(runtime,/_inventorySearch = GUILayout\.TextField\(_inventorySearch, GUILayout\.MinHeight\(48f\)\)/);
+  assert.match(runtime,/_inventorySortByName = !_inventorySortByName/);
+  assert.match(runtime,/new List<string>\(player\.ownedWeapons\)/);
+  assert.match(runtime,/new List<string>\(player\.ownedArmors\)/);
+  assert.match(runtime,/visibleWeapons\.Sort\(/);
+  assert.match(runtime,/visibleArmors\.Sort\(/);
+  assert.doesNotMatch(runtime,/player\.owned(?:Weapons|Armors)\.(?:Sort|Clear|Add|Remove)\(/);
+  for(const method of ['TryEquipWeapon','TryEquipArmor','TryBuyWeapon','TryBuyArmor','TrySellWeapon','TrySellArmor']){
+    assert.match(runtime,new RegExp('\\_core\\.'+method+'\\('),'actual menu needs existing owner function: '+method);
+    assert.match(core,new RegExp('public bool '+method+'\\('));
+  }
+  assert.match(runtime,/player\.currentRegionId != "town"/);
+  assert.match(runtime,/SHOP_ACTION game=daechung-rpg/);
+  assert.match(core,/private const string SaveKey = "daechung-rpg-save-v1"/);
+  assert.match(core,/public int version = 1;/);
+  assert.match(core,/PlayerPrefs\.SetString\(SaveKey, JsonUtility\.ToJson\(data\)\)/);
+  assert.doesNotMatch(core,/SaveKey.*v2|class InventoryV2|new GameSaveData\s*\{\s*version\s*=\s*2/);
+});
+test('equip and sell reject unowned items, preserve existing prices and do not mutate combat stat authority',()=>{
+  const core=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/GameCore.cs',import.meta.url),'utf8');
+  const buy=core.slice(core.indexOf('public bool TryBuyWeapon('),core.indexOf('public bool TryEquipWeapon('));
+  assert.equal((buy.match(/Player\.currentRegionId != "town"/g)||[]).length,2,'both purchases must enforce the existing village-only shop rule');
+  const equip=core.slice(core.indexOf('public bool TryEquipWeapon('),core.indexOf('public bool TryChangeJob('));
+  assert.match(equip,/Player\.ownedWeapons\.Contains\(weaponId\)/);
+  assert.match(equip,/Player\.ownedArmors\.Contains\(armorId\)/);
+  assert.match(equip,/Player\.equippedWeaponId = "bare-hands"/);
+  assert.match(equip,/Player\.equippedArmorId = "none"/);
+  assert.match(equip,/Player\.currentHp = Mathf\.Min\(Player\.currentHp, GetMaxHp\(\)\)/);
+  assert.match(equip,/Player\.currentRegionId != "town"/);
+  assert.match(equip,/weapon\.hidden/);
+  assert.match(equip,/Player\.gold \+= weapon\.price/);
+  assert.match(equip,/Player\.gold \+= armor\.price/);
+  assert.match(equip,/Player\.gold > int\.MaxValue - weapon\.price/);
+  assert.match(equip,/Player\.gold > int\.MaxValue - armor\.price/);
+  assert.doesNotMatch(equip,/Player\.baseAttack\s*=/);
+  assert.doesNotMatch(equip,/Player\.baseMaxHp\s*=/);
+  assert.doesNotMatch(equip,/Player\.experience\s*=/);
+});
+
+test('actual Unity browser touch visits character, inventory and shop with synchronized gold evidence',()=>{
+  assert.match(daechungUnitySource,/tabsCount=\{MenuTabs\.Length\}/);
+  assert.match(source,/tabCount=getBound\('tabsCount'\)/);
+  assert.match(source,/for\(const \[index,name\] of \[\[3,'CHARACTER'\],\[4,'INVENTORY'\],\[5,'SHOP'\]\]\)/);
+  assert.match(source,/await page\.touchscreen\.tap\(tapX,menuTarget\.y\)/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_PLAYER_STATE_MISSING:/);
+  assert.match(source,/source=GAMECORE_V1_STATE/);
+  assert.match(source,/screenGold!==stateGold/);
+  assert.match(source,/UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:/);
+  assert.match(source,/nativePlayerStateObserved:true/);
+  assert.match(source,/visitedPages\.push\('WORLD'\)/);
+  assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
 });

@@ -5,6 +5,7 @@ local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
 local TweenService=game:GetService("TweenService")
+local ProximityPromptService=game:GetService("ProximityPromptService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
@@ -715,6 +716,107 @@ end
 p:GetAttributeChangedSignal("BossIntroId"):Connect(showBossCinematic)
 
 
+-- 오브젝트별 UI: 서버가 등록한 실제 ProximityPrompt와 Player 복제 상태만 관찰한다.
+-- NPC/포탈/상자/제단/전직 종류별 조건은 다르게 표시하되, 원본 Triggered 실행은 건드리지 않는다.
+local objectContext=Instance.new("Frame")
+objectContext.Name="ObjectInteractionContext";objectContext.AnchorPoint=Vector2.new(.5,0)
+objectContext.Position=touchEnabled and UDim2.new(.5,0,0,136)or UDim2.new(.5,0,0,54)
+objectContext.Size=UDim2.new(1,-30,0,67);objectContext.Visible=false;objectContext.Active=false
+objectContext.BackgroundColor3=Color3.fromRGB(28,33,43);objectContext.BackgroundTransparency=.04
+objectContext.BorderSizePixel=0;objectContext.ZIndex=12;objectContext.Parent=gui
+corner(objectContext,12);stroke(objectContext,.22)
+local objectSize=Instance.new("UISizeConstraint");objectSize.MaxSize=Vector2.new(360,70);objectSize.Parent=objectContext
+local objectTitle=Instance.new("TextLabel")
+objectTitle.Name="ObjectName";objectTitle.Size=UDim2.new(1,-18,0,25);objectTitle.Position=UDim2.fromOffset(9,6)
+objectTitle.BackgroundTransparency=1;objectTitle.TextColor3=Color3.fromRGB(251,225,158)
+objectTitle.Font=Enum.Font.GothamBold;objectTitle.TextSize=15;objectTitle.TextXAlignment=Enum.TextXAlignment.Left
+objectTitle.ZIndex=13;objectTitle.Parent=objectContext
+local objectStatus=Instance.new("TextLabel")
+objectStatus.Name="ObjectState";objectStatus.Size=UDim2.new(1,-18,0,30);objectStatus.Position=UDim2.fromOffset(9,31)
+objectStatus.BackgroundTransparency=1;objectStatus.TextColor3=Color3.fromRGB(215,227,237)
+objectStatus.Font=Enum.Font.Gotham;objectStatus.TextWrapped=true;objectStatus.TextSize=12
+objectStatus.TextXAlignment=Enum.TextXAlignment.Left;objectStatus.ZIndex=13;objectStatus.Parent=objectContext
+local activeObjectPrompt=nil
+local objectStateConnection=nil
+local function refreshObjectInteraction()
+ local pr=activeObjectPrompt
+ if not pr or not pr.Parent or not pr.Enabled or gui:GetAttribute("RPGMenuOpen")==true or classPanel.Visible then
+  objectContext.Visible=false
+  return
+ end
+ local kind=tostring(pr:GetAttribute("InteractionKind")or"")
+ local id=tostring(pr:GetAttribute("InteractionId")or"")
+ if kind==""or id==""then objectContext.Visible=false;return end
+ local note=pr.ActionText
+ local state="AVAILABLE"
+ if kind=="WEAPON_MERCHANT"or kind=="ARMOR_MERCHANT"then
+  local weapon=kind=="WEAPON_MERCHANT"
+  local key=weapon and"WeaponTier"or"ArmorTier"
+  local prices=weapon and C.WeaponPrices or C.ArmorPrices
+  local tier=tonumber(p:GetAttribute(key))or 1
+  local price=prices[tier+1]
+  if not price then note="최고 티어 보유";state="MAX_TIER"
+  elseif (tonumber(p:GetAttribute("Gold"))or 0)<price then note="다음 단계 "..price.."G · 골드 부족";state="INSUFFICIENT_GOLD"
+  else note="다음 단계 "..price.."G · 서버 구매 조건 적용"end
+ elseif kind=="QUEST_NPC"then
+  local questId=tonumber(p:GetAttribute("QuestPortal"))or 0
+  if questId>0 then note="의뢰 "..tostring(p:GetAttribute("QuestKills")or 0).."/"..tostring(p:GetAttribute("QuestNeed")or 0)
+  else note="퀘스트 받기"end
+ elseif kind=="ADVANCEMENT_NPC"then
+  local min=C.AdvancementLevel or 15
+  note="전직 교관 · 레벨 "..min.."부터 시험"
+  if (tonumber(p:GetAttribute("Level"))or 1)<min then state="LEVEL_LOCKED"end
+ elseif kind=="HEALER"then
+  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid")
+  note=h and("HP "..math.floor(h.Health).."/"..math.floor(h.MaxHealth).." · 회복")or"체력 회복"
+ elseif kind=="ENTRY_PORTAL"then
+  local zoneId=tonumber(pr:GetAttribute("DestinationZone"))
+  local zone=zoneId and C.Portals[zoneId]
+  note=zone and (zone.Name.." · 입장") or pr.ActionText
+ elseif kind=="RETURN_PORTAL"then
+  if p:GetAttribute("InCombat")==true then note="전투 중 귀환 불가";state="COMBAT_LOCKED"
+  else note="귀환 가능 여부는 서버에서 확인"end
+ elseif kind=="TREASURE_CHEST"or kind=="EVENT_ALTAR"then
+  local claimKey=pr:GetAttribute("ClaimAttribute")
+  if typeof(claimKey)=="string"and p:GetAttribute(claimKey)==true then
+   note=kind=="TREASURE_CHEST"and"이미 연 보물상자"or"이미 조사한 제단"
+   state="ALREADY_CLAIMED"
+  else note=kind=="TREASURE_CHEST"and"상자 열기"or"제단 조사"end
+ elseif kind=="SECRET_RUNE"then
+  if pr.Parent:GetAttribute("Revealed")==true then note="이미 조사한 룬석";state="ALREADY_REVEALED"
+  else note="숨겨진 정보 조사"end
+ end
+ objectTitle.Text=tostring(pr.ObjectText or"상호작용").." · "..tostring(pr.ActionText)
+ objectStatus.Text=note
+ objectContext:SetAttribute("BoundInteractionId",id)
+ objectContext:SetAttribute("BoundInteractionKind",kind)
+ objectContext:SetAttribute("BoundInteractionState",state)
+ objectContext:SetAttribute("OwnsGameplayAuthority",false)
+ objectContext.Visible=true
+end
+local objectShown=ProximityPromptService.PromptShown:Connect(function(pr)
+ if not pr:GetAttribute("InteractionKind")then return end
+ if objectStateConnection then objectStateConnection:Disconnect();objectStateConnection=nil end
+ activeObjectPrompt=pr
+ objectStateConnection=pr.Parent:GetAttributeChangedSignal("Revealed"):Connect(refreshObjectInteraction)
+ refreshObjectInteraction()
+end)
+local objectHidden=ProximityPromptService.PromptHidden:Connect(function(pr)
+ if activeObjectPrompt~=pr then return end
+ activeObjectPrompt=nil
+ if objectStateConnection then objectStateConnection:Disconnect();objectStateConnection=nil end
+ refreshObjectInteraction()
+end)
+local objectClaimChanged=p.AttributeChanged:Connect(function(key)
+ if activeObjectPrompt and key==activeObjectPrompt:GetAttribute("ClaimAttribute")then refreshObjectInteraction()end
+end)
+local objectMenuChanged=gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(refreshObjectInteraction)
+gui.Destroying:Connect(function()
+ objectShown:Disconnect();objectHidden:Disconnect()
+ objectClaimChanged:Disconnect();objectMenuChanged:Disconnect()
+ if objectStateConnection then objectStateConnection:Disconnect()end
+end)
+
 local rpgMenu=RPGMenu.install(C,gui,p,{
  sounds={actionSfx,hitSfx,skillSfx,levelSfx},
  canOpen=function()return startupOverlay.Parent==nil and not classPanel.Visible end,
@@ -724,6 +826,24 @@ local rpgMenu=RPGMenu.install(C,gui,p,{
  end,
  trackQuest=function()objective.Visible=true end,
  changeRoom=function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end,
+ -- 표시 권한만 현장 거리·생존·전투 상태와 동기화한다. 구매는 기존 서버가 다시 검증한다.
+ merchantAccess=function()
+  local character=p.Character
+  local playerRoot=character and character:FindFirstChild("HumanoidRootPart")
+  local health=character and character:FindFirstChildOfClass("Humanoid")
+  local usable=playerRoot~=nil and health~=nil and health.Health>0
+   and p:GetAttribute("InCombat")~=true and (tonumber(p:GetAttribute("CurrentZone"))or 0)==0
+  local world=workspace:FindFirstChild("DaechungRPGWorld")
+  local village=world and world:FindFirstChild("Village")
+  local weapon=village and village:FindFirstChild("WeaponMerchant")
+  local armor=village and village:FindFirstChild("ArmorMerchant")
+  return {
+   weapon=(usable and weapon~=nil and (playerRoot.Position-weapon.Position).Magnitude<=16)==true,
+   armor=(usable and armor~=nil and (playerRoot.Position-armor.Position).Magnitude<=16)==true
+  }
+ end,
+ buyWeapon=function()remote:FireServer(C.Actions.BUY_WEAPON)end,
+ buyArmor=function()remote:FireServer(C.Actions.BUY_ARMOR)end,
  toggleTips=function()hint.Visible=not hint.Visible end,
 })
 
@@ -779,6 +899,7 @@ local function render()
  if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · 보스 동료 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
  if classId=="BREAKER"then skill.Text="파쇄"elseif classId=="SHADOW"then skill.Text="그림자"elseif classId=="RUNE"then skill.Text="룬"elseif classId=="SOUL"then skill.Text="영혼"else skill.Text="스킬"end
  renderClassPanel()
+ refreshObjectInteraction()
 end
 for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
 local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end

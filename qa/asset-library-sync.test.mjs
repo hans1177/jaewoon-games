@@ -222,3 +222,319 @@ test('Roblox inventory menu stacks controls on narrow screens and does not clip 
  assert.match(inventory,/root:SetAttribute\("OwnsInventoryAuthority",false\)/);
  assert.doesNotMatch(inventory,/RemoteEvent|DataStoreService|RunService|RenderStepped/);
 });
+
+test('character state uses a compact stacked scrolling layout without owning level or save authority',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateMapFullScreen(options)',a);
+ assert.ok(a>=0&&b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/scroll\.Name="CharacterScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/details\.Position=UDim2\.fromOffset\(0,sheetHeight\+12\)/);
+ assert.match(body,/sheetHeight=math\.max\(330,160\+statCount\*30\)/);
+ assert.match(body,/statCount=#\(state\.stats or \{\}\)/);
+ assert.match(body,/root:SetAttribute\("CharacterStateRevision"/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsCharacterStats",false/);
+ assert.match(body,/OwnsProgressionAuthority",false/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|PlayerPrefs|SetAsync|UpdateAsync/);
+});
+
+test('equipment slots stay scrollable and authority-safe on narrow mobile screens',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateCharacterDetailScreen(options)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const body=source.slice(begin,end);
+ assert.match(body,/Instance\.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroll\.Name="EquipmentScroll"/);
+ assert.match(body,/scroll\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/scroll\.ScrollingDirection=Enum\.ScrollingDirection\.Y/);
+ assert.match(body,/scroll\.Active=true/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/sheet\.Visible=not compact/);
+ assert.match(body,/grid:GetPropertyChangedSignal\("AbsoluteContentSize"\)/);
+ assert.match(body,/slots\.Size=UDim2\.new\(1,-8,0,grid\.AbsoluteContentSize\.Y\+10\)/);
+ assert.match(body,/row\.locked~=true and type\(options\.onEquip\)=="function"/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsEquipAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/scroll=scroll,Sync=sync/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|SetAsync|UpdateAsync|RenderStepped/);
+});
+
+test('codex screen binds real discovered entries and hides unverified data from mobile labels',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=source.indexOf('function RobloxCommonUI.CreateCodexScreen(options)');
+ const b=source.indexOf('function RobloxCommonUI.CreateCollectionProgress(options)',a);
+ assert.ok(a>=0 && b>a);
+ const body=source.slice(a,b);
+ assert.match(body,/sync\(options\.codex or \{\}\)/);
+ assert.match(body,/entries=type\(state\.entries\)=="table"and state\.entries or \{\}/);
+ assert.match(body,/selectedCategory="전체"/);
+ assert.match(body,/row\.unlocked==true and tostring\(row\.name or row\.title or ""\) or "미발견"/);
+ assert.match(body,/selected\.unlocked==true and tostring\(selected\.description or selected\.details or ""\)/);
+ assert.match(body,/root:SetAttribute\("BoundCodexEntryCount",#entries\)/);
+ assert.match(body,/root:SetAttribute\("CodexStateRevision"/);
+ assert.match(body,/body\.AbsoluteSize\.X<560/);
+ assert.match(body,/root:SetAttribute\("MobileStackedLayout",compact\)/);
+ assert.match(body,/root:SetAttribute\("TouchScrollable",true\)/);
+ assert.match(body,/OwnsDiscoveryAuthority",false/);
+ assert.match(body,/OwnsRewardAuthority",false/);
+ assert.match(body,/OwnsSaveAuthority",false/);
+ assert.match(body,/OwnsRemoteAuthority",false/);
+ assert.match(body,/return root,\{nav=categories,categories=categories,entries=list,detail=detail,Sync=sync\}/);
+ assert.doesNotMatch(body,/DataStoreService|FireServer|RemoteEvent|SetAsync|UpdateAsync|new GameSaveData/);
+});
+
+test('quest and crafting menus render only owner-supplied state and never invent quests or recipes',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const quests=section('CreateQuestLog','CreateCraftingFullScreen');
+ const craft=section('CreateCraftingFullScreen','CreateShopFullScreen');
+ assert.match(quests,/sync\(options\.quests or \{\}\)/);
+ assert.match(quests,/row\.active==true/);
+ assert.match(quests,/row\.completed==true/);
+ assert.match(quests,/root:SetAttribute\("BoundQuestCount",#shown\)/);
+ assert.match(quests,/card:SetAttribute\("BoundQuestId",tostring\(row\.id or ""\)\)/);
+ assert.match(quests,/current\.canTrack==true and type\(options\.onTrack\)=="function"/);
+ assert.match(quests,/options\.onTrack\(current\.id,current\)/);
+ assert.match(quests,/for i=#shown\+1,#cards do cards\[i\]\.Visible=false end/);
+ assert.doesNotMatch(quests,/title="퀘스트 "\.\.i|description="목표와 진행 상태"/);
+ assert.match(craft,/sync\(options\.recipes or \{\}\)/);
+ assert.match(craft,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(craft,/current\.craftable==true and type\(options\.onCraft\)=="function"/);
+ assert.match(craft,/options\.onCraft\(current\.id,current\)/);
+ assert.match(craft,/root:SetAttribute\("BoundRecipeCount",#shown\)/);
+ assert.match(craft,/row\.ingredientsText or row\.requirements/);
+ assert.doesNotMatch(craft,/title="제작 항목 "\.\.i/);
+ for(const body of [quests,craft]){
+   assert.match(body,/return root,\{/);
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsSaveAuthority",false/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.match(body,/TouchScrollable",true/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|while true/);
+ }
+});
+
+test('party tycoon farm and defense menus synchronize real source values without owning gameplay',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,next)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+next+'(options)'));
+ const party=section('CreatePartyRoleOverview','CreateRouteRiskPreview');
+ const building=section('CreateBuildCatalogPanel','CreateBuildPieceCard');
+ const farm=section('CreateFarmPlotPanel','CreateAnimalHousingPanel');
+ const wave=section('CreateWaveForecastRibbon','CreateStatusEffectTimeline');
+ assert.match(party,/sync\(options\.party or \{\}\)/);
+ assert.match(party,/state\.members/);
+ assert.match(party,/root:SetAttribute\("BoundPartyMemberCount",#members\)/);
+ assert.match(party,/current\.canSelect==true and type\(options\.onSelect\)=="function"/);
+ assert.match(party,/OwnsPartyAuthority",false/);
+ assert.doesNotMatch(party,/\{"전투 역할","지원 역할","현재 상태","중복\/빈 역할"\}/);
+ assert.match(building,/sync\(options\.buildings or \{\}\)/);
+ assert.match(building,/root:SetAttribute\("BoundBuildingCount",#rows\)/);
+ assert.match(building,/current\.available==true/);
+ assert.match(building,/OwnsPlacementAuthority",false/);
+ assert.doesNotMatch(building,/\{"기초","벽\/문\/창","천장\/지붕"/);
+ assert.match(farm,/sync\(options\.plot or \{\}\)/);
+ assert.match(farm,/root:SetAttribute\("BoundPlotId",tostring\(state\.id or ""\)\)/);
+ assert.match(farm,/state\.canHarvest==true and type\(options\.onHarvest\)=="function"/);
+ assert.match(farm,/OwnsFarmingAuthority",false/);
+ assert.match(wave,/sync\(options\.wave or \{\}\)/);
+ assert.match(wave,/root:SetAttribute\("WaveStateRevision"/);
+ assert.match(wave,/OwnsWaveAuthority",false/);
+ for(const body of [party,building,farm,wave]){
+   assert.match(body,/Sync=sync/);
+   assert.match(body,/OwnsRemoteAuthority",false/);
+   assert.doesNotMatch(body,/DataStoreService|FireServer|UpdateAsync|SetAsync|RunService/);
+ }
+});
+
+test('real inventory search sort and category controls filter owner data without changing inventory authority',()=>{
+ const src=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const a=src.indexOf('function RobloxCommonUI.CreateInventoryFullScreen(options)');
+ const b=src.indexOf('function RobloxCommonUI.CreateEquipmentFullScreen(options)',a);
+ assert.ok(a>=0 && b>a);
+ const inventory=src.slice(a,b);
+ assert.match(inventory,/local rows,shown,filterNames=\{\},\{\},\{\}/);
+ assert.match(inventory,/filterNames\[1\]="전체"/);
+ assert.match(inventory,/local category=tostring\(row\.category or ""\)/);
+ assert.match(inventory,/if not table\.find\(filterNames,currentFilter\)then currentFilter=filterNames\[1\]or"전체"end/);
+ assert.match(inventory,/search:GetPropertyChangedSignal\("Text"\):Connect\(refresh\)/);
+ assert.match(inventory,/sort\.Activated:Connect\(function\(\)/);
+ assert.match(inventory,/sortByName=not sortByName/);
+ assert.match(inventory,/table\.sort\(shown,function\(left,right\)/);
+ assert.match(inventory,/currentFilter=="전체"or currentFilter==category/);
+ assert.match(inventory,/string\.find\(name,query,1,true\)/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/selectedId=current\.id/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(inventory,/root:SetAttribute\("BoundVisibleItemCount",#shown\)/);
+ assert.match(inventory,/root:SetAttribute\("InventorySortByName",sortByName\)/);
+ assert.match(inventory,/root:SetAttribute\("CurrentInventoryFilter",currentFilter\)/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("TouchScrollable",true\)/);
+ for(const field of ['OwnsInventoryAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(inventory,new RegExp('root:SetAttribute\\("'+field+'",false\\)'));
+ }
+ assert.doesNotMatch(inventory,/DataStoreService|FireServer|SetAsync|UpdateAsync|RemoteEvent|RunService/);
+});
+
+test('Vibe common character equipment inventory and trading screens sync exact owner state and actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const character=section('CreateCharacterDetailScreen','CreateMapFullScreen');
+ const equipment=section('CreateEquipmentFullScreen','CreateCharacterDetailScreen');
+ const inventory=section('CreateInventoryFullScreen','CreateEquipmentFullScreen');
+ const shop=section('CreateShopFullScreen','CreateConfirmDialog');
+ for(const [kind,body] of [['character',character],['equipment',equipment],['inventory',inventory],['shop',shop]]){
+  assert.match(body,/local function sync\(/,kind);
+  assert.match(body,/Sync=sync/,kind);
+  assert.doesNotMatch(body,/DataStoreService|SetAsync|UpdateAsync|FireServer|OnServerEvent/);
+ }
+ assert.match(character,/state\.name/);
+ assert.match(character,/state\.className/);
+ assert.match(character,/state\.stats/);
+ assert.match(character,/state\.revision/);
+ assert.match(equipment,/row\.equipped==true/);
+ assert.match(equipment,/if row and row\.id and row\.locked~=true and type\(options\.onEquip\)=="function"then/);
+ assert.match(equipment,/options\.onEquip\(row\.id,row\)/);
+ assert.match(inventory,/slot:SetAttribute\("BoundItemId",tostring\(row\.id or ""\)\)/);
+ assert.match(inventory,/local current=shown\[index\]/);
+ assert.match(inventory,/if not current or current\.id==nil or current\.locked==true then return end/);
+ assert.match(inventory,/if type\(options\.onSelect\)=="function"then options\.onSelect\(current\.id,current\)end/);
+ assert.match(inventory,/for i=#shown\+1,#slots do slots\[i\]\.Visible=false end/);
+ assert.match(inventory,/root:SetAttribute\("BoundItemCount",#rows\)/);
+ assert.match(shop,/if current\.canSell==true and type\(options\.onSell\)=="function"then options\.onSell\(current\.id,current\)/);
+ assert.match(shop,/current\.canBuy==true and type\(options\.onBuy\)=="function"then options\.onBuy\(current\.id,current\)/);
+ assert.match(shop,/item\.price~=nil/);
+ assert.match(shop,/search:GetPropertyChangedSignal\("Text"\):Connect/);
+ assert.match(shop,/list\.AbsoluteSize\.X<430/);
+ assert.match(shop,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("OwnsSaveAuthority",false\)/);
+ assert.match(shop,/root:SetAttribute\("BoundShopItemCount",#shown\)/);
+ const trade=section('CreateBuySellPanel','CreateBuybackPanel');
+ assert.match(trade,/name=options.name or "BuySellPanel",size=options.size or UDim2.new\(1,-24,1,-24\)/);
+ assert.match(trade,/local function sync\(state\)/);
+ assert.match(trade,/item.sellPrice/);
+ assert.match(trade,/mode=="SELL"/);
+ assert.match(trade,/action\.Activated:Connect\(function\(\)/);
+ assert.match(trade,/options.onBuy\(item.id,item\)/);
+ assert.match(trade,/options.onSell\(item.id,item\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsTradeAuthority",false\)/);
+ assert.match(trade,/root:SetAttribute\("OwnsEconomyAuthority",false\)/);
+ assert.match(trade,/Sync=sync/);
+ assert.doesNotMatch(trade,/DataStoreService|SetAsync|UpdateAsync|FireServer|RemoteEvent/);
+});
+
+test('system-menu drawer is a functional touch-safe synchronized menu, not a static suggestion card',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const begin=source.indexOf('function RobloxCommonUI.CreateMenuSystemSwitcherDrawer(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateNavigationBreadcrumbBackstack(options)',begin);
+ const body=source.slice(begin,end);
+ assert.ok(begin>=0&&end>begin);
+ assert.match(body,/Instance.new\("ScrollingFrame"\)/);
+ assert.match(body,/scroller\.AutomaticCanvasSize=Enum\.AutomaticSize\.Y/);
+ assert.match(body,/button\.Activated:Connect\(function\(\)/);
+ assert.match(body,/root:SetAttribute\("BoundSystemCount",#rows\)/);
+ assert.match(body,/root:SetAttribute\("CurrentSystemId",selectedId\)/);
+ assert.match(body,/button:SetAttribute\("MinimumTouchHeight",48\)/);
+ assert.match(body,/options\.onSelect\(id,current\)/);
+ assert.match(body,/if type\(current\)=="table"and current\.enabled==false then return end/);
+ assert.match(body,/return root,\{inner=inner,list=scroller,labels=buttons,buttons=buttons,Sync=sync\}/);
+ for(const role of ['OwnsSystemAuthority','OwnsNavigationAuthority','OwnsSaveAuthority','OwnsRemoteAuthority']){
+   assert.match(body,new RegExp('root:SetAttribute\\("'+role+'",false\\)'));
+ }
+ assert.doesNotMatch(body,/DataStoreService|SetAsync|FireServer|RemoteEvent|RenderStepped|RunService/);
+});
+
+test('common world-object prompts and interaction state cards synchronize actual object identity and lock state',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const start=source.indexOf('function RobloxCommonUI.CreateWorldPropInteractionPrompt(options)');
+ const end=source.indexOf('function RobloxCommonUI.CreateWorldPropActionWheel(options)',start);
+ const prompt=source.slice(start,end);
+ assert.match(prompt,/local function sync\(state\)/);
+ assert.match(prompt,/action\.Text=tostring\(state\.actionText or options\.actionText/);
+ assert.match(prompt,/target\.Text=tostring\(state\.targetText or options\.targetText/);
+ assert.match(prompt,/status\.Text=tostring\(state\.statusText or state\.reason or ""\)/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionId",tostring\(state\.id/);
+ assert.match(prompt,/root:SetAttribute\("BoundInteractionKind",tostring\(state\.kind/);
+ assert.match(prompt,/root:SetAttribute\("InteractionAvailable",available\)/);
+ assert.match(prompt,/return root,\{action=action,target=target,status=status,Sync=sync\}/);
+ const stateStart=source.indexOf('function RobloxCommonUI.CreateInteractionStateCard(options)');
+ const stateEnd=source.indexOf('function RobloxCommonUI.CreateSeatInteractionPrompt(options)',stateStart);
+ const card=source.slice(stateStart,stateEnd);
+ assert.match(card,/local function sync\(state\)/);
+ assert.match(card,/state\.requirements or ""/);
+ assert.match(card,/state\.result or ""/);
+ assert.match(card,/root:SetAttribute\("SourceAuthority",tostring\(state\.source/);
+ assert.match(card,/Sync=sync/);
+ for(const body of [prompt,card]){
+   assert.match(body,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(body,/FireServer|RemoteEvent|DataStoreService|UpdateAsync|SetAsync|RunService/);
+ }
+});
+
+test('NPC object menus and world action wheel never fabricate available actions and sync game owners',()=>{
+ const source=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(first,second)=>source.slice(source.indexOf('function RobloxCommonUI.'+first+'(options)'),
+   source.indexOf('function RobloxCommonUI.'+second+'(options)'));
+ const npc=section('CreateNpcInteractionPrompt','CreateNpcInteractionMenu');
+ const menu=section('CreateNpcInteractionMenu','CreateNpcRelationshipCard');
+ const wheel=section('CreateWorldPropActionWheel','CreateInteractionProgress');
+ assert.match(npc,/local function sync\(state\)/);
+ assert.match(npc,/root:SetAttribute\("InteractionKind",tostring\(state\.kind/);
+ assert.match(npc,/root:SetAttribute\("InteractionAvailable",enabled\)/);
+ assert.match(npc,/return root,key,title,subtitle,sync/);
+ assert.match(menu,/local function sync\(state\)/);
+ assert.match(menu,/sync\(options\.interaction or \{actions=options\.actions or \{\}\}\)/);
+ assert.match(menu,/buttons\[index\]\.Visible=false/);
+ assert.match(menu,/selected\.available==false/);
+ assert.match(menu,/options\.onSelect\(selected\.id,selected\)/);
+ assert.match(menu,/root:SetAttribute\("BoundInteractionActionCount",#rows\)/);
+ assert.match(menu,/return root,inner,list,buttons,sync/);
+ assert.doesNotMatch(menu,/\{id="GIVE_ITEM",/);
+ assert.match(wheel,/actions=\{\}/);
+ assert.match(wheel,/local function sync\(state\)/);
+ assert.match(wheel,/row\.available~=false/);
+ assert.match(wheel,/options\.onSelect\(actionId,current\)/);
+ assert.match(wheel,/root:SetAttribute\("BoundActionCount",#actions\)/);
+ for(const text of [npc,menu,wheel]){
+   assert.match(text,/OwnsInteractionAuthority",false/);
+   assert.doesNotMatch(text,/RemoteEvent|FireServer|SetAsync|DataStoreService|RunService|RenderStepped/);
+ }
+});
+
+test('all per-object factory panels bind observed chest harvest bed light and inspection state instead of placeholder actions',()=>{
+ const script=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
+ const section=(a,b)=>script.slice(script.indexOf('function RobloxCommonUI.'+a+'(options)'),
+   script.indexOf('function RobloxCommonUI.'+b+'(options)'));
+ const rows=[
+  ['CreateBedInteractionPrompt','CreateHarvestInteractionPrompt',['state.action','state.respawnPoint','state.requirements']],
+  ['CreateHarvestInteractionPrompt','CreateContainerInteractionPrompt',['state.requiredTool','state.progress','state.resourceCategory']],
+  ['CreateContainerInteractionPrompt','CreateLightControlPrompt',['state.status','state.capacity','state.access']],
+  ['CreateLightControlPrompt','CreateReadInspectPanel',['state.status','state.connection','state.requirements']],
+  ['CreateReadInspectPanel','CreateInventorySmartSortPreview',['state.target','state.description','state.related']]
+ ];
+ for(const [name,next,props] of rows){
+   const body=section(name,next);
+   assert.match(body,/local function sync\(state\)/,name);
+   assert.match(body,/Sync=sync/,name);
+   assert.match(body,/BoundInteractionId/,name);
+   assert.match(body,/SourceAuthority/,name);
+   assert.match(body,/OwnsInteractionAuthority",false/,name);
+   assert.doesNotMatch(body,/RemoteEvent|FireServer|DataStoreService|SetAsync|UpdateAsync|while true/,name);
+   for(const prop of props)assert.ok(body.includes(prop),name+': '+prop);
+ }
+ const progress=section('CreateInteractionProgress','CreateInteractionStateCard');
+ assert.match(progress,/controller\.SetRatio\(state\.ratio,state\.text or state\.label\)/);
+ assert.match(progress,/root:SetAttribute\("OwnsInteractionDuration",false\)/);
+ assert.match(progress,/return root,controller,sync/);
+});

@@ -35,6 +35,11 @@ assert(#rows==2 and rows[1].tier==2 and rows[1].description:find('+8',1,true))
 assert(#Model.equipment({},config)==0)
 assert(#Model.filter(rows,'도구','')==0)
 assert(#Model.filter(rows,'전체','무기')==1)
+local actual={{id='z',name='실제 도구',category='도구',equipped=true},{id='a',name='가나다 도구',category='도구',equipped=false}}
+assert(Model.filter(actual,'도구','')[1].id=='z')
+assert(Model.filter(actual,'도구','',true)[1].id=='a')
+assert(#Model.filter(actual,'도구','없는 아이템',true)==0)
+assert(actual[1].id=='z' and actual[2].id=='a')
 assert(not Model.quest({},config).active)
 local q=Model.quest({QuestPortal=1,QuestKills=3,QuestNeed=5},config)
 assert(q.active and q.ratio==.6 and q.text:find('3 / 5',1,true))
@@ -97,6 +102,7 @@ local parent=Instance.new('PlayerGui')
 local gui=Instance.new('ScreenGui');gui.AbsoluteSize=Vector2.new(393,852);gui.Parent=parent
 local player=Instance.new('Player');player.Parent=parent
 player:SetAttribute('WeaponTier',1);player:SetAttribute('ArmorTier',1);player:SetAttribute('Level',1)
+player:SetAttribute('Gold',250);player:SetAttribute('CurrentZone',0)
 local backpack=Instance.new('Backpack');backpack.Parent=player
 local character=Instance.new('Model');player.Character=character
 local humanoid=Instance.new('Humanoid');humanoid.Health=100;humanoid.Parent=character
@@ -105,15 +111,163 @@ humanoid.EquipTool=function(_,tool)equipped+=1;tool.Parent=character end
 humanoid.UnequipTools=function()for _,tool in ipairs(character:GetChildren())do if tool:IsA('Tool')then tool.Parent=backpack end end end
 local tool=Instance.new('Tool');tool.Name='실제 도구';tool.Parent=backpack
 local allowed=false;local combat=true
-local api=Menu.install({Portals={},Classes={}},gui,player,{canOpen=function()return allowed end,onOpen=function(open)combat=not open end})
+local weaponOrders=0;local armorOrders=0
+local api=Menu.install({Portals={},Classes={},WeaponPrices={50,120,240},ArmorPrices={45,110,220}},gui,player,{
+ canOpen=function()return allowed end,onOpen=function(open)combat=not open end,
+ buyWeapon=function()weaponOrders+=1 end,buyArmor=function()armorOrders+=1 end
+})
 local function find(name)for i=#instances,1,-1 do if instances[i].Name==name and instances[i].Parent then return instances[i]end end error('missing '..name)end
 api.button.Activated:Fire();assert(not api.isOpen())
 allowed=true;api.button.Activated:Fire();assert(api.isOpen() and not combat)
+find('Tab3').Activated:Fire()
+assert(find('CharacterSummary').Text:find('Lv.1',1,true))
+find('Tab4').Activated:Fire()
+assert(find('ShopSummary').Text:find('골드 250',1,true))
+find('BuyWeapon').Activated:Fire();find('BuyArmor').Activated:Fire()
+assert(weaponOrders==1 and armorOrders==1,'shop callbacks belong to client owner')
+player:SetAttribute('Gold',0)
+assert(not find('BuyWeapon').Active and not find('BuyArmor').Active,'no client-side false purchase')
+find('Tab1').Activated:Fire()
 local stableSlot=find('InventorySlot1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
 find('Filter3').Activated:Fire();find('ItemAction').Activated:Fire();assert(equipped==1 and tool.Parent==character)
+local another=Instance.new('Tool');another.Name='가나다 도구';another.Parent=backpack
+assert(find('InventorySlot1').ItemName.Text=='실제 도구','default equipped-first ordering')
+find('InventorySort').Activated:Fire()
+assert(find('InventorySort').Text=='정렬: 이름순')
+assert(find('InventorySlot1').ItemName.Text=='가나다 도구','name sort of real tool rows')
+find('InventorySort').Activated:Fire()
+assert(find('InventorySort').Text=='정렬: 장착순')
+assert(find('InventorySlot1').ItemName.Text=='실제 도구')
 find('ItemAction').Activated:Fire();assert(tool.Parent==backpack)
 input.focused={};input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 input.focused=nil;input.InputBegan:Fire({KeyCode='Escape'},false);assert(not api.isOpen() and combat)
 input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 find('CloseMenu').Activated:Fire();assert(not api.isOpen() and combat)
 `));
+
+test('in-game Roblox sorting is touch-accessible and owns no save or inventory state',()=>{
+ assert.match(menu,/local sortByName=false/);
+ assert.match(menu,/sortButton=button\(inventory,"InventorySort","정렬: 장착순"\)/);
+ assert.match(menu,/sortButton\.Activated:Connect\(function\(\)sortByName=not sortByName;refresh\(\)end\)/);
+ assert.match(menu,/Model\.filter\(rows,category,search\.Text,sortByName\)/);
+ assert.match(menu,/sortButton\.Text=sortByName and "정렬: 이름순"or"정렬: 장착순"/);
+ assert.match(menu,/local listStart=162/);
+ assert.match(menu,/inventory\.CanvasSize=UDim2\.fromOffset\(0,availableHeight\)/);
+ assert.match(model,/function Model\.filter\(rows, category, query, sortByName\)/);
+ assert.doesNotMatch(menu,/DataStoreService|SetAsync|UpdateAsync/);
+});
+test('character and merchant pages use actual replicated state and server requests without changing item prices',()=>{
+ const config=fs.readFileSync('roblox-games/daechung-rpg/shared/GameConfig.luau','utf8');
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const shared=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
+ assert.match(model,/function Model\.character\(attributes,config\)/);
+ assert.match(model,/function Model\.shop\(attributes,config,merchantAccess\)/);
+ assert.match(model,/source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"/);
+ assert.match(model,/sellSupported=false/);
+ assert.match(server,/local prices=isWeapon and C\.WeaponPrices or C\.ArmorPrices/);
+ assert.equal(shared,model,'shared model must match the exact internal asset');
+ for(const name of ['캐릭터','상점']){
+   assert.match(menu,new RegExp('"' + name + '"'));
+ }
+ assert.match(menu,/character=Model\.character\(a,config\)/);
+ assert.match(menu,/offers=Model\.shop\(a,config,access\)/);
+ assert.match(menu,/buyWeapon\.Activated:Connect/);
+ assert.match(menu,/buyArmor\.Activated:Connect/);
+ assert.match(menu,/if options\.buyWeapon then options\.buyWeapon\(\)end/);
+ assert.match(menu,/if options\.buyArmor then options\.buyArmor\(\)end/);
+ assert.match(menu,/CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true/);
+ assert.match(menu,/humanoid\.HealthChanged:Connect\(scheduleRefresh\)/);
+ assert.match(config,/BUY_WEAPON="BUY_WEAPON",BUY_ARMOR="BUY_ARMOR"/);
+ assert.match(client,/buyWeapon=function\(\)remote:FireServer\(C\.Actions\.BUY_WEAPON\)end/);
+ assert.match(client,/buyArmor=function\(\)remote:FireServer\(C\.Actions\.BUY_ARMOR\)end/);
+ assert.match(client,/merchantAccess=function\(\)/);
+ assert.match(client,/\(playerRoot\.Position-weapon\.Position\)\.Magnitude<=16/);
+ assert.match(client,/\(playerRoot\.Position-armor\.Position\)\.Magnitude<=16/);
+ assert.match(client,/p:GetAttribute\("InCombat"\)~=true/);
+ assert.match(menu,/options\.merchantAccess\(\)/);
+ assert.match(menu,/Heartbeat:Connect\(function\(\)/);
+ assert.match(menu,/activeTab~="상점"then return/);
+ assert.match(model,/proximityObserved=merchantAccess~=nil/);
+ const buy=server.slice(server.indexOf('local function purchaseMerchantEquipment('),server.indexOf('local function makeVillage()'));
+ assert.match(buy,/merchant=village and village:FindFirstChild\(merchantName\)/);
+ assert.match(buy,/health\.Health<=0/);
+ assert.match(buy,/n\(p,"CurrentZone",0\)~=0/);
+ assert.match(buy,/p:GetAttribute\("InCombat"\)==true/);
+ assert.match(buy,/\(characterRoot\.Position-merchant\.Position\)\.Magnitude>16/);
+ assert.match(buy,/p:SetAttribute\("Gold",n\(p,"Gold",0\)-cost\)/);
+ assert.match(buy,/p:SetAttribute\(tierKey,tier\+1\)/);
+ assert.match(buy,/setStats\(p,not isWeapon\)/);
+ assert.doesNotMatch(buy,/GetDataStore|SetAsync|UpdateAsync|RemoteEvent:FireServer/);
+ assert.match(server,/if a==C\.Actions\.BUY_WEAPON then accepted=purchaseMerchantEquipment\(p,"WEAPON"\)/);
+ assert.match(server,/elseif a==C\.Actions\.BUY_ARMOR then accepted=purchaseMerchantEquipment\(p,"ARMOR"\)/);
+ assert.equal((server.match(/purchaseMerchantEquipment\(p,"WEAPON"\)/g)||[]).length,2,'NPC prompt and menu must share one purchase owner');
+ assert.equal((server.match(/purchaseMerchantEquipment\(p,"ARMOR"\)/g)||[]).length,2);
+});
+test('live character and shop view model reads tiers and availability without mutating player',{skip:!luau},()=>run(`
+local Model=(function()${model}\nend)()
+local config={Classes={RUNE={Name='룬술사'}},WeaponPrices={50,120,240},ArmorPrices={45,110,220},
+ WeaponBonus={0,8,18},ArmorBonus={0,10,22}}
+local a={ClassId='RUNE',Level=6,XP=18,Gold=130,MaxHP=250,AttackPower=35,WeaponTier=1,ArmorTier=2,CurrentZone=0}
+local c=Model.character(a,config)
+assert(c.className=='룬술사' and c.level==6 and c.gold==130 and c.maxHp==250)
+assert(c.weaponTier==1 and c.armorTier==2 and c.attack==35)
+local shop=Model.shop(a,config)
+assert(shop.weapon.price==120 and shop.weapon.canBuy and shop.weapon.nextTier==2)
+assert(shop.armor.price==220 and not shop.armor.canBuy)
+local far=Model.shop(a,config,{weapon=false,armor=false})
+assert(far.proximityObserved and not far.weapon.canBuy and not far.armor.canBuy)
+local near=Model.shop(a,config,{weapon=true,armor=false})
+assert(near.proximityObserved and near.weapon.canBuy and not near.armor.canBuy)
+assert(not shop.sellSupported)
+a.Gold=0
+assert(not Model.shop(a,config).weapon.canBuy)
+a.CurrentZone=1
+a.Gold=999
+assert(not Model.shop(a,config).weapon.canBuy)
+a.CurrentZone=0
+a.WeaponTier=3
+assert(Model.shop(a,config).weapon.price==nil)
+`));
+
+test('each authored world object uses its existing server action with replicated interaction identity',()=>{
+ const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');
+ const client=fs.readFileSync('roblox-games/daechung-rpg/client/Game.client.luau','utf8');
+ const kinds=[
+   'QUEST_NPC','WEAPON_MERCHANT','ARMOR_MERCHANT','HEALER','ADVANCEMENT_NPC',
+   'ENTRY_PORTAL','RETURN_PORTAL','EVENT_ALTAR','TREASURE_CHEST','SECRET_RUNE','BOSS_COMPANION'
+ ];
+ assert.match(server,/local function prompt\(target,objectText,actionText,kind,interactionId\)/);
+ assert.match(server,/p\.MaxActivationDistance=11;p\.HoldDuration=\.12/);
+ assert.match(server,/p:SetAttribute\("InteractionId",id\);p:SetAttribute\("InteractionKind",objectKind\)/);
+ assert.match(server,/target:SetAttribute\("ObjectInteractionId",id\);target:SetAttribute\("ObjectInteractionKind",objectKind\)/);
+ for(const kind of kinds)assert.match(server,new RegExp('"'+kind+'"'),'missing '+kind);
+ for(const kind of kinds.filter(kind=>kind!=='BOSS_COMPANION')){
+   const lines=server.split('\n').filter(line=>line.includes('prompt(')&&line.includes('"'+kind+'"'));
+   assert.equal(lines.length,1,'each object type must have one original prompt handler: '+kind);
+ }
+ assert.match(server,/portalPrompt:SetAttribute\("DestinationZone",z\.Id\)/);
+ assert.match(server,/returnPrompt:SetAttribute\("DestinationZone",0\)/);
+ assert.match(server,/altarPrompt:SetAttribute\("ClaimAttribute",altarKey\)/);
+ assert.match(server,/chestPrompt:SetAttribute\("ClaimAttribute",chestKey\)/);
+ assert.match(server,/p:SetAttribute\(altarKey,true\);p:SetAttribute\("Gold",n\(p,"Gold",0\)\+25\)/);
+ assert.match(server,/p:SetAttribute\(chestKey,true\);p:SetAttribute\("Gold",n\(p,"Gold",0\)\+40\)/);
+ assert.match(server,/stone:SetAttribute\("Revealed",true\);pr.Enabled=false/);
+ assert.match(server,/clickTimes\[p\]\[def\.Id\]/);
+ assert.match(server,/cd:SetAttribute\("InteractionKind","BOSS_COMPANION"\)/);
+ assert.match(server,/if combat or p:GetAttribute\("InCombat"\)==true then msg\(p,"전투 중에는 마을로 돌아갈 수 없어"\)return end/);
+ assert.match(client,/ProximityPromptService=game:GetService\("ProximityPromptService"\)/);
+ assert.match(client,/ProximityPromptService\.PromptShown:Connect/);
+ assert.match(client,/ProximityPromptService\.PromptHidden:Connect/);
+ assert.match(client,/refreshObjectInteraction/);
+ assert.match(client,/kind=="TREASURE_CHEST"or kind=="EVENT_ALTAR"/);
+ assert.match(client,/p:GetAttribute\(claimKey\)==true/);
+ assert.match(client,/kind=="WEAPON_MERCHANT"or kind=="ARMOR_MERCHANT"/);
+ assert.match(client,/kind=="RETURN_PORTAL"/);
+ assert.match(client,/kind=="SECRET_RUNE"/);
+ assert.match(client,/BoundInteractionId/);
+ assert.match(client,/BoundInteractionKind/);
+ assert.match(client,/BoundInteractionState/);
+ assert.match(client,/OwnsGameplayAuthority",false/);
+ assert.doesNotMatch(client,/p:SetAttribute\(.*Gold|p:SetAttribute\(.*WeaponTier/);
+});

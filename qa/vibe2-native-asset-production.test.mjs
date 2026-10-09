@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
@@ -12,6 +13,302 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('Vibe genre menu recommendations bind source-backed existing UI without owning economy, save or network',()=>{
+  const root=tempRoot();
+  try{
+    const uiFile=path.join(root,'assets','roblox','common-ui-v1','RobloxCommonUI.luau');
+    fs.mkdirSync(path.dirname(uiFile),{recursive:true});
+    fs.writeFileSync(uiFile,[
+      'function RobloxCommonUI.CreateCharacterDetailScreen(options) end',
+      'function RobloxCommonUI.CreateInventoryFullScreen(options) end',
+      'function RobloxCommonUI.CreateEquipmentFullScreen(options) end',
+      'function RobloxCommonUI.CreateBuySellPanel(options) end',
+      'function RobloxCommonUI.CreateQuestLog(options) end'
+    ].join('\n'));
+    const gameRoot=path.join(root,'roblox-games','demo-rpg','shared');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'RPGMenu.luau'),
+      'local GuiService=game:GetService("GuiService")\nlocal character=Model.character(state,config)\nlocal shop=Model.shop(state,config)\nlocal gear=Model.equipment(state,config)\n');
+    // UI 문자열만으로 시스템을 추정하지 않으며, 실제 게임 소스의 책임 함수가 필요하다.
+    const serverDir=path.join(root,'roblox-games','demo-rpg','server');
+    fs.mkdirSync(serverDir,{recursive:true});
+    fs.writeFileSync(path.join(serverDir,'Game.server.luau'),[
+      'local function purchaseMerchantEquipment(player,kind)',
+      '  local cost=50',
+      '  player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)',
+      '  player:SetAttribute("WeaponTier",2)',
+      '  player:SetAttribute("MaxHP",100)',
+      'end',
+      'local function acceptQuest(player) player:SetAttribute("QuestPortal",1) end'
+    ].join('\n'));
+    const task={gameId:'demo-rpg',genre:'RPG',goal:'현재 캐릭터 장비 인벤토리 상점 메뉴를 실제 게임 상태와 동기화'};
+    const request={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const plan=buildVibeAssetProductionPlan(request);
+    const menu=plan.genreMenuRecommendations;
+    assert.ok(menu.signals.includes('RPG_PROGRESSION'));
+    assert.ok(menu.companySeedUiIdeaIds.includes('RPG_QUEST_EQUIPMENT_CODEX_SCREENS'));
+    assert.ok(menu.candidateFeatures.some(row=>row.role==='TRADE'&&row.factory==='CreateBuySellPanel'));
+    assert.equal(menu.newQueueCreated,false);
+    assert.equal(menu.shadowUiPipelineCreated,false);
+    assert.equal(menu.runtimeVerifiedCount,0);
+    assert.ok(menu.nativeSourceBoundCandidateCount>=2);
+    const character=menu.candidateFeatures.find(row=>row.role==='CHARACTER');
+    assert.equal(character.companyFactoryPresent,true);
+    assert.equal(character.status,'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED');
+    assert.equal(character.existingNativeUiRefs[0].path,'roblox-games/demo-rpg/shared/RPGMenu.luau');
+    assert.match(character.companyUiSourceSha256,/^[a-f0-9]{64}$/);
+    assert.match(character.existingNativeUiRefs[0].sha256,/^[a-f0-9]{64}$/);
+    const commerce=menu.candidateFeatures.find(row=>row.role==='TRADE');
+    assert.equal(commerce.status,'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED');
+    assert.equal(commerce.gameplaySaveNetworkEconomyAuthorityRetained,true);
+    const guidance=assetProductionGuidance(plan);
+    assert.match(guidance,/GENRE MENU FEATURE SYNCHRONIZATION/);
+    assert.match(guidance,/게임 상태/);
+    assert.match(guidance,/NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED/);
+    fs.unlinkSync(path.join(gameRoot,'RPGMenu.luau'));
+    const noUi=buildVibeAssetProductionPlan(request).genreMenuRecommendations;
+    const unbound=noUi.candidateFeatures.find(row=>row.role==='CHARACTER');
+    assert.equal(unbound.status,'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED');
+    assert.equal(unbound.existingNativeUiRefs.length,0);
+    fs.unlinkSync(path.join(serverDir,'Game.server.luau'));
+    const noSource=buildVibeAssetProductionPlan(request).genreMenuRecommendations;
+    assert.equal(noSource.candidateFeatures.find(row=>row.role==='CHARACTER').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
+    assert.equal(noSource.runtimeVerifiedCount,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('genre-specific menu ideas reuse official genre signals without inventing missing gameplay systems',()=>{
+  const root=tempRoot();
+  try{
+    const configurations=[
+      {genre:'SURVIVAL',signal:'SURVIVAL',role:'CRAFT'},
+      {genre:'TYCOON',signal:'TYCOON_SIM',role:'HOUSING'},
+      {genre:'HORROR',signal:'HORROR',role:'CODEX'},
+      {genre:'TOWER DEFENSE',signal:'DEFENSE',role:'DEFENSE'},
+      {genre:'PUZZLE',signal:'PUZZLE',role:'PUZZLE'},
+      {genre:'COZY FARMING',signal:'COZY_FARMING',role:'FARM'}
+    ];
+    for(const row of configurations){
+      const plan=buildVibeAssetProductionPlan({target:'unity',repoRoot:root,
+        task:{gameId:'genre-demo',genre:row.genre,goal:'모바일 메뉴 아이디어 제안'},
+        manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+      const suggestions=plan.genreMenuRecommendations;
+      assert.ok(suggestions.signals.includes(row.signal),row.genre);
+      const item=suggestions.candidateFeatures.find(entry=>entry.role===row.role);
+      assert.ok(item,row.genre+' '+row.role);
+      assert.equal(item.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',row.genre);
+      assert.equal(item.existingNativeUiRefs.length,0);
+      assert.equal(item.gameplaySaveNetworkEconomyAuthorityRetained,true);
+      assert.equal(item.applyVia,'EXISTING_BUILD_UP_GRAPHICS_PRODUCTION_INPUT_ONLY');
+      assert.equal(suggestions.runtimeVerifiedCount,0);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('genre UI detection rejects unowned menu keywords and platform-incompatible Roblox factories',()=>{
+  const root=tempRoot();
+  try{
+    const folder=path.join(root,'roblox-games','menu-proof-demo');
+    fs.mkdirSync(path.join(folder,'server'),{recursive:true});
+    fs.mkdirSync(path.join(folder,'shared'),{recursive:true});
+    fs.writeFileSync(path.join(folder,'server','Game.server.luau'),
+      'local shopkeeper = "weapon shop"\nlocal progressBar = "level"\nlocal mapTitle = "world"');
+    fs.writeFileSync(path.join(folder,'shared','RPGMenu.luau'),
+      'local GuiService=game:GetService("GuiService")\nlocal character=Model.character(state,config)\nlocal shop=Model.shop(state,config)');
+    const task={gameId:'menu-proof-demo',genre:'RPG',goal:'상점 캐릭터 메뉴'};
+    const config={target:'roblox',repoRoot:root,task,manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const unowned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    for(const role of ['CHARACTER','TRADE','INVENTORY','EQUIPMENT']){
+      const row=unowned.candidateFeatures.find(item=>item.role===role);
+      assert.equal(row.status,'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',role);
+      assert.equal(row.existingNativeUiRefs.length,0,role);
+    }
+    fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
+      'local function purchaseMerchantEquipment(player,kind) end');
+    const stub=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    assert.equal(stub.candidateFeatures.find(row=>row.role==='TRADE').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED','stubs may not become live shop features');
+    fs.writeFileSync(path.join(folder,'server','Trade.server.luau'),
+      'local function purchaseMerchantEquipment(player,kind)\n local cost=50\n player:SetAttribute("Gold",player:GetAttribute("Gold")-cost)\n end');
+    const owned=buildVibeAssetProductionPlan(config).genreMenuRecommendations;
+    assert.equal(owned.candidateFeatures.find(row=>row.role==='TRADE').status,
+      'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
+      'additional server source file must be discovered without hardcoded RPG filenames');
+    assert.equal(owned.candidateFeatures.find(row=>row.role==='CHARACTER').status,
+      'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED');
+    const unity=buildVibeAssetProductionPlan({...config,target:'unity',
+      task:{gameId:'menu-proof-demo',genre:'RPG'}}).genreMenuRecommendations;
+    assert.equal(unity.uiFactorySource,null);
+    assert.equal(unity.candidateFeatures.find(row=>row.role==='CHARACTER').factory,null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Vibe source worker applies genre menu suggestions only to exact SHA-matched editable responsibility',()=>{
+  const sourcePath='roblox-games/daechung-rpg/shared/RPGMenu.luau';
+  const content=fs.readFileSync(sourcePath,'utf8');
+  const sha256=createHash('sha256').update(content).digest('hex');
+  const plan={
+    genreMenuRecommendations:{
+      signals:['RPG_PROGRESSION'],
+      candidateFeatures:[{
+        role:'CHARACTER',factory:'CreateCharacterDetailScreen',
+        status:'NATIVE_UI_SOURCE_PRESENT_RUNTIME_QA_REQUIRED',
+        companyUiSource:'assets/roblox/common-ui-v1/RobloxCommonUI.luau',
+        companyUiSourceSha256:'a'.repeat(64),sourceIdeaIds:['RPG_QUEST_EQUIPMENT_CODEX_SCREENS'],
+        gameSystemSourceRefs:[{path:sourcePath,sha256}],
+        existingNativeUiRefs:[{path:sourcePath,sha256}]
+      },{
+        role:'FAKE_SHOP',factory:'CreateShopFullScreen',
+        status:'IDEA_ONLY_GAME_SYSTEM_NOT_CONFIRMED',gameSystemSourceRefs:[],existingNativeUiRefs:[]
+      }]
+    }
+  };
+  const order={target:'roblox',goal:'RPG 캐릭터 장비 상점 메뉴 상태 동기화',
+    assetProduction:plan};
+  const exact=buildPrompt(order,{files:[{path:sourcePath,content,editable:true}]},[sourcePath]);
+  assert.match(exact,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(exact,/RPG_QUEST_EQUIPMENT_CODEX_SCREENS/);
+  assert.match(exact,/CreateCharacterDetailScreen/);
+  assert.match(exact,/Check each exact original source hash/);
+  assert.doesNotMatch(exact,/FAKE_SHOP/);
+  const stale=buildPrompt(order,{files:[{path:sourcePath,content:content+'\n-- changed',editable:true}]},[sourcePath]);
+  assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const clipped=buildPrompt(order,{files:[{path:sourcePath,content,editable:true,truncated:true}]},[sourcePath]);
+  assert.doesNotMatch(clipped,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const unrelated=buildPrompt({...order,goal:'fix shader normals'},
+    {files:[{path:sourcePath,content,editable:true}]},[sourcePath]);
+  assert.doesNotMatch(unrelated,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+});
+
+test('genre menus bind only to current editable native UI consumers, never server-only gameplay owners',()=>{
+ const root=tempRoot();
+ try{
+   const gameRoot=path.join(root,'roblox-games','survival-proof');
+   fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+   fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+   const serverPath='roblox-games/survival-proof/server/Game.server.luau';
+   const clientPath='roblox-games/survival-proof/client/Game.client.luau';
+   const server='local function TryCraft(player,recipeId) player:SetAttribute("ItemCount",1) end';
+   const client='local screen=Instance.new("ScreenGui")\nlocal action=Instance.new("TextButton")';
+   fs.writeFileSync(path.join(root,serverPath),server);
+   fs.writeFileSync(path.join(root,clientPath),client);
+   const plan=buildVibeAssetProductionPlan({target:'roblox',repoRoot:root,
+     task:{gameId:'survival-proof',genre:'SURVIVAL',goal:'craft menu'},
+     manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+   const menu=plan.genreMenuRecommendations;
+   const row=menu.candidateFeatures.find(item=>item.role==='CRAFT');
+   assert.equal(row.status,'EXISTING_SYSTEM_NATIVE_UI_BINDING_REQUIRED');
+   assert.equal(row.existingNativeUiRefs.length,0);
+   assert.equal(row.nativeUiConsumerRefs.length,1);
+   assert.equal(row.nativeUiConsumerRefs[0].path,clientPath);
+   assert.equal(row.gameSystemSourceRefs[0].path,serverPath);
+   const order={target:'roblox',goal:'craft menu',
+     source:{root:'roblox-games/survival-proof'},assetProduction:{genreMenuRecommendations:menu}};
+   const valid=buildPrompt(order,{files:[{path:'client/Game.client.luau',content:client,editable:true}]},
+     ['client/Game.client.luau']);
+   assert.match(valid,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   assert.match(valid,/"role":"CRAFT"/);
+   assert.ok(valid.includes('"editPath":"client/Game.client.luau"'));
+   assert.ok(!valid.includes('"editPath":"server/Game.server.luau"'));
+   const onlyServer=buildPrompt(order,{files:[{path:'server/Game.server.luau',content:server,editable:true}]},
+     ['server/Game.server.luau']);
+   assert.doesNotMatch(onlyServer,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   const stale=buildPrompt(order,{files:[{path:'client/Game.client.luau',content:client+'\n-- stale',editable:true}]},
+     ['client/Game.client.luau']);
+   assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+   const wrongGame=buildPrompt({...order,source:{root:'roblox-games/other-game'}},
+     {files:[{path:'client/Game.client.luau',content:client,editable:true}]},['client/Game.client.luau']);
+   assert.doesNotMatch(wrongGame,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Vibe discovers only actual object-specific prompts with source identity, never imaginary object systems',()=>{
+  const root=tempRoot();
+  try{
+    const gameDir=path.join(root,'roblox-games','interaction-demo');
+    fs.mkdirSync(path.join(gameDir,'server'),{recursive:true});
+    fs.mkdirSync(path.join(gameDir,'client'),{recursive:true});
+    const server=path.join(gameDir,'server','Game.server.luau');
+    const client=path.join(gameDir,'client','Game.client.luau');
+    fs.writeFileSync(server,[
+      'local function prompt(target,objectText,actionText,kind,interactionId)',
+      '  return Instance.new("ProximityPrompt")',
+      'end',
+      'prompt(portal,"지하문","들어가기","ENTRY_PORTAL","Portal1")',
+      'prompt(chest,"보물상자","열기","TREASURE_CHEST","Chest1")',
+      'prompt(altar,"제단","조사","EVENT_ALTAR","Altar1")'
+    ].join('\n'));
+    fs.writeFileSync(client,[
+      'local function refreshObjectInteraction() end',
+      'ProximityPromptService.PromptShown:Connect(refreshObjectInteraction)',
+      'ObjectContext:SetAttribute("BoundInteractionKind","TREASURE_CHEST")'
+    ].join('\n'));
+    const ui=path.join(root,'assets','roblox','common-ui-v1','RobloxCommonUI.luau');
+    fs.mkdirSync(path.dirname(ui),{recursive:true});
+    fs.writeFileSync(ui,[
+      'function RobloxCommonUI.CreateWorldPropInteractionPrompt(options) end',
+      'function RobloxCommonUI.CreateContainerInteractionPrompt(options) end',
+      'function RobloxCommonUI.CreateReadInspectPanel(options) end'
+    ].join('\n'));
+    const order={repoRoot:root,target:'roblox',task:{
+      gameId:'interaction-demo',genre:'RPG',
+      goal:'포탈 상자 제단의 오브젝트별 상호작용과 UI 동기화'
+    },manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}};
+    const plan=buildVibeAssetProductionPlan(order);
+    const actual=plan.genreMenuRecommendations.objectInteractions;
+    assert.deepEqual(actual.map(row=>row.kind),['ENTRY_PORTAL','EVENT_ALTAR','TREASURE_CHEST']);
+    assert.equal(plan.genreMenuRecommendations.objectSourceBoundCount,3);
+    assert.ok(!actual.some(row=>row.kind==='WEAPON_MERCHANT'||row.kind==='BOSS_COMPANION'));
+    assert.ok(actual.every(row=>row.status==='SERVER_OBJECT_AND_CLIENT_UI_SOURCE_BOUND_RUNTIME_QA_REQUIRED'));
+    assert.ok(actual.every(row=>row.nativeRuntimeVerified===false&&row.serverGameplayAuthorityRetained===true));
+    assert.ok(actual.every(row=>row.gameSourceRefs[0].sha256===createHash('sha256').update(fs.readFileSync(server)).digest('hex')));
+    assert.ok(actual.every(row=>row.clientConsumerRefs[0].sha256===createHash('sha256').update(fs.readFileSync(client)).digest('hex')));
+    assert.match(assetProductionGuidance(plan),/EXISTING OBJECT-SPECIFIC INTERACTION SYNCHRONIZATION/);
+    fs.unlinkSync(client);
+    const serverOnly=buildVibeAssetProductionPlan(order).genreMenuRecommendations.objectInteractions;
+    assert.ok(serverOnly.every(row=>row.status==='SERVER_OBJECT_SOURCE_PRESENT_UI_BINDING_REQUIRED'));
+    assert.ok(serverOnly.every(row=>row.clientConsumerRefs.length===0));
+    fs.unlinkSync(server);
+    const noOwners=buildVibeAssetProductionPlan(order).genreMenuRecommendations.objectInteractions;
+    assert.deepEqual(noOwners,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Vibe emits exact-source-bound object interaction guidance for editable server owners only',()=>{
+  const file='roblox-games/daechung-rpg/server/Game.server.luau';
+  const content=fs.readFileSync(file,'utf8'),sha256=createHash('sha256').update(content).digest('hex');
+  const object={
+    kind:'TREASURE_CHEST',factory:'CreateContainerInteractionPrompt',
+    purpose:'PER_PLAYER_OPENED_CHEST_STATE',
+    status:'SERVER_OBJECT_SOURCE_PRESENT_UI_BINDING_REQUIRED',
+    gameSourceRefs:[{path:file,sha256}],clientConsumerRefs:[],
+    nativeRuntimeVerified:false,serverGameplayAuthorityRetained:true
+  };
+  const order={target:'roblox',goal:'보물상자 오브젝트 상호작용 동기화',assetProduction:{
+    genreMenuRecommendations:{signals:['RPG_PROGRESSION'],candidateFeatures:[],objectInteractions:[object]}
+  }};
+  const valid=buildPrompt(order,{files:[{path:file,content,editable:true}]},[file]);
+  assert.match(valid,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(valid,/TREASURE_CHEST/);
+  assert.match(valid,/CreateContainerInteractionPrompt/);
+  assert.match(valid,/Preserve per-object InteractionKind, InteractionId/);
+  const scoped={...order,source:{root:'roblox-games/daechung-rpg'}};
+  const relative='server/Game.server.luau';
+  const actualWorker=buildPrompt(scoped,{files:[{path:relative,content,editable:true}]},[relative]);
+  assert.match(actualWorker,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  assert.match(actualWorker,/"editPath":"server\/Game\.server\.luau"/);
+  const wrongGame=buildPrompt({...scoped,source:{root:'roblox-games/other-game'}},
+    {files:[{path:relative,content,editable:true}]},[relative]);
+  assert.doesNotMatch(wrongGame,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const stale=buildPrompt(order,{files:[{path:file,content:content+'\n-- stale',editable:true}]},[file]);
+  assert.doesNotMatch(stale,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const notEditable=buildPrompt(order,{files:[{path:file,content,editable:false}]},[file]);
+  assert.doesNotMatch(notEditable,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+  const unknown=buildPrompt({...order,assetProduction:{genreMenuRecommendations:{signals:['RPG_PROGRESSION'],
+    candidateFeatures:[],objectInteractions:[]}}},{files:[{path:file,content,editable:true}]},[file]);
+  assert.doesNotMatch(unknown,/EXISTING GENRE MENU SOURCE SYNCHRONIZATION BEGIN/);
+});
 test('OBJ static validation reads actual polygons and material references without self-approving production',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'obj-geometry-'));
   const assetDir=path.join(root,'assets');

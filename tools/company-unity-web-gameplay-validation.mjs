@@ -201,7 +201,31 @@ try{
     // 동일한 탭 줄의 첫 탭으로 돌아가 원래 화면을 복구한다.
     const boundsLine=markers.slice().reverse().find(line=>line.includes(' UI_BOUNDS ')&&line.includes('game=daechung-rpg'))||'';
     const getBound=key=>Number(boundsLine.match(new RegExp('\\b'+key+'=([0-9.]+)'))?.[1]);
-    const firstTabX=(getBound('tabsLeft')+getBound('tabsWidth')/6)/getBound('screenWidth');
+    const tabCount=getBound('tabsCount');
+    if(!Number.isSafeInteger(tabCount)||tabCount<6)throw new Error('UNITY_WEB_QA_MOBILE_MENU_TAB_COUNT_INVALID');
+    const visitedPages=['SOCIAL'];
+    // 실제 플레이의 캐릭터·장비·매매창을 각각 눌러 native PlayerState 바인딩 증거를 확인한다.
+    for(const [index,name] of [[3,'CHARACTER'],[4,'INVENTORY'],[5,'SHOP']]){
+      const normalizedTabX=(getBound('tabsLeft')+getBound('tabsWidth')*(index+.5)/tabCount)/getBound('screenWidth');
+      const tapX=canvasBox.x+canvasBox.width*normalizedTabX;
+      if(!Number.isFinite(tapX)||tapX<0||tapX>=mobileViewport.width)
+        throw new Error('UNITY_WEB_QA_MOBILE_MENU_TAB_OFFSCREEN:'+index);
+      const menuStart=markers.length;
+      await page.touchscreen.tap(tapX,menuTarget.y);
+      await page.waitForTimeout(1150);
+      const latest=markers.slice(menuStart);
+      if(!latest.some(line=>line.includes(' MENU_INPUT ')&&line.includes('index='+index)&&line.includes('status=PASS')))
+        throw new Error('UNITY_WEB_QA_MOBILE_MENU_PAGE_NOT_INTERACTIVE:'+name);
+      const snapshot=latest.find(line=>line.includes(' MENU_SCREEN ')&&line.includes('index='+index)
+        &&line.includes('source=GAMECORE_V1_STATE'));
+      if(!snapshot)throw new Error('UNITY_WEB_QA_MOBILE_MENU_PLAYER_STATE_MISSING:'+name);
+      const stateGold=Number(markers.slice().reverse().find(line=>line.includes(' STATE ')&&line.includes('game=daechung-rpg'))?.match(/\bgold=(\d+)/)?.[1]);
+      const screenGold=Number(snapshot.match(/\bgold=(\d+)/)?.[1]);
+      if(!Number.isSafeInteger(screenGold)||screenGold<0||!Number.isSafeInteger(stateGold)||screenGold!==stateGold)
+        throw new Error('UNITY_WEB_QA_MOBILE_MENU_GAMECORE_STATE_MISMATCH:'+name);
+      visitedPages.push(name);
+    }
+    const firstTabX=(getBound('tabsLeft')+getBound('tabsWidth')/(tabCount*2))/getBound('screenWidth');
     if(!Number.isFinite(firstTabX)||firstTabX<=0||firstTabX>=1)throw new Error('UNITY_WEB_QA_MOBILE_MENU_BOUNDS_INVALID');
     const firstTapX=canvasBox.x+canvasBox.width*firstTabX;
     const firstMenuInputStart=markers.length;
@@ -209,8 +233,9 @@ try{
     await page.waitForTimeout(600);
     if(!markers.slice(firstMenuInputStart).some(line=>line.includes(' MENU_INPUT ')&&line.includes('index=0')&&line.includes('status=PASS')))
       throw new Error('UNITY_WEB_QA_MOBILE_MENU_WORLD_RETURN_FAILED');
-    mobileMenuInteraction={pass:true,actualBrowserTouch:true,visitedPages:['SOCIAL','WORLD'],
-      target:menuTarget,returnedToWorld:true};
+    visitedPages.push('WORLD');
+    mobileMenuInteraction={pass:true,actualBrowserTouch:true,visitedPages,
+      target:menuTarget,returnedToWorld:true,nativePlayerStateObserved:true};
   }
 
   await canvas.focus();

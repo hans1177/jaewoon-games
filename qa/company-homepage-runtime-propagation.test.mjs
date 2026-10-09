@@ -256,7 +256,11 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
   assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
-  assert.match(renderer,/href=`\/web-games\/\$\{id\}\//);
+  assert.match(renderer,/for\(const href of \[/);
+  assert.match(renderer,/`\/web-games\/\$\{id\}\/unity\/`/);
+  assert.match(renderer,/`\/web-games\/\$\{id\}\/`/);
+  assert.match(renderer,/const expected=`web-games\/\$\{id\}`/);
+  assert.match(renderer,/return raw===expected\?`\/\$\{expected\}\/`:'';/);
   assert.match(renderer,/probeFetch\(`\$\{href\}index\.html\?ts=/);
   assert.match(renderer,/bundleGroupsFromUnityIndex/);
   assert.match(renderer,/renderCatalog\(catalog\);/);
