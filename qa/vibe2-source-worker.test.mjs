@@ -4360,11 +4360,28 @@ test('semantic diff preserves an unchanged unrelated function between two author
       responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
       allowedDependentSymbolsOrSystems:['moveCamera'],ownedState:['pointerState'],
       codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
-      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY','WORLD'],unrelatedSystemMutationForbidden:true}
+      semanticDiffBudget:{allowedSystems:['INPUT','WORLD'],unrelatedSystemMutationForbidden:true}
     },sourceRoot
   });
   assert.equal(result.pass,true,JSON.stringify(result.violations));
   assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer','moveCamera']);
+});
+
+test('semantic diff still blocks an economy amount mutation inside an input-only owned function',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'function handlePointer(e){ gold += 1; pointerState=e; }\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'gold += 1;',replace:'gold += 999;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.ok(result.unexpectedSystems.includes('ECONOMY'));
+  assert.match(result.violations.join('|'),/UNRELATED_SYSTEM:ECONOMY/);
 });
 
 test('semantic diff blocks unrelated Luau top-level currency initialization',()=>{
