@@ -34,25 +34,42 @@
         "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
         "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
       ]
+    },
+    "local_authoring_parts::0fdabb01dd64a8bea47420f1b9f39a404f44045ef7face600bebc6238fde58a7:signatureSystems:0": {
+      "id": "MATERIAL_CAUSAL_GRAMMAR",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "EXPLORED_HABITAT",
+        "GATHERED_MATERIAL",
+        "FIGHTED_INSECT"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_TOOL",
+        "SAFER_ROUTE",
+        "ECOSYSTEM_INSIGHT"
+      ],
+      "name": "Material Causality Grammar",
+      "purpose": "Establishes the causal relationship between environmental interaction and survival progression.",
+      "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 279280,
-      "lastMs": 31911,
+      "totalMs": 312537,
+      "lastMs": 33257,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:13:42.927Z"
+      "updatedAt": "2026-10-09T14:14:16.185Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:09:03.618Z",
-  "updatedAt": "2026-10-09T14:13:42.927Z",
+  "updatedAt": "2026-10-09T14:14:16.185Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1725,7 +1742,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:13:42.927Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:14:16.185Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
