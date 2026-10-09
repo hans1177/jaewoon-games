@@ -126,7 +126,7 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
 });
 
-test('DEVELOPMENT_CONFIRMED keeps Roblox and Unity Web independent without bypassing gameplay QA',()=>{
+test('DEVELOPMENT_CONFIRMED permits independent Roblox and Unity Web 3D development without a Unity Web admission gate',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.equal(dev.executionMode,'ROBLOX_AND_UNITY_WEB_INDEPENDENT_CONTINUOUS');
   assert.equal(dev.resumeFromLatestEvidence,true);
@@ -152,6 +152,10 @@ test('DEVELOPMENT_CONFIRMED keeps Roblox and Unity Web independent without bypas
   assert.equal(machinePolicy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
   assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.existingNativeDevelopmentGrandfathered,true);
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.newNativeDevelopmentStartRequiresUnityWebReadiness,false);
+  assert.equal(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
+  assert.deepEqual(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.equal(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
   assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
 });
@@ -181,7 +185,10 @@ test('Roblox and Unity Web are active while Unity Android and UEFN remain owner-
   assert.equal(strategy.primaryPlatform,'ROBLOX');
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
   assert.equal(strategy.priorityMeaning,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER');
-  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'});
+  assert.deepEqual(strategy.developmentAccess,{
+    ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',
+    UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'
+  });
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
   assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
@@ -191,11 +198,15 @@ test('Roblox and Unity Web are active while Unity Android and UEFN remain owner-
   assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
+  assert.equal(strategy.UNITY.developmentAlwaysAllowed,false);
+  assert.equal(strategy.UNITY.developmentStatus,'DEVELOPMENT_PAUSED');
   assert.equal(strategy.UNITY.ownerExplicitResumeRequired,true);
-  assert.deepEqual(machinePolicy.ownerActiveDevelopmentScope20261009?.activeTargets,['ROBLOX','UNITY_WEB']);
   assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
   assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
   assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+  assert.equal(machinePolicy.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
+  assert.equal(machinePolicy.developmentAccess.UNITY_WEB,'ALWAYS_ALLOWED');
+  assert.deepEqual(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
 });
 test('artbook authorship and provenance rules remain unchanged',()=>{
   assert.equal(directive.ai.artbookEditor.singleEditor,true);
