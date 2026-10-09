@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T09:33:38.719Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T09:34:33.936Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/monster-adventure/2026-10-09/design-seed.json",
+    "contentDigest": "9dc10ae8e10e6d7da8739e1e435aae44fc3865639e4875b646cfaef0980ccc04",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 936104,
-      "lastMs": 167084,
+      "totalMs": 991317,
+      "lastMs": 55213,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:33:38.450Z"
+      "updatedAt": "2026-10-09T09:34:33.933Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T09:33:38.720Z"
+  "updatedAt": "2026-10-09T09:34:33.943Z"
 }

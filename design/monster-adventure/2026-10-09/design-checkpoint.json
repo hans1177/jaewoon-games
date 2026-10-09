@@ -290,25 +290,213 @@
           "playerChoice": "Explore new routes, uncover hidden rewards, or revisit past achievements with fresh perspective and intentionality."
         }
       ]
+    },
+    "local_authoring_parts::6261780983943d719694f59bd42037333225a3e765e6e973e417219307bf83b3:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::9a7f613f5f6a503a0ccb2a3f82bce3082f5beadc154f9a8de92d5a49c7faaeea:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 핵심 재미와 시스템 연결을 확정합니다.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. -> Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. -> Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 핵심 재미와 시스템 연결을 확정하는 시그니처 세계 규칙",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과로 다음 상태 변화를 만드는 주체 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 선택 및 접근 가능성을 실제로 바꾼다"
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 선택 결과와 세계 상태 변화에 대한 시그니처 상호작용을 구체화하는 기존 시스템의 실제 상태 교환",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. This is the player's action that directly affects the world state and determines the next selection in the game space based on the core loop and signature systems defined above."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "stateOutputs": [
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 다음 질문을 제안하는 보조 요소.",
+          "playerChoice": "플레이어는 현재 상태에서 새로운 선택을 하여 다음 질문에 대한 답을 제공해야 한다."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "stateOutputs": [
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "Player chooses to explore new paths, discover new opportunities, or revisit previous ones in a meaningful way.",
+          "playerChoice": "Explore new routes, uncover hidden rewards, or revisit past achievements with fresh perspective and intentionality."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "몬스터 어드벤처는 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임이다. 이는 주체로 플레이어가 처음부터 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 시그니처 상호작용의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "playerFantasy": "몬스터 어드벤처에서는 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임이다. 이는 주체로 플레이어가 처음부터 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 시그니처 상호작용의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "coreFun": "몬스터 어드벤처는 플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임이다. 이는 주체로 플레이어가 처음부터 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 시그니처 상호작용의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 핵심 재미와 시스템 연결을 확정합니다.",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. -> Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. -> Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 핵심 재미와 시스템 연결을 확정하는 시그니처 세계 규칙",
+          "playerChoice": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.의 결과로 다음 상태 변화를 만드는 주체 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간의 다음 선택 및 접근 가능성을 실제로 바꾼다"
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE",
+            "DISTANCE"
+          ],
+          "stateOutputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 선택 결과와 세계 상태 변화에 대한 시그니처 상호작용을 구체화하는 기존 시스템의 실제 상태 교환",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends. This is the player's action that directly affects the world state and determines the next selection in the game space based on the core loop and signature systems defined above."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "stateOutputs": [
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "플레이어가 즉시 시작할 수 있는 단순한 입력(1 손 tap/swipe)과 명확한 점수, 거리 또는 짧은 세션 목표 중심으로 이루어진 CASUAL 게임의 다음 질문을 제안하는 보조 요소.",
+          "playerChoice": "플레이어는 현재 상태에서 새로운 선택을 하여 다음 질문에 대한 답을 제공해야 한다."
+        },
+        {
+          "id": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_STATUS",
+            "REWARD",
+            "PROGRESSION"
+          ],
+          "stateOutputs": [
+            "NEXT_OPEN_QUESTION"
+          ],
+          "name": "CORE_FUN_TO_LEARN",
+          "purpose": "Player chooses to explore new paths, discover new opportunities, or revisit previous ones in a meaningful way.",
+          "playerChoice": "Explore new routes, uncover hidden rewards, or revisit past achievements with fresh perspective and intentionality."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 936104,
-      "lastMs": 167084,
+      "totalMs": 991317,
+      "lastMs": 55213,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:33:38.450Z"
+      "updatedAt": "2026-10-09T09:34:33.933Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:18:02.096Z",
-  "updatedAt": "2026-10-09T09:33:38.719Z",
+  "updatedAt": "2026-10-09T09:34:33.942Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2390,14 +2578,24 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::62eb6fc40f137ad41fb92fc9026038d741cfc5264986cd732bc310c0baf04c95:signatureSystems:1": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:33:38.719Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:34:33.936Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/monster-adventure/2026-10-09/design-seed.json",
+    "contentDigest": "9dc10ae8e10e6d7da8739e1e435aae44fc3865639e4875b646cfaef0980ccc04",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
