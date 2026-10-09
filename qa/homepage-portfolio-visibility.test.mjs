@@ -12,7 +12,8 @@ const webGames=(catalog.games||[]).filter(game=>
   game.hasWebArchive===true&&
   String(game.webPath||'').trim()
 );
-assert(webGames.length>0,'expected playable web games in catalog');
+assert.equal(webGames.length,0,'legacy HTML games are archived, not marked as verified Unity WebGL');
+assert((catalog.games||[]).some(game=>game.id==='ant-simulator'&&game.hasWebArchive===true&&game.homepageWebPlayable===false),'preserve legacy game source and catalog identity');
 
 const vector=(catalog.games||[]).find(game=>game.id==='seed-roblox-battleground-fight-welcome-to-bloxburg');
 assert(vector,'Vector Clash catalog entry missing');
@@ -55,7 +56,7 @@ assert.match(renderer,/function verifiedRobloxDeploymentRows\(/);
 assert.match(renderer,/homeWebGameCenter/);
 assert.match(renderer,/homeRobloxDeploymentCenter/);
 assert.match(renderer,/Roblox 배포 기록/);
-assert.match(renderer,/homepageDisplayMode==='WEB_PUBLISHED'/);
+assert.match(renderer,/function webPublishedRows\\(/);\nassert.match(renderer,/game.unityWebAvailable===true/);
 assert.match(renderer,/homepageDisplayMode==='ROBLOX_HISTORICAL_DEPLOYMENT'/);
 assert.match(renderer,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
 
