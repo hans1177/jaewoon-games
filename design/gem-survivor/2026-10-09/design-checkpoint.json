@@ -561,25 +561,50 @@
     },
     "local_authoring_parts::8c9ca8bb79e7c56973567e489c9f913e9ec722c5b1f9ca75f404f5f300a07ed5:toSystem": {
       "toSystem": "SELECT_STATE -> PROGRESS_STATE -> CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE"
+    },
+    "local_authoring_parts::8c9ca8bb79e7c56973567e489c9f913e9ec722c5b1f9ca75f404f5f300a07ed5:trigger": {
+      "trigger": "SELECT_STATE가 선택 후 변형되어 PROGRESS_STATE로 전환하며, 이 과정에서 세계 상태가 변경되고 다음 선택이 결정된다."
+    },
+    "local_authoring_parts::8c9ca8bb79e7c56973567e489c9f913e9ec722c5b1f9ca75f404f5f300a07ed5:stateChange": {
+      "stateChange": "SELECT_STATE 선택 후 변형되어 PROGRESS_STATE로 전환하며, 이 과정에서 세계 상태가 변경되고 다음 선택이 결정된다."
+    },
+    "local_authoring_parts::09d99561bf1d65cf61e8324068a2da925b6d0abd91f4ed0006ef04fc7baa50fe:systemInterconnections:1": {
+      "fromId": "SELECT_STATE",
+      "toId": "CHANGED_SELECT_STATE",
+      "stateKeys": [
+        "SELECT_STATE",
+        "PROGRESS_STATE",
+        "CHANGED_SELECT_STATE"
+      ],
+      "fromSystem": "SELECT_STATE -> PROGRESS_STATE -> CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE",
+      "toSystem": "SELECT_STATE -> PROGRESS_STATE -> CHANGED_SELECT_STATE / CHANGED_PROGRESS_STATE",
+      "trigger": "SELECT_STATE가 선택 후 변형되어 PROGRESS_STATE로 전환하며, 이 과정에서 세계 상태가 변경되고 다음 선택이 결정된다.",
+      "stateChange": "SELECT_STATE 선택 후 변형되어 PROGRESS_STATE로 전환하며, 이 과정에서 세계 상태가 변경되고 다음 선택이 결정된다."
+    },
+    "local_authoring_parts::50e5f3dd406ea39c658e2c8cc92345b3b70bb8978a63e6c654616a33bd249e75:fromId": {
+      "fromId": "PROGRESS_STATE"
+    },
+    "local_authoring_parts::50e5f3dd406ea39c658e2c8cc92345b3b70bb8978a63e6c654616a33bd249e75:toId": {
+      "toId": "CHANGED_PROGRESS_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 27,
+      "successes": 27,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1907222,
-      "lastMs": 90332,
+      "totalMs": 2269823,
+      "lastMs": 89496,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:08:00.463Z"
+      "updatedAt": "2026-10-09T09:14:03.074Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:36:13.165Z",
-  "updatedAt": "2026-10-09T09:08:00.463Z",
+  "updatedAt": "2026-10-09T09:14:03.074Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2958,7 +2983,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:08:00.463Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:14:03.074Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
