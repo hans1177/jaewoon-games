@@ -26,10 +26,10 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-latest'/);
   assert.match(workflow,/fan_in:[\s\S]*runs-on: ubuntu-latest/);
-  assert.match(workflow,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \] && \[ "\$VIBE2_EXECUTION_LANE" != 'asset-development' \]; then/);
+  assert.match(workflow,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
   assert.doesNotMatch(workflow,/queue_pressure:-0\}" -gt 0[^\n]+game_micro_fanin/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
-  assert.match(workflow,/VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE/);
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_REFILL_READY/);
   assert.match(workflow,/run-name: Vibe2 Continuous Core · \$\{\{ github\.event\.action \|\| github\.event_name \}\} ·/);
   assert.match(workflow,/runs\?event=repository_dispatch&per_page=100/);
   assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:/);
