@@ -539,25 +539,38 @@
       "name": "생존 및 전투 기반의 실시간 스케줄링 게임",
       "purpose": "플레이어가 주도하는 단일 캐릭터의 탈출을 위한 실시간 스타트업 루프 생성",
       "playerChoice": "장비/기술 선택에 따라 실제 세계 상태 변화와 보상/위험/다음 선택이 재정의됨"
+    },
+    "local_authoring_parts::a804d956a992aef39d582d7da0136689b670ff56475195e7069e4f2ee04794d8:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "환경/지역 변화"
+      ],
+      "stateOutputs": [
+        "보상/위험/다음 선택"
+      ],
+      "name": "생존 및 전투 기반의 실시간 스케줄링 게임",
+      "purpose": "실제 상황에서 발생한 위협 또는 대응 방식에 따른 환경/지역 변화로 인해 플레이어의 전략적 결정이 재정의됨",
+      "playerChoice": "환경/지역 변화가 장비/기술 선택에 영향을 주며, 이는 다음 사건의 시작점이다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 14,
+      "calls": 16,
+      "successes": 15,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1808855,
-      "lastMs": 98933,
+      "totalMs": 1908903,
+      "lastMs": 100048,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:54:19.847Z"
+      "updatedAt": "2026-10-09T22:55:59.897Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-09T22:54:19.847Z",
+  "updatedAt": "2026-10-09T22:55:59.898Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2400,7 +2413,7 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:54:19.847Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:55:59.897Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
