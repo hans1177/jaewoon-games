@@ -419,25 +419,28 @@
     },
     "local_authoring_parts::be005b79d83caf3625459d032cc520cebe4e949133b2455f0cf665465a210994:toSystem": {
       "toSystem": "ENVIRONMENTAL_ADAPTATION_D"
+    },
+    "local_authoring_parts::be005b79d83caf3625459d032cc520cebe4e949133b2455f0cf665465a210994:trigger": {
+      "trigger": "INCOMING_INSECT_WAVE_PATTERN가 도달할 때, 환경 적응 시스템은 현재 상태를 기반으로 실시간으로 전략적 자원 배분 및 방어 위치 조정을 수행하여 진입 단계에서의 위험 패턴을 파악하고 다음 단계로 전환한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1596366,
-      "lastMs": 88379,
+      "totalMs": 1691514,
+      "lastMs": 95148,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:26:01.543Z"
+      "updatedAt": "2026-10-09T15:27:36.692Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:59:25.113Z",
-  "updatedAt": "2026-10-09T15:26:01.543Z",
+  "updatedAt": "2026-10-09T15:27:36.692Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2620,7 +2623,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:26:01.543Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:27:36.692Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
