@@ -1486,8 +1486,12 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
   });
   assert.notEqual(changedDesign.designedGameVolume.authoredDesignFingerprint,
     scoped.designedGameVolume.authoredDesignFingerprint);
-  assert.equal((changedDesign.designedGameVolume.activeItem||changedDesign.designedGameVolume.deferredItem).ref,
-    volume.activeItem.ref,'editing a system beyond the ordinary prompt summary resets stale unit selection');
+  assert.equal(changedDesign.designedGameVolume.scopedAdvancementObserved,false,
+    'a changed design cannot inherit previously verified unit progression');
+  const restartedRef=(changedDesign.designedGameVolume.activeItem||changedDesign.designedGameVolume.deferredItem).ref;
+  const firstForCurrentFocus=changedDesign.primaryFocus==='PROGRESSION'?'CONTENT_MILESTONE[0]':'CORE_LOOP[0]';
+  assert.equal(restartedRef,firstForCurrentFocus,
+    'changing a late design system resets to the first approved item for the current quality focus');
 });
  
 test('preservation-only approved design never schedules novel gameplay from the content inventory',()=>{
