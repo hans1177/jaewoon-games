@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 시작 단계에서 명확한 목표를 설정하여 제한된 이동 횟수와 장애물, 또는 볼륨 있는 퀘스트 형태로 진행해야 하며, 이를 해결하는 과정에서 즉각적인 피드백을 받게 된다.",
       "coreFun": "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택의 순차적 관계가 유지되며, 이는 게임의 핵심 루프를 구성한다."
+    },
+    "local_authoring_parts::170d1aa0a0d42ebe7a2050f258aa64f00a68820d444197fbf69cebbc88ba8532:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택",
+        "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택",
+        "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1369051,
-      "lastMs": 96617,
+      "totalMs": 1461274,
+      "lastMs": 92223,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:20:52.126Z"
+      "updatedAt": "2026-10-09T18:22:24.354Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:58:03.033Z",
-  "updatedAt": "2026-10-09T18:20:52.128Z",
+  "updatedAt": "2026-10-09T18:22:24.354Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2144,7 +2151,7 @@
     "d3b14657e4d878caf2ea031a712e1067eba9d2ba183d0fca7beec6abf77e7c2d": true,
     "2882f8fd473bdadf754d7ed9a9a0b6d14073a8e81d57359e95f0e2f6f80b52ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:20:52.128Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:22:24.354Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
