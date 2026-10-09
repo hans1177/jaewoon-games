@@ -498,25 +498,95 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::632787a45e910c3011c6e6fa8f13d8d9879220fce5a440d46968edf95817dbb2:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "PUZZLE_LOOP_CORE",
+          "toSystem": "PUZZLE_LOOP_A",
+          "trigger": "Player selects a board level with clear goal and constraints.",
+          "stateChange": "Board state changes to new pattern, reward is awarded, risk is introduced, next choice is presented."
+        },
+        {
+          "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "stateKeys": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "PUZZLE_LOOP_A",
+          "toSystem": "PUZZLE_LOOP_B",
+          "trigger": "Player makes strategic moves to solve the objective.",
+          "stateChange": "Board state changes to new obstacle configuration, reward is awarded, risk is introduced, next choice is presented."
+        },
+        {
+          "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_2",
+          "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "stateKeys": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "PUZZLE_LOOP_B",
+          "toSystem": "PUZZLE_LOOP_C",
+          "trigger": "Player clears the level goal and faces a new challenge.",
+          "stateChange": "Board state changes to new pattern, reward is awarded, risk is introduced, next choice is presented."
+        },
+        {
+          "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_3",
+          "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_4",
+          "stateKeys": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "PUZZLE_LOOP_C",
+          "toSystem": "PUZZLE_LOOP_DELVE",
+          "trigger": "Player makes strategic decisions aligned with world rules.",
+          "stateChange": "Board state changes to new configuration, reward is awarded, risk is introduced, next choice is presented."
+        },
+        {
+          "fromId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_0",
+          "toId": "SHARDBOUND_ODYSSEY_SIGNATURE_SYSTEM_1",
+          "stateKeys": [
+            "BOARD_STATE",
+            "PLAYER_ACTION"
+          ],
+          "fromSystem": "PUZZLE_LOOP_CORE",
+          "toSystem": "PUZZLE_LOOP_A",
+          "trigger": "Player selects a board level with clear goal and constraints.",
+          "stateChange": "Board state changes to new pattern, reward is awarded, risk is introduced, next choice is presented."
+        }
+      ],
+      "progressionDirection": "Dynamic Board State Evolution",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Linear Progression",
+        "resourceFlow": "Resource Allocation Based on Player Agency",
+        "balanceRules": "Equilibrium between player autonomy and game mechanics"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 775130,
-      "lastMs": 276723,
+      "totalMs": 1068020,
+      "lastMs": 292890,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T13:09:10.401Z"
+      "updatedAt": "2026-10-09T13:14:03.292Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:56:15.219Z",
-  "updatedAt": "2026-10-09T13:09:10.401Z",
+  "updatedAt": "2026-10-09T13:14:03.292Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2555,7 +2625,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T13:04:33.668Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T13:14:03.292Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
