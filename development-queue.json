@@ -3169,7 +3169,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-09T03:58:03.224Z",
+      "updatedAt": "2026-10-09T04:54:22.825Z",
       "robloxSourceCommit": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
       "robloxSourceBootstrapPassedAt": "2026-10-08T19:54:49.292Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -3180,20 +3180,21 @@
       "robloxBuildArtifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
       "robloxBuildPassedAt": "2026-10-09T03:28:26.329Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-09T03:28:26.329Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-10-09T04:54:22.825Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-10-09T03:17:35.372Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-10-09T04:12:08.119Z",
+        "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
+        "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -3204,9 +3205,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
             "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
@@ -3219,10 +3220,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE"
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -3261,11 +3268,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaEvidence": {
@@ -23393,7 +23400,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-09T04:50:00.063Z",
+  "updatedAt": "2026-10-09T04:54:22.825Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
