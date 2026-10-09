@@ -39,7 +39,7 @@ test('검증된 설계 요약은 홈페이지 전용으로 표시하고 원본 �
 test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하고 옛 게임 주소는 유지한다',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const fetched=[];
-  let previewMode=false,invalid3d=false,invalidVisual=false,missingWasm=false;
+  let previewMode=false,invalid3d=false,invalidVisual=false,missingWasm=false,mismatchedBuild=false;
   const group={loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']};
   const evidence=()=>({
     engine:'UNITY_WEB',gameId:'demo',pass:!previewMode,playableBrowserTest:true,
@@ -65,13 +65,16 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
       })};
       if(location.includes('unity-web-build.json'))return{ok:true,json:async()=>({
         engine:'UNITY_WEB',gameId:'demo',bootSmoke:'PASS',ownerBrowserTestEligible:true,
+        sourceCommit:'a'.repeat(40),buildTreeSha256:'b'.repeat(64),unitySourceTreeSha256:'c'.repeat(64),
+        canonicalSourceRoot:'unity-games/demo',buildOutputRoot:'web-games/demo',
         actualBrowserPlay:previewMode?'PLAYABLE_TEST_ONLY':'PASS'
       })};
       if(location.includes('unity-web-gameplay-validation.json'))return{ok:true,json:async()=>evidence()};
       if(location.includes('unity-web-independent-qa.json'))return{ok:true,json:async()=>evidence()};
       if(location.includes('unity-web-regression.json'))return{ok:true,json:async()=>evidence()};
       if(location.includes('upper-platform-development-readiness.json'))return{ok:true,json:async()=>({
-        gameId:'demo',state:previewMode?'REPAIR_REQUIRED':'UPPER_PLATFORM_DEVELOPMENT_READY',pass:!previewMode
+        gameId:'demo',state:previewMode?'REPAIR_REQUIRED':'UPPER_PLATFORM_DEVELOPMENT_READY',pass:!previewMode,
+        sourceCommit:'a'.repeat(40),buildTreeSha256:(mismatchedBuild?'f':'b').repeat(64),unitySourceTreeSha256:'c'.repeat(64)
       })};
       return{ok:options.method==='HEAD'&&(!missingWasm||!location.includes('demo.wasm'))};
     }
@@ -99,6 +102,10 @@ test('실제 Unity WebGL을 개발자가 QA 수리 중에도 직접 테스트하
   missingWasm=true;
   const noBundle=await engine.bindAvailableUnityWebSurfaces(catalog);
   assert.equal(noBundle.games[0].unityWebAvailable,false,'missing actual WebGL runtime assets blocks the test link');
+  missingWasm=false;
+  mismatchedBuild=true;
+  const staleEvidence=await engine.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(staleEvidence.games[0].unityWebAvailable,false,'QA from a different WebGL build cannot unlock a gameplay link');
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
