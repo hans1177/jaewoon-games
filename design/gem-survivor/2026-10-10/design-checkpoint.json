@@ -539,25 +539,41 @@
         "선택: 진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화",
         "상태 변화: 양방향 실제 상태 교환 발생, 보석 생존전의 핵심 재미와 시스템 연결 강화"
       ]
+    },
+    "local_authoring_parts::8aa4a45d4d139152facbd1bed3e74062f9d0671055882b7f9fa46920496c9e66:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE_CORE_LOOP_1",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "진행",
+        "위험",
+        "보상"
+      ],
+      "stateOutputs": [
+        "선택",
+        "상태 변화"
+      ],
+      "name": "실시간 진행 및 위험 조절 루프 생성",
+      "purpose": "플레이어가 실시간 진행 및 위험 조절 중 이전의 진입 시점 이후에도 새로운 행동, 경로, 조합, 관계, 발견 또는 대응법을 통해 콘텐츠를 다르게 사용하게 된다.",
+      "playerChoice": "진행·위험·보상 연결 루프 생성, 즉각적 보상 및 선택에 따른 상태 변화 발생, 양방향 실제 상태 교환 강화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1603316,
-      "lastMs": 99876,
+      "totalMs": 1708260,
+      "lastMs": 104944,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:41:32.804Z"
+      "updatedAt": "2026-10-09T17:43:17.750Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:14:49.445Z",
-  "updatedAt": "2026-10-09T17:41:32.804Z",
+  "updatedAt": "2026-10-09T17:43:17.750Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2271,7 +2287,7 @@
     "69d2f7a48bf76da14e13c8f875083ffc9887d0932eda7acdf9554d9c95adfdfa": true,
     "70adc167046cdeb77006a3f5903f6e2d6469af161d45c65df1e002968984b5cd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:41:32.804Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:43:17.750Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
