@@ -174,7 +174,7 @@ const worldDataSha256=worldDataText?createHash('sha256').update(worldDataText).d
 if(hasApprovedWorld&&fs.existsSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs')))
   throw new Error('UNITY_WEB_APPROVED_WORLD_EXISTING_SOURCE_MUST_BE_EDITED_NOT_REBOOTSTRAPPED');
 
-fs.rmSync(output,{recursive:true,force:true});
+if(fs.existsSync(output))throw new Error('UNITY_WEB_EXISTING_SOURCE_PRESERVE_AND_REPAIR_IN_PLACE');
 for(const dir of [
   'Assets/Scripts','Assets/Editor','Assets/Art','Assets/Prefabs','Assets/Materials','Assets/Animations',
   'Packages','ProjectSettings'
@@ -414,6 +414,7 @@ ${nativeWorldRuntime}
         LoadState();
         BuildWorld();
         ${worldData?'RestoreWorldObjects();':''}
+        VerifyNativeSpatialDepth();
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
@@ -427,6 +428,46 @@ ${nativeWorldRuntime}
                   (nativeMotionActors > 0 ? "" : " reason=ANIMATOR_REQUIRED"));
         Debug.Log("JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=" + GameId + " role=action x=0.5000 y=0.7200");
         LogState();
+    }
+
+    // 메인 · 실제 Unity 월드의 메시 깊이와 배우 표현을 측정한다. 전투·밸런스·세이브 권한 없음.
+    private void VerifyNativeSpatialDepth()
+    {
+        int worldMeshes3d = 0;
+        float zMin = float.PositiveInfinity;
+        float zMax = float.NegativeInfinity;
+        foreach (MeshFilter filter in FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
+        {
+            if (filter == null || !filter.gameObject.activeInHierarchy || filter.sharedMesh == null) continue;
+            Vector3 size = filter.sharedMesh.bounds.size;
+            if (size.x < 0.02f || size.y < 0.02f || size.z < 0.02f) continue;
+            worldMeshes3d++;
+            zMin = Mathf.Min(zMin, filter.transform.position.z);
+            zMax = Mathf.Max(zMax, filter.transform.position.z);
+        }
+        int gameplayActors3d = 0;
+        foreach (GameObject actor in new GameObject[] { player, enemy })
+        {
+            if (actor == null || !actor.activeInHierarchy) continue;
+            MeshFilter filter = actor.GetComponentInChildren<MeshFilter>();
+            SkinnedMeshRenderer skin = actor.GetComponentInChildren<SkinnedMeshRenderer>();
+            Mesh actorMesh = filter != null ? filter.sharedMesh : (skin != null ? skin.sharedMesh : null);
+            if (actorMesh == null) continue;
+            Vector3 size = actorMesh.bounds.size;
+            if (size.x >= 0.02f && size.y >= 0.02f && size.z >= 0.02f) gameplayActors3d++;
+        }
+        int spriteGameplayActors = 0;
+        foreach (SpriteRenderer sprite in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
+            if (sprite != null && sprite.gameObject.activeInHierarchy) spriteGameplayActors++;
+        int worldDepthCm = worldMeshes3d >= 2 ? Mathf.RoundToInt(Mathf.Max(0f, zMax - zMin) * 100f) : 0;
+        int cameraPerspective = Camera.main != null && !Camera.main.orthographic ? 1 : 0;
+        bool pass = cameraPerspective == 1 && worldMeshes3d >= 2 && worldDepthCm >= 50
+            && gameplayActors3d >= 1 && spriteGameplayActors == 0;
+        Debug.Log("JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=" + GameId
+            + " source=UNITY_WORLD_MESH_DEPTH cameraPerspective=" + cameraPerspective
+            + " worldMeshes3d=" + worldMeshes3d + " worldDepthCm=" + worldDepthCm
+            + " gameplayActors3d=" + gameplayActors3d + " spriteGameplayActors=" + spriteGameplayActors
+            + " status=" + (pass ? "PASS" : "REPAIR_REQUIRED"));
     }
 
     private int BindNativeMotionActors()

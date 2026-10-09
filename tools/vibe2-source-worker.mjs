@@ -2285,6 +2285,37 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const completeness=expansion?.existingCompletenessReview||{};
   const completionAcceptance=(expansion?.completionAcceptance||[]).map(clean).filter(Boolean);
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
+  // 기존 코딩 작업에 승인된 개별 콘텐츠를 연결한다. 정적 소스 이름은 PASS 증거가 아니다.
+  const volume=d?.designedGameVolume||{};
+  const authoredItems=Array.isArray(volume.items)?volume.items:[];
+  const focus=clean(d.primaryFocus).toUpperCase();
+  const volumeApplicable=['CORE_FUN','PROGRESSION'].includes(focus)
+    &&volume.mode==='APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION'
+    &&clean(d?.designImplementationContext?.preservationContract?.mode).toUpperCase()!=='PRESERVATION_PRESENTATION_UPGRADE';
+  const volumePreferred=focus==='PROGRESSION'
+    ?authoredItems.filter(row=>/CONTENT_MILESTONE|VARIETY_REGIONS|VARIETY_OBJECTIVES|NARRATIVE_QUESTSTATES|SYSTEM_CONNECTION/.test(clean(row.family)))
+    :authoredItems.filter(row=>/CORE_LOOP|SIGNATURE_SYSTEM|SYSTEM_CONNECTION|VARIETY_ENEMIESORCHALLENGES|VARIETY_ABILITIES/.test(clean(row.family)));
+  const volumePool=volumePreferred.length?volumePreferred:authoredItems;
+  const volumeOwned=volumePool.filter(row=>(row.sourceCandidates||[]).some(candidate=>
+    responsibleFiles.some(file=>posix(candidate.file)===posix(file)||posix(candidate.file).endsWith('/'+posix(file)))));
+  const volumeChoices=volumeOwned.length?volumeOwned:volumePool;
+  const chosenVolume=volumeApplicable&&volumeChoices.length
+    ?volumeChoices[(Math.max(1,Number(d.generation)||1)-1)%volumeChoices.length]:null;
+  // 설계별 지형·행동·보상·비용·쿨다운 원문을 기존 책임 워커에 전달한다.
+  // 상세 항목은 일반화하지 않으며 원본 수치와 규칙을 보존한다.
+  const volumeSpecFields=[
+    ['IDENTITY',['id','name','kind','ownerId','ruleId','role','humanId','humanTool']],
+    ['STATE',['stateInputs','stateOutputs','stateKeys','fromId','toId','ruleIds','retainedState','removedState','changedChoice']],
+    ['TRIGGER',['trigger','range','rangeUnit','resource','cost','cooldownSeconds','telegraph','avoidance','effect']],
+    ['WORLD',['traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext']],
+    ['ENCOUNTER',['behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning']],
+    ['PROGRESSION',['milestone','newGameplay','systemImpact','variation','playerChoice','purpose']]
+  ];
+  const volumeSpecs=chosenVolume?volumeSpecFields.map(([group,keys])=>{
+    const detail=chosenVolume.designDetail||{};
+    const selected=Object.fromEntries(keys.filter(key=>Object.hasOwn(detail,key)).map(key=>[key,detail[key]]));
+    return Object.keys(selected).length?'volumeSpec='+group+':'+JSON.stringify(selected):null;
+  }).filter(Boolean):[];
   const codingTrace=d?.designToPlatformCodingTrace||{};
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
@@ -2323,7 +2354,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
     'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
-    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must be 2.5D or 3D; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
+    'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must use real native 3D meshes and depth; flat 2D or 2.5D cannot be a final PASS; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
@@ -2340,6 +2371,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
     `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
+    ...(volume.version===1?[`contentVolume=authored:${Number(volume.authoredItemCount||0)} sourceNamedCandidates:${Number(volume.namedSourceCandidateCount||0)} sourceReview:${Number(volume.sourceReviewRequiredCount||0)} runtimeVerified:${Number(volume.runtimeVerifiedCount||0)} status:DESIGN_SOURCE_AND_RUNTIME_UNVERIFIED`]:[]),
+    ...(chosenVolume?[`volumeImplementation=ref:${clean(chosenVolume.ref)} title:${clean(chosenVolume.title)} sourceStatus:${clean(chosenVolume.sourceEvidenceState)} trigger:${clean(chosenVolume.trigger)||'REVIEW_AUTHORED_TRIGGER'} choice:${clean(chosenVolume.playerChoice)||'REVIEW_AUTHORED_CHOICE'} state:${clean(chosenVolume.stateChange)||'REVIEW_AUTHORED_STATE'} accept:${clean(chosenVolume.observableAcceptance)} linkedRules:${(chosenVolume.linkedRuleIds||[]).map(clean).join(',')||'NONE'} sourceOwner:${clean(chosenVolume.designResponsibleSystem)||'REVIEW_ACTUAL_SOURCE_OWNER'} rule:EXISTING_ALLOWED_OWNER_FILE_ONLY_AND_NATIVE_RUNTIME_QA`]:[]),
+    ...volumeSpecs,
+    ...(chosenVolume?[`volumeRequiredBehavior=${(chosenVolume.requiredBehavior||[]).map(clean).filter(Boolean).join(' | ')}; status=NATIVE_PLAY_QA_REQUIRED; designOnlyPass=FORBIDDEN`]:[]),
     `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
@@ -2377,7 +2412,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   ]:[
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
@@ -2413,7 +2448,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
-    'contentTheme=','contentCompletionAcceptance=',
+    'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
@@ -2425,7 +2460,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
     // 각 디자이너 역할은 고유하다. 1개만 남기면 A/B/c/@ 구현 연결이 사라진다.
-    if(prefix==='designCodeRole='){
+    if(prefix==='designCodeRole='||prefix==='volumeSpec='){
       // KEEP EVERY MAIN/A/B/c/@ ROLE in the concise contract.
     }else if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
@@ -3709,6 +3744,22 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     'For all three surfaces, keep gameplay-critical tick and hit/health results invariant. Compare exact-revision before/after measurements (CPU/GPU frame time, memory, draw/animation/AI cost where observable) using existing platform runtime QA. If unavailable, report performance UNVERIFIED; never fabricate a runtime/FPS PASS.',
     '[PLATFORM PERFORMANCE SOURCE IMPLEMENTATION END]'
   ].join('\n'):'';
+  // 유니티 웹 3D 제작은 기존 Vibe 코드 생성/학습 경로에서 정밀 책임 함수 수정을 우선한다.
+  // 과거 검증 실패를 같은 책임 함수의 원인별 수리로 연결하고, 가짜 3D 표식으로 통과시키지 않는다.
+  const unityWeb3dCodingBlock=clean(order.target).toLowerCase()==='unity'
+    &&(order.unityWebDevelopment===true||order.selectedTask?.firstStageUnityWeb===true
+      ||(order.evidence||[]).some(value=>clean(value)==='unity-web-first-stage'))?[
+    '[UNITY WEB NATIVE 3D CODING METHOD BEGIN]',
+    'Owner directive 2026-10-09: every new and existing Unity Web game must render real 3D. The canonical project is unity-games/<gameId>, WebGL output is web-games/<gameId>. 2D and 2.5D world rendering cannot pass.',
+    'Read current responsible Unity C# methods and approved design first. Trace the requested behavior and verified same-game failure code to its real owner; edit that method in place. Do not create wrapper overrides, duplicated renderers, shadow asset registries, or alternate Web gameplay codebases.',
+    'Build or preserve genuinely depth-bearing Unity scenes, 3D meshes, 3D camera and world-space objects. Use MeshFilter/MeshRenderer or SkinnedMeshRenderer, Unity 3D colliders, native materials and real mesh triangle topology. Physics2D, Rigidbody2D, SpriteRenderer and Tilemap are not substitutes for the 3D world. UI images/icons, 2D textures and audio may remain support resources.',
+    'For spatial gameplay library assets (characters, creatures, environment, buildings, weapons, props, terrain), reuse only compatible genuine 3D source/derived native assets. Retain original assets, style/license evidence and binding lineage. A flat sprite, billboard, renamed asset, 3D marker or visual-only counter does not satisfy asset authoring.',
+    'Keep game logic, authoritative hit detection, combat timing, progression, rewards, drop rates, economy, multiplayer session authority and save keys/schema unchanged. Convert presentation in the existing scene/renderer, not by replacing GameCore, deleting a save key, or changing physics damage.',
+    'Emit MESH_INTEGRITY only from actual Unity runtime inspection of the rendered MeshFilter meshes and triangle indices/material/texture validity. Every Unity Web game must produce genuine inspected>0, validMeshes=inspected, triangles>0, volumetricMeshes>0 (nonplanar XYZ mesh bounds), materialPass=1 and texturePass=1 evidence before browser QA; do not hardcode counts or success.',
+    'When the runtime reveals a missing 3D proof, preserve the exact failure fingerprint, repair the responsible scene/asset binding, rebuild WebGL, and rerun mobile browser input, core gameplay, save-restore and independent QA/regression. Source changes and model claims alone are UNVERIFIED.',
+    'Learn coding methods only from independently verified functional source edits and runtime outcomes. Prefer the latest verified same-game strategy, preserve prior passing methods, and report uncertainty rather than inventing success.',
+    '[UNITY WEB NATIVE 3D CODING METHOD END]'
+  ].join('\n'):'';
   const productionFamilies=motionUnit?['MOTION']:[...(order.assetProduction?.decisions||[]).map(row=>row.type).filter(Boolean),...Object.entries(order.assetProduction?.baseMaterialLoadout?.families||{}).filter(([,atoms])=>Array.isArray(atoms)&&atoms.length>0).map(([family])=>family)];
   const taskRequests=unique([order.selectedTask?.goal,order.selectedTask?.focus]);
   if(!taskRequests.length&&!motionUnit&&Buffer.byteLength(String(order.goal||''),'utf8')<=6000&&clean(order.goal))taskRequests.push(String(order.goal));
@@ -3918,6 +3969,7 @@ productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
 robloxSourceCoaching?.block||'',
+unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
@@ -3989,13 +4041,49 @@ function storageContractSnapshot(source=''){
   const raw=String(source??'');
   const literalKeys=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g)].map(match=>match[1]));
   const keyVariables=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)].map(match=>match[1]));
+  // Native persistence identity belongs to the saved game, not the generation model.
+  // Examine key arguments only: payload updates and harmless whitespace are not schema changes.
+  const nativeKeySignatures=[],nativeBindingNames=new Set();
+  const nativeCalls=/\b(PlayerPrefs\s*\.\s*(?:Get(?:String|Int|Float)|Set(?:String|Int|Float)|HasKey|DeleteKey)|GetDataStore|[A-Za-z_$][\w$]*\s*:\s*(?:GetAsync|SetAsync|UpdateAsync))\s*\(/g;
+  for(const call of raw.matchAll(nativeCalls)){
+    const prefix=raw.slice(raw.lastIndexOf('\n',call.index-1)+1,call.index);
+    if(/^\s*(?:\/\/|--|\*)/.test(prefix))continue;
+    let argument='',depth=0,quote='',escaped=false;
+    for(let i=call.index+call[0].length;i<raw.length&&argument.length<800;i++){
+      const ch=raw[i];
+      if(quote){
+        argument+=ch;
+        if(escaped)escaped=false;
+        else if(ch==='\\')escaped=true;
+        else if(ch===quote)quote='';
+        continue;
+      }
+      if(ch==='"'||ch==="'"||ch===String.fromCharCode(96)){quote=ch;argument+=ch;continue;}
+      if(ch==='('){depth++;argument+=ch;continue;}
+      if(ch===')'){
+        if(depth===0)break;
+        depth--;argument+=ch;continue;
+      }
+      if(ch===','&&depth===0)break;
+      argument+=ch;
+    }
+    if(!argument.trim()||quote||depth!==0)continue;
+    const method=call[1].replace(/\s+/g,'').replace(/^[A-Za-z_$][\w$]*:/,'DataStore:');
+    const normalized=argument.trim().replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60)|\s+/g,(value,literal)=>literal||'');
+    nativeKeySignatures.push(method+':'+normalized);
+    const identifiers=argument.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60/g,' ');
+    for(const name of identifiers.match(/[A-Za-z_$][\w$]*/g)||[]){
+      if(/(?:save|store|key|prefix|slot|profile)/i.test(name))nativeBindingNames.add(name);
+    }
+  }
   const variableBindings={};
-  for(const name of keyVariables){
-    const re=new RegExp('\\b(?:const|let|var)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})\\s*;');
-    const match=re.exec(raw);
+  for(const name of unique([...keyVariables,...nativeBindingNames])){
+    const plain=new RegExp('\\b(?:const|let|var|local)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})');
+    const typed=new RegExp('\\b(?:(?:public|private|protected|internal|static|readonly|const)\\s+)*(?:string|String)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})');
+    const match=plain.exec(raw)||typed.exec(raw);
     if(match)variableBindings[name]=clean(match[1]);
   }
-  return{literalKeys,variableBindings};
+  return{literalKeys,variableBindings,nativeKeySignatures:unique(nativeKeySignatures)};
 }
 function storageContractMutationRows({sourceRoot='',edits=[]}={}){
   if(!clean(sourceRoot)||!Array.isArray(edits)||!edits.length)return[];
@@ -4013,7 +4101,7 @@ function storageContractMutationRows({sourceRoot='',edits=[]}={}){
       if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
       const beforeSource=fs.readFileSync(file,'utf8');
       const before=storageContractSnapshot(beforeSource);
-      if(!before.literalKeys.length&&!Object.keys(before.variableBindings).length)continue;
+      if(!before.literalKeys.length&&!Object.keys(before.variableBindings).length&&!before.nativeKeySignatures.length)continue;
       let afterSource=beforeSource,applicable=true;
       for(const edit of rows){
         const find=String(edit?.find??''),replace=String(edit?.replace??'');
@@ -4027,6 +4115,9 @@ function storageContractMutationRows({sourceRoot='',edits=[]}={}){
       }
       for(const [name,expression] of Object.entries(before.variableBindings)){
         if(after.variableBindings[name]!==expression)mutations.push(relative+':binding:'+name);
+      }
+      for(const signature of before.nativeKeySignatures){
+        if(!after.nativeKeySignatures.includes(signature))mutations.push(relative+':native:'+signature);
       }
     }catch{}
   }
@@ -4045,14 +4136,42 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles:[];
   const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles:[];
   const hardGate=confidence==='HIGH'&&developmentMode==='PRESERVE_PATCH'&&primaryTargets.length>0&&allowFullRewrite!==true&&bootstrap!==true&&newFiles.length===0&&replaceFiles.length===0;
-  // 변경되지 않은 주변 코드의 키워드로 정상 후보를 오분류하지 않는다.
+  // 여러 함수가 한 편집에 포함되어도 실제 변경된 토큰 주변만 분석한다.
+  // 변경 없는 중간 함수의 재화/전투 키워드는 변경 예산으로 계산하지 않는다.
   const touchedSystems=unique(edits.flatMap(edit=>{
     const before=String(edit.find??''),after=String(edit.replace??'');
-    let prefix=0,suffix=0;
-    while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
-    while(suffix<before.length-prefix&&suffix<after.length-prefix
-      &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
-    return semanticSystemsForText(before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix));
+    const changedWindow=()=>{
+      let prefix=0,suffix=0;
+      while(prefix<before.length&&prefix<after.length&&before[prefix]===after[prefix])prefix++;
+      while(suffix<before.length-prefix&&suffix<after.length-prefix
+        &&before[before.length-1-suffix]===after[after.length-1-suffix])suffix++;
+      return before.slice(prefix,before.length-suffix)+'\n'+after.slice(prefix,after.length-suffix);
+    };
+    const tokenize=text=>text.match(/[A-Za-z_$][\w$]*|\d+(?:\.\d+)?|[^\s]/g)||[];
+    const original=tokenize(before),replacement=tokenize(after);
+    if(!original.length||!replacement.length||original.length*replacement.length>40000){
+      return semanticSystemsForText(changedWindow());
+    }
+    const n=original.length,m=replacement.length;
+    const dp=Array.from({length:n+1},()=>new Uint16Array(m+1));
+    for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--){
+      dp[i][j]=original[i]===replacement[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+    }
+    const changed=[];
+    let i=0,j=0;
+    while(i<n||j<m){
+      if(i<n&&j<m&&original[i]===replacement[j]){i++;j++;continue;}
+      const fromI=i,fromJ=j;
+      while(i<n||j<m){
+        if(i<n&&j<m&&original[i]===replacement[j])break;
+        if(i<n&&(j>=m||dp[i+1][j]>=dp[i][j+1]))i++;
+        else j++;
+      }
+      // 숫자/연산자 변경도 gold, damage 같은 상태 소유자 이름과 묶어서 판별한다.
+      changed.push(original.slice(Math.max(0,fromI-3),Math.min(n,i+3)).join(' '));
+      changed.push(replacement.slice(Math.max(0,fromJ-3),Math.min(m,j+3)).join(' '));
+    }
+    return semanticSystemsForText(changed.join('\n'));
   }));
   const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
   const editScopeRows=edits.map(edit=>{
@@ -4113,7 +4232,29 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
           return ![...existing,...proposed].some(owner=>allowedSymbols.has(owner.name)
             &&owner.start<row.start&&owner.end>=row.end);
         });
-        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols});
+        // 허용된 함수 몸체만 가리고 원본과 후보의 나머지 소스를 대조한다.
+        // 같은 파일의 다른 전역 상태·실행문을 고치는 후보는 책임 함수명이 근처에 있어도 거부한다.
+        const nonOwnedSource=(text,functions)=>{
+          const ownerFunctions=functions.filter(row=>allowedSymbols.has(row.name))
+            .sort((a,b)=>a.start-b.start||b.end-a.end);
+          const outerOwners=[];
+          for(const row of ownerFunctions){
+            if(!outerOwners.some(owner=>owner.start<=row.start&&owner.end>=row.end))outerOwners.push(row);
+          }
+          let remaining=text;
+          for(const row of outerOwners.sort((a,b)=>b.start-a.start)){
+            remaining=remaining.slice(0,row.start)+'\u001fOWNED_FUNCTION:'+row.name+'\u001e'+remaining.slice(row.end);
+          }
+          // 읽기 전용 상태와 구분해 명시적으로 소유한 단일 상태 선언·대입만 허용한다.
+          for(const name of ownedState){
+            if(!/^[A-Za-z_$][\w$]*$/.test(name))continue;
+            const declaration=new RegExp('(^|\\n)[ \\t]*(?:(?:public|private|protected|internal|static|readonly|const|let|var|local)\\s+)*(?:[A-Za-z_][\\w<>\\[\\]?]*\\s+)?'+regexEscape(name)+'\\s*=\\s*[^;\\n]*;?[ \\t]*(?=\\n|$)','g');
+            remaining=remaining.replace(declaration,(_,prefix)=>prefix+'\u001fOWNED_STATE:'+name+'\u001e');
+          }
+          return remaining;
+        };
+        const unownedSourceMutation=nonOwnedSource(before,existing)!==nonOwnedSource(after,proposed);
+        symbolMutationRows.push({path:relative,changedSymbols,unrelatedSymbols,unownedSourceMutation});
       }catch{
         // 소스 검사 자체가 실패한 경우에도 함수 범위를 추측해 PASS로 만들지 않는다.
       }
@@ -4124,6 +4265,7 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
     if(inspected?.changedSymbols.length&&!inspected.unrelatedSymbols.length)row.touchesAllowedMarker=true;
   }
   const unapprovedSymbols=unique(symbolMutationRows.flatMap(row=>row.unrelatedSymbols.map(name=>row.path+':'+name)));
+  const unownedSourcePaths=unique(symbolMutationRows.filter(row=>row.unownedSourceMutation).map(row=>row.path));
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
   const saveKeyViolations=[];
@@ -4139,12 +4281,13 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
   if(hardGate&&unapprovedSymbols.length)violations.push('UNRELATED_SYMBOL:'+unapprovedSymbols.join(','));
+  if(hardGate&&unownedSourcePaths.length)violations.push('UNOWNED_SOURCE_MUTATION:'+unownedSourcePaths.join(','));
   if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
   if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
     version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
-    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),symbolMutationRows,unapprovedSymbols,unownedSourcePaths,
     protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
     saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
     ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
@@ -4666,6 +4809,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     ?unique((reason.match(/UNRELATED_SYMBOL:([^|\n]+)/i)?.[1]||'').split(',')
       .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
     :[];
+  const unownedSourcePaths=semanticDiffViolation
+    ?unique((reason.match(/UNOWNED_SOURCE_MUTATION:([^|\n]+)/i)?.[1]||'').split(',')
+      .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
+    :[];
   const unityBootstrapPairFailure=/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(reason);
   const systemCausalTestRequired=/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(reason);
   const systemSyntaxInvalid=/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(reason);
@@ -4842,6 +4989,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         retryBase.includes('[PRE-SUBMIT SELF REVIEW BEGIN]')?'':preSubmitSelfReviewBlockFromPrompt(rawPrompt),
         repeatedFailureShift,
         unapprovedSymbols.length?'OFF-TARGET FUNCTIONS REJECTED: '+unapprovedSymbols.join(', ')+'. Do not edit their declarations or bodies. Rebuild against ORIGINAL writable source; edit only primary or explicitly permitted dependent functions.':'',
+        unownedSourcePaths.length?'UNOWNED SOURCE SCOPE REJECTED: '+unownedSourcePaths.join(', ')+'. Do not add or change executable code outside the primary and explicitly permitted dependent functions; a standalone state binding is permitted only when explicitly owned by the edit contract.':'',
         oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
@@ -4935,6 +5083,22 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   }
   return result;
 }
+// Identify the exact source intervention rather than a candidate's prose, tests, or JSON order.
+export function rejectedSourcePatchFingerprint(candidate={}){
+  const edits=Array.isArray(candidate.edits)?candidate.edits.map(row=>({
+    path:String(row?.path??''),find:String(row?.find??''),replace:String(row?.replace??'')
+  })):[];
+  const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles.map(row=>({
+    path:String(row?.path??''),content:String(row?.content??'')
+  })):[];
+  const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles.map(row=>({
+    path:String(row?.path??''),content:String(row?.content??'')
+  })):[];
+  if(!edits.length&&!newFiles.length&&!replaceFiles.length)return null;
+  return crypto.createHash('sha256')
+    .update(JSON.stringify({edits,newFiles,replaceFiles}))
+    .digest('hex');
+}
 function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
   return rows[attempt-1]||clean(responseFile);
@@ -5016,6 +5180,12 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   let verifiedExternalLearningPromptChecks=0;
   let consecutiveZeroOutputTimeouts=0;
   const failureHistory=[];
+  // Task-local observations only: rejected candidates are not verified learning memory.
+  const rejectedPatchHistory=new Map();
+  let repeatedRejectedPatchCount=0;
+  let repeatedRejectedPatchStrategyShifts=0;
+  let repeatedRejectedPatchGuidanceCount=0;
+  let lastRepeatedRejectedPatch=null;
   let repeatedFailureStrategyShifts=0;
   let repeatedFailureShiftKey='';
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
@@ -5158,6 +5328,20 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       :expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery,failureRepeatCount}):initialStudioPrompt));
+    if(!allowFullRewrite&&retry&&lastRepeatedRejectedPatch){
+      attemptPrompt+='\n'+[
+        '[REPEATED REJECTED SOURCE PATCH]',
+        'fingerprint='+lastRepeatedRejectedPatch.fingerprint.slice(0,16),
+        'rejectedAttempts='+lastRepeatedRejectedPatch.count,
+        'observedFailureClass='+lastRepeatedRejectedPatch.failureClass,
+        'The previous source edit with the same path, find, and replace was rejected more than once.',
+        'Change the actual implementation or select a different exact allowed responsibility anchor; changing only summary, tests, whitespace, or explanation is insufficient.',
+        'Preserve the original writable-file boundary, existing working gameplay, save semantics, and required QA. Do not treat rejected attempts as verified learning.',
+        '[END REPEATED REJECTED SOURCE PATCH]'
+      ].join('\n');
+      repeatedRejectedPatchGuidanceCount+=1;
+      console.log('VIBE2_REPEAT_REJECTED_PATCH_GUIDANCE='+attempt+':count='+lastRepeatedRejectedPatch.count);
+    }
     let maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
@@ -5240,6 +5424,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
     const focusedFirstEditEarlyStop=!singleMotionWorkUnit&&focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
     const completionMode=singleMotionWorkUnit?'JSON_SINGLE_MOTION':(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((!blueprintFields.length&&!singleMotionWorkUnit&&(timeoutFastEscalation||focusedFirstEditEarlyStop))&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    let attemptCandidate=null;
     try{
       const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
       if(promptCoverage.required===true){
@@ -5298,15 +5483,35 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
         candidate=normalizeCandidate(missingPathRecovery.value,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
       }
       lastRejectedCandidate=candidate;
+      attemptCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxRebuildFocused,initialPromptBytes:Buffer.byteLength(prompt,'utf8'),requestPromptBytes:attemptPromptBytes,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,repeatedFailureStrategyShifts,failureHistory:[...failureHistory],focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxRebuildFocused,initialPromptBytes:Buffer.byteLength(prompt,'utf8'),requestPromptBytes:attemptPromptBytes,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,repeatedFailureStrategyShifts,repeatedRejectedPatchCount,repeatedRejectedPatchStrategyShifts,repeatedRejectedPatchGuidanceCount,rejectedPatchFingerprintCount:rejectedPatchHistory.size,failureHistory:[...failureHistory],focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
       failureHistory.push(failureClass);
+      if(!allowFullRewrite&&attemptCandidate){
+        const fingerprint=rejectedSourcePatchFingerprint(attemptCandidate);
+        if(fingerprint){
+          const previous=rejectedPatchHistory.get(fingerprint)||0;
+          const count=previous+1;
+          rejectedPatchHistory.set(fingerprint,count);
+          lastRepeatedRejectedPatch=count>=2?{fingerprint,count,failureClass}:null;
+          if(count>=2){
+            repeatedRejectedPatchCount+=1;
+            console.log('VIBE2_REPEATED_REJECTED_PATCH='+attempt+':fingerprint='+fingerprint.slice(0,16)+':count='+count+':failureClass='+failureClass);
+            if(!singleMotionWorkUnit&&!systemAtomicPairRequired&&!multiFilePairRequired&&attempt<maxAttempts){
+              focusedReplaceAnchorCursor+=1;
+              focusedReplaceAnchorRotations+=1;
+              repeatedRejectedPatchStrategyShifts+=1;
+              console.log('VIBE2_REJECTED_PATCH_ALTERNATE_ANCHOR='+attempt+':anchor='+(focusedReplaceAnchorCursor+1));
+            }
+          }
+        }
+      }
       const zeroOutputTimeout=failureClass==='TIMEOUT'&&!String(error?.vibe2PartialOutput||'').trim()&&!String(lastRaw||'').trim();
       consecutiveZeroOutputTimeouts=zeroOutputTimeout?consecutiveZeroOutputTimeouts+1:0;
       if(zeroOutputTimeout)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_STREAK=${consecutiveZeroOutputTimeouts}:${candidateVariant}`);

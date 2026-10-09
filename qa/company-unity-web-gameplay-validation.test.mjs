@@ -206,10 +206,13 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
   assert.match(visual,/mesh\.GetIndexCount\(subMesh\) \/ 3/);
   assert.match(visual,/renderer\.sharedMaterial\.shader\.isSupported/);
   assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
-  assert.match(visual,/validMeshes == 2 && triangles > 0/);
+  assert.match(visual,/validMeshes == inspected && triangles > 0/);
+  assert.match(visual,/volumetricMeshes > 0/);
+  assert.match(visual,/bounds\.x > 0\.02f && bounds\.y > 0\.02f && bounds\.z > 0\.02f/);
   assert.match(source,/const nativeMeshMarker=markers\.slice\(\)\.reverse\(\)\.find/);
   assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
-  assert.match(source,/nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified/);
+  assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
+  assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
   assert.match(source,/nativeMeshMissing;/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
 });
@@ -336,4 +339,70 @@ test('actual Unity browser touch visits character, inventory and shop with synch
   assert.match(source,/nativePlayerStateObserved:true/);
   assert.match(source,/visitedPages\.push\('WORLD'\)/);
   assert.doesNotMatch(source,/mobileMenuInteraction=\{pass:true,actualBrowserTouch:true,visitedPages:\['SOCIAL','WORLD'\]/);
+});
+
+
+test('모든 Unity Web 게임에서 실측 3D 메시 없는 QA PASS를 차단한다',()=>{
+  assert.match(source,/UNITY_WEB_3D_ONLY_POLICY_REQUIRED/);
+  assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
+  assert.match(source,/requiredForAllUnityWebGames:true/);
+  assert.match(source,/planarOnlyMeshesCannotPass:true/);
+  assert.match(source,/observedVolumetricMeshes:nativeMeshVerified\?nativeMeshProof\.volumetricMeshes:0/);
+  assert.match(source,/observedTriangles:nativeMeshVerified\?nativeMeshProof\.triangles:0/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
+});
+
+test('Unity Web 3D gameplay rejects pseudo-depth even when triangles exist',()=>{
+  assert.match(source,/const nativeDepthMarker=markers\.slice\(\)\.reverse\(\)\.find/);
+  assert.match(source,/source=UNITY_WORLD_MESH_DEPTH/);
+  assert.match(source,/nativeDepthProof\.cameraPerspective===1/);
+  assert.match(source,/nativeDepthProof\.worldMeshes3d>=2/);
+  assert.match(source,/nativeDepthProof\.worldDepthCm>=50/);
+  assert.match(source,/nativeDepthProof\.gameplayActors3d>=1/);
+  assert.match(source,/nativeDepthProof\.spriteGameplayActors===0/);
+  assert.match(source,/&&nativeDepthVerified/);
+  assert.match(source,/depthPass:nativeDepthVerified/);
+  const build=fs.readFileSync(new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../tools/company-development-unity-web-worker.mjs',import.meta.url),'utf8');
+  assert.match(build,/VerifyNativeSpatialDepth\(\)/);
+  assert.match(build,/FindObjectsByType<MeshFilter>/);
+  assert.match(build,/FindObjectsByType<SpriteRenderer>/);
+  assert.match(worker,/qa\?\.spatialGameplay\?\.depthPass===true/);
+  assert.match(worker,/qa\?\.spatialGameplay\?\.spriteGameplayActors===0/);
+});
+
+
+test('실제 Unity 메시·원근·3축 깊이 검증식이 2D/2.5D와 평면 메시를 승인하지 않는다',()=>{
+  const start=source.indexOf('  const nativeMeshMarker=');
+  const end=source.indexOf('  const shaderLikelyMissing=',start);
+  assert.ok(start>=0&&end>start,'evaluate the actual browser QA 3D proof expressions');
+  const evaluate=new Function('markers','gameId',source.slice(start,end)+
+    '\nreturn {mesh:nativeMeshVerified,depth:nativeDepthVerified,missing:nativeMeshMissing};');
+  const gameId='sample-game';
+  const mesh='JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=sample-game source=UNITY_MESH_FILTER '+
+    'inspected=3 validMeshes=3 triangles=90 volumetricMeshes=3 materialPass=1 texturePass=1 status=PASS';
+  const depth='JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=sample-game source=UNITY_WORLD_MESH_DEPTH '+
+    'cameraPerspective=1 worldMeshes3d=3 worldDepthCm=160 gameplayActors3d=2 spriteGameplayActors=0 status=PASS';
+  assert.deepEqual(evaluate([mesh,depth],gameId),{mesh:true,depth:true,missing:false});
+  const reject=[
+    ['missing native depth',[mesh]],
+    ['orthographic 2D camera',[mesh,depth.replace('cameraPerspective=1','cameraPerspective=0')]],
+    ['2.5D flat world',[mesh,depth.replace('worldDepthCm=160','worldDepthCm=0')]],
+    ['2.5D depth below minimum',[mesh,depth.replace('worldDepthCm=160','worldDepthCm=49')]],
+    ['no 3D gameplay actor',[mesh,depth.replace('gameplayActors3d=2','gameplayActors3d=0')]],
+    ['sprite gameplay actor',[mesh,depth.replace('spriteGameplayActors=0','spriteGameplayActors=1')]],
+    ['all planar meshes',[mesh.replace('volumetricMeshes=3','volumetricMeshes=0'),depth]],
+    ['no real triangles',[mesh.replace('triangles=90','triangles=0'),depth]],
+    ['forged PASS without numeric triangles',[mesh.replace('triangles=90','triangles=unknown'),depth]],
+    ['foreign game proof',[mesh.replace('game=sample-game','game=other-game'),depth]],
+  ];
+  for(const [reason,markers] of reject){
+    const result=evaluate(markers,gameId);
+    assert.equal(result.mesh,false,reason);
+    assert.equal(result.missing,true,reason);
+  }
+  assert.match(source,/const visualBlocked=shaderLikelyMissing\|\|blankOrFrozenFrame/);
+  assert.match(source,/nativeUiOffscreen\|\|nativeUiOverlap\|\|nativeUiMissing\|\|nativeMeshMissing/);
+  assert.match(source,/pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded/);
+  assert.match(source,/libraryAssetPromotionGranted:false/);
 });

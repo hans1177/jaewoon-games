@@ -231,7 +231,7 @@
       "dispatchTarget": ".github/workflows/vibe2-continuous-core.yml",
       "dispatchEvent": "WORKFLOW_DISPATCH",
       "executionLane": "GAME_PRIMARY",
-      "laneMax": 64,
+      "laneMax": 128,
       "existingQueuedTasksOnly": true,
       "newSchedulerCreated": false,
       "newQueueCreated": false,
@@ -325,11 +325,11 @@
     "legacySlotRefillBranchCompatibility": false,
     "systemStewardProtectedSlots": 1,
     "systemStewardSlotBorrowableWhenIdle": true,
-    "parallelismPolicy": "SHARED_QUEUE_EXTERNAL_BOUNDARY_256_GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_64",
+    "parallelismPolicy": "SHARED_QUEUE_EXTERNAL_BOUNDARY_256_GAME_PRIMARY_REPEAT_DEVELOPMENT_FIXED_128",
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_ATOMIC_COMPLETION_REFILL",
-    "maxConcurrentGameTasksMeaning": "SHARED_QUEUE_AND_EXTERNAL_PLANNING_BOUNDARY_256; GAME_PRIMARY_REPEAT_DEVELOPMENT_RESERVATION_IS_FIXED_64_BY_EXECUTION_LANE",
+    "maxConcurrentGameTasksMeaning": "SHARED_QUEUE_AND_EXTERNAL_PLANNING_BOUNDARY_256; GAME_PRIMARY_REPEAT_DEVELOPMENT_RESERVATION_IS_FIXED_128_BY_EXECUTION_LANE",
     "minimumNecessaryProcedure": {
       "enabled": true,
       "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
@@ -407,28 +407,28 @@
     "gamePrimaryExecutionWave": {
       "enabled": true,
       "lane": "GAME_PRIMARY",
-      "maxActiveWorkers": 64,
+      "maxActiveWorkers": 128,
       "reserveOnlyAfterFanIn": false,
       "singleActiveWorkerWave": false,
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "GAME_PRIMARY repeat development is fixed at 64 logical slots. Same-game non-overlapping responsible files may run in parallel; source-root/game-wide locks remain forbidden. Runner pressure may queue work but does not change the 64-slot target.",
+      "note": "GAME_PRIMARY repeat development is fixed at 128 logical slots. Same-game non-overlapping responsible files may run in parallel; source-root/game-wide locks remain forbidden. Runner pressure may queue work but does not change the 128-slot target.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
-      "baselineTarget": 64,
-      "adaptiveMinActiveWorkers": 64,
-      "adaptiveMaxActiveWorkers": 64,
+      "baselineTarget": 128,
+      "adaptiveMinActiveWorkers": 128,
+      "adaptiveMaxActiveWorkers": 128,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": false,
-      "fixedRepeatDevelopmentSlots": 64,
+      "fixedRepeatDevelopmentSlots": 128,
       "adaptiveReservationTarget": false
     },
     "planningBacklog": {
       "enabled": true,
       "lane": "GAME_PRIMARY_PLANNING",
-      "minimum": 40,
-      "target": 60,
+      "minimum": 96,
+      "target": 160,
       "persistentPoolHardMax": 256,
       "expandWhileExecutionWaveActive": true,
       "reservationDeferredUntilFanIn": false,
@@ -442,14 +442,14 @@
         "consumesGamePrimarySlot": true,
         "taskClass": "development-implementation",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
-        "maxActiveWorkers": 64,
+        "maxActiveWorkers": 128,
         "fanInOnlyRefill": false,
         "adaptiveGameControlEligible": false,
         "capacityAwareFreeSlotRefill": true,
-        "adaptiveBaselineTarget": 64,
-        "adaptiveMinActiveWorkers": 64,
-        "adaptiveMaxActiveWorkers": 64,
-        "fixedRepeatDevelopmentSlots": 64,
+        "adaptiveBaselineTarget": 128,
+        "adaptiveMinActiveWorkers": 128,
+        "adaptiveMaxActiveWorkers": 128,
+        "fixedRepeatDevelopmentSlots": 128,
         "reservationTargetMutationAllowed": false
       },
       "RECOVERY_FAST": {
@@ -530,11 +530,11 @@
       "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "workerDirectControlWrite": false,
       "sourceAndFileConflictLocksPreserved": false,
-      "pressureFloor": 64,
+      "pressureFloor": 128,
       "autonomousScaleSteps": [
-        64
+        128
       ],
-      "internalPolicyCap": 64,
+      "internalPolicyCap": 128,
       "externalProviderBoundary": 256,
       "universalActionableDomains": true,
       "neuralGatedExecution": true,
@@ -543,7 +543,7 @@
         "REPRIORITIZE_EXISTING_TASK",
         "IMMEDIATE_REFILL",
         "FAILURE_CLASS_RETRY_STRATEGY",
-        "FIXED_REPEAT_DEVELOPMENT_REFILL_64"
+        "FIXED_REPEAT_DEVELOPMENT_REFILL_128"
       ],
       "protectedAuthoritiesRemainCentral": true,
       "retryStrategyMutationRequiresVerifiedRootCause": true,
@@ -571,7 +571,7 @@
       "pressureCoalescingDefersNewWorkflowCreation": true,
       "pressureThreshold": 4,
       "topLevelFanInRefillLaneSerialization": true,
-      "fixedRepeatDevelopmentSlots": 64
+      "fixedRepeatDevelopmentSlots": 128
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",
@@ -822,7 +822,7 @@
   },
   "adaptiveBackpressure": {
     "enabled": true,
-    "mode": "GAME_PRIMARY_FIXED_64_RESERVATION_WITH_TELEMETRY_ONLY_SPECULATIVE_PRESSURE_CONTROL",
+    "mode": "GAME_PRIMARY_FIXED_128_RESERVATION_WITH_TELEMETRY_ONLY_SPECULATIVE_PRESSURE_CONTROL",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
       4,
@@ -856,18 +856,18 @@
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
     "externalBatchMax": 256,
-    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-10-06_FIXED_REPEAT_DEVELOPMENT_64",
+    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-10-06_FIXED_REPEAT_DEVELOPMENT_128",
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 64,
-    "baselineAdaptiveWave": 64,
+    "minimumAdaptiveWave": 128,
+    "baselineAdaptiveWave": 128,
     "staleTelemetryResetTarget": 256,
     "adaptiveControlRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY_NO_RESERVATION_AUTHORITY",
-    "primaryReservationLimit": "FIXED_REPEAT_DEVELOPMENT_64",
+    "primaryReservationLimit": "FIXED_REPEAT_DEVELOPMENT_128",
     "primaryReservationDownshiftAllowed": false,
     "primaryReservationUpshiftAllowed": false,
-    "fixedRepeatDevelopmentSlots": 64
+    "fixedRepeatDevelopmentSlots": 128
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -1049,7 +1049,7 @@
   "parallelismTelemetry": {
     "enabled": true,
     "tool": "tools/vibe2-parallelism-telemetry.mjs",
-    "requestedMax": 64,
+    "requestedMax": 128,
     "artifact": "vibe2-parallelism-telemetry",
     "metrics": [
       "actualPeakConcurrency",
@@ -1074,7 +1074,7 @@
       "changedLinesPerMinute",
       "bottleneck"
     ],
-    "loadProbeTargetWorkers": 64,
+    "loadProbeTargetWorkers": 128,
     "backpressureSteps": [
       4,
       8,

@@ -26,9 +26,10 @@ test('new upper-platform entry stays in Unity Web floor until readiness exists',
   try{
     write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_EVIDENCE_MISSING');
-    assert.equal(result.buildMethod,'Demo.WebBuild.BuildWeb');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_EVIDENCE_MISSING');
+    assert.equal(result.web.buildMethod,'Demo.WebBuild.BuildWeb');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -42,14 +43,79 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
       version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
       unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
       criteria:{
-        design:{pass:true},code:{pass:true},graphics:{pass:true},webglBuild:{pass:true},
+        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:[
+          ...['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+            stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+            observedMeshCount:6,observedTriangles:240,depthPass:true,perspectiveCamera:true,
+             worldMeshes3d:6,worldDepthCm:450,gameplayActors3d:2,spriteGameplayActors:0
+          }))
+        ]},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
       }
     });
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
-    assert.equal(result.reason,'UPPER_PLATFORM_DEVELOPMENT_READY');
+    assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,false);
+    assert.equal(result.web.state,'UNITY_WEB_VERIFIED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('older 2D readiness and boolean-only 3D markers cannot reopen Unity Web development gate',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-3d-proof-'));
+  try{
+    write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game {}');
+    write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs','namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }');
+    const tree=unitySourceTreeSha256(path.join(root,'unity-games/new-game'));
+    const evidence={
+      version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+      unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
+      criteria:{
+        design:{pass:true},code:{pass:true},graphics:{pass:true,native3dVerified:true},
+        webglBuild:{pass:true},actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
+      }
+    };
+    write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
+    let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
+    evidence.criteria.graphics={pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:[
+      ...['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+        stage,pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_AND_TRIANGLE_PROOF',
+        observedMeshCount:0,observedTriangles:0
+      }))
+    ]};
+    write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
+    result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('pseudo 2.5D sprite actors fail admission even when the terrain has genuine 3D triangles',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-sprite-gate-'));
+  try{
+    write(root,'unity-games/flat-actors/Assets/Scripts/Game.cs','public class Game {}');
+    write(root,'unity-games/flat-actors/Assets/Editor/WebBuild.cs','public static class WebBuild { public static void BuildWeb(){} }');
+    const tree=unitySourceTreeSha256(path.join(root,'unity-games/flat-actors'));
+    write(root,'web-games/flat-actors/upper-platform-development-readiness.json',{
+      version:1,gameId:'flat-actors',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+      unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
+      criteria:{
+        design:{pass:true},code:{pass:true},
+        graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',native3dChecks:
+          ['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+            stage,pass:true,requiredDimension:'3D',
+            source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+            observedMeshCount:6,observedTriangles:240,depthPass:true,perspectiveCamera:true,
+            worldMeshes3d:6,worldDepthCm:450,gameplayActors3d:0,spriteGameplayActors:2
+          }))},
+        webglBuild:{pass:true},actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
+      }
+    });
+    const state=classifyUpperPlatformAdmission(baseItem('flat-actors'),{repoRoot:root});
+    assert.equal(state.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(state.web.reason,'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -69,8 +135,9 @@ test('Unity source drift invalidates readiness and returns the new game to Unity
     });
     write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game { public int Changed; }');
     const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_SOURCE_STALE');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_SOURCE_STALE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -80,7 +147,7 @@ test('already-started native games remain grandfathered from durable progress ev
     const item={...baseItem('existing-game'),currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxFoundationF0Passed:true};
     const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
-    assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+    assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,true);
     assert.equal(result.grandfatherSource,'DURABLE_NATIVE_PROGRESS_EVIDENCE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -101,16 +168,18 @@ test('readiness must pass all seven domains and may never gain release authority
       }
     });
     let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_CRITERIA_INCOMPLETE');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_CRITERIA_INCOMPLETE');
 
     const evidence=JSON.parse(fs.readFileSync(path.join(root,'web-games/new-game/upper-platform-development-readiness.json'),'utf8'));
     evidence.criteria.qa.pass=true;
     evidence.releaseOrDeploymentAuthority=true;
     write(root,'web-games/new-game/upper-platform-development-readiness.json',evidence);
     result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
-    assert.equal(result.reason,'READINESS_RELEASE_AUTHORITY_INVALID');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_RELEASE_AUTHORITY_INVALID');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -126,7 +195,7 @@ test('any durable native progress continues without backtracking, regardless of 
     ]){
       const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
       assert.equal(result.state,'UPPER_PLATFORM');
-      assert.equal(result.reason,'GRANDFATHERED_NATIVE_PROGRESS');
+      assert.equal(result.reason,'MINIMUM_DESIGN_READY');
       assert.equal(result.grandfathered,true);
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -137,10 +206,12 @@ test('a source bootstrap timestamp without an exact native source commit cannot 
   try{
     const item={...baseItem('bootstrap-only'),robloxSourceBootstrapPassedAt:'2026-09-25T05:36:30.138Z'};
     let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/bootstrap-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -149,10 +220,12 @@ test('a native-looking currentStep without durable evidence cannot bypass the Un
   try{
     const item={...baseItem('step-only'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION'};
     let result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/step-only/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(item,{repoRoot:root});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -160,10 +233,12 @@ test('an explicit migration id without durable native progress cannot bypass the
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-explicit-no-evidence-'));
   try{
     let result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
-    assert.equal(result.state,'UNITY_WEB_BOOTSTRAP');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_BOOTSTRAP');
     write(root,'unity-games/listed-but-new/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     result=classifyUpperPlatformAdmission(baseItem('listed-but-new'),{repoRoot:root,grandfatherGameIds:['listed-but-new']});
-    assert.equal(result.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.state,'UPPER_PLATFORM');
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

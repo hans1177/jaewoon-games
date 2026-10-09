@@ -119,9 +119,8 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
-    // 개발 확정 게임은 아직 배포가 없어도 플랫폼별 진행 상태와 비활성 버튼을 보여준다.
-    // 그 외 게임은 실제로 검증된 실행 링크가 있을 때만 표시한다.
-    .filter(game=>productionClassOf(game)==='DEVELOPMENT_CONFIRMED'||hasRunnableHomepageTarget(game))
+    // 개발중·미출시라도 실제 실행 경로가 있는 게임만 노출한다. 버튼만 있는 시제품 카드는 제외한다.
+    .filter(hasRunnableHomepageTarget)
     .sort((a,b)=>{
       const sa=scoreState(a),sb=scoreState(b);
       if(sa.score!==null||sb.score!==null){

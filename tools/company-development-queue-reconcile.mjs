@@ -59,6 +59,7 @@ function assertDirectNativePolicy(roadmap={}){
   const ok=roadmap?.authority==='MACHINE_EXECUTION_CONTRACT'
     &&d.status==='OWNER_DIRECT_LOCKED'
     &&d.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
+    &&d.ownerActiveDevelopmentScope20261009?.activeTargets?.join(',')==='ROBLOX,UNITY_WEB'
     &&d.canonicalDevelopmentAdmissionAuthority===true
     &&d.minimumDesignRequired===true
     &&d.strictDesignScoreRequiredForDevelopmentAdmission===false
@@ -66,11 +67,11 @@ function assertDirectNativePolicy(roadmap={}){
     &&d.webDevelopmentStageRemoved===false
     &&d.unityWebEnabled===true
     &&d.unityWebRequired===true
-    &&d.unityWebGateRequired===true
+    &&d.unityWebGateRequired===false
     &&d.unityWebMode==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&d.upperPlatformAdmission==='UPPER_PLATFORM_DEVELOPMENT_READY'
-    &&development.unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart===true
-    &&development.upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass===true
+    &&d.upperPlatformAdmission==='MINIMUM_DESIGN_READY'
+    &&development.unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart===false
+    &&development.upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass===false
     &&gate.gateId==='UPPER_PLATFORM_DEVELOPMENT_READY'
     &&gate.allCriteriaRequired===true
     &&Array.isArray(gate.targets)
@@ -78,9 +79,9 @@ function assertDirectNativePolicy(roadmap={}){
     &&Array.isArray(d.supportedDevelopmentPlatforms)
     &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY'
     &&Array.isArray(pairing.ROBLOX)
-    &&pairing.ROBLOX.join(',')==='UNITY_WEB_FLOOR,ROBLOX,UNITY'
+    &&pairing.ROBLOX.join(',')==='ROBLOX,UNITY_WEB_FLOOR'
     &&Array.isArray(pairing.UNITY)
-    &&pairing.UNITY.join(',')==='UNITY_WEB_FLOOR,UNITY,ROBLOX';
+    &&pairing.UNITY.join(',')==='UNITY_WEB_FLOOR';
   if(!ok)throw new Error('CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED');
   return d;
 }

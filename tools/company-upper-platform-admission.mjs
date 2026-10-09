@@ -68,6 +68,25 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
   if(requiredDomains.some(key=>data.criteria?.[key]?.pass!==true))return{pass:false,reason:'READINESS_CRITERIA_INCOMPLETE',data,currentTree};
   if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE',data,currentTree};
   if(data.releaseOrDeploymentAuthority!==false)return{pass:false,reason:'READINESS_RELEASE_AUTHORITY_INVALID',data,currentTree};
+  // 기존의 2D/2.5D 검증 기록은 3D 전용 정책이 적용된 새 런타임 증거가 아니다.
+  const graphics=data.criteria?.graphics||{};
+  const native3dChecks=Array.isArray(graphics.native3dChecks)?graphics.native3dChecks:[];
+  const requiredProofStages=['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'];
+  const native3dEvidencePass=graphics.native3dVerified===true
+    &&graphics.requiredDimension==='3D'
+    &&native3dChecks.length===requiredProofStages.length
+    &&native3dChecks.every((proof,index)=>
+      proof?.stage===requiredProofStages[index]&&proof.pass===true
+      &&proof.requiredDimension==='3D'
+      &&proof.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+      &&Number.isSafeInteger(proof.observedMeshCount)&&proof.observedMeshCount>0
+      &&Number.isSafeInteger(proof.observedTriangles)&&proof.observedTriangles>0
+      &&proof.depthPass===true&&proof.perspectiveCamera===true
+      &&Number.isSafeInteger(proof.worldMeshes3d)&&proof.worldMeshes3d>=2
+      &&Number.isSafeInteger(proof.worldDepthCm)&&proof.worldDepthCm>=50
+      &&Number.isSafeInteger(proof.gameplayActors3d)&&proof.gameplayActors3d>=1
+      &&proof.spriteGameplayActors===0);
+  if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
   return{pass:true,reason:'READY',data,currentTree};
 }
 
@@ -79,12 +98,14 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)return{gameId,state:'BLOCKED',reason:'DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED'};
   const targets=new Set(item.concurrentTargetPlatforms||[]);
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
-  const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
   const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
-  if(nativeStarted)return{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS',grandfathered:true,grandfatherSource:grandfathered.has(gameId)?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'};
+  const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
-  if(readiness.pass)return{gameId,state:'UPPER_PLATFORM',reason:'UPPER_PLATFORM_DEVELOPMENT_READY',grandfathered:false,readiness};
-  const buildMethod=discoverUnityWebBuildMethod(repoRoot,gameId);
-  if(buildMethod)return{gameId,state:'UNITY_WEB_FLOOR',reason:readiness.reason,buildMethod};
-  return{gameId,state:'UNITY_WEB_BOOTSTRAP',reason:readiness.reason+':CANONICAL_UNITY_WEB_SOURCE_REQUIRED'};
+  const method=readiness.pass?null:discoverUnityWebBuildMethod(repoRoot,gameId);
+  const web=readiness.pass?{state:'UNITY_WEB_VERIFIED',reason:'CURRENT_UNITY_WEB_QA_VERIFIED',readiness}
+    :method?{state:'UNITY_WEB_FLOOR',reason:readiness.reason,buildMethod:method}
+    :fs.existsSync(path.join(repoRoot,'unity-games',gameId))?{state:'UNITY_WEB_SOURCE_REPAIR',reason:'EXISTING_UNITY_SOURCE_REPAIR_REQUIRED'}
+    :{state:'UNITY_WEB_BOOTSTRAP',reason:readiness.reason+':CANONICAL_UNITY_WEB_SOURCE_REQUIRED'};
+  return{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted,
+    grandfatherSource:nativeStarted?(grandfathered.has(gameId)?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'):null,web};
 }

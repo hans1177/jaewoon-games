@@ -1163,22 +1163,51 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without w
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
+  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
 
-test('source-plan dedupe keeps only the newest same-game ingress on the fixed control runner',()=>{
+test('source-plan dedupe keeps active same-game ingress on the fixed control runner',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: true/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: false/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
+
+
+test('Roblox source-plan winner preserves running work and filters exact game and source revision',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const ingress=workflow.indexOf('CURRENT_SHA="$GITHUB_SHA" node -e "');
+  assert.ok(ingress>=0);
+  const start=workflow.indexOf(' node -e "',ingress)+' node -e "'.length;
+  const end=workflow.indexOf('\n          ")"',start);
+  assert.ok(end>start);
+  const selector=workflow.slice(start,end);
+  const sha='a'.repeat(40);
+  const run=(id,status,game='cozy-island',head=sha)=>({id,status,display_title:'Roblox runtime · '+game,head_sha:head});
+  const winner=(rows,game='cozy-island')=>{
+    let dataCallback=null,endCallback=null,result='';
+    const input={on(event,callback){if(event==='data')dataCallback=callback;else if(event==='end')endCallback=callback;return this;}};
+    runInNewContext(selector,{process:{env:{REQUESTED_GAME_ID:game,CURRENT_SHA:sha},stdin:input,stdout:{write(value){result+=value;}}}});
+    assert.equal(typeof dataCallback,'function');
+    assert.equal(typeof endCallback,'function');
+    dataCallback(JSON.stringify({workflow_runs:rows}));
+    endCallback();
+    return result;
+  };
+  assert.equal(winner([run(10,'in_progress'),run(11,'queued')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'11');
+  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'completed'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'in_progress','different'),run(11,'queued','cozy-island','b'.repeat(40)),run(12,'queued')]),'12');
+  assert.equal(winner([run(10,'in_progress','different')]),'');
+});
 
 test('Roblox control jobs use fixed 24.04 while heavy workers stay full',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -1239,10 +1268,10 @@ test('build revalidation pending waiting state remains eligible for exact Roblox
 });
 
 
-test('exact-game dedupe always prefers the newest active run so stale source runs cannot block fresh exact work',()=>{
+test('exact-game dedupe prefers in-progress work and compares only the same source revision',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.match(workflow,/\.sort\(\(a,b\)=>a-b\)/);
-  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
+  assert.match(workflow,/\.sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
   assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });
 

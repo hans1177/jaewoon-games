@@ -58,7 +58,9 @@ test('canonical high-end visual contract reuses existing graphics and asset pipe
   assert.equal(c.runtimeQa.beforeAfterVisualRegressionRequired,true);
   const spatial=roadmap.livingMotionVisualQualityContract.minimumSpatialPresentation;
   assert.equal(spatial.status,'ACTIVE_EXECUTABLE_CONTRACT');
-  assert.equal(spatial.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(spatial.minimumFinalGameplayDimension,'3D');
+  assert.equal(spatial.accepted2_5DTechniquesAreNotFinalPass,true);
+  assert.equal(roadmap.ownerUnityWeb3dOnly20261009.existing2dOr2_5dGameAction,'MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES');
   assert.equal(spatial.flat2DFinalGameplayForbidden,true);
   assert.equal(spatial.uiOverlayMayRemain2D,true);
   assert.equal(spatial.runtimeEvidenceRequired,true);
@@ -322,10 +324,12 @@ test('asset and direction planners consume one high-end profile without Web-firs
   assert.deepEqual([...art.highEndVisual.targetFrames],[...VIBE_HIGH_END_TARGET_FRAME_ROLES]);
   assert.ok(art.art.transforms.includes('kitbash'));
   assert.equal(art.policy.highEndVisualProduction,true);
-  assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.minimumSpatialPresentation.minimumFinalGameplayDimension,'3D');
+  assert.equal(art.minimumSpatialPresentation.twoPointFiveDFinalPassForbidden,true);
+  assert.equal(art.minimumSpatialPresentation.allSpatialGameplayLibraryAssets3dOnly,true);
   assert.equal(art.minimumSpatialPresentation.flat2DFinalGameplayForbidden,true);
   assert.equal(art.minimumSpatialPresentation.ui2DOverlayAllowed,true);
-  assert.equal(art.policy.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(art.policy.minimumFinalGameplayDimension,'3D');
   assert.ok(art.implementation.some(value=>/3D|2\.5D/.test(value)));
   assert.deepEqual([...art.animation.motionLayers],['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
   assert.equal(art.animation.target,'STUDIO_GRADE_GAME_MOTION');

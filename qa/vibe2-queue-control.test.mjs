@@ -1816,7 +1816,7 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
-test('continuous core rebases stale main pushes, drops duplicate refill wakes, and always ingests neuron completion callbacks',()=>{
+test('continuous core rebases stale main pushes and refill wakes while ingesting neuron completion callbacks',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('- name: Drop stale reserve wake before reserve work');
   const end=workflow.indexOf('\n      - name:',start+1);
@@ -1824,7 +1824,8 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
   const block=workflow.slice(start,end);
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
   assert.match(block,/vibe2-fanin-refill/);
-  assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
+  assert.match(block,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST/);
+  assert.doesNotMatch(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
   assert.match(block,/VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST/);
   assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
   assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
@@ -1837,7 +1838,7 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
     const gh=path.join(temp,'gh'),output=path.join(temp,'output');
     fs.writeFileSync(gh,'#!/bin/sh\nprintf "%s\\n" "$TEST_LATEST_MAIN"\n',{mode:0o755});
     for(const [event,action,eventSha,latestSha,expected,marker] of [
-      ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','false','VIBE2_FANIN_WAKE_STALE_DROPPED'],
+      ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','true','VIBE2_FANIN_WAKE_REBASED_TO_LATEST'],
       ['push','','old-owner-main','new-owner-main','true','VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST'],
       ['repository_dispatch','vibe2-fanin-refill','same-main','same-main','true','VIBE2_RESERVE_WAKE_FRESH'],
       ['repository_dispatch','vibe2-neuron-complete','old-owner-main','new-owner-main','true','NEURON_CALLBACK_ALWAYS_INGEST']
@@ -2439,4 +2440,33 @@ test('quality-first asset lane fixes 63 slots and prioritizes current Roblox con
   const overfull={...batch.queue,tasks:[...batch.queue.tasks,{...tasks[0],id:'legacy-running',status:'running'}]};
   const held=reserveVibeTaskBatch(overfull,{lane:'asset-development',policy});
   assert.equal(held.tasks.length,0);assert.equal(held.queue.tasks.filter(t=>t.status==='running').length,64);
+});
+
+test('Unity Web receives sixteen distinct-game priority slots without a seventeenth-game cap; Android stays held',()=>{
+  const policy={
+    directNativeDualPlatformDevelopment:{ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']}},
+    developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:16}}
+  };
+  const web=Array.from({length:18},(_,i)=>({
+    id:'unity-web-'+i,gameId:'unity-web-'+i,target:'unity',
+    evidence:['unity-web-first-stage'],sourceRoot:'unity-games/unity-web-'+i,
+    responsibleFiles:['unity-games/unity-web-'+i+'/Assets/Scripts/GameCore.cs'],
+    department:'development',type:'implementation',goal:'independent WebGL development',status:'queued'
+  }));
+  const android={id:'android-held',gameId:'android-held',target:'unity',
+    sourceRoot:'unity-games/android-held',responsibleFiles:['unity-games/android-held/Assets/Scripts/GameCore.cs'],
+    department:'development',type:'implementation',goal:'Android app only',status:'queued'};
+  const roblox={id:'roblox-live',gameId:'roblox-live',target:'roblox',
+    sourceRoot:'roblox-games/roblox-live',responsibleFiles:['roblox-games/roblox-live/server/Game.server.luau'],
+    department:'development',type:'implementation',goal:'Roblox development',status:'queued'};
+  const result=reserveVibeTaskBatch({maxConcurrentTasks:25,tasks:[...web,android,roblox]},{
+    policy,maxConcurrentTasks:25,lane:'game-primary',
+    reservation:{id:'independent-two-platforms',runId:'local',reservedAt:new Date().toISOString()}
+  });
+  assert.equal(new Set(result.tasks.filter(t=>t.target==='unity').map(t=>t.gameId)).size,18);
+  assert.equal(result.selection.webGameFlow.target,16);
+  assert.equal(result.selection.webGameFlow.shortfall,0);
+  assert.equal(result.queue.tasks.find(t=>t.id==='android-held').ownerDevelopmentHold,true);
+  assert.equal(result.queue.tasks.find(t=>t.id==='android-held').status,'queued');
+  assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
 });

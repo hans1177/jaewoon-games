@@ -69,7 +69,8 @@ jobs:
           const item=(queue.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error('UNITY_WEB_BOOTSTRAP_QUEUE_ITEM_MISSING:'+gameId);
           if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error('UNITY_WEB_BOOTSTRAP_PRODUCTION_CLASS_INVALID:'+gameId);
-          if(nativeUpperPlatformAlreadyStarted(item))throw new Error('UNITY_WEB_BOOTSTRAP_GRANDFATHER_FORBIDDEN:'+gameId);
+          if(fs.existsSync(path.join('unity-games',gameId)))throw new Error('UNITY_WEB_BOOTSTRAP_EXISTING_SOURCE_MUST_BE_REPAIRED_IN_PLACE:'+gameId);
+           if(nativeUpperPlatformAlreadyStarted(item))console.log('UNITY_WEB_BOOTSTRAP_NATIVE_PROGRESS_PRESERVED='+gameId);
           const designSource=String(item.designBaselineSource||item.minimumDesignContract?.source||'').trim();
           if(!designSource)throw new Error('UNITY_WEB_BOOTSTRAP_DESIGN_SOURCE_MISSING:'+gameId);
           const local=path.join('/tmp/unity-web-bootstrap-design',gameId,'design-revised.json');

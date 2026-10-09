@@ -70,11 +70,11 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    # Exact ingress coalescing only: the newest planner supersedes older planner work for the same game/batch.
-    # Downstream source, runtime, QA, and release jobs are not part of this concurrency group.
+    # Keep the active planner. GitHub coalesces only redundant pending planners for this exact game/batch.
+    # This never serializes downstream source, runtime, QA, or release work.
     concurrency:
       group: roblox-runtime-source-plan-v2-${{ inputs.game_id || 'batch' }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
     runs-on: ubuntu-24.04
@@ -112,16 +112,17 @@ jobs:
               const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
               const currentSha=String(process.env.CURRENT_SHA||'').trim();
               const title='Roblox runtime · '+(requested||'batch');
-              const ids=(j.workflow_runs||[])
+              const candidates=(j.workflow_runs||[])
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===currentSha)
-                .map(r=>Number(r.id))
-                .filter(Number.isFinite)
-                .sort((a,b)=>a-b);
-              if(!ids.length){process.stdout.write('');return;}
-              process.stdout.write(String(ids[ids.length-1]));
+                .filter(r=>Number.isFinite(Number(r.id)))
+                .sort((a,b)=>Number(a.id)-Number(b.id));
+              // An active same-revision plan owns the work. New queued ingress must not make it abandon progress.
+              const winner=candidates.find(r=>String(r.status||'').toLowerCase()==='in_progress')||candidates[candidates.length-1];
+              process.stdout.write(winner?String(winner.id):'');
             });
           ")"
           echo "ROBLOX_RUNTIME_ACTIVE_WINNER=${winner:-NONE}"
+          echo "ROBLOX_SOURCE_PLAN_ACTIVE_WORK_PRESERVED=YES"
           if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
             echo 'run=false' >> "$GITHUB_OUTPUT"
             if [ -n "$REQUESTED_GAME_ID" ]; then

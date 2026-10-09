@@ -18,7 +18,7 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'game';
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const contract=policy?.unityWebFirstStage;
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==true||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
+if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
 if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
 
@@ -207,7 +207,48 @@ if(mode==='result'){
         &&qaMarkers.some(marker=>marker.includes(' CORE_FUN ')&&marker.includes('status=PASS'))
         &&qa?.gameplay?.progressObserved===true
         &&qa?.gameplay?.coreActionObserved===true;
+      // 메인: 기존 게임을 포함해 실제 브라우저에서 관찰된 3D 입체 메시를 최종 단계에서 재확인한다.
+      const nativeMeshMarker=qaMarkers.slice().reverse().find(marker=>marker.includes(' MESH_INTEGRITY ')
+        &&marker.includes(`game=${gameId}`)&&marker.includes('source=UNITY_MESH_FILTER'))||'';
+      const nativeMeshMetric=key=>{
+        const token=nativeMeshMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+        return token===undefined?null:Number(token.slice(key.length+1));
+      };
+      const nativeDepthMarker=qaMarkers.slice().reverse().find(marker=>marker.includes(' SPATIAL_DEPTH ')
+        &&marker.includes(`game=${gameId}`)&&marker.includes('source=UNITY_WORLD_MESH_DEPTH'))||'';
+      const nativeDepthMetric=key=>{
+        const token=nativeDepthMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+        return token===undefined?null:Number(token.slice(key.length+1));
+      };
+      const actualMeshProof=qa?.visualQa?.nativeUnityMesh?.metrics||{};
+      const native3dVerified=qa?.pass===true
+        &&qa?.spatialGameplay?.pass===true
+        &&qa?.spatialGameplay?.requiredDimension==='3D'
+        &&qa?.spatialGameplay?.depthPass===true
+        &&qa?.spatialGameplay?.perspectiveCamera===true
+        &&Number(qa?.spatialGameplay?.worldDepthCm)>=50
+        &&Number(qa?.spatialGameplay?.gameplayActors3d)>=1
+        &&Number(qa?.spatialGameplay?.worldMeshes3d)>=2
+        &&qa?.spatialGameplay?.spriteGameplayActors===0
+        &&nativeDepthMarker.includes('status=PASS')
+        &&nativeDepthMetric('cameraPerspective')===1
+        &&nativeDepthMetric('worldMeshes3d')===qa.spatialGameplay.worldMeshes3d
+        &&nativeDepthMetric('worldDepthCm')===qa.spatialGameplay.worldDepthCm
+        &&nativeDepthMetric('gameplayActors3d')===qa.spatialGameplay.gameplayActors3d
+        &&nativeDepthMetric('spriteGameplayActors')===0
+        &&Number(qa?.spatialGameplay?.observedMeshCount)>0
+        &&Number(qa?.spatialGameplay?.observedTriangles)>0
+        &&Number(qa?.spatialGameplay?.observedVolumetricMeshes)>0
+        &&qa?.visualQa?.nativeUnityMesh?.pass===true
+        &&nativeMeshMarker.includes('status=PASS')
+        &&nativeMeshMetric('inspected')===actualMeshProof.inspected
+        &&nativeMeshMetric('validMeshes')===actualMeshProof.validMeshes
+        &&nativeMeshMetric('triangles')===qa.spatialGameplay.observedTriangles
+        &&nativeMeshMetric('volumetricMeshes')===qa.spatialGameplay.observedVolumetricMeshes
+        &&nativeMeshMetric('volumetricMeshes')===actualMeshProof.volumetricMeshes
+        &&nativeMeshMetric('materialPass')===1&&nativeMeshMetric('texturePass')===1;
       const gate={
+        native3d:native3dVerified,
         boot:build?.bootSmoke==='PASS'&&qa?.boot?.pass===true,
         input:qa?.input?.pass===true&&realMobileEvidence,
         gameplay:qa?.gameplay?.pass===true&&qa?.gameplay?.gameplayStartObserved===true&&qa?.gameplay?.safeReturnOrResetObserved===true,
@@ -230,6 +271,7 @@ if(mode==='result'){
           gameId,
           pass:true,
           gate,
+          spatialGameplay:qa.spatialGameplay,
           canonicalSourceRoot:sourceRoot,
           buildOutputRoot:`web-games/${gameId}`,
           sourceCommit:build?.sourceCommit||null,
@@ -247,7 +289,7 @@ if(mode==='result'){
           upperPlatformReadinessRequired:true,
           upperPlatformReadinessEvidence:`web-games/${gameId}/upper-platform-development-readiness.json`,
           releaseAuthority:false,
-          postGateAction:'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY',
+          postGateAction:'CONTINUE_INDEPENDENT_UNITY_WEB_DEVELOPMENT',
           generatedAt:stamp,
         };
         const evidenceOut=path.join(persistRoot,evidenceRelative);

@@ -368,7 +368,10 @@ export function compileVibeCentralWorkContract({
   const required=source.required===true||Number(orchestration?.version||0)>0;
   const dedupeKey=workKey&&source.fingerprint?sha256([workKey,source.version,source.fingerprint,uniq(responsibleFiles).join('|')].join(':')):null;
   const exactResponsibleFiles=uniq(responsibleFiles);
-  const declaredAssetRecipes=Array.isArray(assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes)
+  // DCC 출력은 자산 제작 작업에서만 생성된다. 일반 게임 작업은 공용 레시피를 읽기만 한다.
+  const writesDeclaredAssets=task?.assetProductionLane===true
+    ||(Array.isArray(task?.evidence)&&task.evidence.includes('asset-production-parallel:v1'));
+  const declaredAssetRecipes=writesDeclaredAssets&&Array.isArray(assetProduction?.nativeAuthoringExecution?.dcc?.executionRecipes)
     ?assetProduction.nativeAuthoringExecution.dcc.executionRecipes
     :[];
   const generatedAssetFiles=uniq(declaredAssetRecipes.flatMap(recipe=>[

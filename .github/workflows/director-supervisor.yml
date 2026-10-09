@@ -592,7 +592,7 @@ jobs:
                 )] | length' <<<"$core_runs")"
                 echo "DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=$active_scoped_core"
                 if [ "$active_scoped_core" -eq 0 ]; then
-                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches"                   -f ref=main                   -f 'inputs[execution_lane]=game-primary'                   -f 'inputs[lane_max]=64' >/dev/null
+                gh api --method POST                   "repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches"                   -f ref=main                   -f 'inputs[execution_lane]=game-primary'                   -f 'inputs[lane_max]=128' >/dev/null
                 echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED'
                 else
                   echo 'DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE'

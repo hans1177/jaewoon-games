@@ -163,6 +163,17 @@ assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
 assert.match(webRuntime,/company-minimum-design-contract\.mjs/);
 assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
+// Keep coordinator admission run-scoped: GitHub replaces pending runs that share one
+// concurrency group even when cancel-in-progress is false. The existing active-batch
+// scan remains responsible for idempotent work rather than GitHub pending replacement.
+const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
+assert.ok(coordinatorGate.length>0);
+assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
+assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
+assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
+assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+assert.match(coordinatorGate,/cancel-in-progress: false/);
+
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
 assert.equal(lifecycle.directNativeDualPlatformDevelopment.webStageSkipped,false);

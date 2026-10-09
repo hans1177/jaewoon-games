@@ -386,11 +386,11 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     &&firstStagePolicy?.appliesToAllGames===true;
   const unityWebDevelopmentFloor=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'
     &&clean(firstStagePolicy?.scope)==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&firstStagePolicy?.developmentAdmissionAuthority===true
+    &&firstStagePolicy?.enabled!==false
     &&firstStagePolicy?.validationSurfaceOnly===false;
   const grandfatherIds=new Set((centralPolicy?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[]).map(clean).filter(Boolean));
   const unityWebGrandfathered=unityWebDevelopmentFloor&&grandfatherIds.has(id)&&nativeUpperPlatformAlreadyStarted(item);
-  const unityWebFirstStage=(legacyUnityWebFirstStage||unityWebDevelopmentFloor)&&!unityWebGrandfathered;
+  const unityWebFirstStage=legacyUnityWebFirstStage||unityWebDevelopmentFloor;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
@@ -434,7 +434,13 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
       &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
       &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
-    if(!existingRobloxRuntime)continue;
+    // Roblox F0를 통과한 기존 소스는 Unity Web 3D 재개발과 독립적으로 계속 계획한다.
+    // F0는 런타임 PASS가 아니므로 runtimeVerified로 승격하지 않는다.
+    const robloxSourcePath=posix(item?.robloxProjectPath);
+    const independentlyStartedRoblox=item?.robloxFoundationF0Passed===true
+      &&/^roblox-games\/[a-zA-Z0-9._-]+$/.test(robloxSourcePath)
+      &&fs.existsSync(path.join(repoRoot,robloxSourcePath));
+    if(!existingRobloxRuntime&&!independentlyStartedRoblox)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
@@ -739,11 +745,10 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='unity'){
     if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
-    if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
-    return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
+    return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web';
+  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -851,7 +856,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
       +(project.genre&&project.subgenre?5:0))
     : 0;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':(ownerResume&&!['critical','owner-immediate'].includes(clean(priority).toLowerCase())?'high':priority),
+    id,gameId:project.gameId,target:project.engine,unityWebDevelopment:project.engine==='unity'&&project.firstStageUnityWeb===true,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':(ownerResume&&!['critical','owner-immediate'].includes(clean(priority).toLowerCase())?'high':priority),
     releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
@@ -859,7 +864,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
     supervisionContract:supervised?supervisedWebBuildContract():null,
     packageLongWorkProtected:(focused||ownerResume)||undefined,packageRole:focused?'implementation-owner':ownerResume?'owner-resumable-build-up':undefined,
     focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,ownerResumableBuildUp:ownerResume||undefined,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...(project.engine==='unity'&&project.firstStageUnityWeb===true?['unity-web-first-stage']:[]),...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   const runtimeNeural=compileRuntimeNeuralEvent(project,plannedTask.neuralDiagnosis);
@@ -1237,7 +1242,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   return out;
 }
 function findUnityWebFirstStageTask(project,repoRoot,queue){
-  if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
+  if(project.firstStageUnityWeb!==true||!['development-confirmed','release-confirmed'].includes(project.releaseState))return null;
   const root=posix(project.projectPath);
   if(root!==`unity-games/${project.gameId}`)return null;
   const readiness=readUpperPlatformReadiness(repoRoot,project.gameId);
@@ -1248,13 +1253,17 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
   const multiplayerRepairRequired=readiness?.data?.criteria?.qa?.multiplayerRequired===true&&readiness?.data?.criteria?.qa?.multiplayerPass!==true;
   const coreRel=`${root}/Assets/Scripts/GameCore.cs`;
   const runtimeRel=`${root}/Assets/Scripts/RuntimeBootstrap.cs`;
+  const floorRuntimeRel=`${root}/Assets/Scripts/UnityWebFloorGame.cs`;
+  const nativeVisualRel=`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
   const projectVersionRel=`${root}/ProjectSettings/ProjectVersion.txt`;
   const manifestRel=`${root}/Packages/manifest.json`;
   const projectReady=fs.existsSync(sourceFile(repoRoot,projectVersionRel))
     &&fs.existsSync(sourceFile(repoRoot,manifestRel))
-    &&fs.existsSync(sourceFile(repoRoot,coreRel))
-    &&fs.existsSync(sourceFile(repoRoot,runtimeRel));
-  const runtime=readText(sourceFile(repoRoot,runtimeRel));
+    &&((fs.existsSync(sourceFile(repoRoot,coreRel))&&fs.existsSync(sourceFile(repoRoot,runtimeRel)))
+      ||fs.existsSync(sourceFile(repoRoot,floorRuntimeRel)));
+  const runtime=readText(sourceFile(repoRoot,
+    fs.existsSync(sourceFile(repoRoot,runtimeRel))?runtimeRel:floorRuntimeRel));
+  const qaSource=[runtime,readText(sourceFile(repoRoot,nativeVisualRel))].join('\n');
   let buildWebReady=false;
   const editorRoot=sourceFile(repoRoot,`${root}/Assets/Editor`);
   if(fs.existsSync(editorRoot)){
@@ -1273,7 +1282,9 @@ function findUnityWebFirstStageTask(project,repoRoot,queue){
     &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_TARGET/.test(runtime)
     &&/JAEWOON_UNITY_WEB_QA\s+MOBILE_INPUT/.test(runtime)
     &&/JAEWOON_UNITY_WEB_QA\s+CORE_FUN/.test(runtime)
-    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime);
+    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime)
+    &&/JAEWOON_UNITY_WEB_QA\s+MESH_INTEGRITY/.test(qaSource)
+    &&/JAEWOON_UNITY_WEB_QA\s+SPATIAL_DEPTH/.test(qaSource);
   const repairState=clean(project.queueCanonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'
     ||clean(project.queueCurrentStep).toUpperCase()==='VIBE_WEB_REPAIR';
 
@@ -1288,13 +1299,14 @@ Unity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit
 실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로 MOBILE_INPUT을 찍으면 안 된다.
 JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 또는 ATTACK, PROGRESS 또는 REWARD 실제 런타임 증거를 남긴다.
 장르 핵심 루프가 실제 게임 상태로 완료된 순간에만 CORE_FUN status=PASS loop=<genre-specific-loop>를 남긴다. 단순 시작/버튼 클릭/문구 표시만으로 CORE_FUN을 찍지 않는다.
-실제 게임 화면은 placeholder primitive 중심으로 완료 처리하지 않고 기존 저장소 에셋과 권리 명확한 에셋을 우선 사용한다.
+실제 게임 화면은 2D·2.5D나 평면 스프라이트를 최종 장면으로 사용하지 않고 Unity의 3D Scene·MeshFilter/MeshRenderer(또는 SkinnedMeshRenderer)·입체 공간/카메라/조명을 구현한다. placeholder primitive 중심 화면도 완료로 인정하지 않는다. 게임 개체는 company-asset-library.json에 등록된 내부 공용 3D 모델만 사용하고, 장르·다른 게임·원본 플랫폼별 인위적 사용 상한을 두지 않는다. 다른 플랫폼 모델은 Unity 네이티브로 변환하며, 재질·파츠·실루엣·모션으로 게임별 개성을 보존한다. 외부 미등록 자산 직접 사용을 금지하며 2D UI/텍스처/오디오만 보조로 허용한다.
 시스템이 생성하는 Packages/ProjectSettings/WebBuild.cs는 빌드 뼈대일 뿐 게임 구현이 아니다. 게임플레이 소스는 Vibe가 직접 구현한다.
-Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 사이클을 만든 뒤에만 검증으로 넘긴다.`;
+모든 게임에서 실제 MeshFilter 삼각형·재질을 검사한 Unity 런타임 MESH_INTEGRITY 증거(inspected>0, validMeshes=inspected, triangles>0, materialPass=1, texturePass=1)를 계산해서 출력해야 한다. SPATIAL_DEPTH 증거도 실제 Unity 컴포넌트에서 cameraPerspective=1, worldMeshes3d>=2, worldDepthCm>=50, gameplayActors3d>=1, spriteGameplayActors=0을 측정해 출력한다. 숫자 하드코딩·가짜 PASS는 금지한다. Unity Web에서 실제 3D 첫 플레이 사이클을 완성한 뒤 모바일 브라우저/저장/독립 QA·회귀검증으로 넘긴다.`;
     const out=task(id,{...project,engine:'unity',target:'unity'},goal,[coreRel,runtimeRel],'owner-immediate','high',[
       'owner-directive:webgame-first',
       'web-stage:WEB_BASE_IMPLEMENTATION',
       'unity-web-first-stage',
+      'owner-unity-web-native-3d-required',
       'source-root-bootstrap-required',
       'unity-web-source-root-bootstrap-required',
       'canonical-source:unity-games',
@@ -1319,15 +1331,23 @@ Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 
     ].filter(Boolean).join('|');
     const goal=`[UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR] 게임: ${project.name||project.gameId}
 기존 unity-games/${project.gameId}/ canonical Unity 프로젝트를 직접 읽고 UPPER_PLATFORM_DEVELOPMENT_READY 실패 원인을 실제 코드·그래픽에서 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
-이 Unity Web 수리는 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일만 책임진다. Visual/Presentation 전용 C#과 generated native asset은 기존 ASSET_DEVELOPMENT 표현 작업이 병렬로 담당하며 실제 같은 파일이 겹칠 때만 Work Lock 충돌로 직렬화한다.
+이 Unity Web 수리는 기존 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일을 우선 수정하고, 실제 3D 메시 검증 결함이 확인되면 현존하는 PrototypeAnimatedVisuals 책임 C#도 같은 작업에서 직접 수정한다. 그 외 native asset은 기존 ASSET_DEVELOPMENT 제작 루프가 담당하며 같은 파일 수정 충돌은 기존 Work Lock으로 직렬화한다.
 필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
 코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
-그래픽: 캐릭터/적/환경/장비 정체성이 실제 화면에서 구분되어야 하고 placeholder primitive 중심 표현은 완성으로 인정하지 않는다. 최소 2.5D/3D 공간 표현, 실제 모션/애니메이션/VFX를 게임 상태에 연결한다.
+그래픽: 기존 2D·2.5D 플레이 화면은 전부 기존 Unity C# 책임 소스 안에서 3D 장면/입체 메시/공간 카메라로 재개발한다. 캐릭터·적·환경·장비는 company-asset-library.json에 등록된 내부 3D 원본만 실제 사용한다. 다른 장르/기존 게임에서 사용한 모델도 컨셉에 맞으면 재활용하고, 모듈 파츠·비율·재질·실루엣·애니메이션을 변경해 시각 중복을 막는다. 신규 외부 모델을 직접 바인딩하지 않는다. 기존 게임 규칙·세이브·보상은 그대로 둔다. MESH_INTEGRITY 외에 SPATIAL_DEPTH source=UNITY_WORLD_MESH_DEPTH를 실제 카메라·깊이·배우 메시로 측정하고 2D SpriteRenderer 배우를 차단한다. 가짜 계측/PASS는 금지한다.
 브라우저: WebGL 빌드 후 실제 모바일 브라우저 입력·핵심 행동·진행·저장복구가 다시 검증 가능해야 한다.
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+    // 기존 Unity 게임의 2D·2.5D 게임플레이 표현은 원본 시각 책임 파일에서 직접 3D로 교체한다.
+    // 관련 없는 UI 스프라이트와 저장·전투 로직은 그대로 둔다.
+    const nativeVisualSource=readText(sourceFile(repoRoot,nativeVisualRel));
+    const nativeVisualNeeded=Boolean(nativeVisualSource)
+      &&(readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
+        ||readiness?.data?.criteria?.graphics?.native3dVerified===false
+        ||/\bSpriteRenderer\b|\b2[._]?5D\b|\b2D\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
+    const files=[coreRel,runtimeRel,floorRuntimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
+      .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
       const editorDir=sourceFile(repoRoot,`${root}/Assets/Editor`);
       if(fs.existsSync(editorDir)&&fs.statSync(editorDir).isDirectory()){
@@ -1350,6 +1370,7 @@ UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY
       'owner-directive:webgame-first',
       'web-stage:WEB_REPAIR',
       'unity-web-first-stage',
+      'owner-unity-web-native-3d-required',
       'unity-web-development-floor:v1',
       'platform-responsibility-split:unity-web-core-runtime',
       'same-game-cross-platform-parallel:responsible-files-only',
@@ -3497,6 +3518,8 @@ export function findSafeTasks(project,repoRoot,queue){
     ]);
   }
   if(project.engine==='unity'){
+    // WebGL work continues from the canonical Unity source; Android-only work is held.
+    if(project.firstStageUnityWeb!==true)return [];
     if(project.firstStageUnityWeb===true){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
       if(firstStage)return[firstStage];
@@ -3776,13 +3799,19 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
   const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowGames=new Set(developmentPool.filter(item=>item.target==='web'&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
+  const webFlowUnityOnly=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status==='ACTIVE';
+  const webFlowMatches=item=>webFlowUnityOnly?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage')):item.target==='web';
+  const webFlowGames=new Set(developmentPool.filter(item=>webFlowMatches(item)&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
+  const distinctTarget=Math.max(0,Math.floor(Number(centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.distinctGameDevelopmentTarget)||0));
+  const activeGameIds=new Set(developmentPool.filter(item=>item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)).filter(Boolean));
+  const eligibleMissingGameIds=new Set(allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).map(project=>clean(project.gameId)).filter(gameId=>gameId&&!activeGameIds.has(gameId)));
+  const distinctSeedCapacity=Math.min(eligibleMissingGameIds.size,Math.max(0,distinctTarget-activeGameIds.size),persistentCapacity);
   const internalAssetFocus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
   const assetLaneMax=Number(centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
   const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,assetLaneMax-internalMotionActive):0;
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity);
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -3798,6 +3827,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     ownerResumableSeedCapacity,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
     webGameFlow:{target:webFlowTarget,gameIds:[...webFlowGames],shortfall:Math.max(0,webFlowTarget-webFlowGames.size),seedCapacity:webSeedCapacity,normalBacklogBypass:normalCapacity===0&&webSeedCapacity>0},
+    distinctGameFlow:{target:distinctTarget,gameIds:[...activeGameIds],shortfall:Math.max(0,distinctTarget-activeGameIds.size),seedCapacity:distinctSeedCapacity},
     executionWaveMax,
     persistentQueueMax
   };
@@ -3808,17 +3838,19 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const planned=[],packages=[],deferredSmallPackages=[];
   let sequence=0;
   const planningProjects=[
-    ...(webSeedCapacity?projects.filter(project=>project.engine==='web'&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true})):[]),
-    ...projects.map(project=>({project,webSeed:false}))
+    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false})):[]),
+    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true})):[]),
+    ...projects.map(project=>({project,webSeed:false,distinctSeed:false}))
   ];
-  for(const {project,webSeed} of planningProjects){
+  for(const {project,webSeed,distinctSeed} of planningProjects){
     if(planned.length>=capacity)break;
     if(webSeed&&(webFlowGames.size>=webFlowTarget||webFlowGames.has(project.gameId)))continue;
-    if(!webSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
+    if(distinctSeed&&(activeGameIds.size>=distinctTarget||activeGameIds.has(project.gameId)))continue;
+    if(!webSeed&&!distinctSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=webSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
-    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(candidate.target==='web'&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
+    const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
@@ -3842,11 +3874,17 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       deferredSmallPackages.push({gameId:project.gameId,taskIds:packageTasks.map(task=>task.id),workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
       continue;
     }
-    const acceptedTasks=pkg.tasks;
+    // 기존 소유자 재개발은 작업 패키징 이후에도 무제한 인과 재시도 계약을 보존한다.
+    const acceptedTasks=project.ownerResumableBuildUp===true
+      ?pkg.tasks.map(task=>({...task,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR'}))
+      :pkg.tasks;
     queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
     planned.push(...acceptedTasks);
     packages.push({...pkg,tasks:acceptedTasks});
-    for(const task of developmentPlanningPool(queue))if(task.target==='web'&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
+    if(acceptedTasks.some(task=>task.executionLane==='GAME_PRIMARY'))activeGameIds.add(project.gameId);
+    planningBacklog.distinctGameFlow.gameIds=[...activeGameIds];
+    planningBacklog.distinctGameFlow.shortfall=Math.max(0,distinctTarget-activeGameIds.size);
+    for(const task of developmentPlanningPool(queue))if(webFlowMatches(task)&&task.executionLane==='GAME_PRIMARY')webFlowGames.add(clean(task.gameId));
     planningBacklog.webGameFlow.gameIds=[...webFlowGames];
     planningBacklog.webGameFlow.shortfall=Math.max(0,webFlowTarget-webFlowGames.size);
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);

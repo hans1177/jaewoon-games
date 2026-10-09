@@ -22,7 +22,7 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main \+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core --quiet/);
   assert.match(recoveryFast,/git worktree add --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
   assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
-  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,64);
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
 });
 
 test('early fan-in review never suppresses new runnable worker reservations',()=>{
@@ -37,31 +37,31 @@ test('early fan-in review never suppresses new runnable worker reservations',()=
   assert.doesNotMatch(block,/matrix:\[\]/);
 });
 
-test('repeat development is fixed at 64 while physical provider capacity and conflict safety remain',()=>{
+test('repeat development is fixed at 128 while physical provider capacity and conflict safety remain',()=>{
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
   assert.equal(wave.externalProviderAndPlanningBound,256);
-  assert.equal(wave.gamePrimaryFixedInternalCap,64);
-  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,64);
+  assert.equal(wave.gamePrimaryFixedInternalCap,128);
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
   assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.assetDevelopmentSlotsUnchanged,63);
-  assert.equal(wave.defaultRequestedParallelism,64);
-  assert.equal(wave.gamePrimaryBaselineTarget,64);
-  assert.equal(wave.gamePrimaryAdaptiveMinimum,64);
+  assert.equal(wave.defaultRequestedParallelism,128);
+  assert.equal(wave.gamePrimaryBaselineTarget,128);
+  assert.equal(wave.gamePrimaryAdaptiveMinimum,128);
   assert.equal(wave.sourceRootWideLockForbidden,true);
   assert.equal(wave.responsibleFileConflictProtectionStillRequired,true);
   assert.equal(wave.globalActiveWorkerBarrier,false);
 
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,64);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,64);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,64);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,64);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,128);
   const prePlan=runtime.continuous.prePlanGamePrimaryRefill||{};
   assert.equal(prePlan.enabled,true);
   assert.equal(prePlan.workerWorkflow,'.github/workflows/vibe2-continuous-core.yml');
   assert.equal(prePlan.dispatchMode,'WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER');
   assert.equal(prePlan.preservesCanonicalReservation,true);
   assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY_NO_RESERVATION_AUTHORITY');
-  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'FIXED_REPEAT_DEVELOPMENT_64');
+  assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'FIXED_REPEAT_DEVELOPMENT_128');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
   const architectureWave=architecture.neuralWorkGraphTopology.currentWaveExecution;
   const architecturePrePlan=architectureWave.prePlanGamePrimaryRefill||{};
@@ -90,9 +90,9 @@ test('repeat development is fixed at 64 while physical provider capacity and con
   assert.equal(architectureMainPushWake.workflowCallLaneRunsRunScoped,true);
   assert.equal(architectureMainPushWake.workflowCallInheritedPushEventMustNotCoalesce,true);
   assert.equal(architectureMainPushWake.activeWakeCancellationForbidden,true);
-  assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'FIXED_REPEAT_DEVELOPMENT_64');
-  assert.equal(architectureWave.externalSpareBeyond30,'SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_64');
-  assert.match(architectureWave.adaptiveControl,/FIXED_64/);
+  assert.equal(architectureWave.gamePrimaryActiveExecutionCap,'FIXED_REPEAT_DEVELOPMENT_128');
+  assert.equal(architectureWave.externalSpareBeyond30,'SUPERSEDED; GAME_PRIMARY_REPEAT_DEVELOPMENT_LOGICAL_TARGET_IS_FIXED_128');
+  assert.match(architectureWave.adaptiveControl,/FIXED_128/);
   assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(runtime.coordination.responsibleFileExclusive,true);
   assert.equal(runtime.coordination.sameFileParallelWrite,false);
@@ -106,13 +106,13 @@ test('repeat development is fixed at 64 while physical provider capacity and con
   assert.equal(control.currentMax,256);
 
   assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '128'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'"));
   assert.ok(runner.includes("VIBE2_ASSET_PRIORITY_BURST_MAX: '8'"));
   assert.ok(runner.includes("VIBE2_RUNNER_JOB_PRESSURE_THRESHOLD: '8'"));
-  assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_64'));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '64'"));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '64'"));
+  assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_128'));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '128'"));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'"));
   assert.match(core,/GAME_PRIMARY_MAIN_PUSH_WAKE/);
   assert.match(core,/push:\n\s*branches:\n\s*- main\n\s*- 'vibe2\/refill\/fanin\/\*\*'/);
   assert.match(core,/github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' && inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
@@ -235,8 +235,8 @@ test('director fallback wake reuses the canonical game-primary core without crea
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
   assert.match(director,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
   assert.match(director,/-f 'inputs\[execution_lane\]=game-primary'/);
-  assert.equal(fallback.laneMax,64);
-  assert.match(director,/-f 'inputs\[lane_max\]=64'/);
+  assert.equal(fallback.laneMax,128);
+  assert.match(director,/-f 'inputs\[lane_max\]=128'/);
   assert.match(director,/\(\$run\.event \/\/ ""\) != "push"/);
 });
 
@@ -421,7 +421,8 @@ test('stale main push wake rebases to latest main before expensive reserve work 
   assert.match(core.slice(reserveCheckout,reserveNodeSetup),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core.slice(reserveNodeSetup,core.indexOf('\n      - name:',reserveNodeSetup)),/if: steps\.main_wake\.outputs\.proceed == 'true'/);
   assert.match(core,/VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST=/);
-  assert.match(core,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
+  assert.match(core,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST=/);
+  assert.doesNotMatch(core,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
   assert.match(core,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
   assert.match(core,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/main" --jq '\.sha'/);
   assert.match(core,/Prepare latest main machine contract\n\s+id: contract\n\s+if: steps\.main_wake\.outputs\.proceed == 'true'/);

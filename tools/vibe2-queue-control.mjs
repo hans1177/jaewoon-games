@@ -434,8 +434,13 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   });
 }
 
-export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '') {
+export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
+  const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
+  const targetName=clean(target).toLowerCase();
+  const evidence=(Array.isArray(task?.evidence)?task.evidence:[]).map(clean);
+  const unityWeb=task?.unityWebDevelopment===true||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||clean(task?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web';
+  if(scope?.status==='ACTIVE'&&(targetName==='web'||(targetName==='unity'&&!unityWeb)))return true;
   return Boolean(id && ((clean(exclusive?.status).toUpperCase()==='ACTIVE'
     && (exclusive?.gameIds||[]).includes(id))
     || (clean(target).toLowerCase()==='roblox' && (policy.robloxDevelopmentInvestment?.ownerHoldGameIds||[]).includes(id))));
@@ -444,7 +449,7 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '') {
 export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
   const queue=createVibeContinuousQueue(queueInput);
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
-    ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target)
+    ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)
   }))});
 }
 

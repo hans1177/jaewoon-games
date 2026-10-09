@@ -17,6 +17,14 @@ const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
 const port=Number(args.port||4187);
 
+// 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
+const ownerPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const owner3d=ownerPolicy?.ownerUnityWeb3dOnly20261009;
+if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3D'
+  ||owner3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
+  ||ownerPolicy?.unityWebFirstStage?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
+  throw new Error('UNITY_WEB_3D_ONLY_POLICY_REQUIRED');
+
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
@@ -365,15 +373,38 @@ try{
   };
   const nativeMeshProof={
     inspected:nativeMeshMetric('inspected'),validMeshes:nativeMeshMetric('validMeshes'),
-    triangles:nativeMeshMetric('triangles'),materialPass:nativeMeshMetric('materialPass'),
+    triangles:nativeMeshMetric('triangles'),volumetricMeshes:nativeMeshMetric('volumetricMeshes'),materialPass:nativeMeshMetric('materialPass'),
     texturePass:nativeMeshMetric('texturePass')
   };
+  // 메시 존재만으로는 2.5D를 배제할 수 없다. Unity에서 카메라·3축 깊이·게임플레이 모델을 실측한다.
+  const nativeDepthMarker=markers.slice().reverse().find(line=>line.includes(' SPATIAL_DEPTH ')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_WORLD_MESH_DEPTH'))||'';
+  const nativeDepthMetric=key=>{
+    const token=nativeDepthMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const nativeDepthProof={
+    cameraPerspective:nativeDepthMetric('cameraPerspective'),
+    worldMeshes3d:nativeDepthMetric('worldMeshes3d'),
+    worldDepthCm:nativeDepthMetric('worldDepthCm'),
+    gameplayActors3d:nativeDepthMetric('gameplayActors3d'),
+    spriteGameplayActors:nativeDepthMetric('spriteGameplayActors'),
+  };
+  const nativeDepthVerified=Boolean(nativeDepthMarker)&&nativeDepthMarker.includes('status=PASS')
+    &&nativeDepthProof.cameraPerspective===1
+    &&Number.isSafeInteger(nativeDepthProof.worldMeshes3d)&&nativeDepthProof.worldMeshes3d>=2
+    &&Number.isSafeInteger(nativeDepthProof.worldDepthCm)&&nativeDepthProof.worldDepthCm>=50
+    &&Number.isSafeInteger(nativeDepthProof.gameplayActors3d)&&nativeDepthProof.gameplayActors3d>=1
+    &&nativeDepthProof.spriteGameplayActors===0;
   const nativeMeshVerified=Boolean(nativeMeshMarker)&&nativeMeshMarker.includes('status=PASS')
+    &&nativeDepthVerified
     &&Number.isSafeInteger(nativeMeshProof.inspected)&&nativeMeshProof.inspected>0
     &&nativeMeshProof.validMeshes===nativeMeshProof.inspected
     &&Number.isSafeInteger(nativeMeshProof.triangles)&&nativeMeshProof.triangles>0
+    &&Number.isSafeInteger(nativeMeshProof.volumetricMeshes)&&nativeMeshProof.volumetricMeshes>0
+    &&nativeMeshProof.volumetricMeshes<=nativeMeshProof.validMeshes
     &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
-  const nativeMeshMissing=gameId==='daechung-rpg'&&!nativeMeshVerified;
+  const nativeMeshMissing=!nativeMeshVerified;
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
@@ -438,6 +469,20 @@ try{
       markers:coreFunMarkers,
     },
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
+    spatialGameplay:{
+      requiredDimension:'3D',pass:nativeMeshVerified,
+      depthPass:nativeDepthVerified,perspectiveCamera:nativeDepthProof.cameraPerspective===1,
+      gameplayActors3d:nativeDepthProof.gameplayActors3d,worldMeshes3d:nativeDepthProof.worldMeshes3d,
+      worldDepthCm:nativeDepthProof.worldDepthCm,
+      spriteGameplayActors:nativeDepthProof.spriteGameplayActors,
+      source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+      requiredForAllUnityWebGames:true,
+      observedMeshCount:nativeMeshVerified?nativeMeshProof.validMeshes:0,
+      observedTriangles:nativeMeshVerified?nativeMeshProof.triangles:0,
+      observedVolumetricMeshes:nativeMeshVerified?nativeMeshProof.volumetricMeshes:0,
+      planarOnlyMeshesCannotPass:true,
+      legacy2dOr2_5dRequires3dRebuild:!nativeMeshVerified,
+    },
     visualQa:{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
@@ -450,7 +495,8 @@ try{
       nativeUnityMesh:{measurementState:nativeMeshMarker?'UNITY_RUNTIME_MESH_INSPECTION':'NOT_MEASURED',
         pass:nativeMeshMarker?nativeMeshVerified:null,missingRequiredCapture:nativeMeshMissing,
         inspector:'UNITY_MESH_FILTER',metrics:nativeMeshMarker?nativeMeshProof:null,sourceMarker:nativeMeshMarker||null,
-        libraryAssetPromotionGranted:false},
+        spatialDepth:{pass:nativeDepthVerified,sourceMarker:nativeDepthMarker||null,metrics:nativeDepthProof},
+         libraryAssetPromotionGranted:false},
       realDeviceVerified:false,
     },
     nativeRenderBudget:{
@@ -492,7 +538,8 @@ try{
   }
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
-    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,visualPixels
+    nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,
+    nativeDepthVerified,nativeDepthProof,visualPixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget

@@ -54,6 +54,24 @@ import {
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
 
+test('Unity Web real 3D failure is routed to verified same-game coding repair learning',()=>{
+  const task={
+    gameId:'spatial-rebuild',target:'unity',
+    goal:'기존 2.5D 게임을 실제 3D로 재개발한다',
+    evidence:['blocker:READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED']
+  };
+  const fp=failureFingerprintForTask(task);
+  assert.match(fp,/READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED/);
+  const classified=failureFingerprintForTask({target:'unity',goal:'3d mesh missing',evidence:['UNITY_WEB_3D_ONLY_POLICY_REQUIRED']});
+  assert.match(classified,/UNITY_3D_SPATIAL/);
+  const context=retrieveUnifiedLearning({task});
+  assert.equal(context.failureFingerprint,fp);
+  assert.match(learningGuidance(context),/unity-native-3d-repair/);
+  assert.match(learningGuidance(context),/reject 2D\/2\.5D final surfaces/);
+  const other=retrieveUnifiedLearning({task:{gameId:'different',target:'roblox',goal:'퀘스트 저장 수정'}});
+  assert.doesNotMatch(learningGuidance(other),/unity-native-3d-repair/);
+});
+
 test('Korean convenience and systemic depth goals retrieve existing UI and progression learning domains',()=>{
   assert.ok(classifyLearningDomains({goal:'메뉴 편의성 프리셋 일괄 처리'}).primary.includes('UI_STATE'));
   assert.ok(classifyLearningDomains({goal:'파고들기 숙련 보상 발견 조합'}).primary.includes('PROGRESSION'));

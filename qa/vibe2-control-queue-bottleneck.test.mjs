@@ -49,10 +49,3 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/cancel-in-progress: false/);
 });
 
-test('confirmed coordinator does not replace pending development game or batch jobs',()=>{
-  const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(router,/group:\s*company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
-  assert.doesNotMatch(router,/group:\s*company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
-  assert.match(router,/DEVELOPMENT_COORDINATOR_ADMISSION=OLDEST_ACTIVE_BATCH/);
-  assert.match(router,/cancel-in-progress:\s*false/);
-});

@@ -18,7 +18,7 @@ import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tool
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
 import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -26,6 +26,24 @@ import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-w
 
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
+
+test('Vibe coding method requires native 3D for Unity Web but does not change unrelated platform prompts',()=>{
+  const context={files:[{path:'RuntimeBootstrap.cs',content:'using UnityEngine; public class RuntimeBootstrap {}',editable:true}]};
+  const options={verifiedExternalLearningContract:{block:''}};
+  const order={target:'unity',goal:'기존 2D 게임을 3D로 재개발',selectedTask:{firstStageUnityWeb:true},
+    evidence:['unity-web-first-stage','upper-platform-readiness:READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED']};
+  const webPrompt=buildPrompt(order,context,['RuntimeBootstrap.cs'],options);
+  assert.match(webPrompt,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+  assert.match(webPrompt,/readiness|failure fingerprint/i);
+  assert.match(webPrompt,/inspected>0, validMeshes=inspected, triangles>0/);
+  assert.match(webPrompt,/Do not create wrapper overrides/);
+  assert.match(webPrompt,/save keys\/schema unchanged/);
+  assert.match(webPrompt,/Source changes and model claims alone are UNVERIFIED/);
+  const unityApp=buildPrompt({...order,selectedTask:{firstStageUnityWeb:false},evidence:[],goal:'상점 버튼 수정'},context,['RuntimeBootstrap.cs'],options);
+  assert.doesNotMatch(unityApp,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+  const roblox=buildPrompt({...order,target:'roblox',selectedTask:{},evidence:[]},context,['RuntimeBootstrap.cs'],options);
+  assert.doesNotMatch(roblox,/UNITY WEB NATIVE 3D CODING METHOD BEGIN/);
+});
 
 test('Vibe source performance tasks retain distinct Unity Web, Unity Android and Roblox source/runtime contracts',()=>{
   const context={files:[{path:'GameCore.cs',content:'public void Update() {}',editable:true}]};
@@ -1601,6 +1619,81 @@ test('full-file candidates compare against their actual source before earning gr
   const candidate={replaceFiles:[{path:'game.js',content:'const score = 1; /* claimed build-up */\n'}]};
   assert.equal(evaluateCandidateSelfReview({candidate,sourceRoot,order:{target:'web'}}).pass,false);
   assert.equal(evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:{phase:'BUILD_UP',requiredConnectedImprovements:{min:1}}}).pass,false);
+});
+
+test('rejected patch fingerprint ignores prose and records only exact source interventions',()=>{
+  const a={
+    summary:'first explanation',tests:['check one'],
+    edits:[{path:'index.html',find:'let gold=0;',replace:'let gold=999;'}],
+    newFiles:[],replaceFiles:[]
+  };
+  const b={
+    tests:['different self-reported test'],expectedEffect:'different claim',
+    edits:[{replace:'let gold=999;',find:'let gold=0;',path:'index.html'}],
+    summary:'second explanation'
+  };
+  const c={...b,edits:[{path:'index.html',find:'let gold=0;',replace:'let gold=1;'}]};
+  assert.match(rejectedSourcePatchFingerprint(a),/^[a-f0-9]{64}$/);
+  assert.equal(rejectedSourcePatchFingerprint(a),rejectedSourcePatchFingerprint(b));
+  assert.notEqual(rejectedSourcePatchFingerprint(a),rejectedSourcePatchFingerprint(c));
+  assert.equal(rejectedSourcePatchFingerprint({summary:'no code changes',edits:[]}),null);
+});
+
+test('repeat-rejected source candidates produce one changed implementation and causal retry telemetry',async()=>{
+  const cwd=tempRoot(),root='web-games/demo',relative='index.html';
+  const source=[
+    'function handlePointer(event){ return event.x; }',
+    'function awardGold(){ return 100; }'
+  ].join('\n')+'\n';
+  const sourceRoot=path.join(cwd,root);
+  write(path.join(sourceRoot,relative),source);
+  const prompt=[
+    'You are the Vibe2 game source worker. Return strict JSON.',
+    'Engine: web',
+    'Goal: fix handlePointer without changing player rewards',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    source
+  ].join('\n');
+  const first=path.join(cwd,'repeat-bad-first.json');
+  const second=path.join(cwd,'repeat-bad-second.json');
+  const third=path.join(cwd,'repeat-good-third.json');
+  const badEdit={
+    path:relative,
+    find:'function handlePointer(event){ return event.x; }',
+    replace:'function handlePointer(event){ gold += 999; return event.x; }'
+  };
+  write(first,JSON.stringify({summary:'first bad patch',tests:['none'],edits:[badEdit]}));
+  write(second,JSON.stringify({summary:'different words but same failed patch',edits:[badEdit],tests:['claimed smoke test']}));
+  // Attempt 3 is the existing focused retry, rotated once after the repeated patch.
+  const focused=focusedReplaceOnlySpec(prompt,{
+    responsibleFiles:[relative],sourceRoot,anchorIndex:1
+  });
+  assert.ok(focused?.find,'existing focused retry must select an exact writable anchor');
+  const replacement=focused.find.replace('event.x','Math.round(event.x)');
+  write(third,JSON.stringify({replace:replacement===focused.find?focused.find+'\n;':replacement}));
+  let validationCalls=0;
+  const result=await generateCandidateWithRecovery({
+    prompt,model:'qwen3:1.7b',responseFiles:[first,second,third],allowFullRewrite:false,
+    target:'web',responsibleFiles:[relative],sourceRootRelative:root,sourceRoot,
+    candidateValidator(candidate){
+      validationCalls+=1;
+      if((candidate.edits||[]).some(row=>String(row.replace||'').includes('gold += 999'))){
+        throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY');
+      }
+      return{pass:true};
+    }
+  });
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.repeatedRejectedPatchCount,1);
+  assert.equal(result.generation.repeatedRejectedPatchGuidanceCount,1);
+  assert.equal(result.generation.repeatedRejectedPatchStrategyShifts,1);
+  assert.equal(result.generation.rejectedPatchFingerprintCount,1);
+  assert.equal(result.generation.focusedReplaceAnchorRotations>=1,true);
+  assert.deepEqual(result.generation.failureHistory,['SEMANTIC_DIFF_BUDGET','SEMANTIC_DIFF_BUDGET']);
+  assert.equal(validationCalls,3);
+  assert.equal(result.candidate.edits.some(row=>row.replace.includes('gold += 999')),false);
+  assert.equal(result.candidateValidation.pass,true);
 });
 
 test('repeated self-review failure changes strategy inside the existing retry budget',async()=>{
@@ -4292,6 +4385,155 @@ test('coding retry consumes the exact unrelated function violation instead of re
   assert.match(retry,/ORIGINAL writable source/);
 });
 
+test('semantic diff blocks a top-level reward mutation despite a nearby approved function',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'function handlePointer(e){ pointerState=e; }\nlet gold = 10;\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'let gold = 10;',replace:'let gold = 999;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unownedSourcePaths,['index.html']);
+  assert.match(result.violations.join('|'),/UNOWNED_SOURCE_MUTATION:index\.html/);
+});
+
+test('semantic diff blocks a permitted function change coupled with an unowned global write',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before='function handlePointer(e){ pointerState=e; }\nconst started = true;\n';
+  write(path.join(sourceRoot,'index.html'),before);
+  const after=before.replace('pointerState=e;','pointerState=normalizePointer(e);')
+    .replace('const started = true;','const started = true;\ngold += 999;');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:after}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer']);
+  assert.deepEqual(result.unownedSourcePaths,['index.html']);
+});
+
+test('semantic diff allows a standalone declaration of explicitly owned gameplay state',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'let pointerState = 0;\nfunction handlePointer(e){ pointerState=e; }\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'let pointerState = 0;',replace:'let pointerState = 3;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,true,JSON.stringify(result.violations));
+  assert.deepEqual(result.unownedSourcePaths,[]);
+});
+
+test('semantic diff preserves an unchanged unrelated function between two authorized methods',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  const before=[
+    'function handlePointer(e){ pointerState=e; }',
+    'function awardCoins(){ return gold; }',
+    'function moveCamera(){ return cameraX; }'
+  ].join('\n');
+  write(path.join(sourceRoot,'index.html'),before);
+  const after=before.replace('pointerState=e;','pointerState=normalizePointer(e);')
+    .replace('return cameraX;','return cameraX+1;');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:before,replace:after}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],
+      allowedDependentSymbolsOrSystems:['moveCamera'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','WORLD'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,true,JSON.stringify(result.violations));
+  assert.deepEqual(result.symbolMutationRows[0].changedSymbols,['handlePointer','moveCamera']);
+});
+
+test('semantic diff still blocks an economy amount mutation inside an input-only owned function',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),
+    'function handlePointer(e){ gold += 1; pointerState=e; }\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'gold += 1;',replace:'gold += 999;'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.ok(result.unexpectedSystems.includes('ECONOMY'));
+  assert.match(result.violations.join('|'),/UNRELATED_SYSTEM:ECONOMY/);
+});
+
+test('semantic diff blocks unrelated Luau top-level currency initialization',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'roblox-games/demo');
+  write(path.join(sourceRoot,'server/Game.server.luau'),
+    'local function movePlayer(input)\n  return input.X\nend\nlocal gold = 50\n');
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'server/Game.server.luau',find:'local gold = 50',replace:'local gold = 999'}]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['movePlayer'],ownedState:['input'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY'],unrelatedSystemMutationForbidden:true}
+    },sourceRoot
+  });
+  assert.equal(result.pass,false);
+  assert.deepEqual(result.unownedSourcePaths,['server/Game.server.luau']);
+});
+
+test('semantic diff respects a Unity owned field but rejects another field mutation',()=>{
+  const cwd=tempRoot(),sourceRoot=path.join(cwd,'unity-games/demo');
+  const before=[
+    'internal class GameCore {',
+    '  private int playerPosition = 1;',
+    '  private int gold = 50;',
+    '  void HandleMovement(){playerPosition += 1;}',
+    '}'
+  ].join('\n');
+  write(path.join(sourceRoot,'Assets/Scripts/GameCore.cs'),before);
+  const editContract={
+    responsibilityConfidence:'HIGH',primaryTargets:['HandleMovement'],ownedState:['playerPosition'],
+    codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+    semanticDiffBudget:{allowedSystems:['INPUT','ECONOMY','WORLD'],unrelatedSystemMutationForbidden:true}
+  };
+  const allowed=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'playerPosition = 1;',replace:'playerPosition = 2;'}]},
+    editContract,sourceRoot
+  });
+  const rejected=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'gold = 50;',replace:'gold = 999;'}]},
+    editContract,sourceRoot
+  });
+  assert.equal(allowed.pass,true,JSON.stringify(allowed.violations));
+  assert.equal(rejected.pass,false);
+  assert.deepEqual(rejected.unownedSourcePaths,['Assets/Scripts/GameCore.cs']);
+});
+
+test('coding retry uses the exact unowned file evidence instead of repeating the same global patch',()=>{
+  const retry=buildGenerationRetryPrompt([
+    'Engine: web','Goal: repair handlePointer','Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    'function handlePointer(e){ pointerState=e; }','let gold = 10;'
+  ].join('\n'),{
+    error:new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNOWNED_SOURCE_MUTATION:index.html'),
+    responsibleFiles:['index.html'],attempt:2
+  });
+  assert.match(retry,/UNOWNED SOURCE SCOPE REJECTED: index\.html/);
+  assert.match(retry,/outside the primary and explicitly permitted dependent functions/);
+});
+
 test('semantic diff hard gate protects existing save keys from silent removal',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
@@ -4340,6 +4582,104 @@ test('semantic diff invariant allows unrelated source repair when save binding i
   assert.equal(result.mode,'OBSERVE_ONLY');
   assert.equal(result.pass,true);
   assert.deepEqual(result.saveContractMutations,[]);
+});
+
+test('native Unity save identities are preserved for direct and constant-backed PlayerPrefs keys',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo');
+  const fixtures=[
+    {
+      source:'private const string SaveKey = "legacy-v1";\nvoid Save(){ PlayerPrefs.SetString(SaveKey, data); }\n',
+      find:'"legacy-v1"',replace:'"changed-v2"',failure:/SAVE_CONTRACT_MUTATION:.*binding:SaveKey/
+    },
+    {
+      source:'private const string SavePrefix = "legacy:";\nvoid Save(){ PlayerPrefs.SetInt(SavePrefix + "level", level); }\n',
+      find:'"legacy:"',replace:'"changed:"',failure:/SAVE_CONTRACT_MUTATION:.*binding:SavePrefix/
+    },
+    {
+      source:'void Save(){ PlayerPrefs.SetInt("legacy-level", level); }\n',
+      find:'"legacy-level"',replace:'"new-level"',failure:/SAVE_CONTRACT_MUTATION:.*native:PlayerPrefs.SetInt/
+    }
+  ];
+  for(const fixture of fixtures){
+    write(path.join(root,'Assets/Scripts/GameCore.cs'),fixture.source);
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:fixture.find,replace:fixture.replace}]},
+      editContract:{
+        responsibilityConfidence:'LOW',primaryTargets:[],
+        codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+        semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}
+      },sourceRoot:root
+    });
+    assert.equal(result.pass,false,fixture.source);
+    assert.equal(result.saveContractInvariantEnforced,true);
+    assert.match(result.violations.join('|'),fixture.failure);
+  }
+});
+
+test('native Roblox DataStore names and player record prefixes remain unchanged',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'roblox-games/demo'),relative='server/Game.server.luau';
+  const fixtures=[
+    {
+      source:'local store = DSS:GetDataStore("profile-v1")\nstore:SetAsync("player:"..player.UserId, data)\n',
+      find:'"profile-v1"',replace:'"profile-v2"',failure:/SAVE_CONTRACT_MUTATION:.*native:GetDataStore/
+    },
+    {
+      source:'local store = DSS:GetDataStore("profile-v1")\nstore:GetAsync("player:"..player.UserId)\n',
+      find:'"player:"',replace:'"wrong:"',failure:/SAVE_CONTRACT_MUTATION:.*native:DataStore:GetAsync/
+    },
+    {
+      source:'local savePrefix = "player:"\nstore:UpdateAsync(savePrefix..player.UserId, function(old) return old end)\n',
+      find:'"player:"',replace:'"wrong:"',failure:/SAVE_CONTRACT_MUTATION:.*binding:savePrefix/
+    }
+  ];
+  for(const fixture of fixtures){
+    write(path.join(root,relative),fixture.source);
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:relative,find:fixture.find,replace:fixture.replace}]},
+      editContract:{
+        responsibilityConfidence:'LOW',primaryTargets:[],
+        codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+        semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}
+      },sourceRoot:root
+    });
+    assert.equal(result.pass,false,fixture.source);
+    assert.match(result.violations.join('|'),fixture.failure);
+  }
+});
+
+test('native save invariant permits gameplay payload changes and equivalent key whitespace',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo'),relative='Assets/Scripts/GameCore.cs';
+  const source='void Save(){ PlayerPrefs.SetInt( SavePrefix + "level", level); }\n';
+  write(path.join(root,relative),source);
+  const changes=[
+    {find:'level);',replace:'level+1);'},
+    {find:'SavePrefix + "level"',replace:'SavePrefix+"level"'},
+    {find:'Save(){ ',replace:'Save(){ PlayerPrefs.SetInt("extra-slot",1); '}
+  ];
+  for(const edit of changes){
+    const result=evaluateSemanticDiffBudget({
+      candidate:{edits:[{path:relative,...edit}]},
+      editContract:{responsibilityConfidence:'LOW',codingArchitecture:{developmentMode:'PRESERVE_PATCH'},semanticDiffBudget:{allowedSystems:['SAVE'],saveKeysMustRemainCompatible:[]}},
+      sourceRoot:root
+    });
+    assert.equal(result.pass,true,JSON.stringify(result.violations));
+    assert.deepEqual(result.saveContractMutations,[]);
+  }
+});
+
+test('native save key changes remain possible only through the explicit migration contract',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo'),relative='Assets/Scripts/GameCore.cs';
+  write(path.join(root,relative),'void Save(){ PlayerPrefs.SetString("legacy-slot", data); }\n');
+  const candidate={edits:[{path:relative,find:'"legacy-slot"',replace:'"new-slot"'}]};
+  const result=evaluateSemanticDiffBudget({
+    candidate,editContract:{
+      responsibilityConfidence:'LOW',codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['SAVE'],saveKeyMigrationAllowed:true}
+    },sourceRoot:root
+  });
+  assert.equal(result.pass,true);
+  assert.equal(result.saveKeyMigrationAllowed,true);
+  assert.ok(result.saveContractMutations.some(row=>row.includes('native:PlayerPrefs.SetString')));
 });
 
 test('candidate release gate mirrors variable-backed save contract invariant',()=>{

@@ -333,6 +333,7 @@ function normalizeTask(input = {}, index = 0) {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
     target: clean(input.target) || 'auto',
+    unityWebDevelopment: input.unityWebDevelopment === true || normalizedEvidence.includes('unity-web-first-stage'),
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
     assetProductionLane: input.assetProductionLane===true || normalizedEvidence.includes('asset-production-parallel:v1'),
@@ -640,10 +641,11 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if(target==='roblox'&&task.releaseState==='development-confirmed')return 2;
     return 1;
   };
-  const platform=(task)=>clean(task.target).toLowerCase();
+  const platform=(task)=>{const target=clean(task.target).toLowerCase();const evidence=(task.evidence||[]).map(clean);return target==='unity'&&(task.unityWebDevelopment===true||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web'))?'unity-web':target;};
   // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
   // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
-  const weights={roblox:6,unity:2,web:1};
+  const hasUnityWeb=[...capacityRunning,...candidates.map(row=>row.task)].some(task=>platform(task)==='unity-web');
+   const weights=hasUnityWeb?{roblox:6,'unity-web':6,unity:0,web:1}:{roblox:6,unity:2,web:1};
   const service=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,queue.tasks.filter((task)=>platform(task)===name&&task.status==='running'&&taskMatchesExecutionLane(task,laneMode)).length
   ]));
@@ -695,7 +697,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   // 실행 중인 작업을 취소하거나 같은 게임의 독립 파일 작업을 직렬화하지 않는다.
   const webTarget=laneMode==='game-primary'?Math.max(0,Math.floor(Number(webGameFlowTarget)||0)):0;
   const webGameId=task=>clean(task.gameId)||clean(task.sourceRoot)||clean(task.id);
-  const webGames=()=>new Set([...capacityRunning,...selected].filter(task=>platform(task)==='web').map(webGameId));
+  const webPlatform=hasUnityWeb?'unity-web':'web';
+   const webGames=()=>new Set([...capacityRunning,...selected].filter(task=>platform(task)===webPlatform).map(webGameId));
   // 같은 파일의 자산 작업이 이미 대기 중이면 일반 GAME_PRIMARY가 매 사이클 먼저 선점해서
   // ASSET_DEVELOPMENT가 굶지 않게 한다. 실행 중 충돌 보호는 그대로 유지하고,
   // owner/release-confirmed/post-release 긴급 작업은 기존 우선권을 보존한다.
@@ -710,7 +713,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const reservationConflictFor=(task)=>{
     const activeConflict=conflictDetails(task,active);
     if(activeConflict)return activeConflict;
-    if(webTarget&&platform(task)==='web'&&!webGames().has(webGameId(task))&&webGames().size>=webTarget){
+    if(webTarget&&webPlatform==='web'&&platform(task)==='web'&&!webGames().has(webGameId(task))&&webGames().size>=webTarget){
       return {reason:'web-game-flow-target-full',taskId:null,executionLane:'GAME_PRIMARY',blocker:null};
     }
     if(laneMode!=='game-primary'
@@ -747,7 +750,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   };
 
   if(webTarget&&freeSlots>0){
-    for(const row of schedulingCandidates.filter(row=>platform(row.task)==='web')){
+    for(const row of schedulingCandidates.filter(row=>platform(row.task)===webPlatform)){
       if(selected.length>=freeSlots||webGames().size>=webTarget)break;
       if(webGames().has(webGameId(row.task)))continue;
       const conflict=reservationConflictFor(row.task);
@@ -790,8 +793,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       ).length;
       return selected.length+higherPending<freeSlots;
     };
-    for(const name of ['unity','web']){
-      if(name==='web'&&webTarget)continue;
+    for(const name of (hasUnityWeb?['unity-web']:['unity','web'])){
+      if(name===webPlatform&&webTarget)continue;
       if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
       for(const row of schedulingCandidates.filter((candidate)=>platform(candidate.task)===name)){
         if(selected.length>=freeSlots)break;

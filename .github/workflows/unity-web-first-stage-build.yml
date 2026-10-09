@@ -213,7 +213,7 @@ jobs:
           const c=policy.unityWebFirstStage;
           const gate=policy.directNativeDualPlatformDevelopment?.upperPlatformDevelopmentReadinessGate;
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==true) throw new Error('Unity Web development floor contract changed');
+          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web development floor contract changed');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
@@ -509,7 +509,13 @@ jobs:
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
             &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
-          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true);
+          const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
+            &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
+              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+              &&e.spatialGameplay.depthPass===true&&e.spatialGameplay.perspectiveCamera===true
+              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+              &&e.visualQa?.nativeUnityMesh?.pass===true);
           if(!gatePass&&gameId!=='daechung-rpg')
             throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
           const file=root+'/unity-web-build.json';
@@ -576,9 +582,37 @@ jobs:
           const floorSourceFile=path.join(project,'unity-web-floor-source.json');
           let floorSource={};try{if(fs.existsSync(floorSourceFile))floorSource=JSON.parse(fs.readFileSync(floorSourceFile,'utf8'));}catch{}
           const bootstrapGraphicsBlocked=floorSource?.presentationState==='BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP'||floorSource?.upperPlatformReady===false;
+          // 기존 2D 검증 결과와 가짜 표시를 제외하고, 세 번의 브라우저 QA에서 실제 Unity 메시를 확인한다.
+          const native3dChecks=[
+            ['BROWSER_PLAY',play],['INDEPENDENT_QA',independent],['REGRESSION',regression]
+          ].map(([stage,e])=>({
+            stage,requiredDimension:e.spatialGameplay?.requiredDimension||null,
+            source:e.spatialGameplay?.source||null,
+            observedMeshCount:Number(e.spatialGameplay?.observedMeshCount||0),
+            observedTriangles:Number(e.spatialGameplay?.observedTriangles||0),
+            depthPass:e.spatialGameplay?.depthPass===true,
+            perspectiveCamera:e.spatialGameplay?.perspectiveCamera===true,
+            worldMeshes3d:Number(e.spatialGameplay?.worldMeshes3d||0),
+            worldDepthCm:Number(e.spatialGameplay?.worldDepthCm||0),
+            gameplayActors3d:Number(e.spatialGameplay?.gameplayActors3d||0),
+            spriteGameplayActors:Number(e.spatialGameplay?.spriteGameplayActors??-1),
+            pass:e.spatialGameplay?.pass===true&&e.spatialGameplay?.depthPass===true
+              &&e.visualQa?.nativeUnityMesh?.pass===true
+              &&e.visualQa?.nativeUnityMesh?.measurementState==='UNITY_RUNTIME_MESH_INSPECTION'
+          }));
+          const native3dVerified=native3dChecks.every(e=>
+            e.pass&&e.requiredDimension==='3D'&&e.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+            &&Number.isSafeInteger(e.observedMeshCount)&&e.observedMeshCount>0
+            &&Number.isSafeInteger(e.observedTriangles)&&e.observedTriangles>0
+             &&e.depthPass===true&&e.perspectiveCamera===true
+             &&Number.isSafeInteger(e.worldMeshes3d)&&e.worldMeshes3d>=2
+             &&Number.isSafeInteger(e.worldDepthCm)&&e.worldDepthCm>=50
+             &&Number.isSafeInteger(e.gameplayActors3d)&&e.gameplayActors3d>=1
+             &&e.spriteGameplayActors===0);
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
-            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png');
+            &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png')
+            &&native3dVerified;
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
             &&Boolean(build.buildTreeSha256)
@@ -605,7 +639,7 @@ jobs:
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
-            graphics:{pass:graphicsPass,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
+            graphics:{pass:graphicsPass,native3dVerified,requiredDimension:'3D',native3dChecks,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
@@ -803,7 +837,7 @@ jobs:
             for settle_attempt in 1 2 3; do
               git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
               git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-native-3d-runtime-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
               git -C /tmp/vibe2-control add .vibe2/queue.json
               if git -C /tmp/vibe2-control diff --cached --quiet; then
                 settled=1

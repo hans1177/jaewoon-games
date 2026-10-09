@@ -49,11 +49,10 @@ jobs:
     name: Admit one unscoped development coordinator
     runs-on: ubuntu-slim
     timeout-minutes: 5
-    # GitHub replaces an older pending job in a shared concurrency group even when
-    # cancel-in-progress is false. Keep coordinator wakes run-scoped; the
-    # explicit active-batch admission scan below already coalesces duplicate work.
     concurrency:
-      group: company-development-confirmed-coordinator-gate-${{ github.run_id }}
+      # Coalesce only unscoped same-revision batch gate jobs. Exact-game gate jobs remain independent.
+      # This is job-scoped: native per-game execution is never serialized by a coordinator wake.
+      group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}
       cancel-in-progress: false
     outputs:
       proceed: ${{ steps.admit.outputs.proceed }}
@@ -153,13 +152,13 @@ jobs:
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
           if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('UPPER_PLATFORM_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==true||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
+          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==false||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
           const gate=d.upperPlatformDevelopmentReadinessGate||{};
           if(gate.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate.allCriteriaRequired!==true||JSON.stringify(gate.targets)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('UPPER_PLATFORM_READINESS_GATE_REQUIRED');
           const fan=d.unityWebNativeFanOut||{};
-          if(fan.enabled!==true||fan.trigger!=='UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.developmentAdmissionAuthority!==true||fan.directDispatchFromUnityWebBuildForbidden!==true||fan.sourceTreeExactMatchRequired!==true)throw new Error('UPPER_PLATFORM_MAIN_HANDOFF_CONTRACT_REQUIRED');
+          if(fan.enabled!==false||fan.trigger!=='UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.developmentAdmissionAuthority!==false||fan.directDispatchFromUnityWebBuildForbidden!==true||fan.sourceTreeExactMatchRequired!==true)throw new Error('UPPER_PLATFORM_MAIN_HANDOFF_CONTRACT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
-          if(d.automaticPairing?.ROBLOX?.join(',')!=='UNITY_WEB_FLOOR,ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB_FLOOR,UNITY,ROBLOX')throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
+          if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY_WEB_FLOOR'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB_FLOOR')throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
           if(d.canonicalDevelopmentAdmissionAuthority!==true)throw new Error('DIRECT_NATIVE_ADMISSION_AUTHORITY_REQUIRED');
           if(d.strictDesignScoreRequiredForDevelopmentAdmission!==false)throw new Error('STRICT_DESIGN_ADMISSION_FORBIDDEN');
@@ -236,9 +235,11 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
+          const ownerExcludedGameIds=new Set(roadmap?.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
+            !ownerExcludedGameIds.has(item.gameId)&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
@@ -268,37 +269,39 @@ jobs:
           const nativeIds=[],robloxIds=[],unityIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
             const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
-            if(decision.state==='UPPER_PLATFORM'){
-              nativeIds.push(item.gameId);
-              if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='+item.gameId+':'+currentControlSha);
-              else {
-                robloxIds.push(item.gameId);
-                console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
-              }
-              if(activeUnity.has(item.gameId))console.log('UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else unityIds.push(item.gameId);
-              if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
+            if(decision.state!=='UPPER_PLATFORM'){
+              blockedIds.push(item.gameId);
+              console.log('GAME_MINIMUM_DESIGN_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
               continue;
             }
-            if(decision.state==='UNITY_WEB_FLOOR'){
+            nativeIds.push(item.gameId);
+            if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='+item.gameId+':'+currentControlSha);
+            else{
+              robloxIds.push(item.gameId);
+              console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
+            }
+            if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
+            const web=decision.web||{};
+            if(web.state==='UNITY_WEB_FLOOR'){
               if(activeUnityWebFloor.has(item.gameId))console.log('UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else {
+              else{
                 webIds.push(item.gameId);
-                console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
+                console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+web.reason+':'+web.buildMethod);
               }
-              continue;
-            }
-            if(decision.state==='UNITY_WEB_BOOTSTRAP'){
+            }else if(web.state==='UNITY_WEB_BOOTSTRAP'){
               if(activeUnityWebBootstrap.has(item.gameId))console.log('UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else {
+              else{
                 bootstrapIds.push(item.gameId);
-                console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
+                console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+web.reason);
               }
-              continue;
+            }else if(web.state==='UNITY_WEB_SOURCE_REPAIR'){
+              console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+web.reason);
+            }else if(web.state==='UNITY_WEB_VERIFIED'){
+              console.log('UNITY_WEB_VERIFIED_INDEPENDENT='+item.gameId);
             }
-            blockedIds.push(item.gameId);
-            console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
           }
+          console.log('DEVELOPMENT_OWNER_EXCLUDED_GAME_IDS='+(Array.from(ownerExcludedGameIds).join(',')||'NONE'));
+          console.log('UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_json='+JSON.stringify(nativeIds)+'\n');
@@ -342,7 +345,7 @@ jobs:
     secrets: inherit
 
   dispatch-unity:
-    name: Run ready Unity upper-platform lanes
+    name: Unity Android development (owner hold)
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_count != '0'
     strategy:

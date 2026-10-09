@@ -336,7 +336,7 @@ test('Unity native executor independently enforces Unity Web upper-platform admi
   assert.match(workflowSource,/UNITY_NATIVE_ADMISSION_BLOCKED=/);
   assert.match(admissionSource,/UPPER_PLATFORM_DEVELOPMENT_READY/);
   assert.match(admissionSource,/READINESS_SOURCE_STALE/);
-  assert.match(workflowSource,/UNITY_WEB_PREDEVELOPMENT_FLOOR=UPPER_PLATFORM_DEVELOPMENT_READY_REQUIRED_FOR_NEW_NATIVE_ENTRY/);
+  assert.match(workflowSource,/UNITY_WEB_PREDEVELOPMENT_FLOOR=INDEPENDENT_UNITY_WEB_DEVELOPMENT_ANDROID_HELD/);
   assert.match(workflowSource,/UNITY_WEB_FLOOR_OWNER=unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(workflowSource,/UNITY_WEB_VALIDATION=NON_BLOCKING_SEPARATE_WORKFLOW/);
 });
