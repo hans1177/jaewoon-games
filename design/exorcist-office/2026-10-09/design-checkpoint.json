@@ -718,25 +718,28 @@
     },
     "local_authoring_parts::862b312f574ec2284835f564d8b71afcb92fa37467e7568c58e4db2de98d6d76:retryFlow": {
       "retryFlow": "{\"condition\": \"플레이어가 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.\"}"
+    },
+    "local_authoring_parts::862b312f574ec2284835f564d8b71afcb92fa37467e7568c58e4db2de98d6d76:riskPressure": {
+      "riskPressure": "{\"condition\": \"플레이어가 시작 단계에서 즉시 실행 가, 시작 입력을 통해 중심 행동을 트리거하고, 다음 월드 상태로 전환하여 게임 진행을 이어간다.\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 58,
+      "calls": 59,
+      "successes": 59,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1884536,
-      "lastMs": 34150,
+      "totalMs": 1918422,
+      "lastMs": 33886,
       "lastError": null,
-      "updatedAt": "2026-10-09T16:21:38.040Z"
+      "updatedAt": "2026-10-09T16:22:11.927Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:50:13.290Z",
-  "updatedAt": "2026-10-09T16:21:38.040Z",
+  "updatedAt": "2026-10-09T16:22:11.927Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2384,7 +2387,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T16:21:38.040Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T16:22:11.927Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
