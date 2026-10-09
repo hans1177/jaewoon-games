@@ -1845,25 +1845,53 @@
       "toSystem": "SURVIVAL2-MAIN-02",
       "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
       "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act."
+    },
+    "local_authoring_parts::170e1b88726f123eb2bd78e26bd2fbdf42bf63a6147cf9357b85fdb109780383:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01"
+    },
+    "local_authoring_parts::170e1b88726f123eb2bd78e26bd2fbdf42bf63a6147cf9357b85fdb109780383:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
+    },
+    "local_authoring_parts::36ea04bab65a8fcb434706619665dac2ee6dc0aff719e3800fed2b89e4cff3f6:systemInterconnections:4": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01",
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 110,
-      "successes": 110,
+      "calls": 112,
+      "successes": 112,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8342468,
-      "lastMs": 62219,
+      "totalMs": 8470635,
+      "lastMs": 61648,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:42:12.122Z"
+      "updatedAt": "2026-10-09T06:44:20.296Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T06:42:12.125Z",
+  "updatedAt": "2026-10-09T06:44:20.304Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4199,7 +4227,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::501f8b6e59042c85206df599f11130be65f53c6b1a3d67495152ecea55d67aba:signatureSystems:0": 1,
-    "designer_draft_slices::systems-progression": 10
+    "designer_draft_slices::systems-progression": 11
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4238,10 +4266,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:42:12.124Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:44:20.300Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
