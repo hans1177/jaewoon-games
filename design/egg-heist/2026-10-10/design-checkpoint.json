@@ -194,25 +194,38 @@
         "stateChange\": \"Player gains awareness of environmental hazards, triggers initial decision to scout or move the egg\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"Escape Mechanics\\\",\\n \\\"material\\\": \"Variable route system with adaptive pathfinding\\\",\\n \\\"materialDomain\\\": \"Strategy, Navigation, Resource Allocation\\\",\\n \\\"stateChange\\\": \"Player selects an",
         "escape route based on current threat level and available resources\\\"\n },\\n \\\"abCausality\\\": \"Player's choice of route affects both immediate survival outcomes and long-term strategic options\\\"\n },\\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"If player chooses low-risk scouting, B evolves to include high-stakes evasion strategies\\\",\\n \\\"bChanges"
       ]
+    },
+    "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:0": {
+      "id": "coreLoop_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "player_choice_of_escape_route"
+      ],
+      "stateOutputs": [
+        "survival_outcomes_and_strategic_options"
+      ],
+      "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+      "purpose": "To model the causal relationship between player decisions and game mechanics, emphasizing how choices impact both short-term survival and long-term strategy.",
+      "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources in the initial phase, with subsequent choices evolving based on environmental feedback and adaptive pathfinding."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 799137,
-      "lastMs": 111149,
+      "totalMs": 898096,
+      "lastMs": 98959,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:05:37.071Z"
+      "updatedAt": "2026-10-09T20:07:16.032Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:52:17.910Z",
-  "updatedAt": "2026-10-09T20:05:37.071Z",
+  "updatedAt": "2026-10-09T20:07:16.032Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1663,7 +1676,7 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:05:37.071Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:07:16.032Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
