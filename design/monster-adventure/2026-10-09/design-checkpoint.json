@@ -63,25 +63,39 @@
       "name": "RUN_DURATION_AND_REWARD_CONNECTION",
       "purpose": "설명: 입력 및 선택에 따라 세션 길이와 보상을 연결하는 주요 시스템.",
       "playerChoice": "세션 길이 설정 후, 보상 또는 위험을 선택하여 다음 상태로 전환합니다."
+    },
+    "local_authoring_parts::8bb5d573096f56b8e0d4ac0ae8b786bb07bd7a8ffed92afb7acbb997edb98c73:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "STATE_CHANGE"
+      ],
+      "name": "RUN_DURATION_AND_REWARD_CONNECTION_WITH_RISK",
+      "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
+      "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 401897,
-      "lastMs": 32759,
+      "totalMs": 433724,
+      "lastMs": 31827,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:23:29.762Z"
+      "updatedAt": "2026-10-09T11:24:01.591Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:16:47.832Z",
-  "updatedAt": "2026-10-09T11:23:29.762Z",
+  "updatedAt": "2026-10-09T11:24:01.591Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2167,7 +2181,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:23:29.762Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:24:01.591Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
