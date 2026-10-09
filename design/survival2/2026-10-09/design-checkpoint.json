@@ -3,76 +3,23 @@
   "gameId": "survival2",
   "date": "2026-10-09",
   "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
-  "fingerprint": "fdfb19eb0b2b70e2b1156ec77ef7ce6f16363571e13d732337f2325eb581b418",
-  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
+  "fingerprint": "865e0633a9abc8842250a2b46f91965a60f690afc095f5016dfd62bf5046086f",
+  "policyDigest": "3bae97985d3734f0dd2be83c7447ba4928188d9e542be339dee50932cef38315",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::197b4b3554267b10552dff26f05c5b757591cfc735b0c5c032604ec2769653ae:identity": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계된다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되며, 이 행동은 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성되어 있다. 보조 요소 c는 이들을 변주하는 서브요소로, 발견·숙련·재방문 @를 통해 깊이를 표현한다. 시그니처 시스템에는 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택, 목표 진행이 서로 영향을 주는 월드 상태가 포함되며, 인과법칙은 기존 규칙 ID를 유지하고, 각 상태 키는 실제 상태 이름만 참조한다. 게임은 단순 반복보다는 경로·위험·결과의 차이를 만든다."
-    },
-    "local_authoring_parts::197b4b3554267b10552dff26f05c5b757591cfc735b0c5c032604ec2769653ae:playerFantasy": {
-      "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임되어, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다."
-    },
-    "local_authoring_parts::50da80e217a4628c12f57652a933fc894f587318c4780711fa934c9885e2b154:identity,playerFantasy": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계된다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되며, 이 행동은 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성되어 있다. 보조 요소 c는 이들을 변주하는 서브요소로, 발견·숙련·재방문 @를 통해 깊이를 표현한다. 시그니처 시스템에는 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택, 목표 진행이 서로 영향을 주는 월드 상태가 포함되며, 인과법칙은 기존 규칙 ID를 유지하고, 각 상태 키는 실제 상태 이름만 참조한다. 게임은 단순 반복보다는 경로·위험·결과의 차이를 만든다.",
-      "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임되어, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다."
-    },
-    "local_authoring_parts::50da80e217a4628c12f57652a933fc894f587318c4780711fa934c9885e2b154:coreFun": {
-      "coreFun": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임하여, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다."
-    },
-    "local_authoring_parts::c21b2ce6b8f69ccf00307ef65ed549e8c2c02b1bf1dd4ed99defdff2aa775424:identity,playerFantasy,coreFun": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계된다. 플레이어는 숲의 생존자들에서 Explore the forest for a needed resource while reading environmental and creature danger.의 주체가 되며, 이 행동은 세계 상태와 다음 선택을 바꾼다. 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성되어 있다. 보조 요소 c는 이들을 변주하는 서브요소로, 발견·숙련·재방문 @를 통해 깊이를 표현한다. 시그니처 시스템에는 ACTION_SURVIVAL_ROGUELITE 핵심 행동, 이동·경로·위치 선택, 목표 진행이 서로 영향을 주는 월드 상태가 포함되며, 인과법칙은 기존 규칙 ID를 유지하고, 각 상태 키는 실제 상태 이름만 참조한다. 게임은 단순 반복보다는 경로·위험·결과의 차이를 만든다.",
-      "playerFantasy": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임되어, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다.",
-      "coreFun": "숲의 생존자들은 탐험과 협력으로 자원을 수집하며, 환경 위험에 노출되어도 살아남는 데 기여하는 역할을 수행한다. 플레이어는 숲의 생존자들 중 하나로 부임하여, 주체가 되어 자원을 찾고, 위험을 읽으며 다음 선택을 결정해야 한다. 이 과정에서, 중심 행동 MAIN은 'Explore the forest for a needed resource while reading environmental and creature danger.'이며, 두 대축 A/B는 'Return or push deeper based on current supplies and group readiness.' 및 'Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.'로 구성된다. 보조 요소 c는 이들을 변주하여, 발견·숙련·재방문 @의 깊이를 표현한다."
-    },
-    "local_authoring_parts::72724cb19cc2496289f96482fe0f3473b7bec6487e3b8a429c86d5064fb994cf:coreLoop": {
-      "coreLoop": [
-        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Return or push deeper based on current supplies and group readiness.\nOUTPUT: Status change in world state, affecting future choices.",
-        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat.\nOUTPUT: Status change in world state, affecting future choices.",
-        "INPUT: Explore the forest for a needed resource while reading environmental and creature danger.\nSELECT: Re-evaluate situation based on new information or resource availability.\nOUTPUT: Status change in world state, affecting future choices."
-      ]
-    },
-    "local_authoring_parts::8136d18e806933c4570d3a4f1f91db789814287e7a2e19ebc8553f36aee6d26e:signatureSystems:0": {
-      "id": "ACTION_SURVIVAL_ROGUELITE",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "RESOURCE_FOUND",
-        "ENVIRONMENT_READ"
-      ],
-      "stateOutputs": [
-        "PATH_CHANGED",
-        "SURVIVAL_ADVANTAGE_GAINED"
-      ],
-      "name": "Explore the forest for a needed resource while reading environmental and creature danger.",
-      "purpose": "Discover resources to sustain survival and prepare for threats",
-      "playerChoice": "Select which resource to pursue and how to proceed based on environment and group readiness"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 303434,
-      "lastMs": 37794,
-      "lastError": null,
-      "updatedAt": "2026-10-09T11:49:36.964Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T11:44:33.378Z",
-  "updatedAt": "2026-10-09T11:49:36.974Z",
+  "createdAt": "2026-10-09T14:56:38.286Z",
+  "updatedAt": "2026-10-09T14:56:38.300Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 121,
-    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "version": 122,
+    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
     "inventoryCount": 717,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -80,7 +27,7 @@
     "platforms": {
       "WEB": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -97,119 +44,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -276,34 +143,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -315,33 +154,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -608,30 +423,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -681,17 +476,13 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "ADAPT",
-            "assetId": "roblox-common-environment-forest",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "forest"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -711,17 +502,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-item-gold-ingot",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -781,7 +568,7 @@
       },
       "UNITY": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -798,119 +585,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -977,34 +684,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1016,33 +695,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -1309,30 +964,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1382,17 +1017,13 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "ADAPT",
-            "assetId": "roblox-common-environment-forest",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "forest"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1412,17 +1043,13 @@
           },
           {
             "family": "PROP",
-            "action": "ADAPT",
-            "assetId": "roblox-common-item-gold-ingot",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1482,7 +1109,7 @@
       },
       "ROBLOX": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1499,119 +1126,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1678,34 +1225,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1717,33 +1236,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -2010,30 +1505,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2083,17 +1558,13 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "USE",
-            "assetId": "roblox-common-environment-forest",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "forest"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2113,17 +1584,13 @@
           },
           {
             "family": "PROP",
-            "action": "USE",
-            "assetId": "roblox-common-item-gold-ingot",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "resource"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2183,27 +1650,6 @@
       }
     },
     "assetFacts": {
-      "roblox-common-environment-forest": {
-        "family": "ENVIRONMENT",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "forest"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "BIOME",
-        "sourcePath": "/assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 950.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
       "roblox-common-motion-craft-loop": {
         "family": "MOTION",
         "roleEvidence": {
@@ -2220,27 +1666,6 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-item-gold-ingot": {
-        "family": "PROP",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "resource"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "RESOURCE",
-        "sourcePath": "/assets/roblox/common-items-v1/RobloxCommonItems.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 892.4,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -2290,25 +1715,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::8136d18e806933c4570d3a4f1f91db789814287e7a2e19ebc8553f36aee6d26e:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "ACTION_SURVIVAL_ROGUELITE"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::8136d18e806933c4570d3a4f1f91db789814287e7a2e19ebc8553f36aee6d26e:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:49:36.964Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
