@@ -478,7 +478,7 @@ test('Open Cloud engine probe records headless Luau execution without pretending
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING_BEFORE=false'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ATTEMPTED=true'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_SUCCEEDED=false'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=permission denied'},
+   {message:"JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_START_ERROR=The current thread cannot call 'Run' (lacking capability Plugin)"},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_SIMULATION_RUNNING=false'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=false'},
   ]}]}}
@@ -488,13 +488,16 @@ test('Open Cloud engine probe records headless Luau execution without pretending
  assert.equal(r.simulationRunningBefore,false);
  assert.equal(r.simulationStartAttempted,true);
  assert.equal(r.simulationStartSucceeded,false);
- assert.equal(r.simulationStartError,'permission denied');
+ assert.equal(r.simulationStartError,"The current thread cannot call 'Run' (lacking capability Plugin)");
+ assert.equal(r.simulationStartCapabilityDenied,true);
  assert.equal(r.simulationRunning,false);
  assert.equal(r.serverBootObserved,true);
  assert.equal(r.serverBootEvidence.headlessServerExecution,true);
  assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  assert.equal(r.serverBootEvidence.simulationStartAttempted,true);
  assert.equal(r.serverBootEvidence.simulationStartSucceeded,false);
+ assert.equal(r.serverBootEvidence.simulationStartCapabilityDenied,true);
+ assert.equal(r.serverBootEvidence.livePlayerSimulationClaimed,false);
  const body=JSON.parse(calls[0].init.body);
  assert.match(body.script,/RunService:IsRunning\(\)/);
  assert.match(body.script,/pcall\(function\(\) RunService:Run\(\) end\)/);
