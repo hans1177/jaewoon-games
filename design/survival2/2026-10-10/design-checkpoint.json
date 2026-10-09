@@ -532,25 +532,32 @@
       },
       "playerFantasy": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임에서, 플레이어는 자원 배분 전략을 유연하게 조정하며, 생물 다양성과 환경 위험 간의 관계를 이해하여 생존력을 극대화해야 한다.",
       "coreFun": "생물 다양성 변화 → 자원 분배 조정 → 생식 기회 증대; 자원 분배 조정 → 빌딩 효율성 개선; 자원 분배 최적화 → 빌딩 효율성 극대화; 자원 간 경쟁 심화 → 자원 분배 최적화 → 빌딩 효율성 개선"
+    },
+    "local_authoring_parts::1c4f4f0378731fc1be53011f762d8d9cbb49dcfc750b902de2cd63a8da8e54a9:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT: 플레이어가 생물 다양성 변화에 따라 자원 배분 전략을 선택",
+        "STATE CHANGE: 자원 분배 조정 및 빌딩 효율성 개선 상태 변환",
+        "OUTPUT/PROGRESSION: 자원 재배포 결정 및 다음 선택 기회 제공"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1525983,
-      "lastMs": 100959,
+      "totalMs": 1618197,
+      "lastMs": 92214,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:17:50.583Z"
+      "updatedAt": "2026-10-09T18:19:22.801Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:24.564Z",
-  "updatedAt": "2026-10-09T18:17:50.585Z",
+  "updatedAt": "2026-10-09T18:19:22.801Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,7 +2267,7 @@
     "858d89ae2d06831456fac8eb64ddc860e0275d112d9bedcd74e1c812120b5ea1": true,
     "06c2cda81000d051af0476d850699102b4fcfddb3fbad471800d87b0d568b8a1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:17:50.585Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:19:22.801Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
