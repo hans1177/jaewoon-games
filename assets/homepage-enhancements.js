@@ -162,46 +162,73 @@ async function bindAvailableUnityWebSurfaces(catalog){
     try{return await fetch(url,{...options,signal:controller.signal});}
     finally{clearTimeout(timer);}
   };
-  const available=new Map();
   const candidates=catalog.games.filter(game=>{
     const id=gameIdOf(game),unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
-    return Boolean(id)&&projectPath===`unity-games/${id}`;
+    return /^[a-z0-9][a-z0-9-]*$/.test(id)
+      &&(projectPath===`unity-games/${id}`||['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)));
   });
+  const available=new Map();
   await Promise.all(candidates.map(async game=>{
-    const id=gameIdOf(game),href=`/web-games/${id}/`,stamp=Date.now();
-    try{
-      const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
-      if(!indexResponse.ok||!/createUnityInstance\s*\(/.test(await indexResponse.text()))return;
-      const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
-      if(!manifestResponse.ok)return;
-      const manifest=await manifestResponse.json(),groups=manifest?.requiredGroups||{};
-      if(manifest?.engine!=='UNITY_WEB'||manifest?.gameId!==id||manifest?.bundleComplete!==true
-        ||!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))return;
-      const evidence=await Promise.all(['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json','upper-platform-development-readiness.json'].map(async file=>{
-        const response=await probeFetch(`${href}${file}?ts=${stamp}`,{cache:'no-store'});
-        return response.ok?response.json():null;
-      }));
-      const [gameplay,independent,regression,readiness]=evidence;
-      const valid3d=row=>row?.pass===true&&row?.spatialGameplay?.pass===true
-        &&row?.spatialGameplay?.requiredDimension==='3D'&&row?.visualQa?.nativeUnityMesh?.pass===true;
-      if(![gameplay,independent,regression].every(valid3d)
-        ||gameplay?.mobile?.pass!==true
-        ||readiness?.pass!==true||readiness?.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'||readiness?.gameId!==id)return;
-      const refs=[...new Set(['loader','data','framework','wasm'].flatMap(key=>groups[key]))];
-      if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))return;
-      const probes=await Promise.all(refs.map(async ref=>{
-        const response=await probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null);
-        return response?.ok===true;
-      }));
-      if(probes.every(Boolean))available.set(id,href);
-    }catch{}
+    const id=gameIdOf(game),stamp=Date.now();
+    // 정식 주소를 우선한다. QA 수리 중인 실행 가능한 Unity 빌드는 /unity/로 별도 테스트한다.
+    for(const route of [
+      {href:`/web-games/${id}/`,testOnly:false},
+      {href:`/web-games/${id}/unity/`,testOnly:true}
+    ]){
+      const {href,testOnly}=route;
+      try{
+        const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
+        if(!indexResponse.ok||!/createUnityInstance\s*\(/.test(await indexResponse.text()))continue;
+        const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
+        if(!manifestResponse.ok)continue;
+        const manifest=await manifestResponse.json(),groups=manifest?.requiredGroups||{};
+        if(manifest?.engine!=='UNITY_WEB'||manifest?.gameId!==id||manifest?.bundleComplete!==true
+          ||!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
+        const evidence=await Promise.all([
+          'unity-web-build.json','unity-web-gameplay-validation.json','unity-web-independent-qa.json',
+          'unity-web-regression.json','upper-platform-development-readiness.json'
+        ].map(async file=>{
+          const response=await probeFetch(`${href}${file}?ts=${stamp}`,{cache:'no-store'});
+          return response.ok?response.json():null;
+        }));
+        const [build,gameplay,independent,regression,readiness]=evidence;
+        const ownerPlayable3d=row=>row?.engine==='UNITY_WEB'&&row?.gameId===id
+          &&row?.playableBrowserTest===true&&row?.boot?.pass===true
+          &&row?.input?.pass===true&&row?.gameplay?.pass===true&&row?.coreFun?.pass===true
+          &&row?.mobile?.pass===true&&row?.saveRestore?.pass===true&&row?.noCriticalRuntimeError===true
+          &&row?.spatialGameplay?.pass===true&&row?.spatialGameplay?.requiredDimension==='3D'
+          &&row?.spatialGameplay?.depthPass===true&&row?.spatialGameplay?.perspectiveCamera===true
+          &&Number(row?.spatialGameplay?.observedMeshCount)>0&&Number(row?.spatialGameplay?.observedTriangles)>0
+          &&Number(row?.spatialGameplay?.worldMeshes3d)>=2&&Number(row?.spatialGameplay?.worldDepthCm)>=50
+          &&Number(row?.spatialGameplay?.gameplayActors3d)>=1&&row?.spatialGameplay?.spriteGameplayActors===0
+          &&row?.visualQa?.nativeUnityMesh?.pass===true;
+        if(![gameplay,independent,regression].every(ownerPlayable3d))continue;
+        if(build?.engine!=='UNITY_WEB'||build?.gameId!==id||build?.ownerBrowserTestEligible!==true)continue;
+        const ready=readiness?.pass===true&&readiness?.state==='UPPER_PLATFORM_DEVELOPMENT_READY'
+          &&readiness?.gameId===id&&[gameplay,independent,regression].every(e=>e.pass===true&&e.performance?.pass===true);
+        const preview=testOnly&&readiness?.pass===false&&readiness?.state==='REPAIR_REQUIRED'
+          &&readiness?.gameId===id&&build?.actualBrowserPlay==='PLAYABLE_TEST_ONLY';
+        if(testOnly?!preview:!ready)continue;
+        const refs=[...new Set(['loader','data','framework','wasm'].flatMap(key=>groups[key]))];
+        if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
+        const probes=await Promise.all(refs.map(async ref=>{
+          const response=await probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null);
+          return response?.ok===true;
+        }));
+        if(!probes.every(Boolean))continue;
+        available.set(id,{href,testOnly});
+        break;
+      }catch{}
+    }
   }));
   return{
     ...catalog,
-    games:catalog.games.map(game=>available.has(gameIdOf(game))
-      ?{...game,unityWebTestUrl:available.get(gameIdOf(game)),unityWebAvailable:true}
-      :{...game,unityWebTestUrl:null,unityWebAvailable:false})
+    games:catalog.games.map(game=>{
+      const access=available.get(gameIdOf(game));
+      return access?{...game,unityWebTestUrl:access.href,unityWebAvailable:true,unityWebTestOnly:access.testOnly}
+        :{...game,unityWebTestUrl:null,unityWebAvailable:false,unityWebTestOnly:false};
+    })
   };
 }
 function webPublishedRows(catalog){
@@ -323,7 +350,7 @@ function buildFocus(catalog,status){
   if(!row)return;
   const game=mergeGame(row),links=internalReleaseLinks(game);
   const direct=links.unityWeb||links.roblox||links.unity||'';
-  const actionLabel=links.unityWeb?'유니티 웹 플레이':'게임 입장';
+  const actionLabel=links.unityWeb?(game.unityWebTestOnly?'유니티 웹 개발 테스트':'유니티 웹 플레이'):'게임 입장';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
@@ -333,7 +360,7 @@ function buildCard(row){
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);const label=platformReleaseLabel(p);return label==='개발 중'&&links[platform==='ROBLOX'?'roblox':'unity']?'개발 중 · 실행 가능':label;};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
-    button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음','webAction unityWebAction'),
+    button(links.unityWeb,game.unityWebTestOnly?'Unity Web · 테스트':'Unity Web · 개발중','Unity Web · 빌드없음','webAction unityWebAction'),
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction')
   ].join('');
