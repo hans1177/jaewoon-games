@@ -66,25 +66,40 @@
       "name": "ACTION_SURVIVAL_ROGUELITE_CORE",
       "purpose": "Player's core gameplay mechanism that evolves through branching paths and dynamic state changes.",
       "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+    },
+    "local_authoring_parts::868b0b5ac5227c8225eee0743efd1e490cfdf694c700f47ca777e62a1ce81d50:signatureSystems:2": {
+      "id": "CORE-4V4-SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "RUN_RESULT",
+        "PLAYER_BUILD"
+      ],
+      "stateOutputs": [
+        "STATUS_CHANGE",
+        "PROGRESSION_DIRECTION"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE_CORE",
+      "purpose": "Main axis of gameplay, connecting player choices to status changes and progression direction.",
+      "playerChoice": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 388416,
-      "lastMs": 31412,
+      "totalMs": 456754,
+      "lastMs": 38116,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:53:54.484Z"
+      "updatedAt": "2026-10-09T08:55:02.825Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:47:26.027Z",
-  "updatedAt": "2026-10-09T08:53:54.484Z",
+  "updatedAt": "2026-10-09T08:55:02.826Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,11 +2295,25 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::868b0b5ac5227c8225eee0743efd1e490cfdf694c700f47ca777e62a1ce81d50:signatureSystems:3": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "c",
+        "previousRuleIds": [
+          "CORE-4V4-SIGNATURE_SYSTEM_0",
+          "CORE-4V4-SIGNATURE_SYSTEM_1",
+          "CORE-4V4-SIGNATURE_SYSTEM_2"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::868b0b5ac5227c8225eee0743efd1e490cfdf694c700f47ca777e62a1ce81d50:signatureSystems:3": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:53:54.484Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-09T08:55:02.825Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:c",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
