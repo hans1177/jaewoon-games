@@ -211,25 +211,40 @@
       "name": "방송부",
       "purpose": "신호 송신기로 인해 정화 및 감염 기능을 수행하며, 가짜 경보 신호를 전송함",
       "playerChoice": "정화 공격 또는 감염 공격 선택"
+    },
+    "local_authoring_parts::635194f61eb8e835fd84dcfb0a5584ef7532694e5c889154d4762e04d27f2669:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "passive",
+        "infectedAbility"
+      ],
+      "stateOutputs": [
+        "boostedSignal",
+        "alarmTrigger"
+      ],
+      "name": "방송부",
+      "purpose": "감염 상태 변화가 정화 상태 변화와 상호작용하여 실제 세계 상태 변화를 일으킨다.",
+      "playerChoice": "고유 스킬 사용 또는 정화 공격 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1057211,
-      "lastMs": 102762,
+      "totalMs": 1159351,
+      "lastMs": 102140,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:06:20.458Z"
+      "updatedAt": "2026-10-09T23:08:02.601Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:43:55.966Z",
-  "updatedAt": "2026-10-09T23:06:20.460Z",
+  "updatedAt": "2026-10-09T23:08:02.601Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1847,8 +1862,8 @@
   "localAuthoringSplits": {
     "39611f6de9f13432a720e8014c1730a38b7b91df650874386676992f1292c420": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:06:20.458Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-09T23:08:02.601Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
