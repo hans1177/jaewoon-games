@@ -247,25 +247,185 @@
           "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
         }
       ]
+    },
+    "local_authoring_parts::3f8a406a0c0fd958c379a6e1c59e26f3842d036b57733f4e1011cf45eba47076:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::09693c8e3f8f5a2c57b39fc31e10a2dc614ee2347b17e63b2202f4951e881dba:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR ANOTHER VISIBLE PUZZLE CONSTRAINT.",
+        "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD FEEDBACK TO SOLVE THE CURRENT OBJECTIVE.",
+        "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD PATTERNS OR OBSTRUCTION COMBINATIONS."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "관리 및 수정하는 게임 내 맵의 기능",
+          "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD P"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
+          "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "게임 내에서 월드 패턴의 생성 및 관리",
+          "playerChoice": "보드 패턴의 새로운 구성이나 조합을 선택하여 게임 진행에 영향을 미칩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK",
+            ">// NOTE: "
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "EXPLORATION",
+          "playerChoice": "DISCOVERY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "ENHANCE PLAYER EXPERIENCE THROUGH EMERGENT CONTENT EXPANSION",
+          "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
+    },
+    "designer_draft_slices::identity-core": {
+      "identity": "작은 모험 RPG은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 핵심 루프를 가진다. 플레이어의 선택은 즉시 상태 변화를 만든다. 성장은 숫자 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 학문적으로 타당한 이유를 제공하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 표현한다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다. 게임의 설계는 기존 원본의 점수나 관문을 승계하지 않고 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+      "playerFantasy": "작은 모험 RPG에서 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 핵심 루프를 가진다. 플레이어의 선택은 즉시 상태 변화를 만든다. 성장은 숫자 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 학문적으로 타당한 이유를 제공하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 표현한다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreFun": "작은 모험 RPG은 플레이어가 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.이라는 중심 행동을 통해 선택 결과가 다음 월드 상태로 연결되는 PUZZLE 게임이다. 이 게임은 단순 반복보다는 경로·위험·보상이 서로 연결되어 있는 핵심 루프를 가진다. 플레이어의 선택은 즉시 상태 변화를 만든다. 성장은 숫자 증가뿐만 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 다양한 콘텐츠를 다르게 사용하게 한다. 세계의 역사·생활·경제·지역 기능이 학문적으로 타당한 이유를 제공하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 표현한다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다.",
+      "coreLoop": [
+        "INPUT/SELECT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR ANOTHER VISIBLE PUZZLE CONSTRAINT.",
+        "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD FEEDBACK TO SOLVE THE CURRENT OBJECTIVE.",
+        "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD PATTERNS OR OBSTRUCTION COMBINATIONS."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "관리 및 수정하는 게임 내 맵의 기능",
+          "playerChoice": "게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "CLEAR THE LEVEL GOAL TO EARN REWARDS OR UNLOCK NEXT STAGE, THEN FACE NEW BOARD P"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "Establishes the dynamic and evolving board patterns that define the game's core gameplay mechanics.",
+          "playerChoice": "Player selects and configures the board pattern to create new challenges and unlock progression opportunities."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "MAKE MATCHES OR DELIBERATE PUZZLE MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "게임 내에서 월드 패턴의 생성 및 관리",
+          "playerChoice": "보드 패턴의 새로운 구성이나 조합을 선택하여 게임 진행에 영향을 미칩니다."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "c",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK",
+            ">// NOTE: "
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "EXPLORATION",
+          "playerChoice": "DISCOVERY"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_4",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "START A BOARD OR GRID LEVEL WITH CLEAR GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
+          ],
+          "stateOutputs": [
+            "DISCOVER NEW QUESTIONS AND PATHWAYS THAT REFLECT THE WORLD'S HISTORY, LIVING, EK"
+          ],
+          "name": "BOARD_PATTERN_EDITOR",
+          "purpose": "ENHANCE PLAYER EXPERIENCE THROUGH EMERGENT CONTENT EXPANSION",
+          "playerChoice": "DISCOVERY OF NEW QUESTIONS AND PATHWAYS IN THE CONTEXT OF THE GAME WORLD"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 766259,
-      "lastMs": 68948,
+      "totalMs": 822122,
+      "lastMs": 55863,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:47:01.839Z"
+      "updatedAt": "2026-10-09T08:47:57.706Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:47:01.841Z",
+  "updatedAt": "2026-10-09T08:47:57.714Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2298,12 +2458,22 @@
       }
     }
   },
-  "sliceDependencies": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:47:01.841Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:47:57.708Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
+  "designerSeed": {
+    "file": "design/simple-rpg/2026-10-09/design-seed.json",
+    "contentDigest": "6d0c8f8c3eba3ca8f031eaef7e694b02f5cbda57d6fa1ec72bdb21f880cd3fbd",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  }
 }
