@@ -62,6 +62,21 @@ for(const file of scriptFiles){
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
 }
 
+// F0 소스 검사: 2D 구성요소가 없다는 사실만으로 3D로 인정하지 않는다.
+// 실제 Unity 3D 카메라 + 공간 좌표 + 메시 생성/바인딩 코드를 모두 요구한다.
+const nativeSource=scriptFiles.map(file=>fs.readFileSync(file,'utf8')
+  .replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,'')).join('\n');
+const native3dCamera=/(?:\bCamera\.main\b|\bCamera\.current\b|AddComponent\s*<\s*Camera\s*>|GetComponent\s*<\s*Camera\s*>)/.test(nativeSource);
+const native3dSpatialTransform=/(?:new\s+Vector3\s*\(|\bVector3\.(?:one|zero|forward|up|right)\b|Quaternion\.Euler\s*\(|\.transform\.(?:position|localPosition|localScale|rotation)\b)/.test(nativeSource);
+const nativePrimitiveGeometry=/GameObject\.CreatePrimitive\s*\(\s*PrimitiveType\.(?:Cube|Sphere|Capsule|Cylinder|Plane|Quad)\b/.test(nativeSource);
+const nativeFilterMeshBinding=/(?:AddComponent|GetComponent)\s*<\s*MeshFilter\s*>\s*\(\s*\)\s*\.\s*(?:sharedMesh|mesh)\s*=/.test(nativeSource)
+  &&/(?:AddComponent|GetComponent)\s*<\s*MeshRenderer\s*>/.test(nativeSource);
+const nativeSkinnedMeshBinding=/\bSkinnedMeshRenderer\b/.test(nativeSource)&&/\bsharedMesh\s*=/.test(nativeSource);
+const native3dWorldMesh=nativePrimitiveGeometry||nativeFilterMeshBinding||nativeSkinnedMeshBinding;
+if(!(native3dCamera&&native3dSpatialTransform&&native3dWorldMesh))
+  throw new Error('UNITY_WEB_F0_NATIVE_3D_WORLD_SOURCE_REQUIRED:camera='+native3dCamera
+    +':spatial='+native3dSpatialTransform+':mesh='+native3dWorldMesh);
+
 const editorRoot=path.join(sourceRoot,'Assets','Editor');
 const editorFiles=[];
 if(fs.existsSync(editorRoot)){
@@ -108,6 +123,10 @@ const request={
   outputRoot:`web-games/${gameId}`,
   canonicalSource:true,
   requiredGameplayDimension:'3D',
+  f0Native3dSourceRequired:true,
+  f0Native3dSourcePassed:true,
+  f0Native3dSourceEvidence:{camera:native3dCamera,spatialTransform:native3dSpatialTransform,worldMesh:native3dWorldMesh},
+  f0StaticEvidenceIsNotRuntimeQa:true,
   threeDOnlyOwnerDirective:'OWNER_DIRECTIVE_2026-10-09',
   native3dRuntimeMeshQaRequired:true,
   existing2dOr2_5dSourceRequiresInPlace3dRebuild:true,
@@ -133,4 +152,5 @@ console.log(`UNITY_WEB_CSHARP_FILES=${scriptFiles.length}`);
 console.log(`UNITY_WEB_BUILD_METHOD=${buildMethod}`);
 console.log(`UNITY_WEB_PRIMITIVE_SIGNALS=${primitiveSignals.length}`);
 console.log('UNITY_WEB_3D_ONLY=ENFORCED');
+console.log('UNITY_WEB_F0_NATIVE_3D_SOURCE=PASS');
 console.log('UNITY_WEB_REQUEST_STATUS=READY');
