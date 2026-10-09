@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::b105e164ddbef5e55fd3d588d670cc313de9a6f41a69aeb4cd4002c8f1f2ecde:identity": {
+      "identity": "50일은 플레이어가 단순한 생존 게임에서 시작해 점점 어려워지는 전투 루틴을 거쳐 다양한 선택과 결과로 이어지는 반복 가능한 핵심 루프를 가진 ACTION_SURVIVAL_ROGUELITE 게임이다. 주체는 '플레이어'이며, 세계 상태는 '생존', '전투', '선택', '보상' 등에 기반하여 진화하는 다층적인 시스템을 구성한다. 중심 행동은 '전투'이고, 두 대축은 '선택'과 '보상/위험'이며, 보조 요소는 '성장'이다. 게임의 모든 원본 규칙과 수치를 유지하며, 설계와 구현 모두에서 최우선으로 보존된다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 239333,
+      "lastMs": 239333,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:06:37.175Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:02:37.821Z",
-  "updatedAt": "2026-10-09T11:02:37.836Z",
+  "updatedAt": "2026-10-09T11:06:37.175Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2208,5 +2224,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:06:37.175Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
