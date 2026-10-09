@@ -34,25 +34,39 @@
         "Just initiated exploration phase with resource gathering and risk assessment.\nSelected path based on available materials and group cohesion.\nStatus update reflects improved survival conditions and adjusted group roles.\nImmediate reward includes new tools and reduced threat levels from nearby dangers.",
         "INPUT: Identify key resources and assess risks.\nSELECT: Choose optimal paths and strategies.\nOUTPUT: Enhanced survival capabilities, modified group interactions, expanded territory access.\nACTION: Strategic decision making leading to long-term benefits and new challenges."
       ]
+    },
+    "local_authoring_parts::a43f46bf36757773f6632db7f519265e143166e456626dab85b2f59d765a71fb:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "FOREST_ECO_SYSTEM"
+      ],
+      "stateOutputs": [
+        "SURVIVAL_RESOURCES",
+        "GROUP_DYNAMICS"
+      ],
+      "name": "ENVIRONMENTAL_RISK_ASSESSMENT",
+      "purpose": "Evaluate environmental hazards and resource availability to guide exploration decisions.",
+      "playerChoice": "Assess terrain risks, identify critical resources, and determine optimal paths for survival progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 176257,
-      "lastMs": 29334,
+      "totalMs": 209366,
+      "lastMs": 33109,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:20:27.686Z"
+      "updatedAt": "2026-10-09T08:21:00.796Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:31.411Z",
-  "updatedAt": "2026-10-09T08:20:27.686Z",
+  "updatedAt": "2026-10-09T08:21:00.796Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2280,7 +2294,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:20:27.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:21:00.796Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
