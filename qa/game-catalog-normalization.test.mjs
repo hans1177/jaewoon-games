@@ -135,7 +135,7 @@ assert.equal(ingestPolicy.root,'web-games');
 assert.equal(ingestPolicy.requiredEntryFile,'index.html');
 assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD');
 assert.equal(ingestPolicy.reconcileExistingCatalogGamesEveryStatusSync,true);
-assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,true);
+assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,false);
 assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard,true);
 
 {
@@ -144,26 +144,14 @@ assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard
     const dir=path.join(root,'owner-upload');
     fs.mkdirSync(dir,{recursive:true});
     fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><title>Owner Upload Game</title><main>'+('x'.repeat(700))+'</main>');
-    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=1;');
-    const temp={games:[],permanentRemovalPolicy:{ids:[]}};
+    const temp={games:[{id:'owner-upload',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/owner-upload/'}],permanentRemovalPolicy:{ids:[]}};
     const first=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
-    assert.deepEqual(first.added,['owner-upload']);
-    const game=temp.games[0];
-    assert.equal(game.id,'owner-upload');
-    assert.equal(game.name,'Owner Upload Game');
-    assert.equal(game.webPath,'/web-games/owner-upload/');
-    assert.equal(game.hasWebArchive,true);
-    assert.equal(game.homepageWebPlayable,true);
-    assert.equal(game.productionClass,'DESIGN_ONLY');
-    assert.equal(game.homepageDisplayMode,'WEB_PUBLISHED');
-    assert.match(game.ownerWebSourceRevision,/^[a-f0-9]{64}$/);
-    const firstRevision=game.ownerWebSourceRevision;
-    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=2;');
-    const second=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
-    assert.deepEqual(second.updated,['owner-upload']);
-    assert.notEqual(game.ownerWebSourceRevision,firstRevision);
-    assert.equal(game.webDevelopmentResetRequired,true);
-    assert.equal(game.ownerWebEntryFile,'web-games/owner-upload/index.html');
+    assert.deepEqual(first.added,[]);
+    assert.deepEqual(first.disabled,['owner-upload']);
+    assert.equal(temp.games[0].homepageWebPlayable,false);
+    assert.equal(temp.games[0].hasWebArchive,true,'keep legacy reference without exposing it');
+    assert.equal(temp.games[0].ownerWebSourceState,'LEGACY_WEB_REFERENCE_ONLY');
+    assert.equal(temp.games[0].webPath,'/web-games/owner-upload/');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -195,25 +183,35 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     write('simple-shell','<title>Approved Web Bootstrap</title><button>Win</button>');
     write('counter-shell','<title>카운터</title><script src="/web-games/_shared/vibe2-final.js?v=1"></script>');
     write('vibe-maker','<title>게임 제작기</title>');
-    const temp={games:[{id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},{id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:['removed']}};
+    const temp={games:[
+      {id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},
+      {id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true},
+      {id:'unity-only-index',webPath:'/web-games/unity-only-index/',homepageWebPlayable:false,hasWebArchive:false}
+    ],permanentRemovalPolicy:{ids:['removed']}};
     write('removed','<title>이전 삭제 게임</title>');
     const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.deepEqual(result.added,['owner-unregistered']);
+    assert.deepEqual(result.added,[],'HTML files alone may not auto-register games');
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
-    assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed'].includes(x.id)));
-    write('unity-only-index','<title>Unity Web Player</title><script>var buildUrl="Build"; var loaderUrl=buildUrl+"/game.loader.js";var config={dataUrl:buildUrl+"/game.data",frameworkUrl:buildUrl+"/game.framework.js",codeUrl:buildUrl+"/game.wasm"};</script>');
+    assert(!temp.games.some(x=>['counter-shell','vibe-maker','removed','owner-unregistered'].includes(x.id)));
+    write('unity-only-index','<title>Unity Web Player</title><script>createUnityInstance(document.getElementById("unity-canvas"),{});</script>');
+    const unity=path.join(root,'unity-only-index');
+    const group={loader:['Build/game.loader.js'],data:['Build/game.data'],framework:['Build/game.framework.js'],wasm:['Build/game.wasm']};
+    fs.mkdirSync(path.join(unity,'Build'));
+    for(const files of Object.values(group))for(const file of files)fs.writeFileSync(path.join(unity,file),'bundle-fixture');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert(!temp.games.some(x=>x.id==='unity-only-index'),'Unity HTML without its actual bundle is not runnable');
-    fs.mkdirSync(path.join(root,'unity-only-index','Build'));
-    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(root,'unity-only-index','Build',file),'bundle-fixture');
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,false,'bundle alone cannot bypass QA');
+    fs.writeFileSync(path.join(unity,'unity-web-deploy-manifest.json'),JSON.stringify({engine:'UNITY_WEB',gameId:'unity-only-index',bundleComplete:true,requiredGroups:group}));
+    const qa={pass:true,spatialGameplay:{pass:true,requiredDimension:'3D'},visualQa:{nativeUnityMesh:{pass:true}},mobile:{pass:true}};
+    for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])fs.writeFileSync(path.join(unity,name),JSON.stringify(qa));
+    fs.writeFileSync(path.join(unity,'upper-platform-development-readiness.json'),JSON.stringify({gameId:'unity-only-index',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true}));
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,true);
-    write('simple-shell','<title>다시 구현한 게임</title><canvas></canvas>');
+    assert.equal(temp.games.find(x=>x.id==='unity-only-index').ownerWebSourceState,'UNITY_WEB_VERIFIED');
+    write('simple-shell','<title>이전 일반 웹</title><canvas id="game"></canvas><script>function move(){};</script>');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);
-    assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,1);
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -238,7 +236,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
     fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
-    assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'game-specific world source may reenter without deleting native project');
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy HTML cannot reenter without a verified Unity WebGL build');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
