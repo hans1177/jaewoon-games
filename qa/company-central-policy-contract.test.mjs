@@ -1971,7 +1971,8 @@ test('current Vibe operating system is fixed while detail-chain optimization rem
   assert.equal(fixed.repeatDevelopmentConcurrency.externalPublicReleaseIsCheckpointNotTerminal,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.externalPublicReleaseRequiresExplicitOwnerApproval,true);
   assert.equal(fixed.repeatDevelopmentConcurrency.postReleaseRepeatDevelopmentContinues,true);
-  assert.deepEqual(fixed.repeatDevelopmentConcurrency.supportedBoundPlatformLoops,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(fixed.repeatDevelopmentConcurrency.supportedBoundPlatformLoops,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','UNITY_WEB']);
   assert.equal(logMap.fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressGamePrimaryRefill,false);
   assert.equal(logMap.fixedRepeatDevelopment64EvidenceContract.runnerPressureMaySuppressNextCycleRefill,false);
   assert.equal(architecture.fixedRepeatDevelopment64.logicalCapacityUnaffectedByRunnerPressure,true);
