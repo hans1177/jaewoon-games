@@ -2898,7 +2898,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T01:24:10.538Z"
       },
-      "updatedAt": "2026-10-09T11:12:08.809Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "50137686c0189b567fd2143f386803b7caef5eaa",
       "robloxSourceBootstrapPassedAt": "2026-10-09T07:09:25.265Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -3939,7 +3939,26 @@
         "authority": "roblox-open-cloud-pre-f9-validation-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "sourceRevision": "50137686c0189b567fd2143f386803b7caef5eaa",
+        "artifactIdentity": "sha256:1b44f1c727a99188229a0aecea1569e1a80c0fc81fec92e87fa62a9c230e72b9",
+        "artifactRunId": 37903694058,
+        "universeId": "10768961338",
+        "placeId": "79150944093879",
+        "candidateVersionNumber": 12,
+        "httpStatus": 429,
+        "failureStage": "CREATE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY",
+        "externalCapacityDeferred": true,
+        "retryAfterSeconds": 2508,
+        "retryNotBefore": "2026-10-09T11:56:18.988Z",
+        "observedAt": "2026-10-09T11:14:31.768Z",
+        "workflowRunId": 37919464094,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -3969,10 +3988,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -3992,7 +4010,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-09T10:57:37.082Z"
+        "verifiedAt": "2026-10-09T11:14:31.768Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-09T10:57:37.082Z",
       "robloxStudioRuntimeSession": {
@@ -7282,7 +7300,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-09T11:12:08.809Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "5918521b76b85dc8350b4812940232e541cf47a1",
       "robloxSourceBootstrapPassedAt": "2026-10-09T03:26:47.870Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -8025,10 +8043,10 @@
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 1076,
-        "retryNotBefore": "2026-10-09T10:00:24.748Z",
-        "observedAt": "2026-10-09T09:42:29.950Z",
-        "workflowRunId": 37908957168,
+        "retryAfterSeconds": 2508,
+        "retryNotBefore": "2026-10-09T11:56:18.988Z",
+        "observedAt": "2026-10-09T11:14:31.768Z",
+        "workflowRunId": 37919464094,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -8060,10 +8078,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8957,7 +8974,7 @@
         "source": "roblox-dedicated-targets.json",
         "restoredAt": "2026-10-02T05:12:43.771Z"
       },
-      "updatedAt": "2026-10-09T11:12:08.809Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
       "robloxSourceBootstrapPassedAt": "2026-10-08T12:50:41.556Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -9666,10 +9683,10 @@
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 1076,
-        "retryNotBefore": "2026-10-09T10:00:24.748Z",
-        "observedAt": "2026-10-09T09:42:29.950Z",
-        "workflowRunId": 37908957168,
+        "retryAfterSeconds": 2508,
+        "retryNotBefore": "2026-10-09T11:56:18.988Z",
+        "observedAt": "2026-10-09T11:14:31.768Z",
+        "workflowRunId": 37919464094,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -9701,10 +9718,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaEvidence": {
@@ -9724,7 +9740,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-09T10:57:37.082Z"
+        "verifiedAt": "2026-10-09T11:14:31.768Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-08T14:26:48.300Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
@@ -11438,7 +11454,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-09T11:12:08.809Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
       "robloxSourceBootstrapPassedAt": "2026-10-08T12:50:41.556Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -11917,10 +11933,10 @@
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 1076,
-        "retryNotBefore": "2026-10-09T10:00:24.748Z",
-        "observedAt": "2026-10-09T09:42:29.950Z",
-        "workflowRunId": 37908957168,
+        "retryAfterSeconds": 2508,
+        "retryNotBefore": "2026-10-09T11:56:18.988Z",
+        "observedAt": "2026-10-09T11:14:31.768Z",
+        "workflowRunId": 37919464094,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -11952,10 +11968,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -12017,7 +12032,7 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-09T10:57:37.082Z"
+        "verifiedAt": "2026-10-09T11:14:31.768Z"
       },
       "robloxMultiplayerQaPassedAt": "2026-10-09T06:04:41.348Z",
       "robloxPublicReleaseBlockers": [
@@ -22342,7 +22357,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-09T11:12:08.809Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
       "robloxSourceBootstrapPassedAt": "2026-10-08T12:50:41.556Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -22817,12 +22832,12 @@
         "httpStatus": 429,
         "failureStage": "CREATE",
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
-        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"code\":\"RESOURCE_EXHAUSTED\",\"message\":\"Luau task creation rate limit exceeded. Retry after the indicated delay.\"}",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_DEFERRED_EXTERNAL_CAPACITY",
         "externalCapacityDeferred": true,
-        "retryAfterSeconds": 2181,
-        "retryNotBefore": "2026-10-09T10:00:24.416Z",
-        "observedAt": "2026-10-09T09:24:04.448Z",
-        "workflowRunId": 37905931314,
+        "retryAfterSeconds": 2508,
+        "retryNotBefore": "2026-10-09T11:56:18.988Z",
+        "observedAt": "2026-10-09T11:14:31.768Z",
+        "workflowRunId": 37919464094,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -22854,10 +22869,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-first-frame-grounding-unobserved",
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -36207,7 +36221,7 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-09T10:57:37.082Z",
+      "updatedAt": "2026-10-09T11:14:31.768Z",
       "robloxSourceCommit": "5918521b76b85dc8350b4812940232e541cf47a1",
       "robloxSourceBootstrapPassedAt": "2026-10-09T03:26:47.870Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -36916,7 +36930,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -36939,9 +36953,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-open-cloud-engine-probe-transient-retry"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -37168,7 +37182,7 @@
       "robloxPublicReleaseFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
       "robloxPublicReleaseRuntimeObservationPending": true,
       "robloxRuntimeFoundationInternalReleaseException": true,
-      "robloxRuntimeLastObservationAttemptAt": "2026-10-09T09:42:29.950Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-10-09T11:14:31.768Z",
       "robloxCanonicalPublishQueue": [],
       "robloxF9Blockers": [],
       "robloxF9FailureSignature": null,
@@ -38354,7 +38368,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-09T11:12:36.727Z",
+  "updatedAt": "2026-10-09T11:14:31.768Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
