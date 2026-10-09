@@ -947,25 +947,43 @@
         "UPGRADES"
       ],
       "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: PLACEMENT -> RESONANCE: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS"
+    },
+    "local_authoring_parts::51d2f36b2e1875d958f6bd065909296b7e83810def3a25b635e31572ecf50cb9:toSystem,trigger,stateChange": {
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS"
+    },
+    "local_authoring_parts::392a5382cf19025e64ec6b0b930200cdf7829c1bd32a6195fbc758ea157b623f:systemInterconnections:3": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar: PLACEMENT -> RESONANCE: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS",
+      "toSystem": "GAMEPLAY_SKETCH v4 emergent grammar: RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS",
+      "trigger": "ATTACK_PATTERNS",
+      "stateChange": "RESONANCE → PLACEMENT: ATTACK_PATTERNS trigger STATE_CHANGE: ATTACK_PATTERNS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 66,
-      "successes": 66,
+      "calls": 67,
+      "successes": 67,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6110024,
-      "lastMs": 92619,
+      "totalMs": 6205091,
+      "lastMs": 95067,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:01:11.922Z"
+      "updatedAt": "2026-10-09T01:02:46.990Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T01:01:11.922Z",
+  "updatedAt": "2026-10-09T01:02:46.991Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3301,7 +3319,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:01:11.922Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:02:46.991Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
