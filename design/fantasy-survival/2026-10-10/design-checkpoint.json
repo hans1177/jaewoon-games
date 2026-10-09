@@ -239,25 +239,173 @@
       "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
       "purpose": "플레이어의 선택에 따른 상태 변화, 보상/위험, 그리고 다음 선택 유도",
       "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+    },
+    "local_authoring_parts::0328babfb163883041aa1272573c8b2d835e90021694b8ba30b4119fc57b772e:signatureSystems:3": {
+      "id": "delve",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "playerChoice",
+        "environmentState"
+      ],
+      "stateOutputs": [
+        "statusChange",
+        "rewardOrRisk"
+      ],
+      "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+      "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하며, 실질적 세계 상태 변화를 일관되게 유도",
+      "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+    },
+    "local_authoring_parts::e1cf241500f928b5b84082ea2bfdc44f3f17625cfe706197a70762768da77b96:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "coreFun",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하여, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 실질적 세계 상태 변화를 일관되게 생성하며, 상황별로 조합을 변경하고, 이동 속도나 타격 손맛을 조절하여 새로운 선택과 보상/위험을 유도한다"
+        },
+        {
+          "id": "signatureSystems",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화, 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 생존 및 전투 시뮬레이션의 핵심 단계 구현",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통한 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화, 보상/위험, 그리고 다음 선택 유도",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+        },
+        {
+          "id": "delve",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하며, 실질적 세계 상태 변화를 일관되게 유도",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+        }
+      ]
+    },
+    "local_authoring_parts::273aad8c83db92d7309949b0ca95e0cd221c5889b797f72b6ba02712543adf26:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택",
+        "플레이어의 숙련된 전략 -> 상태 변화 -> 보상/위험/다음 선택",
+        "플레이어의 선택이 상태를 변화시키고, 이는 다시 다른 선택으로 이어지는 양방향 실제 상태 교환"
+      ],
+      "signatureSystems": [
+        {
+          "id": "coreFun",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하여, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 실질적 세계 상태 변화를 일관되게 생성하며, 상황별로 조합을 변경하고, 이동 속도나 타격 손맛을 조절하여 새로운 선택과 보상/위험을 유도한다"
+        },
+        {
+          "id": "signatureSystems",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화, 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 생존 및 전투 시뮬레이션의 핵심 단계 구현",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통한 실질적 세계 상태 변화 유도"
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화, 보상/위험, 그리고 다음 선택 유도",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+        },
+        {
+          "id": "delve",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerChoice",
+            "environmentState"
+          ],
+          "stateOutputs": [
+            "statusChange",
+            "rewardOrRisk"
+          ],
+          "name": "생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'",
+          "purpose": "플레이어의 선택에 따른 상태 변화와 즉각적 결과를 생성하며, 실질적 세계 상태 변화를 일관되게 유도",
+          "playerChoice": "플레이어의 선택 -> 상태 변화 -> 보상/위험/다음 선택의 양방향 실제 상태 교환을 통해, 생존 및 전투 시뮬레이션의 핵심 단계인 '전투'와 '생존'을 구현한다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1073116,
-      "lastMs": 108914,
+      "totalMs": 1181455,
+      "lastMs": 108339,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:13:37.944Z"
+      "updatedAt": "2026-10-09T21:15:26.284Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:55:44.798Z",
-  "updatedAt": "2026-10-09T21:13:37.944Z",
+  "updatedAt": "2026-10-09T21:15:26.287Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1970,7 +2118,7 @@
   "localAuthoringSplits": {
     "271d072a82ddae35e1db6f383331e5ac2cf26d5ab1bfba7a853709177da2b91d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:13:37.944Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:15:26.287Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
