@@ -50,25 +50,41 @@
       "name": "FIGHT THROUGH AN ESCALATING HORDE IN A SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE",
       "purpose": "플레이어가 단순히 채집과 제작을 하며 살아가는 게임에서, 주체적으로 선택하며 성장과 위험, 승리 및 실패에 대한 정서적 발판을 제공하는 방식으로 진행된다.",
       "playerChoice": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.의 결과가 다음 월드 상태와 접근 가능성을 바꾼다."
+    },
+    "local_authoring_parts::8026fc7205a12bdcc2eeb2bec54eb194f1f52f6eaa05f26fea0e8fb74fd0a23e:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "INPUT/SELECT",
+        "STATE CHANGE",
+        "REWARD/RISE/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "PLAYER EMOTIONAL SUPPORT",
+        "GAME WORLD STATE TRANSFORMATION"
+      ],
+      "name": "FIGHT THROUGH AN ESCALATING HORDE IN A SHORT REAL-TIME SURVIVAL RUN WHILE POSITIONING AROUND ENEMY PRESSURE",
+      "purpose": "Player's emotional support and game world state transformation through survival actions.",
+      "playerChoice": "Collect run rewards or experience, upgrade builds, and choose new strategies that transform the current build and affect future progression choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 334929,
-      "lastMs": 45993,
+      "totalMs": 369376,
+      "lastMs": 34447,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:23:27.403Z"
+      "updatedAt": "2026-10-09T08:24:01.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:52.442Z",
-  "updatedAt": "2026-10-09T08:23:27.403Z",
+  "updatedAt": "2026-10-09T08:24:01.852Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2267,7 +2283,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:23:27.403Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:24:01.852Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
