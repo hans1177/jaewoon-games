@@ -1057,25 +1057,41 @@
     },
     "local_authoring_parts::973eaa7457c41912a8c772230b0b1f982306c78beba3e6c58686fc7564941baa:trigger": {
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::973eaa7457c41912a8c772230b0b1f982306c78beba3e6c58686fc7564941baa:stateChange": {
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
+    },
+    "local_authoring_parts::996b4af2f77ccd6d3ccaac29418c092ad98899d34c6780729fb491d77a54d3f7:systemInterconnections:0": {
+      "fromId": "SIGNATURE_SYSTEM_01",
+      "toId": "SIGNATURE_SYSTEM_01",
+      "stateKeys": [
+        "LEVEL_GOAL_STATE",
+        "BOARD_STATE",
+        "NEXT_BOARD_PATTERN_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_01",
+      "toSystem": "SIGNATURE_SYSTEM_01",
+      "trigger": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다.",
+      "stateChange": "시스템은 LEVEL_GOAL_STATE 상태에서 PLAYER_CHOICE 선택을 받아, NEXT_BOARD_PATTERN_STATE로 전환하여 게임 세계를 동적으로 진화시킵니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 107,
-      "successes": 107,
+      "calls": 108,
+      "successes": 108,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3590955,
-      "lastMs": 32863,
+      "totalMs": 3624208,
+      "lastMs": 33253,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:34:46.666Z"
+      "updatedAt": "2026-10-09T01:35:19.921Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T01:34:46.667Z",
+  "updatedAt": "2026-10-09T01:35:19.923Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3401,7 +3417,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:34:46.666Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:35:19.923Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
