@@ -80,25 +80,53 @@
         "worldChange": "세계 상태 변화로 인해 다음 월드 상태와 새로운 선택 가능성을 생성",
         "nextEvent": "새로운 선택이 이루어지면 다음 사건이 발생하며 게임은 계속 진행됨"
       }
+    },
+    "local_authoring_parts::15c1009c481bd271483a9faa12b4d0932d77595c306bf8608c8236116e7a478d:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "플레이어 선택",
+          "kind": "GENRE",
+          "gameplayEffect": "선택에 따른 세계 상태 변환 및 보상 제공"
+        },
+        {
+          "name": "세계 상태 변환",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어 행동에 따라 새로운 월드 상태 생성"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "게임 초기 설정",
+          "gameplayEffect": "즉시 시작 가능한 단순 입력 및 명확한 점수/거리/짧은 세션 목표"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "세계 상태 관리",
+          "gameplayEffect": "플레이어의 행동에 따른 환경 변화 및 상태 전환"
+        }
+      ],
+      "cGenreInterlock": "플레이어 선택과 세계 상태 간 양방향 실제 상태 교환 및 보상 피드백 포함됨",
+      "cWorldAndGameplayEffect": "플레이어 선택 -> 세계 상태 변환 -> 보상/위험/다음 선택, 세계 상태 변환 -> 플레이어 선택 -> 보상/위험/다음 선택, 게임 종료 시 보상 및 재방문 기회 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1065604,
-      "lastMs": 117768,
+      "totalMs": 1181772,
+      "lastMs": 116168,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:39:43.957Z"
+      "updatedAt": "2026-10-09T18:41:40.128Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:21:58.328Z",
-  "updatedAt": "2026-10-09T18:39:43.958Z",
+  "updatedAt": "2026-10-09T18:41:40.128Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1579,7 +1607,7 @@
     "86c0d47c7476e8100f5be26e0bf61ddbea347c9907265051e083abeff0f38e6c": true,
     "1cf75110668d5b35b85fc30035e5a19be8b90aa48ac7866a3e2fcde98d706f95": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:39:43.958Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:41:40.128Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
