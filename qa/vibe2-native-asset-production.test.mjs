@@ -3773,7 +3773,7 @@ test('Unity 3D 마력숲은 기존 공격/피해 판정에서만 관절 모션�
   assert.match(source,/if\(actionPart!=null\)AuthorCombatClips\(root,actionPart\)/);
   assert.match(source,/playerWeaponTrail=character\.transform\.Find\("RightArm"\)\.gameObject\.AddComponent<TrailRenderer>\(\)/);
   assert.match(attack,/if\(playerCombatAnimation!=null\)playerCombatAnimation\.Play\("attack"\)/);
-  assert.match(attack,/if\(playerWeaponTrail!=null && weapon!=null\)/);
+  assert.match(attack,/if\(playerWeaponTrail!=null && weapon!=null && !sand && !orb\)/);
   assert.ok(attack.indexOf('playerCombatAnimation.Play("attack")')<attack.indexOf('if(target==null)'),'miss swing exists, but no fake contact');
   assert.match(attack,/if\(target==null\)\{info="공격 범위에 몬스터가 없어\.";return;\}/);
   assert.match(attack,/HurtMonster\(target,damage\)/);
@@ -3804,7 +3804,59 @@ test('Unity 3D 마력숲은 기존 공격/피해 판정에서만 관절 모션�
   const roblox=fs.readFileSync(path.join(root,'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'),'utf8');
   assert.match(roblox,/PersistentUploadRequiredForProduction", true/);
   assert.match(roblox,/RuntimeVerificationState", "PENDING_STUDIO"/);
-  const nativeClips=fs.readdirSync(path.join(root,'unity-games/fantasy-survival/Assets/Animations'))
-    .filter(name=>/\.(?:anim|fbx)$/i.test(name));
-  assert.equal(nativeClips.length,0,'this source-level test must not be mistaken for imported native rig/clip QA');
+  // 향후 실제 Unity .anim/.fbx 클립의 추가를 방해하지 않는다. 정적 테스트는 네이티브 런타임 PASS가 아니다.
+  assert.ok(fs.existsSync(path.join(root,'unity-games/fantasy-survival/Assets/Animations')));
+});
+
+
+test('Roblox village-dungeons emits combat VFX only for server-authorized hits, dodge and death',()=>{
+  const root=path.resolve(import.meta.dirname,'..');
+  const server=fs.readFileSync(path.join(root,'roblox-games/village-dungeons/server/Game.server.luau'),'utf8');
+  const client=fs.readFileSync(path.join(root,'roblox-games/village-dungeons/client/Game.client.luau'),'utf8');
+  const section=(source,first,last)=>{
+    const a=source.indexOf(first);
+    const b=source.indexOf(last,a+first.length);
+    assert(a>=0&&b>a,first+' to '+last+' missing');
+    return source.slice(a,b);
+  };
+  const damage=section(server,'local function damageMonster(','local function runEnemyAI(');
+  const enemyAI=section(server,'local function runEnemyAI(','local function spawnMonster(');
+  const consumer=section(client,'-- 선택된 내부 자산 family를 기존 마을/던전 네이티브 표현에 직접 소비한다.','local title = Instance.new("TextLabel")');
+  const remoteConsumer=section(client,'remote.OnClientEvent:Connect(function(eventName, snapshot)','if #Config.Actions > 0 then');
+  assert.match(damage,/local nextHealth = math.max\(0, health - math.max\(1, math.floor\(amount\)\)\)/);
+  assert.match(damage,/enemy:SetAttribute\("Health", nextHealth\)/);
+  assert.match(damage,/enemy:SetAttribute\("HitReactionAt", os.clock\(\)\)/);
+  assert.match(damage,/remote:FireClient\(player, "COMBAT_PRESENTATION",/);
+  assert.ok(damage.indexOf('enemy:SetAttribute("Health", nextHealth)')<damage.indexOf('remote:FireClient(player, "COMBAT_PRESENTATION"'));
+  assert.match(damage,/Kind = nextHealth > 0 and "ENEMY_HIT" or "ENEMY_DEATH"/);
+  assert.match(damage,/Position = enemy.PrimaryPart.Position/);
+  assert.match(enemyAI,/if os.clock\(\) <= dodgeUntil then/);
+  assert.match(enemyAI,/enemy:SetAttribute\("AttackState", "DODGED"\)/);
+  assert.match(enemyAI,/Kind = "DODGE", Position = rootPart.Position/);
+  assert.match(enemyAI,/local health = math.max\(0, previousHealth - damage\)/);
+  assert.match(enemyAI,/setNumber\(player, "Health", health\)/);
+  assert.match(enemyAI,/if health < previousHealth then/);
+  assert.match(enemyAI,/Kind = health > 0 and "PLAYER_HIT" or "PLAYER_DEATH"/);
+  assert.match(server,/player:SetAttribute\("DodgeWindowUntil", os.clock\(\) \+ 0.8\)/);
+  assert.match(server,/local baseDamage = 10 \+ level \+ equipmentPower/);
+  assert.match(server,/damageMonster\(player, enemy, damage\)/);
+  assert.match(server,/task.wait\(1.2\)/);
+  assert.match(server,/GetDataStore\("village-dungeons-development-v1"\)/);
+  assert.match(consumer,/local combatContactAttachment = nil/);
+  assert.match(consumer,/local combatContactEmitter = nil/);
+  assert.match(consumer,/local function bindStudioCombatVisual\(character\)/);
+  assert.match(consumer,/player.CharacterAdded:Connect\(bindStudioCombatVisual\)/);
+  assert.match(consumer,/emitter\.LockedToPart = false/);
+  assert.match(consumer,/StudioVfxAtom/);
+  assert.doesNotMatch(consumer,/player:GetAttributeChangedSignal\("LastApprovedScope"\)/,
+    'button/action status is not confirmed target damage');
+  assert.match(remoteConsumer,/if eventName == "COMBAT_PRESENTATION" then/);
+  assert.match(remoteConsumer,/typeof\(snapshot.Position\) ~= "Vector3"/);
+  assert.match(remoteConsumer,/combatContactAttachment\.WorldPosition = snapshot.Position/);
+  assert.match(remoteConsumer,/combatContactEmitter:Emit\(isDeath and 12 or \(kind == "DODGE" and 4 or 7\)\)/);
+  assert.match(remoteConsumer,/CombatVisualLastConfirmedKind/);
+  assert.match(remoteConsumer,/if eventName ~= "MULTIPLAYER_SYNC"/);
+  assert.match(remoteConsumer,/participantCount = math.max\(1, math.floor\(tonumber\(snapshot.ParticipantCount\) or 1\)\)/);
+  assert.doesNotMatch(remoteConsumer,/remote:FireServer\(/,'no new client damage or dodge authority');
+  assert.equal((server.match(/Instance\.new\("RemoteEvent"\)/g)||[]).length,1,'reuse existing authoritative RemoteEvent only');
 });
