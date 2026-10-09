@@ -1079,25 +1079,42 @@
         "INFRASTRUCTURE_UPGRADE"
       ],
       "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE"
+    },
+    "local_authoring_parts::276eaf57b13672d5c28b6daff1187e067b59a6b297ccb56f11418e66c26bfe20:toSystem,trigger,stateChange": {
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "RESOURCE_GATHERING_FOCUS",
+      "stateChange": "RESOURCE_ACCUMULATION_TO_INFRACUTURAL_UPGRADE"
+    },
+    "local_authoring_parts::aacded5e95accf795b1706e4c4a466398dbce7d1d0e4043feafef49248781ac8:systemInterconnections:2": {
+      "fromId": "RESOURCE_A",
+      "toId": "VILLAGE_B",
+      "stateKeys": [
+        "RESOURCE_ACCUMULATION",
+        "INFRASTRUCTURE_UPGRADE"
+      ],
+      "fromSystem": "ISLAND_RESOURCES_AND_VILLAGE_INFRASTRUCTURE",
+      "toSystem": "VILLAGE_INFRASTRUCTURE",
+      "trigger": "RESOURCE_GATHERING_FOCUS",
+      "stateChange": "RESOURCE_ACCUMULATION_TO_INFRACUTURAL_UPGRADE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 81,
-      "successes": 81,
+      "calls": 82,
+      "successes": 82,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4475086,
-      "lastMs": 60406,
+      "totalMs": 4536511,
+      "lastMs": 61425,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:10:47.966Z"
+      "updatedAt": "2026-10-09T01:11:49.393Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:47:57.452Z",
-  "updatedAt": "2026-10-09T01:10:47.966Z",
+  "updatedAt": "2026-10-09T01:11:49.394Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3328,7 +3345,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:10:47.966Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:11:49.394Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
