@@ -152,7 +152,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       reject('DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},'MAIN 게임 정체성 및 A/B 각각의 시스템+소재와 양방향 원인·상태 교환을 다시 설계한다.');
     }
     const c=list(grammar?.cThemes);
-    if(c.length!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
+    if(c.length!==2||new Set(c.map(row=>clean(row?.name).toLowerCase())).size!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
       reject('DESIGN_C_TWO_TOPICS_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C의 두 창작 소재를 실제 세계와 A/B 선택에 인과적으로 결합해야 한다.');
     }
     const genres=list(grammar?.cGenres);

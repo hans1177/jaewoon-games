@@ -176,6 +176,9 @@ authoredV5.content.creativeGrammar={
 const v5Score=scoreDesignGateV2({seed:v5Seed,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
 assert.equal(v5Score.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'),false);
 assert.equal(v5Score.grammarCarryEvidence.creativityCarried,true);
+const repeatedCTheme=structuredClone(authoredV5);
+repeatedCTheme.content.creativeGrammar.cThemes[1].name='철학';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedCTheme,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
 // V5에는 더 이상 소문자 c 보조 시스템을 강제하지 않는다. C 소재·장르 검증은 별도로 유지한다.
 const withoutLegacyC=structuredClone(authoredV5);
 withoutLegacyC.content.signatureSystems=withoutLegacyC.content.signatureSystems.filter(row=>row.grammarRole!=='c');

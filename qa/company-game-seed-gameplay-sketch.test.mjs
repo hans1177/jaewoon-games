@@ -332,6 +332,9 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   assert.equal(schoolResult.pass,true,schoolResult.errors.join('; '));
   const schoolFlow=buildGameFlowArchitecture({gameId:'school-tycoon-v5',genre:school.GAME_CATEGORY,baseline:{content:{identity:'초등학교 만들기 타이쿤',coreFun:'학교 건설과 운영 및 괴물 사건 대응',coreLoop:school.CORE_LOOP,novelGameGrammar:school.GAMEPLAY_SKETCH.novelGameGrammar}},inventory:[]});
   assert.equal(evaluateGameFlowArchitecture(schoolFlow).pass,true);
+  const duplicatedFlow=structuredClone(schoolFlow);
+  duplicatedFlow.systemBlueprint.novelGrammarContract.gameplaySystemFusion.themeFusion.themes[1].name='철학';
+  assert.ok(evaluateGameFlowArchitecture(duplicatedFlow).blockers.includes('FLOW_C_TWO_THEMES_AND_CAUSAL_LINK_REQUIRED'));
   const duplicatedTheme=structuredClone(school);
   duplicatedTheme.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.themes[1].name='철학';
   assert.equal(validateGameSeed(duplicatedTheme).pass,false);
