@@ -1323,25 +1323,42 @@
         "SCORE_DISTANCE_SHORT_SESSION"
       ],
       "fromSystem": "MONSTER_ADVENTURE_CORE_FUN"
+    },
+    "local_authoring_parts::8755dabb8800efe68ce86878140c7a21d2147c0601f767b069bc7a3654a71ee2:toSystem,trigger,stateChange": {
+      "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transform the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
+    },
+    "local_authoring_parts::21d583983390e52d25e7c529ecdc1b7feba7b9c6e79450316cc9d8c14d77df44:systemInterconnections:4": {
+      "fromId": "MONSTER_ADVENTURE_CORE_FUN",
+      "toId": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "stateKeys": [
+        "START_INPUT",
+        "SCORE_DISTANCE_SHORT_SESSION"
+      ],
+      "fromSystem": "MONSTER_ADVENTURE_CORE_FUN",
+      "toSystem": "MONSTER_ADVENTURE_SIGNATURE_SYSTEM_1",
+      "trigger": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "stateChange": "Transform the world state by initiating the game loop and unlocking progression opportunities through casual gameplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 104,
-      "successes": 104,
+      "calls": 105,
+      "successes": 105,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6705614,
-      "lastMs": 91246,
+      "totalMs": 6798407,
+      "lastMs": 92793,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:54:49.031Z"
+      "updatedAt": "2026-10-09T06:56:21.826Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T06:54:49.031Z",
+  "updatedAt": "2026-10-09T06:56:21.836Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3536,7 +3553,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:1": 3,
     "local_authoring_parts::5a9e47c91c997d3e48f52d520cde28558006b2c796b475e57a2b8f8da5a062cc:signatureSystems:2": 2,
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3575,10 +3592,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:54:49.031Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T06:56:21.831Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
