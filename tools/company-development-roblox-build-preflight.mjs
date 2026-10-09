@@ -25,8 +25,10 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const {leads,distinct,pool,sharedModel,minDistinct}=configuredLeads(directive);
   const secondary=secondaryOwnerFocus===true;
   const directRoblox=upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX';
-  const concurrentRoblox=upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
-    &&Array.isArray(item.concurrentTargetPlatforms)
+  const concurrentRoblox=(
+    upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
+    ||upper(item.platformExecutionMode)==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'
+  )&&Array.isArray(item.concurrentTargetPlatforms)
     &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX');
   const robloxLaneEligible=directRoblox||concurrentRoblox;
   const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);

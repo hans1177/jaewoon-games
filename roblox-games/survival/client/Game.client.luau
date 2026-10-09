@@ -618,6 +618,22 @@ local function applySurvivalCreaturePresentation(enemy)
   local rootPart = enemy:FindFirstChild("HumanoidRootPart")
   if humanoid and rootPart and rootPart:IsA("BasePart") then
     rootPart.Material = Enum.Material.SmoothPlastic
+    -- 몬스터 생성 순간 실제 내부 VFX 자산 계열을 소비하고 잔여 효과를 정리한다.
+    if hasStudioAssetAtom("VFX", "ELEMENT_DUST") then
+      local emitter = Instance.new("ParticleEmitter")
+      emitter.Name = "SurvivalCreatureSpawnDust"
+      emitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+      emitter.Rate = 0
+      emitter.Color = ColorSequence.new(Color3.fromRGB(184, 166, 131))
+      emitter.Lifetime = NumberRange.new(0.2, 0.38)
+      emitter.Speed = NumberRange.new(2, 4)
+      emitter.SpreadAngle = Vector2.new(50, 50)
+      emitter.Parent = rootPart
+      emitter:Emit(hasStudioAssetAtom("VFX", "SHAPE_BURST") and 10 or 6)
+      task.delay(0.45, function()
+        if emitter.Parent then emitter:Destroy() end
+      end)
+    end
   end
 end
 

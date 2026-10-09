@@ -896,10 +896,21 @@ local function bindNativeFoundationCharacter(character)
   local params = RaycastParams.new()
   params.FilterType = Enum.RaycastFilterType.Exclude
   params.FilterDescendantsInstances = {character}
-  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), params)
-  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)
+  character:SetAttribute("GROUND_CONTACT", false)
   character:SetAttribute("MOVEMENT_CONFIRMED", false)
   local origin = rootPart.Position
+  task.spawn(function()
+    for attempt = 1, 30 do
+      if not character.Parent or humanoid.Health <= 0 then break end
+      local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0), params)
+      local groundContact = groundHit ~= nil and groundHit.Instance ~= nil and humanoid.FloorMaterial ~= Enum.Material.Air
+      if groundContact then
+        character:SetAttribute("GROUND_CONTACT", groundContact)
+        break
+      end
+      task.wait(0.1)
+    end
+  end)
   task.spawn(function()
     while character.Parent and humanoid.Health > 0 do
       local delta = rootPart.Position - origin
