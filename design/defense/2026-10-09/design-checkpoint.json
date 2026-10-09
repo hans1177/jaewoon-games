@@ -1372,25 +1372,35 @@
       "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
       "trigger": "시스템 간 연결을 위한 임시 표식 'systemInterconnections[0].trigger'은 실제 조건·선택·상태 변화·검증 방법으로 재구성되어야 합니다. 이 과정에서 방어 범위 확대, 자원 축적 및 전략 유연성이 증가하는 상태 변화를 기반으로, 게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 새로운 경험과 의미를 제공하는 보조 요소로 발전합니다.",
       "stateChange": "시스템 간 연결을 위한 임시 표식 'systemInterconnections[0].trigger'은 실제 조건·선택·상태 변화·검증 방법으로 재구성되어야 합니다. 이 과정에서 방어 범위 확대, 자원 축적 및 전략 유연성이 증가하는 상태 변화를 기반으로, 게임 내 콘텐츠의 다양한 활용 및 재해석을 통해 새로운 경험과 의미를 제공하는 보조 요소로 발전합니다."
+    },
+    "local_authoring_parts::ac92983ec458d03546d3117b8314874608a75f351a634bcf6ee3456cceeee006:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_CORE_LOOP_MAIN_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 82,
-      "successes": 79,
+      "calls": 83,
+      "successes": 80,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5872260,
-      "lastMs": 62898,
+      "totalMs": 5976385,
+      "lastMs": 104125,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:01:02.157Z"
+      "updatedAt": "2026-10-09T02:24:34.841Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T02:22:50.711Z",
+  "updatedAt": "2026-10-09T02:24:34.841Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3730,10 +3740,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:01:02.161Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:24:34.841Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
