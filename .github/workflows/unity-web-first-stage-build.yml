@@ -762,7 +762,7 @@ jobs:
           # 이미 검증된 Unity WebGL 정식 주소의 후속 빌드와 새 게임 경로만 이 검사를 통과한다.
           if [ "$READINESS_PASS" = 'true' ] && git cat-file -e "origin/main:web-games/$GAME_ID/index.html" 2>/dev/null; then
             existing_entry="$(git show "origin/main:web-games/$GAME_ID/index.html")"
-            if ! grep -Eq 'createUnityInstance[[:space:]]*\\(' <<<"$existing_entry"; then
+            if ! grep -Eq 'createUnityInstance[[:space:]]*\(' <<<"$existing_entry"; then
               echo 'UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_KEEP_EXISTING_GAME_URL' >&2
               exit 1
             fi
