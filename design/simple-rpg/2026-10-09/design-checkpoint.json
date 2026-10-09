@@ -443,25 +443,28 @@
       "toSystem": "MAKE_MATCHES_OR_DELIBERATE_PUZZLE_MOVES, CREATE COMBOs, AND USE IMMEDIATE BOARD",
       "trigger": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함",
       "stateChange": "플레이어가 게임 내 맵의 구조와 구성 요소를 선택하여 변경할 수 있는 플레이어 역할 또는 대안 중 하나를 결정함"
+    },
+    "local_authoring_parts::3ef9bad627ef569d4ed7e81cbd37bcddc32ceb0ceb9d8818dfc0cfbe4158b144:fromId": {
+      "fromId": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL, LIMITED MOVES, OBSTACLES, OR AN其他可见"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1438657,
-      "lastMs": 59260,
+      "totalMs": 1496449,
+      "lastMs": 57792,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:58:14.630Z"
+      "updatedAt": "2026-10-09T08:59:12.424Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:34:15.438Z",
-  "updatedAt": "2026-10-09T08:58:14.631Z",
+  "updatedAt": "2026-10-09T08:59:12.424Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2719,7 +2722,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T08:58:14.631Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:59:12.424Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
