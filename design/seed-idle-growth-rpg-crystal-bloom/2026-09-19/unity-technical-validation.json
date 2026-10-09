@@ -5,12 +5,12 @@
   "pass": true,
   "validated": true,
   "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
-  "checkedAt": "2026-10-05T23:27:43.178Z",
+  "checkedAt": "2026-10-09T01:50:08.231Z",
   "sourceBinding": {
-    "upstreamBuildRunId": 37327569421,
-    "sourceCommit": "28461dc420de8411e586980f1691780e6e21bf33",
-    "sourceTreeSha": "18c54018209dc1579048771b6ffa0f466552f26a",
-    "apkSha256": "7c0275d9db4a0e714161d3eb40b513666dd897566d165f0c1eecfdc3c4899b86",
+    "upstreamBuildRunId": 37789705298,
+    "sourceCommit": "077af9dc48fb7e59e0e2ef7b3ad21cf458d681ee",
+    "sourceTreeSha": "817ca47b510f18552c97a019707b4f53abd88d95",
+    "apkSha256": "f2b2224013a805b3e065680ef9af084ac8381e2541ac97187f7ca99345d08502",
     "sameBinding": true
   },
   "foundationAdapter": {
@@ -115,17 +115,17 @@
       "state": "PASS",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
       "sampleCount": 5,
-      "totalFramesRendered": 127,
+      "totalFramesRendered": 125,
       "jankyFrames": 0,
       "jankyFrameRatePct": 0,
-      "minFps": 11.3,
-      "avgFps": 13.6,
+      "minFps": 10.9,
+      "avgFps": 13.466666666666667,
       "scope": "ANDROID_16_EMULATOR_TECHNICAL_VALIDATION"
     },
     "MEMORY_HEAT_LOADING": {
       "state": "PASS_WITH_LIMITATION",
       "provider": "ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO",
-      "maxAllocatedMemoryBytes": 53763781,
+      "maxAllocatedMemoryBytes": 57084986,
       "loading": "PASS",
       "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
       "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
@@ -177,9 +177,9 @@
     "Physical-device thermal behavior is not inferred from emulator evidence."
   ],
   "provenance": {
-    "buildInfo": "/tmp/unity-build/seed-idle-growth-rpg-crystal-bloom-android-cloud-37327569421-1/build-info.json",
-    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37327569421/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
-    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37327569421/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "buildInfo": "/tmp/unity-build/seed-idle-growth-rpg-crystal-bloom-android-cloud-37789705298-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-37789705298/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-37789705298/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
     "projectPath": "unity-games/seed-idle-growth-rpg-crystal-bloom"
   }
 }
