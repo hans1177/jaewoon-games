@@ -4661,6 +4661,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
   const semanticDiffViolation=/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(reason);
+  // 책임 밖 수정 실패의 실제 함수 이름을 다음 생성 시도에 돌려준다.
+  const unapprovedSymbols=semanticDiffViolation
+    ?unique((reason.match(/UNRELATED_SYMBOL:([^|\n]+)/i)?.[1]||'').split(',')
+      .map(value=>clean(value)).filter(value=>/^[A-Za-z0-9_./:-]+$/.test(value))).slice(0,8)
+    :[];
   const unityBootstrapPairFailure=/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(reason);
   const systemCausalTestRequired=/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(reason);
   const systemSyntaxInvalid=/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(reason);
@@ -4836,6 +4841,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         retryBase.includes('[GAME CONTEXT CAPSULE BEGIN]')?'':gameContextCapsuleBlockFromPrompt(rawPrompt),
         retryBase.includes('[PRE-SUBMIT SELF REVIEW BEGIN]')?'':preSubmitSelfReviewBlockFromPrompt(rawPrompt),
         repeatedFailureShift,
+        unapprovedSymbols.length?'OFF-TARGET FUNCTIONS REJECTED: '+unapprovedSymbols.join(', ')+'. Do not edit their declarations or bodies. Rebuild against ORIGINAL writable source; edit only primary or explicitly permitted dependent functions.':'',
         oversizedInitial?`Initial compaction reason: ${safeReason}`:`Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
