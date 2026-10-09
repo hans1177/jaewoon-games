@@ -34,25 +34,38 @@
         "STATE CHANGE: 위험과 보상을 순환적으로 경험하여 다음 선택에 영향을 미칩니다.",
         "OUTPUT/PROGRESSION: 보물 찾기 또는 업그레이드 선택이라는 두 가지 대표 선택 중 하나로 진행됩니다."
       ]
+    },
+    "local_authoring_parts::dcc33a1eff741cdda522526b14465a55f98a89c87e1e9f99f2a79cd872f7cdc0:signatureSystems:0": {
+      "id": "CORE-4V4-HORDE-INPUT",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HORDE-INPUT"
+      ],
+      "stateOutputs": [
+        "HORDE-OUTPUT"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player's core action and progression driver, driving the game's survival and growth mechanics.",
+      "playerChoice": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 277725,
-      "lastMs": 35050,
+      "totalMs": 309403,
+      "lastMs": 31678,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:00:47.153Z"
+      "updatedAt": "2026-10-09T11:01:18.833Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:56:09.398Z",
-  "updatedAt": "2026-10-09T11:00:47.153Z",
+  "updatedAt": "2026-10-09T11:01:18.833Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2264,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:00:47.153Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:01:18.833Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
