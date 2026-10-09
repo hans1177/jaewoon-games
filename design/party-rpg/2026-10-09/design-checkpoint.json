@@ -753,25 +753,33 @@
         "riskPressure": "게임 중 발생하는 위험 상황을 감지하여, 선택적 전략을 실행하고, 상태 변화를 추적하며, 검증 과정에서 실시간 피드백을 활용해 재도전 기회를 제공한다.",
         "recoveryRules": "게임 중 발생하는 위험 상황을 감지하여, 선택적 전략을 실행하고, 상태 변화를 추적하며, 검증 과정에서 실시간 피드백을 활용해 재도전 기회를 제공한다."
       }
+    },
+    "local_authoring_parts::caf2a29f5e44abb47a8603aa20f73d07d42e20bacff8c2ff76f58976f3b973a5:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_GAME",
+      "toId": "MATCH_GAME",
+      "stateKeys": [
+        "BOARD_STATE"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 63,
-      "successes": 63,
+      "calls": 64,
+      "successes": 64,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4107667,
-      "lastMs": 136729,
+      "totalMs": 4203415,
+      "lastMs": 95748,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:11:58.912Z"
+      "updatedAt": "2026-10-09T00:39:39.197Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T00:38:03.445Z",
+  "updatedAt": "2026-10-09T00:39:39.197Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2954,10 +2962,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:11:58.912Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:39:39.197Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
