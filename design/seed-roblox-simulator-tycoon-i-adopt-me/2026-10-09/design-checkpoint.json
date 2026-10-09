@@ -548,25 +548,28 @@
     },
     "local_authoring_parts::f7c3a8f6ab9c61a37382307274351307f052812081e9cca1b36d7821c202308a:toSystem": {
       "toSystem": "CORE-02→CORE-03"
+    },
+    "local_authoring_parts::f7c3a8f6ab9c61a37382307274351307f052812081e9cca1b36d7821c202308a:trigger": {
+      "trigger": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1269959,
-      "lastMs": 31984,
+      "totalMs": 1305744,
+      "lastMs": 35785,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:02:21.778Z"
+      "updatedAt": "2026-10-09T12:02:57.564Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T12:02:21.778Z",
+  "updatedAt": "2026-10-09T12:02:57.564Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3318,7 +3321,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T12:02:21.778Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:02:57.564Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
