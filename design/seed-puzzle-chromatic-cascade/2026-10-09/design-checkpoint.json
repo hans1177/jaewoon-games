@@ -1680,25 +1680,34 @@
       "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR",
       "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
       "stateChange": "START_BOARD → END_MATCH, CORE-01→CORE-02 상태 교환이 이루어진다."
+    },
+    "local_authoring_parts::7c2ce304ae5b45b0542d0857c75ce2aa49b1fe2eda2de319772720ffab9118c3:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_016_CHARACTERS_LESS_THAN_OR_EQUAL_TO_16_CHARS_AND_GREATER_THAN_OR_EQUAL_TO_16_CHARS_ABOVE_OR_BELOW_24_CHARS_LESS_THAN_OR_EQUAL_TO_24_CHAR"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 132,
-      "successes": 132,
+      "calls": 133,
+      "successes": 133,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9405666,
-      "lastMs": 98797,
+      "totalMs": 9501404,
+      "lastMs": 95738,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:51:07.547Z"
+      "updatedAt": "2026-10-09T06:52:43.290Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T06:51:07.550Z",
+  "updatedAt": "2026-10-09T06:52:43.290Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3881,7 +3890,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:51:07.550Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:52:43.290Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
