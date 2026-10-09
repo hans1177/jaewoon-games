@@ -1645,25 +1645,42 @@
         "TOWER_PLACEMENT"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0"
+    },
+    "local_authoring_parts::848e38b13caf948c246e457792c3ef75d46fc9807febedf30a31ebbb4ba0531b:toSystem,trigger,stateChange": {
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "ENEMY_WAVE→BATTLE_STATUS",
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
+    },
+    "local_authoring_parts::f089813c73c1567c4b08c975fcac2bc7be59989f7e39d7d6d8fbe05a1c8ce8bd:systemInterconnections:3": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0",
+      "toSystem": "SIGNATURE_SYSTEM_0",
+      "trigger": "ENEMY_WAVE→BATTLE_STATUS",
+      "stateChange": "Enemy wave is detected, and the system triggers a status update in the battlefield to reflect the new defensive strategy and resource allocation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 122,
-      "successes": 122,
+      "calls": 123,
+      "successes": 123,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7576145,
-      "lastMs": 90472,
+      "totalMs": 7667607,
+      "lastMs": 91462,
       "lastError": null,
-      "updatedAt": "2026-10-09T04:59:28.978Z"
+      "updatedAt": "2026-10-09T05:01:00.442Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T04:59:28.978Z",
+  "updatedAt": "2026-10-09T05:01:00.444Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4004,7 +4021,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:59:28.978Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:01:00.444Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
