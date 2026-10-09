@@ -1247,25 +1247,51 @@
         "END_MATCH"
       ],
       "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46"
+    },
+    "local_authoring_parts::935dd96b98e45c9522d4a339e26e5a4599859efe1d79e7b7fde6f4e236afb346:toSystem,trigger,stateChange": {
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH"
+    },
+    "local_authoring_parts::7218610d98719151f0e1b04722be84b3b7b4746e86a57e0b2cd603adcfaf8598:systemInterconnections:4": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_START_BOARD_TO_CORE-02_START_MATCH_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "toSystem": "CORE-02_START_MATCH_TO_CORE-01_START_BOARD_01_02_03_04_05_06_07_08_09_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_35_36_37_38_39_40_41_42_43_44_45_46",
+      "trigger": "플레이어가 START_BOARD 상태에서 선택한 경로에 따라 END_MATCH 상태로 전환하는 과정",
+      "stateChange": "START_BOARD → END_MATCH"
+    },
+    "local_authoring_parts::29b20d056bf37d26f82d5bf546345651ad3e88d7d3b486206b65dfae54d50ef4:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "CORE-01",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "START_BOARD",
+        "END_MATCH"
+      ],
+      "fromSystem": "CORE-01_SYSTEM_01_TO_CORE-02_SYSTEM_02_RELATIONSHIP_01_V4_01_A16_B16_C16_D16_E16_F16_G16_H16_I16_J16_K16_L16_M16_N16_O16_P16_Q16_R16_S16_T16_U16_V16_W16_X16_Y16_Z16_AA16_AB16_AC16"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 99,
-      "successes": 99,
+      "calls": 101,
+      "successes": 101,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 6425239,
-      "lastMs": 107600,
+      "totalMs": 6581340,
+      "lastMs": 47604,
       "lastError": null,
-      "updatedAt": "2026-10-09T03:06:01.756Z"
+      "updatedAt": "2026-10-09T03:08:37.872Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:23:05.545Z",
-  "updatedAt": "2026-10-09T03:06:01.756Z",
+  "updatedAt": "2026-10-09T03:08:37.872Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3409,7 +3435,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3448,7 +3474,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:06:01.756Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:08:37.872Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
