@@ -1631,25 +1631,35 @@
       "toSystem": "CORE_LOOP_DESIGN_01_ABOVE_BELT_REGIONAL_FEATURES_BOUNDARY_PRESSURE_READING_SYSTEM_02_MAIN_INTERACTION_LAYER_03_CORE_STRATEGY_INTERFACE_04_PRIMARY_ACTION_MODULE_05_RELATED_STATE_MAN",
       "trigger": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
       "stateChange": "new_strategy"
+    },
+    "local_authoring_parts::325fe20c743726249ae43789db6a63b839b4474ba7f5e0ea565cd8721ebe0ae8:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE",
+      "toId": "territory_objective",
+      "stateKeys": [
+        "new_strategy",
+        "updated_front_line",
+        "expanded_resources"
+      ],
+      "fromSystem": "CORE_LOOP_DESIGN_01_ABOVE_BELT_REGIONAL_FEATURES_BOUNDARY_PRESSURE_READING_SYSTEM_02_MAIN_INTERACTION_LAYER_03_CORE_STRATEGY_INTERFACE_04_PRIMARY_ACTION_MODULE_05_RELATED_STATE_MAN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 123,
-      "successes": 120,
+      "calls": 124,
+      "successes": 121,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 9342459,
-      "lastMs": 98587,
+      "totalMs": 9441851,
+      "lastMs": 99392,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:32:54.346Z"
+      "updatedAt": "2026-10-09T04:34:33.742Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T04:32:54.348Z",
+  "updatedAt": "2026-10-09T04:34:33.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3818,7 +3828,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:32:54.348Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:34:33.742Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
