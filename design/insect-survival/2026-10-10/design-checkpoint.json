@@ -493,25 +493,51 @@
       "name": "small-world survival pressure",
       "purpose": "Establishes the core gameplay mechanism for surviving in a small-scale ecological environment",
       "playerChoice": "Selecting between resource gathering or combat based on environmental context"
+    },
+    "local_authoring_parts::2dcd02d00dd2cc9c86beaa8e085078951db0e192b97f28230acf45145c506c70:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "Ecological Adaptation",
+      "purpose": "To simulate real-time ecological interactions through player choices, fostering survival progression in a small-world environment.",
+      "playerChoice": "Selecting between resource gathering or combat based on evolving environmental pressures and adaptive strategies."
+    },
+    "local_authoring_parts::3b792c572173a9d9702566cfd713d118174b655a8bf69988f80a77a20daaca56:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "player's initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "to create a dynamic survival loop where player choices impact ecological consequences",
+      "playerChoice": "selecting between resource gathering or combat"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 604008,
-      "lastMs": 35700,
+      "totalMs": 650429,
+      "lastMs": 10553,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:52:00.043Z"
+      "updatedAt": "2026-10-09T22:52:46.474Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T22:52:00.043Z",
+  "updatedAt": "2026-10-09T22:52:46.474Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2216,7 +2242,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
+    "designer_draft_slices::identity-core": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2314,7 +2340,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:52:00.043Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:52:46.474Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
