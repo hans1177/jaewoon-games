@@ -60,13 +60,15 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
-test('owner policy defines exactly three platform targets on existing adapters and Unity Web floor',()=>{
+test('owner scope uses Roblox and Unity Web as the two active targets with Unity Android held',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const direct=roadmap.directNativeDualPlatformDevelopment;
   const targets=direct.platformCountingPolicy;
   assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-09');
-  assert.equal(targets.targetCount,3);
-  assert.deepEqual(targets.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.equal(targets.targetCount,2);
+  assert.deepEqual(targets.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   assert.deepEqual(targets.existingExecutionBindings,{
     ROBLOX:'ROBLOX',UNITY_ANDROID:'UNITY',UNITY_WEB:'UNITY_WEB_FLOOR'
   });
@@ -102,7 +104,7 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime gates new Roblox and Unity work on Unity Web readiness',()=>{
+test('central development runs Roblox and Unity Web independently with native platform QA intact',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,file+' must exist');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -116,7 +118,9 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   assert.equal(direct.webDevelopmentStageRemoved,false);
   assert.equal(direct.unityWebEnabled,true);
   assert.equal(direct.unityWebRequired,true);
-  assert.equal(direct.unityWebGateRequired,true);
+  assert.equal(direct.unityWebGateRequired,false);
+  assert.equal(direct.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
+  assert.equal(roadmap.ownerActiveDevelopmentScope20261009.robloxRequiresUnityWebReadiness,false);
   assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
