@@ -19,25 +19,33 @@
     "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:identity,playerFantasy": {
       "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
       "playerFantasy": "나의 생존기는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 주체가 되어, 단순한 생존 흐름에서 복잡한 위험과 성장의 경로를 탐색하며, 이 과정에서 다양한 선택과 결과를 경험하게 된다."
+    },
+    "local_authoring_parts::1809cdcc71fb658f142f4f1d30e9806fa4335dbdff7cd1f7afddf4ded75b7008:coreFun": {
+      "coreFun": "플레이어는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 주체가 되어 단순한 생존 흐름에서 복잡한 위험과 성장의 경로를 탐색하며, 이 과정에서 다양한 선택과 결과를 경험하게 된다."
+    },
+    "local_authoring_parts::5635cf3c492e5d3d5487a48e87a883fa3e983a544128859890a8870b787cc5b8:identity,playerFantasy,coreFun": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "나의 생존기는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 주체가 되어, 단순한 생존 흐름에서 복잡한 위험과 성장의 경로를 탐색하며, 이 과정에서 다양한 선택과 결과를 경험하게 된다.",
+      "coreFun": "플레이어는 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성에 영향을 미치는 게임이다. 플레이어는 주체가 되어 단순한 생존 흐름에서 복잡한 위험과 성장의 경로를 탐색하며, 이 과정에서 다양한 선택과 결과를 경험하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 198150,
-      "lastMs": 33346,
+      "totalMs": 233063,
+      "lastMs": 34913,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:05:50.235Z"
+      "updatedAt": "2026-10-09T11:06:25.151Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:02:32.060Z",
-  "updatedAt": "2026-10-09T11:05:50.237Z",
+  "updatedAt": "2026-10-09T11:06:25.152Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2236,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:05:50.237Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:06:25.152Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
