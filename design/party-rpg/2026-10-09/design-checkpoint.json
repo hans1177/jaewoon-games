@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::8ec1d4497e60bf9eb6558bb4b3d527e245652e4cfacd836adc9c85e5ede582f9:identity": {
+      "identity": "파티 RPG을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다. 플레이어는 Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.의 주체가 되어 세계 상태와 다음 선택을 바꾼다. 게임의 중심 행동은 START, 두 대축은 MATCH/DELVE, 보조 요소는 COMBO이며, 발견·숙련·재방문은 @로 역할을 구분한다. 이 결과가 design-seed.json이며 뒤의 상세 설계는 같은 시드를 확장한다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 146423,
+      "lastMs": 146423,
+      "lastError": null,
+      "updatedAt": "2026-10-09T11:49:41.084Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:47:14.547Z",
+  "updatedAt": "2026-10-09T11:49:41.084Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2046,5 +2062,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T11:49:41.084Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
