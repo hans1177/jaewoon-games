@@ -1319,7 +1319,7 @@ JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 
     ].filter(Boolean).join('|');
     const goal=`[UNITY_WEB_DEVELOPMENT_FLOOR_REPAIR] 게임: ${project.name||project.gameId}
 기존 unity-games/${project.gameId}/ canonical Unity 프로젝트를 직접 읽고 UPPER_PLATFORM_DEVELOPMENT_READY 실패 원인을 실제 코드·그래픽에서 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
-이 Unity Web 수리는 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일만 책임진다. Visual/Presentation 전용 C#과 generated native asset은 기존 ASSET_DEVELOPMENT 표현 작업이 병렬로 담당하며 실제 같은 파일이 겹칠 때만 Work Lock 충돌로 직렬화한다.
+이 Unity Web 수리는 기존 GameCore/RuntimeBootstrap/필요한 Editor 빌드 파일을 우선 수정하고, 실제 3D 메시 검증 결함이 확인되면 현존하는 PrototypeAnimatedVisuals 책임 C#도 같은 작업에서 직접 수정한다. 그 외 native asset은 기존 ASSET_DEVELOPMENT 제작 루프가 담당하며 같은 파일 수정 충돌은 기존 Work Lock으로 직렬화한다.
 필수 수리 근거: ${reasons||'UPPER_PLATFORM_READINESS_REPAIR'}.
 코드: 시작→플레이→진행/보상→종료 또는 재시도 핵심 루프가 실제 상태 변화로 이어지고 치명 오류·진행 소프트락이 없어야 한다.
 그래픽: 기존 2D·2.5D 플레이 화면은 전부 Unity 3D 장면/입체 메시/공간 카메라로 직접 재개발한다. 캐릭터·적·환경·장비에 실제 3D 메시와 고유 모션을 적용하고, 공용 라이브러리는 실제 3D 게임 오브젝트만 재사용한다. 기존 게임 규칙·세이브·보상은 그대로 둔다. Unity 런타임 MESH_INTEGRITY는 실제 MeshFilter 메시/삼각형/재질/텍스처 검사 결과만 기록하고 가짜 계측/PASS는 금지한다.
@@ -1329,7 +1329,7 @@ MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     const nativeVisualRel=`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
     const nativeVisualNeeded=readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
-      ||readinessReason==='READINESS_CRITERIA_INCOMPLETE';
+      ||readiness?.data?.criteria?.graphics?.native3dVerified===false;
     const files=[coreRel,runtimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
       .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
