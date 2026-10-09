@@ -896,25 +896,28 @@
       "toSystem": "BOARD_STATE_TRANSITION_SYSTEM",
       "trigger": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다.",
       "stateChange": "시스템은 LEVEL_GOAL_STATE 상태를 입력받아, BOARD_STATE 상태로 전환하여 게임 세계를 동적으로 진화시키며, 이 과정에서 PLAYER_CHOICE의 선택이 기반으로 NEXT_BOARD_PATTERN_STATE를 생성합니다."
+    },
+    "local_authoring_parts::5a5c3ffb42b5222d9a966dde2dfd0acfe26ed2ebe0bc48b87c233605fd0dedfc:fromId": {
+      "fromId": "SIGNATURE_SYSTEM_04"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 89,
-      "successes": 89,
+      "calls": 90,
+      "successes": 90,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2974301,
-      "lastMs": 33495,
+      "totalMs": 3005397,
+      "lastMs": 31096,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:12:52.546Z"
+      "updatedAt": "2026-10-09T00:13:23.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:49:39.552Z",
-  "updatedAt": "2026-10-09T00:12:52.548Z",
+  "updatedAt": "2026-10-09T00:13:23.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3240,7 +3243,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:12:52.548Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T00:13:23.646Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
