@@ -1826,25 +1826,41 @@
     },
     "local_authoring_parts::813ac9611d5c8de140c644a971d04c6fe48bde28a2b4802d3904548011df0611:trigger": {
       "trigger": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
+    },
+    "local_authoring_parts::813ac9611d5c8de140c644a971d04c6fe48bde28a2b4802d3904548011df0611:stateChange": {
+      "stateChange": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
+    },
+    "local_authoring_parts::72a31b0aa0fe6fa33e722bc94af196bb40a58d05c51590f6836eda3ee27cbaca:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3",
+      "toId": "SIGNATURE_SYSTEM_3",
+      "stateKeys": [
+        "DEFENSE_COVERAGE",
+        "RESOURCE_ACUMULATION",
+        "TACTICAL_FLEXIBILITY"
+      ],
+      "fromSystem": "SINGLE_DEFENSE_STRATEGY_CORE",
+      "toSystem": "SINGLE_DEFENSE_STRATEGY_CONTENT_EXPANSION",
+      "trigger": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다.",
+      "stateChange": "시스템 연결에서 'DEFENSE_COVERAGE', 'RESOURCE_ACUMULATION', 'TACTICAL_FLEXIBILITY' 상태가 교환되며, 이 과정에서는 기초 방어 전략 학습 후 자원 축적 증가에 따라 전략 유연성과 방어 범위가 점진적으로 확장되는 경향이 나타난다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 136,
-      "successes": 133,
+      "calls": 137,
+      "successes": 134,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 8751675,
-      "lastMs": 36344,
+      "totalMs": 8786894,
+      "lastMs": 35219,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T05:34:46.501Z"
+      "updatedAt": "2026-10-09T05:35:21.722Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:18.458Z",
-  "updatedAt": "2026-10-09T05:34:46.501Z",
+  "updatedAt": "2026-10-09T05:35:21.729Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4042,91 +4058,6 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE"
-        },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "DEFENSE_COVERAGE_CHANGE_OR_RESOURCE_ACUMULATION_INCREMENTATION_OR_TACTICAL_FLEXIBILITY_INCREASE"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -4151,9 +4082,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4168,9 +4099,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4185,9 +4116,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4202,9 +4133,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→SIGNATURE_SYSTEM_3→SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4231,7 +4162,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 6
+    "designer_draft_slices::systems-progression": 7
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4269,10 +4200,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:34:46.501Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T05:35:21.725Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
