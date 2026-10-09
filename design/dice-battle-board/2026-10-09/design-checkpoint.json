@@ -536,25 +536,28 @@
       "toSystem": "BOARD_STATE_TRANSITION",
       "trigger": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다.",
       "stateChange": "주사위로 레벨을 시작하며 선택 결과가 다음 월드 상태에 영향을 미칩니다."
+    },
+    "local_authoring_parts::ef87d6c8bf8127d1652165d20f9b06502f1037a3c25692f0b36903ac6890920c:fromId": {
+      "fromId": "BOARD_STATE_TRANSITION"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1317899,
-      "lastMs": 89801,
+      "totalMs": 1405343,
+      "lastMs": 87444,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:11:44.684Z"
+      "updatedAt": "2026-10-09T11:13:12.131Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T10:49:46.715Z",
-  "updatedAt": "2026-10-09T11:11:44.686Z",
+  "updatedAt": "2026-10-09T11:13:12.131Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2855,7 +2858,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:11:44.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:13:12.131Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
