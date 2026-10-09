@@ -467,25 +467,43 @@
     },
     "local_authoring_parts::28be0c71b85cd81f36fc53d51b4c4fb11f70a448a26e2fe4175c60122a61ac1c:trigger": {
       "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다."
+    },
+    "local_authoring_parts::28be0c71b85cd81f36fc53d51b4c4fb11f70a448a26e2fe4175c60122a61ac1c:stateChange": {
+      "stateChange": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
+    },
+    "local_authoring_parts::29bd255b787ef73ccc579b3781dcbd552ebdd06ee109637e5ccef659bef69add:systemInterconnections:0": {
+      "fromId": "CORE-01→CORE-02",
+      "toId": "CORE-02",
+      "stateKeys": [
+        "CORE-01→CORE-02",
+        "CORE-02→CORE-03",
+        "CORE-03→CORE-04",
+        "CORE-04→CORE-05",
+        "CORE-05→CORE-01"
+      ],
+      "fromSystem": "CORE-01→CORE-02",
+      "toSystem": "CORE-02→CORE-03",
+      "trigger": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+      "stateChange": "CORE-01→CORE-02의 출력 상태가 CORE-02의 입력 상태로 전달되어야 하며, 이 과정에서 원본 규칙에 따라 조건 및 선택 로직이 실행되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 848187,
-      "lastMs": 34408,
+      "totalMs": 881486,
+      "lastMs": 33299,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:55:19.985Z"
+      "updatedAt": "2026-10-09T11:55:53.285Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:41:11.728Z",
-  "updatedAt": "2026-10-09T11:55:19.985Z",
+  "updatedAt": "2026-10-09T11:55:53.287Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3237,7 +3255,7 @@
       "progressionDirection": "SEQUENTIAL"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T11:55:19.985Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:55:53.287Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
