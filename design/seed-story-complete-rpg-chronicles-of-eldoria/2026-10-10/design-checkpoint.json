@@ -194,25 +194,39 @@
         "Player gains items/skills that influence future choices",
         "Player's growth becomes critical to final boss progression"
       ]
+    },
+    "local_authoring_parts::2428e2f4d79acc6f918b2890e226c8b12013744362bde0834c2e02d495a7acb4:signatureSystems:0": {
+      "id": "DELVE(@)",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"key\": \"PLAYER_CHOICE\", \"value\": \"Player chooses a path in the story\"}",
+        "{\"key\": \"RESOURCE_GAIN\", \"value\": \"Player gains items/skills that influence未来选择\""
+      ],
+      "stateOutputs": [
+        "{\"key\": \"NARRATIVE_BRANCH\", \"value\": \"New narrative branch emerges from player决策"
+      ],
+      "name": "Resource Management System",
+      "purpose": "Player gains new resources that alter game state",
+      "playerChoice": "Player makes decision that alters game state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 529639,
-      "lastMs": 49338,
+      "totalMs": 629032,
+      "lastMs": 99393,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:14:36.437Z"
+      "updatedAt": "2026-10-09T21:16:15.831Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:05:46.769Z",
-  "updatedAt": "2026-10-09T21:14:36.437Z",
+  "updatedAt": "2026-10-09T21:16:15.831Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1958,7 +1972,7 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:14:36.437Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:16:15.831Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
