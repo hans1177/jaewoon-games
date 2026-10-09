@@ -1178,25 +1178,40 @@
     },
     "local_authoring_parts::d5e909394b501e6110a8e8a753d3d41e7aa6039232b24d6dc7b5b3890adfa422:trigger": {
       "trigger": "플레이어는 모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 Vibe 폴리시 시스템의 카메라 움직임 및 애니메이션 상태 전환을 유연하게 적용해야 한다. 이 과정에서 플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해, 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있다."
+    },
+    "local_authoring_parts::d5e909394b501e6110a8e8a753d3d41e7aa6039232b24d6dc7b5b3890adfa422:stateChange": {
+      "stateChange": "플레이어는 모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 Vibe 폴리시 시스템의 카메라 움직임 및 애니메이션 상태 전환을 유연하게 적용해야 한다. 이 과정에서 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있다."
+    },
+    "local_authoring_parts::e7216de71a4d50d61643076a02ba762f050fa55374411b0a8b062d84652b1dd8:systemInterconnections:1": {
+      "fromId": "systemInterconnections[1]",
+      "toId": "systemInterconnections[1]",
+      "stateKeys": [
+        "trigger",
+        "stateChange"
+      ],
+      "fromSystem": "Vibe 폴리시 시스템 구축",
+      "toSystem": "Vibe 폴리시 시스템 구축",
+      "trigger": "플레이어는 모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 Vibe 폴리시 시스템의 카메라 움직임 및 애니메이션 상태 전환을 유연하게 적용해야 한다. 이 과정에서 플레이어는 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해, 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있다.",
+      "stateChange": "플레이어는 모바일 환경에서의 캐릭터 이동, 자원 수집, 장비/스킬 선택 등을 통해 Vibe 폴리시 시스템의 카메라 움직임 및 애니메이션 상태 전환을 유연하게 적용해야 한다. 이 과정에서 주변 자원을 수집하여 자신에게 유리하게 변형하는 장비나 스킬을 선택해 기존의 단순 반복을 벗어나 새로운 행동 패턴을 개발할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 66,
-      "successes": 65,
+      "calls": 67,
+      "successes": 66,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5749581,
-      "lastMs": 97728,
+      "totalMs": 5846697,
+      "lastMs": 97116,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T01:51:29.886Z"
+      "updatedAt": "2026-10-09T01:53:07.003Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:32:30.796Z",
-  "updatedAt": "2026-10-09T01:51:29.886Z",
+  "updatedAt": "2026-10-09T01:53:07.004Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3626,7 +3641,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:51:29.886Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:53:07.004Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
