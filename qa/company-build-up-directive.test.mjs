@@ -1394,11 +1394,11 @@ test('merged design volume keeps 17 systems 18 connections 3 milestones and 10 e
       Buffer,console:{log(){}}
     });
   const activePrompt=guide({target:'roblox',gameId:'volume-scope',buildUpDirective:first},[owner]);
-  assert.match(activePrompt,/contentUnitSelection=active:CORE_LOOP\\[0\\]/);
-  assert.match(activePrompt,/volumeImplementation=ref:CORE_LOOP\\[0\\]/);
+  assert.match(activePrompt,/contentUnitSelection=active:CORE_LOOP\[0\]/);
+  assert.match(activePrompt,/volumeImplementation=ref:CORE_LOOP\[0\]/);
   const compactPrompt=compact(activePrompt,{compact:true,responsiblePaths:[owner]});
-  assert.match(compactPrompt,/contentUnitSelection=active:CORE_LOOP\\[0\\]/);
-  assert.match(compactPrompt,/volumeImplementation=ref:CORE_LOOP\\[0\\]/);
+  assert.match(compactPrompt,/contentUnitSelection=active:CORE_LOOP\[0\]/);
+  assert.match(compactPrompt,/volumeImplementation=ref:CORE_LOOP\[0\]/);
  
   const generic=create(first,'verified','b'.repeat(64),{runtimeObserved:true,runtimePassed:true});
   assert.equal((generic.designedGameVolume.activeItem||generic.designedGameVolume.deferredItem).ref,volume.activeItem.ref,
