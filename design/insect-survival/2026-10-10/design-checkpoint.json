@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::afa65b0a2a28ed2d4e80fbee5ae6ff8edf949eb5ac9363d58dd8103007631a0e:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "INSECT_ECOLOGY",
+          "materialDomain": "ECOLOGICAL_RISK",
+          "stateChange": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE"
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "EARTH_RESOURCES",
+          "materialDomain": "RESOURCE_MANAGEMENT",
+          "stateChange": "USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE"
+        },
+        "abCausality": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE → USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE",
+        "abEvolution": {
+          "aChangesB": "A→B 조건에 따라 B의 상태 변화를 반영합니다.",
+          "bChangesA": "B→A 조건에 따라 A의 상태 변화를 반영합니다.",
+          "lateGameChange": "A→B, B→A 두 시스템 간 상호작용이 다음 상태로 확장됩니다."
+        },
+        "materialFusion": {
+          "contrast": "INSECT_ECOLOGY과 EARTH_RESOURCES는 서로 다른 생태·위험·보상 구조를 가진다. 주요 인물의 목표와 두려움은 학문적 기반으로 정의된다.",
+          "causalBridge": "생태학적 분석을 통해 선택과 위험을 연결하는 데 사용됩니다.",
+          "removalConsequence": "INSECT_ECOLOGY 또는 EARTH_RESOURCES가 제거되면 게임 규칙이 변형됩니다."
+        },
+        "storyCausalChain": {
+          "cause": "INSECT_ECOLOGY 연구 및 자원 수집",
+          "characterConflict": "플레이어의 선택과 자원 관리 전략 갈등",
+          "playerChoice": "자원 수집 후 위험 대응 전략 결정하기",
+          "worldChange": "자원 수집 및 위험 대응이 실제 세계 상태로 이어집니다.",
+          "nextEvent": "자원 수집 및 위험 대응 이후 새로운 사건 발생"
+        },
+        "cThemes": [
+          {
+            "name": "EARTH_RESOURCES",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 수집 및 조합 가능성이 증대됨"
+          },
+          {
+            "name": "INSECT_ECOLOGY",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택과 위험에 대한 이해 능력 향상"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "주요 플레이 단계와 위험 구조를 가진다"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "ECOLOGICAL_RISK",
+            "gameplayEffect": "선택과 위험에 대한 인과 변화를 유도한다"
+          }
+        ],
+        "cGenreInterlock": "INSECT_ECOLOGY와 EARTH_RESOURCES는 서로 다른 생태·위험·보상 구조를 가지며, 주요 인물의 목표와 두려움은 학문적 기반으로 정의된다. 선택과 위험을 연결하는 데 사용되는 연구 결과가 게임 규칙에 반영되며, 자원 수집 후 위험 대응 전략 결정이 실제 세계 상태로 이어지게 된다.",
+        "cWorldAndGameplayEffect": "자원 수집 및 위험 대응이 실제 세계 상태로 이어지는 방식으로 게임 진행이 이루어집니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "생태학적 분석을 통해 선택과 위험을 연결합니다.",
+            "discovery": "자원 수집 및 위험 대응 전략 결정 가능성이 증대함",
+            "newChoice": "자원 수집 후 위험 대응 전략 결정하기"
+          },
+          {
+            "clue": "플레이어의 선택과 자원 관리 전략 갈등 발생",
+            "discovery": "자원 수집 및 위험 대응 전략 결정 가능성 향상",
+            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+          },
+          {
+            "clue": "자원 수집 및 위험 대응이 실제 세계 상태로 이어짐",
+            "discovery": "선택과 위험에 대한 이해 능력 향상",
+            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+          },
+          {
+            "clue": "주요 인물의 목표와 두려움은 학문적 기반으로 정의됨",
+            "discovery": "선택과 위험에 대한 인과 변화가 유도됨",
+            "newChoice": "자원 수집 후 위험 대응 전략 결정"
+          }
+        ],
+        "delveGrowthRule": "자원 수집 및 위험 대응 전략 결정이 게임 진행에 반영되며, 선택과 위험에 대한 이해 능력이 증대해 새로운 사건 발생을 유도합니다.",
+        "finalGameIdentity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계된 새 정체성입니다."
+      },
+      "playerFantasy": "플레이어는 자원 수집과 위험 대응 전략 결정을 통해 살아남고, 선택과 위험에 대한 이해를 바탕으로 진보하며, 게임 세계 상태로 이어지는 방식으로 플레이어의 역할을 수행해야 합니다. 주요 인물의 목표와 두려움은 학문적 기반으로 정의됩니다. 조건에 따라 자원 수집 후 위험 대응 전략 결정이 이루어지며, 선택과 위험에 대한 이해 능력이 향상되어 새로운 사건 발생을 유도합니다.",
+      "coreFun": "SELECT_AND_CONVERT_TO_TOOL_OR_ROUTE → USE_LEARNED_INFORMATION_TO_STRENGTHEN_PRESSURE → RESEARCH_ECOLOGICAL_DATA_TO_IMPROVE_SELECTION_PROCESSING"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 178676,
+      "lastMs": 178676,
+      "lastError": null,
+      "updatedAt": "2026-10-09T17:11:44.402Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:08:45.684Z",
-  "updatedAt": "2026-10-09T17:08:45.692Z",
+  "updatedAt": "2026-10-09T17:11:44.402Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1682,5 +1783,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T17:11:44.402Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
