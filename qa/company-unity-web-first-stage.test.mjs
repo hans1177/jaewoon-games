@@ -238,6 +238,21 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
     assert.ok(repair.includes(`      ${permission}\n`),`repair caller must grant callee permission: ${permission}`);
   }
 });
+test('기존 HTML 게임과 저장 데이터는 검증 없는 Unity 정식 주소 덮어쓰기 전에 차단한다',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const publish=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'));
+  const originFetch=publish.indexOf('git fetch --no-tags origin main');
+  const migrationGate=publish.indexOf('UNITY_WEB_LEGACY_SAVE_MIGRATION_NOT_VERIFIED_KEEP_EXISTING_GAME_URL');
+  const deleteRuntime=publish.indexOf('rm -rf "$runtime_dir"');
+  assert(originFetch>=0&&migrationGate>originFetch&&deleteRuntime>migrationGate,
+    '검증 전에 현재 정식 게임 디렉터리를 삭제해서는 안 된다');
+  assert.match(publish,/if \[ "\$READINESS_PASS" = 'true' \] && git cat-file -e "origin\/main:web-games\/\$GAME_ID\/index\.html"/);
+  assert.match(publish,/grep -Eq 'createUnityInstance\[\[:space:\]\]\*\\\\\('/);
+  assert.match(publish,/exit 1/);
+  assert.match(publish,/if \[ "\$READINESS_PASS" != 'true' \]/);
+  assert.match(publish,/runtime_dir="web-games\/\$GAME_ID\/unity"/);
+});
+
 test('a playable native-3D owner build receives a separate test URL while final QA still guards the stable URL',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
