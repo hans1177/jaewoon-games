@@ -1113,25 +1113,42 @@
         "전략적 동기 부여"
       ],
       "fromSystem": "identity-core"
+    },
+    "local_authoring_parts::aab88a43943bf294e5d3e3e1c96fed167661430faaec7b1594f46f40a02945cc:toSystem,trigger,stateChange": {
+      "toSystem": "signatureSystems-1",
+      "trigger": "전선 상태 변화",
+      "stateChange": "전략적 동기 부여"
+    },
+    "local_authoring_parts::6e7a2b05037e99a8088cc65213ab744af62e5ab94b6a3cbbfea57b9071f75391:systemInterconnections:0": {
+      "fromId": "identity-core",
+      "toId": "signatureSystems-1",
+      "stateKeys": [
+        "전선 상태 변화",
+        "전략적 동기 부여"
+      ],
+      "fromSystem": "identity-core",
+      "toSystem": "signatureSystems-1",
+      "trigger": "전선 상태 변화",
+      "stateChange": "전략적 동기 부여"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 29,
+      "calls": 34,
+      "successes": 30,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 4183505,
-      "lastMs": 91102,
+      "totalMs": 4274137,
+      "lastMs": 90632,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:43:22.026Z"
+      "updatedAt": "2026-10-09T23:44:52.659Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-09T23:43:22.026Z",
+  "updatedAt": "2026-10-09T23:44:52.661Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2821,7 +2838,7 @@
     "e3991c91af100edb3449564f0fd5cdb1d6b7611be364ff8e8ee43cd3c66c82e3": true,
     "6590538dd7d43630a2db0bc448a401acf5e0771c40df0c9d596698a6a3dd0908": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:43:22.026Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:44:52.661Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
