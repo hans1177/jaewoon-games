@@ -37,25 +37,41 @@
         "ACTION: 감염된 인간은 기존 직업별 고유 스킬로 옛 팀 추격, 한 진영이 0명이 되면 즉시 승패 결정",
         "NEXT SELECT: 대안 선택 (고유 도구+패시브+감염 후 능력 세트)"
       ]
+    },
+    "local_authoring_parts::4c30baf1614952cb163a6cf254bc7600a6d4128af2ae6c29059bb4ef72053217:signatureSystems:0": {
+      "id": "INFECT_ATTACK",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "HumanCount",
+        "MonsterCount",
+        "EliminatedCount"
+      ],
+      "stateOutputs": [
+        "InfectedHumans",
+        "MonstersInfected"
+      ],
+      "name": "감염 공격",
+      "purpose": "몬스터의 명시적 서버 권한 감염 공격이 적중한 인간이 탈락하지 않고 몬스터로 전환하며 인간 직업별 감염 스킬을 얻는다.",
+      "playerChoice": "인물 정화 또는 몬스터 감염 공격 선택, 감염 공격은 서버에 권한 있는 방식으로 관리됨, 정화는 라운드에서 제거됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 470954,
-      "lastMs": 81928,
+      "totalMs": 510248,
+      "lastMs": 39294,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:21:57.700Z"
+      "updatedAt": "2026-10-09T14:22:36.996Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:14:06.720Z",
-  "updatedAt": "2026-10-09T14:21:57.700Z",
+  "updatedAt": "2026-10-09T14:22:36.996Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -637,7 +653,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:21:57.700Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T14:22:36.996Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
