@@ -1505,25 +1505,34 @@
         "\"cost\": 100, \"cooldownSeconds\": 5, \"telegraph\": \"개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 ",
         "행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로월"
       ]
+    },
+    "local_authoring_parts::bc3034bc342dcafd4611a0e6eb12791d0243364bbb4ff9dca30caa6d8fce8bb2:source": {
+      "source": "개미 시뮬레이터의 현재 상태와 목표 추론 후 장르 핵심 행동 결정은 개미 종족 선택, 월드 탐험, 자원 확보, 위험 겪기, 목표 결정 등의 순차적 루프로 수행되며, 이 과정에서 플레이어는 실질적으로 월드 상태 및 보상/위험 조정을 경험하게 된다."
+    },
+    "local_authoring_parts::bc3034bc342dcafd4611a0e6eb12791d0243364bbb4ff9dca30caa6d8fce8bb2:rangeKey": {
+      "rangeKey": "ACTION_SURVIVAL_ROGUELITE_1"
+    },
+    "local_authoring_parts::bc3034bc342dcafd4611a0e6eb12791d0243364bbb4ff9dca30caa6d8fce8bb2:costKey": {
+      "costKey": "ACTION_SURVIVAL_ROGUELITE_1"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 58,
-      "successes": 56,
+      "calls": 61,
+      "successes": 59,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2271760,
-      "lastMs": 35130,
+      "totalMs": 2304131,
+      "lastMs": 6184,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-09T23:19:39.649Z"
+      "updatedAt": "2026-10-09T23:20:12.025Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T23:19:39.649Z",
+  "updatedAt": "2026-10-09T23:20:12.025Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3295,7 +3304,7 @@
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true,
     "a3506ccbe00d7e0a4b3a416931a59565c4ea5f6533bf7f269b4e188386ee8c52": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:19:39.649Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T23:20:12.025Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
