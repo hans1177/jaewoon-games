@@ -1742,25 +1742,35 @@
       "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2",
       "trigger": "SELECT_NEXT_WORLD_STATE",
       "stateChange": "START_STATE → RUN_STATE"
+    },
+    "local_authoring_parts::e903628b72bc7c691ea9b6da4792d458ceb768cf00b8c9b09e60306a04232407:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_BASELINE_01_V2"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 110,
-      "successes": 107,
+      "calls": 111,
+      "successes": 108,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7203848,
-      "lastMs": 100933,
+      "totalMs": 7305472,
+      "lastMs": 101624,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T04:42:45.171Z"
+      "updatedAt": "2026-10-09T04:44:26.800Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T04:42:45.174Z",
+  "updatedAt": "2026-10-09T04:44:26.800Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3829,7 +3839,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T04:42:45.174Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T04:44:26.800Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
