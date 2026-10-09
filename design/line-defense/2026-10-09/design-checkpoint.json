@@ -1220,25 +1220,34 @@
       "toSystem": "SIGNATURE_SYSTEM_1",
       "trigger": "Enemy wave detected and tower placement adjusted",
       "stateChange": "Battle status updated with new defensive strategy and resource allocation"
+    },
+    "local_authoring_parts::effa396e476b0594ff4ca4de01ed33e968f6545e65e3b508c8385f5c91a645f3:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "ENEMY_WAVE",
+      "toId": "BATTLE_STATUS",
+      "stateKeys": [
+        "ENEMY_WAVE",
+        "TOWER_PLACEMENT"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 89,
-      "successes": 89,
+      "calls": 90,
+      "successes": 90,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5452751,
-      "lastMs": 47507,
+      "totalMs": 5501461,
+      "lastMs": 48710,
       "lastError": null,
-      "updatedAt": "2026-10-09T02:58:52.842Z"
+      "updatedAt": "2026-10-09T02:59:41.556Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:59:31.174Z",
-  "updatedAt": "2026-10-09T02:58:52.845Z",
+  "updatedAt": "2026-10-09T02:59:41.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3579,7 +3588,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:58:52.845Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:59:41.556Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
