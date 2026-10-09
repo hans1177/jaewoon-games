@@ -3,729 +3,23 @@
   "gameId": "ant-simulator",
   "date": "2026-10-09",
   "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
-  "fingerprint": "6ba34b4d98c730be7289edb6f4ad3274c6b567c81b0b9793a0d7cf819be3800c",
-  "policyDigest": "479c57db66e55f8cf1ca58c7fcba84083ff6e3b0472d99bb145bd5f0dbff7f0d",
+  "fingerprint": "3402e042a666725621598968a9e717bb4e4af63d87aef07ae3e93ea9bca088b4",
+  "policyDigest": "3bae97985d3734f0dd2be83c7447ba4928188d9e542be339dee50932cef38315",
   "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::e379060d72c37a4cc10fa4d435f4f97e6c8bbf5386b0a76f6b482247197f9914:identity": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다."
-    },
-    "local_authoring_parts::e379060d72c37a4cc10fa4d435f4f97e6c8bbf5386b0a76f6b482247197f9914:playerFantasy": {
-      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다."
-    },
-    "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:identity,playerFantasy": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다."
-    },
-    "local_authoring_parts::f828a7bd01971ab64a11bd04c5aa0e6d8e1d60cd3c8f7ae104164c72c3802d5e:coreFun": {
-      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다."
-    },
-    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:identity,playerFantasy,coreFun": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다."
-    },
-    "local_authoring_parts::4265866c2a9c31f165243354ee5ecb0f44daf77e1720a21dc281f78c1ecc127b:coreLoop": {
-      "coreLoop": [
-        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
-        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-      ]
-    },
-    "local_authoring_parts::0a293d13b49067b7c37111e57cb5f1b82c74a3df5945ae11f486579873855820:signatureSystems:0": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "stateOutputs": [
-        "새로운 월드 상태",
-        "새로운 자원",
-        "새로운 위험",
-        "새로운 목표"
-      ],
-      "name": "OPEN_WORLD_ACTION_REGISTRY",
-      "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
-    },
-    "local_authoring_parts::0a293d13b49067b7c37111e57cb5f1b82c74a3df5945ae11f486579873855820:signatureSystems:1": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "stateOutputs": [
-        "새로운 월드 상태",
-        "새로운 자원",
-        "새로운 위험",
-        "새로운 목표"
-      ],
-      "name": "OPEN_WORLD_ACTION_REGISTRY",
-      "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
-    },
-    "local_authoring_parts::0a293d13b49067b7c37111e57cb5f1b82c74a3df5945ae11f486579873855820:signatureSystems:2": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "stateOutputs": [
-        "새로운 월드 상태",
-        "새로운 자원",
-        "새로운 위험",
-        "새로운 목표"
-      ],
-      "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-      "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-      "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
-    },
-    "local_authoring_parts::0a293d13b49067b7c37111e57cb5f1b82c74a3df5945ae11f486579873855820:signatureSystems:3": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-      "grammarRole": "c",
-      "stateInputs": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "stateOutputs": [
-        "새로운 월드 상태",
-        "새로운 자원",
-        "새로운 위험",
-        "새로운 목표"
-      ],
-      "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-      "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-      "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::0a293d13b49067b7c37111e57cb5f1b82c74a3df5945ae11f486579873855820:signatureSystems:4": {
-      "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "stateOutputs": [
-        "새로운 월드 상태",
-        "새로운 자원",
-        "새로운 위험",
-        "새로운 목표"
-      ],
-      "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-      "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-      "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-    },
-    "local_authoring_parts::4265866c2a9c31f165243354ee5ecb0f44daf77e1720a21dc281f78c1ecc127b:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-        }
-      ]
-    },
-    "local_authoring_parts::34ac404af203bd48f1e9b310c3884c02589b9a5b7cffd82cd4ceed1a9110e630:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
-        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-      ],
-      "signatureSystems": [
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-        }
-      ]
-    },
-    "local_authoring_parts::34ac404af203bd48f1e9b310c3884c02589b9a5b7cffd82cd4ceed1a9110e630:multiplayerMode": {
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::5c696c16ab54587deb41cce24727042efdc38a9d41a66ac141f905c8895dfd86:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
-        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-      ],
-      "signatureSystems": [
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "designer_draft_slices::identity-core": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션입니다. 플레이어는 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-      "playerFantasy": "개미 시뮬레이터에서는 세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키며, 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꿉니다. 이 게임은 즉시 이해할 수 있는 입력/피드백/실패/재도전 흐름을 제공하며, 숙련의 단계에서 발견·숙련·재방문 깊이로 진화합니다.",
-      "coreFun": "플레이어는 개미 시뮬레이터의 현재 월드 상태와 목표를 읽고, 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다. 이 과정에서 입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 순서로 진행되며, 숙련 단계에서는 발견/숙련/재방문 깊이로 진화합니다.",
-      "coreLoop": [
-        "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-        "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-        "변화된 상태와 보상/위험/실패를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정합니다.",
-        "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-      ],
-      "signatureSystems": [
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "개미 종족 선택, 월드 탐험 방향 결정, 자원 확보 전략 수립, 위험 대응 전술 제안, 목표 설정 및 실행 계획 수립 중 하나의 선택이 이루어집니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY",
-          "purpose": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(A)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_B",
-          "purpose": "플레이어가 선택한 장르 핵심 행동(MAIN)에 대한 전략적 대응 및 실행 계획을 정의하여, 월드 상태와 자원/위험/진행 상태를 변환합니다.",
-          "playerChoice": "선택 후 실제 입력을 수행하며, 월드 상태가 변하고, 보상 또는 위험/실패가 발생합니다. 이 과정에서 다음 목표·지역·상호작용·전략 선택이 결정됩니다."
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-          "grammarRole": "c",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_C",
-          "purpose": "보조 요소로서, MAIN/A/B의 상태 교환을 변주하며, 발견/숙련/재방문 깊이로 진화시키는 시스템",
-          "playerChoice": "실제 입력 및 상호작용 결과에 기반하여 새로운 월드 상태와 자원/위험/진행 상태를 생성하고, 이 상태 변화를 바탕으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-        },
-        {
-          "id": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "월드 상태",
-            "자원",
-            "위험",
-            "목표"
-          ],
-          "stateOutputs": [
-            "새로운 월드 상태",
-            "새로운 자원",
-            "새로운 위험",
-            "새로운 목표"
-          ],
-          "name": "OPEN_WORLD_ACTION_REGISTRY_DELVE",
-          "purpose": "플레이어가 발견된 새로운 정보나 측면에서 월드 상태, 자원, 위험, 목표를 재조정하여 게임 흐름을 진화시킨다.",
-          "playerChoice": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::ac97581ee98826b94d29b51f93009bc297170fd51914bb07df9fe7fc99c7143d:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
-    },
-    "local_authoring_parts::ac97581ee98826b94d29b51f93009bc297170fd51914bb07df9fe7fc99c7143d:toSystem,trigger,stateChange": {
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:0": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::8e11083656fa2f47bc488c078cc2bef66c7c74cf5c7f1664b76fed3232323d5d:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
-    },
-    "local_authoring_parts::8e11083656fa2f47bc488c078cc2bef66c7c74cf5c7f1664b76fed3232323d5d:toSystem,trigger,stateChange": {
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:1": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::ce62a72d3f57dbf18663a8ed41a116431a6db9d5c97e62d3d5c28130aef7712b:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
-    },
-    "local_authoring_parts::ce62a72d3f57dbf18663a8ed41a116431a6db9d5c97e62d3d5c28130aef7712b:toSystem,trigger,stateChange": {
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:2": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::f10a50992a4f4365872fd43b429514ccccda76a3903c8564958bc01b523a86d0:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
-    },
-    "local_authoring_parts::f10a50992a4f4365872fd43b429514ccccda76a3903c8564958bc01b523a86d0:toSystem,trigger,stateChange": {
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY_C",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:3": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY_C",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::527a26cb6c902a4cad5d22105b44eef72051631abc0430bbf342d6ead6af285e:fromId,toId,stateKeys,fromSystem": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY"
-    },
-    "local_authoring_parts::527a26cb6c902a4cad5d22105b44eef72051631abc0430bbf342d6ead6af285e:toSystem,trigger,stateChange": {
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    },
-    "local_authoring_parts::2c7afb18375eb3fca520073d70efeb1a5aa69ace9acdad8ce05d559fbca06637:systemInterconnections:4": {
-      "fromId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0",
-      "toId": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1",
-      "stateKeys": [
-        "월드 상태",
-        "자원",
-        "위험",
-        "목표"
-      ],
-      "fromSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "toSystem": "OPEN_WORLD_ACTION_REGISTRY",
-      "trigger": "플레이어가 월드 상태, 자원, 위험, 목표를 읽고 장르 핵심 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-      "stateChange": "월드 상태, 자원, 위험, 목표에 대한 새로운 정보를 획득하고, 해당 정보를 기반으로 다음 목표·지역·상호작용·전략 선택을 결정함"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1059895,
-      "lastMs": 26367,
-      "lastError": null,
-      "updatedAt": "2026-10-09T13:01:10.560Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T12:43:30.589Z",
-  "updatedAt": "2026-10-09T13:01:10.568Z",
+  "createdAt": "2026-10-09T14:22:35.052Z",
+  "updatedAt": "2026-10-09T14:22:35.067Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 121,
-    "sha256": "5b9e5a2facc4d7a8bf5cc66605645f9355eb102fd7af1f09d98206ade99d2f9c",
+    "version": 122,
+    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
     "inventoryCount": 717,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -733,7 +27,7 @@
     "platforms": {
       "WEB": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -750,119 +44,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -929,34 +143,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -968,33 +154,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -1261,30 +423,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1413,7 +555,7 @@
       },
       "UNITY": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1430,119 +572,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1609,34 +671,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1648,33 +682,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -1941,30 +951,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2093,7 +1083,7 @@
       },
       "ROBLOX": {
         "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 713,
+        "eligibleAssetCount": 408,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -2110,119 +1100,39 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
-            "ARCHWAY",
-            "BUILDING_PACK",
-            "CEILING_TILE",
-            "CEILING_WEDGE",
-            "DOOR_FRAME",
-            "FENCE_FOUNDATION",
-            "FLOOR_TILE",
-            "FOUNDATION_TRIANGLE",
             "GABLE_SURVIVAL_ROOF",
-            "GATE_FRAME",
-            "HALF_WALL",
-            "LADDER",
-            "PILLAR",
-            "RAILING",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "ROOF_CORNER",
-            "ROOF_FLAT",
-            "ROOF_SLOPE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL",
-            "STAIRS",
-            "WALL_CORNER",
-            "WALL_TRIM",
-            "WALL_WINDOW",
-            "WINDOW_FRAME"
+            "SOLID_TIMBER_WALL"
           ],
           "CHARACTER": [
-            "ACCESSORY_GEAR",
-            "AMULET_GEAR",
             "BACK_CAPE_MODULE",
-            "BACK_GEAR",
-            "BELT_GEAR",
-            "COSMETIC_OVERLAY",
-            "FOOT_GEAR",
-            "GEAR_PACK",
-            "HAND_GEAR",
-            "HEAD_GEAR",
-            "LEG_GEAR",
             "LIGHT_SHOULDER_MODULE",
-            "RING_GEAR",
-            "SHOULDER_GEAR",
-            "SURVIVAL_TORSO_CLOTH_MODULE",
-            "TORSO_GEAR"
+            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
-            "AQUATIC_BODY",
             "ARACHNID",
-            "ARACHNID_CORE",
-            "ARACHNID_LEG_CLUSTER",
             "CANINE_HEAD_MODULE",
-            "CLAW_PAIR",
             "CREATURE_CLAW_MODULE",
-            "CREATURE_PARTS_PACK",
-            "ELITE_ORNAMENT",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
             "FIELD_ELITE_WIND",
-            "FIN_PAIR",
-            "FLYING_BODY",
-            "GIANT_TORSO",
-            "GOLEM_CORE",
-            "GRAZER_HEAD",
-            "HORN_PAIR",
-            "HUMANOID_RAIDER_TORSO",
             "INSECT_ARACHNID",
-            "INSECT_HEAD",
             "LONG_JAW_MODULE",
-            "MANDIBLE_PAIR",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
             "PLAINS_WILD_WIND",
-            "PREDATOR_HEAD",
-            "SERPENT_BODY",
-            "SHELL_BACK",
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
-            "STARTER_HERO_WATER",
-            "TAIL_LONG",
-            "TENTACLE_CLUSTER",
-            "THORAX_INSECT",
-            "TORSO_BIPED",
-            "TORSO_QUADRUPED",
-            "UNDEAD_TORSO",
-            "WING_PAIR"
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
-            "BIOME",
-            "BIOME_KIT",
-            "BIOME_VARIANT",
-            "BROADLEAF_TREE",
-            "BUSH",
             "CORE_WORLD_PACK",
-            "DEAD_TREE",
             "DIRT_TRAVEL_PATH",
-            "FALLEN_LOG",
-            "FERN",
-            "FLOWER",
-            "FOLIAGE_PACK",
-            "GRASS",
-            "LOD",
             "MEDIUM_RESOURCE_ROCK",
-            "MOSS",
-            "MUSHROOM",
-            "PINE_TREE",
-            "REED",
-            "ROOT",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "SEASON_VARIANT",
-            "STUMP",
-            "THICK_RESOURCE_TREE_TRUNK",
-            "VINE",
-            "WIND_VARIANT"
+            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -2289,34 +1199,6 @@
             "WALK"
           ],
           "PROP": [
-            "AMMUNITION",
-            "ANIMAL_TROUGH",
-            "BARREL",
-            "BED",
-            "BENCH",
-            "CART",
-            "CHEST",
-            "CONSTRUCTION_TRACE",
-            "COOKING",
-            "CRAFT_MATERIAL",
-            "CRAFT_STATION",
-            "CRATE",
-            "CROP_PLOT",
-            "CURRENCY_CONTAINER",
-            "DECORATION",
-            "DOOR_CONTROL",
-            "FARM_TOOL",
-            "FENCE",
-            "FIREWOOD",
-            "FLAG",
-            "FOOD",
-            "INGREDIENT",
-            "INTERACTIVE_SWITCH",
-            "ITEM",
-            "ITEM_PACK",
-            "LIFE_PROP",
-            "LIGHT_SOURCE",
-            "LORE",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -2328,33 +1210,9 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
-            "MARKET_STALL",
-            "PLANTER",
-            "QUEST_ITEM",
-            "QUEST_PROP",
-            "RESOURCE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
-            "RESOURCE_NODE",
-            "RUIN_DEBRIS",
-            "SHELF",
-            "SIGNPOST",
-            "STORAGE",
-            "SURVIVAL_LANTERN_LAMP",
-            "TABLE",
-            "TENT",
-            "THROWABLE",
-            "TORCH",
-            "TREASURE",
-            "UPGRADE_MATERIAL",
-            "UTILITY",
-            "UTILITY_GADGET",
-            "UTILITY_MATERIAL",
-            "UTILITY_TOOL",
-            "WARDROBE",
-            "WELL",
-            "WORKBENCH",
-            "WORLD_PROP_PACK"
+            "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
             "AREA",
@@ -2621,30 +1479,10 @@
             "WEATHER"
           ],
           "WEAPON": [
-            "AXE",
-            "BOW",
-            "CLUB",
-            "CROSSBOW",
             "CROSS_GUARD_MODULE",
-            "DAGGER",
-            "DUAL_WIELD_PAIR",
-            "GREAT_AXE",
-            "HAMMER",
-            "HAMMER_MACE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MAGIC_FOCUS",
-            "MODULAR_COMBAT_PARTS_PACK",
-            "PICKAXE",
-            "SCYTHE",
-            "SHIELD",
-            "SPEAR",
-            "STAFF",
-            "SWORD",
-            "THROWN",
-            "TOOL_PACK",
-            "TWO_HAND_BLADE",
-            "WARHAMMER"
+            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2773,167 +1611,5 @@
       }
     },
     "assetFacts": {}
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "8a517f2fbd2fb6f9f96b89ccab00f469c8d1befeae0d0d1f6162878610d6610f"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::systems-progression": [
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
-        },
-        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 2
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::systems-progression": {
-      "progressionDirection": "선형 진화",
-      "progressionEconomyBalance": {
-        "progressionLoop": "발견 -> 숙련 -> 재방문",
-        "resourceFlow": "자원 획득 -> 소비 -> 해금",
-        "balanceRules": "기존 수치·보상·저장 의미는 보존한다"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "1번 발견 단서",
-          "newGameplay": "월드 상태, 자원, 위험, 목표를 읽고 장르 핸 루트 행동(MAIN)을 선택하여 월드 상태 및 자원/위험/진행 상태를 바꿉니다.",
-          "systemImpact": "플레이어의 선택에 따라 월드 상태와 자원/위험/진행 상태가 변화함"
-        },
-        {
-          "milestone": "2번 발견 단서",
-          "newGameplay": "선택 후 실제 입력을 수행하고, 월드 상태가 변하며, 보상 또는 위험/실패가 발생합니다.",
-          "systemImpact": "월드 상태 변화로 인해 다음 목표·지역·상호작용·전략 선택이 결정됨"
-        },
-        {
-          "milestone": "3번 발견 단서",
-          "newGameplay": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다.",
-          "systemImpact": "기존 수치·보상·저장 의미는 보존한다"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "월드 상태 변화 없음",
-          "자원 소비 완료",
-          "위험 대응 실패"
-        ],
-        "retryFlow": "재도전 시에는 기존의 월드 상태와 자원을 재사용하고, 새로운 목표나 전략을 설정하여 게임 흐름을 이어갑니다.",
-        "riskPressure": "자원 압박 및 위험 감소를 통해 플레이어의 선택에 영향을 주고, 다음 목표·지역·상호작용·전략 선택을 결정함",
-        "recoveryRules": "기존 수치·보상·저장 의미는 보존한다"
-      }
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-09T13:01:10.563Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
-  "designerSeed": {
-    "file": "design/ant-simulator/2026-10-09/design-seed.json",
-    "contentDigest": "42917956113cfed840d38826c394dba841fcc27b192eb3df610af0c1ec1a035b",
-    "authorModel": "ollama:qwen3:1.7b",
-    "status": "AUTHORED_CANDIDATE"
   }
 }
