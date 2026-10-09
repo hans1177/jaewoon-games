@@ -426,6 +426,19 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   assert.match(index,/function openChatGpt\(\)/);
 });
 
+test('게임별 신규 표지 누락은 수리 대상으로 기록하고 실제 게임 카드 자체는 숨기지 않는다',()=>{
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const owner=roadmap.ownerUnityWebHomepageOnly20261010||{};
+  assert.equal(owner.homepageTitle?.missingActualArtworkAction,'KEEP_GAME_CARD_VISIBLE_AND_ROUTE_TO_EXISTING_GRAPHICS_ASSET_REPAIR');
+  assert.match(manager,/const homepageCoverRepairIds=games\.filter/);
+  assert.match(manager,/validatedHomepageMedia\(canonicalId\(game\),entry\)/);
+  assert.match(manager,/HOMEPAGE_COVER_REPAIR_REQUIRED=/);
+  assert.match(manager,/HOMEPAGE_COVER_REPAIR_GAME_IDS=/);
+  assert.match(renderer,/\.filter\(game=>isHomepageGame\(game\)/);
+  assert.doesNotMatch(renderer,/\.filter\(game=>Boolean\(game\.homepageMedia\)\)/);
+});
+
 test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
