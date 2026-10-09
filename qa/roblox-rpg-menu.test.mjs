@@ -35,6 +35,11 @@ assert(#rows==2 and rows[1].tier==2 and rows[1].description:find('+8',1,true))
 assert(#Model.equipment({},config)==0)
 assert(#Model.filter(rows,'도구','')==0)
 assert(#Model.filter(rows,'전체','무기')==1)
+local actual={{id='z',name='실제 도구',category='도구',equipped=true},{id='a',name='가나다 도구',category='도구',equipped=false}}
+assert(Model.filter(actual,'도구','')[1].id=='z')
+assert(Model.filter(actual,'도구','',true)[1].id=='a')
+assert(#Model.filter(actual,'도구','없는 아이템',true)==0)
+assert(actual[1].id=='z' and actual[2].id=='a')
 assert(not Model.quest({},config).active)
 local q=Model.quest({QuestPortal=1,QuestKills=3,QuestNeed=5},config)
 assert(q.active and q.ratio==.6 and q.text:find('3 / 5',1,true))
@@ -125,6 +130,14 @@ assert(not find('BuyWeapon').Active and not find('BuyArmor').Active,'no client-s
 find('Tab1').Activated:Fire()
 local stableSlot=find('InventorySlot1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
 find('Filter3').Activated:Fire();find('ItemAction').Activated:Fire();assert(equipped==1 and tool.Parent==character)
+local another=Instance.new('Tool');another.Name='가나다 도구';another.Parent=backpack
+assert(find('InventorySlot1').ItemName.Text=='실제 도구','default equipped-first ordering')
+find('InventorySort').Activated:Fire()
+assert(find('InventorySort').Text=='정렬: 이름순')
+assert(find('InventorySlot1').ItemName.Text=='가나다 도구','name sort of real tool rows')
+find('InventorySort').Activated:Fire()
+assert(find('InventorySort').Text=='정렬: 장착순')
+assert(find('InventorySlot1').ItemName.Text=='실제 도구')
 find('ItemAction').Activated:Fire();assert(tool.Parent==backpack)
 input.focused={};input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 input.focused=nil;input.InputBegan:Fire({KeyCode='Escape'},false);assert(not api.isOpen() and combat)
@@ -132,6 +145,17 @@ input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 find('CloseMenu').Activated:Fire();assert(not api.isOpen() and combat)
 `));
 
+test('in-game Roblox sorting is touch-accessible and owns no save or inventory state',()=>{
+ assert.match(menu,/local sortByName=false/);
+ assert.match(menu,/sortButton=button\(inventory,"InventorySort","정렬: 장착순"\)/);
+ assert.match(menu,/sortButton\.Activated:Connect\(function\(\)sortByName=not sortByName;refresh\(\)end\)/);
+ assert.match(menu,/Model\.filter\(rows,category,search\.Text,sortByName\)/);
+ assert.match(menu,/sortButton\.Text=sortByName and "정렬: 이름순"or"정렬: 장착순"/);
+ assert.match(menu,/local listStart=162/);
+ assert.match(menu,/inventory\.CanvasSize=UDim2\.fromOffset\(0,availableHeight\)/);
+ assert.match(model,/function Model\.filter\(rows, category, query, sortByName\)/);
+ assert.doesNotMatch(menu,/DataStoreService|SetAsync|UpdateAsync/);
+});
 test('character and merchant pages use actual replicated state and server requests without changing item prices',()=>{
  const config=fs.readFileSync('roblox-games/daechung-rpg/shared/GameConfig.luau','utf8');
  const server=fs.readFileSync('roblox-games/daechung-rpg/server/Game.server.luau','utf8');

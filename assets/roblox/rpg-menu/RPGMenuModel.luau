@@ -73,7 +73,8 @@ function Model.shop(attributes,config,merchantAccess)
   proximityObserved=merchantAccess~=nil,source="SERVER_REPLICATED_EQUIPMENT_AND_CANONICAL_CATALOG"}
 end
 
-function Model.filter(rows, category, query)
+-- 유틸: 기존 장착순을 기본값으로 보존하고, 이름순은 화면 사본에만 적용한다.
+function Model.filter(rows, category, query, sortByName)
  local result = {}
  query = string.lower(query or "")
  for _, row in ipairs(rows) do
@@ -82,7 +83,7 @@ function Model.filter(rows, category, query)
   end
  end
  table.sort(result,function(a,b)
-  if (a.equipped==true)~=(b.equipped==true) then return a.equipped==true end
+  if sortByName~=true and (a.equipped==true)~=(b.equipped==true) then return a.equipped==true end
   if a.name==b.name then return tostring(a.id)<tostring(b.id) end
   return a.name<b.name
  end)

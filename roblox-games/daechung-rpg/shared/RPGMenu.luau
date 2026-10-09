@@ -31,6 +31,7 @@ function Menu.install(config,gui,player,options)
  local opened=false
  local activeTab="배낭"
  local category="전체"
+ local sortByName=false
  local selectedId=nil
  local selectedTool=nil
  local rows={}
@@ -75,7 +76,11 @@ function Menu.install(config,gui,player,options)
   filterButtons[name]=b
   b.Activated:Connect(function()category=name;refresh()end)
  end
- local items=make("ScrollingFrame",inventory,"InventoryGrid",{Position=UDim2.fromOffset(0,112),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
+ -- 메인: 정렬은 실제 Tool 목록의 표시 순서만 바꾼다. 게임 소유·저장은 변경하지 않는다.
+ local sortButton=button(inventory,"InventorySort","정렬: 장착순")
+ sortButton.Position=UDim2.fromOffset(0,108);sortButton.Size=UDim2.new(1,0,0,44)
+ sortButton.Activated:Connect(function()sortByName=not sortByName;refresh()end)
+ local items=make("ScrollingFrame",inventory,"InventoryGrid",{Position=UDim2.fromOffset(0,162),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
  local grid=make("UIGridLayout",items,"ItemGridLayout",{CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder})
  local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110)
  local details=make("ScrollingFrame",inventory,"ItemDetails",{BackgroundColor3=colors.panel,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y});round(details)
@@ -176,7 +181,8 @@ function Menu.install(config,gui,player,options)
    end
   end
   -- 같은 아이템 버튼은 유지해 상태 갱신 중 터치·게임패드 선택이 끊기지 않게 한다.
-  local filtered=Model.filter(rows,category,search.Text)
+  local filtered=Model.filter(rows,category,search.Text,sortByName)
+  sortButton.Text=sortByName and "정렬: 이름순"or"정렬: 장착순"
   itemRows={}
   empty.Visible=#filtered==0
   local selection=nil
@@ -268,11 +274,13 @@ function Menu.install(config,gui,player,options)
   inventory.CanvasSize=UDim2.fromOffset(0,availableHeight)
   local split=layout.compact
   local listWidth=split and availableWidth or math.floor(availableWidth*.58)
-  local listHeight=split and math.max(64,math.floor((availableHeight-120)*.5)) or math.max(64,availableHeight-112)
+  local listStart=162
+  local detailGap=8
+  local listHeight=split and math.max(64,math.floor((availableHeight-listStart-detailGap)*.5)) or math.max(64,availableHeight-listStart)
   items.Size=UDim2.fromOffset(listWidth,listHeight)
   grid.CellSize=UDim2.fromOffset(math.floor((listWidth-8*(layout.columns-1)-6)/layout.columns),106)
-  details.Position=split and UDim2.fromOffset(0,120+listHeight) or UDim2.fromOffset(listWidth+12,112)
-  details.Size=split and UDim2.fromOffset(availableWidth,availableHeight-120-listHeight) or UDim2.fromOffset(availableWidth-listWidth-12,availableHeight-112)
+  details.Position=split and UDim2.fromOffset(0,listStart+listHeight+detailGap) or UDim2.fromOffset(listWidth+12,listStart)
+  details.Size=split and UDim2.fromOffset(availableWidth,math.max(64,availableHeight-listStart-listHeight-detailGap)) or UDim2.fromOffset(availableWidth-listWidth-12,listHeight)
  end
 
  setOpen=function(value)
