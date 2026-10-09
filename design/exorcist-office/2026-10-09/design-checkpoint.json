@@ -1528,25 +1528,43 @@
         "PROGRESSION_STATE"
       ],
       "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_START_STATE_TO_RUN_STATE_01_SIMPLE_INPUT_AND_CLEAR_GOAL_01_CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_"
+    },
+    "local_authoring_parts::fb39537b2daec1ea68d0f313da31bf64ef97addb406421a09225c924c4ffda1b:toSystem,trigger,stateChange": {
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_RUN_STATE_TO_NEXT_WORLD_STATE_01_BRIEF_RUN_WITH_READABLE_FEEDBACK",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않음"
+    },
+    "local_authoring_parts::84074d2cdc5f70980b9c158140dfdb18dc98adfde18b43c6c08955865640f675:systemInterconnections:1": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_START_STATE_TO_RUN_STATE_01_SIMPLE_INPUT_AND_CLEAR_GOAL_01_CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_",
+      "toSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01_AHEAD_OF_TIME_01_RUN_STATE_TO_NEXT_WORLD_STATE_01_BRIEF_RUN_WITH_READABLE_FEEDBACK",
+      "trigger": "플레이어가 즉시 시작하며 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태와 다음 선택을 바꾸는 CASUAL 게임이다.",
+      "stateChange": "START_STATE→RUN_STATE의 출력과 입력 상태가 연결되지 않음"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 95,
-      "successes": 92,
+      "calls": 96,
+      "successes": 93,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 6127609,
-      "lastMs": 39107,
+      "totalMs": 6166856,
+      "lastMs": 39247,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T02:48:18.955Z"
+      "updatedAt": "2026-10-09T02:48:58.203Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T02:48:18.955Z",
+  "updatedAt": "2026-10-09T02:48:58.205Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3615,7 +3633,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T02:48:18.955Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:48:58.205Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
