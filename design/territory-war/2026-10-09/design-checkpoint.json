@@ -19,25 +19,33 @@
     "local_authoring_parts::01d5265f011d688d68e72aa4a4cc5e8e3ed3ae56543436c4dab70a6cb537170e:identity,playerFantasy": {
       "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.",
       "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다."
+    },
+    "local_authoring_parts::01d5265f011d688d68e72aa4a4cc5e8e3ed3ae56543436c4dab70a6cb537170e:coreFun": {
+      "coreFun": "영토전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다."
+    },
+    "local_authoring_parts::cec26b121e4ca1d801ccdd905538e82d51fd767c7462976f449a3b49e1f1cf49:identity,playerFantasy,coreFun": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다. 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.",
+      "playerFantasy": "영토전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다.",
+      "coreFun": "영토전쟁에서 플레이어는 현재 경계 압력에 따라 영토 목표를 선택하며, 이 선택은 다음 월드 상태와 관계 변화로 이어진다. 주요 행동은 'Read the current border pressure and choose one territory objective.'이며, 결과적으로는 'Commit units or resources to attack, reinforce or expand economy.' 또는 'Resolve the territorial change and adapt the next plan to the new front line.'의 형태로 나타난다. 세계 규칙은 단일 방어 전략 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 구조로 구성된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 270586,
-      "lastMs": 39931,
+      "totalMs": 316778,
+      "lastMs": 46192,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:25:11.357Z"
+      "updatedAt": "2026-10-09T15:25:57.552Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:20:40.748Z",
-  "updatedAt": "2026-10-09T15:25:11.359Z",
+  "updatedAt": "2026-10-09T15:25:57.553Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1572,7 +1580,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:25:11.359Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:25:57.553Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
