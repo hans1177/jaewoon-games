@@ -11,6 +11,7 @@ import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-co
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
@@ -92,6 +93,48 @@ function writeStudioDesign(root,gameId,overrides={}){
     identity:`${gameId} 고유 플레이 정체성`,
     coreFun:'적의 위협을 읽고 핵심 행동을 선택해 실제 전투 상태를 바꾸는 재미',
     coreLoop:['위협과 목표를 읽고 행동을 선택한다','실제 입력으로 적·월드·자원 상태를 바꾼다','결과와 보상으로 다음 목표와 전략을 갱신한다'],
+    // 검증용 게임도 실제 V5 MAIN × A × B × C + @ 설계의 최소 계약을 갖춰야 한다.
+    // 플레이어 행동·상태 인과가 없는 임시 MAIN-only 설계를 PASS 증거로 오인하지 않는다.
+    creativeGrammar:{
+      mainIdentity:`${gameId}에서 지역 배치와 위험 대응을 함께 판단해 다음 플레이 지형과 목표를 바꾸는 게임`,
+      a:{system:'지형 배치와 경로 운영',material:'지형의 층과 흔적',materialDomain:'환경과 건축의 역사',stateChange:'선택한 지역 배치가 안전 경로와 탐험 가능한 공간의 상태를 변경한다.'},
+      b:{system:'위험 대응과 보상 전략',material:'생물 행동과 지역 생태',materialDomain:'자연사와 생태',stateChange:'위험을 제어한 결과가 다음 지역 배치의 자원 비용과 접근 가능성을 바꾼다.'},
+      abCausality:'지역의 배치와 이동 경로가 위협의 대응 선택을 바꾸고, 대응한 결과의 위험과 보상 상태가 다시 지역 배치와 다음 진행 목표를 바꾼다.',
+      abEvolution:{
+        aChangesB:'배치된 통로와 은폐 지역에 따라 같은 위협에서도 회피와 대응의 유효한 선택이 바뀐다.',
+        bChangesA:'실제로 해결한 위험과 사용한 자원이 다음 경로 배치와 거점 확장의 비용을 바꾼다.',
+        lateGameChange:'후반에는 여러 지역의 배치와 위험 대응을 동시에 조절하여 새로운 연결 경로를 만든다.'
+      },
+      materialFusion:{
+        contrast:'지형의 구조와 생태 행동은 서로 다른 재료지만 공간 위험을 선택하는 플레이에서 결합된다.',
+        causalBridge:'생물의 이동으로 남은 흔적이 새 지역의 진입 경로와 배치 결정에 반영된다.',
+        removalConsequence:'지형 배치를 없애면 위험 대응 위치 선택이 사라지고 생태 규칙을 없애면 지역 선택의 긴장과 변화가 사라진다.'
+      },
+      storyCausalChain:{
+        cause:'지역의 통로가 변하면서 생물과 주민이 쓰던 이동 길이 막혀 새로운 문제가 생긴다.',
+        characterConflict:'주민은 안전한 우회로를 원하지만 탐험가는 더 위험한 지름길의 가치를 주장한다.',
+        playerChoice:'플레이어는 자원을 써서 통로를 복구하거나 다른 지역을 탐색하는 경로를 선택한다.',
+        worldChange:'해결 방식에 따라 새로운 통로와 거점의 사용 가능 상태가 실제로 변경된다.',
+        nextEvent:'바뀐 통로로 생물 이동과 주민의 요청이 달라져 다음 지역의 사건이 발생한다.'
+      },
+      cThemes:[
+        {name:'환경 윤리',kind:'MATERIAL',gameplayEffect:'자연을 보존할지 개발할지 결정하면 지역 자원과 이동 조건이 달라진다.'},
+        {name:'민담',kind:'MATERIAL',gameplayEffect:'지역의 전승에서 얻은 단서가 위험을 피하는 숨겨진 경로를 드러낸다.'}
+      ],
+      cGenres:[
+        {role:'PRIMARY',name:'전략',gameplayEffect:'지역 자원과 위험을 비교해 어느 경로에 먼저 투자할지 결정한다.'},
+        {role:'SECONDARY',name:'탐험',gameplayEffect:'발견한 단서로 기존 배치 계획에서 보이지 않던 선택지가 실제로 열린다.'}
+      ],
+      cGenreInterlock:'탐험에서 발견한 지형과 민담의 단서가 전략 장르의 배치 비용과 위험 대응 우선순위를 바꾼다.',
+      cWorldAndGameplayEffect:'환경 윤리와 민담의 선택 결과가 지역 자원의 재생과 새로운 탐험 경로, 위험 대응 규칙을 함께 바꾼다.',
+      delveDiscoveries:Array.from({length:4},(_,i)=>({
+        clue:`이전 위험 반응과 지형 흔적을 함께 관찰하는 발견 단서 ${i+1}`,
+        discovery:`위험과 통로 상태의 조합에서 새로운 숨겨진 관계를 발견한다 ${i+1}`,
+        newChoice:`다음 진입과 자원 사용에서 이미 검증된 경로를 새로운 순서로 활용한다 ${i+1}`
+      })),
+      delveGrowthRule:'상한 없이 새로운 지역 상태와 적 반응의 조합을 발견하고 검증된 규칙 안에서 다음 대응 전략을 심화한다.',
+      finalGameIdentity:`${gameId}의 전략과 탐험을 지역·생태의 인과 구조로 연결한 복합 게임`
+    },
     signatureSystems:[
       {name:'combat-counterplay',purpose:'적 유형에 맞춘 실제 전투 선택',playerChoice:'공격·회피·배치 중 상황에 맞는 대응을 선택'},
       {name:'progression-loop',purpose:'전투 결과가 다음 선택을 확장',playerChoice:'보상으로 다음 목표나 성장 경로를 고른다'}
@@ -100,11 +143,28 @@ function writeStudioDesign(root,gameId,overrides={}){
     ...overrides
   };
   const file=path.join(dir,'design-revised.json');
-  fs.writeFileSync(file,JSON.stringify({version:1,gameId,date:'2026-09-25',status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
+  fs.writeFileSync(file,JSON.stringify({version:6,gameId,date:'2026-09-25',gameplaySketchVersion:5,status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
   fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,status:'COMPLETE',baselineGate:{state:'DESIGN_BASELINE_READY',ready:true,blockers:[],checkedAt:'2026-09-25T00:00:00Z'}},null,2),'utf8');
   fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'PASS',totalScore:90,hardFailures:[],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
   return file;
 }
+test('simulated verified studio design fixture satisfies the current V5 identity-and-grammar gate',()=>{
+  const root=tempRepo();
+  try{
+    const file=writeStudioDesign(root,'v5-authoring-fixture');
+    const record=JSON.parse(fs.readFileSync(file,'utf8'));
+    assert.equal(record.gameplaySketchVersion,5);
+    const verified=latestVerifiedDesign(root,'v5-authoring-fixture');
+    assert.ok(verified,'a simulated verified design must be complete under the same gate used by the real planner');
+    assert.equal(verified.record.content.creativeGrammar.cThemes.length,2);
+    assert.deepEqual(verified.record.content.creativeGrammar.cGenres.map(row=>row.role),['PRIMARY','SECONDARY']);
+    const broken=structuredClone(record);
+    delete broken.content.creativeGrammar;
+    fs.writeFileSync(file,JSON.stringify(broken,null,2),'utf8');
+    assert.equal(latestVerifiedDesign(root,'v5-authoring-fixture'),null,'old MAIN-only content is not a verified design');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 const status={projects:[{gameId:'demo',ownerDecision:'PASS',target:'unity-android',projectPath:'unity-games/demo',progress:80}]};
 const catalog={games:[
   {id:'demo',homepageCategory:'development-confirmed'},
