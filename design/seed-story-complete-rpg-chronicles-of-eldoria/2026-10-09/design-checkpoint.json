@@ -83,25 +83,41 @@
       "name": "엘도리아 연대기 시그니처 시스템 3: 스토리 진입 및 성장 기반 상태 교환 메커니즘",
       "purpose": "플레이어가 스토리를 진행하며 성장하는 과정에서 다음 스토리 섹션, 최종 몬스터 접근 가능성, 그리고 옵셔널 후작업의 선택에 대한 상태 교환을 관리합니다.",
       "playerChoice": "스토리 진행 속도와 플레이어의 성장 수준에 따라 다음 섹션 또는 최종 몬스터를 선택할 수 있습니다."
+    },
+    "local_authoring_parts::e00b2c1f4cf938683060f0105f9bc111c2a2e5a420356b180d8242d916b85d5e:signatureSystems:3": {
+      "id": "ELDORIA_CORE_SIGNATURE_4",
+      "grammarRole": "c",
+      "stateInputs": [
+        "STORY_COMPLETE_STATUS",
+        "PLAYER_GROWTH_LEVEL"
+      ],
+      "stateOutputs": [
+        "NEXT_STORY_SEGMENT_ID",
+        "FINAL_BOSS_REACHABLE_FLAG",
+        "POST_GAME_HOOK_FLAG"
+      ],
+      "name": "엘도리아 연대기 시그니처 시스템 4: 발견·숙련·재방문 기반 상태 교환 메커니즘",
+      "purpose": "플레이어의 발견, 숙련 및 재방문 과정에 따라 상태가 변하게 하며, 스토리 진입 단계에서 새로운 세그먼트와 게임 결과를 확정합니다.",
+      "playerChoice": "DISCOVER_NEW_SEGMENTS, MASTER_CONTENT, REVISIT_THE_WORLD"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 496279,
-      "lastMs": 48846,
+      "totalMs": 739534,
+      "lastMs": 243255,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:53:01.596Z"
+      "updatedAt": "2026-10-09T08:57:04.852Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:44:45.284Z",
-  "updatedAt": "2026-10-09T08:53:01.596Z",
+  "updatedAt": "2026-10-09T08:57:04.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2333,7 +2349,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:53:01.596Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:57:04.852Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
