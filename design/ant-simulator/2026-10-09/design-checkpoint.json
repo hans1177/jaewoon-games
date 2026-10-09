@@ -602,21 +602,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 426572,
-      "lastMs": 39359,
+      "totalMs": 634934,
+      "lastMs": 208362,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:29:41.660Z"
+      "updatedAt": "2026-10-09T14:33:10.033Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:22:35.052Z",
-  "updatedAt": "2026-10-09T14:29:41.670Z",
+  "updatedAt": "2026-10-09T14:33:10.038Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2215,15 +2215,158 @@
     "assetFacts": {}
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "f902dc64e033d40fed91d97843cb8767ec7ca4b123ee161c0b5ea9fe763b78a2"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:29:41.663Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_0→ANT_SIMULATOR_SIGNATURE_SYSTEM_1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_1→ANT_SIMULATOR_SIGNATURE_SYSTEM_2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_2→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_2→ANT_SIMULATOR_SIGNATURE_SYSTEM_3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_3→ANT_SIMULATOR_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_3→ANT_SIMULATOR_SIGNATURE_SYSTEM_4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "ANT_SIMULATOR_SIGNATURE_SYSTEM_4→ANT_SIMULATOR_SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: ANT_SIMULATOR_SIGNATURE_SYSTEM_4→ANT_SIMULATOR_SIGNATURE_SYSTEM_0의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "SEQUENTIAL",
+      "progressionEconomyBalance": {
+        "progressionLoop": "STABILIZE -> UNDERSTAND -> OBSERVE -> DIAGNOSE -> PRIORITIZE -> BLUEPRINT -> PROPOSE -> COMPARE -> REVISE -> VALIDATE -> LEARN -> REPLAN -> EXPAND",
+        "resourceFlow": "PLAYER_FRICTION -> INFORMATION_HIERARCHY -> CONTEXTUAL_ACTIONS -> REUSABLE_SETUP -> BATCH_PREVIEW_AND_COMMIT -> INTERRUPTION_AND_RETURN",
+        "balanceRules": "TASK_COMPLETION -> INPUT_AND_MENU_TRANSITIONS -> CONTEXT_LOSS -> ERROR_RECOVERY -> STATE_AND_COST_REGRESSION"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1. World State Transformation",
+          "newGameplay": "Player selects target location, manages resources, and assesses risks to drive the game forward with strategic decision-making based on current world state and goals.",
+          "systemImpact": "New world states are created through player-driven choices in target selection, resource management, and risk detection."
+        },
+        {
+          "milestone": "2. Core Gameplay Action Sequence",
+          "newGameplay": "Player makes complex decisions about world state, target choices, resource management, risk detection, and entry/exit strategies.",
+          "systemImpact": "Core gameplay actions evolve from simple action selection to more nuanced strategic planning."
+        },
+        {
+          "milestone": "3. Revisiting Past States",
+          "newGameplay": "Player revisits previous world states and targets with deeper exploration of resources, risks, and strategies.",
+          "systemImpact": "New goals are set through re-exploration of past locations and strategies."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "World state transformation fails due to poor resource management or risky choices.",
+          "Player encounters unexpected environmental hazards that disrupt their strategy."
+        ],
+        "retryFlow": "Player attempts new strategies, recalibrates resource allocation, and reassesses risks before continuing.",
+        "riskPressure": "Resource scarcity, repeated failures, and escalating dangers force players to adapt quickly.",
+        "recoveryRules": "Players use saved progress, adjust resource allocations, and refine their strategies in response to setbacks."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T14:33:10.033Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
