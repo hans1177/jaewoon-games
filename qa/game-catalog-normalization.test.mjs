@@ -273,7 +273,12 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'},
     {id:'verified-unity',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',unityWebAvailable:true,unityWebTestUrl:'/web-games/verified-unity/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),['verified-unity'],'only actual Unity Web links should appear on homepage');
+  assert.deepEqual([...visible].sort(),['design-playable','dev-playable','no-build','verified-unity'],
+    'real game cards stay visible before QA, but click-only control shells stay excluded');
+  assert.equal(vm.runInContext("internalReleaseLinks({id:'no-build'}).unityWeb",context),'',
+    'visible game card must not create a non-existent Unity Web link');
+  assert.equal(vm.runInContext("internalReleaseLinks({id:'verified-unity',unityWebAvailable:true,unityWebTestUrl:'/web-games/verified-unity/'}).unityWeb",context),'/web-games/verified-unity/',
+    'verified Unity Web game keeps its playable link');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
