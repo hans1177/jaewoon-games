@@ -822,7 +822,7 @@ jobs:
             for settle_attempt in 1 2 3; do
               git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
               git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-native-3d-runtime-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
               git -C /tmp/vibe2-control add .vibe2/queue.json
               if git -C /tmp/vibe2-control diff --cached --quiet; then
                 settled=1
