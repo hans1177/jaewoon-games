@@ -536,7 +536,7 @@ test('midnight hundred source entries stay shared for every game without bypassi
     assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
     assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
     assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
-    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'STYLE_ADAPT');
   }
   const fixture={version:1,assets:[
     {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
@@ -1388,9 +1388,11 @@ test('customization and detailed style instructions reach the existing asset wor
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
   try{
+    fs.mkdirSync(path.join(root,'assets','test'),{recursive:true});
+    fs.writeFileSync(path.join(root,'assets','test','owned-motion.json'),JSON.stringify({states:['idle','attack'],rigType:'R15'}));
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
       id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-      license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
+      path:'assets/test/owned-motion.json',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
     }]}));
     const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
@@ -1570,7 +1572,8 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
   assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
-  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.ok(hero.nativeAuthoringExecution.dcc.availableExistingRecipes.length>0);
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
   assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
@@ -1898,18 +1901,21 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
     assert.ok(plan.summary.discoveredSameGameRobloxAssets>=4);
-    assert.ok(plan.summary.sameGameRobloxCandidateTypes>0);
-    assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
-    assert.ok(plan.decisions.some(row=>row.decisionOrder[1]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
+    // 코드에서 발견한 외부 Roblox Asset ID만으로 로컬 3D 원본/재사용 후보라고 승인하지 않는다.
+    assert.equal(plan.summary.sameGameRobloxCandidateTypes,0);
+    assert.ok(plan.decisions.every(row=>row.sameGameCandidates.length===0));
     assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
     assert.equal(plan.policy.unverifiedSameGameRobloxAssetDoesNotOutrankVerifiedCompanyAsset,true);
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
-    assert.match(guidance,/6933438443/);
+    assert.ok(!guidance.includes('REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'),'unverified ID-only discovery is not a ready 3D asset');
 
+    const source3d='assets/roblox/world-ghosts/native/mesh/bride.glb';
+    const nature3d=path.join(root,'assets','roblox','shared','nature.glb');
+    fs.mkdirSync(path.dirname(nature3d),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),source3d),nature3d);
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'roblox-games/shared/nature.luau',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/roblox/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
@@ -2340,7 +2346,7 @@ test('native presentation pass is available to every confirmed project while the
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('fantasy-survival development-confirmed Unity can receive P0 weather work only through owner-authorized company status',()=>{
+test('owner-held Unity Android game cannot receive P0 weather source work',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','fantasy-survival','Assets','Scripts');
@@ -2359,16 +2365,13 @@ test('fantasy-survival development-confirmed Unity can receive P0 weather work o
       queue:{maxConcurrentTasks:4,tasks:[]},
       repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
-    assert.equal(result.planned,true);
-    const weather=result.tasks.find(row=>row.id==='fantasy-survival-unity-weather-presentation-v1');
-    assert.ok(weather);
-    assert.equal(weather.priority,'owner-immediate');
-    assert.equal(weather.weatherPresentationLane,true);
-    assert.ok(weather.evidence.includes('weather-presentation:v1'));
+    assert.equal(result.planned,false);
+    assert.ok(!(result.tasks||[]).some(row=>row.id==='fantasy-survival-unity-weather-presentation-v1'));
+    assert.ok(!(result.tasks||[]).some(row=>row.weatherPresentationLane===true));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('development-confirmed existing Unity non-pilot receives holistic backfill before generic presentation and never inherits pilot weather scope',()=>{
+test('owner-held Unity Android non-pilot cannot enter unauthorized presentation or weather work',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','other-game','Assets','Scripts');
@@ -2383,10 +2386,10 @@ test('development-confirmed existing Unity non-pilot receives holistic backfill 
       developmentQueue:{items:[]},
       queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
-    assert.equal(result.planned,true);
-    assert.ok(result.tasks.some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
-    assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
-    assert.equal(result.tasks.some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
+    assert.equal(result.planned,false);
+    assert.ok(!(result.tasks||[]).some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
+    assert.ok(!(result.tasks||[]).some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
+    assert.equal((result.tasks||[]).some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -3151,6 +3154,11 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const masterPath=path.join(root,master);
     fs.mkdirSync(path.dirname(masterPath),{recursive:true});
     fs.copyFileSync(path.join(process.cwd(),master),masterPath);
+    for(const relative of ['roblox-games/apply-first-demo/assets/wolf.glb','assets/roblox/wolf.glb']){
+      const destination=path.join(root,relative);
+      fs.mkdirSync(path.dirname(destination),{recursive:true});
+      fs.copyFileSync(masterPath,destination);
+    }
     const sameGame={
       id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
       path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
@@ -3260,6 +3268,11 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     const masterPath=path.join(root,master);
     fs.mkdirSync(path.dirname(masterPath),{recursive:true});
     fs.copyFileSync(path.join(process.cwd(),master),masterPath);
+    for(const relative of ['roblox-games/rescue-demo/assets/hero.glb','assets/roblox/hero-donor.glb']){
+      const destination=path.join(root,relative);
+      fs.mkdirSync(path.dirname(destination),{recursive:true});
+      fs.copyFileSync(masterPath,destination);
+    }
     const manifest={assets:[
       {id:'base-hero',family:'CHARACTER',category:'CHARACTER',status:'REPO_ASSET',
         path:'roblox-games/rescue-demo/assets/hero.glb',types:['character'],tags:['character','hero'],
