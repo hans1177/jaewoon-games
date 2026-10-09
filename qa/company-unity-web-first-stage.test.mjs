@@ -11,7 +11,6 @@ const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 const native3dGameSource='using UnityEngine; public class Game:MonoBehaviour { void Awake(){ Camera sceneCamera=Camera.main; var world=GameObject.CreatePrimitive(PrimitiveType.Cube); world.transform.position=new Vector3(0f,1f,2f); } }\n';
 
-
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-first-stage-'));
   const old=process.cwd();
@@ -46,8 +45,8 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.f0Native3dSourcePreflight.runtimeVerified,false);
     assert.equal(req.f0Native3dSourcePreflight.mesh,true);
     assert.equal(req.f0Native3dSourcePreflight.camera,true);
-
     assert.equal(req.native3dRuntimeMeshQaRequired,true);
+    assert.equal(req.existing2dOr2_5dSourceRequiresInPlace3dRebuild,true);
     // 3D 표시만 있는 빈 게임·주석은 F0 통과 근거가 아니다.
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),
       'using UnityEngine; public class Game:MonoBehaviour {} // GameObject.CreatePrimitive(PrimitiveType.Cube) Camera.main new Vector3(0,1,2)\\n');
@@ -69,6 +68,14 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('source preflight requires the central existing-game and all-spatial-assets 3D contract',()=>{
+  const source=fs.readFileSync(tool,'utf8');
+  assert.match(source,/twoPointFiveDimensionalFinalPassForbidden/);
+  assert.match(source,/MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES/);
+  assert.match(source,/mandatory3dFamilies\.every/);
+  assert.match(source,/sharedLibraryGameWorldFamilies3dOnly/);
 });
 
 test('Unity technical prototype is rejected as canonical first-stage source',()=>{
