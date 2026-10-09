@@ -149,25 +149,173 @@
       "name": "방어 전략 진화적 투입 시스템",
       "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성에 기반하여 방어 전략의 진화를 촉진하며, 이는 실제 세계 상태 변화와 다음 선택 결정에 영향을 미친다.",
       "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계를 선택함으로써 실제 세계 상태 변화를 유도합니다."
+    },
+    "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:3": {
+      "id": "delve-core",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "배치 위치 선택",
+        "전투 주제 변경"
+      ],
+      "stateOutputs": [
+        "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+        "전투 장면 경험 및 방어 효과 재설계"
+      ],
+      "name": "공명 연결과 배치 조합의 진화적 투입 시스템",
+      "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성을 바탕으로 방어 전략의 진화적 투입 시스템을 형성하며, 이는 실제 세계 상태 변화와 다음 선택 결정을 유도합니다.",
+      "playerChoice": "플레이어가 배치 위치와 전투 주제를 선택하여 방해 받는 공간에서의 방어 효과와 전투 상황의 유사성에 대한 이해를 구축하고, 이를 통해 방어 전략의 진화적 투입 시스템을 형성합니다."
+    },
+    "local_authoring_parts::88ea27fc0ab1724ff09f174f1f5b4333e61c24e9f12d721428c82ab676146b4f:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "레이아웃 기반 플래그십",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템 구축",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과 재설계 및 실제 세계 상태 변화 유도"
+        },
+        {
+          "id": "layout-flagship",
+          "grammarRole": "A",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "레이아웃 기반 플래그십",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템을 구축",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계 및 실제 세계 상태 변화 유도"
+        },
+        {
+          "id": "layout-advancement",
+          "grammarRole": "B",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "방어 전략 진화적 투입 시스템",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성에 기반하여 방어 전략의 진화를 촉진하며, 이는 실제 세계 상태 변화와 다음 선택 결정에 영향을 미친다.",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계를 선택함으로써 실제 세계 상태 변화를 유도합니다."
+        },
+        {
+          "id": "delve-core",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "공명 연결과 배치 조합의 진화적 투입 시스템",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성을 바탕으로 방어 전략의 진화적 투입 시스템을 형성하며, 이는 실제 세계 상태 변화와 다음 선택 결정을 유도합니다.",
+          "playerChoice": "플레이어가 배치 위치와 전투 주제를 선택하여 방해 받는 공간에서의 방어 효과와 전투 상황의 유사성에 대한 이해를 구축하고, 이를 통해 방어 전략의 진화적 투입 시스템을 형성합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::8d30363480967f516d78028a16340533ba32f9b96b4f0fc835d98fced017d18b:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 배치 위치 선택 → 상태변화: 방해받는 공간에 따른 방어 효과 증대 또는 감소 → 보상: 방어 전략 재설계 및 다음 선택 결정",
+        "입력: 전투 주제 변경 → 상태변화: 방어 행동 반복 및 결과 변동 → 보상: 새로운 전투 장면 경험 및 방어 효과 재설계",
+        "입력: 배치 위치 및 전투 주제의 관계 변화 → 상태변化: 방어 성능 재설계 → 보상: 실제 세계 상태 변화와 다음 선택 유도"
+      ],
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "레이아웃 기반 플래그십",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템 구축",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과 재설계 및 실제 세계 상태 변화 유도"
+        },
+        {
+          "id": "layout-flagship",
+          "grammarRole": "A",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "레이아웃 기반 플래그십",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴에 따라 방어 전략의 진화적 투입 시스템을 구축",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계 및 실제 세계 상태 변화 유도"
+        },
+        {
+          "id": "layout-advancement",
+          "grammarRole": "B",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "방어 전략 진화적 투입 시스템",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성에 기반하여 방어 전략의 진화를 촉진하며, 이는 실제 세계 상태 변화와 다음 선택 결정에 영향을 미친다.",
+          "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과의 재설계를 선택함으로써 실제 세계 상태 변화를 유도합니다."
+        },
+        {
+          "id": "delve-core",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "배치 위치 선택",
+            "전투 주제 변경"
+          ],
+          "stateOutputs": [
+            "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+            "전투 장면 경험 및 방어 효과 재설계"
+          ],
+          "name": "공명 연결과 배치 조합의 진화적 투입 시스템",
+          "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성을 바탕으로 방어 전략의 진화적 투입 시스템을 형성하며, 이는 실제 세계 상태 변화와 다음 선택 결정을 유도합니다.",
+          "playerChoice": "플레이어가 배치 위치와 전투 주제를 선택하여 방해 받는 공간에서의 방어 효과와 전투 상황의 유사성에 대한 이해를 구축하고, 이를 통해 방어 전략의 진화적 투입 시스템을 형성합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 573690,
-      "lastMs": 104069,
+      "totalMs": 683110,
+      "lastMs": 109420,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:35:05.834Z"
+      "updatedAt": "2026-10-09T22:36:55.256Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-09T22:35:05.834Z",
+  "updatedAt": "2026-10-09T22:36:55.259Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1866,32 +2014,13 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "identity-core",
-          "layout-flagship"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "identity-core",
-          "layout-flagship"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:1": 1,
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T22:35:05.834Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T22:36:55.259Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
