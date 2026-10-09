@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {spawnSync} from 'node:child_process';
 import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
 import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
@@ -456,4 +457,17 @@ test('amusement tycoon exact F1-F4 checkpoint writer is real and bounded',()=>{
  assert.doesNotMatch(source,/foundationCheckpoint\("CAMERA_READY"/);
  assert.doesNotMatch(source,/foundationCheckpoint\("INPUT_READY"/);
  assert.doesNotMatch(source,/foundationCheckpoint\("CORE_LOOP_READY"/);
+});
+
+
+/* ── 공식 고정 버전 Luau 컴파일: 기존 Vibe3 실행기 사용 ── */
+test('amusement-tycoon Luau source compiles with the pinned native compiler', {
+ skip: process.env.GITHUB_ACTIONS !== 'true' && !fs.existsSync('/tmp/luau-bin/luau-compile'),
+},()=>{
+ const compiler='/tmp/luau-bin/luau-compile';
+ assert.ok(fs.existsSync(compiler),'official pinned Luau compiler must be installed by existing engine-contract workflow');
+ const file='roblox-games/amusement-tycoon/server/Game.server.luau';
+ const result=spawnSync(compiler,[file],{encoding:'utf8',maxBuffer:4*1024*1024});
+ assert.equal(result.error,undefined,result.error?.message);
+ assert.equal(result.status,0,'Luau compile failed: '+(result.stderr||result.stdout||result.signal||'unknown'));
 });
