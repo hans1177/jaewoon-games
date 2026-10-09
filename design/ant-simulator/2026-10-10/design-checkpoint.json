@@ -568,25 +568,45 @@
       "name": "개미 시뮬레이터 주요 요소 규칙",
       "purpose": "플레이어의 선택에 따른 월드 상태 변화와 보상/위험 발생 후 다음 목표 결정을 수행하며, 주요 요소와 보조 요소 간 상호작용을 통해 게임 루프 재설계됨",
       "playerChoice": "실제 입력으로 월드 상태와 보상/위험 조정을 적용하여 장르 핵심 행동을 결정함"
+    },
+    "local_authoring_parts::b196e4d7a9d99b2fb8841c10b5a661d5a017e700ac68d7eabd4be5a11bd4f2e8:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "개미 종족 선택",
+        "월드 상태",
+        "자원",
+        "위험",
+        "진행 상태"
+      ],
+      "stateOutputs": [
+        "장르 핵심 행동 결정",
+        "월드 상태 변환",
+        "보상/위험 발생",
+        " 다음 목표 결정"
+      ],
+      "name": "오픈월드 멀티 시뮬레이터의 DELVE 규칙",
+      "purpose": "플레이어 선택에 따른 월드 상태와 보상/위험의 순차적 루프 재설계 및 게임 루프 재시작을 관리하는 주요 규칙",
+      "playerChoice": "월드 상태, 자원, 위험, 진행 상태를 바탕으로 장르 핵심 행동을 결정하여, 이로 인해 보상/위험 발생 후 다음 목표 결정이 이루어짐"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1161273,
-      "lastMs": 75500,
+      "totalMs": 1238901,
+      "lastMs": 77628,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:59:31.282Z"
+      "updatedAt": "2026-10-09T21:00:48.911Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-09T20:59:31.282Z",
+  "updatedAt": "2026-10-09T21:00:48.917Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2221,7 +2241,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:2": 1,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2322,10 +2342,10 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:59:31.282Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T21:00:48.913Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
