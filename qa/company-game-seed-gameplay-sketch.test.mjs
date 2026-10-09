@@ -66,9 +66,11 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/brokenGenreAssumption/);
   assert.match(source,/newPrimaryVerb/);
   assert.match(source,/irreducibilityTest/);
-  assert.match(source,/MAIN × A × B × c/);
-  const legacyMajorC=['MAIN×A×B×'+'C','A/B/'+'C',"connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
-  for(const token of legacyMajorC)assert.equal(source.includes(token),false);
+  assert.match(source,/MAIN × A × B × C/);
+  assert.match(source,/themeFusion:C_FUSION_SCHEMA/);
+  assert.match(source,/genreInterlock/);
+  const forbiddenCAsThirdMechanicalAxis=["connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
+  for(const token of forbiddenCAsThirdMechanicalAxis)assert.equal(source.includes(token),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
   const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
