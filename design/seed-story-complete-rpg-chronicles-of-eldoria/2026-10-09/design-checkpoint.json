@@ -1788,25 +1788,44 @@
         "INFORMATION_DISCOVERY_STATE"
       ],
       "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::7c86d8386a58a80ee4ee3d6c33f62ce924034dbb3133e594a962fd42e2d5723f:toSystem,trigger,stateChange": {
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE",
+      "stateChange": "LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::65aa39c3532a1569874e346fbe2d2aadb1332beb920f13e24a461372630bb637:systemInterconnections:4": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE",
+      "toSystem": "LOCATION_CHANGE_STATE",
+      "trigger": "EXPLORATION_STATE",
+      "stateChange": "LOCATION_CHANGE_STATE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 132,
-      "successes": 131,
+      "calls": 133,
+      "successes": 132,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 11071033,
-      "lastMs": 92510,
+      "totalMs": 11159760,
+      "lastMs": 88727,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T07:03:02.127Z"
+      "updatedAt": "2026-10-09T07:04:30.856Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T07:03:02.127Z",
+  "updatedAt": "2026-10-09T07:04:30.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4041,6 +4060,108 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[0].stateChange",
+          "value": "LOCATION_CHANGE_STATE"
+        },
+        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[1].stateChange",
+          "value": "LOCATION_CHANGE_STATE"
+        },
+        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[2].stateChange",
+          "value": "LOCATION_CHANGE_STATE"
+        },
+        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[3].stateChange",
+          "value": "LOCATION_CHANGE_STATE"
+        },
+        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections[4].stateChange",
+          "value": "LOCATION_CHANGE_STATE"
+        },
+        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
         "code": "DESIGN_STATE_EXCHANGE_BROKEN",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -4082,9 +4203,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4099,26 +4220,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
-        "kind": "HARD_GATE",
-        "axis": "CORE_LOOP_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections",
-          "detail": "SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다"
-        },
-        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0 → LOCATION_CHANGE_STATE→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: SIGNATURE_SYSTEM_0→LOCATION_CHANGE_STATE의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -4145,7 +4249,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 7
+    "designer_draft_slices::systems-progression": 8
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -4184,10 +4288,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T07:03:02.127Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T07:04:30.860Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
