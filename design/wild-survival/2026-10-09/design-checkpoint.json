@@ -500,25 +500,60 @@
       "toSystem": "systemInterconnections",
       "trigger": "coreFun→coreLoop",
       "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
+    },
+    "local_authoring_parts::dea1dea4a80e8fbcd5a9f4db1787b4d2facdb823e7b77fc0fb46e77aac134dbf:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar' (주요 상태 교환 원본 규칙 적용됨, 실제 상태 변화 기반 확보됨, 이전 항목과 동일한 상태 연결됨, 현재 소스 확인 후 재작성 진행 중임)"
+    },
+    "local_authoring_parts::dea1dea4a80e8fbcd5a9f4db1787b4d2facdb823e7b77fc0fb46e77aac134dbf:toSystem,trigger,stateChange": {
+      "toSystem": "systemInterconnections",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
+    },
+    "local_authoring_parts::d46a640820cb6ec2106d3ca6999c10be5f74d89ffe9d494badbc6038d587cc83:systemInterconnections:2": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar' (주요 상태 교환 원본 규칙 적용됨, 실제 상태 변화 기반 확보됨, 이전 항목과 동일한 상태 연결됨, 현재 소스 확인 후 재작성 진행 중임)",
+      "toSystem": "systemInterconnections",
+      "trigger": "coreFun→coreLoop",
+      "stateChange": "currentWorldState → newWorldState, playerGoal → nextAction"
+    },
+    "local_authoring_parts::870900d3757bda6f1b17b2546d44f3d421820269724d50f7af58270aba0bafd1:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar (주요 상태 교환 원본 규칙 적용됨, 실제 상태 변화 기반 확보됨, 이전 항목과 동일한 상태 연결됨, 현재 소스 확인 후 재작성 진행 중임)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 858603,
-      "lastMs": 14759,
+      "totalMs": 936013,
+      "lastMs": 33023,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:54:13.354Z"
+      "updatedAt": "2026-10-09T15:55:30.772Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:54:13.355Z",
+  "updatedAt": "2026-10-09T15:55:30.772Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2266,7 +2301,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:54:13.355Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:55:30.772Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
