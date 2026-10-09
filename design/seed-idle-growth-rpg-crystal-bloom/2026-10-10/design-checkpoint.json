@@ -460,25 +460,41 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::0f593f22c736d5d67b9237f6eb4564b1cf6f73d1c85942e98c402a60cf4a758f:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYERS",
+        "ACTION",
+        "RESULT"
+      ],
+      "stateOutputs": [
+        "GAME_WORLD",
+        "EVENT"
+      ],
+      "name": "진행·위험·보상 연결된 반복 가능한 핵심 루프",
+      "purpose": "게임 정체성 형성을 위한 필수 조건, 플레이어 선택에 따른 즉각적 결과 및 상태 변화를 통합하여 세계관 재정립",
+      "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택 순환 구조로 게임 세계관 형성됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1028826,
-      "lastMs": 56702,
+      "totalMs": 1099553,
+      "lastMs": 70727,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:44:19.673Z"
+      "updatedAt": "2026-10-09T20:45:30.410Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-09T20:44:19.682Z",
+  "updatedAt": "2026-10-09T20:45:30.410Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2321,10 +2337,10 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:44:19.676Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:45:30.410Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
