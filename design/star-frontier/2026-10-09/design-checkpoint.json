@@ -77,21 +77,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 554043,
-      "lastMs": 55217,
+      "totalMs": 600444,
+      "lastMs": 46401,
       "lastError": null,
-      "updatedAt": "2026-10-09T14:46:16.981Z"
+      "updatedAt": "2026-10-09T14:47:03.384Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T14:37:02.904Z",
-  "updatedAt": "2026-10-09T14:46:16.982Z",
+  "updatedAt": "2026-10-09T14:47:03.393Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1688,25 +1688,16 @@
           "STAR-FRONTIER-CORE",
           "STAR-FRONTIER-B"
         ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "c",
-        "previousRuleIds": [
-          "STAR-FRONTIER-MAIN",
-          "STAR-FRONTIER-CORE",
-          "STAR-FRONTIER-B"
-        ]
       }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::4f0a26028262cf3c4c80c2a1d7d06b79befd2a33c8e527d7b3f1ce4ab58254bb:signatureSystems:2": 1,
-    "local_authoring_parts::4f0a26028262cf3c4c80c2a1d7d06b79befd2a33c8e527d7b3f1ce4ab58254bb:signatureSystems:3": 1
+    "local_authoring_parts::4f0a26028262cf3c4c80c2a1d7d06b79befd2a33c8e527d7b3f1ce4ab58254bb:signatureSystems:3": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T14:46:16.981Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:c",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-09T14:47:03.384Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
