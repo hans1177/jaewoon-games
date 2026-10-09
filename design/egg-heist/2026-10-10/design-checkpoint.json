@@ -207,25 +207,38 @@
       "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
       "purpose": "To model the causal relationship between player decisions and game mechanics, emphasizing how choices impact both short-term survival and long-term strategy.",
       "playerChoice": "Player decides whether to scout or move the egg based on current threat level and available resources in the initial phase, with subsequent choices evolving based on environmental feedback and adaptive pathfinding."
+    },
+    "local_authoring_parts::9005248e89430d787af8798daed46d3284c43e9aadf137271259ceae87827ff5:signatureSystems:1": {
+      "id": "coreLoop_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "player_choice_of_escape_route"
+      ],
+      "stateOutputs": [
+        "survival_outcomes_and_strategic_options"
+      ],
+      "name": "Player's choice of escape route affects both immediate survival outcomes and long-term strategic options",
+      "purpose": "To model the causal relationship between player decision-making and game state changes, emphasizing adaptive strategy deployment in dynamic environments.",
+      "playerChoice": "Player selects an escape route based on current threat level and available resources"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 898096,
-      "lastMs": 98959,
+      "totalMs": 993888,
+      "lastMs": 95792,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:07:16.032Z"
+      "updatedAt": "2026-10-09T20:08:51.825Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:52:17.910Z",
-  "updatedAt": "2026-10-09T20:07:16.032Z",
+  "updatedAt": "2026-10-09T20:08:51.825Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1676,7 +1689,7 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:07:16.032Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:08:51.825Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
