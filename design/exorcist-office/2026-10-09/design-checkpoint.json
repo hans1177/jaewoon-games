@@ -1350,25 +1350,35 @@
       "toSystem": "SYSTEM_0_MAIN_FLOW_BASELINE",
       "trigger": "RUN_STATE -> RESULT_STATE",
       "stateChange": "Run state transitions to result state, allowing players to perform combination, cultivation, and exploration experiments with risk and opportunity costs."
+    },
+    "local_authoring_parts::2ac22357c0b7127115b4724eb35f281693a7048577811e8c437383540450e927:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "START_STATE",
+      "toId": "RUN_STATE",
+      "stateKeys": [
+        "NEXT_WORLD_STATE",
+        "NEW_CHOICE_STATE",
+        "PROGRESSION_STATE"
+      ],
+      "fromSystem": "CASUAL_GAME_FLOW_CORE_LOOP_01_BASELINE_V2_01A_01B_01C_01D_01E_01F_01G_01H_01I_01J_01K_01L_01M_01N_01O_01P_01Q_01R_01S_01T_01U_01V_01W_01X_01Y_01Z_01AA_01AB_01AC_01AD_01AE_01AF_01AG"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 82,
-      "successes": 79,
+      "calls": 83,
+      "successes": 80,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 5586093,
-      "lastMs": 35732,
+      "totalMs": 5629993,
+      "lastMs": 43900,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T01:29:57.892Z"
+      "updatedAt": "2026-10-09T02:40:01.297Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T22:05:56.751Z",
-  "updatedAt": "2026-10-09T02:39:17.376Z",
+  "updatedAt": "2026-10-09T02:40:01.297Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3437,10 +3447,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:29:57.895Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T02:40:01.297Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
