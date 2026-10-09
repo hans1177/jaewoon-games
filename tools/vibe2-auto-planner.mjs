@@ -1333,8 +1333,13 @@ JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 
 QA: Independent QA와 Regression을 약화하지 않는다. 설계상 멀티가 필요하면 실제 2명 이상 상태 동기화와 authoritative sync 증거 없이는 PASS 처리하지 않는다.
 MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브라우저 Pointer/Touch가 그 실제 컨트롤을 작동시킨 뒤에만 기록한다. CORE_FUN은 장르 핵심 루프가 실제 진행/보상까지 완료된 뒤에만 PASS로 기록한다.
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const nativeVisualNeeded=readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
-      ||readiness?.data?.criteria?.graphics?.native3dVerified===false;
+    // 기존 게임 2D·2.5D 표현의 실제 책임 소스도 동일한 Unity Web 수리 작업으로 연결한다.
+    // UI용 2D 자료는 보존하고 월드/액터 SpriteRenderer의 3D 전환만 요구한다.
+    const nativeVisualSource=readText(sourceFile(repoRoot,nativeVisualRel));
+    const nativeVisualNeeded=Boolean(nativeVisualSource)
+      &&(readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
+        ||readiness?.data?.criteria?.graphics?.native3dVerified===false
+        ||/\\bSpriteRenderer\\b|\\b2[._]?5D\\b|\\b2D\\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
     const files=[coreRel,runtimeRel,floorRuntimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
       .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
