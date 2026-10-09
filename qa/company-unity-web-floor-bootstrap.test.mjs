@@ -111,6 +111,24 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/enemy\.transform\.Rotate/);
+    // 메시·월드 깊이 증거는 실제 Unity 런타임 자료에서 산출하며 부트스트랩은 그래픽 통과를 주장하지 않는다.
+    assert.match(runtime,/VerifyNativeMeshIntegrity\(\);[\s\S]*VerifyNativeSpatialDepth\(\);/);
+    assert.match(runtime,/JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=/);
+    assert.match(runtime,/source=UNITY_MESH_FILTER inspected=/);
+    assert.match(runtime,/mesh\.GetTopology\(subMesh\) == MeshTopology\.Triangles/);
+    assert.match(runtime,/mesh\.GetIndexCount\(subMesh\) \/ 3L/);
+    assert.match(runtime,/renderer\.sharedMaterials/);
+    assert.match(runtime,/material\.shader\.isSupported/);
+    assert.match(runtime,/texture\.width >= 4 && texture\.height >= 4/);
+    assert.match(runtime,/validMeshes == inspected && triangles > 0/);
+    assert.match(runtime,/volumetricMeshes > 0 && materialPass && texturePass/);
+    assert.match(runtime,/JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=/);
+    assert.match(runtime,/foreach \(Renderer renderer in FindObjectsByType<Renderer>/);
+    assert.match(runtime,/zMin = Mathf\.Min\(zMin, bounds\.min\.z\)/);
+    assert.match(runtime,/zMax = Mathf\.Max\(zMax, bounds\.max\.z\)/);
+    assert.match(runtime,/spriteGameplayActors == 0/);
+    assert.doesNotMatch(runtime,/MESH_INTEGRITY[^;\n]*status=PASS/);
+
     for(const dir of ['Art','Prefabs','Materials','Animations']){
       assert.equal(fs.existsSync(path.join('unity-games/test-survival/Assets',dir,'unity-web-floor-domain.json')),true);
     }
