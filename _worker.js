@@ -388,6 +388,8 @@ async function injectUniversalTouchControls(response){
   const type=response.headers.get('content-type')||'';
   if(!type.includes('text/html'))return response;
   let html=await response.text();
+  // Unity WebGL C# 자체 터치 핸들러가 존재하므로, 레거시 HTML 조이스틱을 주입하지 않는다.
+  if(/createUnityInstance\s*\(/.test(html)&&/\.loader\.js/.test(html))return response;
   if(!html.includes('/web-games/_shared/touch-controls.js'))html=html.replace('</body>',UNIVERSAL_TOUCH_SCRIPT+'</body>');
   const headers=new Headers(response.headers);
   headers.set('Cache-Control','no-store, no-cache, must-revalidate');
