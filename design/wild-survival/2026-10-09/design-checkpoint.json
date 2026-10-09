@@ -890,25 +890,41 @@
         "world_state"
       ],
       "fromSystem": "wild-survival_signature_systems_0"
+    },
+    "local_authoring_parts::a320d83414fb3407f1ad3588a4085c24eeb5103a6ba514a10d52b8d5d9c69705:toSystem,trigger,stateChange": {
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태에 대한 실질적 입력 및 선택",
+      "stateChange": "월드 상태가 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 변환됨"
+    },
+    "local_authoring_parts::7f255d4ac9e7c52cdb3d601852aa0596e9a476598911cd195fc374c19670370d:systemInterconnections:0": {
+      "fromId": "wild-survival_systems_0",
+      "toId": "wild-survival_systems_1",
+      "stateKeys": [
+        "world_state"
+      ],
+      "fromSystem": "wild-survival_signature_systems_0",
+      "toSystem": "wild-survival_signature_systems_1",
+      "trigger": "월드 상태에 대한 실질적 입력 및 선택",
+      "stateChange": "월드 상태가 진입 -> 선택 -> 변화 -> 보상/위험 -> 다음 선택 순서로 변환됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2416486,
-      "lastMs": 58033,
+      "totalMs": 2435832,
+      "lastMs": 19346,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:25:34.066Z"
+      "updatedAt": "2026-10-09T01:25:53.413Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:05:30.914Z",
-  "updatedAt": "2026-10-09T01:25:34.066Z",
+  "updatedAt": "2026-10-09T01:25:53.415Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3111,7 +3127,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:25:34.066Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:25:53.415Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
