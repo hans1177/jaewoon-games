@@ -1157,25 +1157,36 @@
       "toSystem": "LOCATION_CHANGE_STATE",
       "trigger": "EXPLORATION_STATE 변화 시",
       "stateChange": "EXPLORATION_STATE → LOCATION_CHANGE_STATE"
+    },
+    "local_authoring_parts::62e95d8141a7fd0a98d6011b5d1063375928e05c88c339c2e9981714d5b2bcae:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "SIGNATURE_SYSTEM_0",
+      "toId": "LOCATION_CHANGE_STATE",
+      "stateKeys": [
+        "EXPLORATION_STATE",
+        "CHARACTER_INTERACTION_STATE",
+        "QUEST_ACCEPTANCE_STATE",
+        "INFORMATION_DISCOVERY_STATE"
+      ],
+      "fromSystem": "SIGNATURE_SYSTEM_0"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 68,
-      "successes": 67,
+      "calls": 69,
+      "successes": 68,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 5402870,
-      "lastMs": 77082,
+      "totalMs": 5439652,
+      "lastMs": 36782,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T01:08:49.728Z"
+      "updatedAt": "2026-10-09T01:09:26.522Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:50:46.559Z",
-  "updatedAt": "2026-10-09T01:08:49.738Z",
+  "updatedAt": "2026-10-09T01:09:26.522Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3553,10 +3564,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:08:49.732Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:09:26.522Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

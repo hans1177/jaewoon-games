@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 88,
-  "lastSuccessfulModelCallAt": "2026-10-09T01:08:49.732Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 89,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:09:26.522Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-09/design-seed.json",
     "contentDigest": "fc821979bed20a0dd296f81f2e571345ac7892c2489073fd8656f298485219eb",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 68,
-      "successes": 67,
+      "calls": 69,
+      "successes": 68,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 5402870,
-      "lastMs": 77082,
+      "totalMs": 5439652,
+      "lastMs": 36782,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T01:08:49.728Z"
+      "updatedAt": "2026-10-09T01:09:26.522Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T01:08:49.739Z"
+  "updatedAt": "2026-10-09T01:09:26.524Z"
 }
