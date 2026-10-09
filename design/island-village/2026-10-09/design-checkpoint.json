@@ -62,25 +62,39 @@
       "name": "ISLAND_RESOURCE_MANAGER",
       "purpose": "Manage and distribute island resources to support village development.",
       "playerChoice": "Select which resource to gather, where to allocate them, and what function to build or improve next."
+    },
+    "local_authoring_parts::dd3e9341221ddf743dd6fe43ccda8a36ee496999c7bed8803f5442a64fc383d9:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "GATHER_RESOURCES"
+      ],
+      "stateOutputs": [
+        "BUILD_VILLAGE_FUNCTION",
+        "UNLOCK_NEW_ELEMENT"
+      ],
+      "name": "ISLAND_RESOURCE_MANAGER_B",
+      "purpose": "Manage and distribute island resources to support village development.",
+      "playerChoice": "Select which resource to gather and how to use it for building or improving a village function."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 531850,
-      "lastMs": 96228,
+      "totalMs": 626968,
+      "lastMs": 95118,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:59:41.642Z"
+      "updatedAt": "2026-10-09T12:01:16.762Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:50:49.760Z",
-  "updatedAt": "2026-10-09T11:59:41.642Z",
+  "updatedAt": "2026-10-09T12:01:16.762Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2161,7 +2175,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:59:41.642Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:01:16.762Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
