@@ -129,7 +129,7 @@ test('active canonical games stage V5 authored grammar without recycling legacy 
     assert.equal(upgraded.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.formulaSuffix,'+ @');
     assert.equal(upgraded.novelGrammarBackfill.source,CANONICAL_NOVEL_GRAMMAR_V5_SOURCE);
     assert.equal(upgraded.designEvolutionSignals.at(-1).source,'CANONICAL_GAME_SEED');
-    assert.equal(untouched.novelGrammarBackfill,undefined);
+    assert.equal(untouched.novelGrammarBackfill.authoringPending,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
