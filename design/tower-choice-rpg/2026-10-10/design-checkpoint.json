@@ -194,25 +194,38 @@
         "선택 -> 상태 변화",
         "보상/위험 -> 다음 선택"
       ]
+    },
+    "local_authoring_parts::e8cda5d5adf361993951252efc443a56f4e06cefbc815f86107c7a9b355c3702:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "선택"
+      ],
+      "stateOutputs": [
+        "세계 상태 변동"
+      ],
+      "name": "생존 전략 - 플레이어 선택 및 결과의 연계",
+      "purpose": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성함",
+      "playerChoice": "플레이어 선택 -> 상태 변화 -> 보상/위험 -> 다음 선택로 인해 세계 상태가 변동하며, 중후반 두 시스템은 각각 다른 방식으로 관계를 형성함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 764230,
-      "lastMs": 90672,
+      "totalMs": 866541,
+      "lastMs": 102311,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:53:13.115Z"
+      "updatedAt": "2026-10-09T20:54:55.428Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:28.852Z",
-  "updatedAt": "2026-10-09T20:53:13.115Z",
+  "updatedAt": "2026-10-09T20:54:55.428Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1938,7 @@
   "localAuthoringSplits": {
     "5039b9c1f932b24a2f5ad4d78fc43180d39f3615fe033a75fd96a3f16358768f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:53:13.115Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:54:55.428Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
