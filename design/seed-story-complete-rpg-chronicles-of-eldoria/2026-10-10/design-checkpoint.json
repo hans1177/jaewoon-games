@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 세계 속에서 단순히 '움직임'을 하기보다, 진입 시점부터 쌓아가는 선택의 결과로 인해 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하게 된다.",
       "coreFun": "{\"identity\": \"엘도리아 연대기\", \"creativeGrammar\": {\"mainIdentity\": \"Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.\", \"a\": {\"system\": \"Story Progression System\", \"material\": \"Player-Driven Narrative Branching\", \"stateChange\": \"Player choice triggers new narrative branches\"}, \"b\": {\"system\": \"Resource Management System\", \"material\": \"Item Acquisition & Skill Growth\", \"stateChange\": \"Player gains items/skills which influence future choices\"}, \"abCausality\": \"Player choice → narrative branch → resource gain → next quest/encounter\"}, \"abEvolution\": {\"aChangesB\": \"New narrative branch emerges from player decision\", \"bChangesA\": \"Player gains new resources that alter game state\", \"lateGameChange\": \"Player's growth becomes critical to final boss progression\"}, \"materialFusion\": {\"contrast\": \"Player action creates new叙事\\"
+    },
+    "local_authoring_parts::dc0221e5896e4af67b31a53bb2680a8c092f51cbb9f46b23e903f5d933641909:coreLoop": {
+      "coreLoop": [
+        "Player choice triggers new narrative branches",
+        "Player gains items/skills that influence future choices",
+        "Player's growth becomes critical to final boss progression"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 480301,
-      "lastMs": 66380,
+      "totalMs": 529639,
+      "lastMs": 49338,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T21:13:47.093Z"
+      "updatedAt": "2026-10-09T21:14:36.437Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:05:46.769Z",
-  "updatedAt": "2026-10-09T21:13:47.097Z",
+  "updatedAt": "2026-10-09T21:14:36.437Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1951,7 +1958,7 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T21:13:47.097Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T21:14:36.437Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
