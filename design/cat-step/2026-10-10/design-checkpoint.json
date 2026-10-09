@@ -1086,25 +1086,100 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::0c18e7ff994e846afd46c8a03e7a4fd973549c4a0c259ba7483a51edf50d499f:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "coreFun",
+          "toId": "signatureSystems[0]",
+          "stateKeys": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "fromSystem": "coreFun",
+          "toSystem": "signatureSystems[0]",
+          "trigger": "Player completes the level, triggering transition to new board configuration via reward acquisition and risk assessment.",
+          "stateChange": "progression_unlocked, risk_assessed, board_configuration_set"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[1]",
+          "stateKeys": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[1]",
+          "trigger": "Player chooses to complete the level, which triggers the transition to a new board configuration through strategic match-making and combo-building strategies that adapt to evolution.",
+          "stateChange": "progression_unlocked, risk_assessed, board_configuration_set"
+        },
+        {
+          "fromId": "coreLoop",
+          "toId": "signatureSystems[2]",
+          "stateKeys": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "fromSystem": "coreLoop",
+          "toSystem": "signatureSystems[2]",
+          "trigger": "The player chooses to complete the level, which triggers the transition to a new board configuration through strategic match-making and combo-building mechanisms in PUZZLE systems with dynamic obstacle reconfiguration and goal clearance mechanics.",
+          "stateChange": "progression_unlocked, risk_assessed, board_configuration_set"
+        },
+        {
+          "fromId": "coreFun",
+          "toId": "signatureSystems[3]",
+          "stateKeys": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "fromSystem": "coreFun",
+          "toSystem": "signatureSystems[3]",
+          "trigger": "Players must balance between strategic match-making and risk management as they progress through levels.",
+          "stateChange": "progression_unlocked, risk_assessed, board_configuration_set"
+        },
+        {
+          "fromId": "coreFun",
+          "toId": "signatureSystems[4]",
+          "stateKeys": [
+            "goal_clearance",
+            "reward_acquisition",
+            "new_board_pattern"
+          ],
+          "fromSystem": "coreFun",
+          "toSystem": "signatureSystems[4]",
+          "trigger": "Players must balance between strategic match-making and risk management as they progress through levels.",
+          "stateChange": "progression_unlocked, risk_assessed, board_configuration_set"
+        }
+      ],
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Goal clearance → Reward acquisition → Board configuration change",
+        "resourceFlow": "Reward is the primary driver of progression, with goal clearance initiating new challenges.",
+        "balanceRules": "Progression is balanced by dynamic obstacle reconfiguration and risk assessment mechanisms."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 13,
+      "calls": 17,
+      "successes": 14,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2062525,
-      "lastMs": 300081,
+      "totalMs": 2335735,
+      "lastMs": 273210,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:58:57.433Z"
+      "updatedAt": "2026-10-09T18:03:30.645Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:24:34.778Z",
-  "updatedAt": "2026-10-09T17:58:57.433Z",
+  "updatedAt": "2026-10-09T18:03:30.645Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2701,7 +2776,7 @@
     "37b4da1226a761b0f9d6b13cb7e699817596b8d8c93ff80b585c2838a68946e5": true,
     "0c18e7ff994e846afd46c8a03e7a4fd973549c4a0c259ba7483a51edf50d499f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:53:57.343Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:03:30.645Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
