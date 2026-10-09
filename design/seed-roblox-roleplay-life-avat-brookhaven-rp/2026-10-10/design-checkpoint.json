@@ -80,25 +80,53 @@
         "worldChange": "The world state shifts to reflect the new progression path and modified build.",
         "nextEvent": "The game presents a new challenge that requires further adaptation and strategy."
       }
+    },
+    "local_authoring_parts::211cc4e754c0198b95ec59ec01ba0ed0004358a32818a4db3732155842dff069:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "Survival",
+          "kind": "GENRE",
+          "gameplayEffect": "Player faces escalating threats and must manage resources to survive."
+        },
+        {
+          "name": "Progression",
+          "kind": "GENRE",
+          "gameplayEffect": "Player's choices influence the next challenge and build customization."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "Real-time survival with progression and resource management."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "STRATEGIC_PLANNING",
+          "gameplayEffect": "Player uses strategic planning to adapt to challenges."
+        }
+      ],
+      "cGenreInterlock": "The game blends action-survival mechanics with strategic planning, creating a dynamic interplay between resource management and adaptive strategy.",
+      "cWorldAndGameplayEffect": "The world state shifts based on player decisions, reflecting both survival challenges and progression paths, ensuring each run is unique yet connected through causal loops."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 920215,
-      "lastMs": 50628,
+      "totalMs": 1028900,
+      "lastMs": 108685,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:07:45.568Z"
+      "updatedAt": "2026-10-09T18:09:34.256Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:52:25.327Z",
-  "updatedAt": "2026-10-09T18:07:45.569Z",
+  "updatedAt": "2026-10-09T18:09:34.256Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "613133c06947e2d9e22c0d1aca3f02587735fd3c56fed9da64a91eb34384fdc1": true,
     "9e5bdc62fa765232ae9f1fe83e34a453bcff354484ed8f6f5d6f1768bbcc691a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:07:45.569Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:09:34.256Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
