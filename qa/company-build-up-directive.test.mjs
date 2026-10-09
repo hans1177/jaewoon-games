@@ -1285,8 +1285,8 @@ test('volume index retains every approved item beyond existing compact context b
   assert.equal(volume.items.find(row=>row.ref==='CORE_LOOP[14]').title,'단계 14');
   assert.equal(volume.items.find(row=>row.ref==='IMPLEMENTATION_TRACE[19]').title,'게임 시스템 19');
   assert.ok(volume.items.every(row=>row.implementationVerified===false&&row.runtimeVerified===false));
-  assert.match(directivePrompt(directive),/CONTENT_MILESTONE\\[13\\]/);
-  assert.match(directivePrompt(directive),/IMPLEMENTATION_TRACE\\[19\\]/);
+  assert.ok(directivePrompt(directive).includes('CONTENT_MILESTONE[13]'));
+  assert.ok(directivePrompt(directive).includes('IMPLEMENTATION_TRACE[19]'));
 });
 
 test('preservation-only approved design keeps all volume entries but forbids new gameplay',()=>{
