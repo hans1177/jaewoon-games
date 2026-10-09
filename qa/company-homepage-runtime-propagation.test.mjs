@@ -273,7 +273,9 @@ test('homepage exposes Unity Web as independent development test surface without
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/function playableWebHref\(row\)/);
   assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
+  // 중앙정책상 카드 노출과 실제 실행 링크 검증은 일치해야 한다. 개발확정만으로 무검증 카드를 노출하지 않는다.
+  const developmentRowsBlock=(renderer.split('function developmentRows(catalog,status){')[1]||'').split('function canonicalWebHref(row){')[0]||'';
+  assert.match(developmentRowsBlock,/\.filter\(hasRunnableHomepageTarget\)/);
   assert.match(renderer,/웹 플레이/);
   assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
