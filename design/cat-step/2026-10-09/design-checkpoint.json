@@ -402,21 +402,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 461752,
-      "lastMs": 28421,
+      "totalMs": 694881,
+      "lastMs": 233129,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:30:22.677Z"
+      "updatedAt": "2026-10-09T08:34:15.815Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:22:40.843Z",
-  "updatedAt": "2026-10-09T08:30:22.685Z",
+  "updatedAt": "2026-10-09T08:34:15.819Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2450,15 +2450,163 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "85de7b05b10d1a5f0d19981ee9cb3abf9031f84fcece48d56eb8af16c768f678"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:30:22.679Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CAT-STEP-SIGNATURESYSTEM-1→CAT-STEP-SIGNATURESYSTEM-2의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CAT-STEP-SIGNATURESYSTEM-1→CAT-STEP-SIGNATURESYSTEM-2의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CAT-STEP-SIGNATURESYSTEM-2→CAT-STEP-SIGNATURESYSTEM-3의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CAT-STEP-SIGNATURESYSTEM-2→CAT-STEP-SIGNATURESYSTEM-3의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CAT-STEP-SIGNATURESYSTEM-3→CAT-STEP-SIGNATURESYSTEM-4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CAT-STEP-SIGNATURESYSTEM-3→CAT-STEP-SIGNATURESYSTEM-4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CAT-STEP-DELVE-1→CAT-STEP-SIGNATURESYSTEM-1의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CAT-STEP-DELVE-1→CAT-STEP-SIGNATURESYSTEM-1의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "CAT-STEP-SIGNATURESYSTEM-2→CAT-STEP-SIGNATURESYSTEM-4의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: CAT-STEP-SIGNATURESYSTEM-2→CAT-STEP-SIGNATURESYSTEM-4의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Core Loop: Start → Action → Result → Next State",
+        "resourceFlow": "Player actions generate new states, which in turn create new choices and outcomes.",
+        "balanceRules": "Each state transition must maintain the core gameplay loop and system interactions."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1. Level Initialization",
+          "newGameplay": "Player starts at a base level with predefined goals and obstacles.",
+          "systemImpact": "Establishes initial game state and player choice structure."
+        },
+        {
+          "milestone": "2. Core Gameplay Mechanics",
+          "newGameplay": "Players engage in strategic matches, combo creation, and obstacle navigation.",
+          "systemImpact": "Introduces complex interaction rules between player actions and state transitions."
+        },
+        {
+          "milestone": "3. Content Expansion Layers",
+          "newGameplay": "Players unlock new themes, narrative arcs, and combination-based challenges.",
+          "systemImpact": "Adds emergent gameplay mechanics that enhance player engagement and progression."
+        },
+        {
+          "milestone": "4. Multiplayer Integration",
+          "newGameplay": "Players collaborate or compete to achieve shared objectives while maintaining individual progressions.",
+          "systemImpact": "Enables cooperative play and competitive dynamics through interconnected state transitions."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Level completion failure due to incomplete combos or misjudged moves.",
+          "Progression stall caused by repeated failed attempts to reach the next state."
+        ],
+        "retryFlow": "Players retry failed choices, re-evaluate their strategies, and attempt again with improved techniques.",
+        "riskPressure": "Repeated failures may lead to frustration but also encourage players to refine their approaches and improve outcomes.",
+        "recoveryRules": "Failed states are revisited with updated knowledge, allowing for continued progression without losing previously achieved milestones."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-09T08:34:15.815Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
