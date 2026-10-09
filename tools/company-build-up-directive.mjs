@@ -1900,8 +1900,9 @@ export function buildGameSpecificBuildUpDirective({
     &&clean(previousDirective?.designContentImplementation?.activeUnit?.id)===previousUnitId
     &&previousEffectiveness.classification==='EFFECT_CONFIRMED'
     &&depthInfo.advanceAllowed===true;
-  const activeUnitIndex=!activeContentFocus||!orderedDesignUnits.length?-1:
+  const queuedUnitIndex=!orderedDesignUnits.length?-1:
     previousUnitIndex<0?0:unitAdvanceVerified?(previousUnitIndex+1)%orderedDesignUnits.length:previousUnitIndex;
+  const activeUnitIndex=activeContentFocus?queuedUnitIndex:-1;
   const runtimeContentRepairFirst=foundationRepairRequired||clean(nextActionDecision.action).toUpperCase()==='CAUSAL_REPAIR';
   const designContentImplementation=Object.freeze({
     version:1,authority:'EXISTING_GAME_SPECIFIC_BUILD_UP',designSource:'LATEST_VERIFIED_OR_MINIMUM_DESIGN',
@@ -1916,7 +1917,7 @@ export function buildGameSpecificBuildUpDirective({
     }),
     units:Object.freeze([...designVolumeUnits]),
     activeUnit:activeUnitIndex<0?null:orderedDesignUnits[activeUnitIndex],
-    deferredUnit:!activeContentFocus&&previousUnitIndex>=0?orderedDesignUnits[previousUnitIndex]:null,
+    deferredUnit:!activeContentFocus&&queuedUnitIndex>=0?orderedDesignUnits[queuedUnitIndex]:null,
     nextUnitSelection:runtimeContentRepairFirst?'CAUSAL_REPAIR_FIRST_RETAIN_CURRENT_UNIT'
       :!activeContentFocus?'CURRENT_FOCUS_IS_NOT_CORE_FUN_OR_PROGRESSION'
         :unitAdvanceVerified?'VERIFIED_SOURCE_AND_PLAYER_EFFECT_ADVANCE_TO_NEXT_AUTHORED_UNIT'
