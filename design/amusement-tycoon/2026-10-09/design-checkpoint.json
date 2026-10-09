@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::bdd445aa69762b655ebed305a8643333f27eff4181887a42af1bd45508b1389a:identity": {
+      "identity": "놀이공원 타이쿤을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.', "
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 191047,
+      "lastMs": 191047,
+      "lastError": null,
+      "updatedAt": "2026-10-09T09:20:24.833Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:17:13.781Z",
+  "updatedAt": "2026-10-09T09:20:24.833Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T09:20:24.833Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
