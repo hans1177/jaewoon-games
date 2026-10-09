@@ -179,7 +179,8 @@ async function bindAvailableUnityWebSurfaces(catalog){
            !hex64.test(String(manifest.buildTreeSha256||''))||
            !hex40.test(String(manifest.sourceCommit||'')))continue;
         const groups=manifest.requiredGroups||{};
-        const refs=['loader','data','framework','wasm'].map(key=>groups[key]?.[0]);
+        if(!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
+        const refs=['loader','data','framework','wasm'].flatMap(key=>groups[key]);
         if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
         const files=['unity-web-build.json','upper-platform-development-readiness.json',
           'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
