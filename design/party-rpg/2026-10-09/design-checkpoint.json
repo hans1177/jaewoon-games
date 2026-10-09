@@ -1365,25 +1365,28 @@
       "toSystem": "BOARD_STATE",
       "trigger": "게임 시작 후 목표 설정 및 초기 상태 전환",
       "stateChange": "게임 시작 후 목표를 명확히 설정하여 보상을 획득하거나 다음 레벨을 열고 새로운 패턴이나 장애물을 맞는 선택을 하여야 한다."
+    },
+    "local_authoring_parts::cf7daa3841b9459dde9513ab6d7615b96f0bb1215616e8f20816c31e7fa36042:fromId": {
+      "fromId": "START_GAME"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 142,
-      "successes": 142,
+      "calls": 143,
+      "successes": 143,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11370416,
-      "lastMs": 90582,
+      "totalMs": 11459430,
+      "lastMs": 89014,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:09:59.053Z"
+      "updatedAt": "2026-10-09T05:11:28.071Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:31:40.536Z",
-  "updatedAt": "2026-10-09T05:09:59.055Z",
+  "updatedAt": "2026-10-09T05:11:28.071Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3651,7 +3654,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:09:59.055Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:11:28.071Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
