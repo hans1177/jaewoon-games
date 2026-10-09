@@ -1463,25 +1463,28 @@
       "toSystem": "territory_objective",
       "trigger": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다.",
       "stateChange": "플레이어는 현재 경계 압박을 읽고 지역 특성과 전선 변화를 결합하여 새로운 전략을 세운다."
+    },
+    "local_authoring_parts::b77382b185f2c2d40f1026080f15e354c4038b7fc2c5e7d698adb7cf845466ed:fromId": {
+      "fromId": "READ_BORDER_PRESSURE_AND_CHOOSE_TERRITORY_OBJECTIVE"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 103,
-      "successes": 100,
+      "calls": 104,
+      "successes": 101,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 7482446,
-      "lastMs": 90144,
+      "totalMs": 7570669,
+      "lastMs": 88223,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T03:01:14.265Z"
+      "updatedAt": "2026-10-09T03:02:42.493Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T20:48:16.553Z",
-  "updatedAt": "2026-10-09T03:01:14.267Z",
+  "updatedAt": "2026-10-09T03:02:42.493Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3735,7 +3738,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T03:01:14.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T03:02:42.493Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
