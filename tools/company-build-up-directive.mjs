@@ -609,6 +609,56 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       ...((design.systemInterconnections||[]).filter(row=>authoredId&&
         (clean(row?.fromId)===authoredId||clean(row?.toId)===authoredId)).flatMap(row=>[row.fromId,row.toId]))
     ]);
+    // 개수 확보가 아니라 실제 플레이 연결·실패 복귀·기존 시스템 책임에 대한 구현 조건.
+    const requiredBehavior=family==='CORE_LOOP'?[
+      'CURRENT_STEP_IS_REACHABLE_FROM_PREVIOUS_SESSION_OR_LOOP_STATE',
+      'PLAYER_ACTION_TRANSITIONS_TO_NEXT_AUTHORED_LOOP_STEP',
+      'SUCCESS_FAILURE_AND_RETRY_FEEDBACK_OBSERVABLE'
+    ]:family==='SIGNATURE_SYSTEM'?[
+      'DESIGNED_RULE_ID_INPUT_OUTPUT_STATE_KEYS_BOUND_TO_EXISTING_GAME_SYSTEM',
+      'ALTERNATIVE_PLAYER_CHOICES_CHANGE_AUTHORED_STATE_OR_CONSEQUENCE',
+      'CORE_LOOP_AND_OTHER_SIGNATURE_SYSTEMS_SHARE_AUTHORITATIVE_STATE'
+    ]:family==='SYSTEM_CONNECTION'?[
+      'FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS',
+      'TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE',
+      'TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES'
+    ]:family==='CONTENT_MILESTONE'?[
+      'MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE',
+      'NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL',
+      'MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED'
+    ]:family==='VARIETY_REGIONS'?[
+      'NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE',
+      'TRAVERSAL_LANDMARK_RISK_RESOURCE_AND_ENCOUNTER_ROLES_DISTINCT',
+      'DISCOVERY_NEXT_OBJECTIVE_AND_RETURN_REASON_CONNECTED'
+    ]:family==='VARIETY_ENEMIESORCHALLENGES'?[
+      'ENEMY_BEHAVIOR_POSITIONING_TIMING_MOBILITY_AND_GROUP_ROLE_APPLIED',
+      'TELEGRAPH_AND_PLAYER_COUNTERPLAY_OBSERVABLE',
+      'REWARD_AND_ENCOUNTER_PROGRESS_CONNECTED_WITHOUT_BALANCE_CHANGE'
+    ]:family==='VARIETY_ABILITIES'?[
+      'EXACT_APPROVED_OWNER_TRIGGER_RANGE_RESOURCE_COST_COOLDOWN_PRESERVED',
+      'SERVER_OWNED_EFFECT_STATE_VALIDATION_AND_PRESENTATION_FEEDBACK',
+      'CANCEL_FAIL_RETRY_AND_MULTIPLAYER_STATE_CONSISTENCY'
+    ]:family==='VARIETY_OBJECTIVES'?[
+      'OBJECTIVE_ACTIVATION_AND_PROGRESS_CONDITIONS_REACHABLE',
+      'RESULT_REWARD_OR_NEXT_GOAL_CONNECTED_TO_EXISTING_FLOW',
+      'DUPLICATE_COMPLETION_AND_RECONNECT_PROTECTED'
+    ]:family==='VARIETY_ROLETRANSITIONS'?[
+      'AUTHORITATIVE_PRE_POST_ROLE_STATES_AND_RETENTION_RULES_PRESERVED',
+      'ROLE_CHANGE_PLAYER_CHOICE_AND_ABILITY_USAGE_PLAYABLE',
+      'SAVE_NETWORK_AND_RESPAWN_RECOVERY_VERIFIED'
+    ]:family.startsWith('NARRATIVE_')?[
+      'STORY_BEAT_OR_QUEST_STATE_TRIGGERED_BY_REAL_GAME_ACTION',
+      'WORLD_OR_OBJECTIVE_STATE_AND_NEXT_BEAT_CHANGE_OBSERVABLE',
+      'REPLAY_RECONNECT_AND_NARRATIVE_CAUSAL_ORDER_PRESERVED'
+    ]:family==='IMPLEMENTATION_TRACE'?[
+      'EXACT_DESIGN_ELEMENT_BOUND_TO_EXISTING_RESPONSIBLE_SOURCE',
+      'DESIGN_VALIDATION_EVIDENCE_REPLAYED_IN_NATIVE_GAME_RUNTIME',
+      'QA_RESULT_LINKED_TO_EXACT_SOURCE_REVISION'
+    ]:[
+      'EXISTING_SYSTEM_OR_SOURCE_OWNER_REVIEW_REQUIRED',
+      'DESIGNED_BEHAVIOR_APPLIED_WITH_OBSERVABLE_PLAYER_CHOICE',
+      'PLATFORM_RUNTIME_AND_PRESERVATION_REGRESSION_REQUIRED'
+    ];
     items.push(Object.freeze({
       ref:family+'['+index+']',family,index,title,authoredId:authoredId||null,
       designDetail:Object.freeze({...detail}),playerChoice:playerChoice||null,trigger:trigger||null,
@@ -618,6 +668,8 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       sourceEvidenceState:namedAnchors.length?'EXACT_NAME_SOURCE_CANDIDATE_UNVERIFIED':'EXACT_SOURCE_OWNER_REVIEW_REQUIRED',
       implementationVerified:false,runtimeVerified:false,
       designReviewNeeded:Object.freeze(review),
+      requiredBehavior:Object.freeze(requiredBehavior),
+      buildUpStatus:'AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED',
       observableAcceptance:clean(trace?.validationEvidence)
         ||'실제 '+title+' 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증',
       requiredStages:Object.freeze([
@@ -653,6 +705,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     sourceReviewRequiredCount:items.filter(row=>row.sourceCandidates.length===0).length,
     implementationVerifiedCount:0,runtimeVerifiedCount:0,
     authoredCountsAreNotImplementedOrPlayableCounts:true,noArbitraryContentQuota:true,
+    coverageState:'DESIGN_CONTENT_INDEXED_NATIVE_IMPLEMENTATION_AND_RUNTIME_PENDING',
     absenceOfNameMatchIsNotProofOfMissingImplementation:true,
     existingSaveBalanceEconomyNetworkAuthorityPreserved:true,
     action:'BIND_EACH_APPROVED_ITEM_TO_EXISTING_RESPONSIBLE_SOURCE_AND_PROVE_CONNECTED_PLAYER_FACING_RESULT',
