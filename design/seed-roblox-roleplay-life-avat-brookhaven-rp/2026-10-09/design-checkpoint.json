@@ -800,25 +800,48 @@
     },
     "local_authoring_parts::0453828efdc2689e4f345fb811d425ad2e853f47dc2b650c38431e011c5b9305:riskPressure": {
       "riskPressure": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::0453828efdc2689e4f345fb811d425ad2e853f47dc2b650c38431e011c5b9305:recoveryRules": {
+      "recoveryRules": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::f19980c68d8b44333f158d1e729e63538bb3fd550ad8750b20fe34aa06de58eb:failureRetryRisk": {
+      "failureStates": [
+        "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+        "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+      ],
+      "retryFlow": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "riskPressure": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+      "recoveryRules": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+    },
+    "local_authoring_parts::beda4dfba52dc36b2b013e12c08e80e6c1ede73e872dbfb10b779c4238edff04:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+          "실제 조건: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+        ],
+        "retryFlow": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+        "riskPressure": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다.",
+        "recoveryRules": "실제 조건: 게임 상태가 특정 레벨에서 시작될 때, 선택: 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택을 하며, 상태 변화: 게임 세계관이 동적으로 확장되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인합니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 60,
-      "successes": 60,
+      "calls": 61,
+      "successes": 61,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5078006,
-      "lastMs": 82585,
+      "totalMs": 5172288,
+      "lastMs": 94282,
       "lastError": null,
-      "updatedAt": "2026-10-09T00:27:49.373Z"
+      "updatedAt": "2026-10-09T01:29:01.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:02:58.858Z",
-  "updatedAt": "2026-10-09T00:27:49.373Z",
+  "updatedAt": "2026-10-09T01:29:01.061Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3020,407 +3043,15 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "code": "DESIGN_REPEATED_CONTENT",
         "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "axis": "CONTENT_EXPANSION_PLAN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "path": "systemInterconnections[0].trigger",
-          "value": "PLAYER_SELECTS_UPGRADES_PERKS_WEAPONS_SKILLS"
+          "name": "failureRetryRisk"
         },
-        "requiredAction": "systemInterconnections[0].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[0].stateChange",
-          "value": "UPGRADE_BUILD_AND_AFFECT_NEXT_STATE"
-        },
-        "requiredAction": "systemInterconnections[0].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].trigger",
-          "value": "PLAYER_COLLECTS_RUN_REWARDS_OR_GAIN_EXPERIENCE"
-        },
-        "requiredAction": "systemInterconnections[1].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[1].stateChange",
-          "value": "UPDATE_BUILDER_WITH_NEW_ITEMS"
-        },
-        "requiredAction": "systemInterconnections[1].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].trigger",
-          "value": "PLAYER_CHOOSING_UPGRADES_PERKS_WEAPONS_SKILLS"
-        },
-        "requiredAction": "systemInterconnections[2].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[2].stateChange",
-          "value": "EXPAND_CONTENT_AND_PROGRESSION_PATH"
-        },
-        "requiredAction": "systemInterconnections[2].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].trigger",
-          "value": "PLAYER_EXPANDING_CONTENT_AND_PROGRESSION"
-        },
-        "requiredAction": "systemInterconnections[3].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[3].stateChange",
-          "value": "INTRODUCE_MULTILAYERED_DECISION_MAKING"
-        },
-        "requiredAction": "systemInterconnections[3].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].trigger",
-          "value": "PLAYER_ENGAGE_IN_MULTILAYERED_DECISION_MAKING"
-        },
-        "requiredAction": "systemInterconnections[4].trigger의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "systemInterconnections[4].stateChange",
-          "value": "REDEFINE_GAMEPLAY_MECHANICS_AND_INTRODUCE_NEW_NARRATIVE_LAYERS"
-        },
-        "requiredAction": "systemInterconnections[4].stateChange의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "systemInterconnections"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].milestone",
-          "value": "FIGHT_THROUGH_ELEVATING_HORDE"
-        },
-        "requiredAction": "contentExpansionPlan[0].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].newGameplay",
-          "value": "REALTIME_STRATEGIC_UPGRADES"
-        },
-        "requiredAction": "contentExpansionPlan[0].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[0].systemImpact",
-          "value": "GAMEPLAY_LOOP_REDEFINES"
-        },
-        "requiredAction": "contentExpansionPlan[0].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].milestone",
-          "value": "COLLECT_RUN_REWARDS_OR_GAIN_EXPERIENCE"
-        },
-        "requiredAction": "contentExpansionPlan[1].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].newGameplay",
-          "value": "UPGRADE_BUILDER_WITH_ADAPTED_ITEMS"
-        },
-        "requiredAction": "contentExpansionPlan[1].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[1].systemImpact",
-          "value": "BUILDER_UPDATES_TO_MATCH_PLAYER_CHOICE"
-        },
-        "requiredAction": "contentExpansionPlan[1].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].milestone",
-          "value": "CHOOSE_UPGRADES_PERKS_WEAPONS_SKILLS"
-        },
-        "requiredAction": "contentExpansionPlan[2].milestone의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].newGameplay",
-          "value": "MULTILAYERED_DECISION_MAKING"
-        },
-        "requiredAction": "contentExpansionPlan[2].newGameplay의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "contentExpansionPlan[2].systemImpact",
-          "value": "GAMEPLAY_MECHANICS_REDEFINES"
-        },
-        "requiredAction": "contentExpansionPlan[2].systemImpact의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "contentExpansionPlan"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[0]",
-          "value": "INCREASED_DIFFICULTY_STATE"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.failureStates[1]",
-          "value": "NEW_GAME_STATES_GENERATED"
-        },
-        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.retryFlow",
-          "value": "PLAYER_RETRY_SELECTIONS"
-        },
-        "requiredAction": "failureRetryRisk.retryFlow의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.riskPressure",
-          "value": "DIFFICULTY_INCREMENTATION_AND_CONTENT_EXPANSION"
-        },
-        "requiredAction": "failureRetryRisk.riskPressure의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "failureRetryRisk"
-        ]
-      },
-      {
-        "code": "DESIGN_PLACEHOLDER_CONTENT",
-        "kind": "HARD_GATE",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "path": "failureRetryRisk.recoveryRules",
-          "value": "RETRY_SELECTIONS_AND_CONTINUE_PLAYING"
-        },
-        "requiredAction": "failureRetryRisk.recoveryRules의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3435,9 +3066,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-01→CORE-02의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[0].trigger→systemInterconnections[0].trigger의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-01→CORE-02의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[0].trigger→systemInterconnections[0].trigger의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3452,9 +3083,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-02→CORE-03의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-02→CORE-03의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[1].trigger→systemInterconnections[1].trigger의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3469,9 +3100,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-03→CORE-04의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[2].trigger→systemInterconnections[2].trigger의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-03→CORE-04의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[2].trigger→systemInterconnections[2].trigger의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3486,9 +3117,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-04→CORE-05의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[3].trigger→systemInterconnections[3].trigger의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-04→CORE-05의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[3].trigger→systemInterconnections[3].trigger의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3503,9 +3134,9 @@
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "CORE-05→CORE-01의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "systemInterconnections[4].trigger→systemInterconnections[4].trigger의 출력과 입력 상태가 연결되지 않는다"
         },
-        "requiredAction": "systemInterconnections: CORE-05→CORE-01의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: systemInterconnections[4].trigger→systemInterconnections[4].trigger의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -3534,7 +3165,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:0": 1,
     "local_authoring_parts::e23bf89c4121223632e5e4db52d5229e9128b5bbcb2353c00d0e01013cf6d200:signatureSystems:4": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3543,13 +3174,30 @@
         "progressionLoop": "CYCLICAL",
         "resourceFlow": "ADAPTIVE",
         "balanceRules": "BALANCED"
-      }
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인.",
+          "newGameplay": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인.",
+          "systemImpact": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다."
+        },
+        {
+          "milestone": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 선택: 사용자가 게임 진행 방향을 선택하여 동적으로 확장되는 세계관을 형성하며, 상태 변화: 게임 세계관이 유연하게 변형되고, 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인.",
+          "newGameplay": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다.",
+          "systemImpact": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다."
+        },
+        {
+          "milestone": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다.",
+          "newGameplay": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다.",
+          "systemImpact": "실제 조건: 게임 세계관이 동적으로 확장되고, 사용자가 다층적 결정을 통해 게임 진행 방향을 정하는 선택이 이루어졌으며, 현재 게임 상태가 예상되는 결과와 일치함. 행동: 게임 세계관이 유연하게 변형되어 새로운 플레이어 경험을 제공하며, 상태 변화: 게임 세계관의 구조가 지속적으로 재설계됨. 검증: 현재 게임 상태와 예상되는 결과 간의 일치 여부를 확인하여 프로젝트 성공 여부를 판단합니다."
+        }
+      ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T00:27:49.373Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-09T01:29:01.055Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
