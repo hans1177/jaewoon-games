@@ -40,6 +40,15 @@ test('village-dungeons consumes the selected VFX family through a live ParticleE
   assert.match(source,/emitter:Emit\(10\)/);
 });
 
+test('survival consumes its selected VFX atoms in server-confirmed native feedback',()=>{
+  const source=fs.readFileSync('roblox-games/survival/client/Game.client.luau','utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'VFX'),true);
+  assert.ok(source.includes('control == nil and hasStudioAssetAtom("VFX", "IMPACT_FLASH")'));
+  assert.ok(source.includes('particles.LightEmission = hasStudioAssetAtom("VFX", "SHAPE_BURST")'));
+  assert.ok(source.includes('local particles = Instance.new("ParticleEmitter")'));
+  assert.ok(source.includes('particles:Emit(18)'));
+});
+
 test('asset failure survives worker recording and exact-source persistence while stale results preserve siblings',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const nodeStep=name=>{
