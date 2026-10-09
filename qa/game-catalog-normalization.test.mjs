@@ -234,7 +234,11 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     assert.equal(catalogFixture.games[0].ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     fs.writeFileSync(path.join(dir,'index.html'),shell.replace('<script>','<canvas></canvas><script>'));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
-    assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'real world surface must not be dismissed by generic click-shell signature alone');
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'a decorative canvas must not turn a click-only shell into a game');
+    const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
+    fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
+    ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'game-specific world source may reenter without deleting native project');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
