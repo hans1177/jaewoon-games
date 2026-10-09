@@ -66,25 +66,40 @@
       "name": "AL_DOODADATE_GAME",
       "purpose": "게임 내 플레이어의 선택 결과로 다음 월드 상태를 바꾸는 코믹 잠입·탈출 게임 규칙",
       "playerChoice": "알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다. 성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어, 동일한 콘텐츠를 다르게 사용하게 된다. 세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명하며, 지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다. 탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화된다. 적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+    },
+    "local_authoring_parts::0cb195c837a31a18649e756a69d388aad246538ead660932ea34783e1f3a6e64:signatureSystems:2": {
+      "id": "MAIN_03",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT",
+        "SELECT"
+      ],
+      "stateOutputs": [
+        "OUTPUT",
+        "STATE"
+      ],
+      "name": "AL_DOODADATE_GAME",
+      "purpose": "게임 내 플레이어가 선택 결과로 다음 월드 상태를 바꾸는 CASUAL 게임의 시스템 역할",
+      "playerChoice": "플레이어는 알 도둑 대작전에서 'Scout a small area and identify the target egg and patrol risk.'을 중심으로, 타겟 알의 위치 및 경비 현황을 파악하고 위험에 노출될 수 있는 전략적 행동을 취해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 678873,
-      "lastMs": 119519,
+      "totalMs": 780555,
+      "lastMs": 101682,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:23:45.598Z"
+      "updatedAt": "2026-10-09T15:25:27.281Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:12:26.675Z",
-  "updatedAt": "2026-10-09T15:23:45.598Z",
+  "updatedAt": "2026-10-09T15:25:27.281Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1532,7 +1547,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T15:23:45.598Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:25:27.281Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
