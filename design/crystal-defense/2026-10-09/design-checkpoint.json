@@ -1385,25 +1385,35 @@
       "toSystem": "SYSTEM_B_BASELINE_024_CHARACTER_LENGTH_MINIMUM",
       "trigger": "ATTACK_PATTERNS",
       "stateChange": "PLACEMENT → RESONANCE: STATE TRANSITION FROM RESOURCE ALLOCATED TO STRATEGIC CHOSEN"
+    },
+    "local_authoring_parts::da934fd4363354374be5d3e5ee03eb7f2911304849dca40fc5835595240feb8b:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "PLACEMENT",
+      "toId": "RESONANCE",
+      "stateKeys": [
+        "PLACEMENT",
+        "RESONANCE",
+        "UPGRADES"
+      ],
+      "fromSystem": "SYSTEM_A_BASELINE_016_CHARACTERS_MINIMUM_THRESHOLD_RELATED_TO_PLACEMENT_AND_RESONANCE_RELATIONSHIP_WITH_RESOURCE_ALLOCATION_AND_STRATEGIC_CHOICE_AND_DEFENSE_ADAPTATION_AND_STRATEGI"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 97,
-      "successes": 97,
+      "calls": 98,
+      "successes": 98,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8748486,
-      "lastMs": 61331,
+      "totalMs": 8815610,
+      "lastMs": 67124,
       "lastError": null,
-      "updatedAt": "2026-10-09T05:16:38.696Z"
+      "updatedAt": "2026-10-09T05:17:45.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:46:52.091Z",
-  "updatedAt": "2026-10-09T05:16:38.697Z",
+  "updatedAt": "2026-10-09T05:17:45.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3739,7 +3749,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T05:16:38.697Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T05:17:45.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
