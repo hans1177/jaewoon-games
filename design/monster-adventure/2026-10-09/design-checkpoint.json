@@ -652,25 +652,32 @@
           "stateChange": "플레이어가 즉시 시작하여 단순한 입력과 명확한 점수/거리/짧은 세션 목표로 세계 상태를 변환하며, 이 과정에서 성장의 가능성과 새로운 행동 조합을 열어간다."
         }
       ]
+    },
+    "local_authoring_parts::2d8107dd0e9b28d6eba19a444ff648599a3952ec97d4b23a0206211d888225ec:failureStates": {
+      "failureStates": [
+        "{coreLoop} generates 1 unit of PROGREGATION_UNITS, which is used to unlock new content and progression opportunities.",
+        "Players receive increasing rewards for completing stages, encouraging them to continue playing and exploring new areas.",
+        "Players experience varying levels of challenge, keeping the game engaging and rewarding throughout their journey."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 51,
+      "calls": 52,
+      "successes": 52,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2059643,
-      "lastMs": 32089,
+      "totalMs": 2092384,
+      "lastMs": 32741,
       "lastError": null,
-      "updatedAt": "2026-10-09T01:41:40.436Z"
+      "updatedAt": "2026-10-09T01:42:13.181Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:19:07.722Z",
-  "updatedAt": "2026-10-09T01:41:40.439Z",
+  "updatedAt": "2026-10-09T01:42:13.181Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2911,7 +2918,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T01:41:40.439Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T01:42:13.181Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
