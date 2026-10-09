@@ -12,25 +12,40 @@
   "tasks": {
     "local_authoring_parts::2822aba6093b119e66352349c214bc0115a3f288ce99dcaa0f715aa144a3a0cb:identity": {
       "identity": "Harbor Days: A Survival Roguelite with Dynamic Progression and Deep Player Agency in a Real-Time Arena of Conflict and Growth"
+    },
+    "local_authoring_parts::2822aba6093b119e66352349c214bc0115a3f288ce99dcaa0f715aa144a3a0cb:playerFantasy": {
+      "playerFantasy": "Harbor Days is a real-time survival roguelite where players take on the role of a lone survivor navigating an ever-evolving battlefield filled with shifting alliances, escalating threats, and dynamic choices that shape both your progression and the world around you."
+    },
+    "local_authoring_parts::fab74c06de49ef814c6604045ec8ffaeff38662cdb6e5a4bcd59fe4d4779d410:identity,playerFantasy": {
+      "identity": "Harbor Days: A Survival Roguelite with Dynamic Progression and Deep Player Agency in a Real-Time Arena of Conflict and Growth",
+      "playerFantasy": "Harbor Days is a real-time survival roguelite where players take on the role of a lone survivor navigating an ever-evolving battlefield filled with shifting alliances, escalating threats, and dynamic choices that shape both your progression and the world around you."
+    },
+    "local_authoring_parts::fab74c06de49ef814c6604045ec8ffaeff38662cdb6e5a4bcd59fe4d4779d410:coreFun": {
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
+    },
+    "local_authoring_parts::6abfeea4e274889d3e4f636d7a00d7ec38230daf74362204f561b4d348f45466:identity,playerFantasy,coreFun": {
+      "identity": "Harbor Days: A Survival Roguelite with Dynamic Progression and Deep Player Agency in a Real-Time Arena of Conflict and Growth",
+      "playerFantasy": "Harbor Days is a real-time survival roguelite where players take on the role of a lone survivor navigating an ever-evolving battlefield filled with shifting alliances, escalating threats, and dynamic choices that shape both your progression and the world around you.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.과 Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 179308,
-      "lastMs": 179308,
+      "totalMs": 214898,
+      "lastMs": 19499,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:57:18.050Z"
+      "updatedAt": "2026-10-09T08:57:53.644Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:54:18.722Z",
-  "updatedAt": "2026-10-09T08:57:18.051Z",
+  "updatedAt": "2026-10-09T08:57:53.646Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2229,7 +2244,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:57:18.050Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:57:53.646Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
