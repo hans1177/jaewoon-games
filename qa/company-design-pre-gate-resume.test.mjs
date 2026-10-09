@@ -18,6 +18,8 @@ import {validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {normalizeWebCanonicalAndExpansionPolicy} from '../tools/company-design-prepromotion-repair.mjs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+// Independent VM tests must load the same state-handoff helpers as the production authoring module.
+const authoredHandoffSource=design.slice(design.indexOf('function authoredStateHandoffContract('),design.indexOf('const DESIGN_BASE='));
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
 test('V5 designer instructions require creative C without inventing a legacy c mechanical axis',()=>{
@@ -222,7 +224,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   const fields=Object.keys(content),slices=[{id:'identity-core',fields,predict:1200},{id:'next-detail',fields:['progressionDirection'],predict:900}];
   const schemaFor=keys=>({type:'object',required:keys,properties:Object.fromEntries(keys.map(k=>[k,{type:Array.isArray(content[k])?'array':'string'}])),additionalProperties:false});
   const checkpoint={tasks:{},effectiveDesignerModel:'ollama:test-model'},writes=[],calls=[];
-  const source=design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('function mergeDesignerDesign('));
+  const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('function mergeDesignerDesign('));
   let failDetail=true;
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
     ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,designAssetFamilies:[],playableRequirements:designPlayabilityRequirements(fixture.seed),currentRuleSourceContext:{},currentRuleSource:'',
@@ -371,7 +373,7 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
   const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:item}},additionalProperties:false};
   const checkpoint={tasks:{}},calls=[],logs=[];
   const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    seedGameplaySketchVersion:4,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
     localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
     designCheckpoint:checkpoint,modelCallStats:[],console:{log:line=>logs.push(line)},
     clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,
@@ -695,8 +697,8 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
 test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
   const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
   const library={version:1,assets:[
-    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',internalAuditScore:900},
-    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',referenceVisualAudit:{referenceUseOnly:true}},
+    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',path:'assets/characters/web-character.glb',internalAuditScore:900},
+    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',path:'assets/environments/reference-environment.glb',referenceVisualAudit:{referenceUseOnly:true}},
     {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
   ]};
   const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
@@ -795,7 +797,7 @@ test('nested alternatives are checkpointed as distinct complete items before ove
 });
 
 test('slice input keeps the owner original in a stable prefix and omits compatibility-only seed duplication',async()=>{
-  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const calls=[];
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
     ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,playableRequirements:designPlayabilityRequirements({}),currentRuleSourceContext:{},currentRuleSource:"",designAssetFamilies:[],
@@ -867,7 +869,7 @@ test('role-grounded asset selection beats an unrelated higher score without gran
 });
 
 test('bad cached slices refresh nested identities across retries and valid results are reused',async()=>{
-  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const checkpoint={tasks:{'designer_draft_slices::mode':{multiplayerMode:'SINGLE'}}};
   let calls=0;
   const localParts=new Map();
@@ -919,7 +921,7 @@ test('repeated placeholder repair isolates nested fields and resumes without rep
 });
 
 test('placeholder feedback keeps audit evidence while retries receive paths and still fail invalid content',async()=>{
-  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const key='designer_draft_slices::progression';
   const feedback=validateDesignAuthoringContent({design:{progressionDirection:'SYSTEM_INTERCONNECTIONS_EXPANSION'},fields:['progressionDirection']});
   assert.ok(feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
@@ -952,9 +954,10 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
 });
 
-test('three-platform policy-only checkpoint migration matches original SHA and excludes other inputs',()=>{
+test('historical three-platform checkpoint migration stays SHA-bound while only Roblox and Unity Web are active',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
   const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
   const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
@@ -1117,7 +1120,7 @@ test('bound rule and ability identifiers are valid while identifier-only prose i
 
 
 test('repair keeps valid sibling fields and asks the designer only for the contradictory mode',async()=>{
-  const source=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
   const checkpoint={tasks:{}},calls=[];
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
     ownerPreservationDesign:false,allGamesMultiplayerRequired:true,MULTIPLAYER_MODES:['COMPETITIVE'],designAssetLibrary:null,designAssetFamilies:[],
@@ -1159,7 +1162,7 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const checkpoint={tasks:{}},calls=[];
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    seedGameplaySketchVersion:4,createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
     designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
     parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
     runCheckpointTask:async(phase,id,work)=>work(),
