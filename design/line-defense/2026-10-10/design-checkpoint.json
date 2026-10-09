@@ -194,25 +194,38 @@
         "State change: Resources gained from defeated enemies → Upgrades, new placements, tactical changes",
         "Reward: Defense adapted to enemy types/wave composition → Protection of objective, unlocking harder defense choices"
       ]
+    },
+    "local_authoring_parts::197982592540b3f580f2e15b33bf4bce4994d98ffb70df41c502201f74723b6d:signatureSystems:0": {
+      "id": "line-defense-signature-systems-0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Resources gained from defeated enemies"
+      ],
+      "stateOutputs": [
+        "Upgrades, new placements, tactical changes"
+      ],
+      "name": "Resource Management & Strategic Placement",
+      "purpose": "Player's initial action: Read next enemy wave",
+      "playerChoice": "Adapt defense, gain resources, upgrade placements"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 816657,
-      "lastMs": 60355,
+      "totalMs": 880141,
+      "lastMs": 63484,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T18:26:21.148Z"
+      "updatedAt": "2026-10-09T18:27:24.633Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T18:12:44.451Z",
-  "updatedAt": "2026-10-09T18:26:21.148Z",
+  "updatedAt": "2026-10-09T18:27:24.633Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1934,7 @@
   "localAuthoringSplits": {
     "bee2550e641d5f4297320ff3aedaf7f9cfc81aa9be6355f3c8421bea5f5cc2e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T18:26:21.148Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T18:27:24.633Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
