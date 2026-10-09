@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::bdd445aa69762b655ebed305a8643333f27eff4181887a42af1bd45508b1389a:identity": {
+      "identity": "놀이공원 타이쿤의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백을 중심으로 설계됨. 게임 규칙은 시작 시 단순한 한 손 가림 또는 스wipe 입력과 명확한 점수, 거리, 혹은 짧은 세션 목표로 이루어져 있으며, 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임 형태로 구축됨. 세계 상태와 다음 선택이 동시에 영향을 주는 시그니처 상호작용을 통해 게임의 진화적 관계를 형성함."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 201064,
+      "lastMs": 201064,
+      "lastError": null,
+      "updatedAt": "2026-10-09T12:31:59.126Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:28:38.040Z",
-  "updatedAt": "2026-10-09T12:28:38.056Z",
+  "updatedAt": "2026-10-09T12:31:59.126Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,5 +1949,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-09T12:31:59.126Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
