@@ -448,25 +448,34 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::890e7a3d24ea23001350d618d64d440d44417abbce160725024ac4e766776b41:fromId,toId,stateKeys,fromSystem": {
+      "fromId": "coreFun",
+      "toId": "coreLoop",
+      "stateKeys": [
+        "currentWorldState",
+        "playerGoal"
+      ],
+      "fromSystem": "GAMEPLAY_SKETCH v4 emergent grammar', "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 673584,
-      "lastMs": 242998,
+      "totalMs": 810449,
+      "lastMs": 136865,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:51:08.324Z"
+      "updatedAt": "2026-10-09T15:53:25.195Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T15:39:54.690Z",
-  "updatedAt": "2026-10-09T15:51:08.328Z",
+  "updatedAt": "2026-10-09T15:53:25.195Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2214,10 +2223,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T15:51:08.324Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-09T15:53:25.195Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
