@@ -714,25 +714,110 @@
     "local_authoring_parts::9d469d22e50cee6215e9bf126db130e64022355395a0c1ec9934a8e4b1e8fb0e:progressionLoop,resourceFlow": {
       "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
       "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\""
+    },
+    "local_authoring_parts::9d469d22e50cee6215e9bf126db130e64022355395a0c1ec9934a8e4b1e8fb0e:balanceRules": {
+      "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
+    },
+    "local_authoring_parts::553a7831e6a592970ed1e606aaf69aae37ed28a9f3fdf6532d97926a6e418ea8:progressionEconomyBalance": {
+      "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
+      "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
+      "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
+    },
+    "local_authoring_parts::5cd18f4ccc72c8a2cd585f3387b28e51e63ad923d8352881328f61d697e39e94:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
+        "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
+        "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
+      }
+    },
+    "local_authoring_parts::d6650237314ef36a63b5ed117b6f0291ae8f1cb1650ab4f29b39940ed1ee8313:systemInterconnections,progressionDirection,progressionEconomyBalance": {
+      "systemInterconnections": [
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        },
+        {
+          "fromId": "INSECT_WAVE_PATTERN",
+          "toId": "DEFENDER_LAYOUT",
+          "stateKeys": [
+            "INSECT_WAVE_PATTERN",
+            "DEFENDER_LAYOUT"
+          ],
+          "fromSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "toSystem": "WAVES_OF_CONFLICT_AND_ADAPTATION",
+          "trigger": "INSECT_WAVE_PATTERN",
+          "stateChange": "STATE_CHANGE_EFFECT"
+        }
+      ],
+      "progressionDirection": "DISCOVERABLE_CLUE -> EXPERIMENT_OR_MASTERY_CHOICE -> COST_AND_COUNTERPLAY -> NEW_ACTION -> NEXT_OPEN_QUESTION",
+      "progressionEconomyBalance": {
+        "progressionLoop": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking.",
+        "resourceFlow": "{\"fromSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"toSystem\":\"WAVES_OF_CONFLICT_AND_ADAPTATION\",\"trigger\":\"INSECT_WAVE_PATTERN\",\"stateChange\":\"STATE_CHANGE_EFFECT\"}\n{\"fromId\":\"INSECT_WAVE_PATTERN\",\"toId\":\"DEFENDER_LAYOUT\",\"stateKeys\":[\"INSECT_WAVE_PATTERN\",\"DEFENDER_LAYOUT\"]}\"",
+        "balanceRules": "[DISCOVERABLE_CLUE] Discover the incoming insect wave pattern and its threat hierarchy.\n[EXPERIMENT_OR_MASTERY_CHOICE] Experiment with different defender layouts and resource allocations based on observed patterns of conflict and adaptation.\n[COST_AND_COUNTERPLAY] Evaluate the cost-benefit ratio of each defensive strategy, prioritizing high-value counterplay over short-term gains.\n[NEW_ACTION] Implement a new defensive layout that maximizes survival and strategic advantage in real-time.\n[NEXT_OPEN_QUESTION] Pose an open question to guide future defense decisions, encouraging player exploration and adaptive thinking."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 22,
+      "calls": 26,
+      "successes": 23,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 2366638,
-      "lastMs": 82397,
+      "totalMs": 2431623,
+      "lastMs": 64985,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T12:00:27.559Z"
+      "updatedAt": "2026-10-09T12:01:32.545Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:21:00.826Z",
-  "updatedAt": "2026-10-09T12:00:27.559Z",
+  "updatedAt": "2026-10-09T12:01:32.550Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2933,7 +3018,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:00:27.559Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:01:32.550Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
