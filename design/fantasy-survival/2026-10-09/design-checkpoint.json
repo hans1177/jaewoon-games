@@ -34,25 +34,44 @@
         "기존 마력숲 세계관을 그대로 보존하면서 시뮬레이티브 실시간 생존 압박을 강화하여 새로운 플레이 방식을 창출합니다.",
         "플레이어는 단순히 흔한 캐릭터로만 존재할 뿐, 실제 상태 변화와 인과 관계를 통해 세계의 진화와 발전을 직접 참여하게 됩니다."
       ]
+    },
+    "local_authoring_parts::423e7ae256c7ddb28b7eca7b782c519d0c3ec52d2b4c61fb967f900963028f96:signatureSystems:0": {
+      "id": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "GAME_CATEGORY: ACTION_SURVIVAL_ROGUELITE",
+        "REFERENCE_GAMES: []",
+        "CORE_FUN_TO_LEARN: [\"기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.\",",
+        ",\",채집\\u0026\\u0026제작\\u0026\\u0026장비\\u0026\\u0026전투\\u0026\\u0026퀘스트\\u0026\\u0026연구소 스토"
+      ],
+      "stateOutputs": [
+        "GAME_CATEGORY: ACTION_SURVIVAL_ROGUELITE",
+        "REFERENCE_GAMES: []",
+        "CORE_FUN_TO_LEARN: [\"기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.\",",
+        ",\",채집\\u0026\\u0026제작\\u0026\\u0026장비\\u0026\\u0026전투\\u0026\\u0026퀘스트\\u0026\\u0026연구소 스토"
+      ],
+      "name": "ACTION_SURVIVAL_ROGUELITE",
+      "purpose": "생존 및 진화를 위한 시뮬레이티브 실시간 압박 강화",
+      "playerChoice": "플레이어는 실제 상태 변화와 인과 관계를 통해 세계의 진화와 발전을 직접 참여하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 362985,
-      "lastMs": 52969,
+      "totalMs": 491416,
+      "lastMs": 128431,
       "lastError": null,
-      "updatedAt": "2026-10-09T08:23:57.338Z"
+      "updatedAt": "2026-10-09T08:26:05.771Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T08:17:54.325Z",
-  "updatedAt": "2026-10-09T08:23:57.339Z",
+  "updatedAt": "2026-10-09T08:26:05.771Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2251,7 +2270,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T08:23:57.339Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T08:26:05.771Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
