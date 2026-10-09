@@ -1,5 +1,5 @@
 {
-  "version": 558,
+  "version": 559,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6273,7 +6273,8 @@
       "productionClassPromotionRequired": false,
       "shelf": "homeWebGameCenter",
       "label": "웹게임",
-      "directPlayRequired": true
+      "directPlayRequired": true,
+      "frontDoorVisible": false
     },
     "robloxDeploymentHistory": {
       "includeWhen": [
@@ -6717,7 +6718,7 @@
           "ROBLOX",
           "UNITY"
         ],
-        "visibility": "ROBLOX_UNITY_PLUS_VERIFIED_PLAYABLE_WEB_COMPANION",
+        "visibility": "VERIFIED_UNITY_WEB3D_GAMES_ONLY",
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
         "selectedPlatformDoesNotHideOtherTracks": true,
@@ -6743,12 +6744,12 @@
         "unityWebDevelopmentActionLabel": "Unity Web · 개발중",
         "unityWebMayBeDirectLaunchFallback": true,
         "staleSharedRobloxTargetMayNotActivate": true,
-        "playableWebCompanionActionEnabled": true,
+        "playableWebCompanionActionEnabled": false,
         "playableWebCompanionActionLabel": "웹 플레이",
-        "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
+        "playableWebCompanionSource": "LEGACY_ARCHIVE_MIGRATION_REFERENCE_ONLY",
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
-        "playableWebCompanionMayBeDirectLaunchFallback": true,
+        "playableWebCompanionMayBeDirectLaunchFallback": false,
         "playableWebCompanionDoesNotClaimRelease": true,
         "platformAvailableShelfRequiresVerifiedLobbyOrOwnerConfirmation": true,
         "releasedExperienceLabels": [
@@ -6808,11 +6809,11 @@
       "triggerRoot": "web-games/**",
       "changedGameIdsOnly": false,
       "ingestViaExistingStatusSync": true,
-      "autoRegisterNewWebGameAs": "DESIGN_ONLY_WEB_PUBLISHED",
+      "autoRegisterNewWebGameAs": "LEGACY_ARCHIVE_FOR_UNITY_MIGRATION_ONLY",
       "preserveExistingIdentity": true,
       "publishAfterRuntimeSyncAndHomepageQa": true,
       "reconcileExistingCatalogGamesEveryStatusSync": true,
-      "existingCanonicalIndexEnablesWebPlay": true,
+      "existingCanonicalIndexEnablesWebPlay": false,
       "missingCanonicalIndexHidesTitleOnlyCard": true,
       "discoverCanonicalEntriesEverySync": true,
       "webExposureQualityRef": "catalogNormalization.ownerWebAutoIngest.webExposureQuality"
@@ -6850,7 +6851,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "showWebPlay": true,
+    "showWebPlay": false,
     "showUnityWeb": true,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
@@ -6953,16 +6954,16 @@
         "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
         "reworkOrRevalidationScoresNotShownAsCurrent": false,
         "scoreRequiresSchema15": false,
-        "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
-        "unityWebQaPassRequiredForHomepageLink": false,
-        "unityWebEvidenceFilesRequiredForHomepageLink": false,
+        "unityWebHomepageExposureGate": "COMPLETE_UNITY_WEBGL_BUNDLE_WITH_INDEPENDENT_BROWSER_QA_AND_3D_READINESS",
+        "unityWebQaPassRequiredForHomepageLink": true,
+        "unityWebEvidenceFilesRequiredForHomepageLink": true,
         "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
         "unityWebMayBeCardDirectLaunchFallback": true,
         "staleSharedRobloxTargetHomepageLinkForbidden": true,
         "unityWebLegacyBuildCompatibility": true,
-        "playableWebCompanionButtonEnabled": true,
+        "playableWebCompanionButtonEnabled": false,
         "playableWebCompanionButtonLabel": "웹 플레이",
-        "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
+        "playableWebCompanionSource": "LEGACY_ARCHIVE_MIGRATION_REFERENCE_ONLY",
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
@@ -7057,12 +7058,12 @@
         "bootSmoke": "PASS",
         "initialRealGameplayQa": "PASS"
       },
-      "homepageLinkGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
+      "homepageLinkGate": "COMPLETE_UNITY_WEBGL_BUNDLE_WITH_INDEPENDENT_BROWSER_QA_AND_3D_READINESS",
       "homepageLinkRequiresExistingIndex": true,
-      "homepageLinkQaPassRequired": false,
-      "homepageLinkEvidenceFilesRequired": false,
+      "homepageLinkQaPassRequired": true,
+      "homepageLinkEvidenceFilesRequired": true,
       "validationEvidenceStillRequiredForQaVerdict": true,
-      "homepageLinkRequiresDeployManifest": false,
+      "homepageLinkRequiresDeployManifest": true,
       "homepageLinkRequiredBundleComponents": [
         "loader",
         "data",
@@ -7072,8 +7073,8 @@
       "developmentConfirmedHomepageExposureRequiredWhenDeployable": true,
       "cardDirectLaunchFallbackAllowed": true,
       "homepageLinkRequiresDeployableBundle": true,
-      "homepageLinkAllowsUnityIndexBundleProbe": true,
-      "homepageLinkLegacyUnityBuildCompatibility": true,
+      "homepageLinkAllowsUnityIndexBundleProbe": false,
+      "homepageLinkLegacyUnityBuildCompatibility": false,
       "homepageLinkLegacyProbeRequiredBundleComponents": [
         "loader",
         "data",
@@ -28295,7 +28296,10 @@
       "uniquePerGame": true,
       "generatedArtworkIsNotRuntimeEvidence": true,
       "targetCardBytes": 40960,
-      "noGlossOrCinematicOverprocessing": true
+      "noGlossOrCinematicOverprocessing": true,
+      "staleDesignArtworkReuseForbidden": true,
+      "requireNewRenderedGameSpecificRobloxStyleArtwork": true,
+      "mustCheckSharpnessAfterCompression": true
     },
     "videos": {
       "scope": "RELEASED_OR_VERIFIED_HISTORICAL_RELEASE_GAME",
@@ -28341,7 +28345,7 @@
     },
     "manifest": "assets/homepage-covers/manifest.json",
     "releaseMediaRoot": "assets/homepage-media",
-    "artDirectionSource": "CURRENT_GAME_DESIGN_AND_IMPLEMENTED_FEATURES",
+    "artDirectionSource": "LATEST_CANONICAL_REVISED_DESIGN_WITH_NEW_GENERATED_ARTWORK",
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   },
   "robloxStudioProductionFlowContract": {
@@ -28635,5 +28639,63 @@
     "verifiedAssetAdaptationLearningOnlyFromRealBuildQaAndRuntimeEvidence": true,
     "preserveExistingGamesUntilIndependentlyVerified3dReplacement": true,
     "canonicalExistingSourceAndBuildUpF0F9SequenceUnchanged": true
+  },
+  "ownerUnityWebHomepageOnly20261010": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-10",
+    "status": "OWNER_DIRECT_LOCKED",
+    "activeWebEngine": "UNITY_WEBGL_ONLY",
+    "canonicalGameSource": "unity-games/<gameId>/",
+    "deployableBrowserBuild": "web-games/<gameId>/",
+    "standaloneHtmlCssJsCanvasGameplayDevelopmentForbidden": true,
+    "legacyWebMayOnlyBeMigrationReference": true,
+    "neverPublishLegacyWebFromHomepage": true,
+    "mustUseExistingUnityWebDevelopmentQaRegressionReleasePipeline": true,
+    "neverCreateWrapperOrShadowWebGamePipeline": true,
+    "allExistingAndFutureGamesRequireNativeUnity3dGameplay": true,
+    "homeOnlyShowsUnityWeb3dWithVerifiedFullBundleAndBrowserQa": true,
+    "realBrowser3dRuntimeEvidenceRequired": true,
+    "gameIdAndStableHomepagePlayUrlMustRemainUnchanged": true,
+    "preserveOriginalRulesCoreLoopCombatAndProgression": true,
+    "saveDataCannotBeSilentlyReset": true,
+    "legacySaveMigrationRequiredWhenStorageFormatChanges": true,
+    "saveAndReloadIndependentQaRequired": true,
+    "mobileFullScreenButtonRequired": true,
+    "touchGestureGameInteractionShouldNotScrollBrowser": true,
+    "browserSystemChromeMayBeHiddenOnlyWhereBrowserAllows": true,
+    "homepageTitleImage": {
+      "newArtworkPerLatestDesignRequired": true,
+      "staleOrOldArtworkReuseForbidden": true,
+      "source": "LATEST_CANONICAL_REVISED_GAME_DESIGN",
+      "style": "HIGH_QUALITY_ROBLOX_STUDIO_LIKE_3D_POSTER",
+      "englishGameTitleProminent": true,
+      "koreanSubtitleReadable": true,
+      "newImageGenerationOwner": "EXISTING_GRAPHICS_AND_HOMEPAGE_MANAGER",
+      "dedicatedImageGenerationRequired": true,
+      "imageGeneratorUnavailableMeansPendingNotFakeGenerated": true,
+      "lowSizeWithoutVisibleQualityLoss": true,
+      "format": "WEBP",
+      "aspectRatio": "16:9",
+      "cardSize": [
+        480,
+        270
+      ],
+      "heroSize": [
+        960,
+        540
+      ],
+      "cardTargetBytes": 40960,
+      "cardMaxBytes": 49152,
+      "heroMaxBytes": 143360
+    },
+    "homepageDescription": {
+      "directlyBelowGameTitle": true,
+      "summaryFromCurrentDesign": true,
+      "summaryMaxCharacters": 112,
+      "doNotInventGameplayFeatures": true,
+      "updateWhenDesignChanges": true
+    },
+    "noFakePassForUnbuiltGames": true,
+    "unfinishedLegacyProjectsRemainNonPromoted": true
   }
 }
