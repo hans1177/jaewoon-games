@@ -34,25 +34,38 @@
         "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
         "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
       ]
+    },
+    "local_authoring_parts::9052843b62e158e64443f849a2fc2ca22fdef571fd4a4f7258c4559d7beec524:signatureSystems:0": {
+      "id": "SIGNATURE_SYSTEM_01",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "IDLE_GROWTH_RESOURCE"
+      ],
+      "stateOutputs": [
+        "GROWTH_PROGRESS"
+      ],
+      "name": "IDLE_GROWTH_RESOURCE",
+      "purpose": "플레이어가 주체로 흐르는 인물들의 전투와 자원 수집 루프, 모바일에서도 즉시 이해되는 입력/피드백 시스템",
+      "playerChoice": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 332976,
-      "lastMs": 45490,
+      "totalMs": 377016,
+      "lastMs": 44040,
       "lastError": null,
-      "updatedAt": "2026-10-09T12:10:37.081Z"
+      "updatedAt": "2026-10-09T12:11:21.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T12:05:04.078Z",
-  "updatedAt": "2026-10-09T12:10:37.081Z",
+  "updatedAt": "2026-10-09T12:11:21.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2284,7 +2297,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T12:10:37.081Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T12:11:21.123Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
