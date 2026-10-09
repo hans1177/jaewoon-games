@@ -95,25 +95,117 @@
         "delveGrowthRule": "Each discovery triggers a cascading state change that affects all gameplay domains, with new choices introduced at each stage of progression",
         "finalGameIdentity": "A combination of stealth mechanics, adaptive pathfinding, and dynamic risk-reward systems creates a unique gameplay experience where every decision impacts both immediate survival outcomes and long-term strategic options"
       }
+    },
+    "local_authoring_parts::2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24:playerFantasy,coreFun": {
+      "playerFantasy": "알 도둑 대작전에서는 플레이어가 잠입·탈출을 숙련하며, 환경의 위험과 기회를 정확히 판단해 전략적 선택을 하게 된다. 이 과정에서 플레이어는 단순한 탐색이나 무비판적인 희생보다는, 현실적인 생존과 전략적 진보에 중점을 둔다.",
+      "coreFun": "{\"identity\": \"Player's choice of escape route affects both immediate survival outcomes and long-term strategic options\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"Scout a small area and identify the target egg and patrol risk\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"Stealth\\\",\\n \\\"material\\\": \"Risk-reward escape mechanism with dynamic terrain interaction\\\",\\n \\\"materialDomain\\\": \"Survival, Perception, Risk Management\\\",\\n \\\"stateChange\\\": \"Player gains awareness of environmental hazards, triggers initial decision to scout or move the egg\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"Escape Mechanics\\\",\\n \\\"material\\\": \"Variable route system with adaptive pathfinding\\\",\\n \\\"materialDomain\\\": \"Strategy, Navigation, Resource Allocation\\\",\\n \\\"stateChange\\\": \"Player selects an escape route based on current threat level and available resources\\\"\n },\\n \\\"abCausality\\\": \"Player's choice of"
+    },
+    "local_authoring_parts::0c64898ccda1c0f5aefee8e561dc9c6594ec34baa1c3a5c4f8b463bb2c5d957d:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "알 도둑 대작전 - 코믹 잠입·탈출 게임 재설계",
+      "creativeGrammar": {
+        "mainIdentity": "Scout a small area and identify the target egg and patrol risk.",
+        "a": {
+          "system": "Stealth",
+          "material": "Risk-reward escape mechanism with dynamic terrain interaction",
+          "materialDomain": "Survival, Perception, Risk Management",
+          "stateChange": "Player gains awareness of environmental hazards, triggers initial decision to scout or move the egg"
+        },
+        "b": {
+          "system": "Escape Mechanics",
+          "material": "Variable route system with adaptive pathfinding",
+          "materialDomain": "Strategy, Navigation, Resource Allocation",
+          "stateChange": "Player selects an escape route based on current threat level and available resources"
+        },
+        "abCausality": "Player's choice of route affects both immediate survival outcomes and long-term strategic options",
+        "abEvolution": {
+          "aChangesB": "If player chooses low-risk scouting, B evolves to include high-stakes evasion strategies",
+          "bChangesA": "If player selects a complex terrain, A evolves to incorporate multi-layered perception systems",
+          "lateGameChange": "In late game, both A and B adopt hybrid strategy deployment models"
+        },
+        "materialFusion": {
+          "contrast": "Player's actions trigger cascading state changes that affect multiple gameplay domains",
+          "causalBridge": "Environmental hazards in A influence risk management in C through shared perceptual mechanisms",
+          "removalConsequence": "Removing any single material element causes irreversible shifts in core gameplay dynamics"
+        },
+        "storyCausalChain": {
+          "cause": "Player initiates exploration by scanning the area",
+          "characterConflict": "The environment presents ambiguous threats that challenge the player's decision-making",
+          "playerChoice": "Player decides whether to scout or move the egg",
+          "worldChange": "Environment adapts by introducing new hazards or altering terrain features",
+          "nextEvent": "Player receives feedback on their choice and faces consequences"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Player gains temporary resource bonuses"
+          },
+          {
+            "name": "Perception",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Player learns about environmental anomalies"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Stealth Strategy",
+            "gameplayEffect": "Player uses adaptive perception systems"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Risk Management",
+            "gameplayEffect": "Player manages dynamic threat levels"
+          }
+        ],
+        "cGenreInterlock": "Environmental hazards in A influence risk management in C through shared perceptual mechanisms; removing either system results in irreversible changes to survival mechanics",
+        "cWorldAndGameplayEffect": "Players who remove any material element experience permanent shifts in core gameplay dynamics, including altered risk-reward structures and changed survival outcomes",
+        "delveDiscoveries": [
+          {
+            "clue": "Ambiguous environment presents multiple decision points",
+            "discovery": "Player must choose between low-risk scouting or high-stakes evasion",
+            "newChoice": "Player selects an escape route based on current threat level and available resources"
+          },
+          {
+            "clue": "Dynamic terrain introduces multi-layered perception challenges",
+            "discovery": "Player learns about environmental anomalies",
+            "newChoice": "Player decides whether to scout or move the egg"
+          },
+          {
+            "clue": "Variable routes require strategic planning",
+            "discovery": "Player receives feedback on their choice and faces consequences",
+            "newChoice": "Player adopts hybrid strategy deployment models in late game"
+          },
+          {
+            "clue": "Adaptive pathfinding alters player behavior",
+            "discovery": "Player gains temporary resource bonuses",
+            "newChoice": "Player modifies risk management strategies for future encounters"
+          }
+        ],
+        "delveGrowthRule": "Each discovery triggers a cascading state change that affects all gameplay domains, with new choices introduced at each stage of progression",
+        "finalGameIdentity": "A combination of stealth mechanics, adaptive pathfinding, and dynamic risk-reward systems creates a unique gameplay experience where every decision impacts both immediate survival outcomes and long-term strategic options"
+      },
+      "playerFantasy": "알 도둑 대작전에서는 플레이어가 잠입·탈출을 숙련하며, 환경의 위험과 기회를 정확히 판단해 전략적 선택을 하게 된다. 이 과정에서 플레이어는 단순한 탐색이나 무비판적인 희생보다는, 현실적인 생존과 전략적 진보에 중점을 둔다.",
+      "coreFun": "{\"identity\": \"Player's choice of escape route affects both immediate survival outcomes and long-term strategic options\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"Scout a small area and identify the target egg and patrol risk\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"Stealth\\\",\\n \\\"material\\\": \"Risk-reward escape mechanism with dynamic terrain interaction\\\",\\n \\\"materialDomain\\\": \"Survival, Perception, Risk Management\\\",\\n \\\"stateChange\\\": \"Player gains awareness of environmental hazards, triggers initial decision to scout or move the egg\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"Escape Mechanics\\\",\\n \\\"material\\\": \"Variable route system with adaptive pathfinding\\\",\\n \\\"materialDomain\\\": \"Strategy, Navigation, Resource Allocation\\\",\\n \\\"stateChange\\\": \"Player selects an escape route based on current threat level and available resources\\\"\n },\\n \\\"abCausality\\\": \"Player's choice of"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 430304,
-      "lastMs": 130302,
+      "totalMs": 687988,
+      "lastMs": 257684,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T19:59:28.234Z"
+      "updatedAt": "2026-10-09T20:03:45.919Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:52:17.910Z",
-  "updatedAt": "2026-10-09T19:59:28.234Z",
+  "updatedAt": "2026-10-09T20:03:45.920Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1564,7 +1656,7 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T19:59:28.234Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:03:45.920Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
