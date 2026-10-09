@@ -498,25 +498,42 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::80faae34e1d6f70304074f0a21aee78f8c26dc45c2a327788520d07aa3a1e2ec:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "stateOutputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "name": "천상의 보루 - 단일 디펜스 전략",
+      "purpose": "Player's adaptive decision-making shapes the evolving defensive system",
+      "playerChoice": "strategic placement of defenses and resource management"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1207590,
-      "lastMs": 88265,
+      "totalMs": 1302736,
+      "lastMs": 95146,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T20:56:45.469Z"
+      "updatedAt": "2026-10-09T20:58:20.626Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:36:37.837Z",
-  "updatedAt": "2026-10-09T20:56:45.479Z",
+  "updatedAt": "2026-10-09T20:58:20.626Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2358,10 +2375,10 @@
   "localAuthoringSplits": {
     "c4b34af08c2ba5a42eff6076fae1b5cfca91de052dd165fed5a07fedc0b712ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T20:56:45.472Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-09T20:58:20.626Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
