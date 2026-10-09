@@ -532,25 +532,28 @@
     },
     "local_authoring_parts::26a6f0640ec2c9fb8f7251b3a173af3debc2eaafa8322720e270ab836a365a36:toSystem": {
       "toSystem": "OPENING_PHASE"
+    },
+    "local_authoring_parts::26a6f0640ec2c9fb8f7251b3a173af3debc2eaafa8322720e270ab836a365a36:trigger": {
+      "trigger": "플레이어가 START_INPUT 상태에서 시스템이 RUN_STATUS 상태로 전환하는 과정은 플레이어의 선택 결과에 따라 세계 상태와 다음 선택을 바꾸는 주체 행동과 목표가 실제 월드/시스템 상태 변화를 결정하는 시그니처 상호작용을 통해 이루어진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1819579,
-      "lastMs": 56627,
+      "totalMs": 1882224,
+      "lastMs": 62645,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:48:22.247Z"
+      "updatedAt": "2026-10-09T09:49:24.894Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:18:02.096Z",
-  "updatedAt": "2026-10-09T09:48:22.247Z",
+  "updatedAt": "2026-10-09T09:49:24.894Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2891,7 +2894,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T09:48:22.247Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:49:24.894Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
