@@ -73,25 +73,38 @@
       "name": "MATCH_GAME",
       "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축",
       "playerChoice": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective with a clear goal and limited moves, obstacles, or another visible puzzle constraint in a dynamic board state that evolves with each play session and region transition."
+    },
+    "local_authoring_parts::b8f70b07fc3292073787aeb63a513951d6e7c18a1409ed0de3f7f4a749b6241c:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "c",
+      "stateInputs": [
+        "BOARD_STATE"
+      ],
+      "stateOutputs": [
+        "GAME_STATUS"
+      ],
+      "name": "COMBO_GAME",
+      "purpose": "MAIN/A/B의 관계를 상황별로 변주하며 독립된 대축처럼 전체 루프를 소유하지 않지만, 발견·숙련·재방문 깊이로 역할을 구분하는 보조 요소",
+      "playerChoice": "Create combos or use immediate board feedback to solve the current objective and generate new game states through combination of existing rules and patterns in the board state"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 365168,
-      "lastMs": 40018,
+      "totalMs": 409981,
+      "lastMs": 44813,
       "lastError": null,
-      "updatedAt": "2026-10-09T11:53:19.841Z"
+      "updatedAt": "2026-10-09T11:54:04.656Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T11:47:14.418Z",
-  "updatedAt": "2026-10-09T11:53:19.841Z",
+  "updatedAt": "2026-10-09T11:54:04.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2128,7 +2141,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T11:53:19.841Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T11:54:04.656Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
