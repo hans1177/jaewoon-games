@@ -78635,27 +78635,6 @@
       "version": 2,
       "scope": "ALL_REGISTERED_ASSETS",
       "groupBy": "FAMILY",
-      "gameExclusivePacks": false,
-      "packIdMeaning": "SOURCE_LINEAGE_NOT_GAME_EXCLUSIVITY",
-      "fileRoles": [
-        "authoring",
-        "runtimeCode",
-        "models",
-        "previews",
-        "textures",
-        "references",
-        "catalogs",
-        "support"
-      ],
-      "consumerGameIdsMeaning": "ACTUAL_USAGE_HISTORY_NOT_EXCLUSIVE_OWNERSHIP",
-      "intendedConsumerGameIdsMeaning": "DEMAND_HINT_NOT_USAGE_RESTRICTION",
-      "platformCompatibilityRequired": true,
-      "sourcePathsPreserved": true,
-      "qualityDisplay": {
-        "field": "internalAuditScore",
-        "maxScore": 1000
-      },
-      "fileClassificationIsNotRuntimeVerification": true,
       "familyOrder": [
         "CHARACTER",
         "CREATURE",
@@ -78677,13 +78656,34 @@
         "ASSET_ID"
       ],
       "sortMode": "STABLE_VIEW_AND_SELECTION_NO_SOURCE_REORDER",
+      "gameExclusivePacks": false,
+      "packIdMeaning": "SOURCE_LINEAGE_NOT_GAME_EXCLUSIVITY",
       "originalGameNamedPacksAreSourceLineageOnly": true,
       "originalObjectsAndSourcePathsPreserved": true,
       "allExistingAndFutureGamesEligible": true,
       "consumerGameIdsCannotRestrictOtherGames": true,
       "noAutomaticMonsterSpawnOrGameplayChange": true,
+      "fileRoles": [
+        "authoring",
+        "runtimeCode",
+        "models",
+        "previews",
+        "textures",
+        "references",
+        "catalogs",
+        "support"
+      ],
+      "consumerGameIdsMeaning": "ACTUAL_USAGE_HISTORY_NOT_EXCLUSIVE_OWNERSHIP",
+      "intendedConsumerGameIdsMeaning": "DEMAND_HINT_NOT_USAGE_RESTRICTION",
+      "platformCompatibilityRequired": true,
       "roleStyleLicenseAndSecurityCompatibilityRequired": true,
-      "crossPlatformNativeAdaptationRequired": true
+      "crossPlatformNativeAdaptationRequired": true,
+      "sourcePathsPreserved": true,
+      "qualityDisplay": {
+        "field": "internalAuditScore",
+        "maxScore": 1000
+      },
+      "fileClassificationIsNotRuntimeVerification": true
     }
   },
   "internalAssetRoutineReview": {
