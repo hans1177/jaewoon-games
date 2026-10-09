@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 16,
-  "lastSuccessfulModelCallAt": "2026-10-09T15:56:06.328Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "cachedTaskCount": 17,
+  "lastSuccessfulModelCallAt": "2026-10-09T15:56:37.408Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/exorcist-office/2026-10-09/design-seed.json",
     "contentDigest": "1aac6cd840ebd667ce4fdd1fa01bdc03f8795cf8b02a2694f7d0f12f48e30840",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 352901,
-      "lastMs": 103016,
+      "totalMs": 383975,
+      "lastMs": 31074,
       "lastError": null,
-      "updatedAt": "2026-10-09T15:56:06.328Z"
+      "updatedAt": "2026-10-09T15:56:37.408Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T15:56:06.333Z"
+  "updatedAt": "2026-10-09T15:56:37.409Z"
 }
