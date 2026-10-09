@@ -1743,25 +1743,43 @@
         "New game states, altered progression paths, and expanded player agency"
       ],
       "fromSystem": "SURVIVAL2-MAIN-01"
+    },
+    "local_authoring_parts::84c34bec091075e27bff3c6cc4c010bcf17931bbe1e7efcfc54f6d75581cd0b3:toSystem,trigger,stateChange": {
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
+    },
+    "local_authoring_parts::36ea04bab65a8fcb434706619665dac2ee6dc0aff719e3800fed2b89e4cff3f6:systemInterconnections:0": {
+      "fromId": "SURVIVAL2-MAIN-01",
+      "toId": "SURVIVAL2-MAIN-02",
+      "stateKeys": [
+        "World state changes, new survival advantages, risk/reward dynamics, and next act",
+        "Enhanced gameplay mechanics, improved survival conditions, and strategic depth",
+        "New game states, altered progression paths, and expanded player agency"
+      ],
+      "fromSystem": "SURVIVAL2-MAIN-01",
+      "toSystem": "SURVIVAL2-MAIN-02",
+      "trigger": "Explore the forest for a needed resource while reading environmental and creature danger.",
+      "stateChange": "World state changes, new survival advantages, risk/reward dynamics, and next act"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 103,
-      "successes": 103,
+      "calls": 104,
+      "successes": 104,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7896655,
-      "lastMs": 65745,
+      "totalMs": 7958277,
+      "lastMs": 61622,
       "lastError": null,
-      "updatedAt": "2026-10-09T06:34:46.288Z"
+      "updatedAt": "2026-10-09T06:35:47.911Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-08T21:03:31.006Z",
-  "updatedAt": "2026-10-09T06:34:46.288Z",
+  "updatedAt": "2026-10-09T06:35:47.913Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4136,7 +4154,7 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T06:34:46.288Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T06:35:47.913Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
