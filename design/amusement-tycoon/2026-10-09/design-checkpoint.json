@@ -103,25 +103,227 @@
       "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
       "purpose": "This state element reveals the hidden interaction between MAIN, A, B, and DELVE(@), allowing players to discover new combinations, mastery, and deeper gameplay layers.",
       "playerChoice": "Discover a new combination, master a skill, or delve into an unexplored area to gain unique gameplay experiences."
+    },
+    "local_authoring_parts::94a63d5ebe679971da5f05182f2d20949958640da0001d61031ff014e1f52e92:signatureSystems:4": {
+      "id": "CORE_DELVE_01",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "RUN_INPUT",
+        "REWARD_KEY",
+        "RISK_LEVEL"
+      ],
+      "stateOutputs": [
+        "GAME_DEPTH_INCREMENT",
+        "PLAY_OPTION_UNLOCK",
+        "ACTION_REVEAL"
+      ],
+      "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+      "purpose": "The player discovers a unique interaction between the main action, alternative paths, and deepening elements that unlocks new gameplay possibilities.",
+      "playerChoice": "Discover a hidden combination of the main action, alternative routes, and deepening elements in the game world to unlock new play options and deepen gameplay depth."
+    },
+    "local_authoring_parts::e6f2c9eb6e00172edb69ccd4fbe437f63cff8033f779f95ca579b2f036b12561:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_KEY",
+            "DISTANCE_KEY",
+            "SESSION_DURATION_KEY"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_01",
+            "STATE_CHANGE_02",
+            "STATE_CHANGE_03"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_04",
+            "STATE_CHANGE_05",
+            "STATE_CHANGE_06"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establishes the first axis of system interaction by linking the outcome of the main action to the next state through risk/reward/choice",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_07",
+            "STATE_CHANGE_08",
+            "STATE_CHANGE_09"
+          ],
+          "name": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_10",
+            "STATE_CHANGE_11",
+            "STATE_CHANGE_12"
+          ],
+          "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+          "purpose": "This state element reveals the hidden interaction between MAIN, A, B, and DELVE(@), allowing players to discover new combinations, mastery, and deeper gameplay layers.",
+          "playerChoice": "Discover a new combination, master a skill, or delve into an unexplored area to gain unique gameplay experiences."
+        },
+        {
+          "id": "CORE_DELVE_01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "GAME_DEPTH_INCREMENT",
+            "PLAY_OPTION_UNLOCK",
+            "ACTION_REVEAL"
+          ],
+          "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+          "purpose": "The player discovers a unique interaction between the main action, alternative paths, and deepening elements that unlocks new gameplay possibilities.",
+          "playerChoice": "Discover a hidden combination of the main action, alternative routes, and deepening elements in the game world to unlock new play options and deepen gameplay depth."
+        }
+      ]
+    },
+    "local_authoring_parts::197aeddf667705db38babb1510d34461f77305d43ae64301644c9e51c59e2edd:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "id": "CORE_FUN_01",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "START_INPUT",
+            "SCORE_KEY",
+            "DISTANCE_KEY",
+            "SESSION_DURATION_KEY"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_01",
+            "STATE_CHANGE_02",
+            "STATE_CHANGE_03"
+          ],
+          "name": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "purpose": "플레이어가 가장 반복적으로 수행하며 즉시 상태 변화를 만드는 중심 플레이.",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_02",
+          "grammarRole": "A",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_04",
+            "STATE_CHANGE_05",
+            "STATE_CHANGE_06"
+          ],
+          "name": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "purpose": "Establishes the first axis of system interaction by linking the outcome of the main action to the next state through risk/reward/choice",
+          "playerChoice": "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        },
+        {
+          "id": "CORE_FUN_03",
+          "grammarRole": "B",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_07",
+            "STATE_CHANGE_08",
+            "STATE_CHANGE_09"
+          ],
+          "name": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+          "playerChoice": "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        },
+        {
+          "id": "CORE_FUN_04",
+          "grammarRole": "c",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "STATE_CHANGE_10",
+            "STATE_CHANGE_11",
+            "STATE_CHANGE_12"
+          ],
+          "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+          "purpose": "This state element reveals the hidden interaction between MAIN, A, B, and DELVE(@), allowing players to discover new combinations, mastery, and deeper gameplay layers.",
+          "playerChoice": "Discover a new combination, master a skill, or delve into an unexplored area to gain unique gameplay experiences."
+        },
+        {
+          "id": "CORE_DELVE_01",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "RUN_INPUT",
+            "REWARD_KEY",
+            "RISK_LEVEL"
+          ],
+          "stateOutputs": [
+            "GAME_DEPTH_INCREMENT",
+            "PLAY_OPTION_UNLOCK",
+            "ACTION_REVEAL"
+          ],
+          "name": "Reveal the hidden combination of MAIN, A, B, and DELVE(@) in the game world to unlock new play options and deepen gameplay depth.",
+          "purpose": "The player discovers a unique interaction between the main action, alternative paths, and deepening elements that unlocks new gameplay possibilities.",
+          "playerChoice": "Discover a hidden combination of the main action, alternative routes, and deepening elements in the game world to unlock new play options and deepen gameplay depth."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 413069,
-      "lastMs": 40921,
+      "totalMs": 456176,
+      "lastMs": 43107,
       "lastError": null,
-      "updatedAt": "2026-10-09T09:24:06.870Z"
+      "updatedAt": "2026-10-09T09:24:49.979Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T09:17:13.765Z",
-  "updatedAt": "2026-10-09T09:24:06.870Z",
+  "updatedAt": "2026-10-09T09:24:49.981Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2045,7 +2247,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-09T09:24:06.870Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T09:24:49.981Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
