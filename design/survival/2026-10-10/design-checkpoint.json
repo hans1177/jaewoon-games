@@ -194,25 +194,38 @@
         "These decisions drive narrative progression, shaping future encounters and rewarding player growth through experience and upgrades.",
         "The cycle of adaptation and growth is reinforced by the interplay between survival mechanics, story arcs, and player agency."
       ]
+    },
+    "local_authoring_parts::d7fbe75b5d911b3995b4070b3aa700282a4d0bbee682846a54e565ad0b98f28a:signatureSystems:0": {
+      "id": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerChoice"
+      ],
+      "stateOutputs": [
+        "worldStateChange"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player's decision to collect run rewards or experience",
+      "playerChoice": "Collect run rewards or choose upgrades that change the build"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 753098,
-      "lastMs": 79759,
+      "totalMs": 841083,
+      "lastMs": 87985,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T17:38:59.779Z"
+      "updatedAt": "2026-10-09T17:40:27.766Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T17:26:26.652Z",
-  "updatedAt": "2026-10-09T17:38:59.779Z",
+  "updatedAt": "2026-10-09T17:40:27.766Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1938,7 @@
   "localAuthoringSplits": {
     "20ed2848148c97cab2167c82e7c3422767efd6f54f47be5a6a9d1dea6b677869": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T17:38:59.779Z",
+  "lastSuccessfulModelCallAt": "2026-10-09T17:40:27.766Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
