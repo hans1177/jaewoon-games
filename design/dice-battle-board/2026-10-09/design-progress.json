@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-09T10:57:39.811Z",
+  "cachedTaskCount": 16,
+  "lastSuccessfulModelCallAt": "2026-10-09T10:58:15.163Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/dice-battle-board/2026-10-09/design-seed.json",
+    "contentDigest": "292fbf2130ad7f26262faffea660e2169daac620c7905d25c4a3b082ebe5f4e3",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 473059,
-      "lastMs": 50413,
+      "totalMs": 508407,
+      "lastMs": 35348,
       "lastError": null,
-      "updatedAt": "2026-10-09T10:57:39.808Z"
+      "updatedAt": "2026-10-09T10:58:15.160Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-09T10:57:39.812Z"
+  "updatedAt": "2026-10-09T10:58:15.173Z"
 }
