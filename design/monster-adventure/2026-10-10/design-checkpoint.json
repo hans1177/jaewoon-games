@@ -3,165 +3,18 @@
   "gameId": "monster-adventure",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-MONSTER-ADVENTURE",
-  "fingerprint": "710578f1ddcf1c8f3b062c383fe091d054903ccfa8da719ebff64d70cc3c6eae",
+  "fingerprint": "05f951f19f8e8ea89edfc08fe674f1e578fe066e85aa7faea1dffa87a72ee61b",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::27dc98c27826ea9436a649566e8a79885eb901d0b3af436279ba02d86c477841:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "MONSTER_ADVENTURE",
-        "a": {
-          "system": "TURN_BASED_STRATEGY",
-          "material": "TERRAIN_AND_MONSTERS",
-          "materialDomain": "MOBILE_3D_ACADEMY",
-          "stateChange": "MONSTER_EVOLUTION_PATH"
-        },
-        "b": {
-          "system": "ACTION_SEQUENCE",
-          "material": "ENVIRONMENTAL_CHALLENGE",
-          "materialDomain": "MOBILE_3D_ACADEMY",
-          "stateChange": "RESOURCE_COLLECTION_AND_ATTACK_PLAN"
-        },
-        "abCausality": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-        "abEvolution": {
-          "aChangesB": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "bChangesA": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "lateGameChange": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE"
-        },
-        "materialFusion": {
-          "contrast": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "causalBridge": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "removalConsequence": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE"
-        },
-        "storyCausalChain": {
-          "cause": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "characterConflict": "MONSTER_ATTRIBUTION → PLAYER_STRATEGY → ENVIRONMENTAL_CHALLENGE",
-          "playerChoice": "PLAYER_STRATEGY → ENVIRONMENTAL_CHALLENGE → TERRAIN_CHANGE",
-          "worldChange": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-          "nextEvent": "ATTACK_SEQUENCE → RESOURCE_GAIN → MONSTER_EVOLUTION_PATH"
-        },
-        "cThemes": [
-          {
-            "name": "TERRAIN",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ENVIRONMENTAL_CHALLENGE"
-          },
-          {
-            "name": "MONSTERS",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ACTION_SEQUENCE_AND_ATTACK"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "MOBILE_3D_ACADEMY",
-            "gameplayEffect": "TURN_BASED_STRATEGY"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "ENVIRONMENTAL_CHALLENGE",
-            "gameplayEffect": "RESOURCE_COLLECTION_AND_ATTACK"
-          }
-        ],
-        "cGenreInterlock": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-        "cWorldAndGameplayEffect": "TERRAIN_CHANGE → MONSTER_ATTRUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-        "delveDiscoveries": [
-          {
-            "clue": "TERRAIN_CHANGE",
-            "discovery": "MONSTER_ATTRIBUTION",
-            "newChoice": "RESOURCE_GAIN_AND_ATTACK_PLAN"
-          },
-          {
-            "clue": "MONSTER_ATTRIBUTION",
-            "discovery": "ENVIRONMENTAL_CHALLENGE",
-            "newChoice": "TERRAIN_CHANGE_AND_ATTACK"
-          },
-          {
-            "clue": "RESOURCE_GAIN",
-            "discovery": "ATTACK_SEQUENCE",
-            "newChoice": "MONSTER_EVOLUTION_PATH"
-          },
-          {
-            "clue": "ATTACK_SEQUENCE",
-            "discovery": "RESOURCE_GAIN",
-            "newChoice": "MONSTER_EVOLUTION_PATH"
-          }
-        ],
-        "delveGrowthRule": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE",
-        "finalGameIdentity": "TERRAIN_CHANGE → MONSTER_ATTRIBUTION → RESOURCE_GAIN → ATTACK_SEQUENCE"
-      },
-      "playerFantasy": "플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다. 핵심 루프는 몬스터의 속성과 스킬을 고려한 전략적 선택을 요구하며, 시그니처 시스템인 '속성 상성 전투'와 '몬스터 진화 트리'는 플레이어에게 매번 다른 전투 양상과 성장 경로를 제공하여 깊이 있는 선택과 상태 변화를 경험하게 합니다.",
-      "coreFun": "플레이어는 적의 속성을 파악하고 자신의 몬스터 팀 중 가장 유리한 속성을 가진 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 유리하게 바꿀 수 있습니다. 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
-    },
-    "local_authoring_parts::c376b963a4be1eabda264322b007f2de66fe7677318652fc64cdd5ed31f58058:coreLoop": {
-      "coreLoop": [
-        "INPUT: PLAYER_SELECTS_MONSTER_ATTRIBUTES → STATE: MONSTER_EVOLUTION_PATH_GENERATED → REWARD: RESOURCE_GAIN_AND_ATTACK_PLAN",
-        "INPUT: PLAYER_STRATEGIZES_TERRAIN_CHANGE → STATE: TERRAIN_ATTRIBUTION_CONFIRMED → REWARD: ENVIRONMENTAL_CHALLENGE_SOLVED",
-        "INPUT: PLAYER_ELEVATES_MONSTER → STATE: MONSTER_LEVEL_UPPED_OR_EVOLVED → REWARD: NEW_WORLD_MAP_ENTRY"
-      ]
-    },
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_terrain_change",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "TERRAIN_CHANGE"
-      ],
-      "stateOutputs": [
-        "MONSTER_ATTRIBUTION"
-      ],
-      "name": "Terrain Change Effect",
-      "purpose": "Reflects the impact of terrain changes on monster attributes, introducing variability in combat strategy and evolution paths.",
-      "playerChoice": "Player selects a terrain type, which alters the monster's attribute distribution and affects subsequent battle outcomes."
-    },
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:1:5a2c6b4015086add": {
-      "id": "a_main_terrain_change",
-      "grammarRole": "A",
-      "stateInputs": [
-        "MONSTER_ATTRIBUTION"
-      ],
-      "stateOutputs": [
-        "TERRAIN_CHANGE"
-      ],
-      "name": "DESIGN_ASSET_REVIEW",
-      "purpose": "Reviews game assets to ensure consistency with existing rules and maintains original intent.",
-      "playerChoice": "Selects an asset to review for compliance with established design principles and gameplay mechanics."
-    },
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": {
-      "id": "b_design_asset_review",
-      "grammarRole": "B",
-      "stateInputs": [
-        "TERRAIN_CHANGE"
-      ],
-      "stateOutputs": [
-        "MONSTER_ATTRIBUTION"
-      ],
-      "name": "GAME",
-      "purpose": "Monsters Adventure Game",
-      "playerChoice": "Select a terrain type to affect monster attributes and combat strategy."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 652884,
-      "lastMs": 12592,
-      "lastError": null,
-      "updatedAt": "2026-10-10T09:27:50.810Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T09:16:57.887Z",
-  "updatedAt": "2026-10-10T09:27:50.817Z",
+  "createdAt": "2026-10-10T09:37:35.336Z",
+  "updatedAt": "2026-10-10T09:37:35.441Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1681,28 +1534,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:3:568c7fb49fcbfa91": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_terrain_change",
-          "a_main_terrain_change",
-          "b_design_asset_review"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": 1,
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:3:568c7fb49fcbfa91": 2
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:27:50.810Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_NO_PROGRESS DELVE DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  }
 }
