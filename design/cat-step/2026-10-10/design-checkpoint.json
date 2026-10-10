@@ -194,25 +194,39 @@
         "실제 세계 상태 변화 → 다음 사건 예측 가능성 보장",
         "보드 게임 구조/경로 영향 미치는 플레이어 선택"
       ]
+    },
+    "local_authoring_parts::5c823be065fb391700f469f34f1070bdd758a699f9b449bf3fcc16536c60c615:signatureSystems:0": {
+      "id": "coreLoop_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerChoice",
+        "worldChange"
+      ],
+      "stateOutputs": [
+        "nextEvent"
+      ],
+      "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+      "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미친다는 원인을 설정하며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
+      "playerChoice": "플레이어가 전략적으로 선택하여 세계 상태를 변화시킬 수 있는 역할을 수행한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 674110,
-      "lastMs": 92117,
+      "totalMs": 774043,
+      "lastMs": 99933,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:25:09.597Z"
+      "updatedAt": "2026-10-10T02:26:49.531Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:13:55.461Z",
-  "updatedAt": "2026-10-10T02:25:09.597Z",
+  "updatedAt": "2026-10-10T02:26:49.531Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1805,7 +1819,7 @@
   "localAuthoringSplits": {
     "162bf8034b6d5f91d7ab9018c7feb60bc1bba4a0b287ab44d2fb152c5dcfdd70": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:25:09.597Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:26:49.531Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
