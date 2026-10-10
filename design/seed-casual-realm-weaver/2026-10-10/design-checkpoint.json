@@ -12,25 +12,93 @@
   "tasks": {
     "local_authoring_parts::0187fb8566ad53393c895181a44eef7f8b727eb064654e2f5daf4676a0fc38c0:identity": {
       "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다."
+    },
+    "local_authoring_parts::20cf1a327998ea197c9a7b3026402c3957e874c0ddd77f56e890775f3520585a:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+      "a": {
+        "system": "직조 연결 시스템",
+        "material": "색상, 형태",
+        "materialDomain": "미니멀한 3D 로우 폴리곤 스타일",
+        "stateChange": "조각 간 속성 매칭 → 시너지 발생,"
+      },
+      "b": {
+        "system": "생태계 복원 게이지",
+        "material": "플레이 성과 누적",
+        "materialDomain": "생명력의 전이",
+        "stateChange": "특정 지역 복원 → 보너스 효과 얻기"
+      },
+      "abCausality": "조각 배치 및 연결 → 생동감 있는 환경 변화 → 점수와 보상 제공 → 다음 스테이지 진입으로 인해 상호 의존적인 상태 교환 진행됨."
+    },
+    "local_authoring_parts::20cf1a327998ea197c9a7b3026402c3957e874c0ddd77f56e890775f3520585a:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "조각 배치 및 연결 -> 生动感环境变化 -> 点数与奖励提供 -> 下一阶段进入",
+        "bChangesA": "生态复原 -> 特定区域恢复 -> 附加效果获取 -> 主游戏流程推进",
+        "lateGameChange": "初始发现4个以上，持续扩展，无简单数值强化或功能列举"
+      },
+      "materialFusion": {
+        "contrast": "世界/故事 -> 人物冲突 -> 游戏选择 -> 实际状态变化 -> 新事件生成",
+        "causalBridge": "主系统(A) -> 辅助系统(B) -> 融合系统(C)",
+        "removalConsequence": "移除C后，规则、风险、信息、选择发生改变，需重新设计"
+      },
+      "storyCausalChain": {
+        "cause": "初始发现4个以上(단서→실험→新选择)，持续扩展",
+        "characterConflict": "人物间矛盾，玩家选择影响实际状态变化，触发后续事件",
+        "playerChoice": "单手触摸输入，即时反馈，收集奖励，尝试新路线",
+        "worldChange": "世界深度增加，场景动态变化，环境响应玩家行为",
+        "nextEvent": "根据当前状态变化，生成新的游戏事件，推动流程前进"
+      }
+    },
+    "local_authoring_parts::271155c8953fa1f113590dc449c95e837256722e5f5fd1c43ed65f5c68e5f422:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+      "a": {
+        "system": "직조 연결 시스템",
+        "material": "색상, 형태",
+        "materialDomain": "미니멀한 3D 로우 폴리곤 스타일",
+        "stateChange": "조각 간 속성 매칭 → 시너지 발생,"
+      },
+      "b": {
+        "system": "생태계 복원 게이지",
+        "material": "플레이 성과 누적",
+        "materialDomain": "생명력의 전이",
+        "stateChange": "특정 지역 복원 → 보너스 효과 얻기"
+      },
+      "abCausality": "조각 배치 및 연결 → 생동감 있는 환경 변화 → 점수와 보상 제공 → 다음 스테이지 진입으로 인해 상호 의존적인 상태 교환 진행됨.",
+      "abEvolution": {
+        "aChangesB": "조각 배치 및 연결 -> 生动感环境变化 -> 点数与奖励提供 -> 下一阶段进入",
+        "bChangesA": "生态复原 -> 特定区域恢复 -> 附加效果获取 -> 主游戏流程推进",
+        "lateGameChange": "初始发现4个以上，持续扩展，无简单数值强化或功能列举"
+      },
+      "materialFusion": {
+        "contrast": "世界/故事 -> 人物冲突 -> 游戏选择 -> 实际状态变化 -> 新事件生成",
+        "causalBridge": "主系统(A) -> 辅助系统(B) -> 融合系统(C)",
+        "removalConsequence": "移除C后，规则、风险、信息、选择发生改变，需重新设计"
+      },
+      "storyCausalChain": {
+        "cause": "初始发现4个以上(단서→실험→新选择)，持续扩展",
+        "characterConflict": "人物间矛盾，玩家选择影响实际状态变化，触发后续事件",
+        "playerChoice": "单手触摸输入，即时反馈，收集奖励，尝试新路线",
+        "worldChange": "世界深度增加，场景动态变化，环境响应玩家行为",
+        "nextEvent": "根据当前状态变化，生成新的游戏事件，推动流程前进"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 627160,
-      "lastMs": 26965,
+      "totalMs": 785702,
+      "lastMs": 86889,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:50:25.730Z"
+      "updatedAt": "2026-10-10T10:53:04.276Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:39:58.485Z",
-  "updatedAt": "2026-10-10T10:50:25.730Z",
+  "updatedAt": "2026-10-10T10:53:04.277Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1310,7 +1378,7 @@
     "3494965358adaa47568a2781dd1beee82d89f407eafbeb235f0c1cdd3fec7065": true,
     "0187fb8566ad53393c895181a44eef7f8b727eb064654e2f5daf4676a0fc38c0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:50:25.730Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:53:04.277Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
