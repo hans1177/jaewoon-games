@@ -4036,3 +4036,49 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('open-source Blender cinematic must decode the exact original GLB animation movie',
+  {skip:!process.env.VIBE2_BLENDER_BINARY,timeout:240000},()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-open-source-cinematic-'));
+  try{
+    const args=['--background','--threads','2','--python-exit-code','1',
+      '--python','assets/native-authoring/build-game-visual.py','--',
+      '--output',root,'--asset-id','video-qa','--profile','prop','--subject','crate',
+      '--target','web','--module','video','--motion-kind','turntable',
+      '--cinematic-style','dramatic','--cinematic-quality','preview'];
+    execFileSync(process.env.VIBE2_BLENDER_BINARY,args,
+      {timeout:200000,encoding:'utf8',maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+    const file=path.join(root,'preview-motion.mp4');
+    const asset=path.join(root,'asset.glb');
+    const evidence=JSON.parse(fs.readFileSync(path.join(root,'evidence.json'),'utf8'));
+    assert.ok(fs.statSync(file).size>1024);
+    assert.equal(evidence.videoExport.actualFramesRendered,true);
+    assert.equal(evidence.videoExport.sourceGlbSha256,createHash('sha256').update(fs.readFileSync(asset)).digest('hex'));
+    assert.equal(evidence.videoExport.sha256,createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+    assert.equal(evidence.productionVerified,false);
+    assert.equal(evidence.videoExport.runtimeVerified,false);
+    const probe=JSON.parse(execFileSync(process.env.VIBE2_FFPROBE_BINARY||'ffprobe',[
+      '-v','error','-count_frames',
+      '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+      '-of','json','-i',file
+    ],{timeout:30000,encoding:'utf8'}));
+    const v=probe.streams.find(row=>row.codec_type==='video');
+    assert.equal(probe.streams.length,1);
+    assert.equal(v.codec_name,'mpeg4');
+    assert.equal(v.width,320);
+    assert.equal(v.height,320);
+    assert.equal(Number(v.nb_read_frames),24);
+    assert.equal(v.r_frame_rate,'12/1');
+    assert.equal(Number(probe.format.duration),2);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('source worker validates decoded cinematic frames rather than accepting MP4 metadata alone',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED/);
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID/);
+  assert.match(worker,/nb_read_frames/);
+  assert.match(worker,/stream\?\.codec_name!=='mpeg4'/);
+  assert.match(worker,/sourceGlbSha256!==nativeArtifact\.sha256/);
+});
