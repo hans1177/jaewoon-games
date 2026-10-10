@@ -9,12 +9,210 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::502844c286ccc80f21837314df9aa89f4b293f370b889c2df6955852afd630bd:identity,creativeGrammar": {
+      "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "MONSTER_ADVENTURE_1010",
+        "a": {
+          "system": "TURN_BASED_STRATEGY",
+          "material": "TERRAIN_AND_MONSTERS",
+          "materialDomain": "MOBILE_ADVENTURER",
+          "stateChange": "POCAHONTA_TOWER_BATTLE"
+        },
+        "b": {
+          "system": "PROGRESSION_TREE",
+          "material": "EVOLUTIONARY_PATHWAY",
+          "materialDomain": "ADVENTURE_GROWTH",
+          "stateChange": "MAGE_EVOLVE_TO_ARCHETYPE"
+        },
+        "abCausality": "TURN_BASED_STRATEGY_INTERACTION_WITH_PROGRESSION_TREE",
+        "abEvolution": {
+          "aChangesB": "TERRAIN_CHANGE_ON_SELECTION",
+          "bChangesA": "MONSTER_EVALEATION_ON_CHOICE",
+          "lateGameChange": "FINAL_MONSTER_ADOPTED_BY_PLAYER"
+        },
+        "materialFusion": {
+          "contrast": "TERRAIN_VS_MONSTER_CONTRAST",
+          "causalBridge": "STRATEGIC_COMBINATIONS_OF_TERRAIN_AND_MONSTER",
+          "removalConsequence": "TERRAIN_REMOVED_IF_NO_CONTRAST"
+        },
+        "storyCausalChain": {
+          "cause": "PLAYER_INITIATIVE_INVESTIGATION",
+          "characterConflict": "MONSTER_ATTRIBUTE_CONFLICT",
+          "playerChoice": "STRATEGIC_COMBINATION_SELECTION",
+          "worldChange": "FINAL_WORLD_MAP_MODIFICATION",
+          "nextEvent": "NEXT_ADVENTURE_PHASE"
+        },
+        "cThemes": [
+          {
+            "name": "TERRAIN",
+            "kind": "GENRE",
+            "gameplayEffect": "TERRAIN_EFFECT_ON_ATTACK"
+          },
+          {
+            "name": "MONSTER",
+            "kind": "GENRE",
+            "gameplayEffect": "MONSTER_EVOLUTION_ON_WIN"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "MOBILE_ADVENTURER",
+            "gameplayEffect": "ADVENTURE_PROGRESSION"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "TURN_BASED_STRATEGY",
+            "gameplayEffect": "STRATEGIC_DECISION_MAKER"
+          }
+        ],
+        "cGenreInterlock": "TERRAIN_INTERACTION_WITH_MONSTER_EVOLUTION",
+        "cWorldAndGameplayEffect": "MAP_EFFECT_ON_PLAYERS_ACTIONS_AND_MONSTERS_EVOLUTION",
+        "delveDiscoveries": [
+          {
+            "clue": "TERRAIN_CHANGE_ON_SELECTION",
+            "discovery": "TERRAIN_VS_MONSTER_CONTRAST",
+            "newChoice": "TERRAIN_COMBINATIONS"
+          },
+          {
+            "clue": "MONSTER_EVALEATION_ON_CHOICE",
+            "discovery": "MONSTER_EVOLUTION_PATHWAY",
+            "newChoice": "EVOLUTIONARY_PATHWAYS"
+          },
+          {
+            "clue": "FINAL_WORLD_MAP_MODIFICATION",
+            "discovery": "GAMEPLAY_EFFECT_ON_PLAYER_INITIATIVE",
+            "newChoice": "PLAYER_INITIATIVE_INVESTIGATION"
+          },
+          {
+            "clue": "NEXT_ADVENTURE_PHASE",
+            "discovery": "ADVANCEMENT_OF_ADOPTED_MONSTER",
+            "newChoice": "ADVANCED_MONSTER_SELECTION"
+          }
+        ],
+        "delveGrowthRule": "TERRAIN_AND_MONSTER_COMBINATION_GROWTH_RULE",
+        "finalGameIdentity": "MONSTER_ADVENTURE_1010_FINAL"
+      }
+    },
+    "local_authoring_parts::502844c286ccc80f21837314df9aa89f4b293f370b889c2df6955852afd630bd:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험하는 턴제 전략 게임에서, 몬스터의 속성과 스킬을 고려하여 전투에 최적화된 선택을 하며, 그 결과로는 새로운 자원과 능력을 획득해 더 강력한 적과 도전하게 된다.",
+      "coreFun": "몬스터의 속성을 파악하고 자신의 몬스터 팀 중 가장 유리한 속성을 가진 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 유리하게 바꿀 수 있으며, 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비한다."
+    },
+    "local_authoring_parts::20342296ae8ce8ce3541b579855588e0b6bc4066c58900777b0cfe01d1c885f8:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "MONSTER_ADVENTURE_1010",
+        "a": {
+          "system": "TURN_BASED_STRATEGY",
+          "material": "TERRAIN_AND_MONSTERS",
+          "materialDomain": "MOBILE_ADVENTURER",
+          "stateChange": "POCAHONTA_TOWER_BATTLE"
+        },
+        "b": {
+          "system": "PROGRESSION_TREE",
+          "material": "EVOLUTIONARY_PATHWAY",
+          "materialDomain": "ADVENTURE_GROWTH",
+          "stateChange": "MAGE_EVOLVE_TO_ARCHETYPE"
+        },
+        "abCausality": "TURN_BASED_STRATEGY_INTERACTION_WITH_PROGRESSION_TREE",
+        "abEvolution": {
+          "aChangesB": "TERRAIN_CHANGE_ON_SELECTION",
+          "bChangesA": "MONSTER_EVALEATION_ON_CHOICE",
+          "lateGameChange": "FINAL_MONSTER_ADOPTED_BY_PLAYER"
+        },
+        "materialFusion": {
+          "contrast": "TERRAIN_VS_MONSTER_CONTRAST",
+          "causalBridge": "STRATEGIC_COMBINATIONS_OF_TERRAIN_AND_MONSTER",
+          "removalConsequence": "TERRAIN_REMOVED_IF_NO_CONTRAST"
+        },
+        "storyCausalChain": {
+          "cause": "PLAYER_INITIATIVE_INVESTIGATION",
+          "characterConflict": "MONSTER_ATTRIBUTE_CONFLICT",
+          "playerChoice": "STRATEGIC_COMBINATION_SELECTION",
+          "worldChange": "FINAL_WORLD_MAP_MODIFICATION",
+          "nextEvent": "NEXT_ADVENTURE_PHASE"
+        },
+        "cThemes": [
+          {
+            "name": "TERRAIN",
+            "kind": "GENRE",
+            "gameplayEffect": "TERRAIN_EFFECT_ON_ATTACK"
+          },
+          {
+            "name": "MONSTER",
+            "kind": "GENRE",
+            "gameplayEffect": "MONSTER_EVOLUTION_ON_WIN"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "MOBILE_ADVENTURER",
+            "gameplayEffect": "ADVENTURE_PROGRESSION"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "TURN_BASED_STRATEGY",
+            "gameplayEffect": "STRATEGIC_DECISION_MAKER"
+          }
+        ],
+        "cGenreInterlock": "TERRAIN_INTERACTION_WITH_MONSTER_EVOLUTION",
+        "cWorldAndGameplayEffect": "MAP_EFFECT_ON_PLAYERS_ACTIONS_AND_MONSTERS_EVOLUTION",
+        "delveDiscoveries": [
+          {
+            "clue": "TERRAIN_CHANGE_ON_SELECTION",
+            "discovery": "TERRAIN_VS_MONSTER_CONTRAST",
+            "newChoice": "TERRAIN_COMBINATIONS"
+          },
+          {
+            "clue": "MONSTER_EVALEATION_ON_CHOICE",
+            "discovery": "MONSTER_EVOLUTION_PATHWAY",
+            "newChoice": "EVOLUTIONARY_PATHWAYS"
+          },
+          {
+            "clue": "FINAL_WORLD_MAP_MODIFICATION",
+            "discovery": "GAMEPLAY_EFFECT_ON_PLAYER_INITIATIVE",
+            "newChoice": "PLAYER_INITIATIVE_INVESTIGATION"
+          },
+          {
+            "clue": "NEXT_ADVENTURE_PHASE",
+            "discovery": "ADVANCEMENT_OF_ADOPTED_MONSTER",
+            "newChoice": "ADVANCED_MONSTER_SELECTION"
+          }
+        ],
+        "delveGrowthRule": "TERRAIN_AND_MONSTER_COMBINATION_GROWTH_RULE",
+        "finalGameIdentity": "MONSTER_ADVENTURE_1010_FINAL"
+      },
+      "playerFantasy": "플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탐험하는 턴제 전략 게임에서, 몬스터의 속성과 스킬을 고려하여 전투에 최적화된 선택을 하며, 그 결과로는 새로운 자원과 능력을 획득해 더 강력한 적과 도전하게 된다.",
+      "coreFun": "몬스터의 속성을 파악하고 자신의 몬스터 팀 중 가장 유리한 속성을 가진 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 유리하게 바꿀 수 있으며, 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비한다."
+    },
+    "local_authoring_parts::4fe3be46e7a904e6b411975686c16447e193c45e0949495ee01525a98e388a94:coreLoop": {
+      "coreLoop": [
+        "INPUT: 플레이어는 월드 맵에서 이동하며 몬스터를 조우하거나 자원을 수집하는 선택을 수행합니다.",
+        "SELECT: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
+        "OUTPUT: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
+      ]
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 4,
+      "successes": 3,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 594459,
+      "lastMs": 52801,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T05:36:08.391Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:26:13.908Z",
-  "updatedAt": "2026-10-10T05:26:13.923Z",
+  "updatedAt": "2026-10-10T05:36:08.391Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -789,5 +987,16 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "localAuthoringSplits": {
+    "502844c286ccc80f21837314df9aa89f4b293f370b889c2df6955852afd630bd": true
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T05:36:08.391Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
