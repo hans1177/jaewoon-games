@@ -272,6 +272,7 @@ const ALL_LIBRARY_CODE_ALIASES=Object.freeze({
 const NON_GAME_LIBRARY_PREFIX=/^assets\/(?:company-|department-|homepage-|artbook-|godot-|asset-library|asset-selector|vibe-company-|vibe-orchestrator|vibe-development-|vibe-continuous-|vibe-local-|vibe-diagnostics|vibe-project|vibe-helper|vibe-change-set)/i;
 const ENGINE_LIBRARY_PREFIX=/^assets\/(?:vibe-|jaewoon-|game-)/i;
 const GENERIC_LIBRARY_NAME_TOKENS=new Set(['assets','asset','lib','library','common','shared','game','games','vibe','jaewoon','core','engine','runtime','system','director','pipeline','rendering','utility','tools','helper','module','default','generic','native','roblox','unity','web','part','parts','skin','skins','base','template','templates','model','models','v1','v2','v3','v4','v5','v6','pack']);
+const GENERIC_ASSET_ID_TOKENS=new Set(['monster','enemy','creature','character','humanoid','animal','npc','survival','adventure','world','environment','scene','actions','animation','animations','gameplay','generic','factory','render','rendering','material','materials','inventory','menu','interface','asset','assets','item','items','gear','pack','collection']);
 const safeLibraryPath=value=>/^assets\/[a-z0-9][a-z0-9/_-]*\.(?:js|luau?|json|glb|gltf|fbx|obj|png|webp|svg|mat|anim|controller)$/i.test(clean(value).replace(/^\//,''))
   ?clean(value).replace(/^\//,''):null;
 const codeTokenPatterns=name=>name.toLowerCase().split(/[-_.]+/)
@@ -328,7 +329,7 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
     const id=clean(row.id);
     if(!id)continue;
     const specificTokens=id.toLowerCase().split(/[-_.]+/).filter(token=>token.length>=4
-      &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&!token.startsWith(category.toLowerCase()));
+      &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&!GENERIC_ASSET_ID_TOKENS.has(token)&&!token.startsWith(category.toLowerCase()));
     const specific=anchors.filter(anchor=>regex.test(anchorText(anchor))&&specificTokens.some(token=>anchorText(anchor).toLowerCase().includes(token)));
     // 'shared-quest-v1' 같은 특정 기능 팩을 UI라는 이유만으로 전체 게임에 추천하지 않는다.
     // 순수 공용 카테고리 팩만 추가 기능 요구 없이 카테고리 소스 근거로 후보를 낸다.
