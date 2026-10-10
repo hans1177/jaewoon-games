@@ -95,25 +95,117 @@
         "delveGrowthRule": "{\"Discovery Chain\": \"Player Input → Environmental Response → New Play Option\", \"Growth Rule\": \"Upgrades, Perks, and Strategic Combinations\"}",
         "finalGameIdentity": "Harbor Days - Real-Time Survival RPG with Adaptive Systems and Dynamic Environments"
       }
+    },
+    "local_authoring_parts::11c14d5db7b97b1cb8c6ac51045c688dbfb274f5dae0cf3c9f3b86cbdca937a0:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간 전투에서 점차 증가하는 허브에 빠져들며, 환경의 반응과 선택의 결과로 새로운 플레이 스타일을 탐색해야 한다.",
+      "coreFun": "{\"Player Input → Environmental Response → New Play Option\", \"Build Progression, Tactical Adaptation\"}"
+    },
+    "local_authoring_parts::649b90aaa002e0f123bf2301c1ddfd264c61dbb62c75ef66a0df6bbe0535c1a4:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Harbor Days - Reimagined",
+      "creativeGrammar": {
+        "mainIdentity": "Survival Action RPG with Real-Time Strategy Elements",
+        "a": {
+          "system": "Dynamic Environment",
+          "material": "Evolving World Rules and Player Choices",
+          "materialDomain": "Gameplay Mechanics, Resource Management, and Adaptive Systems",
+          "stateChange": "Player Actions → Environmental Response → Next Game State"
+        },
+        "b": {
+          "system": "Progressive Build System",
+          "material": "Upgrades, Perks, Weapons, and Skill Sets",
+          "materialDomain": "Build Progression, Strategic Combinations, and Tactical Adaptation",
+          "stateChange": "Upgrade Selection → Build Strength → New Play Option"
+        },
+        "abCausality": "{\"A→B\": \"Player Choice → Environmental Feedback → New Gameplay Path\", \"B→A\": \"Environmental Response → Player Decision → New Conflict or Challenge\"}",
+        "abEvolution": {
+          "aChangesB": "Player Choice → Environmental Change → New Play Style",
+          "bChangesA": "Environmental Response → Player Decision → New Risk/Recovery Path",
+          "lateGameChange": "System Integration → High-Stakes Choice → Distinct Terminal Outcome"
+        },
+        "materialFusion": {
+          "contrast": "Player Agency vs. Environmental Constraints",
+          "causalBridge": "Player Action → Environmental Reaction → New Game State",
+          "removalConsequence": "Removed Element → Replaced with Adaptive System"
+        },
+        "storyCausalChain": {
+          "cause": "Player Input → Environmental Response → New Game State",
+          "characterConflict": "Adaptive Environment → Player Strategy → New Challenge or Objective",
+          "playerChoice": "New Game State → Player Decision → New World Condition",
+          "worldChange": "New World Condition → Player Action → Next Event Triggered by System Logic",
+          "nextEvent": "System Logic → Player Action → Final Game Identity Formation"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Resource Management, Real-Time Combat"
+          },
+          {
+            "name": "Strategy",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Build Progression, Tactical Adaptation"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Dynamic Survival Arena",
+            "gameplayEffect": "Real-Time Combat, Resource Allocation"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Progressive Build System",
+            "gameplayEffect": "Upgrades, Perks, and Strategic Combinations"
+          }
+        ],
+        "cGenreInterlock": "{\"Primary Genre Change\": \"Environmental Feedback → New Play Style\", \"Secondary Genre Change\": \"Player Choice → New Conflict or Challenge\"}",
+        "cWorldAndGameplayEffect": "Player Actions → Environmental Responses → New Game States with Adaptive Systems",
+        "delveDiscoveries": [
+          {
+            "clue": "Player Input → Environmental Response → New Gameplay Path",
+            "discovery": "Adaptive Environment → Player Strategy → New Challenge or Objective",
+            "newChoice": "New Game State → Player Decision → New World Condition"
+          },
+          {
+            "clue": "System Logic → Player Action → Final Game Identity Formation",
+            "discovery": "Player Agency vs. Environmental Constraints",
+            "newChoice": "Removed Element → Replaced with Adaptive System"
+          },
+          {
+            "clue": "Player Choice → Environmental Feedback → New Play Option",
+            "discovery": "Build Progression, Tactical Adaptation",
+            "newChoice": "Upgrade Selection → Build Strength → New Play Style"
+          },
+          {
+            "clue": "Environmental Response → Player Decision → New Risk/Recovery Path",
+            "discovery": "Real-Time Combat, Resource Allocation",
+            "newChoice": "New Game State → Player Action → Next Event Triggered by System Logic"
+          }
+        ],
+        "delveGrowthRule": "{\"Discovery Chain\": \"Player Input → Environmental Response → New Play Option\", \"Growth Rule\": \"Upgrades, Perks, and Strategic Combinations\"}",
+        "finalGameIdentity": "Harbor Days - Real-Time Survival RPG with Adaptive Systems and Dynamic Environments"
+      },
+      "playerFantasy": "플레이어는 실시간 전투에서 점차 증가하는 허브에 빠져들며, 환경의 반응과 선택의 결과로 새로운 플레이 스타일을 탐색해야 한다.",
+      "coreFun": "{\"Player Input → Environmental Response → New Play Option\", \"Build Progression, Tactical Adaptation\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 478459,
-      "lastMs": 178357,
+      "totalMs": 536636,
+      "lastMs": 58177,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:58:34.464Z"
+      "updatedAt": "2026-10-10T09:59:32.643Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:50:35.982Z",
-  "updatedAt": "2026-10-10T09:58:34.464Z",
+  "updatedAt": "2026-10-10T09:59:32.645Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1841,7 +1933,7 @@
   "localAuthoringSplits": {
     "11c14d5db7b97b1cb8c6ac51045c688dbfb274f5dae0cf3c9f3b86cbdca937a0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:58:34.464Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:59:32.645Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
