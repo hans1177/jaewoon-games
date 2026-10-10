@@ -2,6 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {createHash} from 'node:crypto';
+import {validateDesignAuthoringContent} from './company-design-gate-scoring-v2.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const list=v=>Array.isArray(v)?v:[];
@@ -36,7 +38,7 @@ function platformProfileReady(profile={},platform=''){
   return clean(profile.platform).toUpperCase()===platform
     &&MINIMUM_PLATFORM_PROFILE_FIELDS.filter(k=>k!=='platform').every(k=>textReady(profile[k],8));
 }
-export function evaluateMinimumDesignContract(record={}){
+export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=false}={}){
   const content=record?.content&&typeof record.content==='object'?record.content:record;
   const profiles=content?.platformProfiles&&typeof content.platformProfiles==='object'?content.platformProfiles:{};
   const common=commonReady(content||{});
@@ -48,6 +50,14 @@ export function evaluateMinimumDesignContract(record={}){
   if(!roblox)blockers.push('ROBLOX_PLATFORM_PROFILE_INCOMPLETE');
   if(!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
   if(roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
+  // 기본 설계도 v5 MAIN × A × B × C + @ 문법과 실제 상태 연결이 있어야 한다.
+  const grammarRequired=requireGrammar||Number(seed?.GAMEPLAY_SKETCH?.version||record?.gameplaySketchVersion||0)>=5;
+  const grammarSeed=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5?seed:{GAMEPLAY_SKETCH:{version:5}};
+  const grammarFailures=grammarRequired?validateDesignAuthoringContent({
+    design:content,seed:grammarSeed,fields:['creativeGrammar','signatureSystems']
+  }):[];
+  if(grammarFailures.length)blockers.push(...new Set(grammarFailures.map(row=>row.code)));
+  const grammarReady=!grammarRequired||grammarFailures.length===0;
   // 개발 착수 조건은 보존하고, 출시 전 확정할 다섯 설계 축을 별도로 전달한다.
   const releaseChecklist={
     identity:textReady(content.identity,24),
@@ -58,8 +68,8 @@ export function evaluateMinimumDesignContract(record={}){
   };
   return Object.freeze({
     version:1,
-    pass:common&&roblox&&unity&&distinct,
-    commonCoreReady:common,
+    pass:common&&roblox&&unity&&distinct&&grammarReady,
+    commonCoreReady:common,creativeGrammarReady:grammarReady,
     platformProfiles:{ROBLOX:roblox,UNITY:unity,distinct},
     releaseChecklist:Object.freeze(releaseChecklist),
     blockers:Object.freeze(blockers)
@@ -71,35 +81,67 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
   if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId)||clean(seed?.status).toUpperCase()!=='ACTIVE'){
     return {created:false,reason:'ACTIVE_GAME_SEED_REQUIRED'};
   }
-  const existing=latestMinimumDesign(root,gameId);
+  const sketch=seed?.GAMEPLAY_SKETCH||{};
+  const grammarRequired=Number(sketch.version||0)>=5;
+  const existing=latestMinimumDesign(root,gameId,{seed,requireGrammar:grammarRequired});
   // 메인: 소유자 초기화보다 오래된 설계는 새 기본 설계 생성의 근거가 아니다.
   // 이미 작성한 같은 날짜의 설계나 유효한 최신 설계는 덮어쓰지 않는다.
   const resetAt=Number(ownerResetAt)||0;
   const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
   if(existing&&(!resetDate||String(existing.date)>resetDate))
     return{created:false,reason:'EXISTING_MINIMUM_DESIGN_PRESERVED',file:existing.file};
-  const identity=clean(seed?.DISTINCT_IDENTITY||seed?.GAMEPLAY_SKETCH?.identityCore?.oneLineFantasy);
-  const loop=list(seed?.CORE_LOOP).map(clean).filter(Boolean);
-  const fun=list(seed?.CORE_FUN_TO_LEARN).map(clean).filter(Boolean);
-  const mode=clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
-  const sketch=seed?.GAMEPLAY_SKETCH||{};
-  const sourceSystems=list(sketch?.flowArchitecture?.systemBlueprint?.requiredSystems)
-    .filter(row=>textReady(row?.id,3)&&textReady(row?.purpose,16));
-  if(!textReady(identity,24)||loop.length<3||fun.length<1||sourceSystems.length<2||!MULTIPLAYER_MODES.has(mode)){
-    return {created:false,reason:'SOURCE_GROUNDED_MINIMUM_DESIGN_INPUT_INCOMPLETE'};
-  }
-  const kst=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'})
-    .format(new Date());
+  const kst=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const designDate=clean(date)||kst;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(designDate))return{created:false,reason:'INVALID_DESIGN_DATE'};
   const file=path.join(root,'design',gameId,designDate,'design-revised.json');
-  if(fs.existsSync(file))return{created:false,reason:'EXISTING_DESIGN_CANDIDATE_PRESERVED'};
+  const designerSeedPath=path.join(root,'design',gameId,designDate,'design-seed.json');
+  const checkpointPath=path.join(root,'design',gameId,designDate,'design-checkpoint.json');
+  const readRecord=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
+  const authored=grammarRequired?readRecord(designerSeedPath):null;
+  const checkpoint=grammarRequired?readRecord(checkpointPath):null;
+  const authoredContent=authored?.content;
+  const contentDigest=authoredContent?createHash('sha256').update(JSON.stringify(authoredContent)).digest('hex'):'';
+  if(grammarRequired){
+    // 미작성 접수 스케치를 모델이 쓴 설계로 속이지 않는다. 기존 identity-core의 검증된 작성 결과만 사용한다.
+    const authentic=authored?.authorRole==='GAME_DESIGNER_AI'
+      &&authored?.sourceStage==='identity-core'
+      &&authored?.gameId===gameId&&authored?.seedId===clean(seed.seedId)
+      &&authored?.date===designDate&&authored?.status==='AUTHORED_CANDIDATE'
+      &&clean(authored?.authorModel)&&authored?.contentDigest===contentDigest
+      &&authored?.fingerprint===checkpoint?.fingerprint
+      &&authored?.engineDigest===checkpoint?.engineDigest
+      &&checkpoint?.designerSeed?.contentDigest===contentDigest
+      &&checkpoint?.designerSeed?.authorModel===authored?.authorModel;
+    if(!authentic)return{created:false,reason:'DESIGN_GRAMMAR_DESIGNER_SEED_PENDING',gameId};
+    const authoredFailures=validateDesignAuthoringContent({
+      design:authoredContent,seed,
+      fields:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode']
+    });
+    if(authoredFailures.length)return{created:false,reason:'DESIGN_GRAMMAR_CONTENT_REPAIR_REQUIRED',blockers:[...new Set(authoredFailures.map(row=>row.code))]};
+  }
+  const identity=clean(grammarRequired?authoredContent.identity:seed?.DISTINCT_IDENTITY||sketch?.identityCore?.oneLineFantasy);
+  const loop=list(grammarRequired?authoredContent.coreLoop:seed?.CORE_LOOP).map(clean).filter(Boolean);
+  const fun=list(seed?.CORE_FUN_TO_LEARN).map(clean).filter(Boolean);
+  const mode=clean(grammarRequired?authoredContent.multiplayerMode:seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+  const sourceSystems=list(sketch?.flowArchitecture?.systemBlueprint?.requiredSystems)
+    .filter(row=>textReady(row?.id,3)&&textReady(row?.purpose,16));
+  if(!textReady(identity,24)||loop.length<3||(!grammarRequired&&fun.length<1)||(!grammarRequired&&sourceSystems.length<2)||!MULTIPLAYER_MODES.has(mode)){
+    return {created:false,reason:'SOURCE_GROUNDED_MINIMUM_DESIGN_INPUT_INCOMPLETE'};
+  }
+  // 검증된 설계는 덮어쓰지 않는다. 틀린 자동 기본 후보만 디자이너 작성본으로 교체한다.
+  if(fs.existsSync(file)){
+    const prior=readRecord(file);
+    if(!grammarRequired||prior?.authorRole!=='VIBE2_MINIMUM_DESIGN_PREPARATION'
+      ||prior?.strictDesignPass===true||prior?.independentQaPass===true||prior?.runtimePass===true
+      ||prior?.releasePass===true||evaluateMinimumDesignContract(prior,{seed,requireGrammar:true}).pass)
+      return{created:false,reason:'EXISTING_DESIGN_CANDIDATE_PRESERVED'};
+  }
   const savePolicy=clean(seed?.SAVE_POLICY)||'EXISTING_GAME_SAVE_SEMANTICS_PRESERVED';
   const sessionMinutes=Number(seed?.TARGET_SESSION_MINUTES);
   const sessionLabel=Number.isFinite(sessionMinutes)&&sessionMinutes>0
     ?'원본 목표 세션 '+sessionMinutes+'분을 참고하며 게임별 실제 종료 규칙은 원본에 따른다.'
     :'세션 길이와 종료는 해당 게임의 원본 구현·명시적 규칙에 따른다.';
-  const systems=sourceSystems.slice(0,4).map(row=>({
+  const systems=grammarRequired?authoredContent.signatureSystems:sourceSystems.slice(0,4).map(row=>({
     id:clean(row.id),
     name:clean(row.id).replaceAll('_',' '),
     purpose:clean(row.purpose),
@@ -109,9 +151,10 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
   const single=mode==='SINGLE';
   const content={
     identity,
-    coreFun:fun.join(' / ')+' — '+loop[1],
+    coreFun:grammarRequired?authoredContent.coreFun:fun.join(' / ')+' — '+loop[1],
     coreLoop:loop,
     signatureSystems:systems,
+    ...(grammarRequired?{creativeGrammar:authoredContent.creativeGrammar,playerFantasy:authoredContent.playerFantasy}:{}),
     progressionDirection:list(sketch.progressionLayers).map(clean).filter(Boolean).join(' ')||loop.at(-1),
     failureRetryRisk:{
       failureStates:['핵심 목표 실패 또는 방어·생존·해결 미달: '+loop.at(-1),'위험·자원 압박으로 계획 변경이나 회복이 필요한 상태: '+loop[1]],
@@ -162,11 +205,13 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
       }
     }
   };
-  const gate=evaluateMinimumDesignContract({content});
+  const gate=evaluateMinimumDesignContract({content},{seed,requireGrammar:grammarRequired});
   if(!gate.pass)return{created:false,reason:'MINIMUM_DESIGN_CONTRACT_REJECTED',blockers:gate.blockers};
   const stamp=new Date().toISOString();
   const record={
     version:5,gameId,date:designDate,gameSeedId:clean(seed.seedId),
+    gameplaySketchVersion:Number(sketch.version||0),
+    ...(grammarRequired?{gameSeedSource:path.relative(root,designerSeedPath).replaceAll('\\','/'),designerModel:authored.authorModel,designerContentDigest:contentDigest}:{}),
     productionClass:'DESIGN_ONLY',
     authorRole:'VIBE2_MINIMUM_DESIGN_PREPARATION',
     status:'MINIMUM_DEVELOPMENT_DESIGN_CANDIDATE',
@@ -182,7 +227,7 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
     file:path.relative(root,file).replaceAll('\\','/'),gate};
 }
 
-export function latestMinimumDesign(root='.',gameId=''){
+export function latestMinimumDesign(root='.',gameId='',{seed=null,requireGrammar=false}={}){
   const gameRoot=path.join(root,'design',gameId);
   if(!fs.existsSync(gameRoot))return null;
   const dates=fs.readdirSync(gameRoot,{withFileTypes:true})
@@ -192,7 +237,7 @@ export function latestMinimumDesign(root='.',gameId=''){
     const file=path.join(gameRoot,date,'design-revised.json');
     if(!fs.existsSync(file))continue;
     const record=JSON.parse(fs.readFileSync(file,'utf8'));
-    const gate=evaluateMinimumDesignContract(record);
+    const gate=evaluateMinimumDesignContract(record,{seed:seed||{},requireGrammar});
     if(gate.pass)return{date,file:path.relative(root,file).replaceAll('\\','/'),record,gate};
   }
   return null;
