@@ -2,31 +2,31 @@
   "version": 2,
   "gameId": "chess-battle",
   "date": "2026-10-10",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 2,
-  "lastSuccessfulModelCallAt": "2026-10-10T02:34:10.378Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION",
+  "cachedTaskCount": 1,
+  "lastSuccessfulModelCallAt": "2026-10-10T05:25:52.996Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
-      "failures": 0,
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 275558,
-      "lastMs": 38153,
-      "lastError": null,
-      "updatedAt": "2026-10-10T02:34:10.378Z"
+      "totalMs": 436710,
+      "lastMs": 195886,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-10T05:25:52.996Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T02:34:10.385Z"
+  "updatedAt": "2026-10-10T05:25:52.997Z"
 }
