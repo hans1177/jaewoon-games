@@ -105,25 +105,40 @@
         "실제 입력과 상호작용 결과에 따라 월드 상태와 대상 정보가 변경되며, 자원 소모 계산, 위험 수준 감소/증가 등이 발생하여 플레이어의 선택에 영향을 주게 된다.",
         "보상/실패 판정 기반으로 다음 목표 결정 및 전략 조정이 이루어지며, 이 과정에서 게임의 진입 시점, 대상 선택, 자원 관리 등의 요소들이 변화하게 된다."
       ]
+    },
+    "local_authoring_parts::a16463de77976ad1cec3f2070ab5ff7994666d48e88c274607a9b4eea754bf1d:signatureSystems:0": {
+      "id": "ACTION_SURVIVAL_ROGUELITE",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "CURRENT_WORLD_STATE",
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "NEXT_WORLD_STATE",
+        "NEW_STRATEGY"
+      ],
+      "name": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실제 입력과 상호작용 결과로 월드 상태, 대상 정보, 자원, 위험, 진행 상태가 변하게 된다.",
+      "purpose": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험하여, 월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가하는 과정을 거쳐 다음 목표 결정 및 전략 조정을 수행해야 한다.",
+      "playerChoice": "실제 입력과 상호작용 결과로 월드 상태, 대상 정보, 자원, 위험, 진행 상태가 변화하고, 이에 따라 보상/실패 판정이 이루어지며, 이후 목표, 지역, 상호작업 전략, 새로운 선택 사례가 결정된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 358942,
-      "lastMs": 72098,
+      "totalMs": 418150,
+      "lastMs": 59208,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:02:58.430Z"
+      "updatedAt": "2026-10-10T03:03:57.639Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:59.147Z",
-  "updatedAt": "2026-10-10T03:02:58.430Z",
+  "updatedAt": "2026-10-10T03:03:57.639Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1725,7 +1740,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:02:58.430Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:03:57.639Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
