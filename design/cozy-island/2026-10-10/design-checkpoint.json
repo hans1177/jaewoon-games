@@ -221,21 +221,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 681985,
-      "lastMs": 46398,
+      "totalMs": 728947,
+      "lastMs": 46962,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:50:49.165Z"
+      "updatedAt": "2026-10-10T02:51:36.128Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:39:27.152Z",
-  "updatedAt": "2026-10-10T02:50:49.165Z",
+  "updatedAt": "2026-10-10T02:51:36.129Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,14 +1642,26 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::5902ad0b6db06e68bc593832a2bf01279b7af5e4e2bdc24454c83da122b79f5c:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "COOP_기본게임주제_협동왕국성장"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::5902ad0b6db06e68bc593832a2bf01279b7af5e4e2bdc24454c83da122b79f5c:signatureSystems:1": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "0a53a934a86e53ce355f6748dee43ab4f73474241bd159cf099bafc03f1ac337": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:50:49.165Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T02:51:36.128Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
 }
