@@ -636,25 +636,34 @@
     },
     "local_authoring_parts::6233eaa055eff96299a2a3d046c685e914feb5ce8d4be2b97280490e0d618b7e:trigger": {
       "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::6233eaa055eff96299a2a3d046c685e914feb5ce8d4be2b97280490e0d618b7e:stateChange": {
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::b144450b5335a2a2e6a29033f190938015c5d2c717cfaddb2f6cd5d6e521204f:systemInterconnections:4:16fde5d73cf6c4c0": {
+      "fromSystem": "Main Defensive Strategy",
+      "toSystem": "Delve into Adaptive Defensive Mechanics",
+      "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 787889,
-      "lastMs": 31417,
+      "totalMs": 819263,
+      "lastMs": 31374,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:14:11.580Z"
+      "updatedAt": "2026-10-10T09:14:42.955Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:14:11.580Z",
+  "updatedAt": "2026-10-10T09:14:42.956Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2347,7 +2356,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:14:11.580Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:14:42.956Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
