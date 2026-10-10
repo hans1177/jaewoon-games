@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1qys1t9",
-      "worker": "vibe2",
-      "taskId": "survival2-studio-evolution-roblox-stability-v1",
-      "gameId": "survival2",
-      "files": [
-        "roblox-games/survival2/client/Game.client.luau",
-        "roblox-games/survival2/shared/GameConfig.luau",
-        "roblox-games/survival2/server/Game.server.luau"
-      ],
-      "baseSha": "b11c914c9d9655f1cc5ed510a4675f677865378d",
-      "runId": "38087188803",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T22:27:13.043Z",
-      "expiresAt": "2026-10-10T23:12:13.043Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival2-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-14nseol",
       "worker": "vibe2",
       "taskId": "fifty-days-studio-evolution-roblox-stability-v1",
@@ -600,6 +579,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-huli-jing-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-19skwzf",
+      "worker": "vibe2",
+      "taskId": "internal-motion-rokurokubi-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/rokurokubi/init.luau"
+      ],
+      "baseSha": "398cd2031ba66c72765a80ed77115ea634147841",
+      "runId": "38090227358",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T23:12:40.384Z",
+      "expiresAt": "2026-10-10T23:57:40.384Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-rokurokubi-walk-v1"
       ]
     }
   ]
