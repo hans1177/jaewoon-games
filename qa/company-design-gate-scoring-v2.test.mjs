@@ -278,6 +278,12 @@ unmarkedPlaceholder.novelGrammarBackfill.authoringPending=false;
 assert.ok(scoreDesignGateV2({seed:unmarkedPlaceholder,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile})
   .hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
 
+const genericMaterial=structuredClone(authoredV5);
+genericMaterial.content.creativeGrammar.a.material='자원 수집';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:genericMaterial,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('DESIGN_CREATIVE_SOURCE_IS_GAME_MECHANIC'),
+  'a plain resource gathering mechanic cannot masquerade as the A creative source');
+
 const noSurprise=structuredClone(authoredV5);
 delete noSurprise.content.creativeGrammar.materialFusion;
 assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:noSurprise,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_MATERIAL_FUSION_SURPRISE_UNPROVEN'));
