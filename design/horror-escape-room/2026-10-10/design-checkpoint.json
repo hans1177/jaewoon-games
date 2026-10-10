@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::39611f6de9f13432a720e8014c1730a38b7b91df650874386676992f1292c420:identity,creativeGrammar": {
+      "identity": "인간4명과 몬스터4명이 시작하는 8인 감염 추격전에서, 인간은 고유 도구·대시·정화로 생존/반격하며, 몬스터는 명시적 감염 공격으로 인간을 전환하는 4대4 감염 전쟁.",
+      "creativeGrammar": {
+        "mainIdentity": "감염 전쟁 - 인물-몬스터 4대4",
+        "a": {
+          "system": "AI 충원",
+          "material": "인간4/몬스터4",
+          "materialDomain": "감염 전쟁",
+          "stateChange": "인간4/몬스터4 배정 -> 빈자리 AI 충원 -> 상태변화 -> 대응 -> 다음 선택"
+        },
+        "b": {
+          "system": "감염 전환",
+          "material": "몬스터의 감염 공격",
+          "materialDomain": "감염 전쟁",
+          "stateChange": "감염된 인간 -> 몬스터로 전환 -> 고유 감염 스킬 획득 -> 상태변화 -> 대응 -> 다음 선택"
+        },
+        "abCausality": "감염된 인간은 몬스터로 전환하고, 그 후에는 고유 감염 스킬로 옛 팀을 추격한다. 몬스터는 감염 공격으로 인간을 전환시키며, 이 과정에서 정화와 대시가 중요한 역할을 한다.",
+        "abEvolution": {
+          "aChangesB": "감염된 인간이 몬스터로 전환되고, 그 후에는 고유 감염 스킬로 옛 팀을 추격하는 방식으로 변모한다.",
+          "bChangesA": "몬스터는 감염 공격으로 인간을 전환하며, 이 과정에서 정화와 대시가 중요하게 작용한다.",
+          "lateGameChange": "감염된 인물은 몬스터로 전환되면서, 그 후에 고유 감염 스킬로 옛 팀을 추격하는 방식으로 변화한다."
+        },
+        "materialFusion": {
+          "contrast": "인간4/몬스터4의 배치 및 AI 충원과 감염 공격·전환·정화·승패·에너지 서버 권한의 관리",
+          "causalBridge": "감염 공격은 적중되면 인간이 몬스터로 전환하고, 정화는 몬스터를 라운드에서 제거한다. 이 과정에서 AI가 빈자리를 채워 4대4 구조를 유지한다.",
+          "removalConsequence": "감염된 인간은 몬스터로 전환되어, 그 후에는 고유 감염 스킬로 옛 팀을 추격한다. 몬스터는 감염 공격으로 인간을 전환시키며, 이 과정에서 정화와 대시가 중요한 역할을 한다."
+        },
+        "storyCausalChain": {
+          "cause": "인간4/몬스터4의 배치 및 AI 충원 -> effect: 감염 공격과 전환 -> consequence: 정화와 대시의 중요성 증대 -> next event: 다음 선택에 도달",
+          "characterConflict": "감염 공격과 전환은 인물 갈등을 유발하며, 이는 플레이어 선택에 영향을 미친다.",
+          "playerChoice": "플레이어는 인간 또는 몬스터로 선택하여, 이 선택은 게임 상태 변화에 직접적인 영향을 미칩니다.",
+          "worldChange": "감염된 인간은 몬스터로 전환되면서, 그 후에는 고유 감염 스킬로 옛 팀을 추격하는 방식으로 세계가 변모한다.",
+          "nextEvent": "플레이어는 새로운 선택을 하여, 이 선택은 다음 사건에 연결된다."
+        },
+        "cThemes": [
+          {
+            "name": "감염",
+            "kind": "GENRE",
+            "gameplayEffect": "명시적 감염 공격과 전환 기능이 포함"
+          },
+          {
+            "name": "전쟁",
+            "kind": "GENRE",
+            "gameplayEffect": "4대4 구조 유지 및 상호작용"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "감염 전쟁",
+            "gameplayEffect": "인간/몬스터 4대4 구조 유지"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "전략",
+            "gameplayEffect": "AI 충원 및 빈자리 관리와 관련"
+          }
+        ],
+        "cGenreInterlock": "감염 전쟁의 인물·예술·역사 등 주제는 전쟁 장르에서만 사용되고, 보조 장르는 AI 충원 및 빈자리 관리에 실질적 인과 변화를 줄 수 있다.",
+        "cWorldAndGameplayEffect": "감염은 게임의 핵심 요소이며, 전쟁은 플레이어의 선택과 상호작용을 통해 표현된다.",
+        "delveDiscoveries": [
+          {
+            "clue": "감염된 인간은 몬스터로 전환하고, 그 후에는 고유 감염 스킬로 옛 팀을 추격한다.",
+            "discovery": "감염 공격과 전환이 중요한 역할을 한다.",
+            "newChoice": "고유 감염 스킬의 선택이 가능하다."
+          },
+          {
+            "clue": "몬스터는 명시적 감염 공격으로 인간을 전환시키며, 이 과정에서 정화와 대시가 중요하게 작용한다.",
+            "discovery": "감염 공격은 적중되면 인간이 몬스터로 전환되며, 정화는 몬스터를 라운드에서 제거한다.",
+            "newChoice": "정화와 대시의 선택이 가능하다."
+          },
+          {
+            "clue": "인간4/몬스터4의 배치 및 AI 충원은 4대4 구조 유지에 필수적이다.",
+            "discovery": "AI 충원은 빈자리 관리를 위해 필요하다.",
+            "newChoice": "AI 충원의 선택이 가능하다."
+          },
+          {
+            "clue": "감염 전쟁의 인물·예술·역사 등 주제는 전쟁 장르에서만 사용되고, 보조 장르는 AI 충원 및 빈자리 관리에 실질적 인과 변화를 줄 수 있다.",
+            "discovery": "보조 장르는 AI 충원 및 빈자리 관리에 실질적 영향을 미친다.",
+            "newChoice": "보조 장르의 선택이 가능하다."
+          }
+        ],
+        "delveGrowthRule": "감염 공격과 전환이 중요한 역할을 하며, 이는 플레이어 선택에 직접적인 영향을 미칩니다. 감염된 인간은 몬스터로 전환되어, 그 후에는 고유 감염 스킬로 옛 팀을 추격합니다.",
+        "finalGameIdentity": "감염 전쟁 - 인물-몬스터 4대4 구조 유지와 감염 공격/전환/정화/승패/에너지 서버 권한의 관리가 포함된 새 정체성"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300101,
-      "lastMs": 300101,
+      "totalMs": 514833,
+      "lastMs": 214732,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:46:12.236Z"
+      "updatedAt": "2026-10-10T01:49:46.970Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:12.115Z",
-  "updatedAt": "2026-10-10T01:46:12.237Z",
+  "updatedAt": "2026-10-10T01:49:46.970Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1630,5 +1717,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "39611f6de9f13432a720e8014c1730a38b7b91df650874386676992f1292c420": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T01:49:46.970Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
