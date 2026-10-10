@@ -97,25 +97,32 @@
       },
       "playerFantasy": "사용자 직접 업로드 웹게임에서의 진정한 생존 경험. 주요 적 패턴과 장비/업그레이드 조합에 대한 전략적 반응을 통해 세계 상태를 변화시키고, 전략적 결정은 실제 결과로 이어진다.",
       "coreFun": "주요 적 대응 및 전략적 반응 → 시뮬레이티드 환境 변화 → 결과 → 다음 전략의 연결된 핵심 루프 구조. 사용자가 직접 선택하는 장비 업그레이드와 전략 재설계가 실제 결과로 이어지는 과정이 포함된다."
+    },
+    "local_authoring_parts::3f3ccfc57f2c22f985b0a5206627cc0968cf4f91dfa6bd3fb989493e859a59ef:coreLoop": {
+      "coreLoop": [
+        "입력: 주요 적 패턴 및 장비 업그레이드 선택 → 상태변화: 시뮬레이티드 환경 변화 → 보상/위험: 전략적 결정 이어지는 루프",
+        "입력: 전략 재설계 및 장비 조합 선택 → 상태변화: 세계 상태 변화 → 보상/위험: 새로운 전략 이어지는 루프",
+        "입력: 전략적 결정 및 상호작용 → 상태변化: 실제 결과로 이어지는 루프"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 171928,
-      "lastMs": 171928,
+      "totalMs": 209836,
+      "lastMs": 37908,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:08:35.317Z"
+      "updatedAt": "2026-10-10T06:09:13.227Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:05:43.335Z",
-  "updatedAt": "2026-10-10T06:08:35.317Z",
+  "updatedAt": "2026-10-10T06:09:13.227Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1984,7 +1991,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:08:35.317Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:09:13.227Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
