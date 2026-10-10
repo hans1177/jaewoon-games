@@ -805,25 +805,40 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::ef5a67cb4f07569cd460e4ad2953eaaf3b43717a9116314ec167ab95a068bcb1:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "적의 압박 증가",
+        "캐릭터 움직임 변환"
+      ],
+      "stateOutputs": [
+        "전략 선택 재정립",
+        "새로운 선택 생성"
+      ],
+      "name": "마력숲 생존기 - 실시간 전투에서 적의 압박 아래서 점점 더 강해지는 흑색 빙하 속에서 숨은 자리를 찾고, 다양한 선택과 성장 가능성을 통해 세계를 이끌며 살아남는 게임",
+      "purpose": "플레이어는 실시간 전투에서 적의 압박 아래서 점점 더 강해지는 흑색 빙하 속에서 숨은 자리를 찾고, 다양한 선택과 성장 가능성을 통해 세계를 이끌며 살아남는 게임",
+      "playerChoice": "Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 13,
+      "calls": 16,
+      "successes": 14,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2181292,
-      "lastMs": 89926,
+      "totalMs": 2293007,
+      "lastMs": 111715,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:28:20.952Z"
+      "updatedAt": "2026-10-10T02:30:12.681Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:51:59.599Z",
-  "updatedAt": "2026-10-10T02:28:20.963Z",
+  "updatedAt": "2026-10-10T02:30:12.681Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2668,10 +2683,10 @@
     "271d072a82ddae35e1db6f383331e5ac2cf26d5ab1bfba7a853709177da2b91d": true,
     "412f1c8b6734bf9edd83a4de81d3b66b1d5112c9446230a6767fc8856c3f10ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:28:20.955Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:30:12.681Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
