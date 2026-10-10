@@ -194,25 +194,42 @@
         "INPUT/SELECT: 주민 고용 -> 상태변화: 자동화 -> 보상: 반복 노동",
         "INPUT/SELECT: 병사 진군 -> 상태변化: 전환 -> 보상: 병영 강화"
       ]
+    },
+    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_automated_gathering",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 노드",
+        "근로자",
+        "병력"
+      ],
+      "stateOutputs": [
+        "획득",
+        "자동전투",
+        "병영 강화"
+      ],
+      "name": "주민 자동화",
+      "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다.",
+      "playerChoice": "나무·식량 모으기, 주민 고용, 병사 진군"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 21,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1342294,
-      "lastMs": 45923,
+      "totalMs": 1400702,
+      "lastMs": 39800,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:35:53.699Z"
+      "updatedAt": "2026-10-10T06:36:52.110Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:13:31.355Z",
-  "updatedAt": "2026-10-10T06:35:53.700Z",
+  "updatedAt": "2026-10-10T06:36:52.111Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -708,23 +725,40 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:0:4f53cda18c2baa0c": [
+    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:1:947220faad43ddf8": [
       {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_automated_gathering"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_automated_gathering"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_automated_gathering"
+        ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:0:4f53cda18c2baa0c": 18
+    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:0:4f53cda18c2baa0c": 18,
+    "local_authoring_parts::81863708b54341bebef32c9af39afee4ba16bb91e8cea0592fb3ecaae06bcbac:signatureSystems:1:947220faad43ddf8": 1
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "f395a8ef0a09dff7c606e410afbfc540b7152cec71bf149cc591f5de1155cb46": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:35:53.699Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:36:52.110Z",
   "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
