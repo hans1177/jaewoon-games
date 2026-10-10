@@ -195,25 +195,40 @@
         "보상/위험: 자원 수집 및 전략적 선택",
         " 다음선택: 방어 복잡도 증가 또는 자원 우선순위 재설정"
       ]
+    },
+    "local_authoring_parts::8b3fcda8648ef7716aaf405133dc14026803bde43632364e08b1dea13c0401f6:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_arena_defense_adaptation",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemyWaveRead",
+        "defensiveConfiguration"
+      ],
+      "stateOutputs": [
+        "resourceAllocationDecisions",
+        "strategicPathChanges"
+      ],
+      "name": "Arena Defense Adaptation",
+      "purpose": "Player's initial defensive setup",
+      "playerChoice": "Strategic trade-offs between defense and resource acquisition in response to increasing threat level and dynamic enemy composition and battlefield conditions, with adaptive defense becoming a key economic factor influencing future battlefields and resource priorities."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 709992,
-      "lastMs": 55356,
+      "totalMs": 785770,
+      "lastMs": 75778,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:22:29.418Z"
+      "updatedAt": "2026-10-10T06:23:45.198Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:10:39.226Z",
-  "updatedAt": "2026-10-10T06:22:29.418Z",
+  "updatedAt": "2026-10-10T06:23:45.198Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1928,7 +1943,7 @@
   "localAuthoringSplits": {
     "549c0283e9358353ce2af4968bf8ab2321e28d15b68f2ff26fa768a3fbf6f3fd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:22:29.418Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:23:45.198Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
