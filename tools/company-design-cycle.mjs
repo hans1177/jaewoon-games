@@ -889,7 +889,10 @@ function repairFields(scored){
   const explicit=reasons.flatMap(reason=>reason.fields||[]);
   const axes=uniq([...(scored?.criticalAxisFailures||[]),...reasons.filter(reason=>!reason.fields?.length).map(reason=>reason.axis)]);
   const derived={webCanonicalDesign:['coreLoop','signatureSystems','contentVarietyPlan','progressionEconomyBalance','failureRetryRisk','uxAccessibilityPlan','artAudioDirection'],platformExpansionPolicy:[]};
-  const fields=uniq([...explicit,...axes.flatMap(axis=>AXIS_FIELDS[axis]||[])].flatMap(field=>Object.prototype.hasOwnProperty.call(derived,field)?derived[field]:[field])).filter(field=>DESIGN.required.includes(field));
+  // 시드 인과 문법의 고유 소재·장르·발견이 희석되면 실제 원본 creativeGrammar를 다시 작성한다.
+  // 점수축의 일반 보정만으로는 잘못된 MAIN/A/B/C/@가 그대로 남는 복구 누락을 막는다.
+  const seedGrammarDiluted=reasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED');
+  const fields=uniq([...explicit,...(seedGrammarDiluted?['creativeGrammar']:[]),...axes.flatMap(axis=>AXIS_FIELDS[axis]||[])].flatMap(field=>Object.prototype.hasOwnProperty.call(derived,field)?derived[field]:[field])).filter(field=>DESIGN.required.includes(field));
   return fields.length?fields:['identity','coreFun','coreLoop','signatureSystems'];
 }
 
