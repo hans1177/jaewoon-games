@@ -1050,25 +1050,38 @@
       "name": "체스 기반 전략적 판타지 게임 - B 라인",
       "purpose": "다른 시스템 + 전략적 선택 창작 소재로 구성됨",
       "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
+    },
+    "local_authoring_parts::dcefab019b792c2c71c0754a22c68048c311d55193dad8c80faebd72ab65e633:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "체스판 상태 변화"
+      ],
+      "stateOutputs": [
+        "전략적 연결 확대"
+      ],
+      "name": "체스 기반 전략적 판타지 게임 - DELVE 라인",
+      "purpose": "체스판 상태 변화에 따른 전략적 판단 및 전장 관리로 인해 실질적인 선택과 전술 경로 개발",
+      "playerChoice": "체스판의 상태 변화를 바탕으로 전략적 판단을 수행하며, AI 전략, 블록체인 등 다른 시스템 도입으로 전략적 연결 확대하여 세계가 변형되고, 다양한 선택 가능성 확률을 바탕으로 전술 경로를 개발해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 31,
+      "calls": 34,
+      "successes": 32,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 3377704,
-      "lastMs": 69443,
+      "totalMs": 3452514,
+      "lastMs": 74810,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:10:48.119Z"
+      "updatedAt": "2026-10-10T01:12:02.930Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-10T01:10:48.119Z",
+  "updatedAt": "2026-10-10T01:12:02.935Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2740,7 +2753,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 5
+    "designer_draft_slices::identity-core": 6
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2842,10 +2855,10 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:10:48.119Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:12:02.931Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
