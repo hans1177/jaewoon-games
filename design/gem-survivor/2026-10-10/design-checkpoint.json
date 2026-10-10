@@ -3,9 +3,9 @@
   "gameId": "gem-survivor",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
-  "fingerprint": "5bc12d36438df3425c653a68580faedb6d37e572a242657f297522ed621151db",
+  "fingerprint": "2be99ab23a1cc87fb093e45852a242364af4f5b974dbf9b48f0a1918f0f600cc",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -13,180 +13,129 @@
     "local_authoring_parts::358a628e47628bd5d6e25d25ec1b1c31c0488c8b4b7024ab3172577022d8ed38:identity,creativeGrammar,playerFantasy,coreFun": {
       "identity": "보석 생존전",
       "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "mainIdentity": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
         "a": {
-          "system": "Survival",
-          "material": "Horde Pressure, Upgrade Choices, Build Synergy",
-          "materialDomain": "Action & Survival",
-          "stateChange": "Build Combination -> Wave Survival -> Boss Conversion"
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "사용자 직접 업로드 웹게임",
+          "materialDomain": "생존,액션,수집",
+          "stateChange": "입력→ 상태변화 → 보상/위험 → 다음 선택"
         },
         "b": {
-          "system": "Progression",
-          "material": "Run Rewards, Experience, Skill Upgrades",
-          "materialDomain": "Gameplay & Progression",
-          "stateChange": "Reward Collection -> Skill Mastery -> Next Progression Choice"
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "사용자 직접 업로드 웹게임",
+          "materialDomain": "생존,액션,수집",
+          "stateChange": "입력→ 상태변화 → 보상/위험 → 다음 선택"
         },
-        "abCausality": "Build Combination → Reward Collection → Skill Mastery → Next Progression Choice",
+        "abCausality": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
         "abEvolution": {
-          "aChangesB": "Upgrade Selection → Run Result → New Strategy Outcome",
-          "bChangesA": "Skill Mastery → Experience Gain → New Playstyle Outcomes",
-          "lateGameChange": "Build Synthesis → World State Change → Terminal Structure"
+          "aChangesB": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "bChangesA": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
         },
         "materialFusion": {
-          "contrast": "Horse Pressure vs. Resource Scarcity",
-          "causalBridge": "Enemy Positioning → Player Adaptation → System Interaction",
-          "removalConsequence": "Wave Difficulty → Skill Requirement → Multi-System Integration"
+          "contrast": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "causalBridge": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+          "removalConsequence": "모바일에서도 즉시 이해되는 입력과 피드백을 생성"
         },
         "storyCausalChain": {
-          "cause": "Player Movement and Enemy Positioning",
-          "characterConflict": "Adaptation to Environmental Pressures",
-          "playerChoice": "Upgrading Builds for Survival",
-          "worldChange": "New Wave Difficulty and Boss Encounter",
-          "nextEvent": "Progression Choice with New Strategy"
+          "cause": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+          "characterConflict": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+          "playerChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택",
+          "worldChange": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
+          "nextEvent": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
         },
         "cThemes": [
           {
-            "name": "Survival",
+            "name": "생존",
             "kind": "MATERIAL",
-            "gameplayEffect": "Enemy Pressure, Wave Difficulty"
+            "gameplayEffect": "사용자 직접 업로드 웹게임, 모바일에서도 즉시 이해되는 입력과 피드백"
           },
           {
-            "name": "Progression",
+            "name": "액션",
             "kind": "MATERIAL",
-            "gameplayEffect": "Run Rewards, Skill Upgrades"
+            "gameplayEffect": "ACTION_SURVIVAL_ROGUELITE, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
           }
         ],
         "cGenres": [
           {
             "role": "PRIMARY",
-            "name": "Action & Survival",
-            "gameplayEffect": "Horse Pressure, Upgrade Choices"
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "모바일에서도 즉시 이해되는 입력과 피드백"
           },
           {
             "role": "SECONDARY",
-            "name": "Gameplay & Progression",
-            "gameplayEffect": "Run Rewards, Skill Mastery"
+            "name": "SURVIVAL",
+            "gameplayEffect": "진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재"
           }
         ],
-        "cGenreInterlock": "Build Combination → Reward Collection → Skill Mastery → Next Progression Choice",
-        "cWorldAndGameplayEffect": "Enemy Positioning → Player Adaptation → System Interaction",
+        "cGenreInterlock": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
+        "cWorldAndGameplayEffect": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
         "delveDiscoveries": [
           {
-            "clue": "Player Movement and Enemy Positioning",
-            "discovery": "Adaptation to Environmental Pressures",
-            "newChoice": "Upgrade Selection"
+            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
           },
           {
-            "clue": "Upgrading Builds for Survival",
-            "discovery": "Skill Mastery",
-            "newChoice": "Experience Gain"
+            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
           },
           {
-            "clue": "New Wave Difficulty and Boss Encounter",
-            "discovery": "Progression Choice with New Strategy",
-            "newChoice": "Multi-System Integration"
+            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핸드폰 게임",
+            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
           },
           {
-            "clue": "Player Action and Neglect Change World State",
-            "discovery": "New Playstyle Outcomes",
-            "newChoice": "Terminal Structure"
+            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
+            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 모바일 게임",
+            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
           }
         ],
-        "delveGrowthRule": "When Backtracking Exists Prior Space Must Gain New Access/Event/Risk/Reward/Information; Empty Return Travel Does Not Count",
-        "finalGameIdentity": "Survival Build Synthesis → Run Result → Multi-System Integration → Terminal Structure"
+        "delveGrowthRule": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "finalGameIdentity": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재, 모바일에서도 즉시 이해되는 입력과 피드백"
       },
-      "playerFantasy": "보석 생존전은 플레이어가 실제 경험을 통해 흔히 보는 게임의 핵심 재미를 숙련하고 선택으로 반복하며, 새로운 전략과 경로를 만들어내는 빌드·경로·위험·보상이 서로 연결되는 반복 가능한 핵심 루프이다.",
-      "coreFun": "플레이어는 단순한 입력 후 즉각적인 상태 변화와 피드백을 경험하여, 다양한 상황에서 적응하는 능력을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 과정에서는 기존의 구조를 벗어나 새로운 시스템 및 장르에 대한 인식을 형성하고, 무한하게 발전할 수 있는 창작 소재를 만든다."
+      "playerFantasy": "사용자 직접 업로드 웹게임, 모바일에서도 즉시 이해되는 입력과 피드백, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재",
+      "coreFun": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재, 모바일에서도 즉시 이해되는 입력과 피드백"
     },
-    "local_authoring_parts::f84b0c58e7afde4cf57cfe13879c839fc3c4c02f2ea48afe8c41e1b12df3aa92:coreLoop": {
+    "local_authoring_parts::4d4b6900ba3689147acfead92df9f9bc0121274b04dfdaaad6aaeff5030129cc:coreLoop": {
       "coreLoop": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        "입력→ 상태변화 → 보상/위험 → 다음 선택",
+        "플레이어가 직접 업로드 웹게임에서 사용하는 입력과 피드백을 통해 진행, 위험, 보상을 연결시키며 루프 형성",
+        "보석 생존전의 핵심 재미는 실제 플레이 선택에 의해 재정의되며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공"
       ]
-    },
-    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Build Combination",
-        "Wave Survival",
-        "Boss Conversion"
-      ],
-      "stateOutputs": [
-        "Reward Collection",
-        "Skill Mastery",
-        "Next Progression Choice"
-      ],
-      "name": "Survival Build Synthesis",
-      "purpose": "To integrate player adaptation, environmental pressures, and system interaction into a cohesive survival experience.",
-      "playerChoice": "Upgrading builds for survival, adapting to enemy positioning, and integrating multi-system interactions through strategic progression choices."
-    },
-    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "Build Combination",
-        "Wave Survival",
-        "Boss Conversion"
-      ],
-      "stateOutputs": [
-        "Reward Collection",
-        "Skill Mastery",
-        "Next Progression Choice"
-      ],
-      "name": "Survival Build Synthesis",
-      "purpose": "Facilitates the synthesis of build combinations, wave survival, and boss conversion to generate new progression choices.",
-      "playerChoice": "Upgrading builds for survival through adaptive strategies and multi-system integration."
-    },
-    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "Build Combination",
-        "Wave Survival",
-        "Boss Conversion"
-      ],
-      "stateOutputs": [
-        "Reward Collection",
-        "Skill Mastery",
-        "Next Progression Choice"
-      ],
-      "name": "Survival Build Synthesis",
-      "purpose": "Facilitates the synthesis of builds, survival, and progression choices to drive the core loop.",
-      "playerChoice": "Upgrading Builds for Survival"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 331578,
-      "lastMs": 35293,
+      "totalMs": 205760,
+      "lastMs": 35482,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:02:14.484Z"
+      "updatedAt": "2026-10-10T07:30:01.573Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T01:56:42.762Z",
-  "updatedAt": "2026-10-10T02:02:14.492Z",
+  "createdAt": "2026-10-10T07:26:35.578Z",
+  "updatedAt": "2026-10-10T07:30:01.574Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -210,6 +159,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -264,6 +214,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -727,8 +678,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -752,6 +703,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -806,6 +758,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1269,8 +1222,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1294,6 +1247,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1348,6 +1302,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1880,25 +1835,11 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]",
-          "signatureSystems[2]"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:3": 2
-  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:02:14.484Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-10T07:30:01.573Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
