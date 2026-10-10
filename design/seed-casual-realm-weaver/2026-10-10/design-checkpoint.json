@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 무작위로 배치된 조각을 조절하며, 그 과정에서 세상을 재구성해 시각적 만족감과 성취감을 얻습니다.",
       "coreFun": "조각을 드래그하여 연결하면 빛이 퍼져나가며 주변 환경이 변하게 되고, 이는 새로운 테마의 조각 세트 해금 및 점수 획득으로 이어집니다."
+    },
+    "local_authoring_parts::7d54980e8defbc89857665f66189da42943f365f7d0dda92031d7540d1358967:coreLoop": {
+      "coreLoop": [
+        "무작위 조각 배치 → 조각 연결 → 빛 전파 및 환경 변화",
+        "연속 연결(콤보) → 특수 효과 발동 → 목표 점수 달성 → 다음 스테이지 진입",
+        "재화 수집 → 새로운 테마 조각 해금 → 정원 꾸미 시스템 활용"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 504993,
-      "lastMs": 53606,
+      "totalMs": 563922,
+      "lastMs": 58929,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:49:02.703Z"
+      "updatedAt": "2026-10-10T09:50:01.635Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:40:37.688Z",
-  "updatedAt": "2026-10-10T09:49:02.705Z",
+  "updatedAt": "2026-10-10T09:50:01.635Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1484,7 +1491,7 @@
   "localAuthoringSplits": {
     "8e105a267bca4f6d8d88adca8793eb4c24056fda2eb45472cae2002de4714a6c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:49:02.705Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:50:01.635Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
