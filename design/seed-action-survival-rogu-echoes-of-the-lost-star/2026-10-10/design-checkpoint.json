@@ -533,25 +533,55 @@
       "name": "Enemy Behavior Engine",
       "purpose": "Enables dynamic threat response based on environmental changes",
       "playerChoice": "Shift in threat type triggers new gameplay mechanics"
+    },
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:3": {
+      "id": "signature-systems-3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "TERRAIN_ADAPTATION"
+      ],
+      "stateOutputs": [
+        "NEW_ACTION"
+      ],
+      "name": "Dynamic Terrain Adaptation",
+      "purpose": "Players choose between different terrain adaptations that affect their entire playstyle.",
+      "playerChoice": "Players select between different terrain adaptations that affect their entire playstyle."
+    },
+    "local_authoring_parts::1146e971b61cb36f2bf5f0a82a53fb7709cc349a5b866a32dc5de0ceb8a41f2b:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Build Composition",
+        "Threat Type Shift",
+        "Terrain Adaptation"
+      ],
+      "stateOutputs": [
+        "Resource Allocation",
+        "Tactical Response",
+        "Dynamic Terrain Adjustment"
+      ],
+      "name": "잃어버린 별의 메아리 - 플레이어가 무한히 파고드는 진입점에서, 단순한 전투보다는 숨겨진 세계로 이어지는 생존 로그라이트",
+      "purpose": "Player's ability to dynamically adjust their survival strategy through adaptive build systems and environmental hazards",
+      "playerChoice": "Choose between different build compositions that prioritize either resource efficiency or strategic flexibility"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 22,
+      "successes": 21,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1880424,
-      "lastMs": 65428,
+      "totalMs": 2095574,
+      "lastMs": 75518,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:55:49.116Z"
+      "updatedAt": "2026-10-10T00:59:24.317Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-10T00:55:49.116Z",
+  "updatedAt": "2026-10-10T00:59:24.319Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2290,14 +2320,24 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::1146e971b61cb36f2bf5f0a82a53fb7709cc349a5b866a32dc5de0ceb8a41f2b:signatureSystems:1": [
+      {
+        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "identity-core"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:1": 1,
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:2": 1,
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:3": 1,
-    "designer_draft_slices::identity-core": 1,
-    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": 4
+    "designer_draft_slices::identity-core": 2,
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": 4,
+    "local_authoring_parts::1146e971b61cb36f2bf5f0a82a53fb7709cc349a5b866a32dc5de0ceb8a41f2b:signatureSystems:1": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2398,10 +2438,10 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:55:49.116Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:59:24.317Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
