@@ -1,1 +1,6 @@
-<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>
+<linker>
+  <assembly fullname="UnityEngine.CoreModule" preserve="all" />
+  <assembly fullname="UnityEngine.ContentLoadModule">
+    <type fullname="Unity.Loading.ContentLoadingSystem" preserve="all" />
+  </assembly>
+</linker>
