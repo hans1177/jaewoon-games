@@ -15,7 +15,7 @@ import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-des
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from './vibe2-asset-production-plan.mjs';
 import {GAME_CONVENIENCE_REFERENCES} from './company-roblox-production-plan.mjs';
 import {computeVibeSeedProposal} from './company-game-seed-bootstrap.mjs';
-import {buildConceptSystemBlueprint} from './company-vibe2-game-flow-architect.mjs';
+import {buildConceptSystemBlueprint,buildGameFlowArchitecture} from './company-vibe2-game-flow-architect.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -97,7 +97,25 @@ const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
     ||!seedGameplaySketch
     ||seedGameplaySketch?.source==='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
 const advancedSeedDesignDepth=inputGameplaySketchVersion>=2;
-const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
+const seedFlowInput=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
+// 설계 작성 전 접수 호환 스케치는 권위 있는 게임 도구 요구로 승격하지 않는다.
+// 작성된 설계는 기존 게임 흐름을 유지하고 현재 공용 도구/자산 역할만 다시 결합한다.
+const seedFlowArchitecture=seedFlowInput&&!pendingSeedGrammarNotAuthored
+  ?buildGameFlowArchitecture({
+    gameId,
+    genre:clean(seed.category||seed.genre||seed.gameCategory),
+    baseline:{
+      GAME_FLOW_ARCHITECTURE:seedFlowInput,
+      content:{
+        identity:clean(seed?.originalDesignContext?.content?.identity||seedGameplaySketch?.identityCore?.distinctIdentity||seed.gameName),
+        coreFun:clean(seed?.originalDesignContext?.content?.coreFun||seedGameplaySketch?.playerPromise),
+        coreLoop:Array.isArray(seed?.originalDesignContext?.content?.coreLoop)?seed.originalDesignContext.content.coreLoop:
+          Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
+        signatureSystems:seed?.originalDesignContext?.content?.signatureSystems||[],
+        progressionDirection:clean(seed?.originalDesignContext?.content?.progressionDirection||seedGameplaySketch?.progressionLayers?.join(' '))
+      }
+    },inventory:[]
+  }):seedFlowInput;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
 const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.requirements)?seedFlowArchitecture.assetFlow.requirements:[];
 const seedDesignDepthContext={
@@ -146,6 +164,21 @@ const seedDesignDepthContext={
       novelGrammarContract:pendingSeedGrammarNotAuthored?null:seedFlowSystemBlueprint.novelGrammarContract||null,
       libraryReusePolicy:seedFlowSystemBlueprint.libraryReusePolicy||null,
       expansionPolicy:seedFlowSystemBlueprint.expansionPolicy||null
+    }:null,
+    designToolSync:seedFlowArchitecture.designToolSync?{
+      version:1,
+      phase:'DESIGN',
+      requiredSystems:seedFlowArchitecture.designToolSync.requiredSystems||[],
+      optionalSystems:seedFlowArchitecture.designToolSync.optionalSystems||[],
+      requiredUiRoles:seedFlowArchitecture.designToolSync.requiredUiRoles||[],
+      optionalUiRoles:seedFlowArchitecture.designToolSync.optionalUiRoles||[],
+      requiredNativeLibraryHints:seedFlowArchitecture.designToolSync.requiredNativeLibraryHints||[],
+      optionalNativeLibraryHints:seedFlowArchitecture.designToolSync.optionalNativeLibraryHints||[],
+      assetSelection:'EXISTING_COMPATIBLE_COMPANY_LIBRARY_FIRST_AT_EXECUTION',
+      runtimeAssetBindingVerified:false,
+      menuVisibility:'AUTHORITATIVE_GAME_CAPABILITIES_ONLY',
+      noShadowPipeline:true,
+      gameSaveEconomyCombatAndNetworkAuthorityUnchanged:true
     }:null,
     assetFlow:seedFlowArchitecture.assetFlow?{
       version:Number(seedFlowArchitecture.assetFlow.version||1),
