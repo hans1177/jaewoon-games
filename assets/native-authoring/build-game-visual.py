@@ -33,6 +33,8 @@ PARSER.add_argument('--source-model', default='')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
 PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], default='auto')
+PARSER.add_argument('--cinematic-style', choices=['studio','dramatic'], default='studio')
+PARSER.add_argument('--cinematic-quality', choices=['preview','high'], default='preview')
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
@@ -961,47 +963,77 @@ if ARGS.module in ('video','animation'):
     old_resolution=(SCENE.render.resolution_x,SCENE.render.resolution_y)
     old_frame=SCENE.frame_current
     old_camera=Vector(cam.location)
-    existing=set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=str(glb))
-    imported=[obj for obj in bpy.data.objects if obj not in existing]
+    old_focal_length=cam_data.lens
+    shot_quality=ARGS.cinematic_quality
+    video_resolution=640 if shot_quality=='high' else 320
+    video_style=ARGS.cinematic_style
+    # 인트로 월드 소개 → 동작 연출 → 클로즈업. 세 컷 모두 실제 GLB를 재수입해 렌더한다.
+    SHOT_PLAN=[
+        {'name':'ESTABLISHING','start':0,'end':8,'focal':38,'radius':2.8,'elevation':1.35,'key':920},
+        {'name':'ACTION_REVEAL','start':8,'end':16,'focal':56,'radius':2.05,'elevation':1.05,'key':1080},
+        {'name':'SIGNATURE_CLOSEUP','start':16,'end':24,'focal':76,'radius':1.60,'elevation':0.90,'key':1190},
+    ]
+    old_key_energy=bpy.data.objects['Key'].data.energy
+    imported=[]
     try:
-        SCENE.render.resolution_x=320
-        SCENE.render.resolution_y=320
+        SCENE.render.resolution_x=video_resolution
+        SCENE.render.resolution_y=video_resolution
+        SCENE.render.image_settings.file_format='PNG'
+        existing=set(bpy.data.objects)
+        bpy.ops.import_scene.gltf(filepath=str(glb))
+        imported=[obj for obj in bpy.data.objects if obj not in existing]
+        if not any(obj.type=='MESH' for obj in imported):
+            raise RuntimeError('VIDEO_REIMPORTED_SOURCE_GLB_MISSING_MESH')
         with tempfile.TemporaryDirectory(prefix='vibe-video-frames-') as video_work:
             frames_dir=Path(video_work)
             for idx in range(24):
                 frame=idx+1
                 SCENE.frame_set(frame)
-                angle=(idx/24)*math.tau
-                cam.location=target+Vector((2.0*math.cos(angle),2.0*math.sin(angle),1.3))*max(BOUNDS_SIZE)
+                shot=next(plan for plan in SHOT_PLAN if plan['start']<=idx<plan['end'])
+                t=(idx-shot['start'])/max(1,shot['end']-shot['start']-1)
+                smooth=t*t*(3-2*t)
+                base_angle=(0.16 if shot['name']=='ESTABLISHING' else 1.05 if shot['name']=='ACTION_REVEAL' else -0.48)
+                angle=base_angle+smooth*(0.30 if shot['name']=='ESTABLISHING' else 0.68 if shot['name']=='ACTION_REVEAL' else 0.18)
+                cam_data.lens=shot['focal']
+                cam.location=target+Vector((shot['radius']*math.cos(angle),
+                    shot['radius']*math.sin(angle),shot['elevation']))*max(BOUNDS_SIZE)
                 cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+                bpy.data.objects['Key'].data.energy=shot['key']*(1.20 if video_style=='dramatic' else 1.0)
                 SCENE.render.filepath=str(frames_dir/f'frame-{idx:03d}.png')
                 bpy.ops.render.render(write_still=True)
-                if not Path(SCENE.render.filepath).is_file():
+                if not Path(SCENE.render.filepath).is_file() or Path(SCENE.render.filepath).stat().st_size<=1024:
                     raise RuntimeError('VIDEO_BLENDER_FRAME_RENDER_MISSING')
             ffmpeg=os.environ.get('VIBE_FFMPEG_BINARY','ffmpeg')
             command=[ffmpeg,'-hide_banner','-loglevel','error','-nostdin','-y',
                      '-framerate','12','-i',str(frames_dir/'frame-%03d.png'),
-                     '-frames:v','24','-c:v','mpeg4','-qscale:v','4',
+                     '-frames:v','24','-c:v','mpeg4','-qscale:v','3',
                      '-pix_fmt','yuv420p','-movflags','+faststart',str(output_video)]
             try:
                 subprocess.run(command,check=True,stdout=subprocess.DEVNULL,
-                               stderr=subprocess.PIPE,timeout=45)
+                               stderr=subprocess.PIPE,timeout=65)
             except (OSError,subprocess.CalledProcessError,subprocess.TimeoutExpired) as exc:
                 raise RuntimeError('VIDEO_FFMPEG_ENCODER_EXECUTION_FAILED') from exc
         if not output_video.is_file() or output_video.stat().st_size<1024:
             raise RuntimeError('VIDEO_FFMPEG_MP4_OUTPUT_MISSING')
-        VIDEO_EXPORT={'source':'https://ffmpeg.org','license':'LGPL-2.1-or-later-or-GPL-depending-on-build',
+        VIDEO_EXPORT={'source':'https://ffmpeg.org',
+            'license':'LGPL-2.1-or-later-or-GPL-depending-on-build',
             'path':'preview-motion.mp4','sha256':hashlib.sha256(output_video.read_bytes()).hexdigest(),
-            'frames':24,'fps':12,'resolution':[320,320],
-            'format':'MP4','codec':'MPEG4','sourceGlbSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
+            'frames':24,'fps':12,'resolution':[video_resolution,video_resolution],
+            'cinematicStyle':video_style,'cinematicQuality':shot_quality,
+            'shotPlan':[{'name':row['name'],'frameStart':row['start'],'frameEnd':row['end']-1,
+                         'focalLengthMm':row['focal']} for row in SHOT_PLAN],
+            'format':'MP4','codec':'MPEG4',
+            'sourceGlbSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
             'motionClips':MOTION_CLIPS,'actualFramesRendered':True,'runtimeVerified':False}
     finally:
         SCENE.render.resolution_x,SCENE.render.resolution_y=old_resolution
         SCENE.frame_set(old_frame)
+        bpy.data.objects['Key'].data.energy=old_key_energy
+        cam_data.lens=old_focal_length
         cam.location=old_camera
         cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
-        for obj in imported:bpy.data.objects.remove(obj,do_unlink=True)
+        for obj in imported:
+            bpy.data.objects.remove(obj,do_unlink=True)
 
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 artifact_hash=hashlib.sha256(glb.read_bytes()).hexdigest()
