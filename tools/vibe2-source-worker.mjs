@@ -2610,6 +2610,9 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const anchors=lines.filter(line=>line.startsWith('sourceAnchors='))
     .flatMap(line=>line.slice('sourceAnchors='.length).split(/ \| (?=[^|\r\n]+\.(?:luau?|cs|[cm]?js|tsx?|html):\d+ )/));
   const paths=selectedPath?[selectedPath]:responsiblePaths;
+  // 실제 선택된 Roblox 게임과 일치하는 Unity 원본만 참조한다.
+  const platformBinding=lines.find(line=>line.startsWith('designCodePlatform='))||'';
+  const expectedGameId=/;source=roblox-games\/([a-z0-9][a-z0-9-]*)(?:;|$)/.exec(platformBinding)?.[1]||'';
   const owned=paths.length?anchors.filter(anchor=>{
     const file=anchor.match(/^(.*?):(?:\d+|\?) /)?.[1];
     return file&&paths.some(relative=>posix(file)===posix(relative)||posix(file).endsWith('/'+posix(relative)));
@@ -2628,10 +2631,14 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(line.startsWith('unityWebSourceReference=')){
       try{
         const reference=JSON.parse(line.slice('unityWebSourceReference='.length));
-        if(!/^unity-games\/[a-z0-9][a-z0-9-]*\/Assets\/Scripts\//.test(clean(reference?.path))
+        const referencePath=posix(clean(reference?.path));
+        const scope=/^unity-games\/([a-z0-9][a-z0-9-]*)\/Assets\/Scripts\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*\.cs$/.exec(referencePath);
+        const segments=referencePath.split('/');
+        if(!scope||segments.some(segment=>!segment||segment==='.'||segment==='..')
+          ||(expectedGameId&&scope[1]!==expectedGameId)
           ||!/^[0-9a-f]{64}$/.test(clean(reference?.sha256)))return[];
         return['unityWebSourceReference='+JSON.stringify({
-          path:reference.path,sha256:reference.sha256,
+          path:referencePath,sha256:reference.sha256,
           sourceStatus:reference.sourceStatus,runtimeVerified:false,
           methods:(Array.isArray(reference.methods)?reference.methods:[]).slice(0,2)
             .map(row=>({method:clean(row.method),source:boundedPromptText(clean(row.source),200)}))
