@@ -37,7 +37,10 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
       assert.equal(asset.productionVerified,false);
       assert.equal(asset.masterGlbStaticQaPass,false);
       assert.equal(asset.nativeRuntimeVerified,false);
-      assert.ok(asset.authoringRecipes.some(r=>r.script==='assets/native-authoring/build-shared-creature.mjs'&&r.masterGlbRequired));
+      assert.equal(asset.sourceGenerator,'assets/native-authoring/build-shared-creature.mjs');
+      assert.deepEqual(asset.sourceGeneratorArgs,['assets/shared','--species='+species]);
+      assert.equal(asset.authoringRecipes,undefined,'Node source cannot be scheduled as a Blender DCC recipe');
+      assert.equal(asset.existingNativeDccExecutorUnchanged,true);
       const original=fs.readFileSync(path.join(root,asset.masterGlb));
       const generated=fs.readFileSync(path.join(folder,'creature-'+species+'.glb'));
       assert.ok(original.equals(generated),species+' source must reproduce exact committed master');
