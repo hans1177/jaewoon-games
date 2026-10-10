@@ -97,25 +97,33 @@
       },
       "playerFantasy": "플레이어는 놀이기구의 위치를 조정하여 손님의 이동 시간을 줄이고, 음식 가격을 조절하며, 테마 장식을 추가하는 선택을 통해 손님의 만족도와 공원의 수익성을 동시에 극대화해야 합니다.",
       "coreFun": "플레이어는 놀이기구의 배치 및 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하고, 수익 재투자 및 효율 극대화를 통해 공원의 전체적인 성장을 촉진합니다. 이러한 선택은 손님의 이동 경로와 행복도 수치에 즉각적인 영향을 미칩니다."
+    },
+    "local_authoring_parts::66da466c982443cbddaf7608b985ab40382229127f1ae3266502eb2a3e06b437:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상·위험·다음 선택",
+        "공간 배치 및 놀이기구 건설: 제한된 자본을 사용하여 놀이기구와 편의시설을 배치하고 동선을 설계합니다.",
+        "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
+        "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 140444,
-      "lastMs": 140444,
+      "totalMs": 172878,
+      "lastMs": 32434,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:31:58.418Z"
+      "updatedAt": "2026-10-10T09:32:30.854Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:29:37.961Z",
-  "updatedAt": "2026-10-10T09:31:58.418Z",
+  "updatedAt": "2026-10-10T09:32:30.854Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1391,7 +1399,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:31:58.418Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:32:30.854Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
