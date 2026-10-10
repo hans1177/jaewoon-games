@@ -3,6 +3,7 @@
 // 메인: 실제 다관절 스킨 3D 모델과 종족별 이동·공격·스킬 키프레임 제작.
 import fs from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 export const SHARED_CREATURE_SPECIES=Object.freeze({
   wolf:{bodyPlan:'QUADRUPED_CANINE',pairs:2,height:.90,signature:'WOLF_PACK_HOWL',palette:[.34,.34,.33]},
@@ -156,8 +157,10 @@ export function buildSharedCreature(species='wolf'){
  doc.materials=colors.map((v,i)=>({name:'Material'+i,doubleSided:true,pbrMetallicRoughness:{baseColorFactor:v,metallicFactor:i===2?.12:.02,roughnessFactor:.84}}));
  doc.meshes=[{name:'CreatureMesh',primitives:groups.filter(g=>g.indices.length).map(g=>{
    if(g.p.length/3>=65535)throw Error('MOBILE_CREATURE_VERTEX_BUDGET_EXCEEDED');
+   const positionMin=[0,1,2].map(axis=>Math.min(...g.p.filter((_,i)=>i%3===axis)));
+   const positionMax=[0,1,2].map(axis=>Math.max(...g.p.filter((_,i)=>i%3===axis)));
    return {mode:4,material:groups.indexOf(g),attributes:{
-     POSITION:accessor(new Float32Array(g.p),'VEC3',5126,34962),
+     POSITION:accessor(new Float32Array(g.p),'VEC3',5126,34962,positionMin,positionMax),
      NORMAL:accessor(new Float32Array(g.n),'VEC3',5126,34962),
      TEXCOORD_0:accessor(new Float32Array(g.uv),'VEC2',5126,34962),
      JOINTS_0:accessor(new Uint16Array(g.bones),'VEC4',5123,34962),
@@ -193,13 +196,16 @@ export function buildSharedCreature(species='wolf'){
    triangles:groups.reduce((n,g)=>n+g.indices.length/3,0),jointCount:joints.length,clipNames:clips,
    sourceVerified:false,nativeRuntimeVerified:false,productionVerified:false,gameplayAuthority:false};
 }
-const targetDir=path.resolve(process.argv[2]||'assets/shared');
-const arg=process.argv.find(x=>x.startsWith('--species='));
-const wanted=arg?arg.slice(10).split(',').map(x=>x.trim()).filter(Boolean):Object.keys(SHARED_CREATURE_SPECIES);
-if(!wanted.length)throw Error('NO_CREATURE_SPECIES_REQUESTED');
-fs.mkdirSync(targetDir,{recursive:true});
-for(const id of new Set(wanted)){
-  const actor=buildSharedCreature(id),file=path.join(targetDir,'creature-'+id+'.glb');
-  fs.writeFileSync(file,actor.bytes);
-  console.log(JSON.stringify({file,bodyPlan:actor.bodyPlan,triangles:actor.triangles,skinnedJoints:actor.jointCount,clips:actor.clipNames,nativeRuntimeVerified:false}));
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+  const arg=process.argv.find(x=>x.startsWith('--species='));
+  const wanted=arg?arg.slice(10).split(',').map(x=>x.trim()).filter(Boolean):Object.keys(SHARED_CREATURE_SPECIES);
+  const targetArg=process.argv.slice(2).find(x=>!x.startsWith('--'));
+  const targetDir=path.resolve(targetArg||'assets/shared');
+  if(!wanted.length)throw Error('NO_CREATURE_SPECIES_REQUESTED');
+  fs.mkdirSync(targetDir,{recursive:true});
+  for(const id of new Set(wanted)){
+    const actor=buildSharedCreature(id),file=path.join(targetDir,'creature-'+id+'.glb');
+    fs.writeFileSync(file,actor.bytes);
+    console.log(JSON.stringify({file,bodyPlan:actor.bodyPlan,triangles:actor.triangles,skinnedJoints:actor.jointCount,clips:actor.clipNames,nativeRuntimeVerified:false}));
+  }
 }
