@@ -2266,6 +2266,8 @@ export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
     license:'BSD-style',engine:'SLICER_SANITIZED_SURFACE_IN_BLENDER',
     requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])}),
   animation:freeze({source:'https://github.com/blender/blender',
+    mocapReference:'https://www.deepmotion.com/animate-3d-api',physicsReference:'https://cascadeur.com/help/tools/physics_tools/autophysics',
+    externalMocapExecution:'USER_LICENSE_VERIFIED_FBX_INPUT_ONLY_NO_PAID_API_CALL',
     license:'GPL-2.0-or-later',engine:'BLENDER_KEYFRAMES_NLA_AND_GLTF_ANIMATION',
     types:freezeList(['animation','motion','prop','item','weapon','environment','background'])}),
   video:freeze({source:'https://ffmpeg.org',
@@ -2298,6 +2300,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
     &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
     &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel))
+    &&(!/\.fbx$/i.test(sourceModel||'')||['animation','video'].includes(module))
     &&['auto','triposr','trellis2'].includes(meshModel);
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
@@ -2382,8 +2385,10 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     checkSourceLicense();
   }
   if(modelRequested){
-    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl|fbx)$/i.test(sourceModel)
       ||sourceModel.split('/').includes('..'))throw new Error('OPEN_SOURCE_LOCAL_SURFACE_REQUIRED');
+    if(/\.fbx$/i.test(sourceModel)&&!['animation','video'].includes(module))
+      throw new Error('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE');
     checkSourceLicense();
   }
   if(imageRequested&&modelRequested)throw new Error('NATIVE_SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE');
