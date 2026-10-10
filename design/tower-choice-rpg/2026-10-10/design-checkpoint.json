@@ -136,25 +136,41 @@
       "name": "Progressive Risk Engine with Dynamic Threat Matrix",
       "purpose": "Enables adaptive risk management through variable threat scaling and dynamic difficulty adjustment.",
       "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation Strategy,"
+    },
+    "local_authoring_parts::8200cf1ea45145f151bd90da95ed4827eba7c8e645d03913acca240938890eca:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "INPUT/SELECT",
+        "STATE CHANGE",
+        "REWARD/RISK/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "PLAYER'S STRATEGIC DECISION",
+        "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+      ],
+      "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+      "purpose": "Enables dynamic difficulty scaling and adaptive combat logic through player-driven risk management.",
+      "playerChoice": "Adaptive Risk Management through Resource Allocation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 566698,
-      "lastMs": 184448,
+      "totalMs": 637387,
+      "lastMs": 70689,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:05:33.711Z"
+      "updatedAt": "2026-10-10T03:06:44.401Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:05:33.711Z",
+  "updatedAt": "2026-10-10T03:06:44.401Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1864,7 +1880,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:05:33.711Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:06:44.401Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
