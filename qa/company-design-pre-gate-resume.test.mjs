@@ -375,62 +375,9 @@ test('independent design games run concurrently without a portfolio success gate
 });
 
 // 내부 모델 시간 제한·준비·재개 회귀 검증
-test('local authoring owns a bounded five-minute budget independently of external timeout',async()=>{
-  const config=design.split('\n').filter(line=>/^const (?:modelCallTimeoutMs|localDesignerCallTimeoutMs)=/.test(line)).join('\n');
-  for(const [value,expected] of [[undefined,300000],['300000',300000],['900000',300000],['1',30000],['invalid',300000]]){
-    const budgets=runInNewContext(config+'\n({local:localDesignerCallTimeoutMs})',{process:{env:{COMPANY_MODEL_CALL_TIMEOUT_MS:'90000',COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS:value}}});
-    assert.equal(budgets.local,expected);
-  }
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const calls=[],stats=[];
-  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'external'},designCheckpoint:{},modelCallStats:stats,console:{log(){}},
-    requestLocalDesignerRaw:async(prompt,options)=>{calls.push(options);return '{"identity":"4v4 infection"}';},
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
-  });
-  for(const timeoutMs of [90000,120000])assert.equal((await author('system','user',{}, {timeoutMs})).identity,'4v4 infection');
-  assert.deepEqual(calls.map(row=>row.timeoutMs),[300000,300000]);
-  assert.deepEqual(stats.map(row=>row.timeoutMs),[300000,300000]);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: local authoring owns a bounded five-minute budget independently of external timeout
 
-test('local transport accepts a late completed response and rejects incomplete output without a false success',async()=>{
-  const source=design.slice(design.indexOf('async function requestLocalDesignerRaw('),design.indexOf('async function callLocalDesignerModel('));
-  const schema={type:'object',required:['identity'],properties:{identity:{type:'string'}},additionalProperties:false};
-  for(const mode of ['complete','incomplete','timeout','truncated']){
-    let timer,delay,requestBody,destroyed=false;
-    const logs=[];
-    const request=runInNewContext(source+'\nrequestLocalDesignerRaw',{
-      localDesignerCallTimeoutMs:300000,localDesignerModel:'local',Buffer,
-      clean:value=>String(value??'').trim(),clip:value=>String(value),console:{log:value=>logs.push(value)},
-      setTimeout:(fn,ms)=>{timer=fn;delay=ms;return 1;},clearTimeout(){},
-      http:{request:(options,onResponse)=>{
-        assert.equal(options.hostname,'127.0.0.1');
-        const req=new EventEmitter();
-        req.destroy=()=>{req.destroyed=true;destroyed=true;};
-        req.end=body=>{
-          requestBody=JSON.parse(body);
-          queueMicrotask(()=>{
-            if(mode==='timeout'){timer();return;}
-            const res=new EventEmitter();res.statusCode=200;res.setEncoding=()=>{};onResponse(res);
-            res.emit('data',JSON.stringify({done:mode==='complete'||mode==='truncated',done_reason:mode==='truncated'?'length':'stop',response:'{"identity":"4v4 infection"}',load_duration:1000000,prompt_eval_count:800,prompt_eval_duration:95000000000,eval_count:1000,eval_duration:65000000000}));
-            res.emit('end');
-          });
-        };
-        return req;
-      }}
-    });
-    if(mode==='complete')assert.equal(await request('private design input',{schema}),'{"identity":"4v4 infection"}');
-    else await assert.rejects(request('private design input',{schema}),mode==='timeout'?/OLLAMA_DESIGN_TIMEOUT 300000ms/:mode==='truncated'?/OLLAMA_DESIGN_OUTPUT_TRUNCATED/:/OLLAMA_DESIGN_INCOMPLETE_RESPONSE/);
-    assert.equal(delay,300000);assert.equal(destroyed,true);
-    assert.equal(requestBody.keep_alive,'10m');assert.equal(requestBody.think,false);
-    assert.equal(requestBody.options.repeat_penalty,1.15);
-    assert.equal(requestBody.options.repeat_last_n,256);
-    assert.deepEqual(requestBody.format,schema);
-    assert.equal(logs.some(row=>row.includes('private design input')),false);
-    assert.equal(logs.some(row=>row.includes('DESIGN_LOCAL_TIMING=')),mode==='complete'||mode==='truncated');
-  }
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: local transport accepts a late completed response and rejects incomplete output without a false success
 
 test('real repeated-sentence output rejects only its field without treating repeated rule IDs as prose',()=>{
   const repeated='병력과 자원은 서버 권한으로 집계된다.';
@@ -464,83 +411,7 @@ test('preservation design rejects action descriptions in input and output state 
 });
 
 // 메인: MAIN/A/B/c/@ 실제 역할을 원본 디자이너가 각각 작성·복구하는지 검증한다.
-test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verified siblings',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const roles=['MAIN','A','B','c','DELVE'];
-  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
-    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
-    purpose:{type:'string'},playerChoice:{type:'string'},
-    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
-    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
-  },additionalProperties:false};
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:item}},additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[],logs=[];
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:4,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
-    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
-    gameId:'qa-resource-game',game:{name:'자원 수집 게임'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'실제 자원 채집과 고유한 대응 선택',CORE_LOOP:['채집','자원 사용','실패 복구'],OWNER_LATEST_DESIGN_REQUEST:'원본 자원·저장·멀티 규칙 보존'},
-    clip:(value,n)=>JSON.stringify(value).slice(0,n),
-    designCheckpoint:checkpoint,modelCallStats:[],console:{log:line=>logs.push(line)},
-    clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,
-    assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      const role=contract.properties.grammarRole.enum[0];
-      calls.push({role,prompt,idPattern:contract.properties.id?.pattern});
-      const attempt=calls.filter(row=>row.role===role).length;
-      const cloned=role==='A'&&attempt<=2;
-      const duplicateMeaning=role==='MAIN'||cloned;
-      const id=cloned?'RULE_MAIN':'RULE_'+role;
-      return JSON.stringify({
-        id,grammarRole:role,name:duplicateMeaning?'주요 자원 규칙':'원본 '+role+' 규칙',
-        purpose:duplicateMeaning?'원본 주요 자원 전환을 설계한다':'원본 '+role+' 규칙에서 고유한 상태 판단을 수행한다',
-        playerChoice:duplicateMeaning?'플레이어가 주요 자원 배분을 선택한다':'플레이어가 '+role+'의 대응 순서를 선택한다',
-        stateInputs:role==='c'&&attempt===1?['INPUT: 채집 → STATE: 나무 증가']:['WoodCount'],
-        stateOutputs:['WoodCount']
-      });
-    }
-  });
-  const grammarContext={
-    mainIdentity:'원본 자원 생존',
-    a:{system:'자원 채집',material:'숲 속 자원의 계절성',materialDomain:'생태',stateChange:'선택한 채집 동선이 위험과 수급을 바꾼다'},
-    b:{system:'거점 구축',material:'버려진 도구 공예',materialDomain:'생활사',stateChange:'거점 배치로 주변 위험과 자원 동선을 바꾼다'},
-    abCausality:'채집 위치가 건축 선택을 바꾸고, 거점 배치가 다시 채집 지도를 바꾼다',
-    cGenreInterlock:'생존을 위해 곤충의 흔적을 조사하면 안전한 경로가 열리는 탐사와 추적의 결합',
-    delveDiscoveries:[{clue:'흔적',discovery:'은신처',newChoice:'이동'},{clue:'발자국',discovery:'이동',newChoice:'추적'}]
-  };
-  const result=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
-  const rows=JSON.parse(JSON.stringify(result.signatureSystems));
-  assert.deepEqual(rows.map(row=>row.grammarRole),roles);
-  assert.equal(new Set(rows.map(row=>row.id)).size,5,'rules must not share the same game identity as their ID');
-  assert.deepEqual(calls.map(row=>row.role),['MAIN','A','A','A','B','c','c','DELVE']);
-  assert.ok(calls.every(row=>row.idPattern===`^${row.role.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`),
-    'role-scoped model schema keeps local rule IDs distinct without changing gameplay state');
-  assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
-  assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'));
-  assert.ok(calls[6].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
-  assert.ok(calls.find(row=>row.role==='A').prompt.includes('숲 속 자원의 계절성'));
-  assert.ok(calls.find(row=>row.role==='B').prompt.includes('버려진 도구 공예'));
-  assert.ok(calls.find(row=>row.role==='DELVE').prompt.includes('흔적'));
-  assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
-  assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
-  const before=calls.length;
-  await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
-  assert.equal(calls.length,before,'previously validated MAIN/A/B/c/@ rule checkpoints are reused');
-  // 검증 전 남아 있던 오래된 잘못된 역할 캐시를 발견하면 그 역할만 다시 요청한다.
-  const savedRoles=Object.values(checkpoint.tasks);
-  savedRoles.find(row=>row.grammarRole==='A').grammarRole='MAIN';
-  savedRoles.find(row=>row.grammarRole==='B').id='RULE_MAIN';
-  savedRoles.find(row=>row.grammarRole==='c').stateInputs=['INPUT: 채집 → STATE: 나무 증가'];
-  const previousCalls=calls.length;
-  const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
-  assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['A','c'],'malformed cached reference IDs are normalized while invalid content remains repairable');
-  assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
-  assert.deepEqual(JSON.parse(JSON.stringify(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs)),['WoodCount']);
-  assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
-  assert.ok(repaired.signatureSystems.every(row=>row.id.startsWith(row.grammarRole.toLowerCase()+'_')));
-  assert.ok(logs.some(row=>row.includes('DESIGN_GRAMMAR_REFERENCE_ID_REPAIRED=')));
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verified siblings
 
 // 검증: 이름만 바꾼 MAIN/A/B/c/@ 복제는 설계 품질 통과가 아니다.
 test('MAIN A B c DELVE authoring gate rejects copied rule meaning with distinct IDs',()=>{
@@ -563,136 +434,22 @@ test('MAIN A B c DELVE authoring gate rejects copied rule meaning with distinct 
   assert.equal(JSON.stringify(copied),before,'invalid design content must not be silently rewritten or accepted');
 });
 
-test('local designer authors connected state handoff fields in one cohesive model request',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const properties={
-    fromId:{type:'string'},toId:{type:'string'},
-    stateKeys:{type:'array',minItems:1,items:{type:'string'}},
-    fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},stateChange:{type:'string'}
-  };
-  const schema={type:'object',required:Object.keys(properties),properties,additionalProperties:false};
-  const expected={fromId:'main_rule',toId:'a_rule',stateKeys:['Resource'],fromSystem:'main process',toSystem:'secondary process',trigger:'resource shared',stateChange:'shared resource consumed'};
-  const calls=[],checkpoint={tasks:{}};
-  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
-    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
-    designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,
-    recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      calls.push(Object.keys(contract.properties));
-      return JSON.stringify(expected);
-    }
-  });
-  const result=await author('designer','original design state handoff',schema,{predict:1400,includeAssetContext:false});
-  assert.deepEqual(JSON.parse(JSON.stringify(result)),expected);
-  assert.equal(calls.length,1,'seven causally connected properties must be generated atomically');
-  assert.deepEqual(calls[0],Object.keys(properties));
-  assert.equal(Object.keys(checkpoint.tasks).length,0,'healthy handoff never spawns partial requests');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: local designer authors connected state handoff fields in one cohesive model request
 
 
-test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const schema={type:'object',required:['a','b','c','d'],properties:Object.fromEntries(['a','b','c','d'].map(field=>[field,{type:'string'}])),additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[],stats=[],health=[];
-  let secondPartFails=true;
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},
-    clean:String,parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,persistDesignCheckpoint(){},
-    recordModelHealth:(model,row)=>health.push(row),
-    assertSchemaValue:(value,contract)=>{for(const field of contract.required)assert.equal(typeof value[field],'string');},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      const fields=Object.keys(contract.properties);calls.push(fields.join(','));
-      if(fields.length===4)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
-      if(fields[0]==='c'&&secondPartFails){secondPartFails=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
-      return JSON.stringify(Object.fromEntries(fields.map(field=>[field,'authored '+field])));
-    }
-  });
-  await assert.rejects(author('system','owner brief',schema),/OLLAMA_DESIGN_HTTP_503/);
-  assert.equal(Object.keys(checkpoint.tasks).length,1,'only the completed half may be saved');
-  const value=await author('system','owner brief',schema);
-  assert.deepEqual(JSON.parse(JSON.stringify(value)),{a:'authored a',b:'authored b',c:'authored c',d:'authored d'});
-  assert.deepEqual(calls,['a,b,c,d','a,b','c,d','c,d']);
-  assert.equal(stats.length,2,'assembling checkpointed parts is not another model call');
-  assert.equal(health.filter(row=>row.success===false).length,2);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: truncated local output splits required fields and resumes only the unfinished part
 
-test('long seed descriptions keep a usable output budget after splitting',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const fields=['identity','playerFantasy','coreFun'];
-  const schema={type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,{type:'string',maxLength:1000}])),additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[];
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract,predict})=>{
-      const requested=Object.keys(contract.properties);calls.push({fields:requested,predict});
-      if(requested.length>1||predict<900)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
-      return JSON.stringify({[requested[0]]:'model-authored description '.repeat(25)});
-    }
-  });
-  const result=await author('designer','owner original',schema,{predict:1200});
-  assert.deepEqual(Object.keys(result),fields);
-  assert.equal(calls.length,3,'no doomed multi-description request before the useful calls');
-  assert.deepEqual(calls.map(row=>row.predict),[1200,1200,1200],'subdivision must not shrink the useful field budget to 600/512');
-  assert.ok(Object.values(result).every(value=>value.length>512),'the authored content is preserved instead of clipped');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: long seed descriptions keep a usable output budget after splitting
 
-test('an indivisible truncated field expands once and resumes at the learned budget without double-counting time',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const schema={type:'object',required:['identity'],properties:{identity:{type:'string',maxLength:1000}},additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[],health=[],stats=[];let now=0,forceTruncated=false;
-  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    createHash,Date:class extends Date{constructor(){super(now);}static now(){return now;}},designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:stats,console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth:(model,row)=>health.push(row),persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{predict,timeoutMs})=>{
-      calls.push({prompt,predict,timeoutMs});now+=predict<2000?100:70;
-      if(predict<2000||forceTruncated)throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
-      return '{"identity":"designer-authored original"}';
-    }
-  });
-  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
-  assert.equal((await author('designer','original',schema,{predict:1200})).identity,'designer-authored original');
-  assert.deepEqual(calls.map(row=>row.predict),[1200,2400,2400]);
-  assert.equal(calls[0].prompt,calls[1].prompt,'retry reuses the same owner/rule context prefix');
-  assert.ok(calls.every(row=>row.timeoutMs===300000));
-  assert.deepEqual(health.map(row=>[row.success,row.elapsedMs]),[[false,100],[true,70],[true,70]]);
-  assert.deepEqual(stats.map(row=>row.elapsedMs),[70,70]);
-  forceTruncated=true;
-  await assert.rejects(author('designer','over-cap request',schema,{predict:8192}),/OLLAMA_DESIGN_OUTPUT_TRUNCATED/);
-  assert.equal(calls.length,4,'the existing output ceiling still fails without inventing content');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: an indivisible truncated field expands once and resumes at the learned budget without double-counting time
 
-test('workflow warms the same local context before declaring authoring ready and fails closed',async()=>{
+test('native design workflow never installs or warms a generative model',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  const start=workflow.indexOf('      - name: Prepare Vibe local design fallback');
-  const end=workflow.indexOf('      - name: Run seed-backed DESIGN_ONLY pipeline',start);
-  const step=workflow.slice(start,end);
-  const script=step.match(/<<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
-  assert.ok(step.indexOf('DESIGN_LOCAL_WARMUP=READY')<step.indexOf("echo 'ready=true'"));
-  assert.match(workflow,/COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'/);
-  for(const scenario of ['ready','http','incomplete','error','timeout']){
-    const logs=[];
-    const run=runInNewContext('(async()=>{'+script+'})',{
-      process:{env:{COMPANY_VIBE_LOCAL_MODEL:'local'}},console:{log:value=>logs.push(value)},
-      AbortSignal:{timeout:ms=>{assert.equal(ms,120000);return 'warmup-budget';}},
-      fetch:async(url,options)=>{
-        assert.equal(url,'http://127.0.0.1:11434/api/generate');
-        const body=JSON.parse(options.body);
-        assert.equal(body.model,'local');assert.equal(body.prompt,'');assert.equal(body.options.num_ctx,8192);assert.equal(body.options.num_predict,0);
-        if(scenario==='timeout')throw new Error('warmup timeout');
-        return {ok:scenario!=='http',status:503,json:async()=>({done:scenario!=='incomplete',error:scenario==='error'?'model missing':undefined})};
-      }
-    });
-    if(scenario==='ready')await run();else await assert.rejects(run(),/DESIGN_LOCAL_WARMUP|warmup timeout/);
-    assert.equal(logs.length,scenario==='ready'?1:0);
-  }
+  assert.doesNotMatch(workflow,/prepare-ollama|ollama\.com\/install|DESIGN_LOCAL_WARMUP|COMPANY_VIBE_LOCAL_MODEL|qwen3:1\.7b/);
+  assert.match(workflow,/DESIGN_PROVIDER_GOVERNOR=VIBE_NATIVE_CAUSAL_FUNCTION/);
+  assert.match(workflow,/DESIGN_NATIVE_AUTHORING_REQUIRED=YES/);
+  assert.match(workflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
+  assert.match(workflow,/node tools\/company-design-cycle\.mjs/);
 });
 
 test('a local timeout preserves finished slices and resumes only the failed slice',async()=>{
@@ -763,44 +520,30 @@ test('design authoring has no external model transport or secret injection',()=>
   assert.doesNotMatch(workflow,/secrets\.GEMINI_API_KEY|COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_/);
 });
 
-test('design always uses the internal model even if external credentials and opt-in are present',async()=>{
-  const routing=design.slice(design.indexOf('async function callDesignerModel('),design.indexOf('async function generateDesignerDraft('));
-  for(const localFails of [false,true]){
-    const calls=[],checkpoint={};
-    const call=runInNewContext(routing+'\ncallDesignerModel',{
-      process:{env:{COMPANY_EXTERNAL_AI_ENABLED:'true',GEMINI_API_KEY:'test-only'}},
-      designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,persistDesignCheckpoint(){},
-      fetch:async()=>{throw new Error('external network forbidden');},
-      callLocalDesignerModel:async()=>{calls.push('local');if(localFails)throw new Error('local unavailable');return {draft:'local'};}
-    });
-    if(localFails)await assert.rejects(call('system','user',{}),/local unavailable/);
-    else assert.equal((await call('system','user',{})).draft,'local');
-    assert.deepEqual(calls,['local']);
-    assert.equal(checkpoint.effectiveDesignerProvider,localFails?undefined:'VIBE_LOCAL_OLLAMA');
-    assert.equal(checkpoint.effectiveDesignerModel,localFails?undefined:'ollama:local');
-  }
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: design always uses the internal model even if external credentials and opt-in are present
 
-test('workflow authoring route ignores exhausted external reviewers and prepares the local provider',()=>{
+test('native workflow keeps exact design checkpoint and starts without external model availability',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const start=workflow.indexOf('      - name: Resolve local design authoring from the current checkpoint');
-  const end=workflow.indexOf('      - name: Restore Vibe local design fallback cache',start);
+  const end=workflow.indexOf('      - name: Run seed-backed DESIGN_ONLY pipeline',start);
+  assert.ok(start>=0&&end>start);
   const step=workflow.slice(start,end);
   const script=step.split("<<'NODE' | tee /tmp/local-design-authoring.txt\n")[1]?.split('          NODE')[0].replace(/^          /gm,'');
   assert.ok(script);
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'optional-design-ai-'));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-design-route-'));
   try{
     const folder=path.join(root,'design','demo','2026-10-06');fs.mkdirSync(folder,{recursive:true});
-    fs.writeFileSync(path.join(folder,'design-checkpoint.json'),JSON.stringify({currentPhase:'DEPARTMENT_REVIEWS',tasks:{},modelHealth:{'gemini:old':{lastError:'RESOURCE_EXHAUSTED'}},phases:{designer_draft:{identity:'preserved'}}}));
-    const output=path.join(root,'output');
-    const run=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',env:{...process.env,ARTBOOK_GAME_ID:'demo',ARTBOOK_DATE:'2026-10-06',GITHUB_OUTPUT:output,COMPANY_GEMINI_LEAD_MODELS:''}});
+    const original={currentPhase:'DEPARTMENT_REVIEWS',tasks:{completed:{identity:'preserved'}},modelHealth:{'ollama:old':{lastError:'MODEL_UNAVAILABLE'}}};
+    const cp=path.join(folder,'design-checkpoint.json');fs.writeFileSync(cp,JSON.stringify(original));
+    const output=path.join(root,'output.txt');
+    const run=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',
+      env:{...process.env,ARTBOOK_GAME_ID:'demo',ARTBOOK_DATE:'2026-10-06',GITHUB_OUTPUT:output,COMPANY_VIBE_LOCAL_MODEL:'not-installed'}});
     assert.equal(run.status,0,run.stderr);
-    assert.match(fs.readFileSync(output,'utf8'),/run_model_cycle=true\nquota_state=LOCAL_ONLY\nlocal_fallback_needed=true/);
-    assert.equal(JSON.parse(fs.readFileSync(path.join(folder,'design-checkpoint.json'),'utf8')).phases.designer_draft.identity,'preserved');
-    assert.match(run.stdout,/DESIGN_AI_REVIEW_LANES=NONE/);
+    assert.match(fs.readFileSync(output,'utf8'),/run_design_cycle=true\nquota_state=VIBE_NATIVE_FUNCTION/);
+    assert.deepEqual(JSON.parse(fs.readFileSync(cp,'utf8')),original);
+    assert.match(run.stdout,/DESIGN_NATIVE_AUTHORING_REQUIRED=YES/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
-  assert.doesNotMatch(workflow,/WAITING_FOR_GEMINI_QUOTA|GEMINI_LEAD_MODELS|GEMINI_LEAD_FALLBACK_LANES|all_quota_blocked/);
-  assert.match(workflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
+  assert.doesNotMatch(workflow,/WAITING_FOR_GEMINI_QUOTA|all_quota_blocked/);
 });
 
 test('design continuation dispatches canonical work without external quota or AI review approval',()=>{
@@ -846,107 +589,12 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
 
 
 // 실제 라이브러리 사실이 컨셉 단계와 모델 요청에 전달되는지 검증한다.
-test('design library facts preserve compatibility and separate audit scores from runtime verification',async()=>{
-  const source=design.slice(design.indexOf("const designAssetLibraryPath="),design.indexOf('const designLearningEvents='));
-  const library={version:1,assets:[
-    {id:'web-character',family:'CHARACTER',role:'PLAYER',platform:'WEB',targetPlatforms:['WEB'],license:'project-original',path:'assets/characters/web-character.glb',internalAuditScore:900},
-    {id:'reference-environment',family:'ENVIRONMENT',role:'SCHOOL',platform:'SHARED_REFERENCE',license:'project-original',path:'assets/environments/reference-environment.glb',referenceVisualAudit:{referenceUseOnly:true}},
-    {id:'blocked-creature',family:'CREATURE',platform:'WEB',license:'project-original',securityBlocked:true,internalAuditScore:1000,consumerGameIds:['g']}
-  ]};
-  const build=registry=>runInNewContext(source+'\ndesignAssetLibraryContext',{
-    readJson:()=>registry,fs:{existsSync:()=>Boolean(registry),readFileSync:()=>JSON.stringify(registry)},createHash,
-    gameId:'g',seed:{DISTINCT_IDENTITY:'concept'},seedFlowAssetRequirements:[{family:'CHARACTER',role:'PLAYER'},{family:'ENVIRONMENT',role:'SCHOOL'},{family:'CREATURE',role:'GHOST'}],
-    clean:value=>String(value??'').trim(),uniq:values=>[...new Set(values.filter(Boolean))],buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary
-  });
-  const before=JSON.stringify(library),context=build(library);
-  const web=context.platforms.WEB.candidates.find(row=>row.assetId==='web-character');
-  assert.equal(web.applicationMode,'USE_AS_IS');
-  assert.equal(context.assetFacts[web.assetId].auditScore,900);assert.equal(context.assetFacts[web.assetId].productionVerified,false);assert.equal(context.assetFacts[web.assetId].runtimeState,'UNVERIFIED');
-  assert.equal(context.platforms.ROBLOX.candidates.find(row=>row.assetId==='web-character').applicationMode,'NATIVE_REAUTHOR_BASE');
-  assert.equal(context.assetFacts['reference-environment'].referenceOnly,true);
-  assert.equal(context.platforms.WEB.candidates.find(row=>row.family==='CREATURE').action,'AUTHOR');
-  assert.equal(context.platforms.WEB.evaluatedAssetCount,3);assert.equal(context.platforms.WEB.eligibleAssetCount,2);
-  assert.equal(JSON.stringify(library),before,'design reads must not synchronize or mutate the registry');
-  library.version=2;library.assets[0].internalAuditScore=700;
-  const refreshed=build(library);
-  assert.notEqual(refreshed.sha256,context.sha256);assert.equal(refreshed.version,2);
-  assert.equal(build(null).status,'UNAVAILABLE');assert.equal(build(null).platforms.WEB.candidates.length,0);
-  assert.equal(build({assets:{}}).status,'UNAVAILABLE');
-
-  const authorSource=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  let sent='';
-  const author=runInNewContext(authorSource+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:context,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:{},modelCallStats:[],console:{log(){}},
-    requestLocalDesignerRaw:async prompt=>{sent=prompt;return '{"identity":"authored"}';},
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue(){},recordModelHealth(){},persistDesignCheckpoint(){}
-  });
-  await author('system','x'.repeat(30000),{});
-  const payload=JSON.parse(sent.split('DESIGN_ASSET_LIBRARY=')[1].split('\n')[0]);
-  assert.deepEqual(payload,JSON.parse(JSON.stringify(context)),'library evidence must not be clipped by shared context');
-  assert.match(sent,/점수는 내부 평가이며 런타임 품질 통과가 아니다/);
-  assert.match(sent,/게임당 설계 원본은 하나/);
-  await author('system','original game rules',{}, {includeAssetContext:false});
-  assert.doesNotMatch(sent,/DESIGN_ASSET_LIBRARY=/);
-  assert.match(sent,/DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR/);
-  assert.match(sent,/original game rules/);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: design library facts preserve compatibility and separate audit scores from runtime verification
 
 // 생성 실패 복구와 동일 입력 체크포인트 재사용만 검증한다.
-test('local timeout subdivides required fields and never swallows an atomic timeout',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const schema={type:'object',required:['a','b'],properties:{a:{type:'string'},b:{type:'string'}},additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[];
-  let atomicFails=true;
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      const fields=Object.keys(contract.properties);calls.push(fields.join(','));
-      if(fields.length>1||fields[0]==='b'&&atomicFails)throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');
-      return JSON.stringify(Object.fromEntries(fields.map(field=>[field,field+' complete'])));
-    }
-  });
-  await assert.rejects(author('system','brief',schema),/OLLAMA_DESIGN_TIMEOUT/);
-  assert.equal(Object.keys(checkpoint.tasks).length,1);
-  atomicFails=false;
-  assert.deepEqual(JSON.parse(JSON.stringify(await author('system','brief',schema))),{a:'a complete',b:'b complete'});
-  assert.deepEqual(calls,['a,b','a','b','b'],'completed fields and failed oversized parent are not replayed');
-  calls.length=0;
-  await author('system','different request',schema,{recoverOversized:true});
-  assert.deepEqual(calls,['a','b'],'a persisted oversized timeout starts with smaller requests');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: local timeout subdivides required fields and never swallows an atomic timeout
 
-test('nested alternatives are checkpointed as distinct complete items before oversized generation',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const fields=['label',...Array.from({length:8},(_,i)=>'detail'+i)];
-  const item={type:'object',required:fields,properties:Object.fromEntries(fields.map(field=>[field,field==='label'?{type:'string',enum:['PLAN_A','PLAN_B','PLAN_C']}:{type:'string'}])),additionalProperties:false};
-  const schema={type:'object',required:['designAlternatives'],properties:{designAlternatives:{type:'array',minItems:2,maxItems:3,items:item}},additionalProperties:false};
-  const checkpoint={tasks:{}},calls=[];
-  let failSecond=true;
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      const props=contract.properties;calls.push({prompt,fields:Object.keys(props)});
-      assert.ok(Object.keys(props).length<=6);
-      assert.equal(props.designAlternatives,undefined,'array wrapper never goes to the model');
-      if(props.label?.enum?.[0]==='PLAN_B'&&failSecond){failSecond=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
-      return JSON.stringify(Object.fromEntries(Object.entries(props).map(([key,value])=>[key,value.enum?.[0]||key+' authored'])));
-    }
-  });
-  await assert.rejects(author('system','brief',schema),/OLLAMA_DESIGN_HTTP_503/);
-  const planACalls=calls.filter(x=>x.prompt.includes('designAlternatives[0]')).length;
-  const result=await author('system','brief',schema);
-  assert.deepEqual(Array.from(result.designAlternatives,x=>x.label),['PLAN_A','PLAN_B']);
-  assert.ok(result.designAlternatives.every(row=>fields.every(field=>typeof row[field]==='string')));
-  assert.equal(calls.filter(x=>x.prompt.includes('designAlternatives[0]')).length,planACalls);
-  assert.ok(calls.some(x=>x.prompt.includes('PREVIOUS_ARRAY_ITEMS=[{"label":"PLAN_A"')),'next alternative sees the authored previous plan');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: nested alternatives are checkpointed as distinct complete items before oversized generation
 
 test('slice input keeps the owner original in a stable prefix and omits compatibility-only seed duplication',async()=>{
   const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
@@ -1043,34 +691,7 @@ test('bad cached slices refresh nested identities across retries and valid resul
   assert.equal(Object.keys(checkpoint.sliceRepairFeedback).length,0);
 });
 
-test('repeated placeholder repair isolates nested fields and resumes without replaying completed parts',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const object=properties=>({type:'object',required:Object.keys(properties),properties,additionalProperties:false});
-  const schema=object({designAlternatives:{type:'array',minItems:2,items:object({label:{type:'string',enum:['PLAN_A','PLAN_B']},rules:object({trigger:{type:'string'},response:{type:'string'}})})}});
-  const checkpoint={tasks:{}},calls=[];
-  let fail=true;
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
-      const entries=Object.entries(contract.properties);assert.equal(entries.length,1);
-      const [field,property]=entries[0];assert.equal(property.type,'string','nested objects and array items must also be isolated');
-      assert.match(prompt,/원본: 4 대 4 시작, 포획되면 인간이 몬스터로 전환/);
-      calls.push({prompt,field});
-      if(field==='response'&&fail){fail=false;throw new Error('OLLAMA_DESIGN_HTTP_503');}
-      return JSON.stringify({[field]:property.enum?.[0]||field+'에 맞는 원본 상태 변화와 대응을 작성한다.'});
-    }
-  });
-  const brief='원본: 4 대 4 시작, 포획되면 인간이 몬스터로 전환';
-  await assert.rejects(author('system',brief,schema,{isolateFields:true}),/OLLAMA_DESIGN_HTTP_503/);
-  const result=await author('system',brief,schema,{isolateFields:true});
-  assert.deepEqual(Array.from(result.designAlternatives,row=>row.label),['PLAN_A','PLAN_B']);
-  assert.deepEqual(calls.map(row=>row.field),['label','trigger','response','response','label','trigger','response']);
-  assert.ok(calls.some(row=>row.field==='response'&&row.prompt.includes('CURRENT_OBJECT_FIELDS={"trigger":')),'sibling state is retained');
-  assert.ok(calls.some(row=>row.prompt.includes('PREVIOUS_ARRAY_ITEMS=[{"label":"PLAN_A"')),'later alternatives retain previous authored items');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: repeated placeholder repair isolates nested fields and resumes without replaying completed parts
 
 test('placeholder feedback keeps audit evidence while retries receive paths and still fail invalid content',async()=>{
   const source=authoredHandoffSource+'\n'+design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
@@ -1310,144 +931,17 @@ test('mandatory multiplayer upgrades legacy single input but preserves existing 
   }
 });
 
-test('grammar content repair keeps a whole rule atomic without supplying authored rules',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const checkpoint={tasks:{}},calls=[];
-  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:4,gameId:'grammar-test',game:{name:'문법 검사'},seed:{GAME_CATEGORY:'ACTION',CORE_LOOP:['행동','변화','결과']},clip:(v,n)=>String(typeof v==='string'?v:JSON.stringify(v)).slice(0,n),createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
-    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    runCheckpointTask:async(phase,id,work)=>work(),
-    requestLocalDesignerRaw:async(prompt,{schema})=>{
-      const role=prompt.match(/CURRENT_GRAMMAR_ROLE=(MAIN|A|B|c|DELVE)/)?.[1];
-      assert.ok(role);calls.push(role);
-      return JSON.stringify(Object.fromEntries(Object.keys(schema.properties).map(field=>[
-        field,field==='grammarRole'?role
-          :field==='id'?role.toLowerCase()+'_authored_rule'
-          :field==='stateInputs'?[schema.properties.stateInputs.items.enum?.[0]||'main-available']
-          :field==='stateOutputs'?[schema.properties.stateOutputs.items.enum?.[0]||'main-resolved']
-          :`designer-generated-${role}`
-      ])));
-    }
-  });
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:5,items:{type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
-    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},
-    name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
-    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
-    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
-  },additionalProperties:false}}},additionalProperties:false};
-  const result=await author('designer','original game rules',schema,{isolateFields:true});
-  assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>role.toLowerCase()+'_authored_rule'));
-  for(let index=1;index<result.signatureSystems.length;index++){
-    const previous=result.signatureSystems[index-1],current=result.signatureSystems[index];
-    assert.ok(current.stateInputs.some(key=>previous.stateOutputs.includes(key)));
-    assert.ok(current.stateOutputs.some(key=>previous.stateInputs.includes(key)));
-  }
-  assert.equal(new Set(result.signatureSystems.map(row=>row.name)).size,5,
-    'Each role must contain its own designer-authored rule content');
-  assert.ok(result.signatureSystems.every(row=>row.stateInputs.length>0&&row.stateOutputs.length>0),
-    'Every complete role rule must declare both consumed and produced state');
-  assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: grammar content repair keeps a whole rule atomic without supplying authored rules
 
 
 // 검증: 버전 5에서 A/B/@의 고유 상태와 기존 왕복 연결을 함께 보존하고 무한 전체 재작성을 방지한다.
-test('V5 focused handoff repair keeps unique authored role states',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const tasks=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const roles=['MAIN','A','B','DELVE'],checkpoint={tasks:{}},calls=[];
-  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
-    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
-    purpose:{type:'string'},playerChoice:{type:'string'},
-    stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
-  },additionalProperties:false};
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
-  const run=runInNewContext(tasks+'\n'+source+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
-    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
-    gameId:'v5-repair',game:{name:'검증용 게임'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'세계 상태의 원본 유지',CORE_LOOP:['이동','채집','복구'],OWNER_LATEST_DESIGN_REQUEST:'기존 규칙 유지'},
-    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
-    console:{log(){}},clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,
-    assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(_,{schema:s})=>{
-      const role=s.properties.grammarRole?.enum?.[0];
-      if(!role){calls.push('FOCUSED');return JSON.stringify({
-        stateInputs:[s.properties.stateInputs.items.enum[0]],stateOutputs:[s.properties.stateOutputs.items.enum[0]]
-      });}
-      calls.push(role);
-      return JSON.stringify({grammarRole:role,id:role.toLowerCase()+'_original_rule',
-        name:role+' 고유 시스템',purpose:role+'에서 다른 위험 조건을 처리하는 규칙',
-        playerChoice:role+'의 자원과 이동을 선택한다',
-        stateInputs:[role==='MAIN'?'RegionState':role+'NewInput'],
-        stateOutputs:[role==='MAIN'?'RiskState':role+'NewOutput']});
-    }
-  });
-  const result=await run('designer','source rules',schema,{predict:900,includeAssetContext:false});
-  const rows=JSON.parse(JSON.stringify(result.signatureSystems));
-  assert.deepEqual(calls,['MAIN','A','FOCUSED','B','FOCUSED','DELVE','FOCUSED']);
-  assert.equal(rows.length,4);
-  for(let i=1;i<rows.length;i++){
-    assert.ok(rows[i].stateInputs.some(key=>rows[i-1].stateOutputs.includes(key)));
-    assert.ok(rows[i].stateOutputs.some(key=>rows[i-1].stateInputs.includes(key)));
-    assert.ok(rows[i].stateInputs.includes(rows[i].grammarRole+'NewInput'));
-    assert.ok(rows[i].stateOutputs.includes(rows[i].grammarRole+'NewOutput'));
-  }
-  assert.equal(Object.keys(checkpoint.tasks).length,4);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: V5 focused handoff repair keeps unique authored role states
 
 // 메인: V5 시스템은 기존 상태를 연결하고 자체 상태를 추가할 수 있어야 한다.
 // 검증: 문장만 달라지고 동일한 V5 역할 실패가 세 번 계속되면 현재 실행을 닫고 다음 체크포인트에서 다시 시도한다.
-test('V5 no-progress stops repeated invalid role replies',async()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const checkpoint={tasks:{}},calls=[];
-  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
-    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','DELVE']},
-    name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
-    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
-    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
-  },additionalProperties:false};
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
-  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
-    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
-    gameId:'no-progress',game:{name:'무한 반복 회귀'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'원본 인과 규칙',CORE_LOOP:['행동','변화','선택'],OWNER_LATEST_DESIGN_REQUEST:'원본 보존'},
-    clip:(v,n)=>String(typeof v==='string'?v:JSON.stringify(v)??'').slice(0,n),
-    designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:v=>String(v??'').trim(),
-    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
-    recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(_, {schema:s})=>{
-      const role=s.properties.grammarRole?.enum?.[0];
-      if(!role)return JSON.stringify({stateInputs:['incoming wave pattern analysis'],stateOutputs:['unbound response state']});
-      const index=calls.length+1;calls.push(role);
-      return JSON.stringify({id:'main_unique_rule',grammarRole:role,name:'Repeated '+index,
-        purpose:'원본 게임의 상태 전이가 아니라 문장을 반복 '+index,
-        playerChoice:'상태 이름을 다시 설명하는 잘못된 응답 '+index,
-        stateInputs:['incoming wave pattern analysis'],stateOutputs:['unbound response state']});
-    }
-  });
-  await assert.rejects(()=>author('designer','원본 실제 상태',schema,{predict:900,includeAssetContext:false}),/DESIGN_GRAMMAR_NO_PROGRESS/);
-  assert.deepEqual(calls,['MAIN','MAIN','MAIN']);
-  assert.equal(Object.keys(checkpoint.tasks).length,0);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: V5 no-progress stops repeated invalid role replies
 
-test('V5 designer state handoffs are schema-constrained and require distinct authored roles',()=>{
-  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  assert.match(source,/if\(roleHandoff\)\{/);
-  assert.match(source,/inputKeysFromPreviousOutputs/);
-  assert.match(source,/outputKeysToPreviousInputs/);
-  assert.match(source,/contains:\{type:'string',enum:values\}/);
-  assert.match(source,/DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR/);
-  assert.match(source,/DESIGN_GRAMMAR_STATE_IDENTIFIER_FOCUSED_REPAIR/);
-  assert.match(source,/DESIGN_GRAMMAR_UNIQUE_ROLE_FOCUSED_REPAIR/);
-  assert.match(source,/DESIGN_GRAMMAR_NO_PROGRESS/);
-  assert.match(source,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
-  assert.match(source,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
-  assert.match(source,/DESIGN_GRAMMAR_ROLE_CONTENT_CLONED/);
-  assert.match(source,/PREVIOUS_ROLE_CONTENT=/);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: V5 designer state handoffs are schema-constrained and require distinct authored roles
 
 test('bootstrap creative diagnostics do not stop designer intake or fake a design pass and copying still fails',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-intake-diagnostic-'));
@@ -1552,51 +1046,7 @@ test('novel grammar dilution explicitly reopens creativeGrammar while unrelated 
   assert.deepEqual(ordinary,['identity','coreFun']);
 });
 
-test('V5 canonical state handoff reuses authored interfaces when focused model cannot echo keys',async()=>{
-  const authorSource=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const roles=['MAIN','A','B','DELVE'],checkpoint={tasks:{}},calls=[];
-  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
-    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
-    purpose:{type:'string'},playerChoice:{type:'string'},
-    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
-    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
-  },additionalProperties:false};
-  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
-  const logs=[];
-  const author=runInNewContext(taskSource+'\n'+authorSource+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{},localDesignerFallbackReady:true,
-    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
-    gameId:'original-handoff',game:{name:'원본 상태 연결'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'원본 선택과 상태 흐름',CORE_LOOP:['탐험','대응','회복'],OWNER_LATEST_DESIGN_REQUEST:'원본 게임 규칙 유지'},
-    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
-    console:{log:line=>logs.push(line)},clean:v=>String(v??'').trim(),
-    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
-    recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(_,{schema:contract})=>{
-      const role=contract.properties.grammarRole?.enum?.[0];
-      calls.push(role||'FOCUSED');
-      if(!role)throw new Error('SIMULATED_MODEL_STATE_SELECTION_FAILURE');
-      return JSON.stringify({grammarRole:role,id:role.toLowerCase()+'_unique_rule',
-        name:role+' 고유 규칙',purpose:role+' 원본의 다른 상태를 변형하는 실제 선택 규칙',
-        playerChoice:role+' 역할의 위험과 기회를 판단하고 선택한다',
-        stateInputs:[role==='MAIN'?'WorldState':role+'UniqueInput'],
-        stateOutputs:[role==='MAIN'?'RiskState':role+'UniqueOutput']});
-    }
-  });
-  const output=await author('designer','original system rules',schema,{predict:900,includeAssetContext:false});
-  const rows=JSON.parse(JSON.stringify(output.signatureSystems));
-  assert.deepEqual(calls,['MAIN','A','FOCUSED','B','FOCUSED','DELVE','FOCUSED']);
-  assert.equal(rows.length,4);
-  for(let i=1;i<rows.length;i++){
-    assert.ok(rows[i].stateInputs.includes(rows[i-1].stateOutputs[0]));
-    assert.ok(rows[i].stateOutputs.includes(rows[i-1].stateInputs[0]));
-    assert.ok(rows[i].stateInputs.includes(rows[i].grammarRole+'UniqueInput'));
-    assert.ok(rows[i].stateOutputs.includes(rows[i].grammarRole+'UniqueOutput'));
-  }
-  assert.ok(logs.filter(s=>s.includes('DESIGN_GRAMMAR_STATE_HANDOFF_ORIGINAL_KEYS_BOUND=')).length===3);
-  assert.equal(Object.keys(checkpoint.tasks).length,4);
-});
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: V5 canonical state handoff reuses authored interfaces when focused model cannot echo keys
 
 test('authored MAIN A B C delve grammar is carried into downstream checkpoint anchors and coding basis',()=>{
   const writer=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
@@ -1640,77 +1090,52 @@ test('V5 resumes valid authored states but reauthors stale natural-language role
   assert.ok(logs.some(row=>row.includes('DESIGN_INVALID_STALE_ROLE_STATE_KEYS_REAUTHOR=2')));
 });
 
-test('V5 system connections use real reciprocal MAIN A B delve state paths, not five guessed edges',async()=>{
-  const snippet=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
-  const tasks=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
-  const systems=[
-    {id:'main_root',grammarRole:'MAIN',name:'주요 세계 행동',stateInputs:['main_state'],stateOutputs:['main_action']},
-    {id:'a_crafting',grammarRole:'A',name:'소재 채집과 제작',stateInputs:['main_action','b_response'],stateOutputs:['main_state','a_action']},
-    {id:'b_combat',grammarRole:'B',name:'위협 전투와 협상',stateInputs:['a_action','delve_response'],stateOutputs:['b_response','b_action']},
-    {id:'delve_secrets',grammarRole:'DELVE',name:'숨겨진 숙련과 비밀',stateInputs:['b_action'],stateOutputs:['delve_response']}
-  ];
-  const handoffs=[];
-  for(const from of systems)for(const to of systems){
-    if(from.id===to.id)continue;
-    const stateKeys=from.stateOutputs.filter(key=>to.stateInputs.includes(key));
-    if(stateKeys.length)handoffs.push({fromId:from.id,toId:to.id,stateKeys});
-  }
-  const names=Object.fromEntries(systems.map(row=>[row.id,row.name]));
-  const roles=Object.fromEntries(systems.map(row=>[row.grammarRole,row.id]));
-  const grammarContext={
-    authoredRuleHandoffs:{ruleIds:systems.map(row=>row.id),handoffs},
-    authoredRuleNames:names,authoredRuleRoles:roles
-  };
-  const edgeSchema={type:'object',
-    required:['fromSystem','toSystem','trigger','stateChange','fromId','toId','stateKeys'],
-    properties:{
-      fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},
-      stateChange:{type:'string'},fromId:{type:'string'},toId:{type:'string'},
-      stateKeys:{type:'array',minItems:1,items:{type:'string'}}
-    },additionalProperties:false
-  };
-  const schema={type:'object',required:['systemInterconnections'],properties:{
-    systemInterconnections:{type:'array',minItems:5,maxItems:24,items:edgeSchema}
-  },additionalProperties:false};
-  const calls=[],checkpoint={tasks:{}};
-  const run=runInNewContext(tasks+'\n'+snippet+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:5,createHash,localDesignerFallbackReady:true,
-    designAssetLibraryContext:{},localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
-    designerRoute:{id:'ollama:local'},gameId:'causal-edges',game:{name:'창작 인과 검증'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'연결되는 세계 인과'},
-    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
-    console:{log(){}},clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,
-    normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
-    recordModelHealth(){},persistDesignCheckpoint(){},
-    requestLocalDesignerRaw:async(prompt,{schema:requested})=>{
-      calls.push({prompt,keys:Object.keys(requested.properties)});
-      return JSON.stringify({
-        fromSystem:'실제 작성된 출발 시스템과 상태 전이',
-        toSystem:'실제 작성된 도착 시스템과 상태 전이',
-        trigger:'플레이어가 기존 상태를 변경하면 도착 규칙의 조건을 평가한다',
-        stateChange:'공유된 실제 상태가 달라져 선택 가능한 대응과 다음 행동이 달라진다'
-      });
-    }
+// 기존 모델 전송 검증은 모델이 제거되어 바이브 함수 검증으로 교체됨: V5 system connections use real reciprocal MAIN A B delve state paths, not five guessed edges
+
+test('canonical native writer caches one deterministic design and never calls a model',async()=>{
+  const start=design.indexOf('let cachedVibeNativeDesign=');
+  const end=design.indexOf('async function generateDesignerDraft(',start);
+  assert.ok(start>0&&end>start);
+  const snippet=design.slice(start,end);
+  let computes=0,saves=0;
+  const checkpoint={};
+  const authored={identity:'인과 게임 본문',creativeGrammar:{mainIdentity:'첫 세계 상태와 선택'},coreLoop:['A','B','A']};
+  const write=runInNewContext(snippet+'\ncallDesignerModel',{
+    computeVibeNativeDesign:()=>{computes++;return structuredClone(authored);},
+    designerRoute:{id:'vibe-native:causal-design-v1'},designCheckpoint:checkpoint,
+    persistDesignCheckpoint:()=>saves++,console:{log(){}},
+    assertSchemaValue:(candidate,schema)=>{for(const key of schema.required||[])if(!(key in candidate))throw new Error('NATIVE_MISSING_FIELD:'+key);}
   });
-  const output=await run('designer','MAIN × A × B × C + @ causal state design',
-    schema,{predict:1000,includeAssetContext:false,grammarContext});
-  const rows=JSON.parse(JSON.stringify(output.systemInterconnections));
-  assert.equal(rows.length,6,'reciprocal four-role chain needs six edges, not a fixed five');
-  assert.equal(calls.length,6);
-  assert.ok(calls.every(row=>row.keys.join(',')==='fromSystem,toSystem,trigger,stateChange'),'source references must not be model-generated');
-  assert.ok(rows.every(row=>handoffs.some(edge=>edge.fromId===row.fromId&&edge.toId===row.toId
-    &&JSON.stringify(edge.stateKeys)===JSON.stringify(row.stateKeys))),'no invented source or state keys');
-  const walk=(from,to)=>{
-    const seen=new Set(),pending=[from];
-    while(pending.length){
-      const id=pending.shift();
-      if(id===to)return true;
-      if(seen.has(id))continue;
-      seen.add(id);
-      for(const row of rows.filter(row=>row.fromId===id))pending.push(row.toId);
-    }
-    return false;
-  };
-  assert.ok(walk('a_crafting','b_combat')&&walk('b_combat','a_crafting'));
-  assert.ok(systems.every(row=>walk('main_root',row.id)&&walk(row.id,'main_root')));
+  const schema={type:'object',required:['identity','coreLoop'],properties:{identity:{type:'string'},coreLoop:{type:'array'}}};
+  const a=await write('unused system','unused user',schema);
+  const b=await write('another system','another user',schema);
+  assert.equal(a.identity,authored.identity);assert.deepEqual(Array.from(b.coreLoop),authored.coreLoop);
+  assert.equal(computes,1);assert.equal(saves,2);
+  assert.equal(checkpoint.effectiveDesignerProvider,'VIBE_NATIVE_FUNCTION');
+  assert.equal(checkpoint.effectiveDesignerModel,'vibe-native:causal-design-v1');
+  await assert.rejects(write('unused','unused',{type:'object',required:['missingField'],properties:{missingField:{type:'string'}}}),/NATIVE_MISSING_FIELD/);
+});
+test('native grammar authoring uses same repository systems and does not mint fake deployment proof',()=>{
+  const start=design.indexOf('function computeVibeNativeDesign(){');
+  const end=design.indexOf('let cachedVibeNativeDesign=',start);
+  const native=design.slice(start,end);
+  assert.match(native,/computeVibeSeedProposal\(/);
+  assert.match(native,/buildConceptSystemBlueprint\(/);
+  assert.match(native,/fs\.existsSync\(file\)/);
+  assert.match(native,/A/);
+  assert.match(native,/sourceMaterial/);
+  assert.match(native,/delveDiscoveries/);
+  assert.match(native,/unityWebSpatialPresentation:\{/);
+  assert.match(native,/dimension:'3D'/);
+  assert.match(native,/실제 플레이 측정 전/);
+  assert.match(design,/reusableCodeModules:/);
+  assert.match(design,/CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER/);
+  assert.doesNotMatch(design,/async function requestLocalDesignerRaw|async function callLocalDesignerModel|127\.0\.0\.1:11434/);
+});
+test('native engine fingerprint tracks both causal seed and reusable module grammar',()=>{
+  assert.match(design,/engineFiles=\[[\s\S]*tools\/company-game-seed-bootstrap\.mjs/);
+  assert.match(design,/engineFiles=\[[\s\S]*tools\/company-vibe2-game-flow-architect\.mjs/);
+  assert.match(design,/fingerprint:checkpointFingerprint,engineDigest/);
+  assert.match(design,/strictGateStillAuthoritative:true/);
+  assert.match(design,/externalSeedRequired:false,designPass:false,runtimePass:false/);
 });
