@@ -2,7 +2,7 @@
 // 역할: World LOD/Macro/Fate-Order-Chaos 결정성과 엔진 권한 격리를 회귀 검사
 import assert from 'node:assert/strict';
 import {resolveVibeWorldLod,createVibeWorldForces,createVibeMacroEventCandidate,createVibeMacroResolutionRequest,resolveVibeMacroCandidate,runVibeMacroResolutionLoop} from '../assets/vibe-orchestrator.js';
-import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,distillVibeVerifiedWorldPatterns,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,createVibeProceduralWorldLayout,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
+import {createVibeGenreWorldGrammar,summarizeVibeVerifiedWorldLearning,distillVibeVerifiedWorldPatterns,createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeReferenceMapAbstraction,createVibeMapDNA,createVibeRouteGraph,createVibeWorldStreamingPlan,createVibeAdaptiveWorldGenerationPlan,createVibeProceduralWorldLayout,createVibeMapDetailReconstruction,planVibeMapAutopilot} from '../assets/vibe-environment-director.js';
 
 assert.equal(resolveVibeWorldLod({distance:0}).level,'micro');
 assert.equal(resolveVibeWorldLod({distance:3,relevance:.4}).level,'meso');
@@ -398,5 +398,53 @@ assert.ok(generated2D.vegetation.every(item=>Number.isFinite(item.position.y)&&!
 assert.ok(generated.vegetation.every(item=>Number.isFinite(item.position.y)&&Number.isFinite(item.position.z)));
 assert.ok(generated2D.instancingPlan.every(group=>group.transforms.every(position=>Number.isFinite(position.y)&&!('z' in position))));
 assert.ok(generated.instancingPlan.every(group=>group.transforms.every(position=>Number.isFinite(position.y)&&Number.isFinite(position.z))));
+
+
+// 공용 원본 후보 전체 조회 → 게임별 3D 구조/소품 바인딩 제안 → 독립 런타임 검증은 미완료로 유지.
+const reusable3d=[
+  {id:'library-house-stone',family:'BUILDING',path:'assets/models/stone-house.glb',sourceHash:'stone-hash',license:'CC0',mapDetailRoles:['STRUCTURE'],tags:['COMMERCIAL']},
+  {id:'library-house-timber',family:'BUILDING',path:'assets/models/timber-house.glb',sourceHash:'timber-hash',license:'CC0',mapDetailRoles:['STRUCTURE'],tags:['RESIDENTIAL']},
+  {id:'library-forest-tree',family:'ENVIRONMENT',path:'assets/models/tree.glb',sourceHash:'tree-hash',license:'CC0',tags:['BUSH','BROADLEAF']},
+  {id:'library-stone-prop',family:'PROP',path:'assets/models/stone.obj',sourceHash:'rock-hash',license:'CC0',tags:['ROCK']},
+  {id:'flat-illustration',family:'BUILDING',path:'assets/images/house.webp',sourceHash:'flat-hash',license:'CC0'},
+  {id:'restricted-building',family:'BUILDING',path:'assets/models/restricted.glb',sourceHash:'unsafe-hash',license:'CC-BY-NC'}
+];
+const sharedWorld=createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',styleFamily:'DARK_FANTASY',libraryAssets:reusable3d});
+assert.equal(sharedWorld.status,'STATIC_LAYOUT_PROPOSED');
+assert.equal(sharedWorld.sharedLibraryBinding.sourceCandidateCount,4,'only rights-cleared native geometry is eligible');
+assert.deepEqual(sharedWorld.sharedLibraryBinding.eligibleFamilies,{BUILDING:2,ENVIRONMENT:1,PROP:1});
+assert.equal(sharedWorld.sharedLibraryBinding.originalAssetsCopied,false);
+assert.equal(sharedWorld.sharedLibraryBinding.actualRuntimeBindingsVerified,false);
+assert.ok(sharedWorld.sharedLibraryBinding.selectedAssetIds.includes('library-forest-tree'));
+assert.ok(sharedWorld.buildings.length>0);
+assert.ok(sharedWorld.buildings.every(item=>item.sourceBinding.status==='SOURCE_SELECTED_NATIVE_APPLICATION_REQUIRED'));
+assert.ok(sharedWorld.buildings.every(item=>item.construction.structure3d.wallHeightMeters>0&&item.construction.structure3d.geometryGenerated===false));
+assert.ok(sharedWorld.buildings.every(item=>item.sourceBinding.runtimeVerified===false&&item.sourceBinding.appliedToNativeGame===false));
+assert.ok(sharedWorld.vegetation.some(item=>item.sourceBinding.assetId==='library-forest-tree'));
+const natureTiles=sharedWorld.vegetation;
+for(let i=0;i<natureTiles.length;i++)for(let j=i+1;j<natureTiles.length;j++){
+  assert.ok(Math.abs(natureTiles[i].x-natureTiles[j].x)>1||Math.abs(natureTiles[i].z-natureTiles[j].z)>1,'blue-noise approximation should enforce minimum spacing');
+}
+assert.equal(sharedWorld.placementDiversity.algorithm,'SEEDED_HASH_PRIORITY_SPATIAL_REJECTION_BLUE_NOISE_APPROXIMATION');
+assert.deepEqual(sharedWorld,createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',styleFamily:'DARK_FANTASY',libraryAssets:[...reusable3d].reverse()}),'registry order must not change stable world bindings');
+
+const mappedSketch={
+  nodes:[{id:'ENTRY',role:'spawn'},{id:'HUB',role:'landmark'},{id:'EXIT',role:'transition'}],
+  edges:[{from:'ENTRY',to:'HUB'},{from:'HUB',to:'EXIT'}],
+  districts:[{id:'district-a',anchorNodeId:'HUB',function:'MARKET'},{id:'district-b',anchorNodeId:'HUB',function:'MARKET'}]
+};
+const mappedDetail=createVibeMapDetailReconstruction({sketch:mappedSketch,assets:reusable3d,gameId:'forest-rpg',target:'ROBLOX'});
+assert.equal(mappedDetail.status,'DETAIL_AUTHORING_PLAN');
+const firstStructure=mappedDetail.regions[0].layers.find(layer=>layer.layer==='STRUCTURE');
+const secondStructure=mappedDetail.regions[1].layers.find(layer=>layer.layer==='STRUCTURE');
+assert.equal(firstStructure.eligibleCandidateCount,2,'all compatible building sources stay eligible');
+assert.equal(firstStructure.status,'REUSE_AND_REAUTHOR');
+assert.notEqual(firstStructure.assetId,secondStructure.assetId,'adjacent regions reuse distinct role-compatible sources where available');
+assert.equal(firstStructure.binding.nativeReady,true);
+assert.equal(firstStructure.binding.actualGameSourceBinding,false);
+assert.equal(firstStructure.runtimeVerified,false);
+assert.ok(firstStructure.candidateAssetIds.every(id=>!['flat-illustration','restricted-building'].includes(id)));
+const flatOnly=createVibeMapDetailReconstruction({sketch:mappedSketch,assets:reusable3d.filter(a=>a.id==='flat-illustration')});
+assert.equal(flatOnly.regions[0].layers.find(layer=>layer.layer==='STRUCTURE').status,'AUTHORING_REQUIRED','2D art is not native spatial geometry');
 
 console.log('vibe-world-macro-causality: ok');
