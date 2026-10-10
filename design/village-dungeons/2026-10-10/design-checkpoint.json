@@ -644,25 +644,38 @@
       "name": "역사와 철학 영향의 진입 규칙",
       "purpose": "문화적 배경과 역사적 사실을 통해 플레이어의 선택에 영향을 줄 수 있는 역할을 수행하며, 선수의 가치관과 생각을 반영하여 행동에 영향을 주는 메커니즘을 구현",
       "playerChoice": "선수의 가치관 및 역사적 배경을 기반으로 전략/경로/성장 가능성을 결정하는 다양한 경로와 전략의 제공"
+    },
+    "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력(손 tap/swipe)"
+      ],
+      "stateOutputs": [
+        "첫 성공, 첫 위험/선택"
+      ],
+      "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
+      "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프로, 실질적 인과 변화가 발생하는 경제적 트레이드오프에 기반하여 시작된다.",
+      "playerChoice": "새로운 전략/경로/성장 가능성이 실제로 달라지는 경험을 선택할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2540819,
-      "lastMs": 104142,
+      "totalMs": 2570377,
+      "lastMs": 29558,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:50:26.742Z"
+      "updatedAt": "2026-10-10T00:50:56.311Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-10T00:50:26.752Z",
+  "updatedAt": "2026-10-10T00:50:56.311Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2426,10 +2439,10 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:50:26.744Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:50:56.311Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
