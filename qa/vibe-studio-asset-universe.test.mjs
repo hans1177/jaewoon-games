@@ -5576,7 +5576,7 @@ test('genre responsive game window and system library atoms stay synchronized an
   assert.ok(ui.requiredComponentCount>=40);
   const permitted=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.UI);
   assert.ok(permitted.includes('minimumDepth'));
-  for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\\(/,/InvokeServer\\(/]){
+  for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
