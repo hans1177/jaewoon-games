@@ -683,25 +683,38 @@
       "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
       "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프를 제공하며, 중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백을 명확히 해야 한다.",
       "playerChoice": "실질적 인과 변화에 기반하여 선택하는 다양한 전략 및 경로를 제공함."
+    },
+    "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "입력(손 tap/swipe)"
+      ],
+      "stateOutputs": [
+        "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백을 명시하는 게임 진행 방향"
+      ],
+      "name": "마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
+      "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프, 경제적 트레이드오프, 역사적 배경, 철학적 가치관, 다양한 전략/경로/성장 가능성이 실제로 달라지는 경험을 결합하여 새로운 정체성을 형성함",
+      "playerChoice": "실제 세계 상태 변화에 따라 새로운 전략/경로/성장 가능성 발생하며, 이는 기존 시스템과 인과적으로 연계됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 29,
+      "calls": 31,
+      "successes": 30,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2739285,
-      "lastMs": 102552,
+      "totalMs": 2779231,
+      "lastMs": 39946,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:53:45.225Z"
+      "updatedAt": "2026-10-10T00:54:25.174Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-10T00:53:45.226Z",
+  "updatedAt": "2026-10-10T00:54:25.179Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2360,20 +2373,10 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 5,
+    "designer_draft_slices::identity-core": 6,
     "local_authoring_parts::7fbdff75d9ef99358f68bd9870736aac568e8831b54d8d58805c8c35573f479a:signatureSystems:2": 1,
     "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:2": 1
   },
@@ -2476,10 +2479,10 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:53:45.225Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:54:25.175Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
