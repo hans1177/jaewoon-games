@@ -406,25 +406,43 @@
       "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
       "purpose": "To adapt defensive strategies based on enemy types, wave compositions, terrain, and resource distributions.",
       "playerChoice": "Adapt defense to enemy types and adjust placements based on battlefield conditions."
+    },
+    "local_authoring_parts::ea36fa6fb8771bf0e3f6fbd7f8fa092124d30fca3f26f80dacec5ca51a2f97b4:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "threatened route",
+        "enemy type",
+        "wave composition",
+        "terrain",
+        "resource distribution"
+      ],
+      "stateOutputs": [
+        "defensive strategy adaptation",
+        "resource allocation decision"
+      ],
+      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "purpose": "Adapt defensive strategy based on enemy types, wave compositions, terrain, and resource distributions.",
+      "playerChoice": "Adapt to enemy type, adjust placement based on terrain and resource availability, and manage budget for upgrades and new placements before pressure increases."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 863340,
-      "lastMs": 67243,
+      "totalMs": 932810,
+      "lastMs": 69470,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:52:59.692Z"
+      "updatedAt": "2026-10-10T02:54:09.164Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:52:59.692Z",
+  "updatedAt": "2026-10-10T02:54:09.164Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2260,7 +2278,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:52:59.692Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:54:09.164Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
