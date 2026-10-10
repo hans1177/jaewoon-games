@@ -606,25 +606,28 @@
     },
     "local_authoring_parts::29edf4600af6eb142357841854a1edbdf5d6d4dbd746490da95997fdd1563a26:fromSystem": {
       "fromSystem": "Main Defensive Strategy"
+    },
+    "local_authoring_parts::29edf4600af6eb142357841854a1edbdf5d6d4dbd746490da95997fdd1563a26:toSystem": {
+      "toSystem": "Game Designer AI"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 599270,
-      "lastMs": 33460,
+      "totalMs": 632328,
+      "lastMs": 33058,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:11:02.952Z"
+      "updatedAt": "2026-10-10T09:11:36.011Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:11:02.952Z",
+  "updatedAt": "2026-10-10T09:11:36.011Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2317,7 +2320,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:11:02.952Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:11:36.011Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
