@@ -45,7 +45,7 @@ test('Daechung WebGL request always builds the exact current main source and cla
 
 test('Unity Web performance QA samples live gameplay frames instead of treating boot time as FPS proof',()=>{
   const gameplay=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
-  const frame=source.indexOf('const framePacing=await page.evaluate');
+  const frame=source.indexOf('framePacing=await Promise.race');
   const returnInput=source.indexOf("await page.keyboard.press('KeyR')");
   assert.ok(gameplay>=0&&frame>gameplay&&returnInput>frame,'sample while gameplay is active');
   assert.match(source,/requestAnimationFrame\(onFrame\)/);
@@ -561,4 +561,15 @@ test('monster adventure Unity raycasts compile with the native physics module',(
   const manifest=JSON.parse(fs.readFileSync(new URL('../unity-games/monster-adventure/Packages/manifest.json',import.meta.url),'utf8'));
   assert.match(game,/Physics\.Raycast\(/);
   assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
+});
+
+
+test('stalled browser frame sampling fails with a bounded causal signature and closes Chromium on errors',()=>{
+  assert.match(source,/UNITY_WEB_QA_FRAME_SAMPLE_HOST_TIMEOUT/);
+  assert.match(source,/frameSampleHostTimeout=setTimeout/);
+  assert.match(source,/clearTimeout\(frameSampleHostTimeout\)/);
+  assert.match(source,/if\(browser\?\.isConnected\(\)\)await browser\.close\(\)/);
+  assert.match(source,/observedRuntimeFailure:true/);
+  assert.match(source,/playableBrowserTest:false/);
+  assert.match(source,/throw error;/);
 });

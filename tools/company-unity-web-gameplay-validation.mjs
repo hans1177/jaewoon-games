@@ -98,6 +98,7 @@ const markers=[];
 const consoleErrors=[];
 const pageErrors=[];
 const failedRequests=[];
+let browser=null;
 
 try{
   // 실제 Android Chrome 사용자 에이전트를 사용해 Unity WebGL의 모바일 템플릿 경로를 실행한다.
@@ -105,7 +106,7 @@ try{
   const androidChrome=devices['Pixel 5'];
   if(!androidChrome?.userAgent?.includes('Android'))throw new Error('UNITY_WEB_QA_ANDROID_PROFILE_MISSING');
   const mobileViewport={width:390,height:844};
-  const browser=await chromium.launch({headless:true});
+  browser=await chromium.launch({headless:true});
   const page=await browser.newPage({...androidChrome,viewport:mobileViewport});
   page.on('console',msg=>{
     const text=String(msg.text()||'');
@@ -310,7 +311,11 @@ try{
   };
 
   // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
-  const framePacing=await page.evaluate(()=>new Promise(resolve=>{
+  let frameSampleHostTimeout;
+  let framePacing;
+  try{
+    framePacing=await Promise.race([
+      page.evaluate(()=>new Promise(resolve=>{
     const intervals=[];
     let first=null,previous=null,finished=false;
     const finish=()=>{
@@ -336,7 +341,14 @@ try{
       else requestAnimationFrame(onFrame);
     };
     requestAnimationFrame(onFrame);
-  }));
+      })),
+      new Promise((_,reject)=>{
+        frameSampleHostTimeout=setTimeout(()=>reject(new Error('UNITY_WEB_QA_FRAME_SAMPLE_HOST_TIMEOUT')),15000);
+      })
+    ]);
+  } finally {
+    clearTimeout(frameSampleHostTimeout);
+  }
   // 모바일 소프트웨어 브라우저의 프레임 성능 실패는 끝까지 관찰하고
   // 실제 이동·공격·보상·저장 증거를 보존한다. 상위 QA PASS와 별개인 테스트 공개 근거다.
   const framePacingFailed=framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
@@ -731,6 +743,11 @@ try{
     fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
   }
   console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
+  try{
+    if(browser?.isConnected())await browser.close();
+  }catch(closeError){
+    console.error('UNITY_WEB_QA_BROWSER_CLOSE_FAILED='+String(closeError?.message||closeError));
+  }
   throw error;
 } finally {
   await new Promise(resolve=>server.close(resolve));
