@@ -335,6 +335,14 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(layout.maxSlopeDegrees,35);
     assert.equal(layout.heights.length,576);
     assert.equal(layout.types.length,576);
+    assert.ok(Array.isArray(layout.waterBodies)&&Array.isArray(layout.earthBiomes));
+    assert.equal(layout.surfaceMaterials.length,576);
+    assert.ok(layout.buildings.every(lot=>lot.eraStrata.length===4&&lot.era));
+    assert.equal(layout.lifePlan.length,0,'no extra NPC or monsters without an authored roster');
+    assert.equal(layout.environmentSync.actualNativeLifeAndWaterBindingsVerified,false);
+    assert.match(runtime,/surface\\.subMeshCount=7/);
+    assert.match(runtime,/var groups=new List<int>\\[7\\]/);
+    assert.match(runtime,/WorldMaterial\\(new Color\\(\\.18f,\\.40f,\\.55f\\)/);
     assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
     assert.ok(layout.roads.length>0);
     assert.ok(layout.buildings.length>0);
