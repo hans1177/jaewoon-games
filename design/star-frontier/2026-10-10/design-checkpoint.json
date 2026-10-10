@@ -194,25 +194,39 @@
         "플레이어의 전략적 결정과 위험 인식 변화를 통해 세계 재구성",
         "역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성"
       ]
+    },
+    "local_authoring_parts::792fe2bad68886d0e9e946f492be6c7d3b7d5a0674af489be179ce3dc9c9ad53:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "선택",
+        "위험"
+      ],
+      "stateOutputs": [
+        "새로운 전략 경로 생성"
+      ],
+      "name": "전략적 빌드 - 역사 및 철학 소재",
+      "purpose": "플레이어의 선택과 위험에 대한 인식 변화를 통해 세계를 재구성하는 과정에서 중요한 선택을 내리는 것이 목적입니다.",
+      "playerChoice": "선택 -> 위험 증가 -> 새로운 전략 경로 생성, 역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성 결정됨니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 702125,
-      "lastMs": 63091,
+      "totalMs": 773474,
+      "lastMs": 71349,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:05:50.981Z"
+      "updatedAt": "2026-10-10T03:07:02.332Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:08.629Z",
-  "updatedAt": "2026-10-10T03:05:50.981Z",
+  "updatedAt": "2026-10-10T03:07:02.332Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1700,7 +1714,7 @@
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:05:50.981Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:07:02.332Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
