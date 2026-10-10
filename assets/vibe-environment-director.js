@@ -349,9 +349,21 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       &&['BUILDING','ENVIRONMENT','PROP'].includes(String(asset?.family||asset?.category).toUpperCase());
   }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
   const poolByFamily=new Map(['BUILDING','ENVIRONMENT','PROP'].map(family=>[family,pool.filter(row=>String(row.family||row.category).toUpperCase()===family)]));
+  const sourceUsage=new Map();
   const pickSource=(family,kind,x,z)=>{
-    const candidates=poolByFamily.get(family)||[],salt=String(kind).split('').reduce((n,c)=>Math.imul(n^c.charCodeAt(0),16777619)>>>0,2166136261);
-    const chosen=candidates.length?candidates[proceduralCellHash(hash^salt,x,z)%candidates.length]:null;
+    const candidates=poolByFamily.get(family)||[];
+    const salt=[gameId,styleFamily,kind].join(':').split('').reduce((n,c)=>Math.imul(n^c.charCodeAt(0),16777619)>>>0,2166136261);
+    const ranked=candidates.map(asset=>{
+      const identity=String(asset.id||asset.assetId),words=[asset.role,asset.subfamily,asset.title,asset.name,...(asset.tags||[])].join(' ').toUpperCase();
+      const match=words.includes(String(kind).toUpperCase());
+      const sameGame=(asset.consumerGameIds||[]).includes(gameId);
+      const sameStyle=!asset.styleFamily||String(asset.styleFamily).toUpperCase()===String(styleFamily).toUpperCase();
+      const stableIdHash=identity.split('').reduce((n,c)=>Math.imul(n^c.charCodeAt(0),16777619)>>>0,2166136261);
+      const variation=proceduralCellHash(hash^salt^stableIdHash,x,z)%17;
+      return{asset,identity,score:(match?70:0)+(sameGame?16:0)+(sameStyle?10:0)+variation-(sourceUsage.get(identity)||0)*12};
+    }).sort((a,b)=>b.score-a.score||a.identity.localeCompare(b.identity));
+    const chosen=ranked[0]?.asset||null;
+    if(chosen){const id=String(chosen.id||chosen.assetId);sourceUsage.set(id,(sourceUsage.get(id)||0)+1);}
     return Object.freeze({status:chosen?'SOURCE_SELECTED_NATIVE_APPLICATION_REQUIRED':'NATIVE_ASSET_AUTHORING_REQUIRED',
       assetId:chosen?.id||chosen?.assetId||null,sourceHash:chosen?.sourceHash||chosen?.contentHash||chosen?.sha256||null,
       sourceFiles:Object.freeze(chosen?[...new Set([chosen.path,chosen.masterGlb,chosen.meshArtifact,...(chosen.sourceFiles||[]),...(chosen.nativeArtifacts||[])].filter(Boolean))]:[]),
