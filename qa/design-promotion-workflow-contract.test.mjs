@@ -44,27 +44,32 @@ test('promotion persists only runtime state while machine policy comes from main
   const checkout=promotion.slice(promotion.indexOf('- name: Checkout current engine source'),promotion.indexOf('- name: Overlay latest company runtime design evidence'));
   assert.match(checkout,/fetch-depth: 2/);
   assert.doesNotMatch(checkout,/fetch-depth: 0/);
-  assert.match(promotion,/COMPANY_RUNTIME_BRANCH: company-runtime/);
-  assert.match(promotion,/refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH/);
-  assert.match(promotion,/refs\/heads\/main:refs\/remotes\/origin\/main/);
-  assert.match(promotion,/for attempt in 1 2 3; do/);
-  assert.match(promotion,/git fetch origin ['"]\+refs\/heads\/main:refs\/remotes\/origin\/main['"] ['"]\+refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH['"] --depth=2 --no-tags --quiet/);
-  assert.match(promotion,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
-  assert.match(promotion,/Object\.hasOwn\(item,'webValidationRequired'\)\|\|Object\.hasOwn\(item,'musicValidationRequired'\)/);
-  assert.doesNotMatch(promotion,/item\.webValidationRequired!==false\|\|item\.musicValidationRequired!==false/);
-  const calls=promotion.match(/node tools\/design-only-promotion-sync\.mjs/g)||[];
-  assert.ok(calls.length>=2);
-  assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/);
-  const policyCheckout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
-  const policyReset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
+  assert.ok(promotion.includes('COMPANY_RUNTIME_BRANCH: company-runtime'));
+  assert.ok(promotion.includes('refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH'));
+  assert.ok(promotion.includes('refs/heads/main:refs/remotes/origin/main'));
+  assert.ok(promotion.includes('for attempt in 1 2 3; do'));
+  assert.ok(promotion.includes('git restore --source="origin/$COMPANY_RUNTIME_BRANCH" --staged --worktree -- "$runtime_path"'),
+    'each retry restores the latest runtime evidence without switching away from canonical main tools');
+  assert.ok(promotion.includes('GIT_INDEX_FILE="$runtime_index" git read-tree "$runtime_parent^{tree}"'));
+  assert.ok(promotion.includes('GIT_INDEX_FILE="$runtime_index" git diff --cached --check'));
+  assert.ok(promotion.includes('git commit-tree "$runtime_tree" -p "$runtime_parent"'));
+  assert.ok(promotion.includes('git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"'));
+  assert.doesNotMatch(promotion,/git checkout -B design-promotion-persist|git reset --hard HEAD/);
+  assert.ok(promotion.includes("Object.hasOwn(item,'webValidationRequired')||Object.hasOwn(item,'musicValidationRequired')"));
+  assert.ok(!promotion.includes("item.webValidationRequired!==false||item.musicValidationRequired!==false"));
+  const calls=promotion.split('node tools/design-only-promotion-sync.mjs').length-1;
+  assert.ok(calls>=2);
+  const policyRead=promotion.split(String.fromCharCode(10)).find(line=>line.includes('git restore --source=origin/main --staged --worktree -- company-directive.json'))||'';
+  const runtimeWrite=promotion.split(String.fromCharCode(10)).find(line=>line.includes('GIT_INDEX_FILE="$runtime_index" git add -A -- game-seed-state.json design'))||'';
   for(const dependency of ['company-homepage-platform-exposure-sync','company-platform-exposure-control','company-shared-context','company-direct-native-design-migration']){
-    assert.ok(policyCheckout.split(/\s+/).includes(`tools/${dependency}.mjs`),`checkout must include ${dependency}`);
-    assert.ok(policyReset.split(/\s+/).includes(`tools/${dependency}.mjs`),`runtime commit must exclude ${dependency}`);
+    assert.ok(policyRead.includes(`tools/${dependency}.mjs`),`policy reload must include ${dependency}`);
+    assert.ok(!runtimeWrite.includes(`tools/${dependency}.mjs`),`runtime commit must exclude ${dependency}`);
   }
-  assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
-  assert.doesNotMatch(promotion,/COMPANY_FLOW\.md/);
-  assert.doesNotMatch(promotion,/DIRECT_NATIVE_DUAL_PLATFORM\.md/);
-  assert.doesNotMatch(promotion,/tools\/company-baseline-gate\.mjs/);
+  assert.ok(runtimeWrite.includes('game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json'));
+  assert.ok(!runtimeWrite.includes('company-learning/'), 'machine policy must never be persisted to runtime');
+  assert.ok(!promotion.includes('COMPANY_FLOW.md'));
+  assert.ok(!promotion.includes('DIRECT_NATIVE_DUAL_PLATFORM.md'));
+  assert.ok(!promotion.includes('tools/company-baseline-gate.mjs'));
 });
 
 test('stale development admission is removed instead of preserving an invalid queue invariant',()=>{

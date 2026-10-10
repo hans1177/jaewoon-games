@@ -1358,8 +1358,29 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const itemTaskKey=`local_authoring_parts::${itemKey}`;
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
+            // 헬퍼: 같은 연결 오류가 반복되면 모델 출력 스키마를 이미 작성한 실제 상태 키에 제한한다.
+            // 임의 키를 끼워 넣거나 검증을 건너뛰지 않고, 통과한 이전 역할의 상태만 다시 선택하게 한다.
+            const repeatedHandoffFailure=Boolean(roleHandoff
+              &&Number(designCheckpoint.sliceRepairAttempts?.[itemTaskKey]||0)>=2
+              &&repairFeedback.some(issue=>/^DESIGN_GRAMMAR_STATE_(?:INPUT|OUTPUT)_HANDOFF_MISSING$/.test(issue.code)));
+            let repairSchema=itemSchema;
+            if(repeatedHandoffFailure){
+              for(const [stateField,previousKeys] of [
+                ['stateInputs',roleHandoff.inputKeysFromPreviousOutputs],
+                ['stateOutputs',roleHandoff.outputKeysToPreviousInputs]
+              ]){
+                const authenticKeys=[...new Set(Array.isArray(previousKeys)?previousKeys:[])]
+                  .filter(key=>typeof key==='string'&&key.trim()&&!/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(key));
+                if(!authenticKeys.length)continue;
+                repairSchema={...repairSchema,properties:{...repairSchema.properties,
+                  [stateField]:{...repairSchema.properties[stateField],
+                    items:{...repairSchema.properties[stateField].items,enum:authenticKeys}}}};
+              }
+              if(Number(designCheckpoint.sliceRepairAttempts?.[itemTaskKey])===2)
+                console.log(`DESIGN_GRAMMAR_HANDOFF_SCHEMA_RECOVERY=${grammarRole}|AUTHORED_STATE_KEYS_ONLY`);
+            }
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
+              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,repairSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             // 규칙 내용은 모델이 작성하고 참조용 ID 형식만 안전하게 정규화한다.
