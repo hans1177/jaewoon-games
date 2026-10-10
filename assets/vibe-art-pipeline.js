@@ -592,6 +592,21 @@ export function createVibeGraphicsProduction({
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
+  // [NATIVE CINEMATIC] Keep the Blender render inside the canonical graphics root.
+  const dcc=assetPlanBound?assetProductionPlan?.nativeAuthoringExecution?.dcc||{}:{};
+  const videoRecipes=(dcc.executionRecipes||[]).filter(row=>row?.cinematic===true);
+  const dccProof=(dcc.executionEvidence?.recipes||[]).filter(row=>row?.cinematicVideo?.verifiedBy==='FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH');
+  const cinematicRendering=Object.freeze({
+    supported:true,requested:videoRecipes.length>0,engine:'BLENDER_PYTHON',
+    encoder:'BLENDER_FFMPEG_H264',source:'assets/native-authoring/build-game-visual.py',
+    stage:'VFX_UI_AND_PRESENTATION_BINDING',
+    status:videoRecipes.length===0?'ON_DEMAND':dccProof.length===videoRecipes.length?'SOURCE_BOUND_DCC_VIDEO_RENDERED':'SOURCE_BOUND_DCC_VIDEO_PENDING',
+    requestedRecipeIds:Object.freeze(videoRecipes.map(row=>row.id)),
+    provenRecipeIds:Object.freeze(dccProof.map(row=>row.id)),
+    expectedVideoFiles:Object.freeze(videoRecipes.map(row=>row.cinematicOutput).filter(Boolean)),
+    audioAuthoringOwner:'audio',gameplayMutationAllowed:false,
+    evidenceIsNotNativeRuntimeQa:true,releaseAuthority:false
+  });
   const referenceImageStudies=Object.freeze((referenceImages||[]).map((row,index)=>{
     const request=createVibeReferenceImageStudyRequest({
       sourceId:row?.sourceId||row?.id||`reference-${index+1}`,
@@ -665,6 +680,7 @@ export function createVibeGraphicsProduction({
     visualDirection,
     visualWork,
     presentation,
+    cinematicRendering,
     characterIdentity,
     mapDetail,
     referenceImageStudies,
@@ -717,6 +733,9 @@ export function createVibeGraphicsProduction({
       declaredSceneObjectsRequireRuntimeBindingEvidence:true,
       characterIdentityDirectorIntegrated:true,
       environmentDetailDirectorIntegrated:true,
+      nativeDccCinematicRenderingWithinExistingGraphicsRoot:true,
+      codecFrameCountAndSourceHashRequiredBeforeVideoEvidence:true,
+      videoRenderNeverGrantsRuntimeOrReleasePass:true,
       engineMeasurementCaptureRequired:true,
       missingEngineMeasurementRemainsUnverified:true,
       studioAssetQualityScaleMaximum:120,
