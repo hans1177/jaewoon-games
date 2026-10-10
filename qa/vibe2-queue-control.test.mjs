@@ -2469,3 +2469,53 @@ test('Unity Web receives sixteen distinct-game priority slots without a seventee
   assert.equal(result.queue.tasks.find(t=>t.id==='android-held').status,'queued');
   assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
 });
+
+test('active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const scope=policy.ownerActiveDevelopmentScope20261009;
+  assert.deepEqual(scope.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.equal(scope.unityAndroidDevelopmentAllowed,false);
+  const task=(id,target,unityWeb=false,file='Assets/Scripts/GameCore.cs')=>({
+    id,gameId:id,target,goal:'repair actual gameplay source',type:'implementation',department:'development',
+    releaseState:'development-confirmed',status:'queued',priority:'high',
+    unityWebDevelopment:unityWeb,evidence:unityWeb?['unity-web-first-stage']:[],
+    sourceRoot:target==='unity'?'unity-games/'+id:target+'-games/'+id,
+    responsibleFiles:[target==='unity'?'unity-games/'+id+'/'+file:target+'-games/'+id+'/client/Main.luau']
+  });
+  const items=[
+    task('qa-active-unity-web','unity',true),
+    task('qa-active-roblox','roblox'),
+    task('qa-held-unity-android','unity'),
+    task('qa-held-legacy-web','web')
+  ];
+  const batch=reserveVibeTaskBatch(createVibeContinuousQueue({tasks:items,maxConcurrentTasks:8}),{
+    lane:'game-primary',maxConcurrentTasks:8,policy,
+    reservation:{id:'qa-current:1',runId:'qa-current',runAttempt:1,reservedAt:'2026-10-11T00:00:00Z'}
+  });
+  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-unity-web','qa-active-roblox']));
+  for(const id of ['qa-held-unity-android','qa-held-legacy-web']){
+    const row=batch.queue.tasks.find(t=>t.id===id);
+    assert.equal(row.status,'queued');
+    assert.equal(row.ownerDevelopmentHold,true);
+  }
+  const unity=batch.queue.tasks.find(t=>t.id==='qa-active-unity-web');
+  assert.equal(unity.status,'running');
+  assert.equal(unity.ownerDevelopmentHold,false);
+  assert.equal(verifyVibeWorkerSynchronization(batch.queue,{
+    taskId:unity.id,reservationId:'qa-current:1',reservationRunId:'qa-current',
+    reservationRunAttempt:1,reservedAt:'2026-10-11T00:00:00Z'
+  }).pass,true);
+
+  const sameGame=[
+    task('qa-web-code-a','unity',true,'Assets/Scripts/GameCore.cs'),
+    task('qa-web-code-b','unity',true,'Assets/Scripts/RuntimeBootstrap.cs'),
+    task('qa-web-code-overlap','unity',true,'Assets/Scripts/GameCore.cs')
+  ].map(row=>({...row,gameId:'qa-same-game',sourceRoot:'unity-games/qa-same-game',
+    responsibleFiles:['unity-games/qa-same-game/'+row.responsibleFiles[0].split('/').slice(-2).join('/')]}));
+  const distinct=reserveVibeTaskBatch(createVibeContinuousQueue({tasks:sameGame,maxConcurrentTasks:8}),{
+    lane:'game-primary',maxConcurrentTasks:8,policy
+  });
+  assert.equal(distinct.tasks.length,2,'independent C# systems can run in parallel but exact file conflicts cannot');
+  assert.equal(new Set(distinct.tasks.flatMap(row=>row.responsibleFiles)).size,2);
+  assert.equal(distinct.queue.tasks.filter(row=>row.status==='queued').length,1);
+});
