@@ -2,6 +2,11 @@
 // 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
+import {computeVibeSeedProposal} from '../tools/company-game-seed-bootstrap.mjs';
+import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
+import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
+import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
 import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
@@ -426,3 +431,66 @@ assert.ok(preservedValidate(disconnected).some(row=>row.code==='DESIGN_PRESERVAT
 console.log('DESIGN_PRESERVED_MAIN_A_B_c_DELVE_CAUSAL_GRAPH=PASS');
 
 console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
+
+/* 메인: 바이브 자체 설계 계산의 독립 결정론적 문법 검증.
+ * 외부 모델·로컬 모델 호출을 사용하지 않고 실제 프로덕션 설계 함수를 직접 평가한다.
+ * 이 검사는 설계 후보의 문법 확인이며 런타임 게임 PASS 증거가 아니다.
+ */
+{
+  const nativeSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  const start=nativeSource.indexOf('function computeVibeNativeDesign(){');
+  const end=nativeSource.indexOf('let cachedVibeNativeDesign=',start);
+  assert.ok(start>0&&end>start,'the canonical native design authoring function must exist');
+  assert.doesNotMatch(nativeSource,/127\\.0\\.0\\.1:11434|async function requestLocalDesignerRaw|callLocalDesignerModel\\(/);
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
+    const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
+    const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
+      {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
+      {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
+    ]};
+    const proposal=computeVibeSeedProposal(target);
+    const seed={
+      seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
+      status:'ACTIVE',generation:'MATERIAL_COMPOSED',GAME_CATEGORY:category,
+      DISTINCT_IDENTITY:proposal.distinctIdentity,CORE_LOOP:proposal.coreLoop,
+      CORE_FUN_TO_LEARN:proposal.coreFunToLearn,GAMEPLAY_SKETCH:proposal.gameplaySketch,
+      SEED_MATERIAL_IDS:['MAT-001','MAT-002'],TARGET_AUDIENCE:proposal.targetAudience,
+      TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
+    };
+    const design=runInNewContext(
+      nativeSource.slice(start,end)+'\\ncomputeVibeNativeDesign()',
+      {
+        seed,gameId:'native-qa',game:{name:proposal.gameName},
+        seedState:{seedMaterials:target.materials},
+        seedGameplaySketch:proposal.gameplaySketch,
+        pendingSeedGrammarNotAuthored:false,
+        originalMultiplayerMode:proposal.multiplayerDesignMode,
+        allGamesMultiplayerRequired:true,
+        playableRequirements:designPlayabilityRequirements(seed),
+        designAssetFamilies:[],designAssetLibrary:null,
+        seedFlowSystemBlueprint:{},factPack:{},fs,
+        computeVibeSeedProposal,repairDesignRequiredFields,
+        clean:value=>String(value??'').replace(/\\s+/g,' ').trim()
+      }
+    );
+    const feedback=validateDesignAuthoringContent({
+      design,seed,fields:Object.keys(design),
+      multiplayerRequired:true,requirePlayableContract:true
+    });
+    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    const scored=scoreDesignGateV2({
+      seed,designRecord:{content:design,sameModelAsDraft:false},
+      cycleStatus:{status:'IN_PROGRESS'},
+      robloxGenreProfile:classifyRobloxGenre({
+        category,identity:design.identity,coreLoop:design.coreLoop,
+        designText:JSON.stringify(design),multiplayerMode:design.multiplayerMode
+      }),
+      multiplayerRequired:true,requirePlayableContract:true
+    });
+    assert.equal(scored.hardFailures.length,0,category+': '+scored.hardFailures.join(', '));
+    assert.ok(scored.totalScore>=80,category+': '+scored.totalScore);
+    assert.equal(design.platformProfiles.UNITY.unityWebSpatialPresentation.dimension,'3D');
+    assert.equal(design.multiplayerMode,'COOP');
+  }
+}
