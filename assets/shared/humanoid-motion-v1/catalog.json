@@ -35,9 +35,9 @@
     "script": "assets/shared/humanoid-motion-v1/author-motion.py",
     "focusedClipDefault": "common_light_attack_1_hq",
     "focusedOutputRoot": "assets/shared/humanoid-motion-v1/derived/",
-    "supportedMotionDefinitions": 31,
+    "supportedMotionDefinitions": 45,
     "locomotionSourceDefinitions": 17,
-    "actionSourceDefinitions": 14,
+    "actionSourceDefinitions": 28,
     "focusedExportPerWorkUnit": 1,
     "workUnit": {
       "objectCount": 1,
@@ -48,7 +48,12 @@
     },
     "sha256ContentVerificationRequired": true,
     "footPlantValidationRequired": true,
-    "groundedRuntimeEvidenceRequired": true
+    "groundedRuntimeEvidenceRequired": true,
+    "careerActionPoseLibrary": "CLASS_ACTION_POSES",
+    "careerActionPoseCount": 14,
+    "careerClipSourceAvailable": true,
+    "careerDerivedMotionBakesVerified": false,
+    "careerGripContactAndStyleRuntimeVerified": false
   },
   "sourceAuthoredClips": [
     {
@@ -174,6 +179,62 @@
     {
       "name": "common_cast_burst_hq",
       "durationSeconds": 0.84
+    },
+    {
+      "name": "common_samurai_iai_draw_hq",
+      "durationSeconds": 0.84
+    },
+    {
+      "name": "common_samurai_parry_counter_hq",
+      "durationSeconds": 0.73
+    },
+    {
+      "name": "common_knight_shield_bash_hq",
+      "durationSeconds": 0.91
+    },
+    {
+      "name": "common_monk_palm_combo_hq",
+      "durationSeconds": 0.82
+    },
+    {
+      "name": "common_archer_draw_release_hq",
+      "durationSeconds": 1.06
+    },
+    {
+      "name": "common_mage_area_cast_hq",
+      "durationSeconds": 1.23
+    },
+    {
+      "name": "common_assassin_backstep_cut_hq",
+      "durationSeconds": 0.72
+    },
+    {
+      "name": "common_lancer_thrust_hq",
+      "durationSeconds": 0.77
+    },
+    {
+      "name": "common_healer_wave_hq",
+      "durationSeconds": 1.12
+    },
+    {
+      "name": "common_summoner_ritual_hq",
+      "durationSeconds": 1.42
+    },
+    {
+      "name": "common_blacksmith_hammer_hq",
+      "durationSeconds": 1.27
+    },
+    {
+      "name": "common_bard_performance_hq",
+      "durationSeconds": 1.6
+    },
+    {
+      "name": "common_mechanist_gadget_hq",
+      "durationSeconds": 0.94
+    },
+    {
+      "name": "common_farmer_harvest_hq",
+      "durationSeconds": 1.19
     }
   ],
   "authoredSourceIsBakedProductionPass": false,
@@ -199,5 +260,212 @@
     "common_heavy_attack_1_hq",
     "common_parry_hq",
     "common_hit_front_hq"
-  ]
+  ],
+  "careerMotionBindings": [
+    {
+      "clip": "common_samurai_iai_draw_hq",
+      "careerId": "SAMURAI",
+      "actionId": "IAI_DRAW",
+      "weaponFamily": "KATANA",
+      "role": "DRAW_CUT",
+      "contactPart": "CONTACT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_samurai_parry_counter_hq",
+      "careerId": "SAMURAI",
+      "actionId": "SHEATH_COUNTER",
+      "weaponFamily": "KATANA",
+      "role": "COUNTER",
+      "contactPart": "CONTACT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_knight_shield_bash_hq",
+      "careerId": "KNIGHT",
+      "actionId": "KNIGHT_SHIELD_BASH",
+      "weaponFamily": "SHIELD_SWORD",
+      "role": "SHIELD_BASH",
+      "contactPart": "LEFT_ARM",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_monk_palm_combo_hq",
+      "careerId": "MONK",
+      "actionId": "MONK_PALM_CHAIN",
+      "weaponFamily": "UNARMED",
+      "role": "COMBO",
+      "contactPart": "HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_archer_draw_release_hq",
+      "careerId": "ARCHER",
+      "actionId": "BOW_DRAW_RELEASE",
+      "weaponFamily": "BOW",
+      "role": "PROJECTILE",
+      "contactPart": "RIGHT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_mage_area_cast_hq",
+      "careerId": "MAGE",
+      "actionId": "ARCANE_RING",
+      "weaponFamily": "STAFF_OR_WAND",
+      "role": "AREA",
+      "contactPart": "BOTH_HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_assassin_backstep_cut_hq",
+      "careerId": "ASSASSIN",
+      "actionId": "ASSASSIN_SHADOW_STEP",
+      "weaponFamily": "DAGGER",
+      "role": "DASH",
+      "contactPart": "RIGHT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_lancer_thrust_hq",
+      "careerId": "LANCER",
+      "actionId": "SPEAR_TRIPLE_THRUST",
+      "weaponFamily": "SPEAR",
+      "role": "THRUST",
+      "contactPart": "BOTH_HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_healer_wave_hq",
+      "careerId": "CLERIC",
+      "actionId": "RESTORE",
+      "weaponFamily": "STAFF_OR_WAND",
+      "role": "HEAL",
+      "contactPart": "BOTH_HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_summoner_ritual_hq",
+      "careerId": "SUMMONER",
+      "actionId": "SPIRIT_CALL",
+      "weaponFamily": "STAFF_OR_WAND",
+      "role": "SUMMON",
+      "contactPart": "RIGHT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_blacksmith_hammer_hq",
+      "careerId": "BLACKSMITH",
+      "actionId": "FORGE_METAL",
+      "weaponFamily": "HAMMER",
+      "role": "REPAIR",
+      "contactPart": "RIGHT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_bard_performance_hq",
+      "careerId": "BARD",
+      "actionId": "BARD_SONG",
+      "weaponFamily": "INSTRUMENT",
+      "role": "PERFORM",
+      "contactPart": "BOTH_HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_mechanist_gadget_hq",
+      "careerId": "MECHANIST",
+      "actionId": "MECHANICAL_BURST",
+      "weaponFamily": "GADGET",
+      "role": "PROJECTILE",
+      "contactPart": "RIGHT_HAND",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    },
+    {
+      "clip": "common_farmer_harvest_hq",
+      "careerId": "FARMER",
+      "actionId": "HARVEST",
+      "weaponFamily": "TOOL",
+      "role": "INTERACT",
+      "contactPart": "BOTH_HANDS",
+      "sourceClipDefinition": true,
+      "actualJointPoseDefinition": true,
+      "requiresExistingSkinnedHumanoidMaster": true,
+      "platformNativeAdaptationRequired": true,
+      "verifiedRuntime": false,
+      "productionVerified": false
+    }
+  ],
+  "crossGenreReusability": {
+    "target": "ALL_COMPATIBLE_3D_GAME_GENRES",
+    "sourceOfTruth": "assets/vibe-motion-director.js",
+    "careerHierarchy": "COMMON_CAREER_MOTION_HIERARCHY",
+    "motionProjection": "createCommonCareerMotionLoadout",
+    "monsterActionProfile": "createCommonMonsterActionLoadout",
+    "gameplayBalanceAuthority": false,
+    "crossPlatformNativeBinaryReuseForbidden": true
+  }
 }

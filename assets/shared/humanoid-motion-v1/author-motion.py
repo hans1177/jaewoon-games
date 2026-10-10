@@ -60,9 +60,476 @@ CLIPS = {
     'common_hit_back_hq': 0.66,
     'common_death_front_hq': 1.72,
     'common_cast_burst_hq': 0.84,
+    'common_samurai_iai_draw_hq': 0.84,
+    'common_samurai_parry_counter_hq': 0.73,
+    'common_knight_shield_bash_hq': 0.91,
+    'common_monk_palm_combo_hq': 0.82,
+    'common_archer_draw_release_hq': 1.06,
+    'common_mage_area_cast_hq': 1.23,
+    'common_assassin_backstep_cut_hq': 0.72,
+    'common_lancer_thrust_hq': 0.77,
+    'common_healer_wave_hq': 1.12,
+    'common_summoner_ritual_hq': 1.42,
+    'common_blacksmith_hammer_hq': 1.27,
+    'common_bard_performance_hq': 1.60,
+    'common_mechanist_gadget_hq': 0.94,
+    'common_farmer_harvest_hq': 1.19,
 }
-FOUNDATION_TARGET_MOTION_COUNT = 40
-ACTION_CLIPS = tuple(k for k in CLIPS if k.startswith('common_') and any(t in k for t in ('attack_', 'guard_', 'parry_', 'dodge_', 'hit_', 'death_', 'cast_')))
+# 메인: 서로 다른 장르와 직업에 사용할 한 대상·한 클립 원본의 고유 관절 포즈.
+# 계층·스킬 의미 계약은 기존 assets/vibe-motion-director.js가 담당한다.
+CLASS_ACTION_POSES = {
+  "common_samurai_iai_draw_hq": {
+    "windup": 0.31,
+    "contact": 0.52,
+    "anticipation": [
+      0.05,
+      -0.3,
+      -0.16,
+      0.2,
+      -0.19,
+      0.31,
+      0.18,
+      0.26,
+      0.47,
+      -0.32,
+      0.25,
+      -0.24
+    ],
+    "release": [
+      -0.15,
+      0.38,
+      0.2,
+      -0.26,
+      0.32,
+      -0.42,
+      -0.23,
+      0.12,
+      -1.04,
+      0.38,
+      -0.19,
+      0.13
+    ]
+  },
+  "common_samurai_parry_counter_hq": {
+    "windup": 0.26,
+    "contact": 0.59,
+    "anticipation": [
+      0.13,
+      -0.23,
+      -0.16,
+      0.23,
+      -0.28,
+      0.34,
+      -0.36,
+      -0.19,
+      -0.72,
+      0.25,
+      0.25,
+      -0.18
+    ],
+    "release": [
+      -0.15,
+      0.34,
+      0.19,
+      -0.27,
+      0.31,
+      -0.42,
+      0.21,
+      -0.12,
+      0.81,
+      0.32,
+      -0.12,
+      0.17
+    ]
+  },
+  "common_knight_shield_bash_hq": {
+    "windup": 0.35,
+    "contact": 0.67,
+    "anticipation": [
+      -0.11,
+      -0.1,
+      -0.2,
+      -0.1,
+      -0.25,
+      0.14,
+      -0.81,
+      -0.28,
+      -0.18,
+      0.16,
+      0.38,
+      -0.25
+    ],
+    "release": [
+      0.2,
+      0.13,
+      0.33,
+      0.15,
+      0.38,
+      0.15,
+      -0.43,
+      -0.32,
+      0.3,
+      0.19,
+      -0.2,
+      0.1
+    ]
+  },
+  "common_monk_palm_combo_hq": {
+    "windup": 0.26,
+    "contact": 0.59,
+    "anticipation": [
+      0.12,
+      0.22,
+      -0.19,
+      -0.22,
+      -0.29,
+      -0.24,
+      -0.74,
+      -0.21,
+      0.26,
+      0.15,
+      0.29,
+      -0.18
+    ],
+    "release": [
+      -0.18,
+      -0.31,
+      0.28,
+      0.27,
+      0.34,
+      0.34,
+      0.13,
+      -0.1,
+      -0.96,
+      0.26,
+      -0.18,
+      0.24
+    ]
+  },
+  "common_archer_draw_release_hq": {
+    "windup": 0.41,
+    "contact": 0.7,
+    "anticipation": [
+      0.09,
+      -0.11,
+      -0.09,
+      0.13,
+      -0.13,
+      0.2,
+      -0.83,
+      -0.3,
+      -0.78,
+      0.33,
+      0.19,
+      -0.17
+    ],
+    "release": [
+      -0.03,
+      -0.07,
+      0.16,
+      -0.05,
+      0.27,
+      -0.15,
+      -0.55,
+      -0.28,
+      0.13,
+      0.26,
+      0.11,
+      -0.04
+    ]
+  },
+  "common_mage_area_cast_hq": {
+    "windup": 0.44,
+    "contact": 0.73,
+    "anticipation": [
+      -0.09,
+      0.11,
+      -0.24,
+      -0.17,
+      -0.28,
+      0.24,
+      -1.02,
+      -0.36,
+      -0.97,
+      0.38,
+      0.15,
+      0.13
+    ],
+    "release": [
+      0.15,
+      -0.14,
+      0.23,
+      0.15,
+      0.4,
+      -0.19,
+      0.32,
+      -0.14,
+      0.37,
+      0.17,
+      -0.1,
+      -0.09
+    ]
+  },
+  "common_assassin_backstep_cut_hq": {
+    "windup": 0.21,
+    "contact": 0.53,
+    "anticipation": [
+      -0.17,
+      0.27,
+      -0.24,
+      -0.28,
+      -0.14,
+      -0.31,
+      -0.23,
+      -0.21,
+      0.56,
+      -0.17,
+      -0.28,
+      0.43
+    ],
+    "release": [
+      0.18,
+      -0.34,
+      0.21,
+      0.29,
+      0.35,
+      0.37,
+      0.24,
+      0.11,
+      -1.09,
+      0.22,
+      0.26,
+      -0.18
+    ]
+  },
+  "common_lancer_thrust_hq": {
+    "windup": 0.32,
+    "contact": 0.63,
+    "anticipation": [
+      -0.09,
+      -0.12,
+      -0.2,
+      0.18,
+      -0.23,
+      0.17,
+      -0.65,
+      -0.23,
+      -0.63,
+      0.24,
+      0.32,
+      -0.29
+    ],
+    "release": [
+      0.17,
+      0.05,
+      0.29,
+      -0.13,
+      0.4,
+      -0.11,
+      -0.91,
+      -0.18,
+      -0.85,
+      0.13,
+      -0.2,
+      0.14
+    ]
+  },
+  "common_healer_wave_hq": {
+    "windup": 0.46,
+    "contact": 0.82,
+    "anticipation": [
+      -0.06,
+      -0.03,
+      -0.16,
+      -0.06,
+      -0.19,
+      0.1,
+      -0.56,
+      -0.26,
+      -0.59,
+      0.27,
+      0.12,
+      0.12
+    ],
+    "release": [
+      0.08,
+      0.06,
+      0.22,
+      0.08,
+      0.28,
+      -0.07,
+      -0.93,
+      -0.15,
+      -0.97,
+      0.18,
+      -0.07,
+      -0.08
+    ]
+  },
+  "common_summoner_ritual_hq": {
+    "windup": 0.48,
+    "contact": 0.84,
+    "anticipation": [
+      -0.11,
+      0.19,
+      -0.22,
+      -0.25,
+      -0.25,
+      0.33,
+      -0.85,
+      -0.41,
+      -0.71,
+      0.31,
+      0.14,
+      -0.14
+    ],
+    "release": [
+      0.13,
+      -0.12,
+      0.24,
+      0.2,
+      0.33,
+      -0.26,
+      -0.27,
+      -0.19,
+      -1.06,
+      0.14,
+      -0.14,
+      0.11
+    ]
+  },
+  "common_blacksmith_hammer_hq": {
+    "windup": 0.43,
+    "contact": 0.75,
+    "anticipation": [
+      0.16,
+      -0.07,
+      0.22,
+      0.1,
+      -0.31,
+      -0.14,
+      -0.86,
+      -0.12,
+      -1.01,
+      0.16,
+      0.33,
+      -0.2
+    ],
+    "release": [
+      -0.26,
+      -0.1,
+      -0.37,
+      -0.1,
+      0.42,
+      0.12,
+      0.93,
+      0.2,
+      1.1,
+      -0.18,
+      -0.2,
+      0.13
+    ]
+  },
+  "common_bard_performance_hq": {
+    "windup": 0.35,
+    "contact": 0.69,
+    "anticipation": [
+      0.07,
+      0.18,
+      -0.15,
+      -0.13,
+      -0.16,
+      0.27,
+      -0.53,
+      -0.12,
+      -0.46,
+      0.19,
+      0.22,
+      -0.18
+    ],
+    "release": [
+      -0.07,
+      -0.16,
+      0.2,
+      0.24,
+      0.23,
+      -0.26,
+      0.31,
+      0.2,
+      -0.72,
+      -0.12,
+      -0.14,
+      0.23
+    ]
+  },
+  "common_mechanist_gadget_hq": {
+    "windup": 0.33,
+    "contact": 0.68,
+    "anticipation": [
+      0.06,
+      -0.09,
+      -0.18,
+      0.12,
+      -0.22,
+      0.19,
+      -0.59,
+      -0.24,
+      -0.73,
+      0.19,
+      0.17,
+      -0.16
+    ],
+    "release": [
+      -0.12,
+      0.1,
+      0.18,
+      -0.07,
+      0.32,
+      -0.12,
+      -0.29,
+      -0.12,
+      0.32,
+      0.28,
+      -0.15,
+      0.12
+    ]
+  },
+  "common_farmer_harvest_hq": {
+    "windup": 0.44,
+    "contact": 0.77,
+    "anticipation": [
+      0.21,
+      0.12,
+      0.33,
+      -0.12,
+      0.2,
+      -0.16,
+      0.17,
+      -0.16,
+      0.11,
+      0.15,
+      0.49,
+      0.46
+    ],
+    "release": [
+      -0.15,
+      -0.09,
+      -0.19,
+      0.13,
+      -0.3,
+      0.16,
+      -0.76,
+      -0.17,
+      -0.83,
+      0.19,
+      -0.16,
+      -0.17
+    ]
+  }
+}
+FOUNDATION_TARGET_MOTION_COUNT = max(40, len(CLIPS))
+CLASS_ACTION_CLIPS = tuple(CLASS_ACTION_POSES)
+ACTION_CLIPS = tuple(k for k in CLIPS if k in CLASS_ACTION_CLIPS or (k.startswith('common_') and any(t in k for t in ('attack_', 'guard_', 'parry_', 'dodge_', 'hit_', 'death_', 'cast_'))))
 assert ARGS.focus in CLIPS, 'UNKNOWN_COMMON_MOTION_CLIP:'+ARGS.focus
 EXPORT_CLIPS = {ARGS.focus:CLIPS[ARGS.focus]}
 REQUIRED_BONES = {
@@ -800,6 +1267,50 @@ def action_pose(name, t):
         rot('ThighL',.12*gather);rot('ThighR',.10*gather)
         detail_face_and_hands(t,moving=.45,alert=.91)
         apply_secondary(t,drive=1.65,braking=release)
+    # 직업별 모션의 고유 실루엣·체중이동·관절 반동은 실제 GLB 키프레임으로 굽는다.
+    # 시전/접촉 시점은 연출 표식일 뿐 전투 판정이나 이동을 결정하지 않는다.
+    elif name in CLASS_ACTION_CLIPS:
+        profile = CLASS_ACTION_POSES[name]
+        wind_time, contact_time = profile['windup'], profile['contact']
+        assert 0.08 < wind_time < contact_time < 0.90, 'INVALID_CLASS_POSE_TIMING:'+name
+        anticipation = curve(t, [
+            (0.0,0.0), (wind_time*0.45,0.28), (wind_time,1.0),
+            (contact_time,0.08), (min(.96,contact_time+.19),0.0),(1.0,0.0)
+        ])
+        contact = curve(t, [
+            (0.0,0.0), (wind_time,0.0),
+            (wind_time+(contact_time-wind_time)*.62,0.53), (contact_time,1.0),
+            (min(.96,contact_time+.16),0.23),(1.0,0.0)
+        ])
+        follow = curve(t, [
+            (0.0,0.0),(contact_time,0.0),(min(.92,contact_time+.11),0.45),
+            (.97,-0.08),(1.0,0.0)
+        ])
+        before,after = profile['anticipation'],profile['release']
+        pose = [
+            before[i]*anticipation+after[i]*contact-after[i]*.08*follow
+            for i in range(len(before))
+        ]
+        assert len(pose)==12 and all(math.isfinite(v) for v in pose), 'INVALID_CLASS_JOINT_POSE:'+name
+        loc('Hips', .030*pose[1], 0.0, -.047*anticipation+.024*contact)
+        rot('Hips',pose[0],pose[1])
+        rot('Spine',pose[2],pose[3])
+        rot('Chest',pose[4],pose[5])
+        rot('Head',-.25*pose[4]+.04*anticipation,-.24*pose[5])
+        rot('UpperArmL',pose[6],-.22*anticipation,pose[7])
+        rot('UpperArmR',pose[8],.24*anticipation,pose[9])
+        rot('ForearmL',-.35*anticipation+.30*contact,-.08*pose[7])
+        rot('ForearmR',-.38*anticipation+.34*contact,.08*pose[9])
+        rot('HandL',.15*anticipation-.30*contact)
+        rot('HandR',.18*anticipation-.36*contact)
+        rot('ThighL',pose[10],.05*pose[1])
+        rot('ThighR',pose[11],-.05*pose[1])
+        rot('ShinL',.30*max(0.0,pose[10])+.10*anticipation)
+        rot('ShinR',.30*max(0.0,pose[11])+.11*anticipation)
+        rot('FootL',-.18*max(0.0,pose[10])+.06*contact)
+        rot('FootR',-.18*max(0.0,pose[11])+.06*contact)
+        detail_face_and_hands(t,moving=.35+.50*contact,alert=.55+.35*anticipation)
+        apply_secondary(t,drive=1.03+.50*contact,turn=pose[5],braking=follow)
     else:
         raise AssertionError('UNKNOWN_COMMON_ACTION:'+name)
 
@@ -1038,7 +1549,7 @@ if ARGS.focus in ACTION_CLIPS:
     min_activity = 0.005 if ARGS.focus == 'common_guard_hold_hq' else 0.20
     if focused_action_activity_max < min_activity:
         qa_failures.append('COMMON_ACTION_ARTICULATION_STATIC:'+ARGS.focus)
-    if ARGS.focus.startswith(('common_light_attack_','common_heavy_attack_','common_cast_')):
+    if ARGS.focus in CLASS_ACTION_CLIPS or ARGS.focus.startswith(('common_light_attack_','common_heavy_attack_','common_cast_')):
         if max(focused_action_joint_activity['UpperArmL'],focused_action_joint_activity['UpperArmR'])<0.30:
             qa_failures.append('COMMON_ACTION_ARM_SWING_MISSING:'+ARGS.focus)
 for clip_name,value in phase_metrics.items():

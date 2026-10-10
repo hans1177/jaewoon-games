@@ -75,7 +75,17 @@ import {
   createStudioMotionActionProfile,
   createRobloxCharacterMotionPlan,
   auditRobloxCharacterMotionEvidence,
-  createMotionDirectorPlan
+  createMotionDirectorPlan,
+  COMMON_CAREER_MOTION_HIERARCHY,
+  COMMON_CAREER_VISUAL_MASTERS,
+  COMMON_GENRE_MOTION_CONTEXTS,
+  resolveCommonMotionGenre,
+  COMMON_SKILL_MOTION_GRAMMAR,
+  COMMON_MONSTER_ACTION_SPECIES,
+  COMMON_MONSTER_SPECIES_JOINT_POSES,
+  COMMON_MONSTER_SKINNED_MASTERS,
+  createCommonCareerMotionLoadout,
+  createCommonMonsterActionLoadout
 } from '../assets/vibe-motion-director.js';
 
 const studioReviewFixture=()=>({
@@ -494,12 +504,20 @@ test('common R15 actions retarget into monster body-plan roles without taking ga
   assert.equal(createMonsterCommonActionRetargetPlan({bodyPlan:'SWARM',group:'signature'}),null);
 });
 
-test('automatic gap fill falls back to common R15 retarget before raw semantic authoring',()=>{
+test('shared motion gap fill stays platform neutral; Roblox R15 is an explicit native option',()=>{
   const insect=createCreatureMotionSetProfile({id:'ant',archetype:'ANT',bodyPlan:'HEXAPOD_INSECT'});
-  const plan=buildAutomaticMotionGapFillPlan({profile:insect});
-  const attack=plan.actions.find(row=>row.group==='attacks');
-  const locomotion=plan.actions.find(row=>row.group==='locomotion');
-  const signature=plan.actions.find(row=>row.group==='signature');
+  const shared=buildAutomaticMotionGapFillPlan({profile:insect});
+  const commonAttack=shared.actions.find(row=>row.group==='attacks');
+  assert.equal(commonAttack.route,'PREPARE_SEMANTIC_MOTION_SEED');
+  assert.equal(commonAttack.commonRetarget,null);
+  assert.equal(commonAttack.sourceId,null);
+  assert.equal(commonAttack.promotionBlockedUntilRuntimeQa,true);
+  const unity=buildAutomaticMotionGapFillPlan({profile:insect,platform:'UNITY'});
+  assert.equal(unity.actions.find(row=>row.group==='locomotion').commonRetarget,null);
+  const roblox=buildAutomaticMotionGapFillPlan({profile:insect,platform:'ROBLOX'});
+  const attack=roblox.actions.find(row=>row.group==='attacks');
+  const locomotion=roblox.actions.find(row=>row.group==='locomotion');
+  const signature=roblox.actions.find(row=>row.group==='signature');
   assert.equal(attack.route,'RETARGET_COMPANY_COMMON_R15_MOTION');
   assert.equal(attack.sourceId,'roblox-common-motion-v1');
   assert.ok(attack.commonRetarget.sourceAtomIds.includes('LIGHT_ATTACK_1'));
@@ -508,7 +526,6 @@ test('automatic gap fill falls back to common R15 retarget before raw semantic a
   assert.equal(signature.route,'PREPARE_SEMANTIC_MOTION_SEED');
   assert.equal(signature.commonRetarget,null);
   assert.equal(attack.verifiedFill,false);
-  assert.equal(attack.promotionBlockedUntilRuntimeQa,true);
 });
 
 test('automatic gap fill uses detailed monster body-plan semantic roles',()=>{
@@ -527,6 +544,272 @@ test('automatic gap fill uses detailed monster body-plan semantic roles',()=>{
   const bossPlan=buildAutomaticMotionGapFillPlan({profile:boss});
   assert.ok(bossPlan.audit.requiredRoleGaps.includes('PHASE_CHANGE'));
   assert.ok(bossPlan.audit.requiredRoleGaps.includes('FAILED_ATTACK_RECOVERY'));
+});
+
+
+test('shared classes form an inherited motion hierarchy rather than a genre-locked job count',()=>{
+  assert.ok(Object.keys(COMMON_CAREER_MOTION_HIERARCHY).length>=45);
+  assert.ok(['ACTION_RPG','SURVIVAL','FIGHTING','TACTICAL_RPG','TYCOON','HORROR','SOCIAL'].every(
+    genre=>Array.isArray(COMMON_GENRE_MOTION_CONTEXTS[genre])));
+  const samurai=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'ACTION_RPG',platform:'SHARED'});
+  assert.deepEqual(samurai.careerPath,['ADVENTURER','MARTIAL','SWORDSMAN','SAMURAI']);
+  assert.equal(samurai.weaponFamily,'KATANA');
+  assert.ok(samurai.groups.attacks.includes('KATANA_DRAW_CUT'));
+  assert.ok(samurai.groups.defense.includes('SWORD_PARRY'));
+  assert.ok(samurai.groups.signature.includes('SAMURAI_DRAW_AND_SHEATH'));
+  assert.ok(samurai.skills.some(s=>s.id==='IAI_DRAW'&&s.kind==='CHARGE'));
+  assert.ok(samurai.roleRequests.some(s=>s.dna.WEAPON_FAMILY==='KATANA'&&s.preparedSemanticOnly));
+  assert.ok(samurai.combatSourcePack.motionIds.length>10);
+  assert.equal(samurai.productionVerified,false);
+  assert.equal(samurai.gameplayAuthority,false);
+  const kensei=createCommonCareerMotionLoadout({careerId:'KENSEI',platform:'UNITY'});
+  assert.deepEqual(kensei.careerPath.at(-2),'SAMURAI');
+  assert.ok(kensei.skills.some(s=>s.id==='KENSEI_FIVE_CUTS'));
+  assert.ok(kensei.skills.some(s=>s.id==='IAI_DRAW'),'inherits an actual presentation skill from Samurai');
+  assert.ok(kensei.groups.attacks.includes('KENSEI_INSTANT_CUT'));
+  const horror=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'HORROR',platform:'WEB'});
+  assert.equal(horror.weaponFamily,samurai.weaponFamily);
+  assert.ok(horror.groups.attacks.includes('KATANA_DRAW_CUT'));
+  assert.ok(!horror.roleRequests.some(row=>row.group==='attacks'),'genre projects roles without deleting canonical class motions');
+  assert.ok(horror.roleRequests.some(row=>row.group==='skills'));
+  assert.equal(horror.platform,'WEB');
+});
+
+
+test('fifty-one career hierarchies inherit valid source 3D skinned masters without automatic native promotion',()=>{
+  const registered=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+  const keys=new Set(registered.assets.map(row=>row.id));
+  assert.ok(Object.keys(COMMON_CAREER_VISUAL_MASTERS).length>=35);
+  for(const careerId of Object.keys(COMMON_CAREER_MOTION_HIERARCHY)){
+    const loadout=createCommonCareerMotionLoadout({careerId,genre:'RPG',platform:'UNITY'});
+    const master=loadout.master;
+    assert.ok(keys.has(master.assetId),careerId+': missing registered 3D master');
+    assert.ok(master.path.startsWith('assets/shared/humanoid-')&&master.path.endsWith('.glb'),careerId);
+    assert.equal(master.rig,'SHARED_HUMANOID_SKINNED_19',careerId);
+    assert.equal(master.runtimeVerified,false,careerId);
+    assert.equal(master.productionVerified,false,careerId);
+    assert.equal(master.gameSpecificRigAndStyleAdaptationRequired,true,careerId);
+    assert.equal(loadout.gameplayAuthority,false,careerId);
+  }
+  const samurai=createCommonCareerMotionLoadout({careerId:'SAMURAI'});
+  const kensei=createCommonCareerMotionLoadout({careerId:'KENSEI'});
+  const ronin=createCommonCareerMotionLoadout({careerId:'RONIN'});
+  assert.equal(samurai.master.assetId,'shared-humanoid-samurai');
+  assert.equal(kensei.master.assetId,samurai.master.assetId);
+  assert.equal(ronin.master.assetId,samurai.master.assetId);
+  assert.equal(samurai.master.sourceRoleActionClip,'SAMURAI_IAI_DRAW');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ARCHER'}).master.assetId,'shared-humanoid-archer');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ELEMENTALIST'}).master.assetId,'shared-humanoid-mage');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ASSASSIN'}).master.assetId,'shared-humanoid-rogue');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'DRAGOON'}).master.assetId,'shared-humanoid-lancer');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'BLACKSMITH'}).master.assetId,'shared-humanoid-blacksmith');
+});
+
+test('multiple native genre labels reuse the same class and creature motion rather than creating a shadow system',()=>{
+  assert.equal(resolveCommonMotionGenre('RPG'),'ACTION_RPG');
+  assert.equal(resolveCommonMotionGenre('Action RPG'),'ACTION_RPG');
+  assert.equal(resolveCommonMotionGenre('school-tycoon'),'TYCOON');
+  assert.equal(resolveCommonMotionGenre('survival crafting'),'SURVIVAL');
+  assert.equal(resolveCommonMotionGenre('roguelite'),'ROGUELIKE');
+  assert.equal(resolveCommonMotionGenre('tower defense'),'TOWER_DEFENSE');
+  assert.equal(resolveCommonMotionGenre('unknown-game-genre'),null);
+  const a=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'RPG',platform:'UNITY'});
+  const b=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'ACTION_RPG',platform:'UNITY'});
+  assert.deepEqual(a.careerPath,b.careerPath);
+  assert.deepEqual(a.groups.attacks,b.groups.attacks);
+  assert.deepEqual(a.skills.map(x=>x.id),b.skills.map(x=>x.id));
+  const wolf=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'survival crafting',platform:'SHARED'});
+  assert.equal(wolf.genre,'SURVIVAL');
+  assert.equal(wolf.bodyPlan,'QUADRUPED_CANINE');
+  assert.equal(wolf.productionVerified,false);
+});
+
+test('skill motion families expose authored contact, gesture and VFX cues without changing gameplay',()=>{
+  for(const kind of ['CHARGE','COUNTER','COMBO','DASH','PROJECTILE','AREA','GUARD','CHANNEL','SUMMON','HEAL','TRAP','TRANSFORM','REPAIR','INTERACT','COMMAND','PERFORM','ULTIMATE']){
+    assert.ok(COMMON_SKILL_MOTION_GRAMMAR[kind],kind);
+  }
+  const samurai=createCommonCareerMotionLoadout({careerId:'SAMURAI'});
+  const drawn=samurai.skills.find(s=>s.id==='IAI_DRAW');
+  assert.equal(drawn.sequence.valid,true);
+  assert.deepEqual(drawn.sequence.requiredCore,['PREPARE','RELEASE','RECOVERY']);
+  assert.ok(drawn.sequence.phases.includes('CHARGE'));
+  assert.equal(drawn.dna.RUNTIME_VERIFICATION_STATE,'PREPARED_SEMANTIC');
+  assert.equal(drawn.runtimeVerified,false);
+  assert.equal(drawn.gameplayAuthority,false);
+  const paladin=createCommonCareerMotionLoadout({careerId:'PALADIN'});
+  assert.ok(paladin.skills.some(s=>s.id==='LIGHT_RESTORE'&&s.kind==='HEAL'&&s.vfxPresentationSlot==='HEAL_GLOW'));
+  const mechanic=createCommonCareerMotionLoadout({careerId:'MECHANIST'});
+  assert.ok(mechanic.skills.some(s=>s.id==='DEPLOY_TURRET'&&s.kind==='SUMMON'));
+  assert.equal(mechanic.combatSourcePack,null,'gadgets are not silently converted to Roblox or unarmed combat');
+});
+
+test('crafting, simulation, social and martial classes keep distinct usable rigs and interactions across genres',()=>{
+  const farmer=createCommonCareerMotionLoadout({careerId:'FARMER',genre:'SURVIVAL',platform:'UNITY'});
+  const smith=createCommonCareerMotionLoadout({careerId:'BLACKSMITH',genre:'TYCOON'});
+  const bard=createCommonCareerMotionLoadout({careerId:'BARD',genre:'SOCIAL'});
+  const captain=createCommonCareerMotionLoadout({careerId:'COMMANDER',genre:'STRATEGY'});
+  assert.ok(farmer.groups.interactions.includes('GATHER'));
+  assert.ok(farmer.skills.some(s=>s.id==='HARVEST'&&s.kind==='INTERACT'));
+  assert.ok(smith.groups.interactions.includes('HEAT_METAL'));
+  assert.ok(smith.groups.attacks.includes('FORGE_HAMMER_SWING'));
+  assert.ok(bard.groups.interactions.includes('PLAY_INSTRUMENT'));
+  assert.ok(bard.skills.some(s=>s.kind==='CHANNEL'));
+  assert.ok(captain.skills.some(s=>s.kind==='COMMAND'));
+  assert.equal(bard.combatSourcePack,null);
+  for(const x of [farmer,smith,bard,captain]){
+    assert.ok(x.roleRequests.length>0);
+    assert.equal(x.sourceStatus,'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED');
+    assert.equal(x.platformNativeAdaptationRequired,true);
+    assert.equal(x.combatAndSkillTimingAuthority,false);
+  }
+  assert.notDeepEqual(smith.groups.attacks,farmer.groups.attacks);
+  assert.notDeepEqual(bard.groups.signature,captain.groups.signature);
+});
+
+test('career and monster motion reject mismatched weapon, body plan, source and genre',()=>{
+  assert.throws(()=>createCommonCareerMotionLoadout({careerId:'NOT_A_CLASS'}),/UNKNOWN_COMMON_CAREER/);
+  assert.throws(()=>createCommonCareerMotionLoadout({careerId:'SAMURAI',weaponFamily:'FIREARM'}),/INCOMPATIBLE_COMMON_CAREER_WEAPON/);
+  assert.throws(()=>createCommonCareerMotionLoadout({careerId:'SAMURAI',bodyPlan:'ARACHNID'}),/INCOMPATIBLE_COMMON_CAREER_BODY_PLAN/);
+  assert.throws(()=>createCommonCareerMotionLoadout({genre:'UNSUPPORTED_GENRE'}),/UNSUPPORTED_COMMON_GENRE/);
+  assert.throws(()=>createCommonMonsterActionLoadout({speciesId:'NOT_A_SPECIES'}),/UNKNOWN_COMMON_MONSTER_SPECIES/);
+  assert.throws(()=>createCommonMonsterActionLoadout({speciesId:'SPIDER',bodyPlan:'QUADRUPED_CANINE'}),/INCOMPATIBLE_COMMON_MONSTER_BODY_PLAN/);
+  assert.throws(()=>createCommonMonsterActionLoadout({speciesId:'SPIDER',rigProfile:'HUMANOID'}),/INCOMPATIBLE_COMMON_MONSTER_RIG/);
+});
+
+test('monster species add actionable limb and attack choreography without human motion cloning',()=>{
+  assert.ok(Object.keys(COMMON_MONSTER_ACTION_SPECIES).length>=18);
+  const ant=createCommonMonsterActionLoadout({speciesId:'ANT',genre:'SURVIVAL',platform:'SHARED'});
+  const beetle=createCommonMonsterActionLoadout({speciesId:'BEETLE',genre:'ACTION_RPG',platform:'UNITY'});
+  assert.equal(ant.bodyPlan,'HEXAPOD_INSECT');
+  assert.equal(beetle.bodyPlan,ant.bodyPlan);
+  assert.ok(ant.species.specialParts.includes('ANTENNAE'));
+  assert.ok(beetle.species.specialParts.includes('ELYTRA'));
+  assert.ok(ant.profile.motionIds.includes('ANT_TRIPOD_WALK'));
+  assert.ok(beetle.profile.motionIds.includes('BEETLE_HORN_LIFT'));
+  assert.notDeepEqual(ant.choreography.map(x=>x.primaryContactLimb),
+    beetle.choreography.map(x=>x.primaryContactLimb),'species with a shared body plan still need distinct contact anatomy');
+  assert.equal(ant.profile.productionVerified,false);
+  assert.ok(ant.candidates.length>30);
+  assert.ok(ant.candidates.every(x=>x.preparedSemanticOnly===true));
+  const spider=createCommonMonsterActionLoadout({speciesId:'SPIDER',genre:'HORROR'});
+  assert.ok(spider.species.specialParts.includes('EIGHT_LEGS'));
+  assert.ok(spider.choreography.some(x=>x.id==='SPIDER_TWO_LEG_STAB'&&x.primaryContactLimb));
+  assert.ok(spider.cues.some(x=>x.id==='WEB_TRAP'&&x.kind==='TRAP'));
+  const golem=createCommonMonsterActionLoadout({speciesId:'GOLEM'});
+  assert.ok(golem.species.specialParts.includes('STONE_PLATES'));
+  assert.ok(golem.cues.some(x=>x.kind==='AREA'));
+  const wyvern=createCommonMonsterActionLoadout({speciesId:'WYVERN'});
+  assert.ok(wyvern.species.specialParts.includes('WINGS'));
+  assert.ok(wyvern.cues.some(x=>x.kind==='BEAM'));
+  const slime=createCommonMonsterActionLoadout({speciesId:'SLIME'});
+  assert.ok(slime.profile.motionIds.includes('SLIME_SQUASH_WALK'));
+  const demon=createCommonMonsterActionLoadout({speciesId:'DEMON_LORD'});
+  assert.ok(demon.cues.some(x=>x.kind==='ULTIMATE'));
+  assert.ok(demon.profile.motionIds.includes('DEMON_PHASE_CHANGE_POSE'));
+  for(const x of [spider,golem,wyvern,slime,demon]){
+    assert.ok(x.choreography.every(a=>a.poseKeyTimes.length===6&&a.rigSpecificCurvesAndContactsRequired));
+    assert.equal(x.productionVerified,false);
+    assert.equal(x.gameplayAuthority,false);
+  }
+});
+
+
+test('twenty monster body plans use distinct 3D joint curves, not speed-scaled humanoid attacks',()=>{
+  assert.equal(Object.keys(COMMON_MONSTER_ACTION_SPECIES).length,20);
+  assert.equal(Object.keys(COMMON_MONSTER_SPECIES_JOINT_POSES).length,20);
+  const profiles=Object.values(COMMON_MONSTER_SPECIES_JOINT_POSES);
+  const poseIds=new Set(profiles.map(row=>JSON.stringify([row.counterPart,row.supportPart,row.coil,row.hit])));
+  assert.equal(poseIds.size,20,'species pose signatures must be distinct');
+  for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
+    const loadout=createCommonMonsterActionLoadout({speciesId,platform:'SHARED'});
+    assert.ok(loadout.choreography.length>=2,speciesId);
+    assert.ok(loadout.profile.presentationVariation.limbPhase,speciesId);
+    for(const action of loadout.choreography){
+      assert.ok(action.jointTracks.length>=3,speciesId+':'+action.id);
+      assert.ok(action.motif,speciesId+':'+action.id);
+      assert.equal(action.authoritativeRootMovement,false);
+      assert.equal(action.authoritativeHitboxAndMovementUnchanged,true);
+      assert.equal(action.verified,false);
+      assert.match(action.sourceType,/REQUIRES_NATIVE_RIG_ADAPTATION/);
+      const uniqueParts=new Set(action.jointTracks.map(x=>x.part));
+      assert.ok(uniqueParts.size>=2,speciesId+':'+action.id);
+      for(const track of action.jointTracks){
+        assert.equal(track.rigJointBindingRequired,true);
+        assert.equal(track.semanticChannelsOnly,true);
+        assert.deepEqual(track.frames.map(x=>x.phase).slice(0,1),[0]);
+        assert.equal(track.frames.at(-1).phase,1);
+        assert.ok(track.frames.every(x=>x.rotation.length===3&&x.rotation.every(Number.isFinite)));
+        assert.ok(track.frames.slice(1,-1).some(x=>x.rotation.some(v=>Math.abs(v)>.02)),
+          speciesId+':'+action.id+':'+track.part+' needs actual articulated pose changes');
+      }
+    }
+    assert.equal(loadout.productionVerified,false);
+    assert.equal(loadout.runtimeVerified,false);
+  }
+  const wolf=createCommonMonsterActionLoadout({speciesId:'WOLF'}).choreography;
+  const fox=createCommonMonsterActionLoadout({speciesId:'FOX'}).choreography;
+  assert.notDeepEqual(wolf[0].jointTracks,fox[0].jointTracks);
+  const spider=createCommonMonsterActionLoadout({speciesId:'SPIDER'}).choreography;
+  assert.ok(spider[0].jointTracks.some(row=>row.part==='EIGHT_LEGS'));
+  assert.ok(spider[0].jointTracks.some(row=>row.part==='ABDOMEN'));
+  const beetle=createCommonMonsterActionLoadout({speciesId:'BEETLE'}).choreography;
+  assert.ok(beetle.some(action=>action.jointTracks.some(row=>row.part==='HORN')));
+  const wyvern=createCommonMonsterActionLoadout({speciesId:'WYVERN'}).choreography;
+  assert.ok(wyvern.some(action=>action.jointTracks.some(row=>row.part==='WINGS')));
+  const slime=createCommonMonsterActionLoadout({speciesId:'SLIME'}).choreography;
+  assert.ok(slime.some(action=>action.jointTracks.some(row=>row.part==='LOBES')));
+});
+
+test('five actual cross-genre creature masters bind 3D skinned action clips while others stay semantic',()=>{
+  const ready={
+    WOLF:['QUADRUPED_CANINE',17],SPIDER:['ARACHNID',29],BEETLE:['HEXAPOD_INSECT',23],
+    GOLEM:['HEAVY_GOLEM_OR_BOSS',15],SERPENT:['REPTILE_OR_SERPENT',17]
+  };
+  assert.equal(Object.keys(COMMON_MONSTER_SKINNED_MASTERS).length,5);
+  for(const [species,[bodyPlan,joints]] of Object.entries(ready)){
+    const loadout=createCommonMonsterActionLoadout({speciesId:species,platform:'UNITY',genre:'SURVIVAL'});
+    assert.ok(loadout.master,species);
+    assert.equal(loadout.master.bodyPlan,bodyPlan);
+    assert.equal(loadout.master.rigJointCount,joints);
+    assert.equal(loadout.master.id,'shared-creature-'+species.toLowerCase());
+    assert.equal(loadout.master.path,'assets/shared/creature-'+species.toLowerCase()+'.glb');
+    assert.equal(loadout.master.sourceAnimationClips.length,11);
+    assert.equal(loadout.rigProfile,loadout.master.rigProfile);
+    assert.ok(loadout.master.sourceAnimationClips.includes('SKILL_PREPARE'));
+    assert.ok(loadout.master.sourceAnimationClips.includes('ATTACK_A'));
+    assert.equal(loadout.master.sourceHasActualSkinnedMesh,true);
+    assert.equal(loadout.master.runtimeVerified,false);
+    assert.equal(loadout.productionVerified,false);
+    assert.equal(loadout.gameplayAuthority,false);
+    const web=createCommonMonsterActionLoadout({speciesId:species,platform:'WEB',genre:'HORROR'});
+    assert.equal(web.master.path,loadout.master.path,'same master provenance, distinct platform adaptation');
+    assert.equal(web.platformNativeAdaptationRequired,true);
+  }
+  const ghost=createCommonMonsterActionLoadout({speciesId:'GHOST'});
+  assert.equal(ghost.master,null);
+  assert.equal(ghost.masterActuallyExistsInSharedRepository,false);
+  assert.equal(ghost.productionVerified,false);
+});
+
+test('canonical motion director directly exposes shared class and creature motion authoring requests',()=>{
+  const classPlan=createMotionDirectorPlan({
+    platform:'UNITY',bodyPlan:'HUMANOID',rigProfile:'HUMANOID',
+    career:{careerId:'SAMURAI',genre:'TACTICAL_RPG'}
+  });
+  assert.equal(classPlan.careerMotion.id,'SAMURAI');
+  assert.equal(classPlan.monsterMotion,null);
+  assert.ok(classPlan.systems.includes('COMMON_CAREER_MOTION_LIBRARY'));
+  assert.equal(classPlan.gameplayAuthority,false);
+  const speciesPlan=createMotionDirectorPlan({
+    platform:'WEB',bodyPlan:'ARACHNID',rigProfile:'CUSTOM_SPIDER_RIG',
+    monster:{speciesId:'SPIDER',genre:'HORROR'}
+  });
+  assert.equal(speciesPlan.monsterMotion.id,'SPIDER');
+  assert.equal(speciesPlan.careerMotion,null);
+  assert.ok(speciesPlan.monsterMotion.candidates.some(row=>row.dna.BODY_PLAN==='ARACHNID'));
+  assert.ok(speciesPlan.systems.includes('COMMON_SPECIES_ACTION_LIBRARY'));
+  assert.equal(speciesPlan.monsterMotion.productionVerified,false);
+  assert.equal(speciesPlan.gameplayAuthority,false);
 });
 
 test('motion DNA captures high-end compatibility metadata',()=>{

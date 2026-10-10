@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -52,10 +54,66 @@ test('shared source is a real animated skinned GLB, not a Roblox-only marker',()
 
 test('shared humanoid authoring source defines distinct motion and combat variants with one object/clip',()=>{
   const clips=catalog.sourceAuthoredClips.map(x=>x.name);
-  assert.equal(clips.length,31);
+  assert.equal(clips.length,45);
   assert.equal(new Set(clips).size,31);
-  assert.equal(catalog.authoring.actionSourceDefinitions,14);
+  assert.equal(catalog.authoring.actionSourceDefinitions,28);
   assert.equal(catalog.authoring.locomotionSourceDefinitions,17);
+});
+
+
+test('shared skinned author directly authors distinct career-specific joint keyframes, not name-only markers',()=>{
+  const expected=[
+    'common_samurai_iai_draw_hq','common_samurai_parry_counter_hq','common_knight_shield_bash_hq',
+    'common_monk_palm_combo_hq','common_archer_draw_release_hq','common_mage_area_cast_hq',
+    'common_assassin_backstep_cut_hq','common_lancer_thrust_hq','common_healer_wave_hq',
+    'common_summoner_ritual_hq','common_blacksmith_hammer_hq','common_bard_performance_hq',
+    'common_mechanist_gadget_hq','common_farmer_harvest_hq'
+  ];
+  const names=new Set(catalog.sourceAuthoredClips.map(x=>x.name));
+  const bound=new Map(catalog.careerMotionBindings.map(x=>[x.clip,x]));
+  for(const name of expected){
+    assert.ok(names.has(name),name);
+    const row=bound.get(name);
+    assert.ok(row?.sourceClipDefinition,row?.clip);
+    assert.equal(row.actualJointPoseDefinition,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.verifiedRuntime,false);
+    assert.equal(row.platformNativeAdaptationRequired,true);
+  }
+  assert.equal(catalog.authoring.careerActionPoseCount,14);
+  assert.equal(catalog.authoring.careerDerivedMotionBakesVerified,false);
+  assert.equal(catalog.authoring.careerGripContactAndStyleRuntimeVerified,false);
+  assert.equal(catalog.sourceAuthoredClips.length,45);
+  assert.equal(catalog.crossGenreReusability.motionProjection,'createCommonCareerMotionLoadout');
+  assert.equal(catalog.crossGenreReusability.gameplayBalanceAuthority,false);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.newMotionGlbFilesCommitted,0);
+  assert.match(producer,/CLASS_ACTION_POSES = \{/);
+  assert.match(producer,/CLASS_ACTION_CLIPS = tuple\(CLASS_ACTION_POSES\)/);
+  assert.match(producer,/elif name in CLASS_ACTION_CLIPS:/);
+  assert.match(producer,/rot\('UpperArmL',pose\[6\]/);
+  assert.match(producer,/rot\('UpperArmR',pose\[8\]/);
+  assert.match(producer,/rot\('ThighL',pose\[10\]/);
+  assert.match(producer,/action_pose\(name,t\)/);
+  const program=[
+    'import ast,json,sys',
+    'tree=ast.parse(open(sys.argv[1],encoding="utf-8").read())',
+    'node=next(x for x in tree.body if isinstance(x,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="CLASS_ACTION_POSES" for t in x.targets))',
+    'print(json.dumps(ast.literal_eval(node.value)))'
+  ].join(';');
+  const result=spawnSync('python3',['-c',program,path.join(dir,'author-motion.py')],{encoding:'utf8',timeout:30000});
+  assert.equal(result.status,0,result.stderr||result.stdout);
+  const poses=JSON.parse(result.stdout);
+  assert.deepEqual(Object.keys(poses).sort(),[...expected].sort());
+  assert.equal(new Set(Object.values(poses).map(row=>JSON.stringify([row.anticipation,row.release]))).size,14,'class silhouettes cannot differ by playback speed alone');
+  for(const [name,row] of Object.entries(poses)){
+    assert.ok(row.windup>0&&row.contact>row.windup&&row.contact<.9,name);
+    assert.equal(row.anticipation.length,12,name);
+    assert.equal(row.release.length,12,name);
+    assert.ok(row.anticipation.every(Number.isFinite),name);
+    assert.ok(row.release.every(Number.isFinite),name);
+    assert.ok(Math.abs(row.anticipation[6]-row.release[6])>.12||Math.abs(row.anticipation[8]-row.release[8])>.12,name+' actual striking-arm rotation');
+  }
 });
 
 test('common source has per-motion baked bones, original foot contact QA, and cross-platform pending gates',()=>{
@@ -117,4 +175,87 @@ test('shared 3D library mutations wake the existing 24H producer instead of a sh
   assert.match(continuous,/asset-development/);
   assert.match(continuous,/Execute declared native DCC authoring verification/);
   assert.equal(catalog.productionVerified,false);
+});
+
+
+test('six career 3D masters contain distinct skinned geometry and actual joint animation on the shared rig',()=>{
+  const roles={
+    samurai:'SAMURAI_IAI_DRAW',archer:'ARCHER_DRAW_RELEASE',mage:'MAGE_AREA_CAST',
+    rogue:'ROGUE_BACKSTEP_CUT',lancer:'LANCER_SPEAR_THRUST',blacksmith:'BLACKSMITH_FORGE_HAMMER'
+  };
+  const company=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const sharedSource=path.join(root,'assets','native-authoring','build-shared-humanoid.mjs');
+  assert.ok(fs.existsSync(sharedSource));
+  const geometryHashes=new Set();
+  const binaryHashes=new Set();
+  for(const [role,clip] of Object.entries(roles)){
+    const relative='assets/shared/humanoid-'+role+'.glb';
+    const bytes=fs.readFileSync(path.join(root,relative));
+    const doc=glbJson(bytes);
+    assert.ok(bytes.length>150000,role);
+    assert.equal(doc.skins.length,1,role);
+    assert.equal(doc.skins[0].joints.length,19,role);
+    assert.equal(doc.animations.length,16,role);
+    assert.ok(doc.meshes[0].name.toLowerCase().includes(role),role);
+    assert.ok(doc.meshes[0].primitives.every(p=>p.attributes.POSITION!==undefined
+      &&p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),role);
+    const specific=doc.animations.find(a=>a.name===clip);
+    assert.ok(specific,'role animation missing: '+role);
+    const skinNodes=new Set(doc.skins[0].joints);
+    const activeJoints=new Set(specific.channels
+      .filter(c=>c.target?.path==='rotation'&&skinNodes.has(c.target?.node))
+      .map(c=>c.target.node));
+    assert.ok(activeJoints.size>=12,role+' must rotate actual skinned joints');
+    const jsonBytes=bytes.readUInt32LE(12);
+    const geometryStart=20+jsonBytes+8;
+    const geometry=createHash('sha256');
+    for(const primitive of doc.meshes[0].primitives){
+      const accessor=doc.accessors[primitive.attributes.POSITION];
+      const view=doc.bufferViews[accessor.bufferView];
+      const offset=geometryStart+view.byteOffset+(accessor.byteOffset||0);
+      geometry.update(bytes.subarray(offset,offset+view.byteLength));
+    }
+    geometryHashes.add(geometry.digest('hex'));
+    binaryHashes.add(createHash('sha256').update(bytes).digest('hex'));
+    const registered=company.assets.find(x=>x.id==='shared-humanoid-'+role);
+    assert.ok(registered,'not registered '+role);
+    const gitBlobHash=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+    assert.equal(registered.masterGlbGitBlobSha,gitBlobHash,role);
+    assert.equal(registered.masterGlb,relative,role);
+    assert.equal(registered.jointCount,19,role);
+    assert.equal(registered.animationClipCount,16,role);
+    assert.ok(registered.visualIdentityAxes.length>=4,role);
+    assert.equal(registered.productionVerified,false,role);
+    assert.equal(registered.verifiedCompanyReusable,false,role);
+    assert.equal(registered.nativeRuntimeVerified,false,role);
+    assert.equal(registered.masterGlbStaticQaPass,false,role);
+    assert.equal(registered.platformNativeDerivativeRequired,true,role);
+  }
+  assert.equal(geometryHashes.size,6,'distinct character silhouettes require distinct vertex geometry');
+  assert.equal(binaryHashes.size,6,'no duplicated models under different filenames');
+});
+
+test('shared 3D master generator reproduces role models and preserves the original traveler and guardian bytes',()=>{
+  const generator=path.join(root,'assets','native-authoring','build-shared-humanoid.mjs');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'shared-career-master-'));
+  const roles=['samurai','archer','mage','rogue','lancer','blacksmith'];
+  try{
+    const produced=spawnSync(process.execPath,[generator,dir,'--roles='+roles.join(',')],{encoding:'utf8',timeout:90000});
+    assert.equal(produced.status,0,produced.stderr||produced.stdout);
+    assert.equal(produced.stdout.trim().split(/\r?\n/).length,6);
+    for(const role of roles){
+      const name='humanoid-'+role+'.glb';
+      assert.ok(fs.readFileSync(path.join(dir,name)).equals(fs.readFileSync(path.join(root,'assets','shared',name))),
+        'source regeneration changed '+role);
+    }
+    const legacy=path.join(dir,'original');
+    const initial=spawnSync(process.execPath,[generator,legacy],{encoding:'utf8',timeout:90000});
+    assert.equal(initial.status,0,initial.stderr||initial.stdout);
+    assert.deepEqual(fs.readdirSync(legacy).sort(),['humanoid-guardian.glb','humanoid-traveler.glb']);
+    for(const role of ['traveler','guardian']){
+      const name='humanoid-'+role+'.glb';
+      assert.ok(fs.readFileSync(path.join(legacy,name)).equals(fs.readFileSync(path.join(root,'assets','shared',name))),
+        'original master changed '+role);
+    }
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

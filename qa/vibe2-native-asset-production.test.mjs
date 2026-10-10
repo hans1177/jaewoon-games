@@ -6,12 +6,92 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
 import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+test('five common monster body plans bake reproducible skinned GLBs and actual attack skill joints',()=>{
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const script=path.join(root,'assets','native-authoring','build-shared-creature.mjs');
+  const lib=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const profiles={
+    wolf:{body:'QUADRUPED_CANINE',joints:17,signature:'WOLF_PACK_HOWL'},
+    spider:{body:'ARACHNID',joints:29,signature:'SPIDER_WEB_THREAT'},
+    beetle:{body:'HEXAPOD_INSECT',joints:23,signature:'BEETLE_HORN_CHARGE'},
+    golem:{body:'HEAVY_GOLEM_OR_BOSS',joints:15,signature:'GOLEM_CORE_PULSE'},
+    serpent:{body:'REPTILE_OR_SERPENT',joints:17,signature:'SERPENT_COIL_STRIKE'}
+  };
+  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'shared-creature-'));
+  try{
+    execFileSync(process.execPath,[script,folder],{encoding:'utf8',timeout:120000});
+    const visualSignatures=new Set();
+    for(const [species,expected] of Object.entries(profiles)){
+      const asset=lib.assets.find(a=>a.id==='shared-creature-'+species);
+      assert.ok(asset,species+' registered');
+      assert.equal(asset.bodyPlan,expected.body);
+      assert.equal(asset.platform,'SHARED_MASTER');
+      assert.equal(asset.productionVerified,false);
+      assert.equal(asset.masterGlbStaticQaPass,false);
+      assert.equal(asset.nativeRuntimeVerified,false);
+      assert.equal(asset.sourceGenerator,'assets/native-authoring/build-shared-creature.mjs');
+      assert.deepEqual(asset.sourceGeneratorArgs,['assets/shared','--species='+species]);
+      assert.equal(asset.authoringRecipes,undefined,'Node source cannot be scheduled as a Blender DCC recipe');
+      assert.equal(asset.existingNativeDccExecutorUnchanged,true);
+      const original=fs.readFileSync(path.join(root,asset.masterGlb));
+      const generated=fs.readFileSync(path.join(folder,'creature-'+species+'.glb'));
+      assert.ok(original.equals(generated),species+' source must reproduce exact committed master');
+      assert.ok(original.length>120000&&original.length<8*1024*1024,species+' mobile asset bound');
+      assert.equal(original.toString('ascii',0,4),'glTF');
+      assert.equal(original.readUInt32LE(4),2);
+      assert.equal(original.readUInt32LE(8),original.length);
+      const jsonLen=original.readUInt32LE(12);
+      const doc=JSON.parse(original.subarray(20,20+jsonLen).toString('utf8').trim());
+      assert.ok(doc.meshes.length>0&&doc.materials.length>=3);
+      assert.equal(doc.skins.length,1);
+      assert.equal(doc.skins[0].joints.length,expected.joints);
+      assert.ok(doc.nodes.some(n=>n.mesh===0&&n.skin===0));
+      assert.equal(doc.animations.length,11);
+      assert.ok(doc.animations.some(a=>a.name===expected.signature));
+      const ids=new Set(doc.skins[0].joints),primitives=doc.meshes.flatMap(m=>m.primitives);
+      assert.ok(primitives.every(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),'actual per-vertex skinned weights');
+      assert.ok(primitives.every(p=>doc.accessors[p.attributes.POSITION].min?.length===3&&doc.accessors[p.attributes.POSITION].max?.length===3),'glTF 2.0 POSITION bounds');
+      const rotations=doc.animations.flatMap(a=>a.channels).filter(ch=>ch.target.path==='rotation');
+      assert.ok(rotations.length>=expected.joints*9,'joint animation channels');
+      assert.ok(rotations.every(ch=>ids.has(ch.target.node)&&ch.target.node!==0),'no root-only motion authority');
+      for(const name of ['WALK','RUN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',expected.signature]){
+        const clip=doc.animations.find(a=>a.name===name);
+        assert.ok(clip,species+':'+name);
+        const movingJoint=clip.channels.find(ch=>ch.target.node===1&&ch.target.path==='rotation');
+        assert.ok(movingJoint,'body rotation is required');
+        const access=doc.accessors[clip.samplers[movingJoint.sampler].output];
+        const view=doc.bufferViews[access.bufferView];
+        const start=20+jsonLen+8+(view.byteOffset||0)+(access.byteOffset||0);
+        const frames=Array.from({length:access.count},(_,i)=>original.readFloatLE(start+i*16));
+        assert.ok(Math.max(...frames)-Math.min(...frames)>.001,species+':'+name+' must articulate body');
+      }
+      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature];
+      const distinctMotionTracks=new Set(actionVariants.map(name=>{
+        const clip=doc.animations.find(a=>a.name===name),hash=createHash('sha256');
+        for(const joint of [1,2,3]){
+          const channel=clip.channels.find(ch=>ch.target.node===joint&&ch.target.path==='rotation');
+          assert.ok(channel,species+':'+name+' missing articulated joint '+joint);
+          const accessor=doc.accessors[clip.samplers[channel.sampler].output];
+          const view=doc.bufferViews[accessor.bufferView];
+          const byteStart=20+jsonLen+8+(view.byteOffset||0)+(accessor.byteOffset||0);
+          hash.update(original.subarray(byteStart,byteStart+accessor.count*4*4));
+        }
+        return hash.digest('hex');
+      }));
+      assert.equal(distinctMotionTracks.size,5,species+' must have five genuinely different attack/skill animations');
+      visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
+    }
+    assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');
+  }finally{fs.rmSync(folder,{recursive:true,force:true});}
+});
 
 test('Unity and shared gameplay libraries mandate real native 3D while keeping UI/audio as support resources',()=>{
   const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan'});
@@ -1472,6 +1552,57 @@ function tempRoot(opts={}){
   writePolicy(root,opts);
   return root;
 }
+
+test('common career motion authoring resolves one existing registered source per game genre, without fake verified clips',()=>{
+  const root=tempRoot();
+  try{
+    const company=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    const registered=company.assets.find(row=>row.id==='shared-humanoid-motion-v1');
+    assert.ok(registered?.availableCareerMotionRecipes?.length>=14,'common career recipes registered in the canonical library');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:company.version,assets:[registered],externalSources:[]
+    }));
+    const base={
+      target:'unity',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    };
+    const task={gameId:'common-career-demo',genre:'ACTION_RPG',goal:'사무라이 검술 공용 모션 제작',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_samurai_iai_draw_hq'};
+    const plan=buildVibeAssetProductionPlan({...base,task});
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,task.commonMotionClip);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedCareer,'SAMURAI');
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.oneObjectOneClipWorkUnit,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.unverifiedUntilNativeRuntime,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    const selected=plan.nativeAuthoringExecution.dcc.executionRecipes[0];
+    assert.equal(selected.script,'assets/shared/humanoid-motion-v1/author-motion.py');
+    assert.ok(selected.args.includes(task.commonMotionClip));
+    assert.equal(selected.runMode,'VERIFY_ONLY');
+    assert.equal(selected.companyPromotionAllowed,false);
+    const combat=plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(combat.career.id,'SAMURAI');
+    assert.equal(combat.career.productionVerified,false);
+    assert.equal(combat.newPipelineCreated,false);
+    const sim=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-farm-demo',genre:'TYCOON',goal:'공용 농장 작업 모션',
+      commonCareerId:'FARMER',commonMotionClip:'common_farmer_harvest_hq'
+    }});
+    assert.equal(sim.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_farmer_harvest_hq');
+    assert.equal(sim.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    assert.equal(sim.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career.genre,'TYCOON');
+    const inherited=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-kensei-demo',genre:'ACTION_RPG',goal:'검성 계층 상속된 공용 모션',
+      commonCareerId:'KENSEI'
+    }});
+    assert.equal(inherited.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_samurai_iai_draw_hq');
+    assert.throws(()=>buildVibeAssetProductionPlan({...base,task:{
+      gameId:'wrong-career-demo',genre:'ACTION_RPG',goal:'없는 직업 클립 요청',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_wizard_unknown_hq'
+    }}),/COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED/);
+    const normal=buildVibeAssetProductionPlan({...base,task:{gameId:'normal-game',genre:'SURVIVAL',goal:'기존 동작 유지'}});
+    assert.equal(normal.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
   const verifiedLearning={

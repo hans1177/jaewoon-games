@@ -7,7 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
@@ -2300,7 +2300,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
@@ -2308,7 +2308,30 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
-  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const declaredTaskRecipes=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const requestedCareerId=clean(task?.commonCareerId).toUpperCase();
+  const requestedCareerClip=clean(task?.commonMotionClip);
+  const registeredCareerAsset=Array.isArray(registry?.assets)
+    ?registry.assets.find(asset=>asset?.id==='shared-humanoid-motion-v1'):null;
+  const availableCareerRecipes=registeredCareerAsset?.availableCareerMotionRecipes||[];
+  // 공용 클립은 원본 1개 + 모션 1개 단위로 승인한다. 14개 후보를 한 작업에 일괄 실행하지 않는다.
+  const validCareerPath=requestedCareerId
+    ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED',
+      bodyPlan:clean(task?.characterBodyPlan||task?.bodyPlan)||'HUMANOID',
+      rigProfile:clean(task?.characterRigProfile||task?.rigProfile)||'HUMANOID'}).careerPath:[];
+  const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length&&(requestedCareerId||requestedCareerClip)
+    ?availableCareerRecipes.filter(recipe=>
+      (!requestedCareerClip||recipe.clipId===requestedCareerClip)
+      &&(!requestedCareerId||validCareerPath.includes(clean(recipe.careerId).toUpperCase())))
+    :[];
+  requestedCareerCandidates.sort((a,b)=>
+    validCareerPath.indexOf(clean(b.careerId).toUpperCase())-validCareerPath.indexOf(clean(a.careerId).toUpperCase())
+    ||clean(a.id).localeCompare(clean(b.id)));
+  if(requestedCareerClip&&!declaredTaskRecipes.length&&(!availableCareerRecipes.some(recipe=>recipe.clipId===requestedCareerClip)
+    ||(requestedCareerId&&requestedCareerCandidates.length===0)))
+    throw new Error('COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED:'+requestedCareerClip);
+  const selectedCareerRecipe=requestedCareerCandidates[0]||null;
+  const explicitRecipeRows=selectedCareerRecipe?[selectedCareerRecipe]:declaredTaskRecipes;
   const explicitRecipeTypes=unique(explicitRecipeRows.flatMap(recipe=>[
     ...(Array.isArray(recipe?.types)?recipe.types:[]),
     clean(recipe?.type)
@@ -2398,6 +2421,16 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
+      sharedCareerSource:freeze({
+        selectedClip:selectedCareerRecipe?.clipId||null,
+        selectedCareer:selectedCareerRecipe?.careerId||null,
+        sourceAssetId:selectedCareerRecipe?.assetId||null,
+        sourceFormat:'PLATFORM_NEUTRAL_SKINNED_GLTF',
+        selectedFromExistingCompanyRegistry:selectedCareerRecipe!==null,
+        oneObjectOneClipWorkUnit:true,unverifiedUntilNativeRuntime:true,
+        sharedAssetSourceIsNotEngineSpecific:true,
+        externalGameplayAuthority:false
+      }),
       coveredTypes:freezeList(coveredDccTypes),
       uncoveredTypes:freezeList(uncoveredDccTypes),
       genericRecipeCount:normalizedGeneric.length,
@@ -4012,6 +4045,7 @@ export function buildVibeAssetProductionPlan({
     task,
     decisions,
     manifest:manifestInput,
+    registry:selectionRegistry,
     explicitRequestedTypes:selector.explicitRequestedTypes||[]
   });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
@@ -4156,6 +4190,30 @@ export function buildVibeAssetProductionPlan({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
   });
+  // 기존 GRAPHICS_PRODUCTION 플래너가 공용 계열·종족의 동작 원본을 장르별로 요청한다.
+  // 게임별 판정/체력/쿨다운과 저장은 건드리지 않는다. 알 수 없는 장르는 자동으로 RPG로 바꾸지 않는다.
+  const sharedMotionGenre=resolveCommonMotionGenre(task.commonMotionGenre||task.genre||task.gameplayGenre);
+  const sharedCareerId=clean(task.commonCareerId).toUpperCase();
+  const sharedSpeciesId=clean(task.commonMonsterSpeciesId).toUpperCase();
+  const sharedMotionGenreValid=Boolean(COMMON_GENRE_MOTION_CONTEXTS[sharedMotionGenre]);
+  const sharedMotionCareer=sharedCareerId&&sharedMotionGenreValid
+    ?createCommonCareerMotionLoadout({
+      careerId:sharedCareerId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+      bodyPlan:task.characterBodyPlan||task.bodyPlan||'HUMANOID',
+      rigProfile:task.characterRigProfile||task.rigProfile||'HUMANOID',
+      weaponFamily:task.characterWeaponFamily||'',
+      styleFamily:task.styleFamily||'STYLIZED_FANTASY'
+    }):null;
+  const sharedMotionMonster=sharedSpeciesId&&sharedMotionGenreValid
+    ?createCommonMonsterActionLoadout({
+      speciesId:sharedSpeciesId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+      bodyPlan:task.monsterBodyPlan||'',rigProfile:task.monsterRigProfile||'',
+      styleFamily:task.styleFamily||'STYLIZED_FANTASY'
+    }):null;
+  const sharedMotionRequestState=(sharedCareerId||sharedSpeciesId)
+    ?(sharedMotionGenreValid?'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED':'GENRE_MAPPING_REQUIRED')
+    :'NOT_REQUESTED';
+
   const assetSynchronization=['unity','web'].includes(resolvedTarget)&&studioUniversePlan?.customization?synchronizeAssetCustomization({
     document:sharedCustomizationDocument,
     currentDocument:currentCustomizationDocument,
@@ -4179,7 +4237,8 @@ export function buildVibeAssetProductionPlan({
       librarySets:bootstrapSets,
       externalSources:selectionRegistry?.externalSources||[],
       usage,
-      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
+      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{},
+      platform:resolvedTarget.toUpperCase()
     });
     const prepared=applySemanticGapPreparation({profile,gapPlan});
     return freeze({
@@ -4849,7 +4908,17 @@ export function buildVibeAssetProductionPlan({
         incompleteSetCount:motionAutoFillPlans.filter(row=>!row.complete).length,
         verifiedCompleteSetCount:motionAutoFillPlans.filter(row=>row.verifiedComplete).length,
         plannedSemanticSeedCount:motionAutoFillPlans.reduce((n,row)=>n+row.semanticSeeds.length,0),
-        plans:freezeList(prioritizedMotionAutoFillPlans)
+        plans:freezeList(prioritizedMotionAutoFillPlans),
+        // 기존 자산 제작·선택 흐름에 묶인 공용 직업/스킬/몬스터 모션 데이터.
+        sharedGenreKits:freeze({
+          state:sharedMotionRequestState,genre:sharedMotionGenre||null,
+          platform:resolvedTarget.toUpperCase(),
+          career:sharedMotionCareer,monster:sharedMotionMonster,
+          preparedSemanticCannotBeVerifiedRuntime:true,
+          nativeEngineRigAndContactQaRequired:true,
+          gameplayAndSaveAuthorityRetained:true,
+          newPipelineCreated:false
+        })
       }),
       studioAssetUniverse:freeze({
         enabled:universeActive,
@@ -5229,6 +5298,11 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionBootstrap?.setCount?`모션 시드 세트=${plan.companyGraphicsLibrary.motionBootstrap.setCount}개; archetypes=${plan.companyGraphicsLibrary.motionBootstrap.archetypes.join('|')}; 상태=${plan.companyGraphicsLibrary.motionBootstrap.status}. PREPARED_SEMANTIC은 실제 네이티브 클립 PASS가 아니며 실게임 런타임 검증 후에만 승격한다.`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?`자동 모션 Gap Fill: auditSets=${plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount}; incomplete=${plan.companyGraphicsLibrary.motionAutoGapFill.incompleteSetCount}; semanticSeeds=${plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount}; fillOrder=${plan.companyGraphicsLibrary.motionAutoGapFill.fillOrder.join('→')}`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.sharedGenreKits?.state==='PREPARED_SEMANTIC_RUNTIME_UNVERIFIED'
+      ?`공용 직업/몬스터 모션 선택: 장르=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.genre}; 직업=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career?.id||'NONE'}; 종족=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.monster?.id||'NONE'}. 캐릭터 역할 상속과 기술 시전/반격/회복/제작 동작, 몬스터 종별 관절·컨택트 곡선은 제작 시드이며 실제 3D 리그 대응·키프레임·장비 접촉·엔진 런타임 검증 후에만 승인한다. 게임별 스타일·장르·기존 밸런스/저장/전투 판정을 유지한다.`
+      :'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.sharedGenreKits?.state==='GENRE_MAPPING_REQUIRED'
+      ?'공용 모션이 요청됐지만 지원하는 장르 식별이 빠졌다. 기존 게임 장르를 유지하며 매핑 요청을 남기고 기본 RPG로 덮지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',
