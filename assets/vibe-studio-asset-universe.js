@@ -2407,6 +2407,8 @@ export function buildInternalAssetLibraryAutomationPlan({assets=[],seedPlan=null
   });
   const eligibleFreeSources=(externalSources||[]).filter(source=>
     /LICENSE_VERIFIED/.test(upper(source?.status))
+    // [외부 후보] 권리 확인은 원본 바이너리 획득/재질 변형 검증을 대신하지 않는다.
+    &&source?.sourceBinaryVerified!==false
     &&source?.volumeAdaptationEligible===true
     &&source?.commercialUseAllowed===true
     &&source?.derivativesAllowed===true
@@ -5680,6 +5682,8 @@ function buildExternalAssetGapIndex(externalSources=[]){
   const byFamily=new Map();
   for(const src of externalSources||[]){
     if(!/LICENSE_VERIFIED/.test(upper(src?.status)))continue;
+    // [원본 파일] 파일 해시가 없는 Meshy 외부 메타데이터는 자동 획득/제작 PASS의 입력이 아니다.
+    if(src?.sourceBinaryVerified===false)continue;
     const categories=uniq([src?.category,...(Array.isArray(src?.categories)?src.categories:[])]).map(upper);
     const families=new Set(categories);
     if(categories.some(category=>['ENVIRONMENT','PROP'].includes(category)))families.add('BUILDING');
