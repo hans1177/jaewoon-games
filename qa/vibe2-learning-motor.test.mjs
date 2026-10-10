@@ -2133,3 +2133,29 @@ test('official source advice stays advisory and cannot become verified learning 
   const runner=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
   assert.match(runner,/const unifiedLearningGuidance = buildMotorGuidance\(unifiedLearning\)/);
 });
+
+test('official-source Unity Web and Android coding drills reuse the existing practice lane',()=>{
+  const curriculum=JSON.parse(fs.readFileSync('company-learning/roblox-practice.json','utf8'));
+  const targets=['unity-web-startup-budget','unity-android-thermal-quality'];
+  assert.equal(curriculum.synthetic,true);
+  assert.equal(curriculum.authority,'PRACTICE_ONLY');
+  assert.equal(curriculum.runtimePromotionAllowed,false);
+  const idle=buildIdlePracticeQueue({});
+  for(const id of targets){
+    const source=curriculum.platformDrills.find(row=>row.id===id);
+    assert.ok(source);
+    assert.equal(source.platform,'unity');
+    assert.equal(source.sourceAuthority,'OFFICIAL_DOCUMENTATION_INSPIRED_PRACTICE_ONLY');
+    assert.match(source.source,/^https:\/\/(docs\.unity\.com|developer\.android\.com)\//);
+    assert.ok(source.reference.startsWith('public static class Practice'));
+    assert.ok(source.broken.startsWith('public static class Practice'));
+    assert.ok(source.feedbackTests.length>=1&&source.tests.length>=2);
+    const drill=idle.drills.find(row=>row.id===id);
+    assert.equal(drill.kind,'PLATFORM_CODE_REPAIR');
+    const injected=injectIdlePracticeTask({tasks:[]},{drills:[drill]});
+    assert.equal(injected.added,true);
+    assert.equal(injected.task.target,'unity');
+    assert.deepEqual(injected.task.responsibleFiles,[]);
+    assert.equal(injected.task.productionPass,false);
+  }
+});
