@@ -1,5 +1,7 @@
 // 파일명: qa/vibe2-training-request.test.mjs
 import test from 'node:test';
+import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 import { buildTrainingRequest } from '../tools/vibe2-training-request.mjs';
 
@@ -71,4 +73,28 @@ test('준비된 작업만 task 전용 dataset/trainer 요청으로 만든다', (
 
 test('같은 상태에서는 requestId가 결정론적으로 동일하다', () => {
   assert.equal(buildTrainingRequest(status()).requestId, buildTrainingRequest(status()).requestId);
+});
+
+
+test('verified local trainer gives difficult QA cases priority without dropping samples or changing holdout',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-train.py',import.meta.url),'utf8');
+  assert.match(source,/class DifficultyCurriculumTrainer\(Trainer\)/);
+  assert.match(source,/torch\.utils\.data\.WeightedRandomSampler/);
+  assert.match(source,/replacement=False/);
+  assert.match(source,/num_samples=len\(weights\)/);
+  assert.match(source,/evalAndFixedHoldoutUntouched/);
+  const script=[
+    'import importlib.util',
+    'spec=importlib.util.spec_from_file_location("vibe2_train", "tools/vibe2-train.py")',
+    'module=importlib.util.module_from_spec(spec)',
+    'spec.loader.exec_module(module)',
+    'rows=[{"difficulty":"simple"},{"difficulty":"bug"},{"difficulty":"regression"},{"difficulty":"roblox-release"},{"difficulty":"unknown"}]',
+    'weights=module.difficulty_curriculum_weights(rows)',
+    'assert len(weights)==len(rows)',
+    'assert weights[0]==weights[-1]==1.0',
+    'assert weights[0]<weights[1]<weights[2]<weights[3]',
+    'assert module.difficulty_curriculum_weights([{"difficulty":"simple"}])==[1.0]',
+  ].join('\n');
+  const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
+  assert.equal(check.status,0,check.stderr||check.error?.message||'Python curriculum test failed');
 });

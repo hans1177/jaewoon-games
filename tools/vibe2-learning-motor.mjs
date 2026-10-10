@@ -1093,6 +1093,79 @@ export function codingStrategyGuidance(preference={}){
   ].join('\n');
 }
 
+// 공식 플랫폼 문서의 응용 방법만 참고한다. 외부 코드를 복사하거나 검증된 학습으로 승격하지 않는다.
+const OFFICIAL_GAME_CODING_REFERENCES=Object.freeze([
+  {
+    id:'roblox-luau-types',platform:'ROBLOX',always:true,
+    source:'https://create.roblox.com/docs/luau',
+    principle:'Use Luau type checking to discover public API and state errors earlier.',
+    apply:'Review existing Luau responsibilities first, type existing interfaces, and avoid duplicate modules.',
+    verify:'Run existing Luau static checks, game-specific mobile and server/client regression.'
+  },
+  {
+    id:'roblox-remote-boundary',platform:'ROBLOX',
+    match:/remote|replicat|network|client|server|combat|attack|trade|inventory|shop|reward|multiplayer|pvp|전투|공격|상점|보상|멀티|서버|통신|복제/i,
+    source:'https://create.roblox.com/docs/scripting/security/client-server-boundary',
+    principle:'Client-triggered state changes require server-side type, permission, state and frequency validation.',
+    apply:'Modify existing RemoteEvent handlers, not a new authority layer; never trust client damage, rewards or saves.',
+    verify:'Test malformed and rapid requests, then real server/client gameplay.'
+  },
+  {
+    id:'roblox-datastore-lifecycle',platform:'ROBLOX',
+    match:/save|load|restore|persist|datastore|data.?store|checkpoint|rejoin|inventory|trade|purchase|저장|불러|복구|재접속|거래|인벤|구매/i,
+    source:'https://create.roblox.com/docs/cloud-services/data-stores/best-practices',
+    principle:'Limit persistent writes; preserve stable keys and use UpdateAsync for concurrent state-dependent writes.',
+    apply:'Preserve current save schema, batching semantics and retry boundaries in the existing save owner.',
+    verify:'Check isolated rejoin, concurrent session, write failure and migration compatibility.'
+  },
+  {
+    id:'roblox-profile-before-optimization',platform:'ROBLOX',
+    match:/performance|(^|[^a-z])(?:lag|fps|frame|npc|ai)(?=$|[^a-z])|render|slow|enemy|physics|network|memory|optimi|최적|지연|렉|프레임|메모리|몬스터|물리|성능/i,
+    source:'https://create.roblox.com/docs/performance-optimization/improve',
+    principle:'Profile high-frequency Luau work and replication traffic before changing a hot path.',
+    apply:'Optimize only measured loops or unnecessary network traffic; preserve gameplay and server state.',
+    verify:'Compare same-scene CPU and network profiles; run gameplay and multiplayer regression.'
+  },
+  {
+    id:'unity-csharp-profiler',platform:'UNITY',
+    match:/performance|slow|fps|frame|render|gc|alloc|memory|physics|profil|asset|optimi|최적|성능|지연|메모리|렉|프레임|물리|로딩|빌드/i,
+    source:'https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Profiling.Profiler.html',
+    principle:'Measure Unity C# execution and allocations in a development build before optimizing.',
+    apply:'Edit responsible scripts only; preserve game rules, state and physics timing.',
+    verify:'Compare Unity Profiler baseline and candidate plus native regression.'
+  },
+  {
+    id:'unity-web-mobile-delivery',platform:'UNITY_WEB',always:true,
+    source:'https://docs.unity.com/en-us/engine/6000.5/manual/platform-specific/webgl/building-distribution/web-optimization-mobile',
+    principle:'Small Web builds load faster on phones; consider Brotli and deferred Addressables only if supported.',
+    apply:'Review existing Unity Web build and hosting Content-Encoding; avoid forced quality changes or new packages.',
+    verify:'Play the real mobile Web build; inspect download, compression, touch, startup, memory and save.'
+  },
+  {
+    id:'unity-web-memory',platform:'UNITY_WEB',
+    match:/memory|heap|crash|loading|startup|browser|mobile|asset|stream|메모리|힙|로딩|브라우저|모바일|에셋|충돌|크래시/i,
+    source:'https://docs.unity3d.com/6000.0/Documentation/Manual/webgl-memory.html',
+    principle:'Unity Web memory depends on the browser process, heap and loaded asset data.',
+    apply:'Measure scene and asset memory in the actual browser before tuning heap or startup loading.',
+    verify:'Check mobile browser first load, reload and extended play; never infer Android APK PASS.'
+  },
+  {
+    id:'unity-android-device-performance',platform:'UNITY_ANDROID',always:true,
+    source:'https://developer.android.com/games/optimize/gameperformance',
+    principle:'Separate CPU and GPU bottlenecks using real Android device traces and A/B measurements.',
+    apply:'Inspect existing Unity Android source; scope any rendering or logic change to measured causes.',
+    verify:'Test frame times, battery and touch/save behavior on the same physical Android device.'
+  },
+  {
+    id:'unity-android-thermal-frame-pacing',platform:'UNITY_ANDROID',
+    match:/thermal|heat|fps|frame|battery|power|adpf|long.?session|optimi|프레임|성능|최적|발열|배터리|전력|온도/i,
+    source:'https://developer.android.com/games/optimize/adpf/best-practices-adpf',
+    principle:'Thermal feedback supports gradual independent graphics changes for sustained performance.',
+    apply:'Reuse existing project quality controls, not new packages or altered combat/movement timing.',
+    verify:'Run sustained physical-device tests and confirm save, input and gameplay regression.'
+  }
+]);
+
 function words(value=''){return new Set(lower(value).match(/[a-z0-9가-힣_]{2,}/g)||[]);}
 function overlapScore(a,b){let n=0;for(const x of a)if(b.has(x))n++;return n;}
 
@@ -1162,6 +1235,28 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const failureFingerprint=failureFingerprintForTask(task);
   const taskAssetMotionIdentity=assetMotionIdentity(task);
   const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
+  // 검증된 프로젝트 지식보다 낮은 읽기 전용 공식 문서 참고 정보.
+  const codingScopeText=[task.goal,task.blocker,task.lastOutcome,task.sourceRoot,...(task.responsibleFiles||[]),...(task.evidence||[])].map(clean).join(' ');
+  const unityWebScope=(engine==='unity'||engine==='web')&&(
+    task.unityWebDevelopment===true||/unity.?web|webgl|unity[-_ ]web|web[-_ ]floor|web[-_ ]build|유니티.?웹|유니티.?브라우저/i.test(codingScopeText)
+  );
+  const unityAndroidScope=(engine==='unity'||engine==='android')&&
+    /android|apk|aab|gradle|안드로이드|구글.?플레이/i.test(codingScopeText)
+    &&(!unityWebScope||/apk|aab|gradle|android.?native|android.?player|안드로이드.?앱|네이티브.?안드로이드/i.test(codingScopeText));
+  const officialGameCodingReferences=OFFICIAL_GAME_CODING_REFERENCES
+    .filter(row=>{
+      const applicable=row.platform==='ROBLOX'?engine==='roblox'
+        :row.platform==='UNITY'?engine==='unity'
+        :row.platform==='UNITY_WEB'?unityWebScope
+        :row.platform==='UNITY_ANDROID'?unityAndroidScope:false;
+      return applicable&&(row.always===true||row.match?.test(codingScopeText)===true);
+    })
+    .slice(0,6)
+    .map(({id,platform,source,principle,apply,verify})=>({
+      id,platform,source,principle,apply,verify,
+      authority:'OFFICIAL_PLATFORM_DOCUMENTATION_ADVISORY',advisoryOnly:true,
+      verifiedForProject:false,trainingSample:false,productionPass:false,sourceWriteAuthorized:false
+    }));
   const mastery=createMasteryState(masteryInput);
   const domainClassification=classifyLearningDomains(task);
   const primaryDomains=new Set(domainClassification.primary);
@@ -1326,6 +1421,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     codePatterns:patterns,
     practiceDistilled,
     externalAiDistilled,
+    officialGameCodingReferences,
     playbookReuse,
     exactKnowledgeIds:uniq([
       ...ranked.map(x=>'EXPERIENCE:'+clean(x.record.id)),
@@ -1359,6 +1455,11 @@ export function learningGuidance(context={}){
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
+  if(context.officialGameCodingReferences?.length){
+    lines.push('- official-coding-guidance=ADVISORY_ONLY_NOT_A_VERIFIED_SAMPLE; inspect current responsible code; no raw code copying, new pipeline, QA bypass, synthetic PASS, or automatic training credit.');
+    for(const row of context.officialGameCodingReferences)
+      lines.push(`- official-coding-reference=${row.id}; target=${row.platform}; source=${row.source}; principle=${row.principle}; apply=${row.apply}; verify=${row.verify}`);
+  }
   for(const row of context.playbookReuse||[]){
     lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourcePlaybooks=${(row.sourcePlaybooks||[]).join('|')||'unknown'}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);
     for(const principle of row.distilledApplicationPrinciples||[]) lines.push(`  - verified-commercial-application-principle=${principle}`);

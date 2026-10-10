@@ -55,7 +55,7 @@ test('new designer intake preserves un-authored V5 sketch and cannot fall back t
   assert.equal(seed.seedAuthoring.stage,'identity-core');
   assert.equal(state.seeds.length,1);
   assert.match(design,/seedGameplaySketchVersion=Math\.max\(5,Number\(seed\?\.novelGrammarBackfill\?\.version\|\|0\),inputGameplaySketchVersion\)/);
-  assert.match(design,/authoringPending===true\|\|!seedGameplaySketch/);
+  assert.match(design,/authoringPending===true\s*\|\|\s*!seedGameplaySketch/);
   const gate=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   assert.match(gate,/seed\?\.GAMEPLAY_SKETCH==null/);
 });

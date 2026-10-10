@@ -416,6 +416,58 @@
         "for(int n=1;n<15;n++){var f=new int[n];for(int i=0;i<n;i++)f[i]=i;var a=new bool[n];a[0]=true;var s=new MenuState{Modal=true,Depth=n-1,SavedFocus=f};Check(Practice.Back(s,a,0)==0&&s.Depth==n-1&&!s.Modal);for(int i=n-1;i>=0;i--){Check(Practice.Back(s,a,0)==0);Check(s.Depth==(i>0?i-1:0));}for(int i=0;i<n;i++)Check(f[i]==i&&a[i]==(i==0));}",
         "Check(Practice.Back(null,new bool[0],0)==-1);var s=new MenuState{Modal=true,Depth=2,SavedFocus=new int[]{0}};Check(Practice.Back(s,new bool[]{true},0)==-1&&s.Modal&&s.Depth==2);s.Depth=0;Check(Practice.Back(s,null,0)==-1&&s.Modal);s.SavedFocus[0]=99;Check(Practice.Back(s,new bool[]{false},0)==-1&&!s.Modal&&s.Depth==0);"
       ]
+    },
+    {
+      "id": "unity-web-startup-budget",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "UNITY_WEB_STARTUP_ASSET_BUDGET",
+      "domains": [
+        "WEB_RUNTIME",
+        "UNITY_RUNTIME",
+        "PERFORMANCE",
+        "ASSET_ADAPTATION"
+      ],
+      "source": "https://docs.unity.com/en-us/engine/6000.5/manual/platform-specific/webgl/building-distribution/web-optimization-mobile",
+      "sourceAuthority": "OFFICIAL_DOCUMENTATION_INSPIRED_PRACTICE_ONLY",
+      "scenario": "Unity Web 모바일 시작 시 불필요한 에셋을 한꺼번에 로드하지 않는 결정론적 순서 선택을 연습한다. public static class Practice의 int[] Select(int[] costs,int budget)를 작성한다. 각 비용은 0 이상 정수이고 현재 배열 순서가 우선순위다. 순서대로 예산에 들어가는 인덱스만 선택하고 예산 초과 항목은 건너뛴다. 비용이 음수거나 배열이 null이거나 예산이 음수면 null을 반환한다. 입력 배열은 수정하지 말고 0 비용 항목은 포함해라. Unity/WebGL 런타임 API를 사용하지 않는 순수 C# 논리 연습이며 실제 브라우저 빌드 PASS로 취급하지 않는다.",
+      "broken": "public static class Practice { public static int[] Select(int[] costs,int budget){return costs;} }",
+      "reference": "public static class Practice {\n public static int[] Select(int[] costs,int budget){\n  if(costs==null||budget<0)return null;\n  for(int i=0;i<costs.Length;i++)if(costs[i]<0)return null;\n  var selected=new int[costs.Length];int count=0;long spent=0;\n  for(int i=0;i<costs.Length;i++){\n   if(spent+costs[i]>budget)continue;\n   selected[count++]=i;spent+=costs[i];\n  }\n  var result=new int[count];\n  for(int i=0;i<count;i++)result[i]=selected[i];\n  return result;\n }\n}",
+      "feedbackTests": [
+        "var costs=new int[]{5,3,2};var x=Practice.Select(costs,7);Check(x!=null&&x.Length==2&&x[0]==0&&x[1]==2);Check(costs[0]==5&&costs[1]==3&&costs[2]==2);",
+        "var x=Practice.Select(new int[]{4,1,1,0},2);Check(x!=null&&x.Length==3&&x[0]==1&&x[1]==2&&x[2]==3);"
+      ],
+      "tests": [
+        "for(int limit=0;limit<25;limit++){var items=new int[]{10,5,3,0,2};var result=Practice.Select(items,limit);Check(result!=null);long used=0;int last=-1;foreach(int k in result){Check(k>last&&k>=0&&k<items.Length);used+=items[k];last=k;}Check(used<=limit);Check(items[0]==10&&items[4]==2);}",
+        "Check(Practice.Select(null,5)==null);Check(Practice.Select(new int[]{1,-1,2},5)==null);Check(Practice.Select(new int[]{1},-1)==null);Check(Practice.Select(new int[0],0).Length==0);Check(Practice.Select(new int[]{0,0},0).Length==2);",
+        "var large=Practice.Select(new int[]{int.MaxValue,1,0},int.MaxValue);Check(large!=null&&large.Length==2&&large[0]==0&&large[1]==2);var x=Practice.Select(new int[]{9,4,5,1},5);Check(x!=null&&x.Length==2&&x[0]==1&&x[1]==3);"
+      ]
+    },
+    {
+      "id": "unity-android-thermal-quality",
+      "platform": "unity",
+      "level": "복합",
+      "failure": "ANDROID_THERMAL_QUALITY_CONTROL",
+      "domains": [
+        "UNITY_RUNTIME",
+        "PERFORMANCE",
+        "MOBILE_INPUT",
+        "STATE_MACHINE"
+      ],
+      "source": "https://developer.android.com/games/optimize/adpf/best-practices-adpf",
+      "sourceAuthority": "OFFICIAL_DOCUMENTATION_INSPIRED_PRACTICE_ONLY",
+      "scenario": "안드로이드 발열에 따른 품질 설정을 기존 사용자 옵션에 맞춰 점진적으로 바꾸는 논리 연습이다. public static class Practice의 int AdjustQuality(int current,int minimum,int maximum,int thermal,bool autoEnabled)를 작성한다. 가상의 thermal 단계는 0~4다. current는 최소~최대에 있어야 한다. min<0, max<min, 범위 밖 current나 thermal이면 -1로 거부한다. autoEnabled가 false면 현재 값을 유지한다. 자동 모드일 때 thermal>=3이면 품질을 최소치까지 한 단계만 내리고, thermal==0이면 최대치까지 한 단계만 올리며, thermal 1~2는 유지한다. Android API 또는 Unity 네이티브 실행을 흉내 낸 입력 검증 연습일 뿐 실제 기기 성능/발열 PASS 증거가 아니다.",
+      "broken": "public static class Practice { public static int AdjustQuality(int current,int minimum,int maximum,int thermal,bool autoEnabled){return maximum;} }",
+      "reference": "public static class Practice {\n public static int AdjustQuality(int current,int minimum,int maximum,int thermal,bool autoEnabled){\n  if(minimum<0||maximum<minimum||current<minimum||current>maximum||thermal<0||thermal>4)return -1;\n  if(!autoEnabled)return current;\n  if(thermal>=3)return current>minimum?current-1:current;\n  if(thermal==0)return current<maximum?current+1:current;\n  return current;\n }\n}",
+      "feedbackTests": [
+        "Check(Practice.AdjustQuality(3,0,5,4,true)==2);Check(Practice.AdjustQuality(3,0,5,0,true)==4);Check(Practice.AdjustQuality(3,0,5,4,false)==3);",
+        "Check(Practice.AdjustQuality(0,0,5,3,true)==0);Check(Practice.AdjustQuality(5,0,5,0,true)==5);Check(Practice.AdjustQuality(2,0,5,2,true)==2);"
+      ],
+      "tests": [
+        "for(int x=0;x<=5;x++){for(int t=0;t<=4;t++){int next=Practice.AdjustQuality(x,0,5,t,true);Check(next>=0&&next<=5);if(t>=3)Check(next==(x>0?x-1:x));else if(t==0)Check(next==(x<5?x+1:x));else Check(next==x);Check(Practice.AdjustQuality(x,0,5,t,false)==x);}}",
+        "Check(Practice.AdjustQuality(3,-1,5,0,true)==-1);Check(Practice.AdjustQuality(3,6,5,0,true)==-1);Check(Practice.AdjustQuality(6,0,5,0,true)==-1);Check(Practice.AdjustQuality(-1,0,5,0,true)==-1);Check(Practice.AdjustQuality(3,0,5,-1,true)==-1);Check(Practice.AdjustQuality(3,0,5,5,true)==-1);",
+        "int quality=8;for(int i=0;i<20;i++)quality=Practice.AdjustQuality(quality,4,8,4,true);Check(quality==4);for(int i=0;i<20;i++)quality=Practice.AdjustQuality(quality,4,8,0,true);Check(quality==8);Check(Practice.AdjustQuality(8,4,8,4,false)==8);"
+      ]
     }
   ],
   "productionRuntimeAuthority": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
