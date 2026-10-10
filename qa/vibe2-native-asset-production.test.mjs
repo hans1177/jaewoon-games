@@ -616,7 +616,9 @@ test('midnight hundred source entries stay shared for every game without bypassi
     assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
     assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
     assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
-    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
+    // Verified 3D source may be style-adapted across engines, but is never runtime-verified by registration.
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'STYLE_ADAPT');
+    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
   }
   const fixture={version:1,assets:[
     {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
@@ -1727,7 +1729,9 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
   assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
-  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.ok(hero.nativeAuthoringExecution.dcc.availableExistingRecipeCount>0);
+  assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
   assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
