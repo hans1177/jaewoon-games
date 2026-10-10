@@ -2340,7 +2340,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
   const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
-  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai':modelRequested?'object':'auto';
+  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
+    :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
   const cinematicStyle=clean(task.assetAuthoring?.cinematicStyle||'studio').toLowerCase();
   const cinematicQuality=clean(task.assetAuthoring?.cinematicQuality||'preview').toLowerCase();
