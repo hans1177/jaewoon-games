@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 단일 지역 탐사, 위험 평가, 자원 획득을 통해 실제 세계 상태 변화에 참여하며, 이 과정에서 새로운 대표 행동, 선택, 규칙을 경험하게 된다. 플레이어는 무력, 경쟁, 재난 등 보조 장르의 관계 변화를 이해함으로써 게임 정체성과 인과적 연관성을 확보한다.",
       "coreFun": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결을 구현하여, 코믹 잠입·탈출 게임의 인과적 구조를 형성한다. 주요 축인 모험과 수집 및 전략의 관계 변화를 통해 다양한 상황별 규칙을 생성하고, 이로 인해 플레이어는 숙련된 선택을 하게 되며, 이를 바탕으로 게임의 중후반에서는 두 시스템 간의 관계 변화와 실질적인 결과를 만들어내는 데 기여한다."
+    },
+    "local_authoring_parts::d1093bf079751a1178d96dd7bb95d7c97905bac66dd706d12af6d1fec226ce15:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택",
+        "단일 지역 탐사 -> 위험 평가 -> 자원 획득",
+        "실제 세계 상태 변화 -> 다음 사건"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 588038,
-      "lastMs": 86049,
+      "totalMs": 680643,
+      "lastMs": 92605,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:52:00.326Z"
+      "updatedAt": "2026-10-10T08:53:32.934Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:42:12.264Z",
-  "updatedAt": "2026-10-10T08:52:00.327Z",
+  "updatedAt": "2026-10-10T08:53:32.944Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1697,8 +1704,8 @@
   "localAuthoringSplits": {
     "a66d394b7b76a93b3d79b8a2da98b646a7514462943f3ced458fd317a1521942": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:52:00.327Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:53:32.934Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
