@@ -463,25 +463,42 @@
     },
     "local_authoring_parts::d52a6034d56e59b93dd55d2bed359a664cda715babd5ae2eae3e848dadd0db88:materialDomain": {
       "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
+    },
+    "local_authoring_parts::d52a6034d56e59b93dd55d2bed359a664cda715babd5ae2eae3e848dadd0db88:stateChange": {
+      "stateChange": "마을에서 장비와 퀘스트를 준비하는 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::5291406046e6d0debcba452aab64ca7d2a1a8abbfa795f7478a32b02326d0928:a": {
+      "system": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "material": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "stateChange": "마을에서 장비와 퀘스트를 준비하는 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:a": {
+      "a": {
+        "system": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "material": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "stateChange": "마을에서 장비와 퀘스트를 준비하는 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 15,
+      "calls": 17,
+      "successes": 16,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1223825,
-      "lastMs": 18875,
+      "totalMs": 1247464,
+      "lastMs": 23639,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:53:06.210Z"
+      "updatedAt": "2026-10-10T09:53:29.850Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T09:53:06.210Z",
+  "updatedAt": "2026-10-10T09:53:29.853Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2492,7 +2509,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:53:06.210Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:53:29.852Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
