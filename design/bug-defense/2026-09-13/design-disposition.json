@@ -14,10 +14,12 @@
       "recommendedState": "ACTIVE",
       "fatalCriteria": [],
       "evidence": [
-        "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic.",
-        "The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic."
+        "Kingdom Rush",
+        "Bloons TD 6",
+        "Plants vs. Zombies 2",
+        "Global strategy/session signal"
       ],
-      "reason": "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic. The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic."
+      "reason": "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b."
     },
     "graphics": {
       "recommendedState": "DISCARD",
@@ -28,10 +30,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
+        "VALID_FATAL_CRITERIA",
         "GAME_SEED",
-        "VALID_FATAL_CRITERIA"
+        "INITIAL_MEETING",
+        "GRAPHICS"
       ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고한다. 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다. DISCARD는 중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다."
+      "reason": "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.  The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.  The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.  The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.  The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed 2026"
     },
     "development": {
       "recommendedState": "REDESIGN",
@@ -42,12 +46,11 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "CORE_FUN_TO_LEARN",
-        "CORE_LOOP",
-        "DISTINCT_IDENTITY",
-        "MARKET_EVIDENCE_SUMMARY"
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json"
       ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+      "reason": "Core design changes are necessary to improve the game's overall quality and player experience."
     },
     "qa": {
       "recommendedState": "REDESIGN",
@@ -58,9 +61,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "VALID_FATAL_CRITERIA"
+        "Owner-directed redesign reset; the canonical design cycle must establish the new market direction without reusing the removed artbook.",
+        "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.",
+        "The game is designed to be a unique and distinctively different version of the original game, focusing on the selection of the insect species and habitat environment as the core identity.",
+        "The game is designed to be a unique and distinctively different version of the original game, focusing on the selection of the insect species and habitat environment as the core identity."
       ],
-      "reason": "The revised design does not address the fatal criteria and evidence provided. The core gameplay mechanic, target audience, and core gameplay mechanic remain unchanged, which violates the original design cycle's fatal criteria."
+      "reason": "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b."
     },
     "balance": {
       "recommendedState": "DISCARD",
@@ -70,12 +76,8 @@
         "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
-      "evidence": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-      ],
-      "reason": "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic. The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic. The questions are the core gameplay mechanic."
+      "evidence": [],
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하거나 수정할 필요가 있다."
     }
   },
   "marketMetricAloneUsedForDiscard": false
