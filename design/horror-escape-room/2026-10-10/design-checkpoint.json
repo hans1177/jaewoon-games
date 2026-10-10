@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::658287b18058f89b1c1bebd88fecee9d45a929f57d197cc55d4511ac954abf90:identity,creativeGrammar": {
+      "identity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+      "creativeGrammar": {
+        "mainIdentity": "감염 전환/정화 시스템, 인간-몬스터 4대4 감염 추격전",
+        "a": {
+          "system": "감염 전환",
+          "material": "명시적 서버 권한 감염 공격",
+          "materialDomain": "몬스터의 명시적 감염 공격",
+          "stateChange": "인간 -> 몬스터로 전환됨, 감염 스킬 획득"
+        },
+        "b": {
+          "system": "인간 정화",
+          "material": "정화 공격",
+          "materialDomain": "인간이 정화 공격으로 몬스터를 제거함",
+          "stateChange": "몬스터 라운드에서 제거됨, 인물 정화 결과 반영"
+        },
+        "abCausality": "{\"A\": \"감염 전환\", \"B\": \"인간 정화\"} 변환 조건: 감염 공격 적중률 70% 이상, 정화 공격 범위 8개 방향",
+        "abEvolution": {
+          "aChangesB": "감염 전환 후 인물 정화 대상 확장, 몬스터 수치 증가",
+          "bChangesA": "인간 정화 시 감염 스킬 추가, 몬스터 수치 감소",
+          "lateGameChange": "감염 상태 변화에 따라 인간/몬스터 역할 재배열"
+        },
+        "materialFusion": {
+          "contrast": "명시적 감염 공격 vs. 정화 공격의 상호작용",
+          "causalBridge": "감염 스킬 획득 -> 정화 효과 발현 -> 역할 재배열",
+          "removalConsequence": "감염된 인간은 몬스터로 전환, 정화 효과는 인물 직업별 적용됨"
+        },
+        "storyCausalChain": {
+          "cause": "몬스터의 명시적 감염 공격 적중률 70%",
+          "characterConflict": "인간-몬스터 4대4 추격전에서의 역할 갈등",
+          "playerChoice": "감염 스킬 선택 및 정화 효과 반영 여부",
+          "worldChange": "감염 상태 변화에 따른 인간/몬스터 역할 재배열",
+          "nextEvent": "감염 상태 변화에 따른 다음 사건 발생"
+        },
+        "cThemes": [
+          {
+            "name": "감염",
+            "kind": "MATERIAL",
+            "gameplayEffect": "명시적 감염 공격 적중률 70%"
+          },
+          {
+            "name": "정화",
+            "kind": "MATERIAL",
+            "gameplayEffect": "정화 공격 범위 8개 방향, 인물 직업별 적용"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "감염 추격전",
+            "gameplayEffect": "명시적 감염 공격 적중률 70%"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "정화 전략",
+            "gameplayEffect": "정화 공격 범위 8개 방향, 인물 직업별 적용"
+          }
+        ],
+        "cGenreInterlock": "감염과 정화 시스템의 상호작용을 통해 플레이어 선택이 영향을 받음",
+        "cWorldAndGameplayEffect": "감염 상태 변화에 따라 인간/몬스터 역할 재배열, 감염 스킬 선택 및 정화 효과 반영 여부 결정됨",
+        "delveDiscoveries": [
+          {
+            "clue": "감염 공격 적중률 70%",
+            "discovery": "인간-몬스터 4대4 추격전에서의 역할 갈등 발생",
+            "newChoice": "감염 스킬 선택 및 정화 효과 반영 여부 결정"
+          },
+          {
+            "clue": "정화 공격 범위 8개 방향",
+            "discovery": "감염 상태 변화에 따른 인간/몬스터 역할 재배열",
+            "newChoice": "감염 스킬 선택 및 정화 효과 반영 여부 결정"
+          },
+          {
+            "clue": "감염 스킬 획득 후 정화 효과 발현",
+            "discovery": "감염 상태 변화에 따른 인물 직업별 적용",
+            "newChoice": "감염 스킬 선택 및 정화 효과 반영 여부 결정"
+          },
+          {
+            "clue": "감염된 인간은 몬스터로 전환",
+            "discovery": "감염 상태 변화에 따른 인간/몬스터 역할 재배열",
+            "newChoice": "감염 스킬 선택 및 정화 효과 반영 여부 결정"
+          }
+        ],
+        "delveGrowthRule": "감염 상태 변화에 따라 인간/몬스터 역할 재배열, 감염 스킬 선택 및 정화 효과 반영 여부 결정됨",
+        "finalGameIdentity": "감염 전환 시스템과 정화 전략의 상호작용을 통해 플레이어 선택이 영향을 받는 새로운 게임 정체성"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300102,
-      "lastMs": 300102,
+      "totalMs": 457141,
+      "lastMs": 157039,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:43:45.705Z"
+      "updatedAt": "2026-10-10T08:46:22.745Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:38:45.583Z",
-  "updatedAt": "2026-10-10T08:43:45.705Z",
+  "updatedAt": "2026-10-10T08:46:22.745Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1358,5 +1445,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "658287b18058f89b1c1bebd88fecee9d45a929f57d197cc55d4511ac954abf90": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T08:46:22.745Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
