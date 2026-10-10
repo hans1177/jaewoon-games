@@ -73,6 +73,76 @@ test('modern convenience selection follows existing systems and static task rout
   assert.ok(f.contract.referencePatterns.every(x=>x.authority==='DESIGN_REFERENCE_ONLY'&&x.runtimeVerified===false&&x.sourceUrl.startsWith('https://')));
 });
 
+test('all first-party game libraries are automatically screened and only existing system matches are candidates',()=>{
+  const ui='unity-games/demo/Assets/Scripts/UIController.cs';
+  const libraries=['assets/inventory-equipment.js','assets/resource-gathering.js','assets/save-versioning.js','assets/mythic-navigation.js','assets/vibe-system-steward.js'];
+  const source={sourceAnchors:[
+    {file:ui,symbol:'GatherResource',context:'void GatherResource() {}'},
+    {file:ui,symbol:'SaveProgress',context:'void SaveProgress() {}'},
+    {file:ui,symbol:'MythicNavigation',context:'void MythicNavigation() {}'}
+  ]};
+  const design={genre:'SURVIVAL',coreLoop:['채집','장비']};
+  const contract=buildInterfaceBlueprintContract({enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',
+    platform:'UNITY_WEB',design,source,files:[ui],availableLibraryPaths:libraries});
+  assert.equal(contract.firstPartyLibraryCount,4);
+  for(const name of ['resource-gathering.js','save-versioning.js','mythic-navigation.js']){
+    assert.ok(contract.internalLibraryMatches.some(row=>row.library==='assets/'+name&&row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'));
+  }
+  assert.ok(!contract.internalLibraryMatches.some(row=>row.library==='assets/vibe-system-steward.js'));
+  assert.ok(contract.internalLibraryMatches.every(row=>row.optional&&!row.automaticImport&&!row.newGameplayAuthority&&!row.runtimeVerified));
+  assert.ok(contract.internalLibraryMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+  const signalOnly=buildInterfaceBlueprintContract({enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',
+    design:{genre:'SURVIVAL',coreLoop:['걷기']},source:{sourceAnchors:[],signals:{inventory:20,combat:20}},
+    availableLibraryPaths:libraries});
+  assert.deepEqual(signalOnly.internalLibraryMatches,[],'signals cannot substitute source anchors');
+  const empty=buildInterfaceBlueprintContract({enabled:true,mode:'EXISTING_PLAY_PRESENTATION',
+    design:{genre:'SURVIVAL',coreLoop:['걷기']},source:{sourceAnchors:[]},availableLibraryPaths:libraries});
+  assert.equal(empty.internalLibraryMatches.length,0);
+  const actual=buildRobloxProductionPlan({gameId:'demo',platform:'UNITY_WEB',
+    policy:{...policy,status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY'],spatialBlueprint:{enabled:true}},
+    design,source:{...source,topFiles:[{file:ui,score:10}]},responsibleFiles:[ui],focus:'USABILITY',availableLibraryPaths:libraries});
+  assert.ok(actual.libraryReuseContract.candidates.some(row=>row.library==='assets/mythic-navigation.js'));
+  assert.ok(robloxProductionPromptLines(actual).some(row=>row.startsWith('UNITY_PRODUCTION_LIBRARY_MATCH=')));
+  const unrelated=productionBlueprintContractsForFiles(actual,{responsibleFiles:['server/Unknown.luau']});
+  assert.deepEqual(unrelated.interface.internalLibraryMatches,[]);
+});
+
+test('external interface algorithms and engine tools match optional existing systems',()=>{
+  const sourceWithUi={signals:{ui:9,input:5,inventory:6,equipment:3,combat:0},sourceAnchors:[{symbol:'openInventory',context:'function openInventory(){ return items; }'}]};
+  const survival={genre:'SURVIVAL',coreLoop:['채집','인벤토리 장비','제작 레시피'],signatureSystems:[{name:'장비 관리'}],mobileUx:'모바일 터치'};
+  const args={enabled:true,mode:'EXISTING_PLAY_PRESENTATION',focus:'USABILITY',files:['web-games/demo/ui.js'],design:survival,source:sourceWithUi};
+  const contract=buildInterfaceBlueprintContract(args);
+  assert.ok(contract.externalAlgorithms.some(row=>row.id==='RECOGNITION_OVER_RECALL'));
+  assert.ok(contract.externalAlgorithms.some(row=>row.id==='MOBILE_TOUCH_TARGETS'));
+  assert.ok(contract.internalToolMatches.some(row=>row.id==='INVENTORY_EQUIPMENT'&&row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'));
+  assert.ok(contract.internalToolMatches.some(row=>row.id==='CRAFTING'&&row.status==='DESIGN_HINT_ONLY'));
+  assert.ok(!contract.internalToolMatches.some(row=>row.id==='QUEST_DIALOGUE'));
+  assert.ok(contract.externalAlgorithms.every(row=>row.optional&&row.runtimeVerified===false));
+  assert.ok(contract.internalToolMatches.every(row=>row.optional&&!row.automaticImport&&!row.newGameplayAuthority));
+  const empty=buildInterfaceBlueprintContract({...args,design:{genre:'RPG',coreLoop:['걷기']},source:{signals:{ui:1,input:0,inventory:0,equipment:0}}});
+  assert.deepEqual(empty.externalAlgorithms,[]);assert.deepEqual(empty.internalToolMatches,[]);
+  const plan=make({focus:'USABILITY',design:{...survival,identity:'숲',ownerFeatureChanges:[]},source:{...source,...sourceWithUi}});
+  assert.ok(plan.interfaceBlueprintContract.internalToolMatches.some(row=>row.id==='INVENTORY_EQUIPMENT'));
+  assert.match(robloxProductionPromptLines(plan).join('\n'),/EXTERNAL_UX_PRINCIPLE_ONLY/);
+  const server=productionBlueprintContractsForFiles(plan,{responsibleFiles:['server/Game.server.luau']});
+  assert.deepEqual(server.interface.externalAlgorithms,[]);assert.deepEqual(server.interface.internalToolMatches,[]);
+});
+
+test('Unity WebGL and Unity app share native UI matching instead of a separate browser game UI',()=>{
+  const own=['unity-games/garden/Assets/Scripts/UIController.cs','unity-games/garden/Assets/Scripts/GameCore.cs'];
+  const observed={...source,sourceRoot:'unity-games/garden',signals:{ui:5,input:4,inventory:5,equipment:1},
+    sourceAnchors:[{symbol:'OpenInventory',context:'void OpenInventory() { inventoryPanel.SetActive(true); }'}],topFiles:own.map(file=>({file,score:10}))};
+  const authored={...design,coreLoop:['explore','inventory equipment','quest'],mobileUx:'touch'};
+  const web=make({platform:'UNITY_WEB',focus:'USABILITY',responsibleFiles:own,source:observed,design:authored});
+  const app=make({platform:'UNITY_APP',focus:'USABILITY',responsibleFiles:own,source:observed,design:authored});
+  assert.equal(web.platform,'UNITY');assert.equal(web.executionSurface,'UNITY_WEB');
+  assert.equal(app.platform,'UNITY');assert.equal(app.executionSurface,'UNITY_APP');
+  assert.deepEqual(web.interfaceBlueprintContract.internalToolMatches,app.interfaceBlueprintContract.internalToolMatches);
+  assert.ok(web.interfaceBlueprintContract.internalToolMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+  assert.ok(web.implementationPackages.flatMap(row=>row.files).every(file=>file.startsWith('unity-games/garden/')));
+  assert.match(robloxProductionPromptLines(web).join('\n'),/SAME canonical Unity C# UI source/);
+});
+
 test('interface blueprint rejects unusable touch, missing escape, fake handlers and generic menu-only plans',()=>{
   const cases=[
     [f=>f.blueprint.screens[0].controls[0].rect.width=20,'TOUCH_TARGET_OR_SAFE_AREA_INVALID'],

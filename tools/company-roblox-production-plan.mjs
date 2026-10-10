@@ -175,21 +175,117 @@ export const GAME_CONVENIENCE_REFERENCES=Object.freeze([
   {id:'PARAMETRIC_BUILD_PREVIEW',match:/factory|construct|blueprint|building|공장|건설|건축|설계도/i,game:'Factorio 2.0',sourceUrl:'https://www.factorio.com/blog/post/fff-392',observedAt:'2026-10-07',principle:'Reusable construction plans accept parameters and derive dependent choices with a preview.',adaptation:'Preview placement, support, collision and cost; preserve simulation authority and explain unresolved dependencies.'}
 ]);
 
+// 선택형 외부 인터페이스 알고리즘: 공개 UX 원칙은 설계 참고이며 실행 근거가 아니다.
+export const INTERFACE_EXTERNAL_ALGORITHMS=Object.freeze([
+  {id:'PROGRESSIVE_DISCLOSURE',match:/menu|panel|setting|option|inventory|craft|recipe|shop|upgrade|메뉴|설정|장비|인벤|제작|상점|강화/i,sourceUrl:'https://www.nngroup.com/articles/progressive-disclosure/',principle:'Prioritize the core actions; reveal secondary options only in relevant context.'},
+  {id:'RECOGNITION_OVER_RECALL',match:/inventory|equip|item|loot|craft|recipe|quest|skill|loadout|인벤|장비|아이템|제작|퀘스트|스킬/i,sourceUrl:'https://www.nngroup.com/articles/recognition-and-recall/',principle:'Show existing choices, prerequisites and outcomes instead of requiring memory.'},
+  {id:'INFORMATION_SCENT',match:/quest|map|region|travel|build|upgrade|objective|goal|route|퀘스트|지도|지역|이동|건설|강화|목표|경로/i,sourceUrl:'https://www.nngroup.com/articles/information-scent/',principle:'Give existing navigation options clear destinations and state-dependent cues.'},
+  {id:'STATUS_AND_RECOVERY',match:/wave|combat|health|hp|cooldown|resource|survival|queue|session|result|battle|웨이브|전투|체력|자원|생존|대기|결과/i,sourceUrl:'https://www.nngroup.com/articles/ten-usability-heuristics/',principle:'Expose real game status, feedback and existing safe exit or recovery paths.'},
+  {id:'MOBILE_TOUCH_TARGETS',match:/mobile|touch|tap|joystick|swipe|phone|모바일|터치|조이스틱|스와이프/i,sourceUrl:'https://support.google.com/accessibility/android/answer/7101858',principle:'Use platform-native safe areas and comfortably separated touch targets.'}
+]);
+// 기존 바이브 엔진 라이브러리만 후보로 식별한다. 자동 임포트나 별도 게임 상태 소유권은 허용하지 않는다.
+export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
+  {id:'INVENTORY_EQUIPMENT',match:/inventory|equip|loadout|itemslot|backpack|인벤|장비|착용|아이템/i,signals:['inventory','equipment'],library:'assets/inventory-equipment.js',screens:['INVENTORY_UI','GAMEPLAY']},
+  {id:'CRAFTING',match:/craft|recipe|workbench|제작|조합|레시피|작업대/i,signals:[],library:'assets/crafting-recipes.js',screens:['CRAFT_UI']},
+  {id:'ECONOMY_SHOP',match:/shop|merchant|trade|economy|loot|상점|거래|상인|전리품/i,signals:[],library:'assets/economy-loot-shop.js',screens:['SHOP_UI']},
+  {id:'QUEST_DIALOGUE',match:/quest|dialog|mission|journal|퀘스트|의뢰|대화|임무/i,signals:[],library:'assets/quest-dialogue.js',screens:['QUEST_UI']},
+  {id:'SKILL_EFFECTS',match:/skill|ability|cooldown|스킬|능력|재사용/i,signals:[],library:'assets/skill-effects.js',screens:['GAMEPLAY']},
+  {id:'TARGETING_COMBAT',match:/target|combat|attack|tower|aim|타깃|전투|공격|조준/i,signals:['combat'],library:'assets/targeting-system.js',screens:['GAMEPLAY']},
+  {id:'NPC_INTERACTION',match:/npc|villager|behavior|주민|대화|동료/i,signals:[],library:'assets/common-ai.js',screens:['GAMEPLAY','QUEST_UI']},
+  {id:'COMPANION_PARTY',match:/party|companion|squad|파티|동료|분대/i,signals:[],library:'assets/ai-party.js',screens:['GAMEPLAY']}
+]);
+
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
-export function buildInterfaceBlueprintContract({design={},files=[],mode='',focus='',enabled=false}={}){
+export function buildInterfaceBlueprintContract({design={},source={},files=[],mode='',focus='',enabled=false,platform='WEB',availableLibraryPaths=[]}={}){
   if(!enabled||mode==='EXISTING_SOURCE_REPAIR')return null;
   const requirements={identity:design.identity,genre:design.genre,coreLoop:design.coreLoop,systems:design.systemInterconnections,ux:design.uxAccessibilityPlan||{},mobileUx:design.mobileUx};
-  const systemText=JSON.stringify([design.coreLoop,design.signatureSystems,design.systemInterconnections,design.uxAccessibilityPlan]);
-  const referencePatterns=GAME_CONVENIENCE_REFERENCES.filter(row=>row.match.test(systemText)).map(({match,...row})=>({...row,authority:'DESIGN_REFERENCE_ONLY',runtimeVerified:false}));
-  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,sourceFiles:files,
-    selectionRule:'Choose one observed player friction owned by these files. Explain applicability from existing systems, compare alternatives and record rejected patterns; do not add every reference feature.',
+  const systemText=JSON.stringify([design.coreFun,design.coreLoop,design.signatureSystems,design.systemInterconnections,design.uxAccessibilityPlan,design.mobileUx]);
+  const anchors=list(source?.sourceAnchors).map(row=>[row?.symbol,row?.context].map(clean).join(' ')).join(' ');
+  const signals=source?.signals&&typeof source.signals==='object'?source.signals:{};
+  const matches=row=>row.match.test(systemText)||row.match.test(anchors);
+  const referencePatterns=GAME_CONVENIENCE_REFERENCES.filter(matches).map(({match,...row})=>({...row,authority:'DESIGN_REFERENCE_ONLY',runtimeVerified:false}));
+  const externalAlgorithms=INTERFACE_EXTERNAL_ALGORITHMS.filter(row=>matches(row)||(row.id==='MOBILE_TOUCH_TARGETS'&&Number(signals.ui)>0&&Number(signals.input)>0))
+    .map(({match,...row})=>({...row,optional:true,authority:'EXTERNAL_UX_PRINCIPLE_ONLY',runtimeVerified:false,matchEvidence:{design:match.test(systemText),sourceAnchor:match.test(anchors)}}));
+  const internalToolMatches=INTERFACE_INTERNAL_TOOL_MATCHERS.filter(row=>matches(row)||row.signals.some(key=>Number(signals[key])>0))
+    .map(({match,signals:signalNames,...row})=>{
+      const observedSource=match.test(anchors)||signalNames.some(key=>Number(signals[key])>0);
+      return{...row,optional:true,matchEvidence:{design:match.test(systemText),source:observedSource},
+        status:observedSource?'SOURCE_SIGNAL_MATCH_UNVERIFIED':'DESIGN_HINT_ONLY',
+        integration:clean(platform).toUpperCase()==='WEB'?'REUSE_EXISTING_COMPATIBLE_HANDLER':'NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT',
+        automaticImport:false,newGameplayAuthority:false,runtimeVerified:false};
+    });
+
+  // 내부 전체 게임용 코드 라이브러리: 실제 저장소 인덱스에서 자동 탐색, 적용은 기존 담당 소스에서만.
+  const runtimeLibraries=unique(list(availableLibraryPaths))
+    .filter(value=>/^assets\/[a-z][a-z0-9-]*\.js$/i.test(value))
+    .filter(value=>!/^assets\/(?:vibe-|company-|department-|homepage-|artbook-|godot-)/i.test(value)
+      &&!/(?:-viewer|-audit|-generator|-selector|-plan|-evolution)\.js$/i.test(value));
+  const aliases=Object.freeze({
+    gathering:/gather|resource|harvest|mine|채집|수집|자원/i,
+    resource:/resource|gather|harvest|자원|채집/i,
+    versioning:/save|load|migration|version|저장|복구/i,
+    inventory:/inventory|equipment|backpack|인벤|장비|아이템/i,
+    equipment:/equip|loadout|armor|weapon|장비|무기/i,
+    crafting:/craft|recipe|workbench|제작|조합|레시피/i,
+    recipes:/recipe|craft|제작|레시피/i,
+    ai:/npc|enemy|behavior|agent|동료|주민|몬스터/i,
+    progression:/progress|level|xp|growth|레벨|성장/i,
+    combat:/combat|attack|battle|damage|전투|공격|피해/i,
+    vitals:/health|hp|shield|hunger|체력|허기/i,
+    save:/save|load|persist|datastore|저장|불러오기/i,
+    targeting:/target|enemy|combat|타깃|적|전투/i,
+    spawner:/spawn|wave|enemy|소환|스폰|웨이브/i,
+    wave:/wave|round|spawn|웨이브|라운드/i,
+    projectiles:/projectile|bullet|shoot|fire|투사체|발사|탄환/i,
+    animation:/animation|animator|motion|애니메이션|모션/i,
+    motion:/motion|animation|rig|모션|애니메이션/i,
+    input:/input|touch|joystick|button|입력|터치|조이스틱/i,
+    timers:/timer|countdown|cooldown|타이머|남은시간/i,
+    scene:/scene|world|region|씬|장면|지역/i,
+    flow:/flow|transition|navigation|screen|전환|화면|이동/i,
+    economy:/economy|gold|shop|money|재화|경제|상점/i,
+    loot:/loot|drop|item|reward|전리품|보상|드랍/i,
+    dialogue:/dialogue|npc|quest|대화|퀘스트/i,
+    quest:/quest|mission|dialogue|퀘스트|의뢰|대화/i,
+    skill:/skill|ability|cooldown|스킬|능력/i,
+    effects:/effect|vfx|skill|이펙트|효과/i,
+    character:/character|player|hero|캐릭터|플레이어/i,
+    graphics:/graphic|visual|render|그래픽|렌더|화면/i,
+    visual:/visual|graphic|render|ui|화면|시각/i,
+    day:/day|night|weather|낮|밤|날씨/i,
+    night:/night|day|weather|낮|밤|날씨/i,
+    turn:/turn|round|initiative|턴|차례/i,
+    state:/state|phase|status|상태|단계/i
+  });
+  const excludedTokens=new Set(['game','common','jaewoon','kit','core','runtime','system','engine','content','presets']);
+  // 개수 신호만으로 실제 라이브러리 바인딩을 주장할 수 없으므로 소스 심볼을 요구한다.
+  const observed=anchors;
+  const internalLibraryMatches=runtimeLibraries.map(library=>{
+    const name=library.slice('assets/'.length,-3);
+    const patterns=name.split('-').filter(token=>token.length>=3&&!excludedTokens.has(token))
+      .map(token=>aliases[token]||new RegExp(token,'i'));
+    const matching=value=>patterns.some(pattern=>pattern.test(value));
+    if(!patterns.length||(!matching(systemText)&&!matching(observed)))return null;
+    const matchedFiles=unique(list(source?.sourceAnchors).filter(row=>matching(clean(row?.symbol)+' '+clean(row?.context))).map(row=>row.file));
+    const fromSource=matching(observed);
+    return{
+      id:name.replace(/-/g,'_').toUpperCase(),library,sourceFiles:matchedFiles,
+      status:fromSource?'SOURCE_SIGNAL_MATCH_UNVERIFIED':'DESIGN_HINT_ONLY',
+      matchEvidence:{design:matching(systemText),source:fromSource},
+      optional:true,firstParty:true,automaticImport:false,newGameplayAuthority:false,
+      integration:clean(platform).toUpperCase()==='WEB'?'REUSE_EXISTING_COMPATIBLE_HANDLER':'NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT',
+      runtimeVerified:false
+    };
+  }).filter(Boolean);
+  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
+    selectionRule:'OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.',
     scope:'TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES',
     schema:{version:1,designFingerprint:'exact contract fingerprint',viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'first screen',
       screens:[{id:'existing screen id',role:'MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS',modal:false,scrollable:false,contentHeight:844,
         controls:[{id:'existing control id',action:'existing gameplay action',feedback:'observable feedback',enabledWhen:'existing state guard',rect:{x:0,y:0,width:44,height:44},binding:{path:'source file',symbol:'event handler',sourceEvidence:'exact event/handler source'}}]}],
       transitions:[{from:'screen id',controlId:'control id',to:'screen id',kind:'OPEN or BACK or CLOSE or ACTION',preservesState:true}],
-      playerTasks:[{id:'frequent player intent',friction:'observed repeated work or information gap',patternId:'reference id or ORIGINAL',adaptation:'why this game needs it',from:'screen id',to:'completion screen',controlId:'completion action',maxNavigationSteps:2,retainedContext:['selection','filter','scroll','draft'],failureRecovery:'existing safe recovery',runtimeCheck:'exact-build input sequence and observable result; compare before/after without invented measurements'}]},
-    learningRule:'Reference descriptions and static plans are hypotheses. Reuse through existing verified experience only after exact-build gameplay evidence; retain failures and reject regressions. Recheck dated references before calling them current.',
+      playerTasks:[{id:'frequent player intent',friction:'observed repeated work or information gap',patternId:'matched reference or algorithm id or ORIGINAL',toolId:'optional source-matched internal tool id',adaptation:'why this game needs it',from:'screen id',to:'completion screen',controlId:'completion action',maxNavigationSteps:2,retainedContext:['selection','filter','scroll','draft'],failureRecovery:'existing safe recovery',runtimeCheck:'exact-build input sequence and observable result; compare before/after without invented measurements'}]},
+    learningRule:'External UX principles and static plans are optional hypotheses, not runtime evidence. Use the existing verified learning path after exact-build native/mobile QA; never copy third-party code, assets or distinctive interface designs.',
     preserve:['SAVE','PROGRESSION','COMBAT_RETURN_RESTRICTIONS','DISABLED_ACTION_GUARDS','EXISTING_MENU_IDENTITIES'],runtimeVerified:false};
 }
 
@@ -233,7 +329,12 @@ export function validateInterfaceBlueprint({contract=null,blueprint=null,sourceF
   for(const task of list(b.playerTasks)){
     if(!task||!clean(task.id)||taskIds.has(task.id)){add('PLAYER_TASK_ID_INVALID');continue;}taskIds.add(task.id);
     if(!['friction','adaptation','failureRecovery','runtimeCheck'].every(k=>clean(task[k]))||!list(task.retainedContext).length)add('PLAYER_TASK_REASONING_MISSING',task.id);
-    if(task.patternId!=='ORIGINAL'&&!list(contract.referencePatterns).some(row=>row.id===task.patternId))add('REFERENCE_PATTERN_NOT_APPLICABLE',task.id);
+    if(task.patternId!=='ORIGINAL'&&![...list(contract.referencePatterns),...list(contract.externalAlgorithms)].some(row=>row.id===task.patternId))add('REFERENCE_PATTERN_NOT_APPLICABLE',task.id);
+    if(clean(task.toolId)){
+      const tool=list(contract.internalToolMatches).find(row=>row.id===task.toolId);
+      if(!tool)add('INTERNAL_TOOL_NOT_APPLICABLE',task.id);
+      else if(tool.status!=='SOURCE_SIGNAL_MATCH_UNVERIFIED')add('INTERNAL_TOOL_SOURCE_UNPROVEN',task.id);
+    }
     if(!map.has(task.from)||!map.has(task.to)||!list(map.get(task.to)?.controls).some(c=>c?.id===task.controlId)){add('PLAYER_TASK_ENDPOINT_INVALID',task.id);continue;}
     const distances=new Map([[task.from,0]]),pending=[task.from];
     for(let i=0;i<pending.length;i++)for(const next of graph.get(pending[i])||[])if(!distances.has(next)){distances.set(next,distances.get(pending[i])+1);pending.push(next);}
@@ -374,7 +475,7 @@ export function validateSpatialBlueprint({contract=null,blueprint=null,sourceFil
 }
 
 // 메인: 같은 장르 계획을 플랫폼별 실제 책임 파일에 연결한다.
-export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={}}={}){
+export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={},availableLibraryPaths=[]}={}){
   const requested=clean(platform).toUpperCase();
   const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
   if(!list(policy.platforms||['ROBLOX']).includes(target)||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
@@ -418,6 +519,12 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const packages=allowedRoles.map(role=>({role,files:roles.filter(row=>row.role===role).map(row=>row.file),
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
+  const interfaceContract=buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true,availableLibraryPaths});
+  const libraryReuseContract=interfaceContract?{
+    status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
+    candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
+  }:null;
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
@@ -435,7 +542,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:buildInterfaceBlueprintContract({design,files,mode,focus,enabled:policy.spatialBlueprint?.enabled===true}),
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -460,6 +567,7 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
   const scoped=(contract,owner)=>contract?{
     ...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0,
+    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[]}:{}),
     ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
   }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
@@ -472,15 +580,26 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     return path&&!path.split('/').includes('..')&&(file===path||file.endsWith('/'+path));
   }))})).filter(row=>row.files.length);
   const blueprints=productionBlueprintContractsForFiles(plan,{responsibleFiles});
+  const scopedFiles=packages.flatMap(row=>row.files);
+  const libraryCandidates=list(plan.libraryReuseContract?.candidates)
+    .filter(row=>!responsibleFiles.length||list(row.sourceFiles).some(file=>scopedFiles.includes(file)));
   return [
     prefix+'CONCEPT='+JSON.stringify({genre:plan.genreProfile,identity:plan.conceptIdentity,mode:plan.mode,coreAction:plan.coreAction}),
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
+    ...(libraryCandidates.length?[
+      prefix+'LIBRARY_MATCH='+JSON.stringify({
+        firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
+        candidates:libraryCandidates,assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
+        automaticImport:false,runtimeVerified:false
+      }),
+      prefix+'LIBRARY_RULE=Consider all currently available first-party game runtime libraries by actual game source evidence. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
+    ]:[]),
     ...(plan.interfaceBlueprintContract?[
       prefix+'INTERFACE='+JSON.stringify(blueprints.interface),
-      prefix+'INTERFACE_RULE=For menu/usability work author interfaceBlueprint before edits. Cover only this task and its existing entry/return screens. Analyze repeated player work, select applicable reference principles or an original solution, and connect playerTasks to actual handlers and screen transitions. Consider reusable setups, conditional filters, contextual deep links, batch preview/commit, remembered work context and device-appropriate quick access. Preserve state guards, costs and rollback. Include feedback, back/close, touch and scroll. Static route length is not measured user effort or runtime PASS.'
+      prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
