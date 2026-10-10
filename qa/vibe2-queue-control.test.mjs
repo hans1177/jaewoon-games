@@ -483,7 +483,7 @@ test('game-primary keeps adaptive telemetry but canonical reservation is fixed a
   });
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
   assert.equal(reserved.adaptiveMaxConcurrentTasks,20);
-  assert.equal(reserved.reservationMaxConcurrentTasks,64);
+  assert.equal(reserved.reservationMaxConcurrentTasks,128);
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
   assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
   assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,128);
