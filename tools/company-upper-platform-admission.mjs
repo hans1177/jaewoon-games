@@ -213,6 +213,334 @@ export function evaluateUnityWebBuildUpGrowth({
   };
 }
 
+// Unity Web 기존 검증 단계의 3개 Playwright 실행이 서로 다른 실제 조작 경로를 통과했는지 판정.
+// 별도 파이프라인을 만들지 않고 기존 browser/independent/regression 증거만 소비한다.
+// Unity Web 전용 소스 정밀 검증. 외부 정적 분석 기법인 interprocedural call graph,
+// definition/use chains, reachable event paths, negative/mutation canaries를 기존 게이트에서 이용한다.
+// 정규식 기반 C# 보수적 분석으로 Roslyn/Unity 컴파일러의 타입 검사나 실제 실행을 대신하지 않는다.
+export function auditUnityWebNativeSystems({
+  repoRoot='.',gameId='',designRecord={},play=null,independent=null,regression=null
+}={}){
+  const id=clean(gameId);
+  if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw new Error('UNITY_WEB_SYSTEM_AUDIT_GAME_ID_INVALID');
+  const content=designRecord?.content&&typeof designRecord.content==='object'?designRecord.content:designRecord;
+  const systems=Array.isArray(content?.signatureSystems)?content.signatureSystems:[];
+  const interconnections=Array.isArray(content?.systemInterconnections)?content.systemInterconnections:[];
+  const originalRoot=path.resolve(repoRoot,'unity-games',id,'Assets','Scripts');
+  const problems=[],files=[],program=[];
+  if(systems.length===0)problems.push('VERIFIED_DESIGN_SIGNATURE_SYSTEMS_REQUIRED');
+  const underRoot=file=>file.startsWith(originalRoot+path.sep)&&file.endsWith('.cs');
+  if(fs.existsSync(originalRoot)){
+    const trustedRoot=fs.realpathSync(originalRoot);
+    const walk=dir=>{
+      for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+        const full=path.join(dir,entry.name);
+        if(entry.isSymbolicLink()){problems.push('C_SHARP_SYMLINK_NOT_AUDITED');continue;}
+        if(entry.isDirectory()){walk(full);continue;}
+        if(!entry.isFile()||!underRoot(full))continue;
+        const real=fs.realpathSync(full);
+        if(!real.startsWith(trustedRoot+path.sep)){
+          problems.push('C_SHARP_SOURCE_ESCAPES_CANONICAL_GAME_ROOT');continue;
+        }
+        const stat=fs.statSync(real);
+        if(stat.size>2*1024*1024){problems.push('C_SHARP_SOURCE_FILE_TOO_LARGE_FOR_PRECISE_AUDIT');continue;}
+        const relative=path.relative(path.resolve(repoRoot),real).replaceAll('\\','/');
+        files.push({file:relative,text:fs.readFileSync(real,'utf8')});
+      }
+    };
+    walk(originalRoot);
+  }else problems.push('CANONICAL_UNITY_GAME_SCRIPTS_MISSING');
+  files.sort((a,b)=>a.file.localeCompare(b.file));
+  if(!files.length)problems.push('NATIVE_C_SHARP_GAME_SCRIPTS_MISSING');
+  // 문자열 안의 "WorldState += 99", 주석, QA PASS 문구를 소스 구현으로 오인하지 않는다.
+  const mask=text=>{
+    let out='',state='code';
+    for(let i=0;i<text.length;i++){
+      const char=text[i],next=text[i+1]||'',prev=text[i-1]||'';
+      if(state==='code'){
+        if(char==='/'&&next==='/'){out+='  ';i++;state='line';continue;}
+        if(char==='/'&&next==='*'){out+='  ';i++;state='block';continue;}
+        if(char==='"'){out+=' ';state=prev==='@'?'verbatim':'double';continue;}
+        if(char==="'"){out+=' ';state='single';continue;}
+        out+=char;continue;
+      }
+      if(state==='line'){
+        if(char==='\n'){out+='\n';state='code';}else out+=' ';
+        continue;
+      }
+      if(state==='block'){
+        if(char==='*'&&next==='/'){out+='  ';i++;state='code';}
+        else out+=char==='\n'?'\n':' ';
+        continue;
+      }
+      if(state==='verbatim'){
+        if(char==='"'&&next==='"'){out+='  ';i++;continue;}
+        if(char==='"'){out+=' ';state='code';}else out+=char==='\n'?'\n':' ';
+        continue;
+      }
+      if(char==='\\'){out+=' ';if(i+1<text.length){out+=text[++i]==='\n'?'\n':' ';}continue;}
+      if((state==='double'&&char==='"')||(state==='single'&&char==="'")){
+        out+=' ';state='code';
+      }else out+=char==='\n'?'\n':' ';
+    }
+    return out;
+  };
+  const sanitized=new Map(files.map(row=>[row.file,mask(row.text)]));
+  const declarations=[];
+  // 접근 제한자를 포함하는 메서드와 일반 Unity 이벤트 메서드: balanced brace로 본문만 분석.
+  const signature=/(?:^|[;{}]\s*|\n\s*)(?:(?:public|private|protected|internal|static|override|virtual|sealed|async|new|partial|extern)\s+)*(?:[A-Za-z_][\w.<>\[\],?]*\s+)+([A-Za-z_][A-Za-z0-9_]*)\s*\([^;{}]*\)\s*\{/gm;
+  for(const [file,text] of sanitized){
+    const matches=[...text.matchAll(signature)],bodySpans=[];
+    for(const m of matches){
+      const name=m[1],start=m.index+m[0].lastIndexOf('{');
+      if(['if','else','switch','while','for','foreach','using','lock','catch'].includes(name))continue;
+      let depth=0,end=-1;
+      for(let j=start;j<text.length;j++){
+        if(text[j]==='{')depth++;
+        if(text[j]==='}'&&--depth===0){end=j;break;}
+      }
+      if(end<0){problems.push('C_SHARP_UNBALANCED_METHOD_BLOCK:'+file);continue;}
+      const body=text.slice(start+1,end);
+      const line=1+text.slice(0,start).split('\n').length-1;
+      declarations.push({id:file+'#'+name+'@'+line,file,name,body,line});
+      bodySpans.push([m.index,end+1]);
+    }
+    const outside=text.split('');
+    for(const [start,end] of bodySpans)
+      for(let i=start;i<end;i++)if(outside[i]!=='\n')outside[i]=' ';
+    const members=outside.join('');
+    for(const member of members.matchAll(/\b(?:(?:public|private|protected|internal)\s+)(?:(?:static|readonly|volatile|new)\s+)*[A-Za-z_][\w<>\[\],.?]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?=[;={])/g)){
+      // 선언은 상태 소유의 후보일 뿐 실제 입력·전이·출력 증거는 아니다.
+      declarations.push({id:file+'#FIELD:'+member[1],file,name:member[1],body:null,kind:'FIELD'});
+    }
+    for(const property of members.matchAll(/\b[A-Za-z_][\w<>\[\],.?]*\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{\s*get\b/g))
+      declarations.push({id:file+'#PROPERTY:'+property[1],file,name:property[1],body:null,kind:'FIELD'});
+  }
+  const methods=declarations.filter(row=>typeof row.body==='string');
+  const declaredStateNames=new Set(declarations.filter(row=>row.kind==='FIELD').map(row=>row.name));
+  const byName=new Map();
+  for(const method of methods)byName.set(method.name,[...(byName.get(method.name)||[]),method]);
+  const callGraph=new Map(methods.map(row=>[row.id,new Set()]));
+  const ambiguousCalls=new Set();
+  const inputPattern=/\b(?:Input\s*\.\s*(?:GetKey|GetMouseButton|GetTouch|touchCount|GetAxis|GetButton)|(?:GUI|GUILayout)\s*\.\s*Button|Event\s*\.\s*current|onClick\s*\.\s*AddListener|OnPointer(?:Click|Down|Up))\b/;
+  const feedbackPattern=/\b(?:GUI|GUILayout)\s*\.\s*(?:Label|TextField)|\b(?:TextMeshProUGUI|TextMesh|AudioSource|ParticleSystem)\b|\b(?:SetRegionVisual|PlayCombatExchange|Play[A-Z]\w*|Show[A-Z]\w*)\s*\(|\b_message\s*=(?!=)/;
+  const callPattern=/\b([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;
+  const clickable=new Set(),feedback=new Set();
+  for(const method of methods){
+    if(inputPattern.test(method.body))clickable.add(method.id);
+    if(feedbackPattern.test(method.body))feedback.add(method.id);
+    const calls=new Set([...method.body.matchAll(callPattern)].map(m=>m[1]));
+    for(const targetName of calls){
+      if(['if','while','for','foreach','switch','catch','return','throw','new','nameof','typeof','sizeof'].includes(targetName))continue;
+      const candidates=byName.get(targetName)||[];
+      const local=candidates.filter(target=>target.file===method.file);
+      const selected=local.length?local:candidates.length===1?candidates:[];
+      if(!selected.length&&candidates.length>1)ambiguousCalls.add(method.id+'->'+targetName);
+      for(const target of selected)callGraph.get(method.id).add(target.id);
+    }
+  }
+  const unityCallbacks=new Set(['Awake','Start','Update','FixedUpdate','LateUpdate','OnGUI',
+    'OnEnable','OnDisable','OnMouseDown','OnPointerDown','OnPointerUp','OnPointerClick',
+    'OnTriggerEnter','OnCollisionEnter','OnTriggerStay','OnApplicationFocus']);
+  const callbacks=methods.filter(row=>unityCallbacks.has(row.name));
+  // BFS reachability: 이벤트 미연결 메서드는 상태를 써도 "실제 구현"으로 인정하지 않는다.
+  const bfs=starts=>{
+    const visited=new Set(starts),queue=[...starts];
+    while(queue.length){
+      const current=queue.shift();
+      for(const next of callGraph.get(current)||[]){
+        if(visited.has(next))continue;
+        visited.add(next);queue.push(next);
+      }
+    }
+    return visited;
+  };
+  const callbackReachable=bfs(callbacks.map(row=>row.id));
+  const inputEntrypoints=[...clickable].filter(ref=>callbackReachable.has(ref));
+  const eventReachable=bfs(inputEntrypoints);
+  const callbackMethods=methods.filter(row=>callbackReachable.has(row.id));
+  const outputPat=key=>new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%-]?=(?!=))','g');
+  const readPat=key=>new RegExp('\\b'+key+'\\b');
+  const noOpAssignment=key=>new RegExp('\\b'+key+'\\s*=\\s*(?:this\\.)?'+key+'\\s*;','g');
+  const stateMethods=(key,kind)=>{
+    if(!/^[A-Za-z_]\w*$/.test(key))return[];
+    const rows=callbackMethods.filter(method=>{
+      let body=method.body;
+      if(kind==='WRITE'){
+        body=body.replace(noOpAssignment(key),' ');
+        body=body.replace(new RegExp('\\b'+key+'\\s*(?:\\+|-)=\\s*0\\s*;','g'),' ');
+        return outputPat(key).test(body)&&eventReachable.has(method.id);
+      }
+      // 단순 "State = 1"의 왼쪽을 읽기 계약으로 오인하지 않는다.
+      body=body.replace(outputPat(key),' ');
+      return readPat(key).test(body);
+    });
+    return rows.map(method=>({file:method.file,symbol:method.name,line:method.line,id:method.id}));
+  };
+  const qaRuns=[play,independent,regression];
+  const runtimeValid=qaRuns.every((e,index)=>e?.gameId===id&&e?.precisionQa?.scenarioId
+    ===['actual-play','independent-qa','regression'][index]&&e?.precisionQa?.pass===true
+    &&e?.pass===true&&e?.spatialGameplay?.pass===true);
+  // 출력 상태의 변화는 3회 실제 Unity WebGL 입력 이후 발생해야 하며,
+  // 텍스트 로그 자체가 소스/동작 검증을 대체하지는 못한다.
+  const runTrace=e=>{
+    const transitions=new Set();
+    for(const line of e?.precisionQa?.liveSystemMarkers||[]){
+      if(typeof line!=='string'||!line.includes('JAEWOON_UNITY_WEB_QA SYSTEM_STATE ')
+        ||!line.includes('game='+id))continue;
+      const fields=Object.fromEntries(line.split(/\s+/).slice(2).map(token=>{
+        const at=token.indexOf('=');return at>0?[token.slice(0,at),token.slice(at+1)]:null;
+      }).filter(Boolean));
+      if(fields.game!==id||!fields.system||!fields.state
+        ||fields.before===undefined||fields.after===undefined||fields.before===fields.after
+        ||fields.status!=='PASS')continue;
+      transitions.add(fields.system+'|'+fields.state);
+    }
+    return transitions;
+  };
+  const transitionSets=qaRuns.map(runTrace);
+  const commonTransitions=runtimeValid?[...transitionSets[0]].filter(token=>
+    transitionSets.every(run=>run.has(token))):[];
+  const roleAudit=systems.map(system=>{
+    const role=clean(system.grammarRole),systemId=clean(system.id);
+    const inputKeys=[...new Set((system.stateInputs||[]).map(clean).filter(Boolean))];
+    const outputKeys=[...new Set((system.stateOutputs||[]).map(clean).filter(Boolean))];
+    const missingDeclaration=[...new Set([...inputKeys,...outputKeys])]
+      .filter(key=>!declaredStateNames.has(key));
+    const inputs=inputKeys.map(key=>({key,owners:stateMethods(key,'READ')}));
+    const outputs=outputKeys.map(key=>({
+      key,writers:stateMethods(key,'WRITE'),
+      runtimeObserved:commonTransitions.includes(systemId+'|'+key)
+    }));
+    const missingInputReads=inputs.filter(x=>!x.owners.length).map(x=>x.key);
+    const missingEventDrivenWrites=outputs.filter(x=>!x.writers.length).map(x=>x.key);
+    const missingNativeRuntimeTransitions=outputs.filter(x=>!x.runtimeObserved).map(x=>x.key);
+    const hasPlayerFeedback=outputs.some(x=>x.writers.some(w=>
+      feedback.has(w.id)||callbackMethods.some(m=>feedback.has(m.id)
+        &&new RegExp('\\b'+x.key+'\\b').test(m.body))));
+    const authored=Boolean(systemId&&role&&inputKeys.length&&outputKeys.length);
+    const staticComplete=authored&&missingDeclaration.length===0
+      &&missingInputReads.length===0&&missingEventDrivenWrites.length===0
+      &&hasPlayerFeedback&&inputEntrypoints.length>0;
+    const runtimeComplete=staticComplete&&runtimeValid&&missingNativeRuntimeTransitions.length===0;
+    const failures=[
+      ...(!authored?['DESIGN_ROLE_STATE_CONTRACT_INCOMPLETE']:[]),
+      ...missingDeclaration.map(key=>'NATIVE_FIELD_OR_PROPERTY_MISSING:'+key),
+      ...missingInputReads.map(key=>'LIVE_CODE_STATE_READ_UNREACHABLE:'+key),
+      ...missingEventDrivenWrites.map(key=>'PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:'+key),
+      ...(!hasPlayerFeedback?['STATE_TO_PLAYER_FEEDBACK_NOT_CONNECTED']:[]),
+      ...(!inputEntrypoints.length?['GAMEPLAY_INPUT_EVENT_SOURCE_MISSING']:[]),
+      ...(!runtimeValid?['THREE_REAL_WEBGL_SCENARIOS_NOT_VERIFIED']:missingNativeRuntimeTransitions
+        .map(key=>'THREE_RUN_NATIVE_SYSTEM_TRANSITION_UNOBSERVED:'+key))
+    ];
+    return{
+      systemId,role,staticComplete,runtimeComplete,failures,
+      declaredInputKeys:inputKeys,declaredOutputKeys:outputKeys,
+      foundNativeStateDeclarationKeys:[...new Set([...inputKeys,...outputKeys])]
+        .filter(key=>declaredStateNames.has(key)),
+      reachableInputReaders:inputs,reachableOutputWriters:outputs,
+      hasPlayerFeedback,unverifiedCodeMarkersAreNotPass:true
+    };
+  });
+  const byRoleId=new Map(roleAudit.map(row=>[row.systemId,row]));
+  const edges=interconnections.map(edge=>{
+    const from=byRoleId.get(clean(edge.fromId)),to=byRoleId.get(clean(edge.toId));
+    const keys=[...new Set((edge.stateKeys||[]).map(clean).filter(Boolean))];
+    const reasons=[];
+    if(!from||!to)reasons.push('EDGE_REFERENCES_UNKNOWN_DESIGN_SYSTEM');
+    for(const key of keys){
+      if(!from?.declaredOutputKeys.includes(key))reasons.push('PRODUCER_OUTPUT_NOT_AUTHORED:'+key);
+      if(!to?.declaredInputKeys.includes(key))reasons.push('CONSUMER_INPUT_NOT_AUTHORED:'+key);
+      if(!from?.reachableOutputWriters.some(x=>x.key===key&&x.writers.length))
+        reasons.push('PRODUCER_LIVE_NATIVE_WRITE_MISSING:'+key);
+      if(!to?.reachableInputReaders.some(x=>x.key===key&&x.owners.length))
+        reasons.push('CONSUMER_LIVE_NATIVE_READ_MISSING:'+key);
+    }
+    return{fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:keys,
+      sourceConnectivityCandidate:reasons.length===0,runtimeVerified:false,failures:reasons};
+  });
+  const staticCoverageComplete=roleAudit.length>0&&problems.length===0
+    &&roleAudit.every(row=>row.staticComplete)
+    &&edges.every(edge=>edge.sourceConnectivityCandidate);
+  const pass=staticCoverageComplete&&roleAudit.every(row=>row.runtimeComplete);
+  return{
+    version:1,gameId:id,platform:'UNITY_WEB',
+    pass,status:pass?'SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED':'NATIVE_SYSTEM_IMPLEMENTATION_REPAIR_REQUIRED',
+    staticCoverageComplete,runtimeValid,
+    algorithms:['INTERPROCEDURAL_CALL_GRAPH_BFS','FIELD_DEF_USE_DATA_FLOW',
+      'PLAYER_INPUT_REACHABILITY','DESIGN_PRODUCER_CONSUMER_DEPENDENCY_PROOF',
+      'THREE_RUN_STATE_TRANSITION_INTERSECTION','MUTATION_SENSITIVE_NEGATIVE_CANARIES'],
+    sourceFiles:files.map(row=>row.file),nativeMethodCount:methods.length,
+    callbackMethodCount:callbacks.length,inputEntrypointCount:inputEntrypoints.length,
+    reachableMethodCount:callbackReachable.size,interactiveReachableMethodCount:eventReachable.size,
+    ambiguousCalls:[...ambiguousCalls].sort(),problems,roles:roleAudit,
+    edges,sourceStaticPassIsNeverActualRuntimePass:true,
+    automatedAnalysisCannotProveFullCSemantics:true,
+    actualCompilerAndWebglQaRemainMandatory:true
+  };
+}
+
+export function evaluateUnityWebPrecisionQa({gameId='',play=null,independent=null,regression=null}={}){
+  const id=clean(gameId);
+  if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw new Error('UNITY_WEB_PRECISION_GAME_ID_INVALID');
+  const runs=[
+    {stage:'BROWSER_PLAY',scenarioId:'actual-play',evidence:play},
+    {stage:'INDEPENDENT_QA',scenarioId:'independent-qa',evidence:independent},
+    {stage:'REGRESSION',scenarioId:'regression',evidence:regression}
+  ];
+  const failures=[];
+  const checks=runs.map(({stage,scenarioId,evidence:e})=>{
+    const p=e?.precisionQa||{},native=e?.spatialGameplay||{},visual=e?.visualQa?.renderedScene||{};
+    const action=p.liveActionState||{};
+    const replay=p.secondaryCycle||{};
+    const checks={
+      exactGameAndScenario:e?.gameId===id&&p.gameId===id
+        &&e.engine==='UNITY_WEB'&&p.scenarioId===scenarioId,
+      actualWebglBrowserRun:e?.playableBrowserTest===true&&e.boot?.pass===true
+        &&p.runtimeOrigin==='PLAYWRIGHT_CHROMIUM_ANDROID_PROFILE_REAL_WEBGL_BUILD',
+      inputAndRealGameState:e?.input?.pass===true&&e.mobile?.realGameTouchHandlerObserved===true
+        &&action.measuredFromNativeGameState===true
+        &&typeof action.stateMeasuredBefore==='string'&&action.stateMeasuredBefore.includes(' STATE ')
+        &&typeof action.stateMeasuredAfter==='string'&&action.stateMeasuredAfter.includes(' STATE ')
+        &&action.stateMeasuredBefore!==action.stateMeasuredAfter
+        &&Array.isArray(action.changedKeys)&&action.changedKeys.length>0
+        &&action.actionAfterLiveEntry===true&&action.rewardAfterLiveActions===true
+        &&action.coreFunAfterLiveActions===true,
+      persistentSaveAndRestore:e?.saveRestore?.pass===true&&p.saveRestoreConfirmed===true
+        &&Array.isArray(e?.saveRestore?.persistentChangedKeys)
+        &&e.saveRestore.persistentChangedKeys.length>0
+        &&Array.isArray(e.saveRestore.restoredKeys)
+        &&e.saveRestore.persistentChangedKeys.every(key=>e.saveRestore.restoredKeys.includes(key)),
+      native3dPixels:native.requiredDimension==='3D'&&native.pass===true&&native.depthPass===true
+        &&native.perspectiveCamera===true&&Number(native.observedMeshCount)>0
+        &&Number(native.observedTriangles)>0
+        &&e?.visualQa?.nativeUnityMesh?.pass===true
+        &&visual.pass===true&&visual.pixels?.source==='REAL_UNITY_CANVAS_SCREENSHOT'
+        &&visual.sceneCapturePersisted===true&&/^[a-f0-9]{64}$/.test(clean(visual.sceneCaptureSha256)),
+      independentTouchFirst:scenarioId!=='independent-qa'
+        ||p.distinctRoute==='REAL_BROWSER_TOUCH_FIRST',
+      regressionReplay:scenarioId!=='regression'||(
+        p.secondaryCycleRequired===true&&replay.pass===true
+        &&replay.resumedAfterReload===true&&replay.mobileInputObserved===true
+        &&replay.actionObserved===true&&replay.rewardObserved===true
+        &&Array.isArray(replay.changedPersistentKeys)&&replay.changedPersistentKeys.length>0),
+      noMarkerOnlyShortcut:p.markerOnlyPassForbidden===true
+    };
+    const bad=Object.entries(checks).filter(([,pass])=>!pass).map(([key])=>key);
+    for(const key of bad)failures.push(stage+':'+key);
+    return{stage,scenarioId,pass:bad.length===0,failedChecks:bad};
+  });
+  const pass=failures.length===0;
+  return Object.freeze({
+    version:1,gameId:id,platform:'UNITY_WEB',pass,
+    status:pass?'VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS':'PRECISION_RUNTIME_REPAIR_REQUIRED',
+    checks:Object.freeze(checks),failures:Object.freeze(failures),
+    actualIndependentQaScenarioRequired:true,postReloadSecondGameplayCycleRequired:true,
+    sourceMarkersAloneNeverProvePass:true,
+    noRobloxOrUnityAndroidGateChanges:true
+  });
+}
+
 export function readUpperPlatformReadiness(repoRoot,gameId){
   const file=path.join(repoRoot,'web-games',gameId,'upper-platform-development-readiness.json');
   if(!fs.existsSync(file))return{pass:false,reason:'READINESS_EVIDENCE_MISSING'};
@@ -256,6 +584,33 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
       &&Number.isSafeInteger(proof.gameplayActors3d)&&proof.gameplayActors3d>=1
       &&proof.spriteGameplayActors===0);
   if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
+  if(data.nativeSystemAuditRequired!==true||data.precisionQaRequired!==true)
+    return{pass:false,reason:'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED',data,currentTree};
+  {
+    const audit=data.nativeSystemAudit||{};
+    if(data.nativeSystemAuditSourceTreeSha256!==currentTree
+      ||data.criteria?.nativeSystems?.pass!==true||audit.pass!==true
+      ||audit.gameId!==gameId||audit.platform!=='UNITY_WEB'
+      ||audit.staticCoverageComplete!==true||audit.runtimeValid!==true
+      ||audit.status!=='SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED'
+      ||!Array.isArray(audit.roles)||audit.roles.length===0
+      ||audit.roles.some(role=>role.staticComplete!==true||role.runtimeComplete!==true
+        ||!Array.isArray(role.reachableOutputWriters)
+        ||role.reachableOutputWriters.some(out=>out.runtimeObserved!==true||!out.writers?.length))
+      ||!Array.isArray(audit.edges)||audit.edges.some(edge=>edge.sourceConnectivityCandidate!==true)
+      ||!Number.isInteger(audit.inputEntrypointCount)||audit.inputEntrypointCount<1)
+      return{pass:false,reason:'READINESS_REAL_NATIVE_GAME_SYSTEM_IMPLEMENTATION_REQUIRED',data,currentTree};
+  }
+  if(data.precisionQaRequired===true){
+    const precision=data.precisionQa||{};
+    if(data.criteria?.precisionQa?.pass!==true||precision.pass!==true
+      ||precision.gameId!==gameId||precision.platform!=='UNITY_WEB'
+      ||precision.status!=='VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS'
+      ||!Array.isArray(precision.checks)||precision.checks.length!==3
+      ||precision.checks.some((check,index)=>check.pass!==true
+        ||check.stage!==['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'][index]))
+      return{pass:false,reason:'READINESS_PRECISE_PLAYTEST_EVIDENCE_REQUIRED',data,currentTree};
+  }
   return{pass:true,reason:'READY',data,currentTree};
 }
 

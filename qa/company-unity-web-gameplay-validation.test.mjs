@@ -101,8 +101,23 @@ test('Unity Web gameplay validation falls back to real browser touch before reje
 });
 
 test('Unity Web gameplay validation refocuses canvas before follow-up keyboard regression actions',()=>{
-  assert.match(source,/await canvas\.focus\(\);\s*for\(let i=0;i<20/s);
+  assert.match(source,/await canvas\.focus\(\);\s*const combatMarkerStart=markers\.length;\s*for\(let i=0;i<20/s);
   assert.match(source,/await canvas\.focus\(\);\s*await page\.keyboard\.press\('KeyR'\)/s);
+});
+
+test('Unity Web precision QA proves runtime input-to-state transitions and collects per-system proof only after real input',()=>{
+  assert.match(source,/const scenarioId=String\(args\.scenario/);
+  assert.match(source,/REAL_BROWSER_TOUCH_FIRST/);
+  assert.match(source,/UNITY_WEB_QA_INDEPENDENT_TOUCH_FIRST_START_FAILED/);
+  assert.match(source,/const combatMarkerStart=markers\.length/);
+  assert.match(source,/const liveSystemMarkers=markers\.slice\(combatMarkerStart\)/);
+  assert.match(source,/const postRewardStateLine=markers\.slice\(rewardFirstIndex\+1\)/);
+  assert.match(source,/changedPostRewardKeys\.length/);
+  assert.match(source,/UNITY_WEB_QA_REAL_GAMEPLAY_STATE_TRANSITION_MISSING/);
+  assert.match(source,/UNITY_WEB_QA_REGRESSION_REENTRY_AFTER_SAVE_FAILED/);
+  assert.match(source,/UNITY_WEB_QA_REGRESSION_REAL_SECOND_CYCLE_MISSING/);
+  assert.match(source,/systemTraceCaptureWindow:'POST_REAL_USER_INPUT_PRE_RELOAD'/);
+  assert.match(source,/liveSystemMarkers,/);
 });
 
 test('approved native world must be observed in the real mobile WebGL browser before gameplay QA accepts it',()=>{

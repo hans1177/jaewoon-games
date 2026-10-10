@@ -17,6 +17,9 @@ const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
 if(screenshot&&!/\.png$/i.test(screenshot))throw new Error('UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED');
 const port=Number(args.port||4187);
+const scenarioId=String(args.scenario||'actual-play').trim();
+if(!['actual-play','independent-qa','regression'].includes(scenarioId))
+  throw new Error('UNITY_WEB_QA_SCENARIO_INVALID:'+scenarioId);
 
 // 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
 // 중앙정책 경로는 실행 위치(/tmp/unity-web)가 아니라 현재 검증기 원본 위치에서 결정한다.
@@ -180,18 +183,32 @@ try{
     throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN:'+JSON.stringify({touchX,touchY,mobileViewport,canvasBox}));
   }
 
+  // 서로 다른 실제 사용 경로를 검증한다: 정규 Play=키보드→터치,
+  // 독립 QA=터치로 진입, 회귀=저장 복원 뒤 재진입/재전투.
+  const enterMarkerStart=markers.length;
   let gameplayStartInput='KEYBOARD_DIGIT1';
-  await canvas.focus();
-  await page.keyboard.press('Digit1');
-  await page.waitForTimeout(1200);
-  let enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
-  if(!enteredGameplay){
-    gameplayStartInput='REAL_BROWSER_TOUCH_FALLBACK';
+  let enteredGameplay=false;
+  if(scenarioId==='independent-qa'){
+    gameplayStartInput='REAL_BROWSER_TOUCH_FIRST';
     await page.touchscreen.tap(touchX,touchY);
-    await page.waitForTimeout(900);
-    enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    await page.waitForTimeout(1400);
+    enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    if(!enteredGameplay)throw new Error('UNITY_WEB_QA_INDEPENDENT_TOUCH_FIRST_START_FAILED');
+  }else{
+    await canvas.focus();
+    await page.keyboard.press('Digit1');
+    await page.waitForTimeout(1200);
+    enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    if(!enteredGameplay){
+      gameplayStartInput='REAL_BROWSER_TOUCH_FALLBACK';
+      await page.touchscreen.tap(touchX,touchY);
+      await page.waitForTimeout(900);
+      enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    }
   }
   if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
+  const enteredRegionStateLine=markers.slice(enterMarkerStart).reverse().find(x=>x.includes(' STATE '))||initialStateLine;
+  const enteredRegionState=parseState(enteredRegionStateLine);
 
   const mobileMarkerStart=markers.length;
   await page.touchscreen.tap(touchX,touchY);
@@ -257,17 +274,40 @@ try{
   }
 
   await canvas.focus();
-  for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
+  const combatMarkerStart=markers.length;
+  for(let i=0;i<20&&!markers.slice(combatMarkerStart).some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
     await page.waitForTimeout(250);
   }
-
-  const actions=markers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
-  const progress=markers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
-  const coreFunMarkers=markers.filter(x=>x.includes(' CORE_FUN ')&&x.includes('status=PASS'));
+  // 공격/보상 뒤 Unity Native 상태가 갱신되는 것을 직접 기다린다.
+  // 저장·실행 전에 찍힌 과거 PASS 로그나 단순 보상 문자열은 사용하지 않는다.
+  await page.waitForTimeout(2400);
+  const combatMarkers=markers.slice(mobileMarkerStart);
+  const actions=combatMarkers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
+  const progress=combatMarkers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
+  const coreFunMarkers=combatMarkers.filter(x=>x.includes(' CORE_FUN ')&&x.includes('status=PASS'));
   if(actions.length<1)throw new Error('UNITY_WEB_QA_CORE_ACTION_EVIDENCE_MISSING');
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
   if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
+  const rewardFirstIndex=markers.findIndex((line,index)=>index>=combatMarkerStart
+    &&(line.includes(' REWARD ')||line.includes(' PROGRESS ')));
+  const postRewardStateLine=markers.slice(rewardFirstIndex+1).find(x=>x.includes(' STATE '))||'';
+  const postRewardState=parseState(postRewardStateLine);
+  const changedPostRewardKeys=Object.keys(postRewardState).filter(key=>
+    key in enteredRegionState&&String(postRewardState[key])!==String(enteredRegionState[key]));
+  if(!Object.keys(enteredRegionState).length||!Object.keys(postRewardState).length||!changedPostRewardKeys.length)
+    throw new Error('UNITY_WEB_QA_REAL_GAMEPLAY_STATE_TRANSITION_MISSING');
+  const liveSystemMarkers=markers.slice(combatMarkerStart)
+    .filter(line=>line.includes('JAEWOON_UNITY_WEB_QA SYSTEM_STATE ')&&line.includes('game='+gameId));
+  const preciseActionEvidence={
+    actionAfterLiveEntry:actions.length>0,
+    rewardAfterLiveActions:rewardFirstIndex>=combatMarkerStart,
+    coreFunAfterLiveActions:coreFunMarkers.length>0,
+    stateMeasuredBefore:enteredRegionStateLine,
+    stateMeasuredAfter:postRewardStateLine,
+    changedKeys:changedPostRewardKeys,
+    measuredFromNativeGameState:true
+  };
 
   // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
   const framePacing=await page.evaluate(()=>new Promise(resolve=>{
@@ -501,6 +541,44 @@ try{
   const restoredKeys=persistentChangedKeys.filter(key=>String(persistedState[key])===String(progressedState[key]));
   if(restoredKeys.length!==persistentChangedKeys.length)throw new Error(`UNITY_WEB_QA_SAVE_RESTORE_MISSING:${persistentChangedKeys.filter(key=>!restoredKeys.includes(key)).join(',')}`);
 
+  // 회귀 검사는 같은 보상 로그를 다시 확인하는 게 아니라 저장 복원된 상태에서
+  // 두 번째 실제 전투/보상을 완료해야 한다.
+  let postReloadReplay=null;
+  if(scenarioId==='regression'){
+    const resumeMarkerStart=markers.length;
+    await canvas.focus();
+    await page.keyboard.press('Digit1');
+    await page.waitForTimeout(1300);
+    let resumed=markers.slice(resumeMarkerStart).some(line=>(line.includes(' START ')||line.includes(' REGION '))&&!line.includes('region=town'));
+    if(!resumed){
+      await page.touchscreen.tap(touchX,touchY);
+      await page.waitForTimeout(1100);
+      resumed=markers.slice(resumeMarkerStart).some(line=>(line.includes(' START ')||line.includes(' REGION '))&&!line.includes('region=town'));
+    }
+    if(!resumed)throw new Error('UNITY_WEB_QA_REGRESSION_REENTRY_AFTER_SAVE_FAILED');
+    const replayMarkerStart=markers.length;
+    await page.touchscreen.tap(touchX,touchY);
+    await page.waitForTimeout(1100);
+    await canvas.focus();
+    for(let i=0;i<20&&!markers.slice(replayMarkerStart).some(line=>line.includes(' REWARD ')||line.includes(' PROGRESS '));i++){
+      await page.keyboard.press('Space');
+      await page.waitForTimeout(250);
+    }
+    await page.waitForTimeout(2400);
+    const replayLines=markers.slice(replayMarkerStart);
+    const inputObserved=replayLines.some(line=>line.includes(' MOBILE_INPUT ')&&line.includes('role=action')&&line.includes('status=PASS'));
+    const actionObserved=replayLines.some(line=>line.includes(' ATTACK ')||line.includes(' ACTION '));
+    const rewardObserved=replayLines.some(line=>line.includes(' REWARD ')||line.includes(' PROGRESS '));
+    const replayedStateLine=replayLines.slice().reverse().find(line=>line.includes(' STATE '))||'';
+    const replayedState=parseState(replayedStateLine);
+    const replayChangedKeys=Object.keys(replayedState).filter(key=>
+      !volatileStateKeys.has(key)&&key in persistedState&&String(replayedState[key])!==String(persistedState[key]));
+    if(!inputObserved||!actionObserved||!rewardObserved||!replayChangedKeys.length)
+      throw new Error('UNITY_WEB_QA_REGRESSION_REAL_SECOND_CYCLE_MISSING');
+    postReloadReplay={pass:true,resumedAfterReload:resumed,mobileInputObserved:inputObserved,
+      actionObserved,rewardObserved,changedPersistentKeys:replayChangedKeys};
+  }
+
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
   if(fatal.length)throw new Error(`UNITY_WEB_FATAL_RUNTIME_ERROR:${fatal.slice(0,5).join(' | ')}`);
 
@@ -508,6 +586,21 @@ try{
     version:1,
     engine:'UNITY_WEB',
     gameId,
+    precisionQa:{
+      version:1,scenarioId,pass:true,gameId,
+      distinctRoute:gameplayStartInput,
+      liveActionState:preciseActionEvidence,
+      liveSystemMarkers,
+      systemTraceCaptureWindow:'POST_REAL_USER_INPUT_PRE_RELOAD',
+      saveRestoreConfirmed:true,
+      secondaryCycleRequired:scenarioId==='regression',
+      secondaryCycle:postReloadReplay,
+      mandatoryDepthSignals:['LIVE_ACTION','LIVE_REWARD','NATIVE_STATE_TRANSITION','SAVE_RESTORE',
+        'MOBILE_TOUCH','NATIVE_3D_MESH','WEBGL_RENDERED_PIXELS'],
+      gameSpecificExtraChecks:mobileMenuInteraction?.pass===true?['MOBILE_NATIVE_MENU_STATE_BINDING']:[],
+      runtimeOrigin:'PLAYWRIGHT_CHROMIUM_ANDROID_PROFILE_REAL_WEBGL_BUILD',
+      markerOnlyPassForbidden:true
+    },
     sourcePath:source,
     approvedEnvironment:{
       required:approvedEnvironment.required===true,

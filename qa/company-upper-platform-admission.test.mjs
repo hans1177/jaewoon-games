@@ -7,6 +7,8 @@ import {
   classifyUpperPlatformAdmission,
   unitySourceTreeSha256,
   evaluateUnityWebBuildUpGrowth,
+  auditUnityWebNativeSystems,
+  evaluateUnityWebPrecisionQa,
 } from '../tools/company-upper-platform-admission.mjs';
 
 const write=(root,rel,data)=>{
@@ -20,6 +22,215 @@ const baseItem=gameId=>({
   platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
   concurrentTargetPlatforms:['ROBLOX','UNITY'],
   currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+});
+
+const withNativeSystemAndPrecisionEvidence=(evidence,id,sourceTree)=>({
+  ...evidence,nativeSystemAuditRequired:true,precisionQaRequired:true,
+  nativeSystemAuditSourceTreeSha256:sourceTree,
+  criteria:{...evidence.criteria,
+    nativeSystems:{pass:true},precisionQa:{pass:true}},
+  nativeSystemAudit:{
+    gameId:id,platform:'UNITY_WEB',pass:true,
+    staticCoverageComplete:true,runtimeValid:true,
+    status:'SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED',
+    inputEntrypointCount:1,
+    roles:[{
+      systemId:'RULE_A',role:'MAIN',staticComplete:true,runtimeComplete:true,
+      reachableOutputWriters:[{key:'GameState',runtimeObserved:true,writers:[
+        {file:'unity-games/'+id+'/Assets/Scripts/Game.cs',symbol:'Act',line:12}
+      ]}]
+    }],
+    edges:[]
+  },
+  precisionQa:{
+    gameId:id,platform:'UNITY_WEB',pass:true,
+    status:'VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS',
+    checks:['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({stage,pass:true}))
+  }
+});
+
+
+test('Unity Web C# code audit verifies two different authored systems through real input, state def-use, feedback and 3-run state transitions',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-native-system-audit-'));
+  const id='native-systems';
+  const file='unity-games/'+id+'/Assets/Scripts/LiveGame.cs';
+  const code=[
+    'using UnityEngine;',
+    'public sealed class LiveGame : MonoBehaviour {',
+    ' public int RouteState; public int RiskState; public int ResourceState;',
+    ' private string _message;',
+    ' public void OnGUI(){ if(GUI.Button(new Rect(0,0,64,64),"Explore")) ExecuteAction(); }',
+    ' private void ExecuteAction(){ RiskState=RouteState+1; ResourceState=RiskState+5; _message="Reward acquired"; }',
+    ' public void Update(){ GUILayout.Label(ResourceState.ToString()); }',
+    '}'
+  ].join('\n');
+  const design={content:{
+    signatureSystems:[
+      {id:'SOURCE_MAIN',grammarRole:'MAIN',stateInputs:['RouteState'],stateOutputs:['RiskState']},
+      {id:'SOURCE_A',grammarRole:'A',stateInputs:['RiskState'],stateOutputs:['ResourceState']}
+    ],
+    systemInterconnections:[{fromId:'SOURCE_MAIN',toId:'SOURCE_A',stateKeys:['RiskState']}]
+  }};
+  const transitionLines=[
+    'JAEWOON_UNITY_WEB_QA SYSTEM_STATE game='+id+' system=SOURCE_MAIN state=RiskState before=0 after=1 status=PASS',
+    'JAEWOON_UNITY_WEB_QA SYSTEM_STATE game='+id+' system=SOURCE_A state=ResourceState before=0 after=6 status=PASS'
+  ];
+  const proofs={
+    play:{gameId:id,pass:true,spatialGameplay:{pass:true},
+      precisionQa:{scenarioId:'actual-play',pass:true,liveSystemMarkers:transitionLines}},
+    independent:{gameId:id,pass:true,spatialGameplay:{pass:true},
+      precisionQa:{scenarioId:'independent-qa',pass:true,liveSystemMarkers:transitionLines}},
+    regression:{gameId:id,pass:true,spatialGameplay:{pass:true},
+      precisionQa:{scenarioId:'regression',pass:true,liveSystemMarkers:transitionLines}},
+  };
+  const inspect=(override={})=>auditUnityWebNativeSystems({
+    repoRoot:root,gameId:id,designRecord:design,...proofs,...override
+  });
+  try{
+    write(root,file,code);
+    const result=inspect();
+    assert.equal(result.pass,true,JSON.stringify(result.roles.map(row=>row.failures)));
+    assert.equal(result.staticCoverageComplete,true);
+    assert.equal(result.nativeMethodCount,3);
+    assert.equal(result.roles.length,2);
+    assert.equal(result.edges[0].sourceConnectivityCandidate,true);
+    assert.equal(result.inputEntrypointCount,1);
+    assert.ok(result.algorithms.includes('INTERPROCEDURAL_CALL_GRAPH_BFS'));
+    assert.ok(result.algorithms.includes('FIELD_DEF_USE_DATA_FLOW'));
+    assert.ok(result.roles.every(row=>row.reachableOutputWriters.every(
+      out=>out.writers.some(writer=>writer.symbol==='ExecuteAction'))));
+    assert.ok(result.roles.every(row=>row.runtimeComplete));
+
+    // Mutation testing: a C# method that is no longer called from a real UI event cannot pass.
+    write(root,file,code.replace('ExecuteAction();',';'));
+    const unreachable=inspect();
+    assert.equal(unreachable.pass,false);
+    assert.equal(unreachable.interactiveReachableMethodCount,1);
+    assert.ok(unreachable.roles.some(row=>row.failures.some(reason=>reason.startsWith('PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:'))));
+
+    // Comments, debug strings and "fake" PASS markers do not count as C# field assignment.
+    write(root,file,code.replace('ResourceState=RiskState+5;', '/* ResourceState=RiskState+5; */ Debug.Log("ResourceState=99");'));
+    const comment=inspect();
+    assert.equal(comment.pass,false);
+    assert.ok(comment.roles.find(row=>row.systemId==='SOURCE_A')
+      .failures.includes('PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:ResourceState'));
+
+    // Identity writes and no-op mutation cannot satisfy the behavior contract.
+    write(root,file,code.replace('ResourceState=RiskState+5;', 'ResourceState=ResourceState;'));
+    const noOp=inspect();
+    assert.equal(noOp.pass,false);
+    assert.ok(noOp.roles.find(row=>row.systemId==='SOURCE_A')
+      .failures.includes('PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:ResourceState'));
+
+    // A state identifier declared only as a local variable is not game-owned state.
+    write(root,file,code.replace('public int RouteState;','')
+      .replace('RiskState=RouteState+1;', 'int RouteState=7; RiskState=RouteState+1;'));
+    const shadow=inspect();
+    assert.equal(shadow.pass,false);
+    assert.ok(shadow.roles[0].failures.includes('NATIVE_FIELD_OR_PROPERTY_MISSING:RouteState'));
+
+    write(root,file,code);
+    const missingSecondRun=inspect({independent:{
+      ...proofs.independent,
+      precisionQa:{...proofs.independent.precisionQa,liveSystemMarkers:transitionLines.slice(0,1)}
+    }});
+    assert.equal(missingSecondRun.staticCoverageComplete,true);
+    assert.equal(missingSecondRun.pass,false);
+    assert.ok(missingSecondRun.roles[1].failures
+      .includes('THREE_RUN_NATIVE_SYSTEM_TRANSITION_UNOBSERVED:ResourceState'));
+    const forgedNoTransition=inspect({play:{
+      ...proofs.play,precisionQa:{...proofs.play.precisionQa,liveSystemMarkers:[
+        transitionLines[0].replace('after=1','after=0'),transitionLines[1]
+      ]}
+    }});
+    assert.equal(forgedNoTransition.pass,false);
+    const missingDesign=inspect({designRecord:{}});
+    assert.equal(missingDesign.pass,false);
+    assert.ok(missingDesign.problems.includes('VERIFIED_DESIGN_SIGNATURE_SYSTEMS_REQUIRED'));
+    const wrongEdges=inspect({designRecord:{content:{
+      ...design.content,systemInterconnections:[{fromId:'SOURCE_MAIN',toId:'SOURCE_A',stateKeys:['ResourceState']}]
+    }}});
+    assert.equal(wrongEdges.pass,false);
+    assert.ok(wrongEdges.edges[0].failures.includes('PRODUCER_OUTPUT_NOT_AUTHORED:ResourceState'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Web full precision gate refuses fake state transitions and requires a distinct replay after reload',()=>{
+  const id='precision-systems',hash='c'.repeat(64);
+  const proof=(scenario)=>({
+    engine:'UNITY_WEB',gameId:id,playableBrowserTest:true,boot:{pass:true},
+    input:{pass:true},mobile:{realGameTouchHandlerObserved:true},
+    saveRestore:{pass:true,persistentChangedKeys:['gold'],restoredKeys:['gold']},
+    spatialGameplay:{requiredDimension:'3D',pass:true,depthPass:true,
+      perspectiveCamera:true,observedMeshCount:4,observedTriangles:180},
+    visualQa:{
+      nativeUnityMesh:{pass:true},
+      renderedScene:{pass:true,sceneCapturePersisted:true,sceneCaptureSha256:hash,
+        pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT'}}
+    },
+    precisionQa:{
+      version:1,gameId:id,scenarioId:scenario,pass:true,
+      runtimeOrigin:'PLAYWRIGHT_CHROMIUM_ANDROID_PROFILE_REAL_WEBGL_BUILD',
+      distinctRoute:scenario==='independent-qa'?'REAL_BROWSER_TOUCH_FIRST':'KEYBOARD_DIGIT1',
+      markerOnlyPassForbidden:true,saveRestoreConfirmed:true,
+      liveActionState:{
+        measuredFromNativeGameState:true,actionAfterLiveEntry:true,rewardAfterLiveActions:true,
+        coreFunAfterLiveActions:true,
+        stateMeasuredBefore:'JAEWOON_UNITY_WEB_QA STATE gold=0',
+        stateMeasuredAfter:'JAEWOON_UNITY_WEB_QA STATE gold=5',
+        changedKeys:['gold']
+      },
+      secondaryCycleRequired:scenario==='regression',
+      secondaryCycle:scenario==='regression'?{
+        pass:true,resumedAfterReload:true,mobileInputObserved:true,actionObserved:true,
+        rewardObserved:true,changedPersistentKeys:['gold']
+      }:null
+    }
+  });
+  const params={
+    gameId:id,
+    play:proof('actual-play'),
+    independent:proof('independent-qa'),
+    regression:proof('regression')
+  };
+  assert.equal(evaluateUnityWebPrecisionQa(params).pass,true);
+  assert.equal(evaluateUnityWebPrecisionQa({...params,independent:{
+    ...params.independent,
+    precisionQa:{...params.independent.precisionQa,distinctRoute:'KEYBOARD_DIGIT1'}
+  }}).pass,false,'the independent run must actually start from real touch');
+  assert.equal(evaluateUnityWebPrecisionQa({...params,regression:{
+    ...params.regression,
+    precisionQa:{...params.regression.precisionQa,secondaryCycle:null}
+  }}).pass,false,'regression must repeat a real game cycle after save reload');
+  assert.equal(evaluateUnityWebPrecisionQa({...params,play:{
+    ...params.play,
+    precisionQa:{...params.play.precisionQa,liveActionState:{
+      ...params.play.precisionQa.liveActionState,
+      stateMeasuredBefore:'JAEWOON_UNITY_WEB_QA STATE gold=5'
+    }}
+  }}).pass,false,'unchanged native state does not prove the action');
+});
+
+test('Unity Web existing F0-F9 build workflow audits real C# source and runtime state across different WebGL scenarios',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-validation.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(workflow,/--scenario=actual-play/);
+  assert.match(workflow,/--scenario=independent-qa/);
+  assert.match(workflow,/--scenario=regression/);
+  assert.match(workflow,/auditUnityWebNativeSystems/);
+  assert.match(workflow,/verifiedDesignRecord=JSON\.parse\(execFileSync\('git',\['show'/);
+  assert.match(workflow,/nativeSystems:\{pass:nativeSystemAudit\.pass/);
+  assert.match(workflow,/precisionQa:\{pass:precisionQa\.pass/);
+  assert.match(workflow,/nativeSystemAuditRequired:true/);
+  assert.match(workflow,/precisionQaRequired:true/);
+  assert.match(source,/liveSystemMarkers=markers\.slice\(combatMarkerStart\)/);
+  assert.match(source,/UNITY_WEB_QA_REGRESSION_REAL_SECOND_CYCLE_MISSING/);
+  assert.match(source,/UNITY_WEB_QA_REAL_GAMEPLAY_STATE_TRANSITION_MISSING/);
+  const native=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
+  assert.match(native,/INTERPROCEDURAL_CALL_GRAPH_BFS/);
+  assert.match(native,/FIELD_DEF_USE_DATA_FLOW/);
+  assert.match(native,/THREE_RUN_STATE_TRANSITION_INTERSECTION/);
+  assert.match(native,/READINESS_REAL_NATIVE_GAME_SYSTEM_IMPLEMENTATION_REQUIRED/);
 });
 
 test('Unity Web BUILD_UP records source and three actual browser observations without claiming baseline growth',()=>{
@@ -181,9 +392,13 @@ test('Unity Web required growth gate fails closed without main source-bound runt
     };
     write(root,evidence,record);
     result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
+    assert.equal(result.web.reason,'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED');
+    const complete=withNativeSystemAndPrecisionEvidence(record,gameId,sourceTree);
+    write(root,evidence,complete);
+    result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
     assert.equal(result.web.state,'UNITY_WEB_VERIFIED');
-    record.buildUpGrowth.previousSourceTreeSha256=sourceTree;
-    write(root,evidence,record);
+    complete.buildUpGrowth.previousSourceTreeSha256=sourceTree;
+    write(root,evidence,complete);
     result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
     assert.equal(result.web.reason,'READINESS_BUILD_UP_GROWTH_EVIDENCE_REQUIRED');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -201,13 +416,13 @@ test('new upper-platform entry stays in Unity Web floor until readiness exists',
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('seven-domain pass with exact current Unity source opens Roblox and Unity upper platforms',()=>{
+test('seven-domain pass only opens Unity Web after exact native C# system and precision evidence',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-ready-'));
   try{
     write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game {}');
     write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     const tree=unitySourceTreeSha256(path.join(root,'unity-games/new-game'));
-    write(root,'web-games/new-game/upper-platform-development-readiness.json',{
+    const readiness={
       version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
       unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
       criteria:{
@@ -220,8 +435,13 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
         ]},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
       }
-    });
-    const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    };
+    const file='web-games/new-game/upper-platform-development-readiness.json';
+    write(root,file,readiness);
+    let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.reason,'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED');
+    write(root,file,withNativeSystemAndPrecisionEvidence(readiness,'new-game',tree));
+    result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
     assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,false);
