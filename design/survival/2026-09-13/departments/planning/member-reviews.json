@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "지정된 담당 부서만 검토하라."
+          "gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET, ownerResetRevision: OWNER-RESET-20260913-1, GAME_CATEGORY: ACT"
         ],
         "fix": [
-          "지정된 담당 부서만 검토하라."
+          "keep"
         ],
         "add": [
-          "지정된 담당 부서만 검토하라."
+          "gameId: survival, gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET"
         ],
         "risks": [
-          "지정된 담당 부서만 검토하라."
+          "keep"
         ],
         "evidence": [
-          "지정된 담당 부서만 검토하라."
+          "keep"
         ],
         "questions": [
-          "지정된 담당 부서만 검토하라."
+          "keep"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "identity"
+          "game_seed_version=1"
         ],
         "fix": [
-          "coreFun"
+          "seed_id=OWNER-RESET-SURVIVAL-20260913"
         ],
         "add": [
-          "coreLoop"
+          "game_name=나의 생존기"
         ],
         "risks": [
-          "Survival"
+          "action_survival_roguelite"
         ],
         "evidence": [
-          "Survival"
+          "Vampire Survivors"
         ],
         "questions": [
-          "Survival"
+          "What is the main goal of the game?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Survival"
+          "game-seed"
         ],
         "fix": [
-          "Survival"
+          "game-seed"
         ],
         "add": [
-          "Survival"
+          "game-seed"
         ],
         "risks": [
-          "Survival"
+          "game-seed"
         ],
         "evidence": [
-          "Survival"
+          "game-seed"
         ],
         "questions": [
-          "Survival"
+          "game-seed"
         ]
       }
     }
