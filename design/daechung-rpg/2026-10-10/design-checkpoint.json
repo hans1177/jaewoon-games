@@ -624,25 +624,28 @@
           "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
         }
       ]
+    },
+    "local_authoring_parts::db525bbeb5b5184b34493e9ee161c247360bd68e6fbd795a48a0dd5709bc0344:role": {
+      "role": "PRIMARY"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 38,
+      "calls": 40,
+      "successes": 39,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2207065,
-      "lastMs": 59719,
+      "totalMs": 2262534,
+      "lastMs": 55469,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:09:29.499Z"
+      "updatedAt": "2026-10-10T10:10:24.972Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T10:09:29.502Z",
+  "updatedAt": "2026-10-10T10:10:24.972Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2653,7 +2656,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:09:29.502Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:10:24.972Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
