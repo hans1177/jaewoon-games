@@ -194,25 +194,38 @@
         " 상태변화: 방어 전략 적용 및 세계 상태 변환",
         "보상/위험: 새로운 선택 가능성 제공, 게임 진행 방향 결정"
       ]
+    },
+    "local_authoring_parts::5f985e7d1b975fceba613d9017723e98da0578b528e01f00cd317986a6d13571:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력: 플레이어 선택"
+      ],
+      "stateOutputs": [
+        "변환: 방어 전략 적용 및 세계 상태 변환"
+      ],
+      "name": "방어 정체성 및 주제 기반 게임",
+      "purpose": "플레이어 선택과 세계 상태 변화의 원인, 갈등, 결과를 통합하여 실제 플레이를 유도하는 전략적 방어 게임",
+      "playerChoice": "주요 플레이어 역할 및 선택 결과 판타지로 방어 정체성을 형성하며, 이 선택은 세계에 영향을 미친다. 선택은 세계를 변환하고, 세계는 선택을 결정하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 664695,
-      "lastMs": 62466,
+      "totalMs": 739058,
+      "lastMs": 74363,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:58:43.028Z"
+      "updatedAt": "2026-10-10T05:59:57.393Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:47:38.137Z",
-  "updatedAt": "2026-10-10T05:58:43.028Z",
+  "updatedAt": "2026-10-10T05:59:57.393Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1923,7 +1936,7 @@
   "localAuthoringSplits": {
     "bfd973430fcafc5e7c4c0e65ae7a104f5871971047a55be32c2ef3e9a13ab04b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:58:43.028Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:59:57.393Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
