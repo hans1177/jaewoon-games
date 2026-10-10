@@ -104,25 +104,38 @@
         "포탈로 사냥터 돌며 AI 파티 구성",
         "보스 공략 및 파티 동료 해금"
       ]
+    },
+    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_arena",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마을에서 퀘스트와 장비 준비"
+      ],
+      "stateOutputs": [
+        "보스 공략 및 파티 동료 해금"
+      ],
+      "name": "아레나",
+      "purpose": "전투, 보상, 저장에 대한 실제 선택 및 규칙 변주",
+      "playerChoice": "AI 파티 초대/제외, 보스 처치 → 해금 → 조합 확장"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 317564,
-      "lastMs": 92189,
+      "totalMs": 356496,
+      "lastMs": 38932,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:48:15.967Z"
+      "updatedAt": "2026-10-10T04:48:54.900Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:58.038Z",
-  "updatedAt": "2026-10-10T04:48:15.967Z",
+  "updatedAt": "2026-10-10T04:48:54.900Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1127,7 +1140,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:48:15.967Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:48:54.900Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
