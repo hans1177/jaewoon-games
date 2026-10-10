@@ -109,25 +109,51 @@
         "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
         "마을 귀환/회복/강화"
       ]
+    },
+    "local_authoring_parts::0a80a627fa3bb15944381ddaef34e2f667e1d74e2d36957f02c1c43fe813374e:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_A_CLEAR_SCORE_DIS"
+      ],
+      "stateOutputs": [
+        "PLAY_BRIEF_RUN_WITH_READABLE_FEEDBACK_COLLECT_REWARDS_MAKE_SMALL_RISK_ROUTE_CHOI"
+      ],
+      "name": "ROAD",
+      "purpose": "INITIAL_GAME_FLOW_AND_CONTRADICTION_REPAIR",
+      "playerChoice": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_A_CLEAR_SCORE_DISTANCE_SHORT_SESSION_GOAL"
+    },
+    "local_authoring_parts::0a80a627fa3bb15944381ddaef34e2f667e1d74e2d36957f02c1c43fe813374e:signatureSystems:1:634fd9dd90a5bde9": {
+      "id": "a_road",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAY_BRIEF_RUN_WITH_READABLE_FEEDBACK_COLLECT_REWARDS_MAKE_SMALL_RISK_ROUTE_CHOI"
+      ],
+      "stateOutputs": [
+        "START_IMMEDIATELY_WITH_SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_A_CLEAR_SCORE_DIS"
+      ],
+      "name": "ROAD",
+      "purpose": "INITIAL_GAME_FLOW_AND_CONTRADICTION_REPAIR",
+      "playerChoice": "SIMPLE_ONE_THUMB_TAP_OR_SWIPE_INPUT_AND_A_CLEAR_SCORE_DISTANCE_SHORT_SESSION_GOAL"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 174525,
-      "lastMs": 30349,
+      "totalMs": 209748,
+      "lastMs": 12274,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:42:34.050Z"
+      "updatedAt": "2026-10-10T08:43:09.277Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:39:39.444Z",
-  "updatedAt": "2026-10-10T08:42:34.050Z",
+  "updatedAt": "2026-10-10T08:43:09.277Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1902,7 +1928,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:42:34.050Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:43:09.277Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
