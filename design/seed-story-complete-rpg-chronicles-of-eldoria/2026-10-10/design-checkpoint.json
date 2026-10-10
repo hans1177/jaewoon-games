@@ -3,606 +3,31 @@
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-SEED-STORY-COMPLETE-RPG-CHRONICLES-OF-ELDORIA",
-  "fingerprint": "96e9081cd8133e79b3686b425216339b5e61e1bbd91442fed086ed3d0cf75123",
+  "fingerprint": "eaa644603bd8613a8bff2e59b0308a1e287ab2bbdbb1f5f1ba39ab08dc8c486f",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::c9f6c622ec553b87f9b96b733e2fd6a1e26ff7e3a2efb2100b5c9c4ef0335ed2:identity": {
-      "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다."
-    },
-    "local_authoring_parts::8aeed77737a11cc12860c1347a69f5f18320fac2387177897eb19183da4824f1:mainIdentity,a,b,abCausality": {
-      "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-      "a": {
-        "system": "속성 공명 시스템",
-        "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-        "materialDomain": "캐릭터 스킬 트리 재구성",
-        "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-      },
-      "b": {
-        "system": "운명 개척 탐험 시스템",
-        "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-        "materialDomain": "고대 유물 파편 활용",
-        "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-      },
-      "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-    },
-    "local_authoring_parts::8aeed77737a11cc12860c1347a69f5f18320fac2387177897eb19183da4824f1:abEvolution,materialFusion,storyCausalChain": {
-      "abEvolution": {
-        "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-        "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-        "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-      },
-      "materialFusion": {
-        "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-        "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-        "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-        "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-        "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-        "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-      }
-    },
-    "local_authoring_parts::84597af22c9fdc85e8deb3b748fbe245f1f9c0c46e01c85f863349500c94493e:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
-      "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-      "a": {
-        "system": "속성 공명 시스템",
-        "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-        "materialDomain": "캐릭터 스킬 트리 재구성",
-        "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-      },
-      "b": {
-        "system": "운명 개척 탐험 시스템",
-        "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-        "materialDomain": "고대 유물 파편 활용",
-        "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-      },
-      "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다.",
-      "abEvolution": {
-        "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-        "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-        "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-      },
-      "materialFusion": {
-        "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-        "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-        "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-        "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-        "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-        "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-      }
-    },
-    "local_authoring_parts::f5512a3eff417c8494cfebc656770e8e6d39a8c2adfa84639589aa4218677c1a:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
-      "cThemes": [
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        {
-          "name": "운명 개척",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "전략 턴제 RPG",
-          "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-        },
-        {
-          "role": "SECONDARY",
-          "name": "모바일 최적화 전략 전투",
-          "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-        }
-      ],
-      "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-      "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다."
-    },
-    "local_authoring_parts::f5512a3eff417c8494cfebc656770e8e6d39a8c2adfa84639589aa4218677c1a:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "delveDiscoveries": [
-        {
-          "clue": "고대 문자 해석로 지형 변환",
-          "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-          "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-        },
-        {
-          "clue": "속성 조합으로 적 약점 공략",
-          "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-          "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-        },
-        {
-          "clue": "전술적 선택으로 스토리 분기 발생",
-          "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-          "newChoice": "전략적 선택의 결합으로 서사 진보"
-        },
-        {
-          "clue": "게임 정체성 확대를 위한 전략적 도전",
-          "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-          "newChoice": "전략적 선택의 반복 및 조합"
-        }
-      ],
-      "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-      "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-    },
-    "local_authoring_parts::84597af22c9fdc85e8deb3b748fbe245f1f9c0c46e01c85f863349500c94493e:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "cThemes": [
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        {
-          "name": "운명 개척",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "전략 턴제 RPG",
-          "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-        },
-        {
-          "role": "SECONDARY",
-          "name": "모바일 최적화 전략 전투",
-          "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-        }
-      ],
-      "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-      "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다.",
-      "delveDiscoveries": [
-        {
-          "clue": "고대 문자 해석로 지형 변환",
-          "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-          "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-        },
-        {
-          "clue": "속성 조합으로 적 약점 공략",
-          "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-          "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-        },
-        {
-          "clue": "전술적 선택으로 스토리 분기 발생",
-          "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-          "newChoice": "전략적 선택의 결합으로 서사 진보"
-        },
-        {
-          "clue": "게임 정체성 확대를 위한 전략적 도전",
-          "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-          "newChoice": "전략적 선택의 반복 및 조합"
-        }
-      ],
-      "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-      "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-    },
-    "local_authoring_parts::57f11fc7f3f4bdbda6f3e978d905c40abf0e725957d4f8a3928c8d57be458ff2:creativeGrammar": {
-      "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-      "a": {
-        "system": "속성 공명 시스템",
-        "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-        "materialDomain": "캐릭터 스킬 트리 재구성",
-        "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-      },
-      "b": {
-        "system": "운명 개척 탐험 시스템",
-        "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-        "materialDomain": "고대 유물 파편 활용",
-        "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-      },
-      "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다.",
-      "abEvolution": {
-        "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-        "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-        "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-      },
-      "materialFusion": {
-        "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-        "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-        "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-        "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-        "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-        "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-      },
-      "cThemes": [
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        {
-          "name": "운명 개척",
-          "kind": "MATERIAL",
-          "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "전략 턴제 RPG",
-          "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-        },
-        {
-          "role": "SECONDARY",
-          "name": "모바일 최적화 전략 전투",
-          "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-        }
-      ],
-      "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-      "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다.",
-      "delveDiscoveries": [
-        {
-          "clue": "고대 문자 해석로 지형 변환",
-          "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-          "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-        },
-        {
-          "clue": "속성 조합으로 적 약점 공략",
-          "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-          "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-        },
-        {
-          "clue": "전술적 선택으로 스토리 분기 발생",
-          "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-          "newChoice": "전략적 선택의 결합으로 서사 진보"
-        },
-        {
-          "clue": "게임 정체성 확대를 위한 전략적 도전",
-          "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-          "newChoice": "전략적 선택의 반복 및 조합"
-        }
-      ],
-      "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-      "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-    },
-    "local_authoring_parts::c9f6c622ec553b87f9b96b733e2fd6a1e26ff7e3a2efb2100b5c9c4ef0335ed2:creativeGrammar": {
-      "creativeGrammar": {
-        "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-        "a": {
-          "system": "속성 공명 시스템",
-          "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-          "materialDomain": "캐릭터 스킬 트리 재구성",
-          "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        "b": {
-          "system": "운명 개척 탐험 시스템",
-          "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-          "materialDomain": "고대 유물 파편 활용",
-          "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        },
-        "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다.",
-        "abEvolution": {
-          "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-          "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-          "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-        },
-        "materialFusion": {
-          "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-          "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-          "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-          "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-          "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-          "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-          "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-        },
-        "cThemes": [
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-          },
-          {
-            "name": "운명 개척",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략 턴제 RPG",
-            "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "모바일 최적화 전략 전투",
-            "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-          }
-        ],
-        "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "고대 문자 해석로 지형 변환",
-            "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-            "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-          },
-          {
-            "clue": "속성 조합으로 적 약점 공략",
-            "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-            "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-          },
-          {
-            "clue": "전술적 선택으로 스토리 분기 발생",
-            "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-            "newChoice": "전략적 선택의 결합으로 서사 진보"
-          },
-          {
-            "clue": "게임 정체성 확대를 위한 전략적 도전",
-            "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-            "newChoice": "전략적 선택의 반복 및 조합"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-        "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-      }
-    },
-    "local_authoring_parts::d8481ad1f33502f6bb0ee8b0f67494a29c6b07b32b6ea719a89e1f2b5522945d:identity,creativeGrammar": {
-      "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-        "a": {
-          "system": "속성 공명 시스템",
-          "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-          "materialDomain": "캐릭터 스킬 트리 재구성",
-          "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        "b": {
-          "system": "운명 개척 탐험 시스템",
-          "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-          "materialDomain": "고대 유물 파편 활용",
-          "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        },
-        "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다.",
-        "abEvolution": {
-          "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-          "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-          "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-        },
-        "materialFusion": {
-          "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-          "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-          "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-          "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-          "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-          "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-          "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-        },
-        "cThemes": [
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-          },
-          {
-            "name": "운명 개척",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략 턴제 RPG",
-            "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "모바일 최적화 전략 전투",
-            "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-          }
-        ],
-        "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "고대 문자 해석로 지형 변환",
-            "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-            "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-          },
-          {
-            "clue": "속성 조합으로 적 약점 공략",
-            "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-            "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-          },
-          {
-            "clue": "전술적 선택으로 스토리 분기 발생",
-            "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-            "newChoice": "전략적 선택의 결합으로 서사 진보"
-          },
-          {
-            "clue": "게임 정체성 확대를 위한 전략적 도전",
-            "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-            "newChoice": "전략적 선택의 반복 및 조합"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-        "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-      }
-    },
-    "local_authoring_parts::d8481ad1f33502f6bb0ee8b0f67494a29c6b07b32b6ea719a89e1f2b5522945d:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 탐험과 전투로 얻은 자원을 기반으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
-      "coreFun": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 텀포와 피해량을 즉각적으로 변화시킵니다."
-    },
-    "local_authoring_parts::ae2e0360e7de68468418f3be85383594123111cdcb206bef1c5fbae2b81aeb0f:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다.",
-        "a": {
-          "system": "속성 공명 시스템",
-          "material": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다.",
-          "materialDomain": "캐릭터 스킬 트리 재구성",
-          "stateChange": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-        },
-        "b": {
-          "system": "운명 개척 탐험 시스템",
-          "material": "플레이어는 제한된 유물 에너지를 사용하여 특정 지형을 복구할지, 아니면 전투 보너스를 얻기 위해 소모할지를 선택하며, 이 선택이 맵의 접근성과 이후 전투 난이도에 직접적인 영향을 줍니다.",
-          "materialDomain": "고대 유물 파편 활용",
-          "stateChange": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-        },
-        "abCausality": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다.",
-        "abEvolution": {
-          "aChangesB": "속성 공명 시스템의 선택은 운명 개척 탐험 시스템의 상태에 즉각적 영향을 미칩니다.",
-          "bChangesA": "운명 개척 탐험 시스템의 선택은 속성 공명 시스템의 전투 결과에 직접적인 영향을 줍니다.",
-          "lateGameChange": "전략적 선택의 결합은 게임 정체성에서 무한히 파고드는 진보와 숙련의 계층을 형성합니다."
-        },
-        "materialFusion": {
-          "contrast": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-          "causalBridge": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화",
-          "removalConsequence": "속성 조합과 유물 에너지 사용이 맵 구조와 전투 난이도를 변동시킵니다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전술적 선택과 고대 유물 파편 활용",
-          "characterConflict": "캐릭터 스킬 트리 재구성과 맵 접근성, 전투 난이도의 갈등",
-          "playerChoice": "속성 공명 시스템의 우선 사용 또는 동료 연계 발동",
-          "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
-          "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
-        },
-        "cThemes": [
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-          },
-          {
-            "name": "운명 개척",
-            "kind": "MATERIAL",
-            "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략 턴제 RPG",
-            "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "모바일 최적화 전략 전투",
-            "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-          }
-        ],
-        "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
-        "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "고대 문자 해석로 지형 변환",
-            "discovery": "플레이어는 고대 유물 파편을 사용하여 특정 지역의 지형을 복구하거나 새로운 길을 열어, 맵 접근성과 전투 난이도에 즉각적인 영향을 미칩니다.",
-            "newChoice": "유물 에너지 소모 또는 전투 보너스 얻기"
-          },
-          {
-            "clue": "속성 조합으로 적 약점 공략",
-            "discovery": "캐릭터 스킬 트리 재구성을 통해 적의 속성을 파악하고, 콤보 형태로 승리를 거두며, 이 선택은 전투 텀포와 피해량을 결정합니다.",
-            "newChoice": "속성 우선 사용 또는 동료 연계 발동"
-          },
-          {
-            "clue": "전술적 선택으로 스토리 분기 발생",
-            "discovery": "플레이어가 전술적 선택을 하면, 전투 결과와 캐릭터 성장 방향이 즉각적으로 변화하며, 새로운 공략 경험을 제공합니다.",
-            "newChoice": "전략적 선택의 결합으로 서사 진보"
-          },
-          {
-            "clue": "게임 정체성 확대를 위한 전략적 도전",
-            "discovery": "강화된 능력으로 고난도 지역에 도전하여, 게임 정체성이 무한히 파고드는 숙련 계층을 형성합니다.",
-            "newChoice": "전략적 선택의 반복 및 조합"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 전술적 선택과 고대 유물 파편 활용은 맵 상태 변화와 게임 정체성의 진보를 직접적으로 연결하고, 이 두 요소의 결합은 무한히 파고드는 숙련 계층을 형성합니다.",
-        "finalGameIdentity": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적인 영향을 미칩니다. 속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
-      },
-      "playerFantasy": "플레이어는 탐험과 전투로 얻은 자원을 기반으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
-      "coreFun": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 텀포와 피해량을 즉각적으로 변화시킵니다."
-    },
-    "local_authoring_parts::818d6aa604036d72eb47a1df29d7c767e9f39fb1413a077bdb0bdcc02ab8a289:coreLoop": {
-      "coreLoop": [
-        "INPUT/SELECT → 상태변화 → 보상/위험/다음 선택",
-        "플레이어는 매 턴마다 속성 공명 시스템의 선택을 하며, 이 선택은 전투의 텀포와 피해량을 즉각적으로 변화시킵니다.",
-        "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
-      ]
-    },
-    "local_authoring_parts::d50f0293c10480f3df3f41dff27dd3eed02f20649973ce455cf3dfe903a6a0bd:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_abilities",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "attribute_combination",
-        "resource_allocation"
-      ],
-      "stateOutputs": [
-        "combat_tempo",
-        "damage_debuff",
-        "skill_tree_upgrade"
-      ],
-      "name": "속성 공명 시스템",
-      "purpose": "플레이어가 매 턴마다 속성의 스킬을 우선 사용하거나 동료와 속성 연계 발동하여 전투의 텀포와 피해량을 즉각적으로 변화시킵니다.",
-      "playerChoice": "속성 우선 사용 또는 동료 연계 발동 선택입니다. 이 선택은 전투 결과 및 캐릭터 성장 방향에 직접적인 영향을 미칩니다."
-    },
-    "local_authoring_parts::d50f0293c10480f3df3f41dff27dd3eed02f20649973ce455cf3dfe903a6a0bd:signatureSystems:1:fe8ade9d5a5a7cc0": {
-      "id": "a_abilities",
-      "grammarRole": "A",
-      "stateInputs": [
-        "combat_tempo",
-        "damage_debuff",
-        "skill_tree_upgrade"
-      ],
-      "stateOutputs": [
-        "attribute_combination",
-        "resource_allocation"
-      ],
-      "name": "속성 공명 시스템",
-      "purpose": "플레이어의 전술적 선택에 따라 전투 텀포와 피해량을 즉각적으로 변화시킨다.",
-      "playerChoice": "속성 우선 사용 또는 동료 연계 발동"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 40,
-      "successes": 38,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 2529795,
-      "lastMs": 23696,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:10:49.120Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T05:28:39.232Z",
-  "updatedAt": "2026-10-10T06:10:49.120Z",
+  "createdAt": "2026-10-10T09:10:25.362Z",
+  "updatedAt": "2026-10-10T09:10:25.438Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -610,6 +35,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -630,6 +56,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -653,10 +80,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -725,6 +154,217 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -810,13 +450,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -828,6 +472,21 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -855,8 +514,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -864,6 +523,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -884,6 +544,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -907,10 +568,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -979,6 +642,217 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -1064,13 +938,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1082,6 +960,21 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1109,8 +1002,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1118,6 +1011,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -1138,6 +1032,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1161,10 +1056,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1233,6 +1130,217 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -1318,13 +1426,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1336,6 +1448,21 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1363,39 +1490,49 @@
         ]
       }
     },
-    "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::d50f0293c10480f3df3f41dff27dd3eed02f20649973ce455cf3dfe903a6a0bd:signatureSystems:2:562f825845ad4a51": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_abilities",
-          "a_abilities"
-        ]
+    "assetFacts": {
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_abilities",
-          "a_abilities"
-        ]
+      "roblox-common-ui-character-detail-screen": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "CHARACTER_DETAIL_SCREEN",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::d50f0293c10480f3df3f41dff27dd3eed02f20649973ce455cf3dfe903a6a0bd:signatureSystems:2:562f825845ad4a51": 29
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "d8481ad1f33502f6bb0ee8b0f67494a29c6b07b32b6ea719a89e1f2b5522945d": true,
-    "c9f6c622ec553b87f9b96b733e2fd6a1e26ff7e3a2efb2100b5c9c4ef0335ed2": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:10:49.120Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+    }
+  }
 }
