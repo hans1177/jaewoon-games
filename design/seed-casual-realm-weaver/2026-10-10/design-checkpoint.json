@@ -104,25 +104,40 @@
         "조각을 연결하면 색상/모양 매칭 효과가 나타나며 주변 환경이 변환됩니다",
         "연속 연결(콤보)을 통해 특수 효과 발동 및 점수 증가"
       ]
+    },
+    "local_authoring_parts::e287ead162c911839b8bbf23d57e9f07bc2e4d9599687f1a127594ec1de7cef8:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "조각 A를 먼저 배치하여 주변 환경 변화를 일으킨다.",
+        "생태계 복원 게이지를 통해 보너스 효과를 얻는다."
+      ],
+      "stateOutputs": [
+        "주변 환境 변화가 시각적으로 나타나며, 플레이어에게 새로운 선택 기회를 제공한다.",
+        "보너스 효과로 인해 스테이지 클리어 시 극적인 변화가 발생하며, 다음 단계로 이동한다."
+      ],
+      "name": "직조 연결 시스템",
+      "purpose": "조각 간의 속성(색상, 형태)을 매칭하여 시너지를 발생시키기 위함입니다.",
+      "playerChoice": "조각 A를 먼저 배치하여 연쇄 반응을 일으킬지, 혹은 더 큰 보상을 위해 특정 패턴을 완성할지 결정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 360415,
-      "lastMs": 64017,
+      "totalMs": 404676,
+      "lastMs": 44261,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:07:41.141Z"
+      "updatedAt": "2026-10-10T09:08:25.403Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:40.705Z",
-  "updatedAt": "2026-10-10T09:07:41.141Z",
+  "updatedAt": "2026-10-10T09:08:25.403Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1398,7 +1413,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:07:41.141Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:08:25.403Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
