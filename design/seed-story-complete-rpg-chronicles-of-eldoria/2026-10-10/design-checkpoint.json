@@ -95,25 +95,117 @@
         "delveGrowthRule": "A→B, B→A 양방향 실제 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시함",
         "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 턴제 RPG의 플레이어 중심 서사적 깊이와 현대적인 모바일 최적화 전략 전투"
       }
+    },
+    "local_authoring_parts::1c49f902ae7f6e55966a696147b665c64769f1cd4474acbd85ae2df4ac45ba33:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+      "coreFun": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다."
+    },
+    "local_authoring_parts::2d16886a029bdfa03aca883f85929a6edb09e4f7588a92934db37ed9e22da97b:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "기본 게임 주제/정체성: 턴제 RPG",
+        "a": {
+          "system": "게임 시스템+해당 축 창작 소재: 속성 공명 시스템",
+          "material": "신화·역사·철학·과학·예술 등 제한 없음: 속성 조합 선택 및 전략적 우위 확보",
+          "materialDomain": "A/B 소재: 속성 조합 선택 및 전략적 우위 확보",
+          "stateChange": "입력→상태변화→보상·위험·다음 선택의 연결"
+        },
+        "b": {
+          "system": "다른 시스템+해당 축 창작 소재: 운명 개척 탐험 시스템",
+          "material": "고대 유물 파편 사용하여 지형 변화 또는 길 열기",
+          "materialDomain": "A/B 소재: 고대 유물 파편 사용하여 지형 변화 또는 길 열기",
+          "stateChange": "입력→상태변화→보상·위험·다음 선택의 연결"
+        },
+        "abCausality": "양방향 실제 상태 교환: 속성 조합 선택 → 지형 변화/길 열기",
+        "abEvolution": {
+          "aChangesB": "속성 조합 선택 → 지형 변화/길 열기의 인과적 연결",
+          "bChangesA": "지형 변화/길 열기 → 속성 조합 선택의 인과적 연결",
+          "lateGameChange": "고난도 지역 도전 및 서사 완결의 인과적 연결"
+        },
+        "materialFusion": {
+          "contrast": "원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건",
+          "causalBridge": "주요 플레이 요소(탐험, 전투)와 보조 장르(유물 파편 활용)",
+          "removalConsequence": "보조 장르 제거 시 플레이 규칙·위험·정보·선택 바뀌어야 함"
+        },
+        "storyCausalChain": {
+          "cause": "월드 맵 탐험 및 자원 수집으로 인한 단서 발견",
+          "characterConflict": "단서 해석을 통한 고대 문자 해독 및 지름길 개척",
+          "playerChoice": "속성 공명 시스템 사용 또는 고대 유물 파편 활용",
+          "worldChange": "지형 변화 또는 길 열기로 인한 접근성 증가",
+          "nextEvent": "강화된 능력으로 고난도 지역 도전 및 스토리 분기 발생"
+        },
+        "cThemes": [
+          {
+            "name": "속성",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전략적 우위 확보, 전술적 선택 반영"
+          },
+          {
+            "name": "고대 유물",
+            "kind": "MATERIAL",
+            "gameplayEffect": "지형 변화/길 열기, 캐릭터 강화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "탐험",
+            "gameplayEffect": "자원 수집, 단서 발굴, 지형 변화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "전투",
+            "gameplayEffect": "속성 조합 선택, 전략적 우위 확보"
+          }
+        ],
+        "cGenreInterlock": "탐험과 전투의 상호작용은 보조 장르 제거 시 바뀌어야 함",
+        "cWorldAndGameplayEffect": "게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위로 구성됨",
+        "delveDiscoveries": [
+          {
+            "clue": "월드 맵 탐험 및 자원 수집",
+            "discovery": "단서 발견(자원, 고대 문자)",
+            "newChoice": "속성 공명 시스템 사용 또는 고대 유물 파편 활용"
+          },
+          {
+            "clue": "고대 유물 파편 해석",
+            "discovery": "지름길 개척 및 지형 변화",
+            "newChoice": "속성 조합 선택, 전략적 우위 확보"
+          },
+          {
+            "clue": "강화된 능력 획득 후 고난도 지역 도전",
+            "discovery": "스토리 분기 발생(플레이어 선택 반영)",
+            "newChoice": "고난도 지역 도전 및 서사 완결"
+          },
+          {
+            "clue": "캐릭터 스킬 트리 재구성",
+            "discovery": "전술적 선택 반영(상태 변화)",
+            "newChoice": "스킬 트리 커스터마이징 및 고난도 지역 도전"
+          }
+        ],
+        "delveGrowthRule": "A→B, B→A 양방향 실제 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시함",
+        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 턴제 RPG의 플레이어 중심 서사적 깊이와 현대적인 모바일 최적화 전략 전투"
+      },
+      "playerFantasy": "플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.",
+      "coreFun": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 462774,
-      "lastMs": 162673,
+      "totalMs": 525717,
+      "lastMs": 62943,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:44:34.098Z"
+      "updatedAt": "2026-10-10T10:45:37.042Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:36:51.303Z",
-  "updatedAt": "2026-10-10T10:44:34.098Z",
+  "updatedAt": "2026-10-10T10:45:37.044Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1641,7 +1733,7 @@
   "localAuthoringSplits": {
     "1c49f902ae7f6e55966a696147b665c64769f1cd4474acbd85ae2df4ac45ba33": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:44:34.098Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:45:37.044Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
