@@ -193,3 +193,35 @@ test('graphics production binds character identity environment detail and runtim
   assert.equal(production.policy.runtimeVisualRepairLoopRequired,true);
   assert.equal(production.policy.declaredInterfaceSurfacesRequireMobileRuntimeEvidence,true);
 });
+
+test('cinematic proof stays inside existing graphics production and cannot grant native runtime PASS',()=>{
+  const base={
+    kind:'vibe2-asset-production-plan',
+    nativeAuthoringExecution:{dcc:{executionRecipes:[{
+      id:'cinematic-prop',cinematic:true,
+      cinematicOutput:'assets/generated/roblox/demo/prop/cinematic.mp4',
+      shotlistOutput:'assets/generated/roblox/demo/prop/shotlist.json'
+    }]}}
+  };
+  const pending=createVibeGraphicsProduction({gameId:'demo',target:'roblox',request:'시네마틱 영상 렌더링',assetProductionPlan:base});
+  assert.equal(pending.kind,'GRAPHICS_PRODUCTION');
+  assert.equal(pending.topLevelWorkUnitCount,1);
+  assert.equal(pending.cinematicRendering.requested,true);
+  assert.equal(pending.cinematicRendering.status,'SOURCE_BOUND_DCC_VIDEO_PENDING');
+  assert.equal(pending.cinematicRendering.releaseAuthority,false);
+  assert.equal(pending.cinematicRendering.evidenceIsNotNativeRuntimeQa,true);
+  assert.equal(pending.cinematicRendering.gameplayMutationAllowed,false);
+  const claimed={
+    ...base,
+    nativeAuthoringExecution:{dcc:{
+      ...base.nativeAuthoringExecution.dcc,
+      executionEvidence:{recipes:[{id:'cinematic-prop',cinematicVideo:{verifiedBy:'FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH'}}]}
+    }}
+  };
+  const rendered=createVibeGraphicsProduction({gameId:'demo',target:'roblox',assetProductionPlan:claimed});
+  assert.equal(rendered.cinematicRendering.status,'SOURCE_BOUND_DCC_VIDEO_RENDERED');
+  assert.equal(rendered.status,'GRAPHICS_PRODUCTION_ACTIVE');
+  assert.equal(rendered.runtimeRepairLoop.status,'RUNTIME_EVIDENCE_PENDING');
+  assert.equal(rendered.authority.gameplayMutationAllowed,false);
+  assert.equal(rendered.policy.codecFrameCountAndSourceHashRequiredBeforeVideoEvidence,true);
+});
