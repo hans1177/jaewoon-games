@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-vibe2-game-flow-architect.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-all-games-design-reset.mjs'
       - 'game-catalog.json'
@@ -70,6 +72,8 @@ jobs:
             'game-catalog.json' \
             'owner-design-reset-queue.json' \
             'tools/company-design-cycle.mjs' \
+            'tools/company-game-seed-bootstrap.mjs' \
+            'tools/company-vibe2-game-flow-architect.mjs' \
             'tools/company-game-seed-contract.mjs' \
             'tools/company-all-games-design-reset.mjs' \
             'tools/owner-design-reset.mjs' \
@@ -186,7 +190,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
-          const engineFiles=['tools/company-design-cycle.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
+          const engineFiles=['tools/company-design-cycle.mjs','tools/company-game-seed-bootstrap.mjs','tools/company-vibe2-game-flow-architect.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
           const configuredWip=roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax;
           const unboundedByPolicy=configuredWip===null||typeof configuredWip==='undefined';
@@ -447,7 +451,7 @@ jobs:
           set -euo pipefail
           node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
           echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
-          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
+          echo 'DESIGN_AI_PROVIDER=VIBE_NATIVE_FUNCTION'
           echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
           echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
 
