@@ -97,25 +97,32 @@
       },
       "playerFantasy": "Players are immersed in a world where every choice has an immediate impact on their journey. They must navigate a series of puzzles, manage risks, and unlock new levels by making strategic decisions. The game is designed to be both challenging and rewarding, offering endless possibilities for exploration and growth.",
       "coreFun": "Player begins with a clear goal, limited moves, and obstacles on a board or grid. They make deliberate matches, create combos, and receive immediate feedback for each action. The game unlocks new levels or objectives based on their choices, creating a sense of progression and reward. Each decision influences the next step, ensuring that play remains engaging and meaningful throughout the journey."
+    },
+    "local_authoring_parts::8afd22cd4874a42f8129ce81556fdab3fd9c178c854b30e8dbad0a0b29b6ed30:coreLoop": {
+      "coreLoop": [
+        "Player begins with a clear goal, limited moves, and obstacles on a board or grid.",
+        "Makes deliberate matches, creates combos, and receives immediate feedback for each action.",
+        "Clears the level goal to earn rewards or unlock new stages, then faces a new pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 149796,
-      "lastMs": 149796,
+      "totalMs": 228586,
+      "lastMs": 78790,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:22:46.628Z"
+      "updatedAt": "2026-10-10T02:24:05.420Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:20:16.789Z",
-  "updatedAt": "2026-10-10T02:22:46.628Z",
+  "updatedAt": "2026-10-10T02:24:05.420Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1705,7 +1712,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:22:46.628Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:24:05.420Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
