@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 위기 상황 속에서 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여, 즉각적인 전투 스펙 향상을 통해 캐주얼 모바일 액션 롤플레잉 게임의 핵심 루프 중심의 플레이어 역할을 수행해야 한다.",
       "coreFun": "적의 공격 궤적 회피 및 무기 제련 성공 시, 마을 대장간·주점·연금 공방에 투자의 영구적인 스탯 버프와 신규 스킬 트리를 해금하며, 심층 보스 타임어택과 극한의 장비 옵션 튜닝을 통한 지속적인 육성 만족도를 제공한다."
+    },
+    "local_authoring_parts::c3ba3431edbf977609afd2a1888559c80d495c699fba9bd529f9e283d8fad7fd:coreLoop": {
+      "coreLoop": [
+        "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+        "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
+        "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1332626,
-      "lastMs": 108580,
+      "totalMs": 1431977,
+      "lastMs": 99351,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:24:42.161Z"
+      "updatedAt": "2026-10-10T09:26:21.517Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:02:29.251Z",
-  "updatedAt": "2026-10-10T09:24:42.163Z",
+  "updatedAt": "2026-10-10T09:26:21.517Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2232,7 +2239,7 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:24:42.163Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:26:21.517Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
