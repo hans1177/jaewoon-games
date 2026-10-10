@@ -732,25 +732,28 @@
       "toSystem": "BASE_TERRAIN",
       "trigger": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과程에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다.",
       "stateChange": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
+    },
+    "local_authoring_parts::f587c799e54ae11659b6bd30ae417bb8d5bf4e5c91b04de43121702befdfe9be:fromId": {
+      "fromId": "signatureSystems[3]"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 33,
+      "calls": 34,
+      "successes": 34,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2162682,
-      "lastMs": 65574,
+      "totalMs": 2220753,
+      "lastMs": 58071,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:32:09.758Z"
+      "updatedAt": "2026-10-10T03:33:07.832Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:32:09.760Z",
+  "updatedAt": "2026-10-10T03:33:07.833Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2546,7 +2549,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:32:09.760Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:33:07.832Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
