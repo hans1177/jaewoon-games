@@ -194,25 +194,42 @@
         " 상태변화: 마력 파편 → 원소 노드 → 영웅 장비 업그레이드",
         "보상/위험: 영웅 진형 강화 → 보스 도전 → 새로운 원소 해금"
       ]
+    },
+    "local_authoring_parts::7b174cc69785cdd48f0f9548ed3eb40287911685a289207f45b5b6b2585949ac:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_rock_elemental_resonance",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "마력 파편 소모로 수정의 가지를 뻗어나가며, 영웅 덱에 적용되는 원소 버프 및 특수 효과 선택",
+        "영웅 진형과 수정의 활성화된 원소 노드 간의 실시간 공명 스킬 발동",
+        "보스 도전 시 새로운 원소 노드와 기존 원소 노드 간의 연쇄 반응 생성"
+      ],
+      "stateOutputs": [
+        "영웅 장비에 원소 버프 및 특수 효과 적용",
+        "전투 중 공명 스킬 발동 및 추가 피해/방어막 증대",
+        "보스 도전 시 새로운 원소 노드와 전기 조합으로 강력한 대응 가능"
+      ],
+      "name": "Rock Elemental Resonance",
+      "purpose": "플레이어가 획득한 마력 파편을 소모하여 수정의 가지를 뻗어나가며, 영웅 전체에게 적용되는 고유 원소 버프와 특수 효과를 선택적으로 활성화합니다.",
+      "playerChoice": "바람, 돌, 물, 화염 중 어떤 원소 노드를 우선적으로 개화하여 현재 영웅 덱의 시너지를 극대화할지 결정합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 723308,
-      "lastMs": 13646,
+      "totalMs": 781006,
+      "lastMs": 57698,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:46:50.207Z"
+      "updatedAt": "2026-10-10T10:47:47.906Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:34:46.872Z",
-  "updatedAt": "2026-10-10T10:46:50.207Z",
+  "updatedAt": "2026-10-10T10:47:47.906Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1501,8 +1518,8 @@
   "localAuthoringSplits": {
     "47a81bcc68fb5449dba648cff1af66d7466e1737a76f785f069e6a1548c5d62e": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:46:50.207Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:47:47.906Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
