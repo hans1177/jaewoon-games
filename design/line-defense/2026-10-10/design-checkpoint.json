@@ -194,25 +194,40 @@
         "입력: 전투 중 적 처치 및 자원 획득 → 상태변화: 재화 가치 실시간 반영 → 보상: 자원 투입, 유닛 업그레이드/배치",
         "입력: 웨이브 클리어 후 전리품 획득 → 상태변化: 군단 전체 영구적 특성 강화 → 보상: 난이도 상승 도전"
       ]
+    },
+    "local_authoring_parts::4980a10cc151dea8af719782a5e879676994d3ab48f9bbe4e9406394311495a8:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road_synergy",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "골목길 시너지 배치 시스템에서 유닛 위치에 따라 실시간으로 시너지 효과가 생성됨",
+        "실시간 재화 순환 엔진으로 자원 가치가 변동되어 플레이어가 자원 투입 전략을 선택함"
+      ],
+      "stateOutputs": [
+        "아지트 방어 중 유닛의 최적 배치와 업그레이드 타이밍 결정",
+        "전투력 증대 및 자원 소비 타이밍 조율 결과로 게임 진행률 변화"
+      ],
+      "name": "골목길 시너지 배치 시스템",
+      "purpose": "플레이어가 공간 배치 기반의 깊이 있는 전략적 선택을 제공하여 아지트를 방어하는 데 활용",
+      "playerChoice": "유닛의 인접한 골목 구역 배치 시 시너지 효과를 극대화하거나 단순한 유닛 배치 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 697195,
-      "lastMs": 9472,
+      "totalMs": 735336,
+      "lastMs": 38141,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:56:18.981Z"
+      "updatedAt": "2026-10-10T09:56:57.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:44:41.550Z",
-  "updatedAt": "2026-10-10T09:56:18.981Z",
+  "updatedAt": "2026-10-10T09:56:57.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1555,8 +1570,8 @@
   "localAuthoringSplits": {
     "333ca0c9839305fb97839b60369f99b2e0c7112dd244a573a9c36f4e5b705bc3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:56:18.981Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:56:57.123Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
