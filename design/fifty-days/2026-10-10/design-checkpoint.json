@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 실시간 생존 액션 루프에서 단순한 공격을 하며, 그 결과로 업그레이드 선택과 장비 변경을 통해 새로운 전략을 개발해야 한다.",
       "coreFun": "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321"
+    },
+    "local_authoring_parts::c4a91b9d74043d3a8a081263800287168398b04ec8de26918507816e51cf3e4b:coreLoop": {
+      "coreLoop": [
+        "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321",
+        "INPUT: RUN_RESULT_123456789 -> STATE_CHANGE_ABCDEFGH -> RUN_RESULT_987654321",
+        "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 646467,
-      "lastMs": 58273,
+      "totalMs": 724963,
+      "lastMs": 78496,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:38:06.924Z"
+      "updatedAt": "2026-10-10T09:39:25.425Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:27:20.403Z",
-  "updatedAt": "2026-10-10T09:38:06.927Z",
+  "updatedAt": "2026-10-10T09:39:25.442Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "c4107309a9bf97b8c26cf00113c480033ad8faf2b362b2f346bea89dc000a0ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:38:06.927Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:39:25.425Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
