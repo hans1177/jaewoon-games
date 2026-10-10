@@ -69,6 +69,23 @@ const SYSTEM_CATALOG=Object.freeze({
   TERRITORY_OBJECTIVE:Object.freeze({owners:['WORLD','CORE_STATE','PROGRESSION'],libraries:[],purpose:'territory state objectives and control consequences change routes pressure or resources'}),
 });
 
+// 메뉴·게임창 구성은 기존 시스템 카탈로그의 책임과 라이브러리 단서만 연결한다.
+const SYSTEM_INTERFACE_SURFACES=Object.freeze({
+  SURVIVAL_VITALS:'GAMEPLAY_HUD', GATHERING_RESOURCE:'GAMEPLAY_HUD',
+  INVENTORY_EQUIPMENT:'INVENTORY_UI', ITEM_LOOT:'INVENTORY_UI', CRAFTING:'CRAFT_UI',
+  HOUSING_BUILDING:'BUILD_UI', WEATHER_ENVIRONMENT:'GAMEPLAY_HUD',
+  EXPLORATION_REGION:'MAP_UI', THREAT_ECOLOGY:'GAMEPLAY_HUD',
+  TARGETING_COMBAT:'GAMEPLAY_HUD', SKILL_BUILD:'SKILL_TREE_UI',
+  ECONOMY_SHOP:'SHOP_UI', QUEST_DIALOGUE:'QUEST_UI',
+  NPC_INTERACTION:'DIALOGUE_UI', COMPANION_PARTY:'PARTY_UI',
+  SOCIAL_RELATIONSHIP:'JOURNAL_UI', FACTION_WORLD_STATE:'JOURNAL_UI',
+  CODEX_COLLECTION:'CODEX_UI', WAVE_ENCOUNTER:'GAMEPLAY_HUD',
+  DEFENSE_PLACEMENT:'BUILD_UI', RESEARCH_TECH:'RESEARCH_UI',
+  PRODUCTION_CHAIN:'BUILD_UI', STAFF_CUSTOMER:'MANAGEMENT_UI',
+  UPGRADE_BRANCH:'UPGRADE_UI', PUZZLE_STATE:'GAMEPLAY_HUD',
+  TRAVERSAL_CHECKPOINT:'GAMEPLAY_HUD', TERRITORY_OBJECTIVE:'MAP_UI',
+});
+
 export const GENRE_SYSTEM_BUNDLES=Object.freeze({
   ACTION_SURVIVAL_ROGUELITE:Object.freeze({
     required:['SURVIVAL_VITALS','GATHERING_RESOURCE','INVENTORY_EQUIPMENT','ITEM_LOOT','CRAFTING','HOUSING_BUILDING','EXPLORATION_REGION','THREAT_ECOLOGY'],
@@ -230,6 +247,21 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
     expansionSystems:Object.freeze(recommendedRows),
     phasePlan:Object.freeze(phasePlan),
     interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    // 설계 때부터 내부 도구 후보를 UI/HUD 책임에 동기화한다. 실제 구현 여부는 소스·런타임으로만 판정한다.
+    interfaceSync:Object.freeze({
+      version:1,source:'EXISTING_GENRE_SYSTEM_CATALOG',
+      requiredSurfaces:Object.freeze(requiredRows.filter(row=>SYSTEM_INTERFACE_SURFACES[row.id]).map(row=>Object.freeze({
+        systemId:row.id,surface:SYSTEM_INTERFACE_SURFACES[row.id],ownerSystems:row.ownerSystems,
+        reusableLibraryHints:row.reusableLibraryHints,implementation:'NATIVE_EXISTING_SOURCE_BINDING_REQUIRED'
+      }))),
+      optionalSurfaces:Object.freeze(recommendedRows.filter(row=>SYSTEM_INTERFACE_SURFACES[row.id]).map(row=>Object.freeze({
+        systemId:row.id,surface:SYSTEM_INTERFACE_SURFACES[row.id],ownerSystems:row.ownerSystems,
+        reusableLibraryHints:row.reusableLibraryHints,implementation:'ONLY_IF_GAME_DESIGN_AND_SOURCE_ALREADY_SUPPORT'
+      }))),
+      preserve:Object.freeze(['SAVE','PROGRESSION','ECONOMY','SERVER_AUTHORITY','EXISTING_GAME_RULES']),
+      directCrossPlatformCodeCopyForbidden:true,shadowUiOrGameplaySystemForbidden:true,
+      staticPlanIsNotRuntimeVerification:true,
+    }),
     novelGrammarContract,
     awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
     libraryReusePolicy:Object.freeze({
