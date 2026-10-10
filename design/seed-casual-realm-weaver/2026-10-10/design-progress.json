@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 9,
-  "lastSuccessfulModelCallAt": "2026-10-10T07:01:54.627Z",
+  "cachedTaskCount": 12,
+  "lastSuccessfulModelCallAt": "2026-10-10T07:03:15.739Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/seed-casual-realm-weaver/2026-10-10/design-seed.json",
+    "contentDigest": "a57a086c45d42594c091d79a3599ecfefa7c040ae2c40b50e664313c92188b44",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 17,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 785013,
-      "lastMs": 94816,
+      "totalMs": 866122,
+      "lastMs": 81109,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:01:54.625Z"
+      "updatedAt": "2026-10-10T07:03:15.737Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T07:01:54.628Z"
+  "updatedAt": "2026-10-10T07:03:15.744Z"
 }
