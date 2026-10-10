@@ -505,25 +505,38 @@
       "name": "진입 순간의 단순 터치 또는 스wipe 입력",
       "purpose": "플레이어가 게임을 시작하는 기본 행동, 대표 선택 및 시그니처 세계 규칙의 명확화",
       "playerChoice": "게임 내 콘텐츠 관리 시스템의 선택과 변환을 통해 실질적 성장 및 위험의 즉각적인 피드백을 받음"
+    },
+    "local_authoring_parts::0f2633d5b9b04def1bd7308dadeaff611d013018c958d758818ee1bfbf80b97c:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "진입 순간의 단순 터치 또는 스wipe 입력"
+      ],
+      "stateOutputs": [
+        "실제 선택 및 보상/위험의 즉각적인 피드백 제공"
+      ],
+      "name": "진입 순간의 단순 터치 또는 스wipe 입력",
+      "purpose": "플레이어가 게임을 시작하는 단순한 행동을 통해 실제 선택과 보상/위험의 즉각적인 피드백을 경험하게 함",
+      "playerChoice": "게임 내 콘텐츠 관리 시스템의 선택과 변환을 수행함으로써 플레이어 역할과 대표 행동을 명확히 함"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1310703,
-      "lastMs": 102202,
+      "totalMs": 1413855,
+      "lastMs": 103152,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:08:44.192Z"
+      "updatedAt": "2026-10-10T02:10:27.346Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:46:53.444Z",
-  "updatedAt": "2026-10-10T02:08:44.192Z",
+  "updatedAt": "2026-10-10T02:10:27.346Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2220,7 +2233,7 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:08:44.192Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:10:27.346Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
