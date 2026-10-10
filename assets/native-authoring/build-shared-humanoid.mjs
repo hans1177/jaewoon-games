@@ -15,7 +15,14 @@ export const SHARED_HUMANOID_ACTION_LIBRARY=Object.freeze({
  lancer:['LANCER_GUARD','LANCER_JUMP_STAB','LANCER_SWEEP','LANCER_CHARGE','LANCER_DOUBLE_THRUST','LANCER_PARRY','LANCER_BACKSTEP','LANCER_FINISHER'],
  blacksmith:['BLACKSMITH_TONGS','BLACKSMITH_ANVIL','BLACKSMITH_COOL_METAL','BLACKSMITH_INSPECT','BLACKSMITH_REPAIR','BLACKSMITH_CRAFT','BLACKSMITH_LIFT','BLACKSMITH_SHOW_TOOL']
 });
-export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
+// 공용 스킬 문법 20종: 모든 인간형 직업이 동일한 19관절 리그를 통해 이 모션을 상속한다.
+// 실제 기술 허가·피해·쿨다운·이동·명중 시점은 각 게임이 소유한다.
+export const SHARED_HUMANOID_SKILL_KINDS=Object.freeze([
+ 'CHARGE','COUNTER','COMBO','DASH','PROJECTILE','BEAM','AREA','GUARD','CHANNEL','SUMMON',
+ 'HEAL','BUFF','TRAP','TRANSFORM','REPAIR','INTERACT','COMMAND','PERFORM','STANCE','ULTIMATE'
+]);
+export function buildSharedHumanoid(kind='traveler',{extended=false,skillPack=false}={}){
+ if(skillPack&&(kind!=='traveler'||extended))throw Error('SKILL_MASTER_MUST_USE_UNMODIFIED_TRAVELER_RIG');
  const guardian=kind==='guardian', deg=Math.PI/180;
  const joints=[
  ['Root',-1,[0,0,0]],['Hips',0,[0,1.03,0]],['Spine',1,[0,.22,0]],['Chest',2,[0,.31,0]],['Neck',3,[0,.27,0]],['Head',4,[0,.16,0]],
@@ -177,6 +184,8 @@ export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
   if(roleActions[kind])defs.push([roleActions[kind].clip,roleActions[kind].duration,25]);
  const extraClips=extended?SHARED_HUMANOID_ACTION_LIBRARY[kind]||[]:[];
  for(const name of extraClips)defs.push([name,1.1,25]);
+ const skillClips=skillPack?SHARED_HUMANOID_SKILL_KINDS.map(kind=>'SKILL_'+kind):[];
+ for(const name of skillClips)defs.push([name,1.25,29]);
  const pulse=(u,at=.42,w=.3)=>Math.exp(-Math.pow((u-at)/w,2)*2);
  function pose(name,u){
   const s=Math.sin(2*Math.PI*u),c=Math.cos(2*Math.PI*u),E={},T=[0,1.03,0];
@@ -260,6 +269,50 @@ export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
      if(mode===7){E.Chest[0]-=24*h;E.Shoulder_L[0]-=17*h;E.Shoulder_R[0]-=22*h;}
      T[1]-=.025*b-.015*hit;
    }
+   // 공통 직업계열의 시전·손동작·체중 이동. 각 역할은 다른 시전궤적/팔 위상/기립자세를 가진다.
+   const skillIndex=skillClips.indexOf(name);
+   if(skillIndex>=0){
+     const spec=[
+       [-35,70,-48,78,18,-22,12],[-65,73,-35,89,-16,31,18],
+       [-62,92,-44,66,29,19,12],[-18,-85,-19,-84,42,-46,54],
+       [-66,-32,-118,78,10,24,8],[-114,-66,-112,-63,-27,30,18],
+       [-86,58,-90,62,-38,49,22],[-120,-69,-118,-75,-29,19,12],
+       [-83,-87,-91,-95,-22,15,5],[-112,51,-54,71,16,37,24],
+       [-87,-38,-82,-45,-19,21,10],[-90,-11,-93,-7,-30,41,21],
+       [-112,-21,-49,42,51,-56,55],[-77,115,-65,108,22,-42,31],
+       [-85,103,-50,64,31,-25,37],[-26,-73,-89,34,15,27,12],
+       [-19,-96,-77,-44,-13,42,20],[-64,45,-116,18,-18,39,17],
+       [-54,-61,-57,-63,30,-13,29],[-130,126,-134,141,-39,57,44]
+     ][skillIndex];
+     const prepare=pulse(u,.24,.18),release=pulse(u,.65,.17),
+       hold=Math.sin(Math.PI*u),recovery=pulse(u,.85,.19),
+       turn=skillIndex%2===0?1:-1,reach=skillIndex%3===0?1:-1;
+     E.Shoulder_L=[spec[0]*prepare+spec[1]*release,turn*(8*hold+12*release),-14*prepare+23*release*reach];
+     E.Shoulder_R=[spec[2]*prepare+spec[3]*release,-turn*(12*hold+9*release),18*prepare-17*release*reach];
+     E.Elbow_L=[-42*prepare+21*release,0,9*turn*hold];
+     E.Elbow_R=[-46*prepare+25*release,0,-10*turn*hold];
+     E.Chest=[spec[4]*prepare+spec[5]*release,turn*(17*prepare-27*release),reach*(12*prepare-9*release)];
+     E.Hips=[spec[6]*prepare*.35-spec[6]*release*.3,turn*12*(release-prepare),turn*11*hold];
+     E.Head=[-spec[4]*prepare*.45-spec[5]*release*.3,-turn*11*hold,turn*6*recovery];
+     E.UpperLeg_L=[-spec[6]*prepare*.5+22*release,0,turn*12*hold];
+     E.UpperLeg_R=[-spec[6]*prepare*.34+17*release,0,-turn*12*hold];
+     E.Knee_L=[spec[6]*hold*.42+15*release,0,0];
+     E.Knee_R=[spec[6]*hold*.33+9*release,0,0];
+     // 긴 시전·명령·공연은 홀드, 돌진·함정·수리는 다른 지지발/상체 리듬.
+     if(['CHANNEL','BEAM','GUARD','STANCE','PERFORM','SUMMON'].includes(SHARED_HUMANOID_SKILL_KINDS[skillIndex])){
+       E.Shoulder_L[0]-=21*hold;E.Shoulder_R[0]-=15*hold;
+       E.Chest[1]+=9*Math.sin(Math.PI*u*2);
+     }
+     if(['DASH','TRAP','REPAIR','INTERACT'].includes(SHARED_HUMANOID_SKILL_KINDS[skillIndex])){
+       E.UpperLeg_L[0]+=28*hold;E.Knee_R[0]+=33*hold;
+       E.Chest[0]+=24*hold;T[1]-=.09*hold;
+     }
+     if(['AREA','HEAL','BUFF','ULTIMATE'].includes(SHARED_HUMANOID_SKILL_KINDS[skillIndex])){
+       E.Shoulder_L[2]-=23*hold;E.Shoulder_R[2]+=21*hold;
+       E.Head[0]-=10*hold;
+     }
+     T[1]-=.03*prepare+.013*recovery;
+   }
    return {E,T};
  }
  for(const [name,d,n] of defs){
@@ -283,15 +336,17 @@ export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
 
 const outputDir=path.resolve(process.argv[2]||'assets/shared');
 const extended=process.argv.includes('--extended-actions');
+const skillPack=process.argv.includes('--skill-motions');
 fs.mkdirSync(outputDir,{recursive:true});
 const defaultRoles=['traveler','guardian'];
 const availableRoles=[...defaultRoles,'samurai','archer','mage','rogue','lancer','blacksmith'];
 const roleArg=process.argv.find(value=>value.startsWith('--roles='));
 const requestedRoles=roleArg?roleArg.slice(8).split(',').map(x=>x.trim()).filter(Boolean):defaultRoles;
 if(!requestedRoles.length||requestedRoles.some(role=>!availableRoles.includes(role)))throw Error('UNKNOWN_SHARED_HUMANOID_ROLE');
+if(skillPack&&(requestedRoles.length!==1||requestedRoles[0]!=='traveler'||extended))throw Error('SKILL_PACK_REQUIRES_SINGLE_TRAVELER_MASTER');
 for(const role of [...new Set(requestedRoles)]){
-  const asset=buildSharedHumanoid(role,{extended});
-  const destination=path.join(outputDir,'humanoid-'+role+(extended?'-actions':'')+'.glb');
+  const asset=buildSharedHumanoid(role,{extended,skillPack});
+  const destination=path.join(outputDir,skillPack?'humanoid-skill-actions.glb':'humanoid-'+role+(extended?'-actions':'')+'.glb');
   fs.writeFileSync(destination,asset.bytes);
   console.log(JSON.stringify({path:destination,vertices:asset.vertexCount,triangles:asset.triangleCount,joints:asset.jointCount,animations:asset.clipNames,nativeRuntimeVerified:false}));
 }
