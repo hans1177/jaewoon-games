@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 실시간 생존 게임에서 적군의 점진적인 증가에 맞서 전략적 방어를 숙련하며, 새로운 지역이나 boss와의 접촉을 통해 플레이 스타일을 변환하는 과정을 경험하게 된다.",
       "coreFun": "{\"identity\": \"코어 전장 4대4 - 진보형 실시간 생존 게임\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival & Action\", \"material\": \"Dynamic enemy waves, adaptive upgrades, and strategic positioning.\", \"materialDomain\": \"Real-time combat, resource management, and tactical decision-making.\", \"stateChange\": \"Enemy wave intensity increases → player builds stronger defenses → new terrain or boss appears\"}, \"b\": {\"system\": \"Roguelike Progression\", \"material\": \"Randomized loot drops, skill progression, and dynamic world events.\", \"materialDomain\": \"Progressive difficulty, randomized content, and emergent gameplay mechanics.\", \"stateChange\": \"Loot drop changes → skill tree updates → new area or event triggered\"}, \"abCausality\": \"Player's defensive build evolves → new terrain/monster spawns"
+    },
+    "local_authoring_parts::db587e5618a57de07f0a799057b019418661fc567cf74a3a718800a8863cca8f:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "플레이어는 실시간 생존 게임에서 적군의 점진적인 증가에 맞서 전략적 방어를 숙련하며, 새로운 지역이나 boss와의 접촉을 통해 플레이 스타일을 변환하는 과정을 경험하게 된다.",
+        "게임은 주기적으로 새로운 토지 또는 boss와의 대 face를 유도하여 플레이어에게 새로운 도전을 제공함."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 651752,
-      "lastMs": 103636,
+      "totalMs": 718519,
+      "lastMs": 66767,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:01:48.096Z"
+      "updatedAt": "2026-10-10T07:02:54.867Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:50:55.985Z",
-  "updatedAt": "2026-10-10T07:01:48.098Z",
+  "updatedAt": "2026-10-10T07:02:54.867Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1924,7 +1931,7 @@
   "localAuthoringSplits": {
     "095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:01:48.098Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:02:54.867Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
