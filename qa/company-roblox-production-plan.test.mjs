@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
+import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles,buildUnifiedLibraryMatchContract} from '../tools/company-roblox-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
@@ -390,3 +390,69 @@ test('owner feature removal survives repeated evolution and only a newer explici
   assert.notEqual(next.ownerChangeFingerprint,previous.ownerChangeFingerprint);
 });
 
+
+test('unified library screen includes native mesh motion materials engine tools and external algorithms without forced imports',()=>{
+  const owner='unity-games/demo/Assets/Scripts/WorldView.cs',stranger='unity-games/demo/Assets/Scripts/Unowned.cs';
+  const source={sourceAnchors:[
+    {file:owner,symbol:'BuildMesh',context:'MeshFilter mesh; MeshRenderer renderer;'},
+    {file:owner,symbol:'BlendAnimation',context:'Animator animator; WalkAnimation blend;'},
+    {file:owner,symbol:'ApplyMaterial',context:'Material material; Shader shader;'},
+    {file:owner,symbol:'OpenInventory',context:'Inventory panel;'},
+    {file:stranger,symbol:'BrowseQuest',context:'Quest journal;'}
+  ]};
+  const libraries=['assets/inventory-equipment.js','assets/jaewoon-motion-engine.js','assets/vibe-motion-director.js','assets/company-admin.js'];
+  const registry=[
+    {id:'shared-humanoid-motion-v1',category:'MOTION',title:'Shared motions',platform:'SHARED_NATIVE_SOURCE',license:'project-original',
+      path:'/assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb',fileRoles:{models:['assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb']},runtimeVerificationState:'PENDING_STUDIO',verifiedCompanyReusable:false},
+    {id:'shared-material-v1',category:'MATERIAL',platform:'SHARED_MASTER',license:'project-original',path:'/assets/shared/material.glb'},
+    {id:'roblox-common-ui-v1',category:'UI',platform:'ROBLOX',license:'project-original',path:'/assets/roblox/common-ui-v1/RobloxCommonUI.luau'},
+    {id:'shared-world-v1',category:'ENVIRONMENT',platform:'SHARED_MASTER',license:'NC',path:'/assets/shared/world.glb'},
+    {id:'shared-quest-v1',category:'UI',platform:'SHARED_MASTER',license:'project-original',path:'/assets/shared/quest.glb'},
+    {id:'shared-locked-v1',category:'MATERIAL',platform:'SHARED_MASTER',license:'project-original',path:'/assets/shared/locked.glb',internalUseBlockedByMissingAudit:true}
+  ];
+  const params={gameId:'demo',source,files:[owner],availableLibraryPaths:libraries,catalogAssets:registry,design:{genre:'SURVIVAL'}};
+  const web=buildUnifiedLibraryMatchContract({...params,platform:'UNITY_WEB'});
+  const app=buildUnifiedLibraryMatchContract({...params,platform:'UNITY_APP'});
+  assert.equal(web.registeredAssetCount,6);
+  assert.equal(web.firstPartyLibraryCount,4);
+  assert.ok(web.candidates.some(row=>row.id==='shared-humanoid-motion-v1'&&row.referenceOnly===false));
+  assert.ok(web.candidates.some(row=>row.id==='shared-material-v1'&&row.kind==='CATALOG_ASSET'));
+  assert.ok(web.candidates.some(row=>row.library==='assets/inventory-equipment.js'));
+  assert.ok(web.candidates.some(row=>row.library==='assets/vibe-motion-director.js'&&row.integration==='USE_EXISTING_CANONICAL_ENGINE_HOOK_ONLY'));
+  assert.ok(!web.candidates.some(row=>['shared-world-v1','roblox-common-ui-v1','shared-quest-v1','shared-locked-v1'].includes(row.id)));
+  assert.ok(!web.candidates.some(row=>row.library==='assets/company-admin.js'));
+  assert.ok(web.externalAlgorithms.some(row=>row.id==='MESH_OPTIMIZATION_LOD'));
+  assert.ok(web.externalAlgorithms.some(row=>row.id==='PBR_MATERIAL_COMPATIBILITY'));
+  assert.ok(web.externalAlgorithms.some(row=>row.id==='MOTION_STATE_TRANSITIONS'));
+  assert.deepEqual(web.candidates,app.candidates,'Unity WebGL and app share the native library candidates');
+  assert.ok(web.candidates.every(row=>row.optional===true&&row.automaticImport===false&&row.runtimeVerified===false));
+  const genreOnly=buildUnifiedLibraryMatchContract({...params,source:{sourceAnchors:[]},platform:'UNITY_WEB'});
+  assert.equal(genreOnly.status,'NO_SOURCE_MATCH');
+  assert.deepEqual(genreOnly.candidates,[]);
+  assert.deepEqual(genreOnly.externalAlgorithms,[]);
+  const unowned=buildUnifiedLibraryMatchContract({...params,files:[stranger],platform:'UNITY_WEB'});
+  assert.ok(unowned.candidates.every(row=>row.sourceFiles.every(f=>f===stranger)));
+  const native=buildUnifiedLibraryMatchContract({...params,platform:'ROBLOX'});
+  assert.ok(native.candidates.some(row=>row.id==='roblox-common-ui-v1'));
+  assert.ok(!native.candidates.some(row=>row.id==='shared-material-v1'&&row.integration==='REUSE_EXISTING_COMPATIBLE_HANDLER'));
+});
+
+test('all library matching in BUILD_UP is independent of the optional interface blueprint',()=>{
+  const ui='unity-games/demo/Assets/Scripts/Action.cs';
+  const plan=buildRobloxProductionPlan({
+    gameId:'demo',platform:'UNITY_WEB',focus:'CORE_FUN',
+    policy:{...policy,status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY'],spatialBlueprint:{enabled:false}},
+    design:{genre:'RPG',coreLoop:['motion-based combat']},
+    source:{sourceAnchors:[{file:ui,symbol:'AnimateAttack',context:'Animator animator; PlayAttackAnimation();'}],topFiles:[{file:ui,score:12}]},
+    responsibleFiles:[ui],
+    availableLibraryPaths:['assets/animation-state.js'],
+    catalogAssets:[{id:'shared-humanoid-motion-v1',category:'MOTION',platform:'SHARED_NATIVE_SOURCE',license:'project-original',path:'/assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb'}]
+  });
+  assert.ok(plan);
+  assert.equal(plan.interfaceBlueprintContract,null);
+  assert.ok(plan.libraryReuseContract.candidates.some(row=>row.id==='shared-humanoid-motion-v1'));
+  const hints=robloxProductionPromptLines(plan);
+  assert.ok(hints.some(row=>row.startsWith('UNITY_PRODUCTION_LIBRARY_MATCH=')));
+  assert.ok(hints.some(row=>row.includes('automaticImport":false')));
+  assert.ok(!hints.some(row=>row.startsWith('UNITY_PRODUCTION_INTERFACE=')));
+});
