@@ -35,6 +35,14 @@ namespace JaewoonGames.DaechungRpg
         public List<string> witnessedStoryEvents = new();
         // 실제 네트워크 협동 플레이어와 구별되는 비전투 NPC 동행 상태.
         public bool scoutAccompanying;
+        // 설계 4개 시스템의 실제 상태. 기존 세이브 키·HP·공격력·보상·진행 규칙과 분리한다.
+        // WorldAccessState: 방문 지역/단서 비트, IntentState: 주민과의 선택(0/1/2).
+        // RouteState: 지역과 탐색 단계, RiskState: 위험 관찰, ResourceState: 모은 단서.
+        public int WorldAccessState;
+        public int IntentState;
+        public int RouteState;
+        public int RiskState;
+        public int ResourceState;
     }
 
     [Serializable]
@@ -273,6 +281,109 @@ namespace JaewoonGames.DaechungRpg
             return true;
         }
 
+
+        // 메인: VIBE_MAIN · 공격이라는 실제 플레이어 선택이 월드 경로에 남는다.
+        // 월드 비트는 기존 지역을 잠그지 않고 탐색한 장소의 기록에만 사용한다.
+        public void RecordWorldChoice()
+        {
+            if (!Player.currentRegionId.StartsWith("field-", StringComparison.Ordinal)
+                || !int.TryParse(Player.currentRegionId.Substring(6), out var region)
+                || region < 1 || region > 10) return;
+            var oldRoute = Player.RouteState;
+            var oldAccess = Player.WorldAccessState;
+            var regionBit = 1 << region;
+            var familiar = (Player.WorldAccessState & regionBit) != 0;
+            var chosenRoute = region * 10 + (Player.IntentState == 2 ? 2 : 1);
+            if (!familiar || Player.RouteState < chosenRoute)
+                Player.RouteState = chosenRoute;
+            Player.WorldAccessState |= regionBit;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1"))
+            {
+                if (oldRoute != Player.RouteState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_MAIN state=RouteState before=" + oldRoute + " after=" + Player.RouteState + " status=PASS");
+                if (oldAccess != Player.WorldAccessState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_MAIN state=WorldAccessState before=" + oldAccess + " after=" + Player.WorldAccessState + " status=PASS");
+            }
+#endif
+        }
+
+        // 메인: VIBE_A · 경로에 들어가 전투를 선택할수록 위험과 조사 단서가 함께 누적된다.
+        // 단서는 게임 골드나 공격력으로 전환하지 않아 기존 밸런스를 보존한다.
+        public void RecordConsequenceChoice()
+        {
+            if (Player.RouteState <= 0 || Player.currentRegionId == "town") return;
+            var oldRisk = Player.RiskState;
+            var oldResource = Player.ResourceState;
+            Player.RiskState = Mathf.Min(99, Player.RiskState + 1);
+            if (Player.RiskState > 0)
+                Player.ResourceState = Mathf.Min(999, Player.ResourceState + 1);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1"))
+            {
+                if (oldRisk != Player.RiskState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_A state=RiskState before=" + oldRisk + " after=" + Player.RiskState + " status=PASS");
+                if (oldResource != Player.ResourceState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_A state=ResourceState before=" + oldResource + " after=" + Player.ResourceState + " status=PASS");
+            }
+#endif
+        }
+
+        // 메인: VIBE_B · 실제 전투 승리로 조사한 단서가 경로 진행과 위험 해석을 바꾼다.
+        public void RecordExplorationOutcome()
+        {
+            if (!Player.currentRegionId.StartsWith("field-", StringComparison.Ordinal)
+                || !int.TryParse(Player.currentRegionId.Substring(6), out var region)
+                || region < 1 || region > 10
+                || Player.RiskState < 1 || Player.ResourceState < 1) return;
+            var oldRoute = Player.RouteState;
+            var oldRisk = Player.RiskState;
+            Player.RouteState = Mathf.Max(Player.RouteState, region * 10 + 3);
+            Player.RiskState = Mathf.Max(0, Player.RiskState - 1);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1"))
+            {
+                if (oldRoute != Player.RouteState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_B state=RouteState before=" + oldRoute + " after=" + Player.RouteState + " status=PASS");
+                if (oldRisk != Player.RiskState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_B state=RiskState before=" + oldRisk + " after=" + Player.RiskState + " status=PASS");
+            }
+#endif
+        }
+
+        // 메인: VIBE_DELVE · 발견된 지역 단서가 다음 사회관계 선택지를 해금한다.
+        // 기존 레벨 잠금/사냥터 규칙은 유지하고 선택형 조사만 추가한다.
+        public void RecordDelveOutcome()
+        {
+            if (!Player.currentRegionId.StartsWith("field-", StringComparison.Ordinal)
+                || !int.TryParse(Player.currentRegionId.Substring(6), out var region)
+                || region < 1 || region > 10
+                || Player.RouteState < region * 10 + 3 || Player.RiskState <= 0) return;
+            var oldAccess = Player.WorldAccessState;
+            var oldIntent = Player.IntentState;
+            Player.WorldAccessState |= 1 << (region + 16);
+            if (Player.IntentState == 0) Player.IntentState = 1;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (Application.absoluteURL.Contains("qa=1"))
+            {
+                if (oldAccess != Player.WorldAccessState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_DELVE state=WorldAccessState before=" + oldAccess + " after=" + Player.WorldAccessState + " status=PASS");
+                if (oldIntent != Player.IntentState)
+                    Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=daechung-rpg system=VIBE_DELVE state=IntentState before=" + oldIntent + " after=" + Player.IntentState + " status=PASS");
+            }
+#endif
+        }
+
+        // 플레이어가 실제 주민 대화를 마친 뒤만 사회관계의 우선순위를 바꿀 수 있다.
+        public bool TryChooseStoryIntent(int choice)
+        {
+            if (Player.currentRegionId != "town" || !HasStoryEvent("chief-introduction")
+                || (choice != 1 && choice != 2) || Player.IntentState == choice) return false;
+            Player.IntentState = choice;
+            Save();
+            return true;
+        }
+
         public bool TryBuyWeapon(string weaponId)
         {
             if (Player.currentRegionId != "town" || string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
@@ -420,6 +531,12 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.mainQuestStep = 0;
                 }
+                // 저장 마이그레이션: v1을 그대로 읽고 새 선택형 상태만 안전한 기본값으로 보정한다.
+                Player.WorldAccessState = Mathf.Max(0, Player.WorldAccessState);
+                Player.IntentState = Mathf.Clamp(Player.IntentState, 0, 2);
+                Player.RouteState = Mathf.Max(0, Player.RouteState);
+                Player.RiskState = Mathf.Clamp(Player.RiskState, 0, 99);
+                Player.ResourceState = Mathf.Clamp(Player.ResourceState, 0, 999);
                 if (Player.baseMaxHp <= 0)
                 {
                     Player.baseMaxHp = 100;
