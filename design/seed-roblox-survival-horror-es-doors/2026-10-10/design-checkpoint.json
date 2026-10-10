@@ -386,25 +386,41 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::7e00e746238b0201c3f688fad665ec7d6e39c8fc4fb404622562ab30c7e2d4b4:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerStartsWithClearGoal",
+        "limitedMovesAndObstaclesOnBoardOrGrid"
+      ],
+      "stateOutputs": [
+        "deliberateMatchesCreated",
+        "combosGenerated",
+        "immediateFeedbackReceived"
+      ],
+      "name": "Last Lantern - Player's Journey Through a Living Board Game",
+      "purpose": "Players interact with a dynamic environment that evolves as they progress.",
+      "playerChoice": "Player chooses new strategy for next level or adapts to new risks."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 401961,
-      "lastMs": 28913,
+      "totalMs": 437629,
+      "lastMs": 35668,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:26:58.804Z"
+      "updatedAt": "2026-10-10T02:27:34.479Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:20:16.789Z",
-  "updatedAt": "2026-10-10T02:26:58.810Z",
+  "updatedAt": "2026-10-10T02:27:34.479Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2124,10 +2140,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:26:58.806Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:27:34.479Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
