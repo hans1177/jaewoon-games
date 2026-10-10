@@ -207,25 +207,38 @@
       "name": "Social Interaction & Relationships",
       "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
       "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
+    },
+    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:1": {
+      "id": "SIGNATURE_SYSTEM_1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+      ],
+      "stateOutputs": [
+        "FIGURE_REVEALS_HIDDEN_MAP"
+      ],
+      "name": "Social Interaction & Relationships",
+      "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
+      "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 899626,
-      "lastMs": 100416,
+      "totalMs": 998045,
+      "lastMs": 98419,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:52:02.006Z"
+      "updatedAt": "2026-10-10T02:53:40.426Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:37:02.353Z",
-  "updatedAt": "2026-10-10T02:52:02.006Z",
+  "updatedAt": "2026-10-10T02:53:40.426Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1742,7 +1755,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:52:02.006Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:53:40.426Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
