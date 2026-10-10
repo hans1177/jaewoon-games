@@ -2047,7 +2047,7 @@ test('current owner hold keeps daechung RPG Unity Web 3D work eligible while And
   fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
   const unityRoot=path.join(root,'unity-games',gameId);
   fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
-  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\\n'.replace('\\n','\n'));
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
   const rows=collectProjects({projects:[]},{games:[{
     id:gameId,name:'5포탈 RPG',productionClass:'DEVELOPMENT_CONFIRMED',
     lifecycleState:'ACTIVE',unityProjectPath:`unity-games/${gameId}`
