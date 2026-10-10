@@ -550,25 +550,32 @@
       },
       "playerFantasy": "별길 개척자의 선택은 진보적 루프에 기반하여 세계 연결을 형성하며, 플레이어의 선택은 실제 세계 상태 변화를 유도하는 갈등을 생성합니다. 이 선택은 모바일 이해 가능한 입력/피드백을 통해 게임 정체성과 관련된 단서를 제공하며, 심리적 발전 과정을 통해 실질적 인과 변화를 포함한 새 정체성을 형성합니다.",
       "coreFun": "{\"system\": \"진보적 루프\", \"material\": \"선택, 보상, 위험, 세계 변화\", \"materialDomain\": \"학문적 규칙, 인과적 상태 변화\", \"stateChange\": \"선택 -> 상태변화 -> 보상/위험/다음 선택\"}"
+    },
+    "local_authoring_parts::5fa74f583bb5a6393554365ac38fd987ae737ff76fbce0bccd1d7eef161166b5:coreLoop": {
+      "coreLoop": [
+        "진보적 선택 -> 세계 변화 -> 보상/위험/다음 선택",
+        "세계 변화 -> 진보적 선택 -> 보상/위험/다음 선택",
+        "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 7,
+      "calls": 11,
+      "successes": 8,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1885150,
-      "lastMs": 83611,
+      "totalMs": 1945005,
+      "lastMs": 59855,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:09:09.287Z"
+      "updatedAt": "2026-10-10T09:10:09.147Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:37:43.767Z",
-  "updatedAt": "2026-10-10T09:09:09.290Z",
+  "updatedAt": "2026-10-10T09:10:09.159Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2070,8 +2077,8 @@
     "9a396cbd4a2c1209951a539122c8bb32e94e98023583a867e8e3b98683101531": true,
     "42c1923fb561b00b95d9531a783f8f5234bf6a95ff699819108cc69ab429d12c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:09:09.290Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:10:09.147Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
