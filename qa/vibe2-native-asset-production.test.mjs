@@ -1893,6 +1893,65 @@ test('image mesh reconstruction requires real local open-source weights and cann
   assert.match(executor,/sha256File\(imageFile\)/);
 });
 
+test('Vibe built-in open-source authoring plans preserve human, clothing, objects and medical rights gates',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const module of ['mesh-ai','human','clothing','object','design','medical','animation','video']){
+    assert.ok(source.includes(module),'native planner must list '+module);
+    assert.ok(py.includes("'"+module+"'"),'Blender native authoring must list '+module);
+  }
+  for(const role of ['chair','table','door','tree','machine','weapon','lamp']){
+    assert.ok(py.includes("'"+role+"'"),role);
+  }
+  assert.match(py,/HUMAN_MPFB_ADDON_NOT_INSTALLED/);
+  assert.match(py,/HUMAN_MPFB_WEIGHT_BINDING_REQUIRED/);
+  assert.match(py,/HUMAN_IMPORTED_RIG_AND_WEIGHTS_REQUIRED/);
+  assert.match(py,/MEDICAL_SOURCE_SANITIZED_CONFIRMATION_REQUIRED/);
+  assert.match(py,/OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED/);
+  assert.match(py,/clinicalUseApproved':False/);
+  assert.match(py,/bpy\.ops\.export_scene\.gltf/);
+  assert.match(py,/if not ASSET_ARMATURES and not MOTION_CLIPS/);
+  assert.match(py,/image_mesh_asset\(\)/);
+});
+
+test('animation and video select a real existing Blender DCC authoring recipe with MP4 evidence',()=>{
+  const base={target:'roblox',manifest:{assets:[]},presetCatalog:{presets:[]}};
+  for(const module of ['animation','video']){
+    const plan=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'oss-motion-'+module,
+      goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 및 배경 애니메이션 렌더링',
+      assetAuthoring:{module,motionKind:'turntable'}
+    }});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,module);
+    assert.ok(recipes.some(recipe=>recipe.module===module),module);
+    for(const recipe of recipes.filter(recipe=>recipe.module===module)){
+      assert.ok(recipe.args.includes('--module'));
+      assert.ok(recipe.args.includes('--motion-kind'));
+      assert.ok(recipe.args.includes('turntable'));
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/def human_motion\(/);
+  assert.match(py,/MOTION_CLIPS\.append\('SHOWCASE'\)/);
+  assert.match(py,/VIDEO_FFMPEG_ENCODER_EXECUTION_FAILED/);
+  assert.match(py,/ffmpeg\.org/);
+  assert.match(py,/'-c:v','mpeg4'/);
+  assert.match(py,/actualFramesRendered':True/);
+  const exec=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(exec,/NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED/);
+  assert.match(exec,/NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID/);
+  assert.match(exec,/videoProof\.sourceGlbSha256!==nativeArtifact\.sha256/);
+  assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
+});
+
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
   const threeD=buildVibeAssetProductionPlan({
     target:'web',
