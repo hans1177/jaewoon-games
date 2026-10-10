@@ -18,7 +18,16 @@ on:
       - 'tools/company-unity-web-gameplay-validation.mjs'
       - 'web-games/**/upper-platform-development-readiness.json'
       - 'company-asset-library.json'
+      - 'unity-games/**'
+      - 'roblox-games/**'
+      - 'game-catalog.json'
       - 'tools/company-shared-context.mjs'
+  workflow_run:
+    workflows:
+      - Company Development Queue Reconcile
+    types: [completed]
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       game_id:

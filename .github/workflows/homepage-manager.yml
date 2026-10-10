@@ -5,6 +5,8 @@ on:
     workflows:
       - Company Status Sync
     types: [completed]
+  schedule:
+    - cron: '29 * * * *'
   push:
     branches: [main]
     paths:
