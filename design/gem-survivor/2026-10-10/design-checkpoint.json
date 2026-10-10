@@ -3,216 +3,18 @@
   "gameId": "gem-survivor",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
-  "fingerprint": "69e67cfe4f1c4bd95fe9b62ffd40e98476c281534c56e5af053c4a53b67dda8e",
+  "fingerprint": "0cc3765e1d1ca729decbc191ef0eebc7dda2e2120bd2f2e8c1b9059948ad4c4f",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::c2848a4fb2acede57e0098fdfbd4d7ec946968286341e0f6a544dcb82f1cd4ce:identity,creativeGrammar": {
-      "identity": "보석 생존전 - 게임 정체성",
-      "creativeGrammar": {
-        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
-        "a": {
-          "system": "SURVIVOR",
-          "material": "HORDE_PRESSURE",
-          "materialDomain": "REAL_TIME_SURVIVAL_RUN",
-          "stateChange": "ENEMY_PRESSURE_CHANGE"
-        },
-        "b": {
-          "system": "UPGRADE_SYSTEM",
-          "material": "BUILD_COMBINATION",
-          "materialDomain": "PLAYER_CHOICE",
-          "stateChange": "BUILD_STRENGTHENING_AND_BOSS_SURVIVAL"
-        },
-        "abCausality": "INVERSE_STATE_TRANSITION: ENEMY_PRESSURE -> BUILD_STRENGTHENING; BUILD_STRENGTHENING -> ENEMY_PRESSURE",
-        "abEvolution": {
-          "aChangesB": "ENEMY_PRESSURE_INCREASES_BUILDS_REQUIRE_UPGRADES",
-          "bChangesA": "BUILD_COMBINATION_EFFECTIVE_UNDER_HARSH_WAVES",
-          "lateGameChange": "BUILD_COMBINATION_CONVERSION_TO_NEXT_PROGRESSION"
-        },
-        "materialFusion": {
-          "contrast": "ACTION_SURVIVAL_RPG_WITH_MOBILE_READABILITY",
-          "causalBridge": "HORDE_PRESSURE_INCREASING_PLAYER_CHOICE",
-          "removalConsequence": "MOBILE_INPUT_READABILITY_DECREASES_ON_HIGH_ENEMIES"
-        },
-        "storyCausalChain": {
-          "cause": "PLAYER_INITIATE_RUN_WITH_ELEVATED_PRESSURE",
-          "characterConflict": "GAME_SYSTEM_RESPONDED_WITH_ADAPTATION",
-          "playerChoice": "CONVERT_RUN_RESULT_TO_NEXT_BUILD",
-          "worldChange": "ENEMY_PRESSURE_INCREASED_AND_BUILD_STRENGTHENED",
-          "nextEvent": "NEXT_PROGRESSION_CHOICE"
-        },
-        "cThemes": [
-          {
-            "name": "ACTION",
-            "kind": "MATERIAL",
-            "gameplayEffect": "REAL_TIME_SURVIVAL"
-          },
-          {
-            "name": "SURVIVAL",
-            "kind": "MATERIAL",
-            "gameplayEffect": "HORDE_PRESSURE_AND_UPGRADE_SELECTION"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "REAL_TIME_SURVIVAL"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "MOBILE_ACTION_RPG",
-            "gameplayEffect": "READABLE_MOBILE_INPUT"
-          }
-        ],
-        "cGenreInterlock": "ACTION_SURVIVAL_ROGUELITE_PRIMARY_INTERACTS_WITH_MOBILE_ACTION_RPG_SECONDARY",
-        "cWorldAndGameplayEffect": "ACTION_SURVIVAL_ROGUELITE_GAMEPLAY_EFFECTS_ARE_EXPLORED_IN_MOBILE_INTERFACE",
-        "delveDiscoveries": [
-          {
-            "clue": "PLAYER_INITIATE_RUN",
-            "discovery": "GAME_SYSTEM_RESPONDED_WITH_ADAPTATION",
-            "newChoice": "CONVERT_RUN_RESULT_TO_NEXT_BUILD"
-          },
-          {
-            "clue": "ENEMY_PRESSURE_INCREASED",
-            "discovery": "BUILD_COMBINATION_STRENGTHENED",
-            "newChoice": "NEXT_PROGRESSION_CHOICE"
-          },
-          {
-            "clue": "RUN_RESULT_CONVERSION",
-            "discovery": "GAME_SYSTEM_REORGANIZED",
-            "newChoice": "NEW_PLAYSTYLE_ROUTE"
-          },
-          {
-            "clue": "HORDE_PRESSURE_ELEVATED",
-            "discovery": "PLAYER_CHOICE_CHANGED",
-            "newChoice": "MODIFIED_UPGRADE_SELECTION"
-          }
-        ],
-        "delveGrowthRule": "ACTION_SURVIVAL_ROGUELITE_GROWTH_RULE: PLAYER_CHOICE_CHANGE_IMPLIES_NEW_UPGRADES_AND_BUILDS",
-        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE_WITH_MOBILE_READABILITY"
-      }
-    },
-    "local_authoring_parts::c2848a4fb2acede57e0098fdfbd4d7ec946968286341e0f6a544dcb82f1cd4ce:playerFantasy,coreFun": {
-      "playerFantasy": "보석 생존전에서는 플레이어가 빠르게 이해할 수 있는 입력과 피드백을 제공하며, 진입 시점부터 반복 가능한 핵심 루프로 구성된다. 게임 내에서 전략적 선택과 경로 변경이 즉각적으로 결과를 만들어내며, 모바일에서도 즉시 읽을 수 있는 방식으로 설계되었다.",
-      "coreFun": "보석 생존전의 핵심 재미는 실제 플레이 선택에 기반하여 구현되며, 진행·위험·보상이 서로 연결되는 반복 가능한 학습 루프를 통해 숙련되고 성장 가능성이 실제로 달라지는 경험을 제공한다. 이는 단순한 수치 증가보다는 새로운 행동 조합과 경로 개발을 요구하며, 게임 전체의 인과적 상태 변화와 상호작용을 포함한다."
-    },
-    "local_authoring_parts::be2b93edec54f549bcd1548ab59c47b9a3d359a677d057ee485f571bc5a7698d:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "보석 생존전 - 게임 정체성",
-      "creativeGrammar": {
-        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
-        "a": {
-          "system": "SURVIVOR",
-          "material": "HORDE_PRESSURE",
-          "materialDomain": "REAL_TIME_SURVIVAL_RUN",
-          "stateChange": "ENEMY_PRESSURE_CHANGE"
-        },
-        "b": {
-          "system": "UPGRADE_SYSTEM",
-          "material": "BUILD_COMBINATION",
-          "materialDomain": "PLAYER_CHOICE",
-          "stateChange": "BUILD_STRENGTHENING_AND_BOSS_SURVIVAL"
-        },
-        "abCausality": "INVERSE_STATE_TRANSITION: ENEMY_PRESSURE -> BUILD_STRENGTHENING; BUILD_STRENGTHENING -> ENEMY_PRESSURE",
-        "abEvolution": {
-          "aChangesB": "ENEMY_PRESSURE_INCREASES_BUILDS_REQUIRE_UPGRADES",
-          "bChangesA": "BUILD_COMBINATION_EFFECTIVE_UNDER_HARSH_WAVES",
-          "lateGameChange": "BUILD_COMBINATION_CONVERSION_TO_NEXT_PROGRESSION"
-        },
-        "materialFusion": {
-          "contrast": "ACTION_SURVIVAL_RPG_WITH_MOBILE_READABILITY",
-          "causalBridge": "HORDE_PRESSURE_INCREASING_PLAYER_CHOICE",
-          "removalConsequence": "MOBILE_INPUT_READABILITY_DECREASES_ON_HIGH_ENEMIES"
-        },
-        "storyCausalChain": {
-          "cause": "PLAYER_INITIATE_RUN_WITH_ELEVATED_PRESSURE",
-          "characterConflict": "GAME_SYSTEM_RESPONDED_WITH_ADAPTATION",
-          "playerChoice": "CONVERT_RUN_RESULT_TO_NEXT_BUILD",
-          "worldChange": "ENEMY_PRESSURE_INCREASED_AND_BUILD_STRENGTHENED",
-          "nextEvent": "NEXT_PROGRESSION_CHOICE"
-        },
-        "cThemes": [
-          {
-            "name": "ACTION",
-            "kind": "MATERIAL",
-            "gameplayEffect": "REAL_TIME_SURVIVAL"
-          },
-          {
-            "name": "SURVIVAL",
-            "kind": "MATERIAL",
-            "gameplayEffect": "HORDE_PRESSURE_AND_UPGRADE_SELECTION"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "REAL_TIME_SURVIVAL"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "MOBILE_ACTION_RPG",
-            "gameplayEffect": "READABLE_MOBILE_INPUT"
-          }
-        ],
-        "cGenreInterlock": "ACTION_SURVIVAL_ROGUELITE_PRIMARY_INTERACTS_WITH_MOBILE_ACTION_RPG_SECONDARY",
-        "cWorldAndGameplayEffect": "ACTION_SURVIVAL_ROGUELITE_GAMEPLAY_EFFECTS_ARE_EXPLORED_IN_MOBILE_INTERFACE",
-        "delveDiscoveries": [
-          {
-            "clue": "PLAYER_INITIATE_RUN",
-            "discovery": "GAME_SYSTEM_RESPONDED_WITH_ADAPTATION",
-            "newChoice": "CONVERT_RUN_RESULT_TO_NEXT_BUILD"
-          },
-          {
-            "clue": "ENEMY_PRESSURE_INCREASED",
-            "discovery": "BUILD_COMBINATION_STRENGTHENED",
-            "newChoice": "NEXT_PROGRESSION_CHOICE"
-          },
-          {
-            "clue": "RUN_RESULT_CONVERSION",
-            "discovery": "GAME_SYSTEM_REORGANIZED",
-            "newChoice": "NEW_PLAYSTYLE_ROUTE"
-          },
-          {
-            "clue": "HORDE_PRESSURE_ELEVATED",
-            "discovery": "PLAYER_CHOICE_CHANGED",
-            "newChoice": "MODIFIED_UPGRADE_SELECTION"
-          }
-        ],
-        "delveGrowthRule": "ACTION_SURVIVAL_ROGUELITE_GROWTH_RULE: PLAYER_CHOICE_CHANGE_IMPLIES_NEW_UPGRADES_AND_BUILDS",
-        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE_WITH_MOBILE_READABILITY"
-      },
-      "playerFantasy": "보석 생존전에서는 플레이어가 빠르게 이해할 수 있는 입력과 피드백을 제공하며, 진입 시점부터 반복 가능한 핵심 루프로 구성된다. 게임 내에서 전략적 선택과 경로 변경이 즉각적으로 결과를 만들어내며, 모바일에서도 즉시 읽을 수 있는 방식으로 설계되었다.",
-      "coreFun": "보석 생존전의 핵심 재미는 실제 플레이 선택에 기반하여 구현되며, 진행·위험·보상이 서로 연결되는 반복 가능한 학습 루프를 통해 숙련되고 성장 가능성이 실제로 달라지는 경험을 제공한다. 이는 단순한 수치 증가보다는 새로운 행동 조합과 경로 개발을 요구하며, 게임 전체의 인과적 상태 변화와 상호작용을 포함한다."
-    },
-    "local_authoring_parts::04e00c0bb1b1004d2b82ede93ec1d1bda4afc6afd246bb45da4711472922c822:coreLoop": {
-      "coreLoop": [
-        "INPUT: PLAYER_INITIATE_RUN_WITH_ELEVATED_PRESSURE",
-        "STATE_CHANGE: ENEMY_PRESSURE_INCREASED_AND_BUILD_STRENGTHENED",
-        "OUTPUT: CONVERT_RUN_RESULT_TO_NEXT_BUILD"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 520596,
-      "lastMs": 47590,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:43:44.466Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T08:35:03.843Z",
-  "updatedAt": "2026-10-10T09:33:06.539Z",
+  "createdAt": "2026-10-10T09:53:22.157Z",
+  "updatedAt": "2026-10-10T09:53:22.171Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1932,16 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "c2848a4fb2acede57e0098fdfbd4d7ec946968286341e0f6a544dcb82f1cd4ce": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:43:44.466Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
