@@ -375,25 +375,94 @@
           "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 실제 세계 상태로 반영됨"
         }
       ]
+    },
+    "local_authoring_parts::da5563a19b364640ae5254e7c11fcd944524d9ecb2abd5ff05f56e35f60867e0:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::8c1faff4313e9e755c4c0f6ebfdecdb1cf265f3b029f676f38d792adfacbe3ba:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력: 전선 위치 변경 및 자원 분배 결정",
+        "선택: 전선 병합 또는 단독 확장",
+        "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결을 통해 실제 세계 상태로 반영하는 영토 전략 게임의 핵심 구조",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행에 대한 실질적인 역할 수행 및 실제 세계 상태 반영"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정 과정에서의 실질적 선택과 그에 따른 군사적 결과 생성",
+          "playerChoice": "전선 병합 또는 단독 확장 선택"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정의 인과적 영향을 전술적으로 표현하며, 군사 전술에 실질적인 영향을 미칩니다.",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 중인 실제 플레이어 역할입니다."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결 및 군사적 조치의 실질적 영향을 나타냄",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 실제 세계 상태로 반영됨"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1032929,
-      "lastMs": 71574,
+      "totalMs": 1088584,
+      "lastMs": 55655,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:20:23.824Z"
+      "updatedAt": "2026-10-10T02:21:19.492Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:20:23.835Z",
+  "updatedAt": "2026-10-10T02:21:19.499Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1924,17 +1993,148 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {
-    "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": 1
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
   },
-  "slicePartialResults": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems_0",
+            "signatureSystems_1",
+            "signatureSystems_2",
+            "signatureSystems_3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": 1,
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "영토 확장 전략 및 주요 위험/목표",
+        "a": {
+          "system": "지역 관리",
+          "material": "지역 경제, 자원 배분, 전선 이동 규칙의 융합",
+          "materialDomain": "지역적 자원, 전략적 선택, 위험 대응",
+          "stateChange": "전선 위치 변경, 자원 투입, 경제적 효과"
+        },
+        "b": {
+          "system": "군사 전술",
+          "material": "전선 병합, 군대 수준, 전투 방식의 변주",
+          "materialDomain": "전략적 선택, 군사적 결과, 전투 기회",
+          "stateChange": "전선 합병, 군대 강화, 전투 계획 수정"
+        },
+        "abCausality": "전선 위치와 자원 분배는 서로 인과적으로 연결되며, 군사 전술은 전선 변화에 따라 실질적인 영향을 미칩니다.",
+        "abEvolution": {
+          "aChangesB": "전선 이동으로 인한 자원 재배포가 B 시스템에 반영됩니다.",
+          "bChangesA": "전략적 선택이 전선 병합에 의해 직접적으로 영향을 받습니다.",
+          "lateGameChange": "전선 병합 후에는 새로운 전략적 선택 및 군사적 조치가 발생합니다."
+        },
+        "materialFusion": {
+          "contrast": "지역 관리 시스템과 군사 전술 시스템 간의 상호작용은 전선 변화에 따라 달라집니다.",
+          "causalBridge": "전선 이동은 지역 경제를 통해 군사 전술의 선택에 영향을 줍니다.",
+          "removalConsequence": "전선 병합 이후에는 새로운 전략적 선택과 군사적 결과가 발생하며, 이는 원본 규칙에 따릅니다."
+        },
+        "storyCausalChain": {
+          "cause": "전선 위치 변경 및 자원 분배 결정 과정",
+          "characterConflict": "군사 전술의 선택과 지역 경제의 변환 사이의 갈등",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행",
+          "worldChange": "전선 위치와 자원 배분이 실제 세계 상태로 반영됨",
+          "nextEvent": "새로운 전략적 선택 및 군사적 조치의 시작"
+        },
+        "cThemes": [
+          {
+            "name": "지역 경제",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 투입과 경제적 효과 생성"
+          },
+          {
+            "name": "전략적 선택",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전선 변화에 따른 군사적 조치"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "지역 관리 시스템",
+            "gameplayEffect": "전선 이동 및 자원 분배 결정"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "군사 전술 시스템",
+            "gameplayEffect": "전선 변화에 따른 군사적 결과"
+          }
+        ],
+        "cGenreInterlock": "지역 관리 시스템은 전선 이동을 통해 군사 전술 시스템에 영향을 미칩니다. 보조 장르 제거 시 전략적 선택이 달라집니다.",
+        "cWorldAndGameplayEffect": "전선 위치와 자원 배분은 실제 세계 상태로 반영되며, 이는 원본 규칙에 따라 이루어집니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "전선 이동의 기준은 지역 경제와 관련된 수치입니다.",
+            "discovery": "자원 투입과 경제적 효과가 새로운 전략적 선택으로 생성됩니다.",
+            "newChoice": "전선 병합 또는 단독 확장 선택"
+          },
+          {
+            "clue": "전략적 선택은 지역 경제의 변환에 의해 직접적으로 영향을 받습니다.",
+            "discovery": "군사적 조치와 전략적 선택이 서로 인과적으로 연결됩니다.",
+            "newChoice": "전선 병합 또는 단독 확장 선택"
+          },
+          {
+            "clue": "전선 변화 후에는 새로운 전략적 선택 및 군사적 결과가 발생합니다.",
+            "discovery": "전략적 선택과 군사적 조치가 서로 인과적으로 연결되어야 합니다.",
+            "newChoice": "전선 병합 또는 단독 확장 선택"
+          },
+          {
+            "clue": "전략적 선택은 지역 경제의 변환에 의해 직접적으로 영향을 받습니다.",
+            "discovery": "전략적 선택과 군사적 조치는 서로 인과적으로 연결되어야 하며, 이는 원본 규칙에 따라 이루어집니다.",
+            "newChoice": "전선 병합 또는 단독 확장 선택"
+          }
+        ],
+        "delveGrowthRule": "전선 위치 변경 및 자원 분배 결정 과정에서 새로운 전략적 선택이 생성되며, 이는 원본 규칙에 따릅니다.",
+        "finalGameIdentity": "전선 위치와 자원 배분이 실제 세계 상태로 반영된 새 정체성입니다."
+      },
+      "playerFantasy": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임에서, 플레이어는 전선 이동, 자원 투입 및 군사적 선택에 대한 실질적인 역할을 수행하며, 이러한 결정은 실제 세계 상태로 반영된다.",
+      "coreFun": "{\"system\": \"지역 관리\", \"material\": \"지역 경제, 자원 배분, 전선 이동 규칙의 융합\", \"stateChange\": \"전선 위치 변경, 자원 투입, 경제적 효과\"},\n{\"system\": \"군사 전술\", \"material\": \"전선 병합, 군대 수준, 전투 방식의 변주\", \"stateChange\": \"전선 합병, 군대 강화, 전투 계획 수정\"},\n\"abCausality\": \"전선 위치와 자원 분배는 서로 인과적으로 연결되며, 군사 전술은 전선 변화에 따라 실질적인 영향을 미칩니다.\"",
+      "coreLoop": [
+        "입력: 전선 위치 변경 및 자원 분배 결정",
+        "선택: 전선 병합 또는 단독 확장",
+        "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:20:23.835Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T02:21:19.494Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
