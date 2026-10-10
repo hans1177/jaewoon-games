@@ -8,25 +8,25 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 3,
-  "lastSuccessfulModelCallAt": "2026-10-10T10:13:06.213Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 4,
+  "lastSuccessfulModelCallAt": "2026-10-10T10:14:15.416Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')",
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 536719,
-      "lastMs": 64524,
+      "totalMs": 605919,
+      "lastMs": 69200,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:13:06.211Z"
+      "updatedAt": "2026-10-10T10:14:15.416Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T10:13:06.214Z"
+  "updatedAt": "2026-10-10T10:14:15.425Z"
 }

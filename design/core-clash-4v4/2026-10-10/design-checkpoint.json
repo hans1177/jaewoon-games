@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 역사를 바꾸며 전투를 수행하며, 선택에 따라 세계가 변하는 생존-액션 루프를 경험해야 한다.",
       "coreFun": "{\"A\": \"역사적 지도 변경\", \"B\": \"군사 계획 수정\", \"C\": \"전투 기술과 전략 결합\"}"
+    },
+    "local_authoring_parts::b709b73f56f7b6e5355c634e65e1d9382207af62f7cb7211aa10aed09b6ae2b2:coreLoop": {
+      "coreLoop": [
+        "역사적 지도 변경 -> 군사 계획 수정 -> 새로운 전략 실행",
+        "군사 계획 수정 -> 전투 기술 -> 전략 실행 변화",
+        "전투 전략 최종화 -> 보상 형성 -> 다음 선택 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 536719,
-      "lastMs": 64524,
+      "totalMs": 605919,
+      "lastMs": 69200,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:13:06.211Z"
+      "updatedAt": "2026-10-10T10:14:15.416Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:04:09.468Z",
-  "updatedAt": "2026-10-10T10:13:06.213Z",
+  "updatedAt": "2026-10-10T10:14:15.424Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "85f31c39ad39a95f54f92af39d0e2b49094e20d9e161d5d29e00f4c759590cc5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:13:06.213Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:14:15.416Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
