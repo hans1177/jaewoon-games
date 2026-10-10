@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
       "coreFun": "{\"system\":\"색상 조합 및 상호작용 시스템\",\"material\":\"색상의 주제나 예술적 표현\",\"materialDomain\":\"예술·문화\",\"stateChange\":\"색상의 조합을 통해 새로운 상태 생성\"}"
+    },
+    "local_authoring_parts::d295b2105f7b82c28e0147edb1dc245504a842eeae5ec9648b21bbad52d829e4:coreLoop": {
+      "coreLoop": [
+        "입력: 색상을 이해하고 선택",
+        "선택: 색상 조합 또는 기존 시스템 활용",
+        " 상태변화: 세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1264082,
-      "lastMs": 68629,
+      "totalMs": 1326958,
+      "lastMs": 62876,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:06:26.108Z"
+      "updatedAt": "2026-10-10T03:07:28.987Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:21.790Z",
-  "updatedAt": "2026-10-10T03:06:26.109Z",
+  "updatedAt": "2026-10-10T03:07:28.987Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2144,7 +2151,7 @@
     "3a0e80912fd0079786f4a4edc5ce858faa07e32782956ac54e2ad7d3bf84c691": true,
     "8d3efe3f4e7e759cf951d8037d3abad6594efcd6c9382f386fbbae4ccd757788": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:06:26.109Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:07:28.987Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
