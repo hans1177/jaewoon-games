@@ -1952,11 +1952,11 @@ test('animation and video select a real existing Blender DCC authoring recipe wi
   assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
 });
 
-test('licensed DeepMotion-style FBX uses the existing Blender motion authoring path while retaining textures',()=>{
+test('licensed FBX motion enters the unified internal asset library without provider-specific routing',()=>{
   const task={
-    gameId:'source-mocap-motion',
+    gameId:'internal-motion',
     goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경 애니메이션',
-    assetAuthoring:{module:'animation',sourceModel:'assets/shared/mocap/walk.fbx',sourceLicense:'project-original',sourceProvider:'deepmotion'}
+    assetAuthoring:{module:'animation',sourceModel:'assets/shared/mocap/walk.fbx',sourceLicense:'project-original'}
   };
   for(const target of ['roblox','unity']){
     const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
@@ -1965,9 +1965,12 @@ test('licensed DeepMotion-style FBX uses the existing Blender motion authoring p
     for(const recipe of recipes){
       assert.equal(recipe.sourceModel,'assets/shared/mocap/walk.fbx');
       assert.equal(recipe.sourceLicense,'project-original');
-      assert.equal(recipe.sourceProvider,'deepmotion');
+      assert.equal(recipe.internalAssetLibrary,'VIBE_STUDIO_ASSET_UNIVERSE');
+      assert.equal(recipe.internalAssetState,'PREPARED_NATIVE_QA_PENDING');
+      assert.equal(recipe.materialsMeshesRigAndMotionEnhancementOnly,true);
       assert.ok(recipe.args.includes('--source-model'));
-      assert.ok(recipe.args.includes('--source-provider'));
+      assert.ok(!recipe.args.includes('--source-provider'));
+      assert.ok(!Object.hasOwn(recipe,'sourceProvider'));
       assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
       assert.equal(recipe.companyPromotionAllowed,false);
       assert.equal(recipe.runtimeVerificationRequired,true);
@@ -1995,28 +1998,31 @@ test('licensed DeepMotion-style FBX uses the existing Blender motion authoring p
   assert.match(script,/SOURCE_MOCAP/);
 });
 
-test('Meshy-style PBR GLB imports keep licensed file provenance without triggering any paid API',()=>{
-  const task={gameId:'meshy-library',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경',
-    assetAuthoring:{module:'object',sourceModel:'assets/shared/meshy/asset.glb',sourceLicense:'cc0',sourceProvider:'meshy'}};
-  const plan=buildVibeAssetProductionPlan({target:'unity',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
-  const imported=plan.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.sourceProvider==='meshy');
-  assert.ok(imported.length>0);
-  for(const recipe of imported){
-    assert.equal(recipe.sourceModel,'assets/shared/meshy/asset.glb');
-    assert.equal(recipe.runMode,'VERIFY_ONLY');
-    assert.equal(recipe.companyPromotionAllowed,false);
-    assert.equal(recipe.args[recipe.args.indexOf('--source-provider')+1],'meshy');
+test('all source GLBs share one internal asset identity and receive non-destructive PBR style variants',()=>{
+  const task={gameId:'internal-mesh',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경',
+    assetAuthoring:{module:'object',sourceModel:'assets/shared/models/asset.glb',sourceLicense:'cc0'}};
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const imported=plan.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.sourceModel===task.assetAuthoring.sourceModel);
+    assert.ok(imported.length>0,target);
+    for(const recipe of imported){
+      assert.equal(recipe.internalAssetLibrary,'VIBE_STUDIO_ASSET_UNIVERSE');
+      assert.equal(recipe.internalAssetState,'PREPARED_NATIVE_QA_PENDING');
+      assert.equal(recipe.runMode,'VERIFY_ONLY');
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.equal(recipe.license,'cc0');
+      assert.ok(!recipe.args.includes('--source-provider'));
+    }
   }
-  assert.throws(()=>buildVibeAssetProductionPlan({target:'unity',
-    task:{...task,assetAuthoring:{...task.assetAuthoring,sourceModel:'assets/shared/meshy/asset.obj'}},
-    manifest:{assets:[]},presetCatalog:{presets:[]}}),/MESHY_LICENSE_VERIFIED_LOCAL_GLB_REQUIRED/);
-  assert.throws(()=>buildVibeAssetProductionPlan({target:'unity',
-    task:{...task,assetAuthoring:{...task.assetAuthoring,sourceModel:'',sourceProvider:'meshy'}},
-    manifest:{assets:[]},presetCatalog:{presets:[]}}),/MESHY_LICENSE_VERIFIED_LOCAL_GLB_REQUIRED/);
   const script=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
-  assert.match(script,/providerIdentityVerified.*False/);
-  assert.match(script,/externalProviderApiCalled.*False/);
+  assert.match(script,/VIBE_STUDIO_ASSET_UNIVERSE/);
+  assert.match(script,/PBR_ROUGHNESS_STYLE_REAUTHOR/);
+  assert.match(script,/PBR_BASE_COLOR_STYLE_REAUTHOR/);
+  assert.match(script,/transformHistory.*SOURCE_ENHANCEMENTS/);
+  assert.match(script,/sourceFileImmutable.*True/);
+  assert.match(script,/nativeRuntimePromotionRequired.*True/);
   assert.match(script,/NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID/);
+  assert.doesNotMatch(script,/ARGS\.source_provider/);
 });
 
 test('unlicensed TRELLIS.2 dependencies block commercial asset authoring before GPU execution',()=>{
