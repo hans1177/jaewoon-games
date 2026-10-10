@@ -2090,6 +2090,11 @@ test('Unity Web 3D source and separate asset responsibilities are scheduled toge
     'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
   fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
   fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  // 기존 Unity 코어가 있어야 WebGL 수리와 원본 시각 책임을 별도 파일로 구분한다.
+  const scriptsDir=path.join(projectDir,'Assets','Scripts');
+  fs.mkdirSync(scriptsDir,{recursive:true});
+  fs.writeFileSync(path.join(scriptsDir,'GameCore.cs'),'public sealed class GameCore {}\\n');
+  fs.writeFileSync(path.join(scriptsDir,'RuntimeBootstrap.cs'),'public sealed class RuntimeBootstrap {}\\n');
   // 3D 시각 책임 파일은 존재하지만 코어 수리 대상 파일과 독립적이다.
   const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
   fs.mkdirSync(path.dirname(visualFile),{recursive:true});
