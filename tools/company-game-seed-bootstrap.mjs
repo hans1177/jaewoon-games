@@ -684,7 +684,16 @@ export function computeVibeSeedProposal(target){
   const ownerBrief=clean(target.ownerBrief||target.brief);
   const requestContext=[requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
   const context=(category+' '+requestContext).toLowerCase();
+  const obbyProfile={
+    genre:'오비',
+    a:'장애물 경로와 점프 타이밍',
+    b:'체크포인트와 구간 기믹 운용',
+    choiceA:'발판 이동 주기와 점프 거리를 관찰해 착지 경로와 도약 시점을 선택',
+    choiceB:'통과한 체크포인트와 구간 장치의 상태를 바꾸어 다음 장애물의 접근 경로와 위험을 선택',
+    playerRole:'장애물 도전자'
+  };
   const profiles={
+    OBBY:obbyProfile,PLATFORMER:obbyProfile,OBBY_PLATFORMER:obbyProfile,
     ACTION_SURVIVAL_ROGUELITE:{genre:'생존',a:'탐험과 채집',b:'제작과 거점 구축',choiceA:'위험한 구역을 조사해 자원과 생존 단서를 확보',choiceB:'수집한 단서에 맞춰 제작 순서와 거점 배치를 변경',playerRole:'생존자'},
     SINGLE_DEFENSE_STRATEGY:{genre:'전략',a:'경로와 방어 배치',b:'적 대응 전술',choiceA:'접근 경로의 방어물과 안전 구역을 선택',choiceB:'변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석',playerRole:'방어 지휘관'},
     PUZZLE:{genre:'퍼즐',a:'단서 조합',b:'공간 상태 변환',choiceA:'관찰한 단서의 순서와 의미를 조합',choiceB:'변한 공간 규칙을 이용해 새 접근 경로를 시험',playerRole:'규칙 탐구자'},
@@ -699,6 +708,7 @@ export function computeVibeSeedProposal(target){
     HORROR:{genre:'호러',a:'위협 탐지와 잠입',b:'봉인과 단서 해독',choiceA:'소리와 흔적을 관찰해 숨어 이동할 시점과 경로를 선택',choiceB:'확보한 단서로 봉인 순서와 위험한 상호작용을 선택',playerRole:'조사자'},
     DEFENSE:{genre:'전략',a:'방어 시설 배치',b:'적 패턴과 자원 대응',choiceA:'접근 경로와 적의 사거리 사이에서 배치 위치를 선택',choiceB:'웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정',playerRole:'방어 지휘관'},
   };
+  const explicitObby=['OBBY','PLATFORMER','OBBY_PLATFORMER'].includes(category.toUpperCase())||/오비|플랫포머|obby|platformer|파쿠르|parkour/i.test(requestedName);
   const school=/학교|school/.test(context);
   const schoolCombat=/괴물|monster|퇴마|exorc|combat|전투|액션/.test(requestContext.toLowerCase());
   const schoolProfile=school?{genre:'경영',a:'학교 시설 건축과 배치',
@@ -707,6 +717,7 @@ export function computeVibeSeedProposal(target){
     choiceB:schoolCombat?'시설이 만든 위험에 따라 괴물의 공격을 피하거나 봉인하는 대응을 선택':'학생의 필요와 교사 배치에 맞춰 학사 운영의 우선순위를 결정',
     playerRole:'학교 운영자'}:null;
   const topicalProfiles=[
+    [/오비|플랫포머|obby|platformer|파쿠르|parkour/,obbyProfile],
     [/타이쿤|tycoon|놀이공원|theme.?park|상점.?운영|management/,profiles.TYCOON],
     [/생존|survival|크래프팅|crafting/,profiles.SURVIVAL],
     [/레이싱|racing|경주|race/,profiles.RACING],
@@ -717,7 +728,7 @@ export function computeVibeSeedProposal(target){
     [/롤플레잉|\brpg\b|역할게임|던전/,profiles.RPG],
   ];
   const topicMatch=topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
-  const profile=schoolProfile||topicMatch?.[1]||profiles[category]||
+  const profile=(explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
   const materialNames={
@@ -748,6 +759,7 @@ export function computeVibeSeedProposal(target){
     [/농장|farm|재배/,'RITUAL_RECIPROCITY'],
   ].filter(([pattern])=>pattern.test(requestContext.toLowerCase())).map(([,id])=>id);
   const genreMaterialIds={
+    '오비':['TRICKSTER_REVERSAL','OATH_CONTRACT','PROPHECY_SELF_FULFILLMENT','FORTUNE_REVERSAL'],
     '경영':['PATRONAGE_NETWORK','OATH_CONTRACT','ABSURD_BUREAUCRACY','FORTUNE_REVERSAL'],
     '생존':['EXILE_RETURN','TABOO_POLLUTION','SACRIFICE_SUBSTITUTION','ANCESTOR_MEMORY'],
     '전략':['FACTION_BALANCE','MANDATE_LEGITIMACY','OATH_CONTRACT','FORTUNE_REVERSAL'],
