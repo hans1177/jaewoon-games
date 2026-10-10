@@ -275,15 +275,15 @@ test('queue command reads adaptive cap and duplicate fan-in keeps exactly one ne
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const fanFile=path.join(dir,'fan.json');
-  const tasks=Array.from({length:32},(_,i)=>({id:`q-${i}`,gameId:`g-${i}`,target:'unity',department:'development',type:'implementation',sourceRoot:`unity-games/g-${i}`,goal:'work',status:'queued',responsibleFiles:[`f-${i}.js`]}));
+  const tasks=Array.from({length:32},(_,i)=>({id:`q-${i}`,gameId:`g-${i}`,target:'unity',department:'development',type:'implementation',sourceRoot:`unity-games/g-${i}`,goal:'work',status:'queued',responsibleFiles:[`f-${i}.js`],evidence:['unity-web-first-stage']}));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:32,tasks},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:32},null,2));
   const reserved=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,max:'32',output:batchFile});
   assert.equal(reserved.tasks.length,32);
   assert.equal(reserved.adaptiveMaxConcurrentTasks,32);
   const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
-  assert.equal(batch.scheduler.configuredMaxConcurrentTasks,64);
-  assert.equal(batch.scheduler.reservationMaxConcurrentTasks,64);
+  assert.equal(batch.scheduler.configuredMaxConcurrentTasks,128);
+  assert.equal(batch.scheduler.reservationMaxConcurrentTasks,128);
   assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,32);
   const results=reserved.tasks.map((task,i)=>({taskId:task.id,variant:'primary',outcome:'PASS',blocker:'candidate-awaiting-qa-and-deployment',evidence:['actions-run:300'],metrics:{requestedMax:32,effectiveMax:32,reservedAt:1000,workerStartedAt:1000+i*5000,workerFinishedAt:4000+i*5000,checkoutMs:100,candidateMs:1000,qaMs:200,workerTotalMs:3000,ollamaCacheHit:true}}));
   fs.writeFileSync(fanFile,JSON.stringify({results},null,2));
