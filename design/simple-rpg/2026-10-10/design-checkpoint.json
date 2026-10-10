@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 역사와 철학의 융합을 통해 전략적 선택과 판단을 하며, 무협과 경영의 융합을 통해 새로운 플레이 규칙과 위험을 경험해야 한다. 이는 실질적인 세계 변화를 통한 숙련과 발견으로 이어져야 한다.",
       "coreFun": "플레이어의 선택 → 세계 상태 변화 → 다음 플레이 선택의 순환 구조로 구성된 대표 행동이며, 이는 상황별 예외와 대가, 조합의 새로운 용도로 이어지고, 숙련으로 바뀌는 선택을 포함한다."
+    },
+    "local_authoring_parts::5ba071d5ed254b8cd4c45279ba10b9d90eb49d35bb80eab6bdcd78b60eb0b4c8:coreLoop": {
+      "coreLoop": [
+        "입력(플레이어 선택) → 상태변화(역사·철학 융합에 따른 전략적 결정) → 보상(경제 구조 생성) · 위험(무협·경영 융합 시 새로운 플레이 규칙)",
+        "상황별 예외(역사적 배경 기반의 경제 불균형) · 대가(무협·철학의 조화로 인한 새로운 전략) · 조합(실질적인 세계 변화) · 숙련(보상 및 위험의 재구성)",
+        "단서→실험→새 선택→실질적인 세계 변화 순으로 이어지는 실제 게임 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 211279,
-      "lastMs": 211279,
+      "totalMs": 252360,
+      "lastMs": 41081,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:40:24.198Z"
+      "updatedAt": "2026-10-10T10:41:05.280Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:36:52.898Z",
-  "updatedAt": "2026-10-10T10:40:24.198Z",
+  "updatedAt": "2026-10-10T10:41:05.286Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1717,8 +1724,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:40:24.198Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:41:05.280Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
