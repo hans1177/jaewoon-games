@@ -114,17 +114,17 @@
       "UNITY": {
         "platform": "UNITY",
         "inputModel": "Unity Input System 터치·드래그·가상 조이스틱을 지원한다.",
-        "sessionModel": "Unity 앱과 WebGL 프로젝트의 세션 재진입·복구를 점검한다.",
+        "sessionModel": "동일 Unity 프로젝트의 WebGL 3D 실제 브라우저 세션·저장 복구만 검증한다.",
         "multiplayerRuntime": "원본 싱글 세션을 유지하며 허위 네트워크 동기화를 만들지 않는다.",
-        "performanceBudget": "Unity 실제 3D 깊이와 WebGL FPS, 메모리, 발열을 검증한다.",
+        "performanceBudget": "실제 Unity 3D 메시 월드·캐릭터·카메라·가림과 WebGL 모바일 프레임·메모리 예산을 검증한다.",
         "uiUx": "안전 영역·해상도별 터치 UI와 방어 배치 가독성을 확보한다.",
         "saveAndNetwork": "버전 있는 저장과 PRESERVE_OR_MIGRATE_BEFORE_SWAP 원본 의미를 보존한다.",
-        "platformContentAdaptation": "공통 게임 규칙을 Unity 씬·프리팹에서 구현하며 WebGL 별도 게임을 만들지 않는다.",
-        "internalReleaseTarget": "Unity 비공개 내부 테스트와 실제 브라우저 플레이를 목표로 한다.",
-        "validationEvidence": "Unity WebGL·네이티브 실행·진행·저장·독립 QA 증거가 별도로 필요하다."
+        "platformContentAdaptation": "원본 규칙을 Unity 네이티브 3D 씬과 실제 메시 프리팹으로 구현한 뒤 같은 프로젝트에서 WebGL 빌드를 생성한다. 2D·2.5D 게임 월드는 최종 금지다.",
+        "internalReleaseTarget": "Unity WebGL 3D 비공개 브라우저 빌드만 개발·검증하고 Unity Android 오너 홀드를 유지한다.",
+        "validationEvidence": "Unity WebGL 실제 3D 메시·카메라·터치·브라우저 플레이·저장·독립 QA 검증이 필요하다."
       }
     }
   },
   "createdAt": "2026-10-10T04:40:20.189Z",
-  "updatedAt": "2026-10-10T04:40:20.189Z"
+  "updatedAt": "2026-10-10T04:45:31.278Z"
 }
