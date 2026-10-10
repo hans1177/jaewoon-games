@@ -233,25 +233,155 @@
       "name": "Resource Management & Economy",
       "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
       "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
+    },
+    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:3": {
+      "id": "SIGNATURE_SYSTEM_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+      ],
+      "stateOutputs": [
+        "FIGURE_REVEALS_HIDDEN_MAP"
+      ],
+      "name": "Social Interaction & Relationships",
+      "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
+      "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
+    },
+    "local_authoring_parts::8ed881546b654717389f2450f74612550e023ee3a58fc425d0c00d3887d5f40e:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
+          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
+          "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Resource Management & Economy",
+          "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
+          "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
+          "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
+        }
+      ]
+    },
+    "local_authoring_parts::353dd3b5a269e25a9a2020863b4fdce062048886fd4442eb0e0a828a688fddf7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Input: Player explores a compact activity space and discovers a person, task or collectible opportunity.",
+        "State change: The player encounters the figure, who reveals a hidden map leading to an uncharted forest.",
+        "Reward: The player gains access to new exploration areas and unique challenges."
+      ],
+      "signatureSystems": [
+        {
+          "id": "SIGNATURE_SYSTEM_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
+          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
+          "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Resource Management & Economy",
+          "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
+          "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
+        },
+        {
+          "id": "SIGNATURE_SYSTEM_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
+          ],
+          "stateOutputs": [
+            "FIGURE_REVEALS_HIDDEN_MAP"
+          ],
+          "name": "Social Interaction & Relationships",
+          "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
+          "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1095078,
-      "lastMs": 97033,
+      "totalMs": 1195005,
+      "lastMs": 99927,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:55:17.461Z"
+      "updatedAt": "2026-10-10T02:56:57.389Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:37:02.353Z",
-  "updatedAt": "2026-10-10T02:55:17.461Z",
+  "updatedAt": "2026-10-10T02:56:57.392Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1768,7 +1898,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:55:17.461Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:56:57.392Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
