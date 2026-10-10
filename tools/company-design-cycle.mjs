@@ -1477,7 +1477,12 @@ function computeVibeNativeDesign(){
     },
     contentExpansionPlan:grammar.expansionVectors.slice(0,4).map((value,index)=>({
       milestone:['첫 선택의 결과','두 시스템의 충돌','숨은 인과법칙','재방문과 장기 숙련'][index],
-      newGameplay:shorten(`${value} 플레이어에게 이전과 다른 대응과 목표를 제공한다.`,490),
+      newGameplay:shorten(`${value} ${[
+        '첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.',
+        '중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.',
+        '숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.',
+        '재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.'
+      ][index]}`,490),
       systemImpact:shorten(`이전 ${index%2?a.name:b.name} 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다.`,490)
     })),
     failureRetryRisk:{
