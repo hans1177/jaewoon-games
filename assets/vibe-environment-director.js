@@ -412,6 +412,66 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const riverType=/ARID|DRY|DESERT/.test(String(climate).toUpperCase()+' '+String(biome).toUpperCase())?'SEASONAL_DRY_CHANNEL':'PERENNIAL_FLOW_CANDIDATE';
   const waterway=new Set(riverType==='SEASONAL_DRY_CHANNEL'?[]:river.map(c=>at(c.x,c.z)));
+  // 지형 셀의 하천·지질·토양·서식지를 결정론적으로 연결한다. 게임 충돌·경제·스폰은 수정하지 않는다.
+  const wetDistance=new Int16Array(w*h).fill(32767),waterQueue=[];
+  for(const tile of terrain){
+    const id=at(tile.x,tile.z);
+    if(tile.biome==='WATER'||waterway.has(id)){wetDistance[id]=0;waterQueue.push(id);}
+  }
+  for(let head=0;head<waterQueue.length;head++){
+    const current=waterQueue[head],x=current%w,z=Math.floor(current/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+      const next=at(xx,zz),distance=wetDistance[current]+1;
+      if(distance<wetDistance[next]){wetDistance[next]=distance;waterQueue.push(next);}
+    }
+  }
+  const climateTag=String(climate+' '+biome).toUpperCase(),coldRegion=/SNOW|ICE|COLD|POLAR|ALPINE/.test(climateTag),aridRegion=/ARID|DESERT|DRY/.test(climateTag);
+  const volcanicRegion=/VOLCAN|LAVA|BASALT/.test(climateTag),seasonalThermal=seasonKey==='WINTER'?'COLD':seasonKey==='SUMMER'?'WARM':'NEUTRAL';
+  const clamp01=n=>Math.max(0,Math.min(1,n));
+  const materialCounts=new Map(),habitatCounts=new Map(),geologyRegions=new Map();
+  for(const tile of terrain){
+    const {x,z}=tile,id=at(x,z),waterDistance=wetDistance[id]===32767?null:wetDistance[id];
+    // Worley/Voronoi 최근접 구역: 지질·토양 경계가 픽셀 잡음처럼 끊어지지 않게 유도한다.
+    const scale=6,cx=Math.floor(x/scale),cz=Math.floor(z/scale);let nearest=null;
+    for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){
+      const gx=cx+dx,gz=cz+dz,noise=proceduralCellHash(hash^0x62b4,gx,gz);
+      const sx=(gx+.2+.6*(noise/4294967296))*scale,sz=(gz+.2+.6*(proceduralCellHash(hash^0xfbe1,gx,gz)/4294967296))*scale;
+      const distance=(x-sx)**2+(z-sz)**2;
+      if(!nearest||distance<nearest.distance)nearest={gx,gz,distance};
+    }
+    const stratum=['GRANITE','LIMESTONE','SHALE','BASALT'][volcanicRegion?3:proceduralCellHash(hash^0x977d,nearest.gx,nearest.gz)%3];
+    const geologyId=nearest.gx+':'+nearest.gz;
+    const temperature=clamp01((coldRegion?.27:aridRegion?.77:.58)-(tile.elevation-.45)*.38+
+      (seasonKey==='WINTER'?-0.2:seasonKey==='SUMMER'?.12:0)+.08*proceduralGradientNoise(hash^0xbeef,x/8,z/8));
+    const humidity=clamp01(tile.moisture+(waterDistance!==null?.24*Math.exp(-waterDistance/3):0)-(aridRegion?.2:0));
+    const slope=tile.slopeDegrees,rocky=tile.biome==='RIDGE'||slope>22;
+    const habitat=tile.biome==='WATER'?'AQUATIC'
+      :rocky?'ROCKY_RIDGE':aridRegion||humidity<.27?'DRY_SCRUB'
+      :temperature<.3?'COLD_UPLAND':waterDistance!==null&&waterDistance<=2?'RIPARIAN'
+      :tile.biome==='FOREST'?'CANOPY_FOREST':'GRASSLAND';
+    const primary=tile.biome==='WATER'?'RIVER_SEDIMENT'
+      :rocky?stratum:temperature<.19&&tile.elevation>.5?'SNOW_COVER'
+      :aridRegion?'SAND_AND_GRAVEL':habitat==='RIPARIAN'?'FLOODPLAIN_SILT'
+      :tile.biome==='FOREST'?'MOSS_LOAM':'GRASS_SOIL';
+    const secondary=primary==='RIVER_SEDIMENT'?'WET_SILT':primary==='SAND_AND_GRAVEL'?'DRY_SOIL'
+      :rocky?'STONE_GRAVEL':humidity>.6?'MOSS_LOAM':'DRY_SOIL';
+    const blend=+(clamp01(.1+humidity*.27+(slope/90)*.13)).toFixed(3);
+    const carryingCapacity=tile.biome==='WATER'?0:+(clamp01(
+      (.18+humidity*.72)*(1-Math.min(.85,slope/65))*(habitat==='ROCKY_RIDGE'?.35:1)*
+      (temperature<.18?.55:1))).toFixed(3);
+    tile.surface=Object.freeze({primary,secondary,secondaryBlend:blend,geologyId,stratum,waterDistanceCells:waterDistance,
+      temperature: +temperature.toFixed(3),humidity:+humidity.toFixed(3),season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
+      nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
+    tile.ecology=Object.freeze({habitat,carryingCapacity,visualCover:0,scenicOnly:true,
+      spawnRateAuthority:false,gameplayResourcesUnchanged:true});
+    materialCounts.set(primary,(materialCounts.get(primary)||0)+1);
+    habitatCounts.set(habitat,(habitatCounts.get(habitat)||0)+1);
+    geologyRegions.set(geologyId,(geologyRegions.get(geologyId)||0)+1);
+  }
+  const terrainMaterialGroups=[...materialCounts].sort(([a],[b])=>a.localeCompare(b)).map(([kind,count])=>Object.freeze({
+    kind,count,sourceBinding:pickSource('MATERIAL',kind,0,0),worldTerrainMaterialApplied:false
+  }));
   const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&!waterway.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
   const nearest=(x,z)=>{
     for(let radius=0;radius<Math.max(w,h);radius++)for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
