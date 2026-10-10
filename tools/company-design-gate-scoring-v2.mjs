@@ -156,6 +156,19 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       reject('DESIGN_A_B_SYSTEM_DISTINCTNESS_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
         'A와 B는 서로 다른 게임 시스템에 각각 창작 소재를 결합하고, 두 시스템의 실제 상태 교환을 작성한다.');
     }
+    // 기본설계 문법: 창작 소재는 게임의 기능명이나 상태값을 바꾼 라벨이 아니다.
+    // 창작 소재의 후보군은 닫지 않고, 명백한 일반 기능명만 필터링한다.
+    const genericMechanics=new Set([
+      '이동','전투','자원 수집','적 행동','탐험','생존','제작','건설','성장','보상','운영','경제','퍼즐','퀘스트',
+      'movement','combat','resource gathering','enemy behavior','exploration','survival','crafting','building','progression','rewards','management','economy','puzzle','quest'
+    ]);
+    if(ownerV5Grammar&&axes.some(axis=>{
+      const material=clean(axis?.material).toLowerCase(),system=clean(axis?.system).toLowerCase();
+      return genericMechanics.has(material)||(material&&material===system);
+    })){
+      reject('DESIGN_CREATIVE_SOURCE_IS_GAME_MECHANIC','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
+        'A/B의 창작 소재에 이동·자원 수집·적 행동 같은 기능명만 쓰지 않는다. 각 시스템에 역사·신화·철학·예술·과학·인물 등 구체적 출처와 플레이 변화의 인과를 창작한다.');
+    }
     const c=list(grammar?.cThemes);
     if(c.length!==2||new Set(c.map(row=>clean(row?.name).toLowerCase())).size!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind)||(ownerV5Grammar&&row?.kind!=='MATERIAL'))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
       reject('DESIGN_C_TWO_TOPICS_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C의 두 창작 소재를 실제 세계와 A/B 선택에 인과적으로 결합해야 한다.');
@@ -242,7 +255,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       const sameName=clean(left?.name).length>=4&&clean(left?.name)===clean(right?.name);
       const samePurpose=clean(left?.purpose).length>=12&&clean(left?.purpose)===clean(right?.purpose);
       const sameChoice=clean(left?.playerChoice).length>=12&&clean(left?.playerChoice)===clean(right?.playerChoice);
-      if(sameName&&(samePurpose||sameChoice))reject('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED','CORE_LOOP_DESIGN',['signatureSystems'],
+      if((sameName&&(samePurpose||sameChoice))||(samePurpose&&sameChoice))reject('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED','CORE_LOOP_DESIGN',['signatureSystems'],
         {roles:[left?.grammarRole,right?.grammarRole],ids:[left?.id,right?.id]},
         '서로 다른 규칙 ID라는 표식만으로 통과하지 않는다. 원본 실제 플레이의 역할별 선택·상태 변화를 구분해 디자이너가 다시 작성한다.');
     }
