@@ -92,6 +92,48 @@ test('Roblox native code remains independent when Unity Web is missing or only h
   assert.doesNotMatch(noDirective,/unityWebSourceReference=/);
 });
 
+test('compact Roblox coding preserves same-game Unity Web source fingerprint and state operation',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const first=worker.indexOf('function buildUpDirectiveBlockFromPrompt(');
+  const last=worker.indexOf('\nexport function buildRobloxNativeSourceInspection',first);
+  assert.ok(first>=0&&last>first);
+  const compact=runInNewContext(worker.slice(first,last)+'\nbuildUpDirectiveBlockFromPrompt',{
+    Buffer,
+    clean:value=>String(value??'').replace(/\s+/g,' ').trim(),
+    posix:value=>String(value??'').replaceAll('\\','/').replace(/\/+$/,''),
+    boundedPromptText:(value,length)=>String(value).slice(0,length),
+    SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+    COMPACT_DIRECTIVE_LINE_BYTES:900,console:{log(){}}
+  });
+  const reference=index=>'unityWebSourceReference='+JSON.stringify({
+    path:'unity-games/roblox-sync/Assets/Scripts/Game'+index+'.cs',
+    sha256:String(index).repeat(64),runtimeVerified:false,
+    sourceStatus:'NATIVE_CSHARP_SOURCE_OBSERVATION_ONLY',
+    methods:[{method:'ApplyDamage',source:'public void ApplyDamage(int value) { Health -= value; }'}]
+  });
+  const lines=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=roblox-sync',
+    'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE',
+    reference(1),reference(2),reference(3),
+    ...['MAIN','A','B','DELVE'].map(role=>'designCodeRole='+role),
+    ...Array.from({length:25},(_,i)=>'gameplay=expand-'+i+' '+('x'.repeat(350))),
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const out=compact(lines,{compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.match(out,/unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE/);
+  assert.equal((out.match(/unityWebSourceReference=/g)||[]).length,2);
+  assert.match(out,/ApplyDamage/);
+  assert.match(out,/Health -= value/);
+  assert.ok(out.includes('1'.repeat(64)));
+  assert.ok(out.includes('2'.repeat(64)));
+  assert.ok(!out.includes('3'.repeat(64)));
+  for(const role of ['MAIN','A','B','DELVE'])assert.ok(out.includes('designCodeRole='+role));
+  const escaped=lines.replace(reference(1),reference(1).replace('unity-games/roblox-sync/Assets/Scripts/', 'unity-games/other-game/../../'));
+  const safe=compact(escaped,{compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.ok(!safe.includes('unity-games/other-game/../../'));
+});
+
 test('Vibe coding method requires native 3D for Unity Web but does not change unrelated platform prompts',()=>{
   const context={files:[{path:'RuntimeBootstrap.cs',content:'using UnityEngine; public class RuntimeBootstrap {}',editable:true}]};
   const options={verifiedExternalLearningContract:{block:''}};
