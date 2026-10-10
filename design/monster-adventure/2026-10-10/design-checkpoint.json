@@ -130,38 +130,25 @@
       "name": "DESIGN_ASSET_REVIEW",
       "purpose": "Reviews game assets to ensure consistency with existing rules and maintains original intent.",
       "playerChoice": "Selects an asset to review for compliance with established design principles and gameplay mechanics."
-    },
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": {
-      "id": "b_main_terrain_change",
-      "grammarRole": "B",
-      "stateInputs": [
-        "TERRAIN_CHANGE"
-      ],
-      "stateOutputs": [
-        "MONSTER_ATTRIBUTION"
-      ],
-      "name": "Terrain Change Effect",
-      "purpose": "Reflects the impact of terrain changes on monster attributes, introducing variability in combat strategy and evolution paths.",
-      "playerChoice": "Player selects a terrain type, which alters the monster's attribute distribution and affects subsequent battle outcomes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 408472,
-      "lastMs": 44068,
+      "totalMs": 420505,
+      "lastMs": 12033,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:23:46.385Z"
+      "updatedAt": "2026-10-10T09:23:58.420Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:16:57.887Z",
-  "updatedAt": "2026-10-10T09:23:46.386Z",
+  "updatedAt": "2026-10-10T09:23:58.421Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1683,11 +1670,24 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_terrain_change",
+          "a_main_terrain_change"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:23:46.385Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:23:58.420Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
