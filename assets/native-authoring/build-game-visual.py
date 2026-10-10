@@ -591,7 +591,9 @@ else:
 # Apply authored geometry before measuring it. Smart UVs include bevel faces.
 for obj in ASSET_OBJECTS:
     bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
-    for modifier in list(obj.modifiers):bpy.ops.object.modifier_apply(modifier=modifier.name)
+    # 인체 리그 바인딩을 유지하며 기존 정적 메쉬의 모디파이어 처리만 유지한다.
+    if not ASSET_ARMATURES:
+        for modifier in list(obj.modifiers):bpy.ops.object.modifier_apply(modifier=modifier.name)
     bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
     bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -601,7 +603,9 @@ points=[obj.matrix_world@vertex.co for obj in ASSET_OBJECTS for vertex in obj.da
 lo=Vector(tuple(min(p[i] for p in points) for i in range(3)))
 hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
 shift=Vector((-(lo.x+hi.x)/2,-(lo.y+hi.y)/2,-lo.z))
-for obj in ASSET_OBJECTS:obj.location+=shift
+for obj in ASSET_OBJECTS:
+    if obj.parent not in ASSET_ARMATURES:obj.location+=shift
+for rig in ASSET_ARMATURES:rig.location+=shift
 bpy.context.view_layer.update()
 BOUNDS_SIZE=list(hi-lo)
 
@@ -613,7 +617,7 @@ for obj in ASSET_OBJECTS:
     obj['vibeGenre']=ARGS.genre
     obj['vibeUnit']='meter'
     obj['vibePivot']='ground-centered'
-    obj['vibeProjectOriginal']=(IMAGE_PROVENANCE['sourceLicense'].lower()=='project-original') if IMAGE_PROVENANCE else (SOURCE_PROVENANCE['license'].lower()=='project-original' if SOURCE_PROVENANCE else True)
+    obj['vibeProjectOriginal']=(IMAGE_PROVENANCE['sourceLicense'].lower()=='project-original') if IMAGE_PROVENANCE else (SOURCE_PROVENANCE['license'].lower()=='project-original' if SOURCE_PROVENANCE else not (MODULE_PROVENANCE and MODULE_PROVENANCE['kind']=='human'))
     if IMAGE_PROVENANCE:
         obj['vibeSourceImageSha256']=IMAGE_PROVENANCE['inputSha256']
         obj['vibeSourceLicense']=IMAGE_PROVENANCE['sourceLicense']
@@ -625,6 +629,8 @@ for obj in ASSET_OBJECTS:
 bpy.ops.object.select_all(action='DESELECT')
 for obj in ASSET_OBJECTS:
     obj.select_set(True)
+for rig in ASSET_ARMATURES:
+    rig.select_set(True)
 if ASSET_OBJECTS:
     bpy.context.view_layer.objects.active=ASSET_OBJECTS[0]
 
@@ -635,7 +641,7 @@ bpy.ops.export_scene.gltf(filepath=str(master),export_format='GLB',use_selection
     export_materials='EXPORT',export_extras=True,export_yup=True)
 original_meshes=[obj.data for obj in ASSET_OBJECTS]
 mesh_cache={}
-for obj in ASSET_OBJECTS:
+for obj in ([] if ASSET_ARMATURES else ASSET_OBJECTS):
     mesh=obj.data
     signature=json.dumps({
         'vertices':[list(v.co) for v in mesh.vertices],
@@ -648,12 +654,12 @@ for obj in ASSET_OBJECTS:
     if key in mesh_cache: obj.data=mesh_cache[key]
     else: mesh_cache[key]=mesh
 optimized_meshes=[obj.data for obj in ASSET_OBJECTS]
-reused_meshes=len(original_meshes)-len(mesh_cache)
+reused_meshes=0 if ASSET_ARMATURES else len(original_meshes)-len(mesh_cache)
 glb=ARGS.output/'asset.glb'
 bpy.ops.export_scene.gltf(filepath=str(glb),export_format='GLB',use_selection=True,
     export_materials='EXPORT',export_extras=True,export_yup=True)
 # 압축이 이익이 없으면 원본 바이트를 유지한다. 품질을 낮춰 크기를 맞추지 않는다.
-if glb.stat().st_size>master.stat().st_size:
+if ASSET_ARMATURES or glb.stat().st_size>master.stat().st_size:
     glb.write_bytes(master.read_bytes())
     for obj,mesh in zip(ASSET_OBJECTS,original_meshes): obj.data=mesh
     optimized_meshes=original_meshes[:]
@@ -715,12 +721,17 @@ geometry_surface={
 application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
     'sourceUnits':'METERS','sourceUp':'Y','boundsSizeMeters':[BOUNDS_SIZE[0],BOUNDS_SIZE[2],BOUNDS_SIZE[1]],
     'pivot':'GROUND_CENTER','surfaceDistribution':physical_analysis,'style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,'geometrySurface':geometry_surface,
-    'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY','deploymentBundleBytes':None,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
+if not ASSET_ARMATURES:
+    application['optimization']={'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb',
+        'originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,
+        'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY',
+        'deploymentBundleBytes':None,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,
+        'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 # Preview stage is not part of the exported model.
@@ -830,7 +841,7 @@ evidence={
     'sourceHash':source_hash,
     'artifactHash':artifact_hash,
     'previewHash':preview_hash,
-    'license':IMAGE_PROVENANCE['sourceLicense'] if IMAGE_PROVENANCE else SOURCE_PROVENANCE['license'] if SOURCE_PROVENANCE else 'project-original',
+    'license':IMAGE_PROVENANCE['sourceLicense'] if IMAGE_PROVENANCE else SOURCE_PROVENANCE['license'] if SOURCE_PROVENANCE else 'CC0' if MODULE_PROVENANCE and MODULE_PROVENANCE['kind']=='human' else 'project-original',
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
@@ -841,7 +852,7 @@ evidence={
     'companyPromotionEligible':False,
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
-    'optimization':application['optimization'],
+    **({'optimization':application['optimization']} if 'optimization' in application else {}),
     'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS]
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
