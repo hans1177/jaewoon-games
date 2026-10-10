@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
-import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
@@ -4488,8 +4488,16 @@ export function buildVibeAssetProductionPlan({
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
     sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
-    seed:task.mapReconstruction.seed||clean(task.gameId)
+    seed:task.mapReconstruction.seed||clean(task.gameId),
+    gameId:clean(task.gameId),target:resolvedTarget
   }):null;
+  // 승인된 월드 입력이 있을 때 기존 배경 엔진으로 3D 높이·구조물·공용 모델 연결을 함께 컴파일한다.
+  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||null;
+  const proceduralWorldLayout=worldInput&&typeof worldInput==='object'&&!Array.isArray(worldInput)
+    ?createVibeProceduralWorldLayout({...worldInput,dimension:'3D',gameId:clean(task.gameId),target:resolvedTarget,
+      styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey||'STYLIZED_FANTASY',
+      libraryAssets:selectionRegistry?.assets||[]})
+    :null;
   const qualityDNA=freeze({
     version:1,
     gameId:clean(task.gameId)||null,
@@ -4904,6 +4912,7 @@ export function buildVibeAssetProductionPlan({
     motionRepairWorkUnit:task.motionRepairWorkUnit?freeze({...task.motionRepairWorkUnit,required:true,estimatedModificationMinutes:60,objectCount:task.motionRepairWorkUnit.objectCount??1,motionCount:task.motionRepairWorkUnit.motionCount??1,runtimeVerified:false}):null,
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
+    proceduralWorldLayout,
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
@@ -5429,6 +5438,18 @@ export function assetProductionGuidance(plan={}){
     plan.precisionProduction?`[PRECISION PRODUCTION CHAIN] ${JSON.stringify(plan.precisionProduction)}. 검사 결과를 보고서로 끝내지 않는다. 현재 소스와 실제 화면에서 결함을 찾고 정확한 수정 범위를 만든 뒤, 같은 작업에서 editable source와 native derivative를 실제 제작하고 기존 게임 책임 위치에 적용한다. 디테일은 GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 순으로 제작하며 실루엣/구조/재질/접촉을 각각 해결한다. 소품 수나 랜덤 노이즈로 디테일을 대신하지 말고 기능·접촉·날씨·손상 원인을 가진 디테일만 만든다. 제작 성공 후 바로 적용 단계로 넘어가며 검사나 수정 계획만 제출하고 멈추지 않는다. 제작 도구가 없을 때만 정확한 AUTHORING 단계와 필요한 원본을 남기고 완료를 주장하지 않는다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
+    plan.proceduralWorldLayout?`[CANONICAL NATIVE 3D WORLD CONSTRUCTION] ${JSON.stringify((world=>{
+      if(!world?.buildings)return{status:world?.status,issues:world?.issues||[],approvedSourceRequired:true,sourceMutationPerformed:false};
+      return{
+        status:world.status,issues:world.issues,seed:world.seed,size:world.size,dimension:world.dimension,regionalBiome:world.regionalBiome,climate:world.climate,
+        sharedLibraryBinding:world.sharedLibraryBinding,placementDiversity:world.placementDiversity,
+        terrainHeightY:world.terrain.map(cell=>+(cell.elevation*8).toFixed(2)),
+        roads:world.roads.map(road=>({id:road.id,cells:road.cells.map(cell=>[cell.x,cell.z])})),
+        buildings:world.buildings.map(row=>({stableObjectId:row.stableObjectId,zone:row.zone,position:row.position,footprint:row.footprint,doorway:row.doorway,construction:row.construction,modules:row.modules,sourceBinding:row.sourceBinding})),
+        vegetation:world.vegetation.map(row=>({stableObjectId:row.stableObjectId,kind:row.kind,position:row.position,scale:row.scale,sourceBinding:row.sourceBinding})),
+        protected:world.protected,runtimeVerified:false
+      };
+    })(plan.proceduralWorldLayout))}. 3D 고도·기초/벽 개구부·문 깊이·지붕·식생을 현재 게임 소스의 실제 Mesh/Prefab/Model로만 구현한다. 공용 에셋 sourceBinding은 참조/변환 작업 입력이며 적용 완료가 아니다. 선택 후보 전부를 복사하지 말고 역할 호환 원본만 바인딩한다. 실제 네이티브 메시·입체 공간·동선/시야·모바일 화면·성능·저장/전투 불변 조건을 검증하기 전에는 완료 판정 금지. 기존 A* 경로와 fBM 지형 생성 결과에 해시 기반 최소거리 분산 배치를 결합한 제안이며 외부 원본 코드/맵 직접 복제 금지. `:'',
     plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰하고 검증된 관찰에서 나온 task-local 아이디어를 현재 VOLUME_UP worklist 앞에 우선 배치한다. 중앙 registry에는 원본 사진·관찰·임시 아이디어를 영속 저장하지 않는다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
     plan.companyGraphicsLibrary?.characterNpcCustomization?.requested?`[CHARACTER NPC CUSTOMIZATION] ${JSON.stringify(plan.companyGraphicsLibrary.characterNpcCustomization)}. 플레이어와 NPC는 같은 체형·머리·얼굴·피부·눈·헤어·수염·흉터·문신·화장·피어싱·종족 파츠·의상·액세서리·표정·보행 자산 풀을 공유한다. NPC는 지역/직업/계층/연령/기후/개인 이력으로 조합 편향만 주고 색상만 다른 복제 NPC를 만들지 않는다. 사진 레퍼런스는 보이는 형태와 재질 아이디어만 source-bound로 사용하고 고유 얼굴·의상·UI를 직접 복제하지 않는다.`:'',
     plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
