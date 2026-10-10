@@ -15,73 +15,83 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "OWN",
-        "OTHERS"
+        "the main idea of the game",
+        "the target audience of the game",
+        "the core gameplay mechanic of the game"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS"
+        "the main idea of the game",
+        "the target audience of the game",
+        "the core gameplay mechanic of the game"
       ],
       "revision": [
-        "OWN",
-        "OTHERS"
+        "the core gameplay mechanic of the game",
+        "the target audience of the game",
+        "the main idea of the game"
       ],
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하거나 수정할 필요가 있다."
+      "reason": "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic. The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic."
     },
     "graphics": {
       "accept": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "OTHERS",
+        "game_seed_question"
       ],
       "challenge": [
-        "game_seed_market_evidence.json"
+        "game_seed_risk",
+        "game_seed_evidence",
+        "game_seed_question"
       ],
       "revision": [
-        "gemma3:1b"
+        "game_seed_question",
+        "game_seed_evidence",
+        "game_seed_question"
       ],
-      "reason": "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b."
+      "reason": "The 'game_seed_question' suggests a potential risk to the core gameplay.  The 'game_seed_evidence' is a critical piece of information, and the 'game_seed_question' warrants a closer look.  We need to understand the underlying intent and potential impact of this question to ensure the game's core remains intact."
     },
     "development": {
       "accept": [
-        "OWN",
-        "OTHERS"
+        "own"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS"
+        "own"
       ],
       "revision": [
-        "OWN",
-        "OTHERS"
+        "own"
       ],
       "reason": "own"
     },
     "qa": {
       "accept": [
-        "qa"
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "qa"
+        "risk",
+        "evidence",
+        "question"
       ],
       "revision": [
-        "qa"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "QA 부서의 의견을 수용하여 전문적인 설계와 테스트를 강화함으로써 게임의 질을 향상시킬 수 있습니다."
+      "reason": "QA 부서는 다른 네 부서의 의견을 수용하고 반박/수정을 하지 않습니다."
     },
     "balance": {
       "accept": [
-        "keep",
-        "add",
-        "fix"
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
       ],
       "challenge": [
-        "risks"
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
       ],
       "revision": [
-        "evidence",
-        "questions"
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
       ],
-      "reason": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다."
+      "reason": "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
     }
   }
 }
