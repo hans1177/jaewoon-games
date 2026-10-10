@@ -1,3 +1,4 @@
+// 파일명: tools/game-catalog-normalization.mjs
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -566,6 +567,21 @@ export function normalizeCatalog(catalog={}){
     if(!id)throw new Error('catalog game id missing');
     if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
     ids.add(id);
+    // 홈페이지: 실제 원본 프로젝트가 존재하면 누락된 플랫폼 소스 경로만 복원한다.
+    // 단순 HTML 시제품은 여전히 비공개 처리하고, 원본 소스만으로 플레이/출시를 주장하지 않는다.
+    if(!clean(game.robloxProjectPath)){
+      const root='roblox-games/'+id;
+      if(fs.existsSync(root+'/default.project.json')
+        &&fs.existsSync(root+'/server/Game.server.luau')
+        &&fs.existsSync(root+'/client/Game.client.luau'))
+        game.robloxProjectPath=root;
+    }
+    if(!clean(game.unityProjectPath)){
+      const root='unity-games/'+id;
+      if(fs.existsSync(root+'/ProjectSettings/ProjectVersion.txt')
+        &&fs.existsSync(root+'/Assets/Scripts'))
+        game.unityProjectPath=root;
+    }
     const media=validatedHomepageMedia(id,covers[id]);
     if(media)game.homepageMedia=media;
     else delete game.homepageMedia;
