@@ -1165,25 +1165,168 @@
         }
       ],
       "antiMonotonyRule": "enemy_behavior_analysis ↔ resource_allocation_state_change"
+    },
+    "local_authoring_parts::1046e2a369e685e0ad3ce0a215f708a335ae0b3dd724a7ad13782dde21a090ff:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "insect_wave_pattern",
+          "name": "곤충 웨이브 패턴",
+          "kind": "MONSTER",
+          "ownerId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:bug-defense",
+          "ruleId": "abilities.insect_wave_pattern",
+          "trigger": "incoming_insect_wave",
+          "range": 5,
+          "rangeUnit": "unit",
+          "resource": "defender_placement",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "threat_prediction",
+          "avoidance": "defense_adjustment",
+          "effect": "wave_defense_readability",
+          "stateInputs": [
+            "incoming_insect_wave_pattern"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment"
+          ],
+          "source": "GAME_SEED.GAMEPLAY_SKETCH",
+          "rangeKey": "insect_wave_range",
+          "costKey": "insect_wave_cost",
+          "cooldownKey": "insect_wave_cooldown"
+        },
+        {
+          "id": "critical_resource",
+          "name": "중요 자원",
+          "kind": "MONSTER",
+          "ownerId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:bug-defense",
+          "ruleId": "abilities.critical_resource",
+          "trigger": "resource_allocation_state",
+          "range": 3,
+          "rangeUnit": "unit",
+          "resource": "economic_value",
+          "cost": 10,
+          "cooldownSeconds": 10,
+          "telegraph": "economic_value_estimation",
+          "avoidance": "resource_spending",
+          "effect": "economical_decision_making",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "source": "GAME_SEED.GAMEPLAY_SKETCH",
+          "rangeKey": "critical_resource_range",
+          "costKey": "critical_resource_cost",
+          "cooldownKey": "critical_resource_cooldown"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER",
+          "humanTool": "DEFENDER_ADJUSTMENT",
+          "humanAbilityId": "insect_wave_pattern",
+          "infectedAbilityId": "critical_resource",
+          "retainedState": "defender_placement_adjustment",
+          "removedState": "resource_allocation_state",
+          "changedChoice": "economical_decision_making"
+        },
+        {
+          "humanId": "PLAYER",
+          "humanTool": "RESOURCE_SPENDING",
+          "humanAbilityId": "critical_resource",
+          "infectedAbilityId": "insect_wave_pattern",
+          "retainedState": "defender_placement_adjustment",
+          "removedState": "resource_allocation_state",
+          "changedChoice": "new_defensive_strategy"
+        }
+      ],
+      "regions": [
+        {
+          "id": "wave_pattern_region",
+          "ruleIds": [
+            "insect_wave_pattern",
+            "critical_resource"
+          ],
+          "name": "곤충 웨이브 패턴 지역",
+          "traversal": "enemy_behavior_analysis",
+          "riskReward": "threat_prediction vs. economical_decision_making",
+          "landmark": "insect_wave_visualization",
+          "encounterPattern": "adaptive_defense",
+          "resourcePressure": "economic_value_estimation",
+          "storyContext": "incoming_insect_wave, defender_placement_adjustment, resource_allocation_state"
+        },
+        {
+          "id": "resource_allocation_region",
+          "ruleIds": [
+            "insect_wave_pattern",
+            "critical_resource"
+          ],
+          "name": "자원 배분 지역",
+          "traversal": "resource_allocation_state_change",
+          "riskReward": "resource_spending vs. defense_efficiency",
+          "landmark": "resource_spend_visualizer",
+          "encounterPattern": "dynamic_defenses",
+          "resourcePressure": "defense_efficiency",
+          "storyContext": "defender_placement_adjustment, next_defense_decision_making"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "곤충 웨이브",
+          "behavior": "adaptive_defense",
+          "counterplay": "economical_decision_making",
+          "positioning": "wave_pattern_region",
+          "timing": "real_time",
+          "mobility": "high",
+          "groupRole": "PRIMARY",
+          "identity": "insect_wave",
+          "rewardMeaning": "threat_prediction_vs_economic_value_estimation"
+        },
+        {
+          "name": "경제적 가치",
+          "behavior": "resource_allocation_state_change",
+          "counterplay": "economic_value_estimation",
+          "positioning": "resource_allocation_region",
+          "timing": "economic_timeframe",
+          "mobility": "medium",
+          "groupRole": "SECONDARY",
+          "identity": "economic_value",
+          "rewardMeaning": "defense_efficiency_vs_resource_spending"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "PRIMARY",
+          "variation": "wave_pattern_vs_critical_resource"
+        },
+        {
+          "role": "SECONDARY",
+          "variation": "economical_decision_making"
+        }
+      ],
+      "antiMonotonyRule": "enemy_behavior_analysis ↔ resource_allocation_state_change"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 53,
+      "calls": 54,
+      "successes": 54,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1848490,
-      "lastMs": 211773,
+      "totalMs": 1985460,
+      "lastMs": 136970,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:09:34.534Z"
+      "updatedAt": "2026-10-10T11:11:51.514Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T11:09:34.543Z",
+  "updatedAt": "2026-10-10T11:11:51.526Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2928,13 +3071,13 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::content-rules": 1
+    "designer_draft_slices::content-rules": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:09:34.540Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:11:51.516Z",
+  "failedPhase": "designer_draft",
   "failedTask": "content-rules",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
