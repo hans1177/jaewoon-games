@@ -9,24 +9,203 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a:identity,creativeGrammar": {
+      "identity": "나의 생존기",
+      "creativeGrammar": {
+        "mainIdentity": "생존 기록과 채집·제작 선택",
+        "a": {
+          "system": "게임 시스템 + 해금/역사/철학/과학/예술 창작 소재",
+          "material": "생존 전략, 자원 수집, 이동, 전투, 위험 관리",
+          "materialDomain": "주요 장르: 생존, 채집; 보조 장르: 역사, 철학, 예술",
+          "stateChange": "플레이어 선택 → 상태 변화 → 다음 플레이 선택"
+        },
+        "b": {
+          "system": "다른 시스템 + 해당 축 창작 소재",
+          "material": "보상, 정보, 전략, 경로, 게임 진행",
+          "materialDomain": "주요 장르: 스토리, 전략; 보조 장르: 블و드, 디자인, 미디어",
+          "stateChange": "플레이어 선택 → 상태 변화 → 다음 플레이 선택"
+        },
+        "abCausality": "양방향 실제 상태 교환 (A→B, B→A, 중후반 두 시스템의 관계 변화)",
+        "abEvolution": {
+          "aChangesB": "A의 선택이 B의 상태 변화를 유도한다(예: 새로운 전략 선택)",
+          "bChangesA": "B의 상태 변화가 A의 선택을 재정의한다(예: 새로운 보상 제공)",
+          "lateGameChange": "중후반 두 시스템 간의 관계 변화 및 피드백 제공"
+        },
+        "materialFusion": {
+          "contrast": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르와 보조 장르를 넣는다.",
+          "causalBridge": "원인 → 인물 갈등 → 플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건",
+          "removalConsequence": "보조 장르 제거 시 바뀌는 플레이 명시, @=4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지)"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 또는 게임 규칙 변경으로 인한 세계 상태 변화",
+          "characterConflict": "인물 갈등과 그에 따른 플레이어 선택",
+          "playerChoice": "플레이어의 실제 행동 및 결과 판타지",
+          "worldChange": "실제 세계 상태 변화 및 다음 사건 생성",
+          "nextEvent": "플레이어 선택이 유도하는 새로운 사건"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 수집, 이동, 전투, 위험 관리"
+          },
+          {
+            "name": "철학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선수의 정체성, 대립, 보상, 정보"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "자원 수집, 이동, 전투, 위험 관리"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "철학",
+            "gameplayEffect": "선수의 정체성, 대립, 보상, 정보"
+          }
+        ],
+        "cGenreInterlock": "보조 장르 제거 시 바뀌는 플레이 명시, @=4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지)",
+        "cWorldAndGameplayEffect": "실제 세계 상태 변화 및 다음 사건 생성, 플레이어 선택이 유도하는 새로운 사건",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어 선택 또는 게임 규칙 변경으로 인한 세계 상태 변화",
+            "discovery": "인물 갈등과 그에 따른 플레이어 선택",
+            "newChoice": "플레이어의 실제 행동 및 결과 판타지"
+          },
+          {
+            "clue": "플레이어 선택이 유도하는 새로운 사건",
+            "discovery": "신규 경로, 보상, 전략, 정보",
+            "newChoice": "다음 플레이 선택을 결정한다"
+          },
+          {
+            "clue": "중후반 두 시스템 간의 관계 변화 및 피드백 제공",
+            "discovery": "전략적 재정비, 보상 조정, 정보 확장",
+            "newChoice": "게임 진행 방향 재설정 및 다음 플레이 선택"
+          },
+          {
+            "clue": "보조 장르 제거 시 바뀌는 플레이 명시",
+            "discovery": "플레이어 역할, 책임, 대표 행동, 결과 판타지",
+            "newChoice": "게임 정체성 재구성 및 다음 플레이 선택"
+          }
+        ],
+        "delveGrowthRule": "4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지), 상한 없이 발전 규칙 적용",
+        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성"
+      }
+    },
+    "local_authoring_parts::d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 생존 기록에서 자원을 채집하며, 동시에 위험에 노출되어 있는 상태를 경험해야 한다. 선택의 결과로 다음 전략적 결정을 내리며, 이 과정에서 새로운 경로와 정보가 유도된다.",
+      "coreFun": "생존 기록과 채집/제작 선택을 통해 플레이어는 자원 수집, 이동, 전투, 위험 관리를 수행한다. 게임 규칙 변경 시 세계 상태 변화를 인식하고, 이를 바탕으로 새로운 선택을 하여 게임 진행 방향을 재설정한다."
+    },
+    "local_authoring_parts::84fa0de3090733206357a35192d8c7236937cdac1118b172424193bb73c551d9:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "나의 생존기",
+      "creativeGrammar": {
+        "mainIdentity": "생존 기록과 채집·제작 선택",
+        "a": {
+          "system": "게임 시스템 + 해금/역사/철학/과학/예술 창작 소재",
+          "material": "생존 전략, 자원 수집, 이동, 전투, 위험 관리",
+          "materialDomain": "주요 장르: 생존, 채집; 보조 장르: 역사, 철학, 예술",
+          "stateChange": "플레이어 선택 → 상태 변화 → 다음 플레이 선택"
+        },
+        "b": {
+          "system": "다른 시스템 + 해당 축 창작 소재",
+          "material": "보상, 정보, 전략, 경로, 게임 진행",
+          "materialDomain": "주요 장르: 스토리, 전략; 보조 장르: 블و드, 디자인, 미디어",
+          "stateChange": "플레이어 선택 → 상태 변화 → 다음 플레이 선택"
+        },
+        "abCausality": "양방향 실제 상태 교환 (A→B, B→A, 중후반 두 시스템의 관계 변화)",
+        "abEvolution": {
+          "aChangesB": "A의 선택이 B의 상태 변화를 유도한다(예: 새로운 전략 선택)",
+          "bChangesA": "B의 상태 변화가 A의 선택을 재정의한다(예: 새로운 보상 제공)",
+          "lateGameChange": "중후반 두 시스템 간의 관계 변화 및 피드백 제공"
+        },
+        "materialFusion": {
+          "contrast": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르와 보조 장르를 넣는다.",
+          "causalBridge": "원인 → 인물 갈등 → 플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건",
+          "removalConsequence": "보조 장르 제거 시 바뀌는 플레이 명시, @=4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지)"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 또는 게임 규칙 변경으로 인한 세계 상태 변화",
+          "characterConflict": "인물 갈등과 그에 따른 플레이어 선택",
+          "playerChoice": "플레이어의 실제 행동 및 결과 판타지",
+          "worldChange": "실제 세계 상태 변화 및 다음 사건 생성",
+          "nextEvent": "플레이어 선택이 유도하는 새로운 사건"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 수집, 이동, 전투, 위험 관리"
+          },
+          {
+            "name": "철학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선수의 정체성, 대립, 보상, 정보"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "자원 수집, 이동, 전투, 위험 관리"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "철학",
+            "gameplayEffect": "선수의 정체성, 대립, 보상, 정보"
+          }
+        ],
+        "cGenreInterlock": "보조 장르 제거 시 바뀌는 플레이 명시, @=4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지)",
+        "cWorldAndGameplayEffect": "실제 세계 상태 변화 및 다음 사건 생성, 플레이어 선택이 유도하는 새로운 사건",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어 선택 또는 게임 규칙 변경으로 인한 세계 상태 변화",
+            "discovery": "인물 갈등과 그에 따른 플레이어 선택",
+            "newChoice": "플레이어의 실제 행동 및 결과 판타지"
+          },
+          {
+            "clue": "플레이어 선택이 유도하는 새로운 사건",
+            "discovery": "신규 경로, 보상, 전략, 정보",
+            "newChoice": "다음 플레이 선택을 결정한다"
+          },
+          {
+            "clue": "중후반 두 시스템 간의 관계 변화 및 피드백 제공",
+            "discovery": "전략적 재정비, 보상 조정, 정보 확장",
+            "newChoice": "게임 진행 방향 재설정 및 다음 플레이 선택"
+          },
+          {
+            "clue": "보조 장르 제거 시 바뀌는 플레이 명시",
+            "discovery": "플레이어 역할, 책임, 대표 행동, 결과 판타지",
+            "newChoice": "게임 정체성 재구성 및 다음 플레이 선택"
+          }
+        ],
+        "delveGrowthRule": "4개 이상 초기 사례(번호만 다르거나 같은 해결법 반복 금지), 상한 없이 발전 규칙 적용",
+        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성"
+      },
+      "playerFantasy": "플레이어는 생존 기록에서 자원을 채집하며, 동시에 위험에 노출되어 있는 상태를 경험해야 한다. 선택의 결과로 다음 전략적 결정을 내리며, 이 과정에서 새로운 경로와 정보가 유도된다.",
+      "coreFun": "생존 기록과 채집/제작 선택을 통해 플레이어는 자원 수집, 이동, 전투, 위험 관리를 수행한다. 게임 규칙 변경 시 세계 상태 변화를 인식하고, 이를 바탕으로 새로운 선택을 하여 게임 진행 방향을 재설정한다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300101,
-      "lastMs": 300101,
+      "totalMs": 712928,
+      "lastMs": 239080,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:40:38.734Z"
+      "updatedAt": "2026-10-10T10:47:31.563Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:35:38.613Z",
-  "updatedAt": "2026-10-10T10:40:38.734Z",
+  "updatedAt": "2026-10-10T10:47:31.564Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1753,5 +1932,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T10:47:31.564Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
