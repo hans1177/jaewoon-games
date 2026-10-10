@@ -291,7 +291,9 @@ test('actual Daechung Unity scene mesh and texture proof is native, fails closed
   assert.match(source,/const nativeMeshVerified=Boolean\(nativeMeshMarker\)/);
   assert.match(source,/nativeMeshMissing=!nativeMeshVerified/);
   assert.match(source,/nativeMeshProof\.volumetricMeshes>0/);
-  assert.match(source,/nativeMeshMissing;/);
+  assert.match(source,/nativeMeshMissing\s*\n\s*\|\|!renderSurfaceVerified\|\|!sceneScreenVerified;/);
+  assert.match(source,/const visualBlocked=shaderLikelyMissing\|\|blankOrFrozenFrame/);
+  assert.match(source,/sceneScreenVerified=Boolean\(scenePixels/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
 });
 
