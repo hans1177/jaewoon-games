@@ -28,25 +28,77 @@
         "stateChange": "전략 선택 변화 -> 장비 업그레이드 -> 새로운 선택 생성"
       },
       "abCausality": "주요 선택 → 부수적 선택 → 주요 선택 재정립 → 세계 상태 변화 → 다음 사건 발생으로 인해 양방향 실제 상태 교환을 구현한다. 적의 압박 강화와 캐릭터 움직임의 상호작용은 A/B 상태 교환에 의해 명확히 반영된다. 플레이어는 다양한 선택과 성장을 통해 세계를 이끌고, 각각의 선택이 다른 시스템과 연결되어 진다."
+    },
+    "local_authoring_parts::be60431bc14858149d6d93ebcd376c975a3310716e7d2c28b2db09e37e57153b:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "적의 압박 강화 → 캐릭터 움직임 변환 → 전략 선택 재정립",
+        "bChangesA": "전략 선택 변화 → 장비 업그레이드 → 새로운 선택 생성",
+        "lateGameChange": "플레이어 선택에 따른 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환이 이루어진다."
+      },
+      "materialFusion": {
+        "contrast": "흑색 빙하, 화산, 연구소, 캐릭터 움직임 vs 플레이어 스킬, 해금, 기술",
+        "causalBridge": "적의 압박 증가와 캐릭터 움직임의 상호작용은 A/B 상태 교환에 의해 명확히 반영된다.",
+        "removalConsequence": "플레이어 선택이 다른 시스템과 연결되어 진다는 것을 나타낸다."
+      },
+      "storyCausalChain": {
+        "cause": "기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다。",
+        "characterConflict": "채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다。",
+        "playerChoice": "Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다。",
+        "worldChange": "플레이어 선택에 따른 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환이 이루어진다。",
+        "nextEvent": "새로운 플레이 옵션 생성 및 다음 질문으로 이어지는 게임 진행"
+      }
+    },
+    "local_authoring_parts::bda6b639dc8d37f84d6cb9f16d1c90c209aff696224a7b3d3baf0629b0de419d:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "마력숲 생존기 - 플레이어는 실시간 전투에서 적의 압박 아래서 점점 더 강해지는 흑색 빙하 속에서 숨은 자리를 찾고, 다양한 선택과 성장 가능성을 통해 세계를 이끌며 살아남는 게임",
+      "a": {
+        "system": "생존 및 전투 시스템",
+        "material": "흑색 빙하, 화산, 연구소, 캐릭터 움직임",
+        "materialDomain": "지역 및 위험",
+        "stateChange": "적의 압박 증가 -> 캐릭터 위치 변경 -> 전략 선택"
+      },
+      "b": {
+        "system": "제작 및 장비 시스템",
+        "material": "플레이어 스킬, 해금, 기술",
+        "materialDomain": "성장 및 선택",
+        "stateChange": "전략 선택 변화 -> 장비 업그레이드 -> 새로운 선택 생성"
+      },
+      "abCausality": "주요 선택 → 부수적 선택 → 주요 선택 재정립 → 세계 상태 변화 → 다음 사건 발생으로 인해 양방향 실제 상태 교환을 구현한다. 적의 압박 강화와 캐릭터 움직임의 상호작용은 A/B 상태 교환에 의해 명확히 반영된다. 플레이어는 다양한 선택과 성장을 통해 세계를 이끌고, 각각의 선택이 다른 시스템과 연결되어 진다.",
+      "abEvolution": {
+        "aChangesB": "적의 압박 강화 → 캐릭터 움직임 변환 → 전략 선택 재정립",
+        "bChangesA": "전략 선택 변화 → 장비 업그레이드 → 새로운 선택 생성",
+        "lateGameChange": "플레이어 선택에 따른 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환이 이루어진다."
+      },
+      "materialFusion": {
+        "contrast": "흑색 빙하, 화산, 연구소, 캐릭터 움직임 vs 플레이어 스킬, 해금, 기술",
+        "causalBridge": "적의 압박 증가와 캐릭터 움직임의 상호작용은 A/B 상태 교환에 의해 명확히 반영된다.",
+        "removalConsequence": "플레이어 선택이 다른 시스템과 연결되어 진다는 것을 나타낸다."
+      },
+      "storyCausalChain": {
+        "cause": "기존 마력숲 생존기의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다。",
+        "characterConflict": "채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다。",
+        "playerChoice": "Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다。",
+        "worldChange": "플레이어 선택에 따른 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환이 이루어진다。",
+        "nextEvent": "새로운 플레이 옵션 생성 및 다음 질문으로 이어지는 게임 진행"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 895428,
-      "lastMs": 71744,
+      "totalMs": 1028179,
+      "lastMs": 132751,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:06:55.052Z"
+      "updatedAt": "2026-10-10T02:09:07.804Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:51:59.599Z",
-  "updatedAt": "2026-10-10T02:06:55.052Z",
+  "updatedAt": "2026-10-10T02:09:07.805Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +1812,7 @@
     "271d072a82ddae35e1db6f383331e5ac2cf26d5ab1bfba7a853709177da2b91d": true,
     "412f1c8b6734bf9edd83a4de81d3b66b1d5112c9446230a6767fc8856c3f10ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:06:55.052Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:09:07.805Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
