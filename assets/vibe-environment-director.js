@@ -346,7 +346,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     :/MODERN|URBAN|CONTEMPORARY|현대/.test(buildingWords)?'MODERN'
     :/ANCIENT|ROMAN|GREEK|EGYPT|고대/.test(buildingWords)?'ANCIENT'
     :/MEDIEVAL|CASTLE|FEUDAL|GOTHIC|중세/.test(buildingWords)?'MEDIEVAL':'LOCAL';
-  const inferredWater=/ARCHIPELAGO|군도/.test(worldWords)?'ARCHIPELAGO'
+  const inferredWater=/WATERSHED|EARTH_SYSTEM|지구환경|해양.*호수|호수.*해양/.test(worldWords)||(/OCEAN|SEA|MARINE|바다|해양/.test(worldWords)&&/LAKE|호수/.test(worldWords))?'WATERSHED'
+    :/ARCHIPELAGO|군도/.test(worldWords)?'ARCHIPELAGO'
     :/ISLAND|섬/.test(worldWords)?'ISLAND'
     :/LAKE|호수/.test(worldWords)?'LAKES'
     :/COAST|BEACH|SEASHORE|해안/.test(worldWords)?'COASTAL'
@@ -354,7 +355,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const eraKey=requestedEra==='AUTO'?inferredEra:requestedEra;
   const waterKey=requestedWater==='AUTO'?inferredWater:requestedWater;
   const supportedEras=['AUTO','LOCAL','ANCIENT','MEDIEVAL','MODERN','FUTURE','HYBRID'];
-  const supportedWaters=['AUTO','OCEAN','COASTAL','ISLAND','ARCHIPELAGO','LAKES'];
+  const supportedWaters=['AUTO','OCEAN','COASTAL','ISLAND','ARCHIPELAGO','LAKES','WATERSHED'];
   if(!supportedEras.includes(requestedEra)||!supportedWaters.includes(requestedWater)||
     !eraByZone||typeof eraByZone!=='object'||Array.isArray(eraByZone)||
     Object.entries(eraByZone).some(([key,value])=>!['RESIDENTIAL','COMMERCIAL','WORKSHOP'].includes(key)||!supportedEras.includes(String(value).toUpperCase()))||
@@ -424,10 +425,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         :waterKey==='OCEAN'?(sx<.43+coastNoise)
         :waterKey==='ISLAND'?(radial>.54+coastNoise)
         :waterKey==='ARCHIPELAGO'?(Math.min(Math.hypot(sx-.36,sz-.42),Math.hypot(sx-.69,sz-.6))>.2+coastNoise*.35)
+        :waterKey==='WATERSHED'?(sx<.24+coastNoise)
         :false;
-      const lake=waterKey==='LAKES'&&(Math.hypot((sx-.73)*1.5,(sz-.32)*1.5)<.115+coastNoise*.1);
+      const lake=(waterKey==='LAKES'||waterKey==='WATERSHED')&&
+        (Math.hypot((sx-.73)*1.5,(sz-.32)*1.5)<.115+coastNoise*.1);
       if(sea||lake)type='WATER';
-      else if(waterKey==='LAKES'||waterKey==='OCEAN'||waterKey==='COASTAL'||waterKey==='ISLAND'||waterKey==='ARCHIPELAGO')
+      else if(waterKey==='LAKES'||waterKey==='OCEAN'||waterKey==='COASTAL'||waterKey==='ISLAND'||waterKey==='ARCHIPELAGO'||waterKey==='WATERSHED')
         type=elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
     }
     terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
@@ -584,6 +587,17 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
     tile.ecology=Object.freeze({habitat,carryingCapacity,visualCover:0,scenicOnly:true,
       spawnRateAuthority:false,gameplayResourcesUnchanged:true});
+    // 유역·염분·계절은 시각·사운드 신호만 생성하며 실제 물리·자원은 기존 게임이 소유한다.
+    const riverCorridor=waterway.has(id);
+    const aquaticCapacity=body?clamp01((isMarine?.72:.64)*(1-Math.min(.7,depthEstimate/85))):0;
+    tile.hydroVisual=Object.freeze({waterBodyId:body?.id||null,kind:body?.kind||(riverCorridor?'RIVER':null),
+      freshWater:!!isFresh||riverCorridor,salinityPpt:body?.salinityPpt??0,riverCorridor,
+      shorelineDistanceCells:shoreline,scenicCarryingCapacity:+aquaticCapacity.toFixed(3),
+      turbidityProxy:+clamp01((body?.kind==='LAKE'?.31:.16)+tile.catchment.erosionRisk*.45).toFixed(3),
+      season:seasonKey,temperatureProxy:tile.surface.temperature,
+      backgroundCue:body?.kind==='OCEAN'?'SURF_TIDE_AND_SEABIRDS':body?.kind==='LAKE'?'LAKE_RIPPLES_AND_REEDS':
+        riverCorridor?'FLOWING_WATER_AND_RIVERBANK':'SOIL_WIND_AND_VEGETATION',
+      shaderAndAudioSynchronizationRequired:true,nativeWaterRendered:false,fishingSwimmingCollisionOrRewardChanged:false});
     materialCounts.set(primary,(materialCounts.get(primary)||0)+1);
     habitatCounts.set(habitat,(habitatCounts.get(habitat)||0)+1);
     geologyRegions.set(geologyId,(geologyRegions.get(geologyId)||0)+1);
@@ -725,7 +739,16 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         :eraResolved==='MODERN'?['REINFORCED_FRAME','GLAZED_FACADE','SERVICE_CORE','ELEVATOR_ACCESS']
         :eraResolved==='FUTURE'?['MODULAR_STRUCTURAL_FRAME','SMART_ENVELOPE','SKYBRIDGE_SOCKET','SERVICE_SHAFT']
         :['FOUNDATION','WALL','DOOR','ROOF'];
-      const eraArchitecture=Object.freeze({era:eraResolved,eraSelection:eraRequest,
+      // 실제 건축 규칙을 지키면서 지질·유적·거주·스카이라인을 시간층으로 매핑한다.
+      const chronology=['ANCIENT','MEDIEVAL','MODERN','FUTURE'],eraStep=chronology.indexOf(eraResolved);
+      const eraStrata=Object.freeze([
+        Object.freeze({level:'GEOLOGICAL',era:'PREHISTORY',material:terrain[at(x,z)].surface.stratum}),
+        Object.freeze({level:'ARCHAEOLOGICAL',era:eraStep>0?chronology[eraStep-1]:'PREHISTORY',material:'LOCAL_RUINS'}),
+        Object.freeze({level:'OCCUPIED',era:eraResolved,material:baseMaterial}),
+        Object.freeze({level:'SKYLINE',era:eraResolved,material:roof})
+      ]);
+      const eraArchitecture=Object.freeze({era:eraResolved,eraSelection:eraRequest,visualStrata:eraStrata,
+        stratumAlgorithm:'CHRONOLOGY_AND_LOCAL_GEOLOGY',
         structuralGrammar:Object.freeze(eraModules),constructionLayer:'ARCHITECTURAL_VISUAL_AUTHORING_ONLY',
         gameTechnologyOrProgressionUnlockChanged:false,periodMixSupported:eraRequest==='HYBRID',
         cultureIdentityPreserved:true,native3dComponentsRequired:true,nativeArchitectureVerified:false});
@@ -804,8 +827,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const observedCoverByHabitat=new Map(),habitatCapacityByType=new Map();
   for(const tile of terrain){
     const type=tile.ecology.habitat;
-    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,waterCells:0};
+    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,scenicCapacity:0,waterCells:0};
     data.cells++;data.capacity+=tile.ecology.carryingCapacity;
+    data.scenicCapacity+=tile.aquatic?tile.hydroVisual.scenicCarryingCapacity:tile.ecology.carryingCapacity;
     if(tile.surface.waterDistanceCells!==null&&tile.surface.waterDistanceCells<=2)data.waterCells++;
     habitatCapacityByType.set(type,data);
   }
@@ -824,7 +848,17 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     // 공간 점유 제한을 고려한 로지스틱 균형(다음 화면 제작 목표, 실게임 생물 개체수 아님).
     const nextVisualCover=usableCapacity>0?Math.max(0,Math.min(row.cells,
       current+growthRate*current*(1-current/Math.max(1,desired)))):0;
-    const cue=habitat==='AQUATIC'?'RIPPLE_AND_WETLAND_AMBIENCE'
+    // Lotka–Volterra 모델을 수치 안정성이 보장된 배경 먹이망 지표로만 응용한다.
+    const producer=Math.min(1,row.scenicCapacity/Math.max(1,row.cells));
+    const prey=Math.max(.03,producer*.67),predator=Math.max(.01,prey*.28);
+    const nextPrey=clamp01(prey+.2*(.24*prey*(1-prey)-.17*prey*predator));
+    const nextPredator=clamp01(predator+.2*(.13*prey*predator-.09*predator));
+    const foodWebVisual=Object.freeze({algorithm:'BOUNDED_LOTKA_VOLTERRA_SCENIC_PREVIEW',producerIndex:+producer.toFixed(3),
+      preyIndex:+nextPrey.toFixed(3),predatorIndex:+nextPredator.toFixed(3),visualOnly:true,realCreatureCountChanged:false});
+    const cue=/CORAL_REEF|OPEN_OCEAN|DEEP_OCEAN/.test(habitat)?'CURRENT_REEF_MARINE_SOUNDS'
+      :/KELP_FOREST/.test(habitat)?'KELP_SWAY_AND_BUBBLES'
+      :/FRESHWATER_LAKE/.test(habitat)?'LAKE_REEDS_AND_SHOREBIRDS'
+      :habitat==='AQUATIC'?'RIPPLE_AND_WETLAND_AMBIENCE'
       :habitat==='CANOPY_FOREST'?'CANOPY_SHADE_AND_BIRDCALL'
       :habitat==='RIPARIAN'?'RIVERBANK_REEDS_AND_INSECT_AMBIENCE'
       :habitat==='DRY_SCRUB'?'WIND_SCRUB_AND_DRY_SOIL'
@@ -834,7 +868,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       carryingCapacitySum:+usableCapacity.toFixed(3),averageHabitatCapacity:+(usableCapacity/Math.max(1,row.cells)).toFixed(3),
       idealVisualCover:+desired.toFixed(3),nextVisualCover:+nextVisualCover.toFixed(3),
       validatedVisualDensityFeedbackApplied:feedbackAccepted,visualDensityFeedback:visualDensityDelta(habitat),
-      ambientCue:cue,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
+      ambientCue:cue,foodWebVisual,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
       decomposerGuild:'SOIL_AND_FALLEN_MATTER_CUE_ONLY',actualCreatureSpawnCount:0,
       actualHarvestableResourceCount:0,actualNativeVisualsVerified:false});
   });
@@ -881,7 +915,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       floodBufferReviewCount:row.highFloodRiskCount,planningOnly:true}));
 
   // 게임이 승인한 개체만 원본 ID로 계획한다. 없는 몬스터·NPC를 직접 생성하지 않는다.
-  const rosterIds=new Set(),rosterIssues=[],lifeAndEncounterSites=[];
+  const rosterIds=new Set(),rosterIssues=[],lifeAndEncounterSites=[],assignedActorCells=new Set();
   const supportedTiers=['NORMAL','ELITE','BOSS','RARE_BOSS','LEGENDARY'];
   const supportedKinds=['NPC','MONSTER','CREATURE','BOSS'];
   const actorActionSet=['WORK','REST','TALK','TRADE','PATROL','SCOUT','FORAGE','HUNT','DEFEND','RAID','VILLAGE_BUILD','DUNGEON_GUARD','MIGRATE'];
@@ -901,11 +935,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       .map(value=>String(value).toUpperCase()));
     const playerRelevant=kind==='NPC',bossTier=['BOSS','RARE_BOSS','LEGENDARY'].includes(tier);
     const authoredDungeon=authoredDungeonSites.find(row=>String(row?.id||'')===String(actor.dungeonId||'')&&row?.approved===true);
+    const dungeonAnchor=authoredDungeon?.cell||authoredDungeon;
+    const dungeonAnchorValid=Number.isInteger(dungeonAnchor?.x)&&Number.isInteger(dungeonAnchor?.z)&&within(dungeonAnchor.x,dungeonAnchor.z);
     const authoredRank=actor?.approved===true&&actor?.tierAuthorized===true;
     const homeAnchor=playerRelevant&&buildings.length?buildings[proceduralCellHash(hash^0xa773,rosterIndex,7)%buildings.length]:null;
     let placements=terrain.filter(tile=>{
       const id=at(tile.x,tile.z),isWater=tile.biome==='WATER';
-      if(blocked.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
+      if(blocked.has(id)||assignedActorCells.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
       if(playerRelevant)return !isWater&&roadSet.has(id);
       if(occupied.has(id)||aquatic!==isWater)return false;
       if(!isWater&&(roadSet.has(id)||sightCells.has(id)))return false;
@@ -924,15 +960,19 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const roadScore=playerRelevant?(housing?Math.max(0,15-Math.hypot(tile.x-housing.x,tile.z-housing.z)*3):5):0;
       const safeDistance=playerRelevant?0:bossTier?Math.min(24,distance*1.5):Math.min(12,distance);
       const aquaticBonus=aquatic&&tile.aquatic?.kind==='OCEAN'?3:0;
-      return{tile,id,score:habitatScore+ownTerritory+roadScore+safeDistance+aquaticBonus+
+      const dungeonAffinity=bossTier&&dungeonAnchorValid?Math.max(0,65-22*Math.hypot(tile.x-dungeonAnchor.x,tile.z-dungeonAnchor.z)):0;
+      return{tile,id,score:habitatScore+ownTerritory+roadScore+safeDistance+aquaticBonus+dungeonAffinity+
         (proceduralCellHash(hash^rosterSalt,tile.x,tile.z)%19)};
     }).sort((a,b)=>b.score-a.score||a.id-b.id);
     const tile=sorted[0]?.tile||null,site=tile?worldPosition(tile.x,tile.z,tile.elevation*8):null;
+    if(tile&&actor.approved===true)assignedActorCells.add(at(tile.x,tile.z));
     const acceptedActions=Array.isArray(actor.allowedActions)?
       [...new Set(actor.allowedActions.map(v=>String(v).toUpperCase()).filter(v=>actorActionSet.includes(v)))]:[];
     const raidAuthorized=actor.raidApproved===true&&Boolean(actor.raidTargetId)&&
       buildings.some(b=>b.stableObjectId===actor.raidTargetId);
-    const dungeonAuthorized=Boolean(authoredDungeon&&tile&&bossTier);
+    const dungeonAuthorized=Boolean(authoredDungeon&&dungeonAnchorValid&&tile&&bossTier&&
+      Math.hypot(tile.x-dungeonAnchor.x,tile.z-dungeonAnchor.z)<=3);
+    if(authoredDungeon&&!dungeonAuthorized)rosterIssues.push('DUNGEON_SITE_REVIEW_REQUIRED:'+actorId);
     const utilities=acceptedActions.map(action=>{
       let score=20+(proceduralCellHash(hash^rosterSalt,rosterIndex,action.length)%9);
       if(playerRelevant&&['WORK','TRADE','VILLAGE_BUILD','TALK'].includes(action)&&buildings.length)score+=28;
@@ -944,13 +984,31 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       return{action,score:+score.toFixed(3)};
     }).filter(row=>row.score>=0).sort((a,b)=>b.score-a.score||a.action.localeCompare(b.action));
     const proposedIntent=utilities[0]?.action||null;
+    // 유틸리티 AI에 시간대 가중치와 행동 관성(히스테리시스)을 적용. 실행은 기존 게임 AI만 허용한다.
+    const phaseWeights={DAWN:{FORAGE:12,MIGRATE:9,PATROL:7},DAY:{WORK:19,TRADE:18,TALK:12,VILLAGE_BUILD:12,SCOUT:9},
+      DUSK:{DEFEND:16,PATROL:12,REST:23},NIGHT:{REST:38,HUNT:28,SCOUT:8,DUNGEON_GUARD:15}};
+    let previousAction=null;
+    const behaviorCycle=Object.freeze(['DAWN','DAY','DUSK','NIGHT'].map(phase=>{
+      const ranked=utilities.map(row=>({action:row.action,score:row.score+(phaseWeights[phase][row.action]||0)+
+        (row.action===previousAction?6:0)+(row.action==='HUNT'&&tile?.aquatic?7:0)}))
+        .sort((a,b)=>b.score-a.score||a.action.localeCompare(b.action));
+      const chosen=actor.approved===true?ranked[0]?.action||null:null;
+      previousAction=chosen;
+      return Object.freeze({phase,proposedAction:chosen,habitat:tile?.ecology.habitat||null,
+        lightCue:phase==='NIGHT'?'NIGHT':phase==='DUSK'?'SUNSET':phase==='DAWN'?'SUNRISE':'DAYLIGHT',
+        season:seasonKey,actionExecuted:false,engineAuthorityRequired:true});
+    }));
     // 등급 변화는 기존 전투/드랍/저장 권한을 우회할 수 없고 승인된 전이 후보만 나온다.
     const authoredLadder=(Array.isArray(actor.authorizedTierTransitions)?actor.authorizedTierTransitions:[])
       .filter(row=>row&&String(row.from||'').toUpperCase()===tier&&supportedTiers.includes(String(row.to||'').toUpperCase())
         &&row.ownerApproved===true);
     const nextTier=authoredRank?String(authoredLadder[0]?.to||'').toUpperCase():null;
     const physiologicalPressure=tile?+(1-(tile.ecology.carryingCapacity||0)).toFixed(3):null;
+    const phenotypeStage=tile?physiologicalPressure>.65?'SURVIVAL_ADAPTATION':
+      tile.surface.temperature<.3?'COLD_CLIMATE_COAT':tile.surface.humidity>.72?'HUMIDITY_ADAPTATION':'REGIONAL_VARIATION':null;
     const adaptation=Object.freeze({currentTier:tier,nextTierProposal:nextTier||null,
+      phenotypeStage,visualVariationSeed:tile?proceduralCellHash(hash^rosterSalt,tile.x,tile.z):null,
+      selectionAlgorithm:'HABITAT_FIT_AND_SELECTION_PRESSURE_VISUAL_ONLY',
       trigger:nextTier?'OWNER_AUTHORED_ECOLOGICAL_EVOLUTION_GUARD':'NOT_AUTHORIZED',
       phenotypeCue:tile?.ecology.habitat||null,ecologicalPressure:physiologicalPressure,
       adaptiveVariation:'VISUAL_PHENOTYPE_AND_BEHAVIOR_PRIORITY_ONLY',
@@ -964,7 +1022,10 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       habitat:tile?.ecology.habitat||null,earthBiome:tile?.earthBiome.name||null,
       aquatic:!!tile?.aquatic,encounterTierAuthorized:authoredRank,
       authoredDungeonId:dungeonAuthorized?String(authoredDungeon.id):null,
-      proposedIntent,behaviorUtilities:Object.freeze(utilities),
+      proposedIntent,behaviorUtilities:Object.freeze(utilities),behaviorCycle,
+      backgroundSync:Object.freeze({earthBiome:tile?.earthBiome.name||null,waterCue:tile?.hydroVisual?.backgroundCue||null,
+        surfaceMaterial:tile?.surface.primary||null,season:seasonKey,era:homeAnchor?.era||eraKey,
+        visualBindingRequired:true,actualNativeBinding:false}),
       raidTargetAuthorized:raidAuthorized,blueprint:renderAsset,evolution:adaptation,
       status:actor.approved===true&&site?'DESIGN_MAPPED_NATIVE_BINDING_REQUIRED':'UNAPPROVED_OR_NO_VALID_SITE',
       exactActorSourceIdRequired:true,actualNpcOrMonsterSpawned:false,engineActionExecuted:false,
@@ -1000,6 +1061,10 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       inputActorCount:ecologyActors.length,plannedActorCount:lifeAndEncounterSites.length,issues:Object.freeze(rosterIssues),
       actorPlacements:Object.freeze(lifeAndEncounterSites),habitatDesignGaps:Object.freeze(habitatDesignGaps),
       tierVocabulary:Object.freeze(supportedTiers),existingActorAiOwner:'assets/vibe-ai-role-director.js',
+      authorizedDungeonWatchCandidates:lifeAndEncounterSites.filter(row=>!!row.authoredDungeonId).length,
+      authorizedRaidIntentCandidates:lifeAndEncounterSites.filter(row=>row.raidTargetAuthorized).length,
+      scheduledBehaviorPhases:lifeAndEncounterSites.reduce((n,row)=>n+row.behaviorCycle.length,0),
+      uniquePlacementCells:assignedActorCells.size,algorithm:'SEEDED_HABITAT_FIT_AND_UTILITY_AI_HYSTERESIS',
       approvedDesignGameActorsOnly:true,autonomousNativeRuntimeActionRequired:true,
       actualAiActorSpawns:0,actualMonsterRankChanges:0,actualNpcDungeonsCreated:0,actualRaidsLaunched:0,
       noBossMonsterStatsLootSaveBalanceMutation:true}),
@@ -1009,6 +1074,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       waterBodies:Object.freeze(waterComponents),
       oceanCount:waterComponents.filter(row=>row.kind==='OCEAN').length,lakeCount:waterComponents.filter(row=>row.kind==='LAKE').length,
       coastlineCells:terrain.filter(tile=>tile.aquatic?.tidalInfluence).length,
+      freshwaterRiverCorridorCells:terrain.filter(tile=>tile.hydroVisual.riverCorridor).length,
+      mixedOceanAndLakeMode:waterKey==='WATERSHED',
       nativeWaterAndMarineCreatureRuntimeQaRequired:true,actualOceanLakeRenderingVerified:false,
       authoredSwimmingFishingMechanicsPreserved:true,waterWorldGameRulesChanged:false}),
     earthBiomes:Object.freeze({algorithm:'WHITTAKER_INSPIRED_CLIMATE_MOISTURE_WITH_AQUATIC_SUCCESSION',
@@ -1019,10 +1086,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       surfaceMaterialGroups:Object.freeze(terrainMaterialGroups),nativeMaterialAndTerrainQaRequired:true,actualMaterialRuntimeVerified:false}),
     ecologyBalance:Object.freeze({algorithm:'CARRYING_CAPACITY_HABITAT_SUITABILITY_LOGISTIC_VISUAL_TARGET',
       season:seasonKey,seasonalThermal,habitatDistribution:Object.freeze(Object.fromEntries([...habitatCounts].sort(([a],[b])=>a.localeCompare(b)))),
-      habitats:Object.freeze(habitatBalance),feedbackAccepted,resourceAndCreatureSpawnAuthority:false,
+      habitats:Object.freeze(habitatBalance),feedbackAccepted,foodWebAlgorithm:'BOUNDED_LOTKA_VOLTERRA_SCENIC_PREVIEW',
+      resourceAndCreatureSpawnAuthority:false,
       originalGameplaySpeciesAndPopulationPreserved:true,realBiologySimulationClaimed:false,nativeVisualsVerified:false}),
     eraAndCulture:Object.freeze({requestedEra,selectedEra:eraKey,eraSelectionMode:requestedEra==='AUTO'?'WORLD_DESIGN_AUTO':'EXPLICIT_APPROVED_DESIGN',eraByZone:Object.freeze({...eraByZone}),
       supportedEras:Object.freeze(supportedEras),usedEras:Object.freeze([...new Set(buildings.map(row=>row.era))].sort()),
+      totalVisualEraStrata:buildings.reduce((count,row)=>count+row.construction.eraArchitecture.visualStrata.length,0),
       buildingCountByEra:Object.freeze(Object.fromEntries([...new Set(buildings.map(row=>row.era))].sort().map(period=>
         [period,buildings.filter(row=>row.era===period).length]))),
       structuralGrammarsAreNativeAuthoringInputs:true,noTechnologyEconomyOrGameplayProgressionMutation:true,
@@ -1035,8 +1104,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       actualNativeUrbanWorldVerified:false}),
     sharedLibraryBinding:Object.freeze({gameId:String(gameId),target:String(target).toUpperCase(),sourceCandidateCount:pool.length,
       eligibleFamilies:Object.freeze(Object.fromEntries([...poolByFamily].map(([family,rows])=>[family,rows.length]))),
-      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).filter(Boolean))].sort()),
+      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).concat(lifeAndEncounterSites.map(row=>row.blueprint?.assetId)).filter(Boolean))].sort()),
       originalAssetsCopied:false,actualRuntimeBindingsVerified:false,missingNativeAssetRequiresExistingAuthoring:true}),
+    environmentLifeSync:Object.freeze({worldSeed:String(seed),season:seasonKey,era:eraKey,waterMode:waterKey,
+      plannedActorCount:lifeAndEncounterSites.length,foodWebHabitats:habitatBalance.length,
+      physicalWorldAndLifeShareHabitatCells:true,backgroundAndLifeUseStableSeed:true,
+      actualNativeLifeAndWaterBindingsVerified:false,gameplayAndSaveAuthority:false}),
     placementDiversity:Object.freeze({algorithm:'SEEDED_HASH_PRIORITY_SPATIAL_REJECTION_BLUE_NOISE_APPROXIMATION',minimumVegetationSeparationCells:2,
       candidatesEvaluated:natureCandidates.length,selectedVegetation:vegetation.length,stableGameObjectIds:true,
       spatialDepthMetersRequired:dimension==='3D',slopeAndNavClearancePreserved:true}),

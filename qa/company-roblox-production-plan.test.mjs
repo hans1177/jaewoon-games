@@ -224,6 +224,10 @@ test('approved procedural landscapes reach only the existing world source worker
   assert.equal(contract.required,true);
   const study=contract.macroSketch.proceduralWorldStudy;
   assert.equal(study.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(study.issues));
+  assert.ok(study.climateFoodWeb.every(row=>row.foodWeb?.visualOnly===true));
+  assert.ok(study.buildings.every(row=>row.architecturalStrata.length===4));
+  assert.equal(study.totalPlannedActorCount,0);
+  assert.equal(study.nativeLifeAndWaterRuntimeVerified,false);
   assert.equal(study.seed,'winter-village');
   assert.equal(study.regionBiome,'MOUNTAIN');
   assert.equal(study.climate,'COLD_WET');
@@ -275,6 +279,28 @@ test('existing spatial worker plans seeded biome drainage connected roads and mo
   assert.match(spatialRule,/not proof of native instancing or runtime visibility/);
   assert.match(spatialRule,/Existing map repairs and presentation-only tasks must preserve/);
   assert.equal(productionBlueprintContractsForFiles(plan,{responsibleFiles:['client/HUD.luau']}).spatial.required,false);
+});
+
+test('approved Earth auto-biome stays in the same source-worker plan with bounded actor samples',()=>{
+  const roster=Array.from({length:35},(_,i)=>({id:'npc-'+i,kind:'NPC',approved:true,
+    allowedActions:['TALK','REST','WORK']}));
+  const spec={approvedDesign:true,dimension:'3D',seed:'biome-many-actors',
+    width:24,height:24,density:.7,biome:'EARTH_SYSTEM',buildingStyle:'HYBRID',ecologyActors:roster};
+  const contract=buildSpatialBlueprintContract({enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',
+    design:{identity:'Earth native world',spatialLayout:{dimension:'3D',proceduralWorld:spec}},
+    files:['roblox-games/earth/server/World.luau']});
+  const study=contract.macroSketch.proceduralWorldStudy;
+  assert.equal(study.waterMode,'WATERSHED');
+  assert.ok(study.waterBodies.some(row=>row.kind==='OCEAN'));
+  assert.ok(study.waterBodies.some(row=>row.kind==='LAKE'));
+  assert.ok(study.eraDistribution.ANCIENT+study.eraDistribution.MEDIEVAL+
+    study.eraDistribution.MODERN+study.eraDistribution.FUTURE>0);
+  assert.equal(study.totalPlannedActorCount,35);
+  assert.ok(study.lifeAndDungeonPlans.length>0&&study.lifeAndDungeonPlans.length<=3);
+  assert.ok(study.lifeAndDungeonPlans.every(row=>row.exactActorRuntimeBindingVerified===false));
+  assert.ok(JSON.stringify(study).length<10000,'no unbounded source-worker context');
+  assert.equal(study.nativeLifeAndWaterRuntimeVerified,false);
+  assert.equal(study.runtimeVerified,false);
 });
 
 test('owner feature removal survives repeated evolution and only a newer explicit request replaces it',()=>{
