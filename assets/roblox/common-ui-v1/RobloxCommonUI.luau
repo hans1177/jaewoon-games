@@ -4661,6 +4661,276 @@ function RobloxCommonUI.CreateStatusOverview(options)
   return root,{Sync=sync,stats=list}
 end
 
+
+-- 스킬트리: 선행 조건 그래프를 위상 정렬해 읽기 쉬운 분기 화면으로 표시한다.
+function RobloxCommonUI.CreateSkillTreeScreen(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"SKILL_TREE_SCREEN","SKILL_TREE")
+  local summary=commonText(body,"Summary","",UDim2.fromOffset(4,0),UDim2.new(1,-8,0,38),theme.MutedText,13,false)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="SkillNodes";list.Position=UDim2.fromOffset(0,42);list.Size=UDim2.new(1,0,1,-42)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body;commonList(list,false,8)
+  local buttons,shown={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local nodes=type(state.nodes)=="table"and state.nodes or {}
+    local byId,degree,edges,invalid={}, {}, {}, {}
+    for _,row in ipairs(nodes)do
+      if type(row)=="table"then
+        local id=tostring(row.id or "")
+        if id~=""and not byId[id]then byId[id]=row;degree[id]=0;edges[id]={} end
+      end
+    end
+    for id,row in pairs(byId)do
+      local seen={}
+      for _,value in ipairs(type(row.prerequisites)=="table"and row.prerequisites or {})do
+        local parent=tostring(value)
+        if not seen[parent]then
+          seen[parent]=true
+          if byId[parent]then
+            degree[id]+=1;table.insert(edges[parent],id)
+          else invalid[id]=true end
+        end
+      end
+    end
+    local queue,ordered={},{}
+    for id,count in pairs(degree)do if count==0 then table.insert(queue,id)end end
+    table.sort(queue)
+    while #queue>0 do
+      local id=table.remove(queue,1)
+      table.insert(ordered,byId[id])
+      for _,nextId in ipairs(edges[id])do
+        degree[nextId]-=1
+        if degree[nextId]==0 then table.insert(queue,nextId);table.sort(queue)end
+      end
+    end
+    for _,row in ipairs(nodes)do
+      if type(row)=="table"then
+        local id=tostring(row.id or "")
+        if id==""or byId[id]~=row then
+          table.insert(ordered,row)
+        elseif degree[id]>0 then
+          invalid[id]=true;table.insert(ordered,row)
+        end
+      end
+    end
+    shown=ordered
+    summary.Text=tostring(state.summary or ("스킬 "..#ordered.."개 · 해금은 게임 판정"))
+    for i,row in ipairs(ordered)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({name="Skill"..i,text="",size=UDim2.new(1,-8,0,76),theme=theme})
+        button.LayoutOrder=i;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=shown[index]
+          if current and current.id~=nil and type(options.onInspect)=="function"then
+            options.onInspect(current.id,current)
+          end
+        end)
+      end
+      local button=buttons[i]
+      local id=tostring(row.id or "")
+      local invalidNode=id==""or byId[id]~=row or invalid[id]==true
+      local status=invalidNode and "조건 오류"or(row.unlocked==true and "해금"or(row.available==true and "해금 가능"or "잠김"))
+      button.Text=tostring(row.name or id).." · "..tostring(row.branch or "공통").." · "..status.."\n"..tostring(row.description or row.requirementText or "")
+      button.TextWrapped=true;button.Visible=true;button.Selectable=true
+      button:SetAttribute("BoundSkillId",id)
+      button:SetAttribute("PrerequisiteGraphValid",not invalidNode)
+      button:SetAttribute("GameReportedUnlocked",row.unlocked==true)
+      button:SetAttribute("GameReportedAvailable",row.available==true and not invalidNode)
+    end
+    for i=#ordered+1,#buttons do buttons[i].Visible=false end
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+  end
+  sync(options.state or {})
+  root:SetAttribute("OwnsSkillUnlockAuthority",false)
+  root:SetAttribute("OwnsProgressionAuthority",false)
+  return root,{list=list,summary=summary,Sync=sync}
+end
+
+-- 저널: 게임에서 보고된 이벤트만 표시하며 ID 중복을 없애고 순번 역순으로 정렬한다.
+function RobloxCommonUI.CreateJournalTimeline(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"JOURNAL_TIMELINE","JOURNAL")
+  local list=Instance.new("ScrollingFrame")
+  list.Name="JournalEntries";list.Size=UDim2.fromScale(1,1)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body;commonList(list,false,8)
+  local buttons,shown={},{}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local entries=type(state.entries)=="table"and state.entries or {}
+    local seen={};shown={}
+    for _,row in ipairs(entries)do
+      if type(row)=="table"then
+        local id=tostring(row.eventId or row.id or "")
+        if id~=""and not seen[id]and row.verified~=false then seen[id]=true;table.insert(shown,row)end
+      end
+    end
+    table.sort(shown,function(a,b)
+      local left,right=tonumber(a.sequence)or 0,tonumber(b.sequence)or 0
+      if left~=right then return left>right end
+      return tostring(a.eventId or a.id)<tostring(b.eventId or b.id)
+    end)
+    for i,row in ipairs(shown)do
+      if not buttons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({name="Journal"..i,text="",size=UDim2.new(1,-8,0,78),theme=theme})
+        button.LayoutOrder=i;button.Parent=list;buttons[i]=button
+        button.Activated:Connect(function()
+          local current=shown[index]
+          if current and type(options.onInspect)=="function"then options.onInspect(current.eventId or current.id,current)end
+        end)
+      end
+      local button=buttons[i]
+      button.Text=tostring(row.title or row.eventType or "기록").." · "..tostring(row.location or row.timeText or "").."\n"..
+        tostring(row.summary or row.description or "")
+      button.TextWrapped=true;button.Visible=true
+      button:SetAttribute("BoundEventId",tostring(row.eventId or row.id))
+      button:SetAttribute("SourceProvenance",tostring(row.source or "GAME_SNAPSHOT"))
+    end
+    for i=#shown+1,#buttons do buttons[i].Visible=false end
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+  end
+  sync(options.state or {})
+  root:SetAttribute("OwnsJournalPersistence",false)
+  root:SetAttribute("OwnsQuestAuthority",false)
+  return root,{list=list,Sync=sync}
+end
+
+-- 월드 이벤트: 기존 바이옴·날씨·NPC 이벤트의 상태, 시간과 심각도를 동기화한다.
+function RobloxCommonUI.CreateWorldEventTimeline(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"WORLD_EVENT_TIMELINE","WORLD_EVENT")
+  local list=Instance.new("ScrollingFrame")
+  list.Name="WorldEvents";list.Size=UDim2.fromScale(1,1)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body;commonList(list,false,8)
+  local labels={}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    local events=type(state.events)=="table"and state.events or {}
+    local seen,ordered={},{}
+    for _,row in ipairs(events)do
+      if type(row)=="table"then
+        local id=tostring(row.eventId or row.id or "")
+        if id~=""and not seen[id]then seen[id]=true;table.insert(ordered,row)end
+      end
+    end
+    table.sort(ordered,function(a,b)
+      local pa,pb=tonumber(a.priority)or 0,tonumber(b.priority)or 0
+      if pa~=pb then return pa>pb end
+      return tostring(a.eventId or a.id)<tostring(b.eventId or b.id)
+    end)
+    for i,row in ipairs(ordered)do
+      if not labels[i]then
+        local label=RobloxCommonUI.CreateTabButton({name="Event"..i,text="",size=UDim2.new(1,-8,0,82),theme=theme})
+        label.LayoutOrder=i;label.Parent=list;labels[i]=label
+        label.Activated:Connect(function()
+          local current=ordered[i]
+          if current and type(options.onInspect)=="function"then options.onInspect(current.eventId or current.id,current)end
+        end)
+      end
+      local label=labels[i]
+      label.Text=tostring(row.title or "월드 이벤트").." · "..tostring(row.status or "미확인").." · "..
+        tostring(row.biome or row.region or "").."\n"..tostring(row.timeText or row.description or "")
+      label.TextWrapped=true;label.Visible=true
+      label:SetAttribute("BoundWorldEventId",tostring(row.eventId or row.id))
+    end
+    for i=#ordered+1,#labels do labels[i].Visible=false end
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+  end
+  sync(options.state or {})
+  root:SetAttribute("OwnsEventSpawnAuthority",false)
+  root:SetAttribute("OwnsRewardAuthority",false)
+  return root,{list=list,Sync=sync}
+end
+
+-- 거래: 양측 제안과 서버 승인 상태를 보여 주며, 클라이언트에서 체결하지 않는다.
+function RobloxCommonUI.CreateTradeEscrowReview(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"TRADE_ESCROW_REVIEW","TRADE_ESCROW")
+  local textView=commonText(body,"TradeSummary","",UDim2.fromOffset(10,8),UDim2.new(1,-20,1,-90),theme.Text,14,false)
+  textView.TextYAlignment=Enum.TextYAlignment.Top
+  local confirm=RobloxCommonUI.CreatePrimaryButton({name="ConfirmTrade",text="확인",size=UDim2.fromOffset(140,52),theme=theme})
+  confirm.AnchorPoint=Vector2.new(1,1);confirm.Position=UDim2.new(1,-8,1,-8);confirm.Parent=body
+  local current={}
+  local function sync(state)
+    current=type(state)=="table"and state or {}
+    local mine=type(current.myOffer)=="table"and current.myOffer or {}
+    local theirs=type(current.theirOffer)=="table"and current.theirOffer or {}
+    local myItems=type(mine.items)=="table"and #mine.items or 0
+    local theirItems=type(theirs.items)=="table"and #theirs.items or 0
+    textView.Text="거래 번호: "..tostring(current.tradeId or "미지정").."\n"..
+      "내 제안: "..myItems.."개 · 통화 "..tostring(mine.currency or 0).."\n"..
+      "상대 제안: "..theirItems.."개 · 통화 "..tostring(theirs.currency or 0).."\n"..
+      "내 승인: "..(current.myConfirmed==true and "확인됨"or "대기").."\n"..
+      "상대 승인: "..(current.theirConfirmed==true and "확인됨"or "대기").."\n"..
+      "거래 상태: "..tostring(current.status or "확인 중").."\n"..
+      "조건 변경 시 다시 검토해야 해."
+    local allowed=current.tradeId~=nil and current.canConfirm==true and current.expired~=true and
+      type(options.onConfirm)=="function"
+    confirm.Active=allowed;confirm.Selectable=allowed;confirm.AutoButtonColor=allowed
+    confirm.Text=allowed and "서버에 승인 요청"or "승인 불가"
+    confirm:SetAttribute("GameReportedConfirmable",allowed)
+    root:SetAttribute("GameOfferRevision",tostring(current.offerRevision or ""))
+    root:SetAttribute("GameSnapshotRevision",tostring(current.revision or ""))
+  end
+  confirm.Activated:Connect(function()
+    if current.tradeId==nil or current.canConfirm~=true or current.expired==true or type(options.onConfirm)~="function"then return end
+    options.onConfirm(current.tradeId,current.offerRevision)
+  end)
+  sync(options.state or {})
+  root:SetAttribute("OwnsTradeSettlement",false)
+  root:SetAttribute("OwnsInventoryAuthority",false)
+  root:SetAttribute("OwnsCurrencyAuthority",false)
+  root:SetAttribute("OwnsNetworkAuthority",false)
+  return root,{review=textView,confirm=confirm,Sync=sync}
+end
+
+-- 시네마틱: 컷신·보스·이벤트 정보만 표시하고 게임 카메라와 입력 회복은 게임에 요청한다.
+function RobloxCommonUI.CreateEventCinematicCard(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"EVENT_CINEMATIC_CARD","EVENT_CINEMATIC")
+  local heading=commonText(body,"CinematicTitle","",UDim2.fromOffset(8,12),UDim2.new(1,-16,0,72),theme.Text,24,true)
+  local detail=commonText(body,"CinematicText","",UDim2.fromOffset(8,90),UDim2.new(1,-16,1,-172),theme.MutedText,16,false)
+  local skip=RobloxCommonUI.CreatePrimaryButton({name="SkipCinematic",text="연출 건너뛰기",size=UDim2.fromOffset(160,52),theme=theme})
+  skip.AnchorPoint=Vector2.new(1,1);skip.Position=UDim2.new(1,-8,1,-8);skip.Parent=body
+  local state={}
+  local function sync(value)
+    state=type(value)=="table"and value or {}
+    heading.Text=tostring(state.title or "")
+    detail.Text=tostring(state.description or state.subtitle or "")
+    local show=state.active==true
+    root.Visible=show
+    local allow=state.skippable~=false
+    skip.Visible=show and allow
+    skip.Active=allow;skip.Selectable=allow
+    root:SetAttribute("BoundCinematicEventId",tostring(state.eventId or ""))
+    root:SetAttribute("ReducedMotionAvailable",true)
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+  end
+  skip.Activated:Connect(function()
+    if state.active~=true or state.skippable==false then return end
+    root.Visible=false
+    if type(options.onSkip)=="function"then options.onSkip(state.eventId)end
+  end)
+  sync(options.state or {})
+  root:SetAttribute("OwnsCameraAuthority",false)
+  root:SetAttribute("OwnsGameplayAuthority",false)
+  root:SetAttribute("OwnsEventAuthority",false)
+  return root,{title=heading,detail=detail,skip=skip,Sync=sync}
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
