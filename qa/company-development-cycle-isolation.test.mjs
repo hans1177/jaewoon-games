@@ -48,6 +48,9 @@ test('only same-revision batch coordinator jobs coalesce, while game lanes stay 
   assert.ok(gate.includes("group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}"));
   assert.match(gate,/cancel-in-progress: false/);
   assert.match(gate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  // No unstarted queued/pending workflow may monopolize this source revision's development batch.
+  assert.match(gate,/select\(\.status == "in_progress"\)/);
+  assert.doesNotMatch(gate,/select\(\.status == "queued" or \.status == "pending"/);
   assert.ok(workflow.slice(0,workflow.indexOf('\njobs:\n')).includes("github.run_id"));
   assert.match(workflow,/  dispatch-roblox:[\s\S]*?matrix:\n        game_id:/);
   assert.match(workflow,/  dispatch-unity-web-floor:[\s\S]*?matrix:\n        game_id:/);
