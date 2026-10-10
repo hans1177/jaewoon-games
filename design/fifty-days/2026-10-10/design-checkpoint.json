@@ -187,25 +187,32 @@
       },
       "playerFantasy": "50일은 실시간 생존 루틴에서 시작하여, 적의 압박을 극복하는 과정에서 플레이어가 선택을 하며, 이 선택은 전략적 결과에 영향을 미친다. 게임은 단순한 스타트업이 아니라, 선택의 복잡성과 그 결과로 인해 진화하는 시스템이다.",
       "coreFun": "플레이어는 실시간 생존 루틴에서 적의 압박 유형을 결정하며, 이를 기반으로 선택적 성장 기회를 확대하거나 전략적 결과를 변주해야 한다. 이 선택은 세계 상태와 갈등을 초래함으로써, 새로운 사건과 보상을 생성하게 된다."
+    },
+    "local_authoring_parts::a0c2755aa4594c61d4dd2d4b01f1fd155150efaea8f9d1b793e07dd76f865b29:coreLoop": {
+      "coreLoop": [
+        "플레이어는 실시간 생존 루틴에서 적 압박 유형을 결정하며, 이를 기반으로 선택적 성장 기회를 확대하거나 전략적 결과를 변주해야 한다.",
+        "선택적 성장 기회 확대 또는 전략적 결과 변주로 인해 세계 상태가 변경되며, 이는 새로운 사건과 보상을 생성하게 된다.",
+        "새로운 사건과 보상의 발생은 다음 단계로 이어지며, 플레이어는 다시 적 압박 유형을 결정하고 선택적 성장 방향을 교체해야 한다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 727044,
-      "lastMs": 180091,
+      "totalMs": 797761,
+      "lastMs": 70717,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:00:01.586Z"
+      "updatedAt": "2026-10-10T02:01:12.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:47:54.435Z",
-  "updatedAt": "2026-10-10T02:00:01.587Z",
+  "updatedAt": "2026-10-10T02:01:12.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "28bee73f28386044544e3160611c224cd69b42a3e5bf4c527cdde9b705718984": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:00:01.587Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:01:12.960Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
