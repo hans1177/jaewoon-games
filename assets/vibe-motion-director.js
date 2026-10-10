@@ -2559,9 +2559,9 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 
 // 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
 export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={},loop=false}={}){
-  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxJointAcceleration:80,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxRootJerk:5000,maxJointSpeed:12,maxJointAcceleration:80,maxJointJerk:5000,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
     maxAttachmentOffset:.02,maxPenetrationDepth:.005,maxGazeErrorRadians:.26,maxGazeAngularSpeed:20,maxExpressionRate:12,...limits};
-  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxJointAcceleration:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
+  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxRootJerk:0,maxJointSpeed:0,maxJointAcceleration:0,maxJointJerk:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const vec=value=>Array.isArray(value)&&value.length===3&&value.every(finite);
   const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
@@ -2617,7 +2617,8 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   if(channels.supportedContacts.some(key=>!contactKeys.includes(key)))issues.push('REQUIRED_SUPPORT_CONTACT_MISSING');
   if(samples[0]?.timeSeconds!==0||!finite(samples.at(-1)?.timeSeconds)||Math.abs(samples.at(-1).timeSeconds-durationSeconds)>1e-6)issues.push('FULL_CLIP_BOUNDARIES_REQUIRED');
   if(issues.length)return Object.freeze({verdict:'UNVERIFIED',sourceHash:text(sourceHash),clipId:text(clipId),issues:freezeList(issues),violations:freezeList([]),metrics:null,blocksVerifiedPromotion:true,runtimeVerified:false});
-  const anchors=new Map(),openViolations=new Map(),jointVelocities=new Map();let previousVelocity=null,previousDt=null;
+  const anchors=new Map(),openViolations=new Map(),jointVelocities=new Map(),jointAccelerations=new Map();
+  let previousVelocity=null,previousRootAcceleration=null,previousDt=null;
   const report=(kind,index,value,limit,region,startIndex=Math.max(0,index-1))=>{
     metrics[kind]=Math.max(metrics[kind],value);
     const key=kind+':'+region,open=openViolations.get(key);
@@ -2650,14 +2651,24 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   for(let index=1;index<samples.length;index++){
     const before=samples[index-1],after=samples[index],dt=after.timeSeconds-before.timeSeconds;
     const velocity=after.rootPosition.map((value,axis)=>(value-before.rootPosition[axis])/dt/characterHeightMeters);
-    if(previousVelocity)report('maxRootAcceleration',index,distance(velocity,previousVelocity)/((dt+previousDt)/2),thresholds.maxRootAcceleration,'ROOT');
+    if(previousVelocity){
+      const accelDt=(dt+previousDt)/2,acceleration=velocity.map((v,i)=>(v-previousVelocity[i])/accelDt);
+      report('maxRootAcceleration',index,Math.hypot(...acceleration),thresholds.maxRootAcceleration,'ROOT');
+      if(previousRootAcceleration)report('maxRootJerk',index,distance(acceleration,previousRootAcceleration)/accelDt,thresholds.maxRootJerk,'ROOT',Math.max(0,index-3));
+      previousRootAcceleration=acceleration;
+    }
     previousVelocity=velocity;
     const yawDelta=after.rootYawRadians-before.rootYawRadians;
     report('maxYawSpeed',index,Math.abs(Math.atan2(Math.sin(yawDelta),Math.cos(yawDelta)))/dt,thresholds.maxYawSpeed,'ROOT_YAW');
     for(const key of jointKeys){
       const jointVelocity=after.jointPositions[key].map((value,axis)=>(value-before.jointPositions[key][axis])/dt/characterHeightMeters);
       report('maxJointSpeed',index,Math.hypot(...jointVelocity),thresholds.maxJointSpeed,key);
-      if(jointVelocities.has(key))report('maxJointAcceleration',index,distance(jointVelocity,jointVelocities.get(key))/((dt+previousDt)/2),thresholds.maxJointAcceleration,key,Math.max(0,index-2));
+      if(jointVelocities.has(key)){
+        const accelDt=(dt+previousDt)/2,acceleration=jointVelocity.map((v,i)=>(v-jointVelocities.get(key)[i])/accelDt);
+        report('maxJointAcceleration',index,Math.hypot(...acceleration),thresholds.maxJointAcceleration,key,Math.max(0,index-2));
+        if(jointAccelerations.has(key))report('maxJointJerk',index,distance(acceleration,jointAccelerations.get(key))/accelDt,thresholds.maxJointJerk,key,Math.max(0,index-3));
+        jointAccelerations.set(key,acceleration);
+      }
       jointVelocities.set(key,jointVelocity);
     }
     previousDt=dt;
@@ -2684,7 +2695,7 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
     frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
     detailCoordinateContract:'ATTACHMENTS_WORLD_METERS_PENETRATION_METERS_GAZE_WORLD_DIRECTIONS_EXPRESSION_WEIGHTS_0_TO_1_SUPPORT_LOCAL_METERS',
-    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,loopBoundaryMeasured:loop}),
+    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,jointJerkMeasured:true,rootJerkMeasured:true,loopBoundaryMeasured:loop}),
     blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
 }
 
