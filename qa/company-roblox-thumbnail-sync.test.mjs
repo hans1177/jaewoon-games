@@ -198,7 +198,7 @@ test('existing Roblox native media is preserved without duplicate re-upload',asy
     }
   });
   assert.equal(count,1);
-  assert.equal(report.imageStatus,'EXISTING_GAME_DETAIL_IMAGE');
+  assert.equal(report.imageStatus,'VERIFIED_GAME_DETAIL_IMAGE');
   assert.equal(report.verifiedDetailImage,true);
   assert.equal(report.approvedRobloxGameplayVideoCount,1);
   fs.rmSync(dir,{recursive:true,force:true});
@@ -209,7 +209,11 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/thumbnail_only:/);
   assert.match(workflow,/if: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.thumbnail_only != true \}\}/);
   assert.match(workflow,/name: sync canonical Roblox and homepage thumbnails/);
-  assert.match(workflow,/github\.event_name == 'push'/);
+  assert.match(workflow,/github\\.event_name == 'push'/);
+  assert.match(workflow,/github\\.event_name == 'schedule'/);
+  assert.match(workflow,/cron: '17 \\*\\/6 \\* \\* \\*'/);
+  assert.match(workflow,/assets\\/roblox-thumbnails\\/\\*\\*/);
+  assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=NO_NEW_UPLOAD_REUSED/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
   assert.match(workflow,/target\.verified===true&&target\.dedicated===true/);
   assert.match(workflow,/\.\.\/runtime\/development-queue\.json/);
