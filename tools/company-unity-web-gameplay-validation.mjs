@@ -716,6 +716,22 @@ try{
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
   }));
   console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
+} catch(error) {
+  // 실제 브라우저 실패 지점을 기록하고 이전 QA 통과 상태로 대체하지 않는다.
+  const failureSignature=String(error?.message||error);
+  if(output&&!fs.existsSync(output)){
+    const failureEvidence={
+      version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
+      observedRuntimeFailure:true,
+      failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+      failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+      generatedAt:new Date().toISOString(),
+    };
+    fs.mkdirSync(path.dirname(output),{recursive:true});
+    fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
+  }
+  console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
+  throw error;
 } finally {
   await new Promise(resolve=>server.close(resolve));
 }
