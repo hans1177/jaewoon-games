@@ -187,25 +187,32 @@
       },
       "playerFantasy": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임에서는 플레이어가 실질적인 자원 수집과 주민 고용, 병력 강화 등 실제 행동을 통해 왕국 확장에 기여할 수 있는 역할을 수행하며, 이 과정에서 다양한 선택과 결과를 경험하게 된다.",
       "coreFun": "주민 고용 및 벌목/농업 자동화 시스템의 초기 단계에서 플레이어는 자원을 수집하여 주민을 생산 직업에 배치하고, 이를 통해 자동화 진입을 목표로 하며, 이후 자원 -> 병력 -> 전투력 강화의 순차적 변화를 관찰하고, 이 과정에서의 선택과 상태 변화를 체험하게 된다."
+    },
+    "local_authoring_parts::f90b0ff16eca70c77f6b17a68addfe647aa04e0d60c4b37be713ae72307dfeff:coreLoop": {
+      "coreLoop": [
+        "작은 섬에서 나무와 식량을 직접 모으고 주민 자동화를 통해 왕국 성장 시작",
+        "주민 고용 및 벌목/농업 자동화 시스템의 초기 단계에서 자원 수집 및 주민 배치",
+        "자원 -> 병력 -> 전투력 강화의 순차적 변화 관찰 및 선택 체험"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 541969,
-      "lastMs": 75477,
+      "totalMs": 612902,
+      "lastMs": 70933,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:01:03.836Z"
+      "updatedAt": "2026-10-10T11:02:14.772Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:52:01.604Z",
-  "updatedAt": "2026-10-10T11:01:03.838Z",
+  "updatedAt": "2026-10-10T11:02:14.772Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1268,7 +1275,7 @@
   "localAuthoringSplits": {
     "35c473f7263f74358bad2c1154af71a663e0ee091ea3352fb745fffd17d638e9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:01:03.838Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:02:14.772Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
