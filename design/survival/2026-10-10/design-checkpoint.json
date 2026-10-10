@@ -194,25 +194,40 @@
         "생존, 채집, 전투, 탐험, 정복, 스타일의 융합으로 플레이어 선택의 의미가 달라진 새 정체성 형성",
         "실시간 생존 게임에서 적 밀도 증가에 따른 전투, 자원 관리, 위협 대응 결정 및 주제 재설계로 인해 새로운 전략 경로 개발"
       ]
+    },
+    "local_authoring_parts::4fd653eba92cdf2add04aab3bf4014e6a3551f5c342eddb11639b279f026bf8a:signatureSystems:0": {
+      "id": "SURVIVAL_CORE_LOOP",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어 선택",
+        "세계 상태 변화"
+      ],
+      "stateOutputs": [
+        "주제 변환",
+        "새로운 전략 경로 개발"
+      ],
+      "name": "실시간 생존 게임의 인과链条",
+      "purpose": "플레이어 선택 기반의 주제 재설계와 세계 상태 변화가 새로운 전략 경로를 형성하여, 생존, 채집, 전투, 탐험, 정복, 스타일의 융합으로 플레이어 선택의 의미가 달라진 새 정체성을 구축",
+      "playerChoice": "플레이어는 적 밀도 증가에 맞서 전투, 자원 관리, 위협 대응 결정을 내며, 이 과정에서 주제 변환, 세계 상태 변화, 새로운 전략 경로 개발 등의 결과를 경험함으로써 게임 세계관을 점진적으로 재구성한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 802723,
-      "lastMs": 96830,
+      "totalMs": 910722,
+      "lastMs": 107999,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:30:55.457Z"
+      "updatedAt": "2026-10-10T02:32:43.458Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:17:32.706Z",
-  "updatedAt": "2026-10-10T02:30:55.457Z",
+  "updatedAt": "2026-10-10T02:32:43.458Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1925,7 +1940,7 @@
   "localAuthoringSplits": {
     "412273fca46df0e7a0a38ff63a262e5f3b3312b3af4f71140902341465c70f9c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:30:55.457Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:32:43.458Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
