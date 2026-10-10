@@ -2278,7 +2278,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
   const inferredActorRole=types.find(type=>isCrossPlatform3dActorType(type))||'';
-  const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\\s-]+/g,'_')||null;
+  const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\s-]+/g,'_')||null;
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
