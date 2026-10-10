@@ -1261,25 +1261,28 @@
       "toSystem": "시스템 연결 루프",
       "trigger": "시스템 연결 루프에서 ACTION, PLAYERS, GAME_WORLD, EVENT 상태 변화가 즉각적으로 발생하며, 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성 형성이 이루어진다.",
       "stateChange": "시스템 연결 루프에서 ACTION, PLAYERS, GAME_WORLD, EVENT 상태 변화가 즉각적으로 발생하며, 시그니처 세계 규칙과 인물 갈등을 통해 게임 정체성 형성이 이루어진다."
+    },
+    "local_authoring_parts::1de31ee67d4df5b4e83e128166b37d74ccd728ad2199fbd588382b5d7f9219e1:fromId": {
+      "fromId": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 90,
-      "successes": 89,
+      "calls": 91,
+      "successes": 90,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 5483823,
-      "lastMs": 32511,
+      "totalMs": 5514201,
+      "lastMs": 30378,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:07:49.827Z"
+      "updatedAt": "2026-10-10T01:08:20.207Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-10T01:07:49.828Z",
+  "updatedAt": "2026-10-10T01:08:20.207Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3310,7 +3313,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:07:49.828Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:08:20.207Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
