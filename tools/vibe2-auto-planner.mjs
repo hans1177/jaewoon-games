@@ -3409,7 +3409,8 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     if(candidate?.graphicsReplacementContract&&candidate?.assetProductionLane===true
       &&['web','roblox','unity'].includes(clean(project.engine).toLowerCase())){
       const refreshed=applyAdaptiveGraphicsReplacementContract(candidate,project,candidate.presentationPass||'ASSET_ADAPTATION',repoRoot);
-      if(JSON.stringify(refreshed.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)
+      if(refreshed.goal!==candidate.goal
+        ||JSON.stringify(refreshed.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)
         !==JSON.stringify(candidate.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)){
         candidate=refreshed;changed+=1;
       }
