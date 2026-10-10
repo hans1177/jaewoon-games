@@ -187,25 +187,66 @@
       },
       "playerFantasy": "휴먼 GO!에서는 플레이어가 진입 시점에서 시작하여, 적의 압박에 맞서 생존하는 실시간 전투 게임입니다. 이 과정에서 플레이어는 다양한 선택을 통해 자원 관리, 전략적 결정, 그리고 새로운 장비나 기술의 확장 가능성을 경험하며, 그들의 정체성과 인생의 방향성을 동시에 발전시킵니다.",
       "coreFun": "플레이어는 처음에는 특정 위치로 설정되어 있으며, 적의 밀도와 자원 부족 상황에 따라 동적으로 움직여야 합니다. 이러한 위치 변화는 다음 단계에서 자원 배분 및 전략적 선택에 직접적인 영향을 미칩니다. 또한, 플레이어는 자신의 구조화된 건강 상태와 유연한 전략 조합을 바탕으로, 더 어려운 파워웨이브 또는 벨트를 극복하기 위해 지속적으로 성장합니다."
+    },
+    "local_authoring_parts::ddb49ff1a461e8cead628c69439b13c909e4bffede25ec6bd496313bb2ed75ad:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "플레이어 위치 동적으로 변환하여 적 압박에 대한 전략적 결정 및 자원 배분을 유도",
+        "초기 설정에서 특정 위치로 정해져 있으며, 적 밀도와 자원 부족 상황에 따라 움직임이 변경됨"
+      ]
+    },
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_arena_survival_roguelite",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerPosition",
+        "enemyDensity",
+        "resourceAvailability"
+      ],
+      "stateOutputs": [
+        "positionShift",
+        "buildConfiguration",
+        "survivabilityThresholds"
+      ],
+      "name": "Arena Survival Roguelite",
+      "purpose": "Dynamic positioning, resource management, and strategic decision-making influence game outcome",
+      "playerChoice": "Selecting different upgrade combinations creates varied strategies for survival and combat efficiency"
+    },
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:1:8c6a92d73d154220": {
+      "id": "a_arena_survival_roguelite",
+      "grammarRole": "A",
+      "stateInputs": [
+        "positionShift",
+        "buildConfiguration",
+        "survivabilityThresholds"
+      ],
+      "stateOutputs": [
+        "playerPosition",
+        "enemyDensity",
+        "resourceAvailability"
+      ],
+      "name": "Arena Survival Roguelite",
+      "purpose": "Player positioning, resource management, and strategic decision-making all influence the outcome of each run.",
+      "playerChoice": "Select different upgrade combinations that maximize survivability or combat effectiveness in response to changing enemy density and resource availability."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 496664,
-      "lastMs": 63290,
+      "totalMs": 867117,
+      "lastMs": 101518,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:24:38.071Z"
+      "updatedAt": "2026-10-10T06:30:48.533Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:21.375Z",
-  "updatedAt": "2026-10-10T06:24:38.073Z",
+  "updatedAt": "2026-10-10T06:30:48.534Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,14 +1959,35 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_arena_survival_roguelite",
+          "a_arena_survival_roguelite"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_arena_survival_roguelite",
+          "a_arena_survival_roguelite"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "1a0f8c21398ea31b10d7bc2fbf71f4648cfa8d30a34879fac9826f3b8c9e162a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:24:38.073Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T06:30:48.533Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
