@@ -35,6 +35,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Validate shared worker context before source work
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/company-unity-web-bootstrap-context.json
+
       - name: Verify bootstrap contract
         run: |
           set -euo pipefail
@@ -69,7 +74,11 @@ jobs:
             echo "UNITY_WEB_BOOTSTRAP_SOURCE_ALREADY_ON_MAIN=$GAME_ID"
             exit 0
           fi
-          pending="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 300 --json number,title,url,headRefName,author \
+          # Search this game's title server-side; a shared 300-PR window loses valid
+          # candidates under heavy, unrelated per-game bootstrap traffic.
+          pending="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "in:title \"dev: bootstrap Unity Web floor source $GAME_ID\"" \
+            --limit 100 --json number,title,url,headRefName,author \
             | jq -c --arg title "dev: bootstrap Unity Web floor source $GAME_ID" \
               --arg prefix "unity-web-floor/bootstrap-$GAME_ID-" \
               '[.[] | select(.title==$title and (.headRefName|startswith($prefix)) and .author.login=="github-actions[bot]")] | sort_by(.number) | reverse | .[0] // empty')"
