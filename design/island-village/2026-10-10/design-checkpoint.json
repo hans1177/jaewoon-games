@@ -106,25 +106,38 @@
         "Risk: Limited resource access leads to reduced building capabilities",
         "Next Choice: Select new building material or method"
       ]
+    },
+    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player collects island resources"
+      ],
+      "stateOutputs": [
+        "Resources are gathered and stored in the village storage system"
+      ],
+      "name": "Resource Management System",
+      "purpose": "Enables construction and improvement of the village through resource collection and structural development.",
+      "playerChoice": "Select new building material or method for optimal construction quality and efficiency."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 327515,
-      "lastMs": 46654,
+      "totalMs": 360400,
+      "lastMs": 32885,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:49:57.123Z"
+      "updatedAt": "2026-10-10T01:50:30.009Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T01:49:57.123Z",
+  "updatedAt": "2026-10-10T01:50:30.009Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1725,7 +1738,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:49:57.123Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:50:30.009Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
