@@ -2237,6 +2237,28 @@ function nativeDccFamilyForTypes(types=[]){
   if(/prop|furniture/.test(joined))return'PROP';
   return null;
 }
+// 기존 Blender 제작 책임에서 사용하는 로컬 오픈소스 원본과 제작 범위.
+export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
+  'mesh-ai':freeze({source:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
+    engine:'TRIPOSR_IMAGE_TO_3D_WITH_BLENDER',requiresLocalModel:true,
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  human:freeze({source:'https://github.com/makehumancommunity/mpfb2',
+    license:'GPL-3.0-or-later',outputLicense:'CC0',engine:'MPFB2_HUMAN_RIG_WITH_BLENDER',
+    requiresLocalAddon:true,types:freezeList(CROSS_PLATFORM_3D_CHARACTER_TYPES)}),
+  clothing:freeze({source:'https://github.com/blender/blender',
+    license:'GPL-2.0-or-later',engine:'BLENDER_CLOTHING_GEOMETRY',
+    types:freezeList(['item','prop'])}),
+  object:freeze({source:'https://github.com/blender/blender',
+    license:'GPL-2.0-or-later',engine:'BLENDER_NATIVE_3D_GAME_OBJECT',
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  design:freeze({source:'https://github.com/blender/blender',
+    compatibleSource:'https://github.com/FreeCAD/FreeCAD',
+    license:'GPL-2.0-or-later',engine:'BLENDER_PARAMETRIC_OR_FREECAD_EXPORTED_SURFACE',
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  medical:freeze({source:'https://github.com/Slicer/Slicer',
+    license:'BSD-style',engine:'SLICER_SANITIZED_SURFACE_IN_BLENDER',
+    requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])})
+});
 function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',requiredTypes=[]){
   const executor=clean(recipe?.executor||recipe?.engine).toUpperCase();
   const script=clean(recipe?.script||recipe?.recipe||recipe?.path).replaceAll('\\','/').replace(/^\.\//,'');
@@ -2248,6 +2270,8 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const evidenceJson=clean(recipe?.evidenceJson).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const preview=clean(recipe?.preview).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const editableSource=clean(recipe?.editableSource||script).replaceAll('\\','/').replace(/^\.\//,'')||null;
+  const module=clean(recipe?.module).toLowerCase()||'auto';
+  const sourceModel=clean(recipe?.sourceModel).replaceAll('\\','/')||null;
   const targetName=clean(target).toLowerCase();
   const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
@@ -2257,10 +2281,14 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\\s-]+/g,'_')||null;
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
-  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
+    &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
+    &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
-    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
+    types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    module,sourceModel,sourceSanitized:recipe?.sourceSanitized===true,
     imageToMesh:recipe?.imageToMesh===true,sourceImage:clean(recipe?.sourceImage)||null,
     sourceLicense:clean(recipe?.sourceLicense)||null,sourceCredit:clean(recipe?.sourceCredit)||null,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
@@ -2273,57 +2301,100 @@ const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','we
 function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
-  if(!['web','roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  if(!['web','roblox','unity'].includes(targetName))return null;
+  const taskModule=clean(task.assetAuthoring?.modulesByType?.[typeName]||task.assetAuthoring?.module||task.assetModule).toLowerCase().replaceAll('_','-');
+  const aliases={'mesh':'mesh-ai','image-to-3d':'mesh-ai','garment':'clothing','apparel':'clothing',
+    'cad':'design','parametric':'design','prop':'object','game-object':'object','slicer':'medical','anatomy':'medical','medical-3d':'medical',
+    'body':'human','humanoid':'human','character':'human'};
+  const selected=aliases[taskModule]||taskModule;
+  if(selected&&selected!=='auto'&&!Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,selected))
+    throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
+  const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
+    ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
+  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
+  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai':modelRequested?'object':'auto';
+  if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  if(module!=='auto'&&!VIBE_NATIVE_OPEN_SOURCE_MODULES[module].types.includes(typeName))return null;
+  if(imageRequested&&module==='human')throw new Error('HUMAN_MPFB_REQUIRES_MODEL_OR_LOCAL_ADDON');
+  if(imageRequested&&module==='medical')throw new Error('MEDICAL_RAW_IMAGE_PROCESSING_FORBIDDEN');
   const gameSlug=(clean(task?.gameId)||'game').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'game';
   const typeSlug=typeName.replace(/[^a-z0-9._-]+/g,'-')||'asset';
   const outputRoot=`assets/generated/${targetName}/${gameSlug}/${typeSlug}`;
   const family=nativeDccFamilyForTypes([typeName]);
   const concept=inferRequestedConcept(task,clean(task.goal||task.request));
-  const expression=resolveInternalAssetStyleExpressionProfile({styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}});
-  // 메인: 이미지가 명시된 경우에만 기존 Blender DCC 레시피에 무료 로컬 TripoSR 추론을 연결한다.
-  // 저작권, 로컬 경로, 출처 확인 없이 이미지를 임의의 원본 에셋으로 위장하지 않는다.
-  const wantsImageMesh=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
-    ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
+  const expression=resolveInternalAssetStyleExpressionProfile({
+    styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,
+    overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}
+  });
   const imageRow=(Array.isArray(task.referenceImages)?task.referenceImages:[])
     .find(row=>clean(row?.path||row?.imageRef||row?.imagePath));
   const sourceImage=clean(task.assetAuthoring?.sourceImage||task.assetImagePath
     ||imageRow?.path||imageRow?.imageRef||imageRow?.imagePath).replaceAll('\\','/');
-  const sourceLicense=clean(task.assetAuthoring?.imageLicense||task.assetAuthoring?.sourceLicense
+  const sourceModel=clean(task.assetAuthoring?.sourceModel).replaceAll('\\','/');
+  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||task.assetAuthoring?.imageLicense
     ||imageRow?.license);
   const sourceCredit=clean(task.assetAuthoring?.sourceCredit||imageRow?.attribution||imageRow?.credit);
-  if(wantsImageMesh){
-    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:png|jpe?g|webp)$/i.test(sourceImage)
-      ||sourceImage.split('/').includes('..'))throw new Error('IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED');
+  const checkSourceLicense=()=>{
     if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
     if(sourceLicense.toLowerCase()==='cc-by'&&!sourceCredit)
       throw new Error('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED');
+  };
+  if(imageRequested){
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:png|jpe?g|webp)$/i.test(sourceImage)
+      ||sourceImage.split('/').includes('..'))throw new Error('IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED');
+    checkSourceLicense();
   }
+  if(modelRequested){
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)
+      ||sourceModel.split('/').includes('..'))throw new Error('OPEN_SOURCE_LOCAL_SURFACE_REQUIRED');
+    checkSourceLicense();
+  }
+  if(imageRequested&&modelRequested)throw new Error('NATIVE_SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE');
+  if(module==='medical'){
+    if(!modelRequested||task.assetAuthoring?.sourceSanitized!==true)
+      throw new Error('MEDICAL_DEIDENTIFIED_SURFACE_REQUIRED');
+  }
+  if(module==='human'&&modelRequested&&!/\.glb$/i.test(sourceModel))
+    throw new Error('HUMAN_RIGGED_SOURCE_GLB_REQUIRED');
   const requestedSubject=clean(task.assetSubject||task.assetAuthoring?.subject).toLowerCase();
   const subject=['rock','crate'].includes(requestedSubject)?requestedSubject
     :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
+  const objectKinds=['rock','crate','chair','table','door','tree','machine','weapon','lamp'];
+  const objectKind=objectKinds.includes(requestedSubject)?requestedSubject
+    :objectKinds.find(value=>new RegExp('\\b'+value+'\\b','i').test(clean(task.goal||task.request)))||subject;
   const genre=clean(task.genre||task.genreFamily||task.concept?.genre).slice(0,80);
+  const modelModule=module==='human'?'human':module==='medical'?'medical':
+    module==='auto'?'auto':module;
+  const actualProfile=GENERIC_NATIVE_DCC_TYPES.includes(typeName)?typeName:'prop';
+  const resolvedLicense=(imageRequested||modelRequested)?sourceLicense:(module==='human'?'CC0':'project-original');
+  const renderedViews=module!=='auto'||imageRequested||modelRequested;
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
-    family,
-    license:wantsImageMesh?sourceLicense:'project-original',
-    imageToMesh:wantsImageMesh,
-    sourceImage:wantsImageMesh?sourceImage:null,
-    sourceLicense:wantsImageMesh?sourceLicense:null,
-    sourceCredit:wantsImageMesh?sourceCredit:null,
+    family,license:resolvedLicense,module:modelModule,
+    imageToMesh:imageRequested,sourceImage:imageRequested?sourceImage:null,
+    sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
+    sourceLicense:(imageRequested||modelRequested)?sourceLicense:null,sourceCredit,
     executor:'BLENDER_PYTHON',
     script:'assets/native-authoring/build-game-visual.py',
     editableSource:'assets/native-authoring/build-game-visual.py',
-    types:[typeName],
-    targetPlatforms:[targetName],
-    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre,
-      ...(wantsImageMesh?['--source-image',sourceImage,'--source-license',sourceLicense,'--source-credit',sourceCredit]:[])],
-    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
-      ...(wantsImageMesh?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[])],
+    types:[typeName],targetPlatforms:[targetName],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,
+      '--profile',actualProfile,'--target',targetName,'--subject',subject,
+      '--style-json',JSON.stringify(expression),'--genre',genre,
+      ...(module!=='auto'?['--module',module]:[]),
+      ...(imageRequested?['--source-image',sourceImage]:[]),
+      ...(modelRequested?['--source-model',sourceModel]:[]),
+      ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
+      ...(module==='medical'?['--source-sanitized','yes']:[]),
+      ...(module==='object'?['--object-kind',objectKind]:[])],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
+      `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
+      `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
+      ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[])],
     evidenceJson:`${outputRoot}/evidence.json`,
-    preview:`${outputRoot}/preview.png`,
-    runMode:'VERIFY_ONLY'
+    preview:`${outputRoot}/preview.png`,runMode:'VERIFY_ONLY'
   };
 }
 
