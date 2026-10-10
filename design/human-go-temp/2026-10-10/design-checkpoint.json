@@ -187,25 +187,32 @@
       },
       "playerFantasy": "휴먼 GO!에서는 전투, 위협, 보상을 연결된 반복적 루프가 실제 플레이 선택에 적용된다. 게임 내에서 이 루프는 단순한 행동 반복보다는 숙련과 성장 가능성이 실제로 달라지는 경험을 제공하며, 모바일에서도 즉시 이해되는 입력과 피드백을 가진다.",
       "coreFun": "전투, 위협, 보상의 연결된 반복적 루프가 실제 플레이 선택에 적용되며, 이 루프는 숙련과 성장 가능성을 실제로 달라지게 하는 방식으로 구현된다. 게임 내에서 이 루프는 단순한 행동 반복보다는 숙련과 성장 가능성이 실제로 달라지는 경험을 제공하며, 모바일에서도 즉시 이해되는 입력과 피드백을 가진다."
+    },
+    "local_authoring_parts::2f9849af03bf8e2fb1dc0b6a44fb703d386f0a44acf4119c21430c9c9b6775b9:coreLoop": {
+      "coreLoop": [
+        "INPUT: PLAYER_CHOICE_OF_ENEMY_PRESSURE_LEVEL",
+        "STATE_CHANGE: ENEMY_PRESSURE_CHANGED_AND_BUILT_MIXTURE_ADJUSTED",
+        "OUTPUT: NEW_ACTION_PATH_OPENED_AND_ENEMY_STRATEGY_UPDATED"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 643318,
-      "lastMs": 77468,
+      "totalMs": 685563,
+      "lastMs": 42245,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:15:47.341Z"
+      "updatedAt": "2026-10-10T09:16:29.590Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:05:03.714Z",
-  "updatedAt": "2026-10-10T09:15:47.343Z",
+  "updatedAt": "2026-10-10T09:16:29.599Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "d63adc5f4e67f7cf2eff4af4379cf4bfaaed08d861cb1c3ab41f9f4f7be80c19": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:15:47.343Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:16:29.590Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
