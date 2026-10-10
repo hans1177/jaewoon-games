@@ -963,6 +963,265 @@ export function createDuelCombatMotionLoadout({
   });
 }
 
+
+// 공용 직업·스킬·몬스터 제작: 장르 중립 모션 원본 규칙이며 게임 판정과 무관하다.
+const splitMotionRoles=value=>freezeList(text(value).split(/\s+/).filter(Boolean));
+const careerMotionNode=(parent,gear,stance,locomotion,attacks,defense,skills,interactions,signature)=>Object.freeze({
+  parent:upper(parent)||null,
+  weaponFamilies:splitMotionRoles(gear),
+  roles:Object.freeze({
+    stance:splitMotionRoles(stance),locomotion:splitMotionRoles(locomotion),
+    attacks:splitMotionRoles(attacks),defense:splitMotionRoles(defense),
+    interactions:splitMotionRoles(interactions),signature:splitMotionRoles(signature)
+  }),
+  skills:splitMotionRoles(skills)
+});
+
+// 공통→계열→직업→상위 직업. 직업을 늘리는 대신 상속된 실동작 요구·전용 실루엣을 보존한다.
+export const COMMON_CAREER_MOTION_HIERARCHY=Object.freeze({
+  ADVENTURER:careerMotionNode('','UNARMED','NEUTRAL_READY','IDLE WALK RUN START STOP TURN JUMP LAND','BASIC_STRIKE','BRACE EVADE','', 'PICKUP OPEN CARRY INTERACT','ADVENTURER_READY'),
+  MARTIAL:careerMotionNode('ADVENTURER','ONE_HAND_SWORD','MARTIAL_READY','COMBAT_STEP PIVOT BACKSTEP','WEAPON_LIGHT WEAPON_HEAVY','WEAPON_GUARD PARRY','BATTLE_FOCUS:BUFF','','MARTIAL_WEIGHT_TRANSFER'),
+  SWORDSMAN:careerMotionNode('MARTIAL','ONE_HAND_SWORD TWO_HAND_SWORD','SWORD_GUARD','SWORD_FOOTWORK','SWORD_SLASH_R SWORD_SLASH_L SWORD_THRUST','SWORD_PARRY','SWORD_CRESCENT:CHARGE SWORD_COUNTER:COUNTER','','SWORD_EDGE_CONTROL'),
+  SAMURAI:careerMotionNode('SWORDSMAN','KATANA','KATANA_CHUDAN KATANA_SHEATH_READY','KATANA_SLIDING_STEP KATANA_PIVOT','KATANA_DRAW_CUT KATANA_DIAGONAL_CUT KATANA_RISING_CUT','KATANA_DEFLECT','IAI_DRAW:CHARGE MOON_CUT:COMBO SHEATH_COUNTER:COUNTER','','SAMURAI_DRAW_AND_SHEATH'),
+  KENSEI:careerMotionNode('SAMURAI','KATANA','KENSEI_STILLNESS','KENSEI_ONE_STEP','KENSEI_INSTANT_CUT KENSEI_CHAIN_CUT','KENSEI_BLADE_PARRY','KENSEI_FIVE_CUTS:COMBO KENSEI_FINAL_DRAW:ULTIMATE','','KENSEI_SILENT_FINISH'),
+  RONIN:careerMotionNode('SAMURAI','KATANA','RONIN_LOW_GUARD','RONIN_UNEVEN_STEP','RONIN_LOW_SWEEP RONIN_REVERSAL_CUT','RONIN_DODGE_PARRY','RONIN_COUNTER_DASH:DASH RONIN_WIND_CUT:CHARGE','','RONIN_BROKEN_RHYTHM'),
+  KNIGHT:careerMotionNode('MARTIAL','ONE_HAND_SWORD SHIELD_SWORD','SHIELD_FORWARD','KNIGHT_PLANTED_STEP KNIGHT_CHARGE','KNIGHT_SHIELD_BASH KNIGHT_SWORD_THRUST','SHIELD_WALL KNIGHT_PARRY','SHIELD_WALL:GUARD KNIGHT_LUNGE:DASH','','KNIGHT_WEIGHT_BRACE'),
+  PALADIN:careerMotionNode('KNIGHT','SHIELD_SWORD','PALADIN_OATH_STANCE','PALADIN_GROUND_ADVANCE','PALADIN_LIGHT_CLEAVE','PALADIN_BLOCK','RADIANT_GUARD:GUARD OATH_BURST:AREA LIGHT_RESTORE:HEAL','','PALADIN_SHIELD_RAISE'),
+  BERSERKER:careerMotionNode('MARTIAL','AXE TWO_HAND_SWORD HAMMER','BERSERKER_WIDE_STANCE','HEAVY_STOMP_STEP','BERSERKER_WILD_SWING BERSERKER_OVERHEAD','BERSERKER_BRACE','WAR_CRY:CHANNEL GROUND_BREAKER:AREA','','BERSERKER_SHOULDER_INERTIA'),
+  LANCER:careerMotionNode('MARTIAL','SPEAR','SPEAR_LOW_READY','SPEAR_PIVOT SPRINT_LUNGE','SPEAR_TRIPLE_THRUST SPEAR_UPSWEEP','SPEAR_SHAFT_GUARD','PIERCING_LUNGE:DASH SPEAR_WHIRL:COMBO','','SPEAR_EXTENDED_SILHOUETTE'),
+  DRAGOON:careerMotionNode('LANCER','SPEAR','DRAGOON_AIR_READY','DRAGOON_LEAP DRAGOON_AERIAL_TURN','DRAGOON_FALLING_THRUST','DRAGOON_AIR_EVADE','DRAGOON_DIVE:DASH DRAGOON_SKY_BREAK:ULTIMATE','','DRAGOON_AIR_CONTACT'),
+  MONK:careerMotionNode('MARTIAL','UNARMED STAFF_OR_WAND','MONK_OPEN_PALM','MONK_CENTERED_STEP','MONK_PALM_CHAIN MONK_SPIN_KICK','MONK_CATCH_COUNTER','PALM_WAVE:AREA INNER_FOCUS:CHANNEL','','MONK_HIP_SHOULDER_CHAIN'),
+  DUELIST:careerMotionNode('SWORDSMAN','ONE_HAND_SWORD DAGGER','DUELIST_SIDE_GUARD','DUELIST_LUNGE DUELIST_PIVOT','DUELIST_RIPOSTE DUELIST_FEINT','DUELIST_DEFLECT','DUELIST_FLASH_STEP:DASH DUELIST_FINAL_THRUST:CHARGE','','DUELIST_BLADE_POINT'),
+  RANGED:careerMotionNode('ADVENTURER','BOW','RANGED_READY','AIM_STRAFE RETREAT_STEP','AIM_RELEASE','EVADE_SHOT','TARGET_FOCUS:CHANNEL','','RANGED_STABLE_AIM'),
+  ARCHER:careerMotionNode('RANGED','BOW','BOW_HALF_DRAW','ARCHER_SIDE_STEP','BOW_DRAW_RELEASE BOW_ARC_SHOT','BOW_BACKSTEP','PIERCING_ARROW:PROJECTILE ARROW_RAIN:AREA','','ARCHER_STRING_RELEASE'),
+  RANGER:careerMotionNode('ARCHER','BOW DAGGER','RANGER_FOREST_READY','RANGER_SILENT_WALK RANGER_ROLL','RANGER_TRACKING_SHOT RANGER_DAGGER','RANGER_EVADE','RANGER_SNARE:TRAP RANGER_MARK:CHANNEL','','RANGER_TERRAIN_READ'),
+  SNIPER:careerMotionNode('RANGED','FIREARM BOW','SNIPER_BRACED_AIM','SNIPER_CROUCH_STEP','SNIPER_PRECISION_FIRE','SNIPER_ROLL_BACK','SNIPER_FOCUS:CHANNEL SNIPER_BREAK_SHOT:PROJECTILE','','SNIPER_RECOIL_RECENTER'),
+  GUNSLINGER:careerMotionNode('RANGED','FIREARM','GUNSLINGER_HIP_READY','GUNSLINGER_CIRCLE_STEP','GUNSLINGER_QUICK_DRAW GUNSLINGER_RELOAD','GUNSLINGER_DODGE_SHOT','GUNSLINGER_BURST:COMBO GUNSLINGER_ROLL_SHOT:DASH','','GUNSLINGER_DRAW_SPIN'),
+  STEALTH:careerMotionNode('ADVENTURER','DAGGER','STEALTH_LOW_READY','SNEAK CROUCH_MOVE SIDE_SLIP','STEALTH_STRIKE','STEALTH_EVADE','VANISH:STANCE','','LOW_SILHOUETTE'),
+  ROGUE:careerMotionNode('STEALTH','DAGGER','ROGUE_REVERSE_GRIP','ROGUE_TUMBLE ROGUE_FAST_PIVOT','ROGUE_DOUBLE_STAB ROGUE_FEINT','ROGUE_SLIP','ROGUE_SMOKE:TRAP ROGUE_DASH:DASH','','ROGUE_ASYMMETRIC_GUARD'),
+  ASSASSIN:careerMotionNode('ROGUE','DAGGER','ASSASSIN_STILL_READY','ASSASSIN_BLIND_SIDE_STEP','ASSASSIN_NECK_LEVEL_STRIKE ASSASSIN_SILENT_CHAIN','ASSASSIN_PARRY','ASSASSIN_SHADOW_STEP:DASH ASSASSIN_EXECUTION:CHARGE','','ASSASSIN_DELIBERATE_STILLNESS'),
+  NINJA:careerMotionNode('ROGUE','DAGGER KATANA','NINJA_LOW_STANCE','NINJA_WALL_ENTRY NINJA_ROLL','NINJA_CROSS_SLASH NINJA_SHURIKEN_THROW','NINJA_AIR_DODGE','NINJA_SMOKE:TRAP NINJA_AFTERIMAGE:DASH','','NINJA_WALL_CONTACT'),
+  SHADOW_DANCER:careerMotionNode('NINJA','DAGGER KATANA','SHADOW_DANCER_BLENDED_GUARD','SHADOW_DANCER_SPIN_EVADE','SHADOW_DANCER_CROSS_CUT','SHADOW_DANCER_COUNTER','SHADOW_DANCER_CHAIN:COMBO SHADOW_DANCER_FINISH:ULTIMATE','','SHADOW_DANCER_SILHOUETTE'),
+  ARCANE:careerMotionNode('ADVENTURER','STAFF_OR_WAND','ARCANE_FOCUS_READY','CAST_WALK CAST_PIVOT','ARCANE_RELEASE','ARCANE_WARD','MAGIC_FOCUS:CHANNEL','','ARCANE_HAND_GESTURE'),
+  MAGE:careerMotionNode('ARCANE','STAFF_OR_WAND','MAGE_STAFF_BRACE','MAGE_CAST_STEP','MAGE_BOLT_CAST','MAGE_MAGIC_GUARD','ARCANE_BOLT:PROJECTILE ARCANE_RING:AREA','','MAGE_STAFF_CONTACT'),
+  ELEMENTALIST:careerMotionNode('MAGE','STAFF_OR_WAND','ELEMENTAL_FOCUS','ELEMENTAL_RITUAL_STEP','ELEMENTAL_PROJECTILE','ELEMENTAL_BARRIER','ELEMENTAL_BURST:AREA ELEMENTAL_BEAM:BEAM','','ELEMENTAL_HAND_CONDUCTION'),
+  BATTLEMAGE:careerMotionNode('MAGE','STAFF_OR_WAND ONE_HAND_SWORD','BATTLEMAGE_SPELL_BLADE','BATTLEMAGE_CAST_DASH','BATTLEMAGE_SPELL_SLASH','BATTLEMAGE_PARRY','ARCANE_EDGE:COMBO ARCANE_BLINK:DASH','','BATTLEMAGE_SWORD_CAST_CHAIN'),
+  SUMMONER:careerMotionNode('MAGE','STAFF_OR_WAND','SUMMONER_COMMAND_READY','SUMMON_CIRCLE_STEP','SUMMONER_STAFF_GESTURE','SUMMONER_RETREAT','SPIRIT_CALL:SUMMON SUMMONER_LINK:CHANNEL','','SUMMONER_FOCUS_HANDS'),
+  NECROMANCER:careerMotionNode('SUMMONER','STAFF_OR_WAND','NECROMANCER_CROOKED_STANCE','NECROMANCER_HEAVY_STEP','NECROMANCER_CURSE_GESTURE','NECROMANCER_SHROUD','BONE_CALL:SUMMON DARK_SIGIL:AREA','','NECROMANCER_UNDEAD_SILHOUETTE'),
+  FAITH:careerMotionNode('ADVENTURER','STAFF_OR_WAND','FAITH_PRAYER_READY','FAITH_GENTLE_STEP','FAITH_STRIKE','FAITH_WARD','BLESSING:BUFF','','FAITH_HAND_RAISE'),
+  CLERIC:careerMotionNode('FAITH','STAFF_OR_WAND HAMMER','CLERIC_SHIELD_PRAYER','CLERIC_PROTECT_STEP','CLERIC_MACE_SWING','CLERIC_GUARD','RESTORE:HEAL SANCTUARY:AREA','','CLERIC_CARE_GESTURE'),
+  PRIEST:careerMotionNode('CLERIC','STAFF_OR_WAND','PRIEST_BLESSING','PRIEST_CIRCLE_STEP','PRIEST_LIGHT_CAST','PRIEST_PROTECT','GREATER_RESTORE:HEAL PURIFY:AREA','','PRIEST_LIGHT_HANDS'),
+  NATURE:careerMotionNode('ADVENTURER','STAFF_OR_WAND','NATURE_READY','NATURE_TRAIL_STEP','NATURE_STRIKE','NATURE_EVADE','NATURE_LISTEN:CHANNEL','','NATURE_BODY_FLOW'),
+  DRUID:careerMotionNode('NATURE','STAFF_OR_WAND','DRUID_ROOTED_STANCE','DRUID_WILD_STEP','DRUID_VINE_CAST','DRUID_BARK_GUARD','VINE_BIND:TRAP WILD_FORM:TRANSFORM','','DRUID_TRANSFORM_STAGING'),
+  BEASTMASTER:careerMotionNode('NATURE','BOW STAFF_OR_WAND','BEASTMASTER_COMMAND_READY','BEASTMASTER_COMPANION_STEP','BEASTMASTER_BOW_STRIKE','BEASTMASTER_BACKSTEP','BEAST_COMMAND:COMMAND PACK_CALL:SUMMON','','BEASTMASTER_ANIMAL_EYE_LINE'),
+  ENGINEERING:careerMotionNode('ADVENTURER','GADGET','ENGINEER_TOOL_READY','ENGINEER_WORK_STEP','GADGET_USE','ENGINEER_DUCK','ASSEMBLE:REPAIR','','ENGINEER_TOOL_GRIP'),
+  MECHANIST:careerMotionNode('ENGINEERING','GADGET FIREARM','MECHANIST_STABLE_BRACE','MECHANIST_REPAIR_STEP','MECHANIST_GADGET_FIRE','MECHANIST_COVER','DEPLOY_TURRET:SUMMON MECHANICAL_BURST:PROJECTILE','','MECHANIST_RECOIL_TOOL'),
+  ALCHEMIST:careerMotionNode('ENGINEERING','GADGET','ALCHEMIST_FLASK_READY','ALCHEMIST_MEASURED_STEP','ALCHEMIST_FLASK_THROW','ALCHEMIST_DUCK','THROW_FLASK:PROJECTILE ALCHEMY_MIX:REPAIR','','ALCHEMIST_GLASS_HANDLING'),
+  ARTISAN:careerMotionNode('ADVENTURER','TOOL','CRAFT_WORK_READY','CRAFT_STEP','TOOL_SWING','TOOL_BRACE','WORK_FOCUS:CHANNEL','CRAFT USE_TOOL','ARTISAN_HAND_TOOL_CONTACT'),
+  BLACKSMITH:careerMotionNode('ARTISAN','HAMMER TOOL','FORGE_HAMMER_READY','FORGE_ANVIL_STEP','FORGE_HAMMER_SWING','FORGE_SHIELD_FACE','FORGE_METAL:REPAIR QUENCH:INTERACT','FORGE HEAT_METAL','BLACKSMITH_IMPACT_SETTLE'),
+  BUILDER:careerMotionNode('ARTISAN','TOOL HAMMER','BUILDER_WEIGHTED_STANCE','BUILDER_CARRY_STEP','BUILDER_HAMMER_SWING','BUILDER_SUPPORT_BRACE','PLACE_STRUCTURE:INTERACT REPAIR_STRUCTURE:REPAIR','CARRY BUILD REPAIR','BUILDER_TWO_HAND_CARRY'),
+  FARMER:careerMotionNode('ARTISAN','TOOL','FARMER_HARVEST_READY','FARMER_FIELD_WALK','FARMER_HOE_SWING','FARMER_STEP_BACK','HARVEST:INTERACT PLANT_SEED:INTERACT','WATER CARRY GATHER','FARMER_GROUND_REACH'),
+  CHEF:careerMotionNode('ARTISAN','TOOL','CHEF_BOARD_READY','CHEF_KITCHEN_STEP','CHEF_KNIFE_CHOP','CHEF_HEAT_REACT','COOK_DISH:INTERACT SERVE_MEAL:INTERACT','CHOP STIR SERVE','CHEF_REPETITIVE_HAND_CRAFT'),
+  MERCHANT:careerMotionNode('ADVENTURER','UNARMED','MERCHANT_SOCIAL_READY','MERCHANT_MARKET_WALK','','MERCHANT_STEP_BACK','BARTER:INTERACT SHOW_GOODS:INTERACT','TRADE INSPECT OFFER','MERCHANT_HAND_SHOWCASE'),
+  PERFORMER:careerMotionNode('ADVENTURER','UNARMED','PERFORMER_STAGE_READY','PERFORMER_RHYTHM_STEP','PERFORMER_SPIN','PERFORMER_GRACE_STEP','PERFORMANCE:PERFORM','','PERFORMER_DYNAMIC_GESTURE'),
+  BARD:careerMotionNode('PERFORMER','INSTRUMENT','BARD_MUSIC_READY','BARD_RHYTHM_WALK','BARD_INSTRUMENT_ACCENT','BARD_COVER','BARD_SONG:CHANNEL ENCORE:PERFORM','PLAY_INSTRUMENT','BARD_FINGER_RHYTHM'),
+  DANCER:careerMotionNode('PERFORMER','UNARMED','DANCER_BALANCED_STANCE','DANCER_SPIN DANCER_LEAP','DANCER_SWEEP','DANCER_EVADE','DANCE_CHAIN:COMBO DANCE_FINISH:PERFORM','','DANCER_FOOT_AND_ARM_ARCS'),
+  COMMAND:careerMotionNode('ADVENTURER','ONE_HAND_SWORD','COMMAND_READY','COMMAND_STEP','COMMAND_STRIKE','COMMAND_GUARD','COMMAND_SIGNAL:COMMAND','','COMMAND_ARM_GESTURE'),
+  COMMANDER:careerMotionNode('COMMAND','ONE_HAND_SWORD','COMMANDER_BANNER_READY','COMMANDER_ADVANCE','COMMANDER_SWORD_SIGNAL','COMMANDER_DEFLECT','RALLY_BANNER:COMMAND HOLD_LINE:GUARD','','COMMANDER_FIELD_READ'),
+  TACTICIAN:careerMotionNode('COMMANDER','GADGET ONE_HAND_SWORD','TACTICIAN_MAP_READY','TACTICIAN_STEP_BACK','TACTICIAN_DIRECT','TACTICIAN_EVADE','TACTICAL_SIGNAL:COMMAND DEPLOY_MARKER:TRAP','POINT MAP_READ','TACTICIAN_FINGER_POINT'),
+  SAILOR:careerMotionNode('ADVENTURER','TOOL ONE_HAND_SWORD','SAILOR_ROPE_READY','SAILOR_DECK_BALANCE','SAILOR_CUTLASS_SWING','SAILOR_ROLL','ANCHOR_PULL:INTERACT SAIL_SIGNAL:COMMAND','ROPE_PULL OAR_ROW','SAILOR_DECK_WEIGHT_SHIFT')
+});
+
+export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
+  ACTION_RPG:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
+  MMORPG:freezeList(['stance','locomotion','attacks','defense','skills','interactions','signature']),
+  ROGUELIKE:freezeList(['locomotion','attacks','defense','skills','signature']),
+  FIGHTING:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
+  MOBA:freezeList(['locomotion','attacks','defense','skills','signature']),
+  TACTICAL_RPG:freezeList(['stance','attacks','defense','skills','interactions','signature']),
+  SURVIVAL:freezeList(['locomotion','defense','attacks','interactions','skills','signature']),
+  SANDBOX:freezeList(['locomotion','interactions','skills','signature']),
+  SIMULATION:freezeList(['locomotion','interactions','skills','signature']),
+  TYCOON:freezeList(['locomotion','interactions','skills','signature']),
+  STRATEGY:freezeList(['stance','locomotion','attacks','skills','signature']),
+  TOWER_DEFENSE:freezeList(['stance','attacks','skills','signature']),
+  SHOOTER:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
+  STEALTH:freezeList(['stance','locomotion','defense','interactions','skills','signature']),
+  PLATFORMER:freezeList(['locomotion','attacks','defense','skills','signature']),
+  HORROR:freezeList(['locomotion','defense','interactions','skills','signature']),
+  SOCIAL:freezeList(['stance','locomotion','interactions','skills','signature'])
+});
+
+// 공통 시전-전투 기술군: 피해·쿨타임·명중·자원 소모는 게임에서만 결정한다.
+export const COMMON_SKILL_MOTION_GRAMMAR=Object.freeze({
+  CHARGE:Object.freeze({charge:'CHARGE',aim:'AIM',impact:'IMPACT_RESPONSE',vfx:'WEAPON_TRAIL',contact:'WEAPON'}),
+  COUNTER:Object.freeze({hold:'COUNTER_WAIT',impact:'IMPACT_RESPONSE',vfx:'COUNTER_FLASH',contact:'WEAPON_OR_HAND'}),
+  COMBO:Object.freeze({charge:'STARTUP',impact:'IMPACT_RESPONSE',vfx:'MOTION_TRAIL',contact:'ACTIVE_LIMB'}),
+  DASH:Object.freeze({charge:'DASH_ANTICIPATION',aim:'TARGET_ALIGN',impact:'IMPACT_RESPONSE',vfx:'DASH_STREAK',contact:'ACTIVE_LIMB'}),
+  PROJECTILE:Object.freeze({charge:'CAST_CHARGE',aim:'AIM',impact:'IMPACT_RESPONSE',vfx:'PROJECTILE_TRAIL',contact:'RELEASE_POINT'}),
+  BEAM:Object.freeze({charge:'BEAM_CHARGE',hold:'CHANNEL',aim:'AIM',impact:'IMPACT_RESPONSE',vfx:'BEAM_VISUAL',contact:'RELEASE_POINT'}),
+  AREA:Object.freeze({charge:'AREA_TELEGRAPH',impact:'IMPACT_RESPONSE',vfx:'AREA_RING',contact:'AREA_ORIGIN'}),
+  GUARD:Object.freeze({hold:'GUARD_HOLD',impact:'GUARD_CONTACT',vfx:'GUARD_GLOW',contact:'GUARD_SURFACE'}),
+  CHANNEL:Object.freeze({hold:'CHANNEL',vfx:'FOCUS_AURA',contact:'HANDS_OR_TOOL'}),
+  SUMMON:Object.freeze({charge:'SUMMON_RITUAL',hold:'CHANNEL',impact:'SUMMON_PRESENTATION',vfx:'SUMMON_RING',contact:'SUMMON_ANCHOR'}),
+  HEAL:Object.freeze({hold:'CHANNEL',impact:'HEAL_VISUAL',vfx:'HEAL_GLOW',contact:'HEAL_TARGET'}),
+  BUFF:Object.freeze({charge:'BUFF_READY',impact:'AURA_RESPONSE',vfx:'BUFF_AURA',contact:'BODY_AURA'}),
+  TRAP:Object.freeze({charge:'TRAP_PREPARE',aim:'PLACE_AIM',impact:'TRAP_PRESENTATION',vfx:'TRAP_MARK',contact:'GROUND_CONTACT'}),
+  TRANSFORM:Object.freeze({charge:'TRANSFORM_PREPARE',impact:'FORM_SHIFT',vfx:'TRANSFORM_SILHOUETTE',contact:'BODY_RIG'}),
+  REPAIR:Object.freeze({hold:'TOOL_WORK',impact:'WORK_SPARK',vfx:'CRAFT_SPARK',contact:'TOOL_CONTACT'}),
+  INTERACT:Object.freeze({hold:'INTERACTION_HOLD',vfx:'INTERACTION_ACCENT',contact:'HAND_CONTACT'}),
+  COMMAND:Object.freeze({hold:'SIGNAL_HOLD',vfx:'COMMAND_SIGNAL',contact:'HAND_OR_PROP'}),
+  PERFORM:Object.freeze({hold:'PERFORMANCE_LOOP',vfx:'PERFORMANCE_ACCENT',contact:'BODY_OR_INSTRUMENT'}),
+  STANCE:Object.freeze({hold:'STANCE_HOLD',vfx:'STANCE_ACCENT',contact:'BODY_CENTER'}),
+  ULTIMATE:Object.freeze({charge:'ULTIMATE_WINDUP',hold:'ULTIMATE_HOLD',aim:'AIM',impact:'IMPACT_RESPONSE',vfx:'ULTIMATE_ACCENT',contact:'SIGNATURE_CONTACT'})
+});
+
+function commonSkillMotionCue(value,{bodyPlan='HUMANOID',rigProfile='HUMANOID',weaponFamily='UNARMED',platform='SHARED'}={}){
+  const [skillId,kind,...extra]=upper(value).split(':');
+  const spec=COMMON_SKILL_MOTION_GRAMMAR[kind];
+  if(!skillId||!spec||extra.length)throw Error('UNSUPPORTED_COMMON_SKILL_MOTION:'+value);
+  const sequence=buildSkillMotionSequence({prepare:'PREPARE',charge:spec.charge||null,hold:spec.hold||null,aim:spec.aim||null,
+    release:'RELEASE',impact:spec.impact||null,recovery:'RECOVERY'});
+  return Object.freeze({
+    id:skillId,kind,sequence,contactPart:spec.contact,
+    vfxPresentationSlot:spec.vfx,audioPresentationSlot:kind+'_AUDIO',cameraPresentationSlot:kind+'_CAMERA',
+    dna:createMotionDNA({motionId:skillId,bodyPlan,rigProfile,weaponFamily,platformVariant:platform,
+      skillRole:kind,runtimeVerificationState:'PREPARED_SEMANTIC'}),
+    actualJointClipRequired:true,sourceProvenanceRequired:true,nativeRigBindingRequired:true,
+    runtimeVerified:false,productionVerified:false,gameplayAuthority:false
+  });
+}
+
+export function createCommonCareerMotionLoadout({
+  careerId='SAMURAI',genre='ACTION_RPG',platform='SHARED',bodyPlan='HUMANOID',
+  rigProfile='HUMANOID',weaponFamily='',styleFamily='STYLIZED_FANTASY'
+}={}){
+  const id=upper(careerId),requestedGenre=upper(genre),platformId=upper(platform);
+  if(!COMMON_CAREER_MOTION_HIERARCHY[id])throw Error('UNKNOWN_COMMON_CAREER:'+id);
+  if(!COMMON_GENRE_MOTION_CONTEXTS[requestedGenre])throw Error('UNSUPPORTED_COMMON_GENRE:'+requestedGenre);
+  if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
+  if(!['HUMANOID','SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER'].includes(upper(bodyPlan)))
+    throw Error('INCOMPATIBLE_COMMON_CAREER_BODY_PLAN:'+upper(bodyPlan));
+  const ancestors=[],visited=new Set();
+  for(let cursor=id;cursor;cursor=COMMON_CAREER_MOTION_HIERARCHY[cursor]?.parent){
+    if(visited.has(cursor)||!COMMON_CAREER_MOTION_HIERARCHY[cursor])throw Error('INVALID_COMMON_CAREER_HIERARCHY:'+id);
+    visited.add(cursor);ancestors.unshift(cursor);
+  }
+  const nodes=ancestors.map(name=>COMMON_CAREER_MOTION_HIERARCHY[name]);
+  const allowedWeapons=nodes.at(-1).weaponFamilies.length?nodes.at(-1).weaponFamilies:nodes.findLast(row=>row.weaponFamilies.length)?.weaponFamilies||['UNARMED'];
+  const weapon=upper(weaponFamily)||allowedWeapons[0];
+  if(!allowedWeapons.includes(weapon))throw Error('INCOMPATIBLE_COMMON_CAREER_WEAPON:'+id+':'+weapon);
+  const groups=Object.freeze(Object.fromEntries(['stance','locomotion','attacks','defense','interactions','signature']
+    .map(group=>[group,freezeList(unique(nodes.flatMap(node=>node.roles[group]||[])))])));
+  const skills=Object.freeze(unique(nodes.flatMap(node=>node.skills)).map(value=>commonSkillMotionCue(value,{
+    bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),weaponFamily:weapon,platform:platformId
+  })));
+  const requiredGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
+  const roleRequests=Object.freeze(requiredGroups.flatMap(group=>{
+    if(group==='skills')return skills.map(row=>Object.freeze({id:row.id,group:'skills',dna:row.dna,preparedSemanticOnly:true}));
+    return (groups[group]||[]).map(role=>Object.freeze({
+      id:role,group,dna:createMotionDNA({motionId:role,bodyPlan,rigProfile,weaponFamily:weapon,
+        styleFamily,platformVariant:platformId,runtimeVerificationState:'PREPARED_SEMANTIC'}),
+      preparedSemanticOnly:true
+    }));
+  }));
+  return Object.freeze({
+    id,careerPath:freezeList(ancestors),genre:requestedGenre,platform:platformId,
+    bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
+    weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
+    groups,skills,genreGroups:requiredGroups,roleRequests,
+    combatSourcePack:WEAPON_COMBAT_MOTION_PACKS[weapon]
+      ?createDuelCombatMotionLoadout({weaponFamily:weapon,platform:platformId}):null,
+    sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
+    actualJointCurvesAndSourceMasterRequired:true,platformNativeAdaptationRequired:true,
+    genreProjectionOnly:true,combatAndSkillTimingAuthority:false,gameplayAuthority:false,
+    productionVerified:false,runtimeVerified:false
+  });
+}
+
+// 체형과 부위별 컨택트를 보존하는 몬스터 전문 액션 데이터. 이름만 다른 인간형 모션 재사용 금지.
+const monsterMotionSpecies=(bodyPlan,contact,travel,attacks,defense,skills,signature,specialParts)=>Object.freeze({
+  bodyPlan:upper(bodyPlan),contactLimbs:splitMotionRoles(contact),specialParts:splitMotionRoles(specialParts),
+  locomotion:splitMotionRoles(travel),attacks:splitMotionRoles(attacks),defense:splitMotionRoles(defense),
+  skills:splitMotionRoles(skills),signature:splitMotionRoles(signature)
+});
+
+export const COMMON_MONSTER_ACTION_SPECIES=Object.freeze({
+  WOLF:monsterMotionSpecies('QUADRUPED_CANINE','JAWS FOREPAWS','WOLF_PACK_CIRCLE WOLF_SILENT_STALK WOLF_POUNCE_LAND','WOLF_FEINT_BITE WOLF_NECK_LUNGE WOLF_FLANK_CLAW WOLF_RUSH_BITE','WOLF_GROUND_SIDESTEP','PACK_HOWL:CHANNEL WOLF_LEAP:DASH','WOLF_HOWL_BODY_ARC WOLF_PACK_STALK_SIGNATURE','SPINE NECK TAIL FORELEGS HINDLEGS'),
+  FOX:monsterMotionSpecies('QUADRUPED_CANINE','JAWS FOREPAWS','FOX_ZIGZAG FOX_CROUCH_STALK FOX_SPRINT_STOP','FOX_QUICK_BITE FOX_SIDE_POUNCE FOX_FEINT','FOX_SPIN_EVADE','FOX_DISTRACTION:PERFORM FOX_BURST:DASH','FOX_TAIL_COUNTERWEIGHT FOX_LOW_POUNCE_SIGNATURE','SPINE EARS TAIL FORELEGS HINDLEGS'),
+  BEAR:monsterMotionSpecies('QUADRUPED_HEAVY','FOREPAWS JAWS','BEAR_HEAVY_START BEAR_STAND_UP BEAR_PLANTED_TURN','BEAR_DOUBLE_SWIPE BEAR_STANDING_SLAM BEAR_BITE_CLAMP BEAR_WEIGHT_CHARGE','BEAR_SHOULDER_BRACE','BEAR_ROAR:CHANNEL BEAR_EARTH_SLAM:AREA','BEAR_REAR_UP_WEIGHT BEAR_FALLING_IMPACT','SHOULDERS FORELEGS HINDLEGS SPINE JAWS'),
+  BOAR:monsterMotionSpecies('QUADRUPED_HEAVY','TUSKS FRONT_HEAD','BOAR_ROOT_GROUND BOAR_LOWER_HEAD BOAR_BRAKING_TURN','BOAR_TUSK_SCOOP BOAR_SIDE_GORE BOAR_BURST_CHARGE','BOAR_BRACE','BOAR_RUSH:DASH BOAR_GROUND_KICK:AREA','BOAR_TUSK_LEAN BOAR_CHARGE_BRAKE_SIGNATURE','NECK TUSKS FORELEGS HINDLEGS'),
+  SPIDER:monsterMotionSpecies('ARACHNID','FANGS FRONT_LEGS','SPIDER_WALL_DROP SPIDER_EIGHT_LEG_PIVOT SPIDER_SILK_DESCENT','SPIDER_FANG_LUNGE SPIDER_TWO_LEG_STAB SPIDER_WEB_JAB SPIDER_POUNCE_PIN','SPIDER_SIDE_SCUTTLE','WEB_TRAP:TRAP SPIDER_VENOM:PROJECTILE','SPIDER_PEDIPALP_THREAT SPIDER_SILK_AMBUSH','EIGHT_LEGS PEDIPALPS ABDOMEN FANGS SPINNERETS'),
+  SCORPION:monsterMotionSpecies('ARACHNID_SCORPION','STINGER CLAWS','SCORPION_STINGER_ARCH SCORPION_SAND_BURROW','SCORPION_OVERHEAD_STING SCORPION_CLAW_GRAB SCORPION_DOUBLE_PIN','SCORPION_CLAW_DEFLECT','VENOM_TAIL:PROJECTILE SAND_EMERGE:DASH','SCORPION_TAIL_AIM SCORPION_TWIN_CLAW_THREAT','TAIL_STINGER CLAWS EIGHT_LEGS PEDIPALPS'),
+  ANT:monsterMotionSpecies('HEXAPOD_INSECT','MANDIBLES FRONT_LEGS','ANT_TRIPOD_WALK ANT_ANTENNA_TRACK ANT_CLIMB','ANT_MANDIBLE_BITE ANT_MANDIBLE_LOCK ANT_FRONT_LEG_SWIPE','ANT_SHELL_BRACE','ANT_ALARM_SIGNAL:COMMAND ANT_SWARM_RUSH:DASH','ANT_TRIPOD_SIGNATURE ANT_PHEROMONE_SCAN','SIX_LEGS ANTENNAE MANDIBLES THORAX ABDOMEN'),
+  BEETLE:monsterMotionSpecies('HEXAPOD_INSECT','HORN CARAPACE','BEETLE_WEIGHTED_WALK BEETLE_SHELL_RAISE BEETLE_WING_UNFOLD','BEETLE_HORN_LIFT BEETLE_RAM BEETLE_SHELL_BODY_SMASH','BEETLE_SHELL_GUARD','BEETLE_CHARGE:DASH BEETLE_WING_BURST:AREA','BEETLE_HORN_LEVER BEETLE_ELYTRA_OPEN','SIX_LEGS HORN ELYTRA WINGS SHELL'),
+  MANTIS:monsterMotionSpecies('HEXAPOD_INSECT','FOREARMS MANDIBLES','MANTIS_PRAYER_IDLE MANTIS_STALK MANTIS_SIDE_HOP','MANTIS_FOREARM_CUT MANTIS_CROSS_SCYTHE MANTIS_GRAB','MANTIS_ARM_DEFLECT','MANTIS_SCYTHE_CHAIN:COMBO MANTIS_AMBUSH:DASH','MANTIS_HEAD_TRACK MANTIS_FOREARM_FOLD','SIX_LEGS SCYTHE_ARMS ANTENNAE NECK'),
+  SERPENT:monsterMotionSpecies('REPTILE_OR_SERPENT','JAWS TAIL','SERPENT_S_COIL SERPENT_RAISE_NECK SERPENT_FAST_SLITHER','SERPENT_FANG_STRIKE SERPENT_WRAP_GRAB SERPENT_TAIL_WHIP','SERPENT_COIL_EVADE','VENOM_SPIT:PROJECTILE CONSTRICT:CHANNEL','SERPENT_BODY_WAVE SERPENT_COIL_THREAT','SPINE_CHAIN NECK JAWS TAIL'),
+  WYVERN:monsterMotionSpecies('FLYING','WINGS CLAWS JAWS','WYVERN_BANK_DIVE WYVERN_HOVER_BRAKE WYVERN_WINGFOLD_LAND','WYVERN_TALON_DIVE WYVERN_AIR_BITE WYVERN_TAIL_SWEEP','WYVERN_ROLL_EVADE','WYVERN_BREATH:BEAM WYVERN_WING_GUST:AREA','WYVERN_WING_GATHER WYVERN_TALON_CONTACT','WINGS TAIL NECK CLAWS'),
+  BAT:monsterMotionSpecies('FLYING','WINGS JAWS','BAT_CEILING_HANG BAT_FLUTTER BAT_ECHO_TURN','BAT_DIVE_BITE BAT_WING_BASH','BAT_SONAR_DODGE','BAT_SCREECH:AREA BAT_DIVE:DASH','BAT_HANG_RELEASE BAT_WING_MEMBRANE','WINGS EARS CLAWS NECK'),
+  SHARK:monsterMotionSpecies('AQUATIC','JAWS TAIL','SHARK_CRUISE_SHALLOW SHARK_WIDE_TURN SHARK_BREACH','SHARK_JAW_BITE SHARK_SIDE_RAM SHARK_TAIL_BURST','SHARK_DIVE_ROLL','SHARK_CIRCLE:CHANNEL SHARK_BREACH:DASH','SHARK_TAIL_PROPULSION SHARK_JAW_OPEN','TAIL FIN_SPINE JAWS FINS'),
+  GOLEM:monsterMotionSpecies('HEAVY_GOLEM_OR_BOSS','FISTS FEET','GOLEM_PLANTED_WALK GOLEM_TORSO_ROTATE GOLEM_CORE_WAKE','GOLEM_OVERHEAD_BREAK GOLEM_TWO_FIST_SLAM GOLEM_STONE_SWEEP','GOLEM_GROUNDED_BRACE','GOLEM_SHOCKWAVE:AREA GOLEM_CORE_BEAM:BEAM','GOLEM_MASS_SHIFT GOLEM_CORE_CHARGE','FISTS FEET SHOULDERS CORE STONE_PLATES'),
+  SLIME:monsterMotionSpecies('AMORPHOUS','BODY_SURFACE','SLIME_SQUASH_WALK SLIME_WOBBLE_STOP SLIME_SPRING_HOP','SLIME_JELLY_SLAP SLIME_BLOB_PUNCH SLIME_ENGULF','SLIME_SPLIT_EVADE','SLIME_SPLIT:SUMMON SLIME_BURST:AREA','SLIME_STRETCH_RETURN SLIME_VOLUME_WAVE','SURFACE LOBES CORE'),
+  GHOST:monsterMotionSpecies('FLOATING_GHOST','ETHEREAL_HANDS','GHOST_HOVER_SINE GHOST_FLOAT_TURN GHOST_PHASE_APPEAR','GHOST_REACH GHOST_SWEEP GHOST_BLINK_ATTACK','GHOST_DISPERSE_EVADE','GHOST_CURSE:PROJECTILE GHOST_PHASE_SHIFT:STANCE','GHOST_APPARITION GHOST_VEIL_REFORM','ETHEREAL_ARMS HEAD VEIL BODY_MIST'),
+  CENTAUR:monsterMotionSpecies('CENTAUR','SPEAR HOOVES','CENTAUR_HEAVY_GALLOP CENTAUR_REAR CENTAUR_GALLOP_PIVOT','CENTAUR_SPEAR_LUNGE CENTAUR_REAR_KICK CENTAUR_TURN_CLEAVE','CENTAUR_UPPER_GUARD','CENTAUR_CHARGE:DASH CENTAUR_WAR_CRY:CHANNEL','CENTAUR_FOUR_HOOF_TURN CENTAUR_UPPER_LOWER_SYNC','FOUR_LEGS HOOF_CONTACT HUMAN_SPINE ARMS'),
+  TENTACLE_BEAST:monsterMotionSpecies('TENTACLED','TENTACLE_TIPS','TENTACLE_ANCHOR_SLIDE TENTACLE_WAVE_MOVE','TENTACLE_MULTI_GRAB TENTACLE_WRAP_STRIKE TENTACLE_WHIP_CROSS','TENTACLE_RETRACT','TENTACLE_REACH:CHANNEL TENTACLE_STORM:AREA','TENTACLE_DELAYED_WAVE TENTACLE_PAIR_CONTACT','TENTACLES BODY_CORE ANCHORS'),
+  SWARM:monsterMotionSpecies('SWARM','SWARM_FRONT','SWARM_SPLIT_FLOW SWARM_PIVOT SWARM_REFORM','SWARM_SURROUND_WAVE SWARM_DIVE_TORRENT SWARM_FOCUS_LUNGE','SWARM_SCATTER_DEFENSE','SWARM_SPLIT:STANCE SWARM_STRIKE:AREA','SWARM_PARTICLE_FORMATION SWARM_CORE_PATTERN','MEMBERS FORMATION_VOLUME FRONT'),
+  DEMON_LORD:monsterMotionSpecies('BOSS_BIPED','HORNS CLAWS FISTS','DEMON_BOSS_INTRO DEMON_BOSS_TURN DEMON_BOSS_CHARGE','DEMON_CLAW_CHAIN DEMON_GROUND_FISSURE DEMON_AERIAL_SMASH','DEMON_GUARD_BREAK_RESPONSE','DEMON_SUMMON:SUMMON DEMON_PHASE_BURST:ULTIMATE','DEMON_PHASE_CHANGE_POSE DEMON_ENRAGE_POSE DEMON_BOSS_DEATH','HORN_MASS ARMS WINGS_SPARE SPINE FEET')
+});
+
+export function createCommonMonsterActionLoadout({
+  speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
+  rigProfile='',styleFamily='STYLIZED_FANTASY'
+}={}){
+  const id=upper(speciesId),species=COMMON_MONSTER_ACTION_SPECIES[id],platformId=upper(platform);
+  if(!species)throw Error('UNKNOWN_COMMON_MONSTER_SPECIES:'+id);
+  if(!COMMON_GENRE_MOTION_CONTEXTS[upper(genre)])throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
+  if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
+  if(bodyPlan&&resolveMonsterBodyPlanMotionDetail(bodyPlan)!==resolveMonsterBodyPlanMotionDetail(species.bodyPlan))
+    throw Error('INCOMPATIBLE_COMMON_MONSTER_BODY_PLAN:'+id+':'+upper(bodyPlan));
+  if(upper(rigProfile)==='HUMANOID'&&!['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan))
+    throw Error('INCOMPATIBLE_COMMON_MONSTER_RIG:'+id+':HUMANOID');
+  const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
+  if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
+  const profile=createCreatureMotionSetProfile({
+    id:'common-'+id.toLowerCase(),archetype:id,bodyPlan:species.bodyPlan,
+    rigProfile:upper(rigProfile)||'SPECIES_RIG_AUTHORING_REQUIRED',
+    locomotion:unique([...detail.roles.locomotion,...species.locomotion]),
+    attacks:unique([...detail.roles.attacks,...species.attacks]),
+    defense:unique([...detail.roles.defense,...species.defense]),
+    reactions:detail.roles.reactions,acting:detail.roles.acting,deaths:detail.roles.deaths,
+    skill:unique([...detail.roles.skill,...species.skills.map(row=>row.split(':')[0])]),
+    signature:unique([...detail.roles.signature,...species.signature]),
+    verificationState:'PREPARED_SEMANTIC'
+  });
+  const cues=Object.freeze(species.skills.map(value=>commonSkillMotionCue(value,{
+    bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,platform:platformId
+  })));
+  const choreography=Object.freeze(species.attacks.map((id,index)=>{
+    const heavy=/SLAM|CRUSH|OVERHEAD|BREAK|CHARGE|RAM|BURST/.test(id);
+    return Object.freeze({
+      id,grammar:MOTION_GRAMMARS.attack,
+      poseKeyTimes:Object.freeze(heavy?[0,.15,.40,.63,.84,1]:[0,.12,.29,.46,.75,1]),
+      weightTransfer:detail.presentationVariation.limbPhase,
+      primaryContactLimb:species.contactLimbs[index%species.contactLimbs.length],
+      secondaryRigParts:species.specialParts,
+      handoffToGameplayContactMarker:true,authoritativeHitboxAndMovementUnchanged:true,
+      rigSpecificCurvesAndContactsRequired:true,verified:false
+    });
+  }));
+  const coverage=auditMotionCoverage(profile);
+  return Object.freeze({
+    id,species,profile,genre:upper(genre),platform:platformId,
+    bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
+    genreGroups:COMMON_GENRE_MOTION_CONTEXTS[upper(genre)],
+    choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
+    contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
+    sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
+    platformNativeAdaptationRequired:true,runtimeVerified:false,productionVerified:false,
+    gameplayAuthority:false
+  });
+}
+
 export function createMotionDNA(input={}) {
   const dna={
     MOTION_ID:text(input.MOTION_ID||input.motionId||input.id),
@@ -1860,7 +2119,8 @@ export function buildAutomaticMotionGapFillPlan({
   librarySets=[],
   externalSources=[],
   usage={},
-  requirements={}
+  requirements={},
+  platform='SHARED'
 }={}){
   const target=profile.groups?profile:createCreatureMotionSetProfile(profile);
   const audit=auditMotionCoverage(target,requirements);
@@ -1870,9 +2130,9 @@ export function buildAutomaticMotionGapFillPlan({
     const donors=findCompatibleMotionDonors({targetProfile:target,librarySets,group:gap.group});
     const verifiedDonor=donors.find(row=>row.productionVerified===true);
     const preparedDonor=donors.find(row=>row.productionVerified!==true);
-    const commonRetarget=createMonsterCommonActionRetargetPlan({
+    const commonRetarget=upper(platform)==='ROBLOX'?createMonsterCommonActionRetargetPlan({
       bodyPlan:target.bodyPlan,archetype:target.archetype,group:gap.group,count:gap.missing
-    });
+    }):null;
     const priority=scoreMotionGapPriority({gap,usage});
     let route='PREPARE_SEMANTIC_MOTION_SEED';
     let sourceId=null;
@@ -2970,7 +3230,8 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null,
+  career=null,monster=null,genre='ACTION_RPG'
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -2979,6 +3240,8 @@ export function createMotionDirectorPlan({
   });
   const selectedDNA=selector.selected?.dna||selector.selected||{BODY_PLAN:bodyPlan,RIG_PROFILE:rigProfile,STYLE_FAMILY:styleFamily,PLATFORM_VARIANT:platform};
   const composition=composeMotionStack({layers,dna:selectedDNA,styleVariant:deriveMotionStyleVariant({parentId:selectedDNA.MOTION_ID||selectedDNA.id,style:styleFamily,styles,modifiers:styleModifiers})});
+  const careerMotion=career?createCommonCareerMotionLoadout({...career,platform,bodyPlan,rigProfile,styleFamily,genre:career.genre||genre}):null;
+  const monsterMotion=monster?createCommonMonsterActionLoadout({...monster,platform,bodyPlan,rigProfile,styleFamily,genre:monster.genre||genre}):null;
   return Object.freeze({
     version:2,
     target:MOTION_DIRECTOR_TARGET,
@@ -3007,6 +3270,7 @@ export function createMotionDirectorPlan({
       measuredTransitionQa:transition?evaluateMotionTransition(transition).verdict:'UNVERIFIED',
       runtimeVerified:false
     }),
+    careerMotion,monsterMotion,
     skillSequence:buildSkillMotionSequence(skill),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,
@@ -3032,6 +3296,8 @@ export function createMotionDirectorPlan({
       'GAMEPLAY_EVENT_MOTION_BINDING','PROCEDURAL_MOTION_LAYER','PARTIAL_RAGDOLL','MOTION_AUDIO_SYNC',
       'GROUP_MOTION_DIRECTOR','MULTI_ACTOR_MOTION','EMOTION_INTENT_LAYER','MOTION_LOD','MOBILE_FRAME_BUDGET','MOTION_LINEAGE','RUNTIME_MOTION_LEARNING',
       ...(upper(platform)==='ROBLOX'?['ROBLOX_SMOOTH_CHARACTER_MOTION']:[]),
+      ...(career?['COMMON_CAREER_MOTION_LIBRARY']:[]),
+      ...(monster?['COMMON_SPECIES_ACTION_LIBRARY']:[]),
       ...(combat?['DUEL_COMBAT_MOTION_KIT']:[])
     ]),
     libraryGraphNodes:MOTION_LIBRARY_GRAPH_NODES,
