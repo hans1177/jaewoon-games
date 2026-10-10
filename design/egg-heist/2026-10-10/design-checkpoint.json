@@ -187,25 +187,34 @@
       },
       "playerFantasy": "플레이어는 잠입과 탈출에 대한 전략적 숙련을 통해 환경의 위험과 기회를 예측하며, 단순한 행동보다 더 복잡한 선택과 결과를 경험하게 된다.",
       "coreFun": "플레이어는 작은 지역에서 목적지 알리미를 확인하고, 타겟 계란과 경보 리스크를 식별하는 과정에서, 실제 상태 변화와 피드백을 즉시 경험할 수 있는 핵심 행동을 수행하여, 다음 전략 및 경로를 실제로 달라지는 경험을 반복한다."
+    },
+    "local_authoring_parts::e30a3f0fa815c6179f538a9ee2f483295e6ed645003d04193d22312d3475377f:coreLoop": {
+      "coreLoop": [
+        "INPUT: Player scouts a small area, identifies target egg and environmental risks",
+        "STATE CHANGE: Player gains awareness of environmental hazards while maintaining stealth",
+        "ACTION: Player chooses between stealth or direct confrontation based on threat level",
+        "OUTCOME: Player adapts to new environmental conditions while maintaining low visibility",
+        "NEXT EVENT: Player must navigate through evolving environmental challenges"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 484168,
-      "lastMs": 53634,
+      "totalMs": 539088,
+      "lastMs": 54920,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:23:53.702Z"
+      "updatedAt": "2026-10-10T02:24:48.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:15:49.512Z",
-  "updatedAt": "2026-10-10T02:23:53.704Z",
+  "updatedAt": "2026-10-10T02:24:48.625Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1656,7 +1665,7 @@
   "localAuthoringSplits": {
     "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:23:53.704Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:24:48.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
