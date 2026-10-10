@@ -539,38 +539,25 @@
         "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
         "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다."
       ]
-    },
-    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"name\": \"마을 재건 시설 연동 시스템\", \"playerChoice\": \"즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지\"}"
-      ],
-      "stateOutputs": [
-        "{\"name\": \"마을 재건 시설 연동 시스템\", \"playerChoice\": \"소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 "
-      ],
-      "name": "마을 재건 시설 연동 시스템",
-      "purpose": "던전에서 획득한 고유 건축 목재와 광석을 마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금한다.",
-      "playerChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을 것인지"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1183243,
-      "lastMs": 48814,
+      "totalMs": 1199094,
+      "lastMs": 15851,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:09:41.819Z"
+      "updatedAt": "2026-10-10T10:09:57.671Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T10:09:41.819Z",
+  "updatedAt": "2026-10-10T10:09:57.671Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2245,15 +2232,25 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:09:41.819Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:09:57.671Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
