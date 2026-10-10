@@ -194,25 +194,40 @@
         "인물 역할 확정 -> 정화 공격 -> 라운드 제거 -> 게임 상태 변화",
         "모든 인물 사용 고유 스킬 -> 게임 내부 상태 변화 -> 플레이어 선택 기반 진척"
       ]
+    },
+    "local_authoring_parts::1b1b66a50ead60801f66f3f2dde4ba8c1c2d702bcc6a3b99f6caf2abc01bb3eb:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_immune_transition",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "감염 공격",
+        "인물 역할 확정"
+      ],
+      "stateOutputs": [
+        "고유 스킬 획득",
+        "게임 상태 변화"
+      ],
+      "name": "감염 전환 - 인물 변신 및 고유 스킬 획득",
+      "purpose": "감염된 인간 -> 몬스터로 전환 + 고유 스킬 획득, 정화 공격으로 라운드 제거됨",
+      "playerChoice": "인물 역할 확정 및 고유 스킬 선택 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 490242,
-      "lastMs": 36197,
+      "totalMs": 529165,
+      "lastMs": 38923,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T06:10:47.022Z"
+      "updatedAt": "2026-10-10T06:11:25.947Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:02:36.651Z",
-  "updatedAt": "2026-10-10T06:10:47.022Z",
+  "updatedAt": "2026-10-10T06:11:25.947Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -800,7 +815,7 @@
   "localAuthoringSplits": {
     "5bdf78c2c2cfb3f5b4d4fdb3c12b2e63901b2fa1c614b2f757ac849301efbed2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:10:47.022Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:11:25.947Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
