@@ -1251,7 +1251,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const sourceOriginal=sourceSeed.originalDesignContext?.content||{};
   const brief=JSON.stringify({gameId:sourceSeed.gameId||'',gameName:sourceSeed.gameName||'',coreFun:sourceSeed.CORE_FUN_TO_LEARN||sourceOriginal.coreFun||'',coreLoop:Array.isArray(sourceSeed.CORE_LOOP)?sourceSeed.CORE_LOOP.slice(0,7):[],originalSystems:(sourceOriginal.signatureSystems||[]).slice(0,12).map(row=>({name:row.name,purpose:row.purpose})),mode:sourceSeed.MULTIPLAYER_DESIGN_MODE||sourceSeed.INITIAL_PLAY_MODE||''});
   const authorSystem=localSubfield?String(system).slice(0,1750)+'\n현재 원본 게임에서 MAIN/A/B/C/@의 역할과 실제 상태 입출력을 각각 구별해 저작한다. 이전 역할 복사·가짜 수치·가짜 저장 상태는 금지한다.':system;
-  const authorUser=localSubfield?'OWNER_ORIGINAL='+brief.slice(0,3400)+'\n'+String(user).slice(-5200):user;
+  const sharedRuleLine=localSubfield?String(user).split('\n').find(line=>line.startsWith('SHARED_RULE_ANCHORS='))||'':'';
+  const authorUser=localSubfield?'OWNER_ORIGINAL='+brief.slice(0,3000)+'\n'+sharedRuleLine.slice(0,1400)+'\n'+String(user).slice(-4500):user;
   const prompt=`${authorSystem}\n\n${assetContext}\n\n${authorUser}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
   const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
   predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
