@@ -121,37 +121,48 @@ export async function uploadRobloxHomepageThumbnail({
 
 // 메인: 공식 경험 상세 페이지의 이미지는 홈 개인화 썸네일과 별개로 관리한다.
 // 원본 플레이 영상은 Roblox 네이티브 실제 실행 증거 없이는 게시하지 않는다.
+// 메인: Roblox 공식 서버 미디어를 조회하고 원본에 연결된 이미지만 승인으로 인정한다.
 export async function syncRobloxExperienceDetailMedia({
-  universeId,pngPath,cookie='',skipDuplicateUpload=false,fetchImpl=globalThis.fetch
+  universeId,pngPath,cookie='',skipDuplicateUpload=false,previousMedia={},
+  fetchImpl=globalThis.fetch
 }={}) {
   if(!validId(universeId))throw new Error('ROBLOX_DETAIL_UNIVERSE_INVALID');
-  if(!pngPath||!fs.existsSync(pngPath))throw new Error('ROBLOX_DETAIL_PNG_MISSING');
   const endpoint='https://games.roblox.com/v2/games/'+universeId+'/media?fetchAllExperienceRelatedMedia=true';
-  const observed=await fetchImpl(endpoint,{headers:{accept:'application/json'}});
+  const observed=await fetchImpl(endpoint,{headers:{accept:'application/json'},cache:'no-store'});
   if(!observed.ok)throw new Error('ROBLOX_DETAIL_MEDIA_FETCH_FAILED:HTTP_'+observed.status);
   let payload={};
   try{payload=await observed.json();}catch{throw new Error('ROBLOX_DETAIL_MEDIA_INVALID_JSON');}
   if(!Array.isArray(payload.data))throw new Error('ROBLOX_DETAIL_MEDIA_INVALID_RESPONSE');
   const images=payload.data.filter(row=>row?.assetType==='Image'||row?.assetTypeId===1);
   const videos=payload.data.filter(row=>row?.assetType==='Video'||row?.assetTypeId===33||Boolean(row?.videoHash));
-  let imageStatus=images.length?'EXISTING_GAME_DETAIL_IMAGE':'PENDING_IMAGE_UPLOAD';
+  const approvedImages=images.filter(row=>row?.approved===true);
+  const previousId=clean(previousMedia?.detailImageId);
+  const matched=Boolean(previousId)&&approvedImages.some(row=>clean(row.imageId)===previousId);
+  let detailImageId=previousId||null;
+  let imageStatus=matched?'VERIFIED_GAME_DETAIL_IMAGE'
+    :images.length?'EXISTING_UNBOUND_GAME_DETAIL_IMAGE':'PENDING_IMAGE_UPLOAD';
   if(!images.length&&skipDuplicateUpload){
     imageStatus='AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD';
   }else if(!images.length){
     if(!clean(cookie))throw new Error('ROBLOX_DETAIL_COOKIE_MISSING');
+    if(!pngPath||!fs.existsSync(pngPath))throw new Error('ROBLOX_DETAIL_PNG_MISSING');
     const form=new FormData();
     form.append('Files',new Blob([fs.readFileSync(pngPath)],{type:'image/png'}),path.basename(pngPath));
-    const result=await csrfFetch({
+    const upload=await csrfFetch({
       url:'https://publish.roblox.com/v1/games/'+universeId+'/thumbnail/image',
       cookie,fetchImpl,method:'POST',body:form
     });
-    if(!result.ok)throw new Error('ROBLOX_DETAIL_IMAGE_UPLOAD_FAILED:HTTP_'+result.status);
+    if(!upload.ok)throw new Error('ROBLOX_DETAIL_IMAGE_UPLOAD_FAILED:HTTP_'+upload.status);
+    let submitted={};
+    try{submitted=await upload.json();}catch{}
+    const uploadId=clean(submitted?.imageId||submitted?.assetId||submitted?.thumbnailId||submitted?.id||submitted?.asset?.id);
+    if(validId(uploadId))detailImageId=uploadId;
     imageStatus='SUBMITTED_AWAITING_ROBLOX_MODERATION';
   }
   return Object.freeze({
-    universeId:clean(universeId),
-    imageStatus,verifiedDetailImage:images.some(row=>row.approved===true),
-    existingImageCount:images.length,
+    universeId:clean(universeId),detailImageId,
+    imageStatus,verifiedDetailImage:matched,existingImageCount:images.length,
+    approvedImageCount:approvedImages.length,
     approvedRobloxGameplayVideoCount:videos.filter(row=>row.approved===true).length,
     videoStatus:videos.some(row=>row.approved===true)
       ?'ROBLOX_NATIVE_PLAYBACK_PROOF_STILL_REQUIRED'
@@ -178,6 +189,19 @@ export async function syncRobloxHomepageThumbnail({
   const queue=readJson(path.resolve(root,queuePath));
   const target=resolveRobloxThumbnailTarget({catalog,queue,gameId});
   const validated=validateCanonicalThumbnail({root,target});
+  // 유효한 동일 원본 업로드는 재사용한다. 반복 배포 시 공식 서버 중복 업로드를 피한다.
+  const existing=(queue.items||[]).find(item=>clean(item?.gameId)===target.gameId)?.robloxThumbnailEvidence||{};
+  if(!detailOnly&&existing.verified===true
+    &&clean(existing.gameId)===target.gameId
+    &&clean(existing.universeId)===target.universeId
+    &&clean(existing.placeId)===target.placeId
+    &&clean(existing.sourcePath)===target.source
+    &&clean(existing.sourceSha256)===validated.sha256
+    &&clean(existing.uploadStatus).toLowerCase()==='finished'){
+    if(clean(outputPath))writeJson(path.resolve(root,outputPath),existing);
+    console.log('ROBLOX_THUMBNAIL_REUSED_VALID_OPERATION='+target.gameId);
+    return Object.freeze({...existing,reused:true});
+  }
   const pngPath=path.resolve(root,'.tmp','roblox-thumbnails',target.gameId+'.png');
   const rendered=renderThumbnailPng({sourcePath:validated.sourcePath,outputPath:pngPath,command:renderCommand});
   console.log('ROBLOX_THUMBNAIL_SOURCE='+target.source);
@@ -191,7 +215,9 @@ export async function syncRobloxHomepageThumbnail({
       &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD'].includes(previous.imageStatus);
     const media=await syncRobloxExperienceDetailMedia({
       universeId:target.universeId,pngPath,cookie:robloxCookie,
-      skipDuplicateUpload:samePreviousUpload,fetchImpl
+      skipDuplicateUpload:samePreviousUpload,
+      previousMedia:previous.universeId===target.universeId
+        &&previous.sourceSha256===validated.sha256?previous:{},fetchImpl
     });
     const evidence={
       version:1,gameId:target.gameId,placeId:target.placeId,
