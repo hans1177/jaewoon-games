@@ -85,6 +85,7 @@ import {
   createReusableCreatureMotionPack,
   createCreatureMotionActionRecipe
 } from '../assets/vibe-motion-director.js';
+import {createVibeCommonSkillFxSource,VIBE_COMMON_SKILL_FX_FORMS} from '../assets/vibe-motion-effects-director.js';
 
 
 test('cross-genre career families compose reusable actions, skill phases and genre selection',()=>{
@@ -138,6 +139,42 @@ test('cross-genre career families compose reusable actions, skill phases and gen
   }
   for(const bad of [{family:'INVALID'},{family:'SWORD',path:'INVALID'},{tier:5},{genre:'INVALID'},{bodyPlan:'ARACHNID'}])
     assert.equal(createCommonClassMotionLoadout(bad).valid,false);
+});
+
+
+test('common skill source has independently sampled class and monster VFX without game-rule mutation',()=>{
+  const examples=[
+    ['IAI_FOCUS_BURST','STRIKE','HUMANOID','CONTACT_ARC'],
+    ['BOW_POWER_SHOT','PROJECTILE','HUMANOID','PROJECTILE_RELEASE_TRAIL'],
+    ['ELEMENT_RELEASE','SPELL','HUMANOID','CHANNEL_RUNE'],
+    ['SUMMON_INVOCATION','SUMMON','HUMANOID','SUMMON_GATE'],
+    ['HEAL_RITUAL','HEAL','HUMANOID','HEAL_ORBIT'],
+    ['SHADOW_STEP','STEALTH','HUMANOID','SHADOW_EDGE'],
+    ['RALLY_COMMAND','COMMAND','HUMANOID','SIGNAL_RING'],
+    ['CRAFT_FOCUS','CRAFT','HUMANOID','TOOL_CONTACT_SPARKS'],
+    ['BARGAIN_GESTURE','INTERACTION','HUMANOID','SUBTLE_ACTION_GLOW'],
+    ['WEB_CAST','PROJECTILE','ARACHNID','WEB_SILK_RIBBONS'],
+    ['VENOM_STING','PROJECTILE','ARACHNID_SCORPION','VENOM_TIP_SPARK'],
+    ['PHEROMONE_SIGNAL','SPELL','HEXAPOD_INSECT','PHEROMONE_RADIAL_PARTICLES'],
+    ['BREATH_RELEASE','SPELL','DRACONIC_WINGED','BREATH_CONE_OR_BEAM']
+  ];
+  assert.equal(Object.keys(VIBE_COMMON_SKILL_FX_FORMS).length,9);
+  for(const [id,skillFamily,bodyPlan,shape] of examples){
+    const fx=createVibeCommonSkillFxSource({id,skillFamily,bodyPlan,mobile:true,enemyCount:24});
+    assert.equal(fx.valid,true,id);
+    assert.equal(fx.shape,shape,id);
+    assert.equal(fx.frames.length,6);
+    assert.equal(fx.frames[0].normalizedTime,0);
+    assert.equal(fx.frames[5].normalizedTime,1);
+    assert.ok(fx.frames.some(x=>x.emission>.7));
+    assert.ok(fx.frames.every(x=>x.particleBudget<=fx.particleMaxPerImpact));
+    assert.equal(fx.runtimeVerified,false);
+    assert.equal(fx.productionVerified,false);
+    assert.equal(fx.gameplayMutationAllowed,false);
+    assert.equal(fx.gameplayAuthority,false);
+  }
+  assert.equal(createVibeCommonSkillFxSource({id:'',skillFamily:'SPELL'}).valid,false);
+  assert.equal(createVibeCommonSkillFxSource({id:'SPELL',skillFamily:'UNKNOWN'}).valid,false);
 });
 
 test('creature packs provide distinctive motion action intent, phased skills and articulated pose recipes',()=>{
