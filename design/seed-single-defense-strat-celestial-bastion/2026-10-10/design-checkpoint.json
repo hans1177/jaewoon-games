@@ -440,25 +440,117 @@
         "delveGrowthRule": "실시간 지형 변형과 타워 속성 조합은 방어 선 배치와 자원 최적화 과정에서 즉각적인 파괴 피드백을 제공하여 전술적 깊이를 생성합니다.",
         "finalGameIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다."
       }
+    },
+    "local_authoring_parts::904b3f79eed8cdc9acf0c32d55b775cf24d52fd500e6d26e228e70023646d3ad:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하여, 적의 경로 예측-방어선 구축-자원 최적화라는 핵심 루프를 통해 전략적인 선택을 하게 된다.",
+      "coreFun": "{\"main\": \"실시간 지형 변형 및 타워 속성 조합\", \"a\": {\"system\": \"지형 변형 시스템\", \"material\": \"실시간 지형 높기와 속성 배열 변경\", \"stateChange\": \"지형 높기와 속성 배열 변경으로 경로 최적화\"}, \"b\": {\"system\": \"속성 공명 시스템\", \"material\": \"타워 속성 조합\", \"stateChange\": \"타워 속성 조합으로 효과 증대 및 방어선 구축\"}, \"ab\": {\"causalBridge\": \"지형 높기와 속성 배열의 실시간 반영으로 인식/선택 이중 기능 구현\", \"removalConsequence\": \"보조 장르 제거 시 방어 선 배치 및 자원 최적화 로직 무결성 유지\"}, \"story\": {\"cause\": \"적 웨이브 정보 확인 및 자원 분석\", \"characterConflict\": \"타워 속성 조합 변화에 따른 플레이어 역할 갈등 발생\", \"playerChoice\": \"지형 높기 조절 또는 타워 속성 조합 변경을 통해 전장 상황 재구성\", \"worldChange\": \"전장 상태 변화 → 다음 단계의 적 경로 예측 및 자원 재배분 결정\", \"nextEvent\": \"자원 최적화 과정에서 새로운 타워 기술 연구 및 방어선 강화 실행\"}}"
+    },
+    "local_authoring_parts::34a78d88a0c35d0ff2eb899f2e9885e6721106d3990b1481352fc56de9428e42:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
+        "a": {
+          "system": "지형 변형 시스템",
+          "material": "실시간 지형 변형 및 속성 조합",
+          "materialDomain": "3D 공간",
+          "stateChange": "지형 높기와 속성 배열 변경로 경로 최적화"
+        },
+        "b": {
+          "system": "속성 공명 시스템",
+          "material": "타워 속성 조합",
+          "materialDomain": "유닛 키트",
+          "stateChange": "타워 속성 조합으로 효과 증대 및 방어선 구축"
+        },
+        "abCausality": "지형 변형과 속성 조합에 대한 즉각적 파괴 피드백 발생, 방어 선 배치 및 자원 최적화 과정에서의 창의적 선택 반영됨.",
+        "abEvolution": {
+          "aChangesB": "지형 높기 변경 → 타워 속성 조합 변환로 방어선 재구축",
+          "bChangesA": "타워 속성 조합 변경 → 지형 높기 재설정 및 적 경로 최적화",
+          "lateGameChange": "자원 제약 내에서 창의적인 지형 변형과 속성 조합으로 전략적 선택"
+        },
+        "materialFusion": {
+          "contrast": "실시간 지형 변형 + 유닛 속성 조합 = 전략적 파괴 피드백 시스템",
+          "causalBridge": "지형 높기와 속성 배열의 실시간 반영으로 인식/선택 이중 기능 구현",
+          "removalConsequence": "보조 장르 제거 시 방어 선 배치 및 자원 최적화 로직 무결성 유지"
+        },
+        "storyCausalChain": {
+          "cause": "적 웨이브 정보 확인 및 자원 분석 -> 방어 타워 배치 또는 지형 수정",
+          "characterConflict": "타워 속성 조합 변화에 따른 플레이어 역할 갈등 발생",
+          "playerChoice": "지형 높기 조절 또는 타워 속성 조합 변경을 통해 전장 상황 재구성",
+          "worldChange": "전장 상태 변화 → 다음 단계의 적 경로 예측 및 자원 재배분 결정",
+          "nextEvent": "자원 최적화 과정에서 새로운 타워 기술 연구 및 방어선 강화 실행"
+        },
+        "cThemes": [
+          {
+            "name": "지형 변형",
+            "kind": "MATERIAL",
+            "gameplayEffect": "실시간 전장 상태 변화 및 방어선 재구축"
+          },
+          {
+            "name": "속성 공명",
+            "kind": "MATERIAL",
+            "gameplayEffect": "타워 속성 조합에 따른 효과 증대 및 방어력 강화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "타워 디펜스",
+            "gameplayEffect": "전략적 지형 변형과 속성 조합의 융합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "플레이어 역할",
+            "gameplayEffect": "창의적인 선택이 전장 상황을 뒤바꾸는 과정"
+          }
+        ],
+        "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템의 상호작용으로 인해 플레이어가 창의적으로 전장 상황을 재구축하는 구조를 형성함.",
+        "cWorldAndGameplayEffect": "실시간 지형 변형과 타워 속성 조합은 방어 선 배치와 자원 최적화 과정에서 즉각적인 파괴 피드백을 제공하여 전술적 깊이를 생성합니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "실시간 지형 변형 및 타워 속성 조합",
+            "discovery": "지형 높기 변경 → 타워 속성 조합 변환로 방어선 재구축",
+            "newChoice": "지형 높기 조절 또는 타워 속성 조합 변경"
+          },
+          {
+            "clue": "타워 속성 조합의 시너지 효과",
+            "discovery": "타워 속성 조합 변경 → 지형 높기 재설정 및 적 경로 최적화",
+            "newChoice": "타워 속성 조합 변경 또는 지형 높기 조절"
+          },
+          {
+            "clue": "자원 제약 내에서 창의적인 전략",
+            "discovery": "자원 제약 내에서 창의적인 지형 변형과 속성 조합으로 전략적 선택",
+            "newChoice": "창의적인 지형 변형 및 속성 조합"
+          },
+          {
+            "clue": "전장 상태 변화와 다음 단계 예측",
+            "discovery": "전장 상태 변화 → 다음 단계의 적 경로 예측 및 자원 재배분 결정",
+            "newChoice": "자원 최적화 과정에서 새로운 타워 기술 연구 및 방어선 강화 실행"
+          }
+        ],
+        "delveGrowthRule": "실시간 지형 변형과 타워 속성 조합은 방어 선 배치와 자원 최적화 과정에서 즉각적인 파괴 피드백을 제공하여 전술적 깊이를 생성합니다.",
+        "finalGameIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다."
+      },
+      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하여, 적의 경로 예측-방어선 구축-자원 최적화라는 핵심 루프를 통해 전략적인 선택을 하게 된다.",
+      "coreFun": "{\"main\": \"실시간 지형 변형 및 타워 속성 조합\", \"a\": {\"system\": \"지형 변형 시스템\", \"material\": \"실시간 지형 높기와 속성 배열 변경\", \"stateChange\": \"지형 높기와 속성 배열 변경으로 경로 최적화\"}, \"b\": {\"system\": \"속성 공명 시스템\", \"material\": \"타워 속성 조합\", \"stateChange\": \"타워 속성 조합으로 효과 증대 및 방어선 구축\"}, \"ab\": {\"causalBridge\": \"지형 높기와 속성 배열의 실시간 반영으로 인식/선택 이중 기능 구현\", \"removalConsequence\": \"보조 장르 제거 시 방어 선 배치 및 자원 최적화 로직 무결성 유지\"}, \"story\": {\"cause\": \"적 웨이브 정보 확인 및 자원 분석\", \"characterConflict\": \"타워 속성 조합 변화에 따른 플레이어 역할 갈등 발생\", \"playerChoice\": \"지형 높기 조절 또는 타워 속성 조합 변경을 통해 전장 상황 재구성\", \"worldChange\": \"전장 상태 변화 → 다음 단계의 적 경로 예측 및 자원 재배분 결정\", \"nextEvent\": \"자원 최적화 과정에서 새로운 타워 기술 연구 및 방어선 강화 실행\"}}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1129799,
-      "lastMs": 173225,
+      "totalMs": 1298391,
+      "lastMs": 168592,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:58:30.140Z"
+      "updatedAt": "2026-10-10T11:01:18.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:39:40.109Z",
-  "updatedAt": "2026-10-10T10:58:30.147Z",
+  "updatedAt": "2026-10-10T11:01:18.743Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1738,7 +1830,7 @@
     "904b3f79eed8cdc9acf0c32d55b775cf24d52fd500e6d26e228e70023646d3ad": true,
     "984900b356f2235204f37c319f6ce94857e44c9cff57a62d872b45dc180711da": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:58:30.147Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:01:18.743Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
