@@ -1,0 +1,12 @@
+# 포근섬: 작은 왕국 키우기 — Unity Web Development Floor
+
+- gameId: `cozy-island`
+- canonical source: `unity-games/cozy-island/`
+- WebGL build method: `UnityWebFloorBuild.BuildWeb`
+- future Unity app build method: `UnityWebFloorBuild.Build`
+- BUILD_UP directive: cozy-island-build-up-g1-a0b017c8d73d (generation 1)
+- verified external learning: REQUIRED FIRST, coverage 100% (7/7)
+- readiness gate: `UPPER_PLATFORM_DEVELOPMENT_READY`
+- release/deployment authority: **NO**
+
+Generated from the locked common design and Unity platform profile. This source must still pass real WebGL build, browser play, independent QA, regression, and the seven-domain upper-platform readiness gate.
