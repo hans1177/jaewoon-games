@@ -187,25 +187,32 @@
       },
       "playerFantasy": "곤충 디펜스에서 플레이어는 입력 직후 읽을 수 있는 상태 변화와 피드백을 경험하며, 숙련 과정에서 새로운 전략 선택과 경로를 연출해 진보하는 게임 경험을 만든다.",
       "coreFun": "{\"identity\": \"defender positions based on incoming wave pattern, adapts resource allocation and defensive posture in response to evolving enemy behaviors\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"wave defense\\\",\\n \\\"material\\\": \"defender positioning and resource allocation\\\",\\n \\\"materialDomain\\\": \"placement strategy\\\",\\n \\\"stateChange\\\": \"defender repositioning and resource reallocation\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"enemy behavior\\\",\\n \\\"material\\\": \"enemy type and threat pattern\\\",\\n \\\"materialDomain\\\": \"threat recognition\\\",\\n \\\"stateChange\\\": \"adaptive defensive posture adjustment\\\"\n },\\n \\\"abCausality\\\": \"defender position → enemy threat → adaptive response → new defensive decision\\\",\\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"defender reprim"
+    },
+    "local_authoring_parts::94058792699f68677e62184fb96047a8d385d49fb63453450ec2c694db89b9f0:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT → STATE CHANGE → REWARD/RISE/NEXT CHOICE",
+        "DEFENDER POSITION → ENEMY THREAT → ADAPTIVE RESPONSE → NEW DEFENSE DECISION",
+        "TACTICAL FLEXIBILITY → WORLD STATE EVOLUTION → PLAYSTYLE SHIFT"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 496539,
-      "lastMs": 82393,
+      "totalMs": 553339,
+      "lastMs": 56800,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:24:41.011Z"
+      "updatedAt": "2026-10-10T02:25:37.814Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:16:24.448Z",
-  "updatedAt": "2026-10-10T02:24:41.012Z",
+  "updatedAt": "2026-10-10T02:25:37.814Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1881,7 +1888,7 @@
   "localAuthoringSplits": {
     "c91068217ffdac6acace458dfcb753805539a5fabd5efc1dea48c05e38a4be3d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:41.012Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:25:37.814Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
