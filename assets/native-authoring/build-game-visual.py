@@ -246,7 +246,29 @@ def image_mesh_asset():
         raise RuntimeError('IMAGE_TO_MESH_ENGINE_LICENSE_UNVERIFIED')
     if not os.environ.get('VIBE_TRIPOSR_MODEL_DIR') or not model_config.is_file() or not model_weights.is_file():
         raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED')
+    # TripoSR의 DINO 토크나이저는 HF의 config.json도 호출한다.
+    # 설치할 때 미리 허가한 캐시에 받아 두고 실행 중에는 네트워크 접근을 차단한다.
     interpreter = os.environ.get('VIBE_TRIPOSR_PYTHON', 'python3')
+    expected_source = os.environ.get('VIBE_TRIPOSR_EXPECTED_SOURCE_SHA256', '').lower()
+    expected_weights = os.environ.get('VIBE_TRIPOSR_EXPECTED_WEIGHTS_SHA256', '').lower()
+    if not expected_source or len(expected_source) != 64 or not all(c in '0123456789abcdef' for c in expected_source):
+        raise RuntimeError('IMAGE_TO_MESH_PINNED_SOURCE_HASH_REQUIRED')
+    if not expected_weights or len(expected_weights) != 64 or not all(c in '0123456789abcdef' for c in expected_weights):
+        raise RuntimeError('IMAGE_TO_MESH_PINNED_WEIGHTS_HASH_REQUIRED')
+    actual_source = hashlib.sha256(engine_file.read_bytes()).hexdigest()
+    if actual_source != expected_source:
+        raise RuntimeError('IMAGE_TO_MESH_ENGINE_SOURCE_HASH_MISMATCH')
+    with model_weights.open('rb') as weights_file:
+        weights_sha = hashlib.file_digest(weights_file, 'sha256').hexdigest()
+    if weights_sha != expected_weights:
+        raise RuntimeError('IMAGE_TO_MESH_MODEL_WEIGHTS_HASH_MISMATCH')
+    offline_environment = dict(os.environ)
+    offline_environment.update({
+        'HF_HUB_OFFLINE': '1',
+        'TRANSFORMERS_OFFLINE': '1',
+        'HF_DATASETS_OFFLINE': '1',
+        'HF_HUB_DISABLE_TELEMETRY': '1',
+    })
     with tempfile.TemporaryDirectory(prefix='vibe-image-mesh-') as work:
         command = [
             interpreter, str(engine_file), str(source), '--output-dir', work,
@@ -254,7 +276,7 @@ def image_mesh_asset():
             '--pretrained-model-name-or-path', str(model_home),
         ]
         try:
-            subprocess.run(command, cwd=str(engine_home), check=True,
+            subprocess.run(command, cwd=str(engine_home), check=True, env=offline_environment,
                            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=490)
         except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
             raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED') from exc
@@ -272,16 +294,14 @@ def image_mesh_asset():
                 obj.data.materials.append(MID)
             ASSET_OBJECTS.append(obj)
 
-    # 대용량 가중치를 Blender 메모리로 올리지 않고 파일 스트림에서 해시를 계산한다.
-    with model_weights.open('rb') as weights_file:
-        weights_sha = hashlib.file_digest(weights_file, 'sha256').hexdigest()
     # 원본 이미지와 가중치는 읽기 전용. 해시와 라이선스만 제작 근거로 보존한다.
     IMAGE_PROVENANCE = {
         'engine': 'VAST-AI-Research/TripoSR',
         'engineLicense': 'MIT',
-        'engineSourceSha256': hashlib.sha256(engine_file.read_bytes()).hexdigest(),
+        'engineSourceSha256': actual_source,
         'model': 'stabilityai/TripoSR',
         'modelWeightSha256': weights_sha,
+        'offlineInference': True,
         'inputPath': ARGS.source_image,
         'inputSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'sourceLicense': license_name,
