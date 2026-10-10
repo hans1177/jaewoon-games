@@ -54,7 +54,7 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
       assert.equal(doc.skins.length,1);
       assert.equal(doc.skins[0].joints.length,expected.joints);
       assert.ok(doc.nodes.some(n=>n.mesh===0&&n.skin===0));
-      assert.equal(doc.animations.length,11);
+      assert.equal(doc.animations.length,15);
       assert.ok(doc.animations.some(a=>a.name===expected.signature));
       const ids=new Set(doc.skins[0].joints),primitives=doc.meshes.flatMap(m=>m.primitives);
       assert.ok(primitives.every(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),'actual per-vertex skinned weights');
@@ -73,7 +73,9 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
         const frames=Array.from({length:access.count},(_,i)=>original.readFloatLE(start+i*16));
         assert.ok(Math.max(...frames)-Math.min(...frames)>.001,species+':'+name+' must articulate body');
       }
-      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature];
+      const speciesVariations={"wolf":["WOLF_PACK_POUNCE","WOLF_FLANK_BITE"],"spider":["SPIDER_WEB_CAST","SPIDER_EIGHT_LEG_STAB"],"beetle":["BEETLE_HORN_DASH","BEETLE_SHELL_GUARD"],"golem":["GOLEM_FIST_SMASH","GOLEM_GROUND_STOMP"],"serpent":["SERPENT_VENOM_SPIT","SERPENT_COIL_LUNGE"]};
+      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature,
+        'DODGE_EVADE','GUARD_BRACE',...speciesVariations[species]];
       const distinctMotionTracks=new Set(actionVariants.map(name=>{
         const clip=doc.animations.find(a=>a.name===name),hash=createHash('sha256');
         for(const joint of [1,2,3]){
@@ -86,7 +88,7 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
         }
         return hash.digest('hex');
       }));
-      assert.equal(distinctMotionTracks.size,5,species+' must have five genuinely different attack/skill animations');
+      assert.equal(distinctMotionTracks.size,9,species+' must have nine different attack, defense and skill animations');
       visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
     }
     assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');

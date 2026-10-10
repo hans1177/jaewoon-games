@@ -773,7 +773,7 @@ test('five actual cross-genre creature masters bind 3D skinned action clips whil
     assert.equal(loadout.master.rigJointCount,joints);
     assert.equal(loadout.master.id,'shared-creature-'+species.toLowerCase());
     assert.equal(loadout.master.path,'assets/shared/creature-'+species.toLowerCase()+'.glb');
-    assert.equal(loadout.master.sourceAnimationClips.length,11);
+    assert.equal(loadout.master.sourceAnimationClips.length,15);
     assert.equal(loadout.rigProfile,loadout.master.rigProfile);
     assert.ok(loadout.master.sourceAnimationClips.includes('SKILL_PREPARE'));
     assert.ok(loadout.master.sourceAnimationClips.includes('ATTACK_A'));
@@ -1643,4 +1643,32 @@ test('motion director and Roblox character plan expose the studio-grade suite fo
   assert.equal(roblox.studioGrade.proceduralIk.limbCount,8);
   assert.equal(roblox.procedural.corrections.MULTI_LIMB_CONTACT,true);
   assert.equal(roblox.rootTransformOnlyVisualLocomotionForbidden,true);
+});
+
+test('genre selections bind existing baked career and species clips rather than role names alone',()=>{
+  const samurai=createCommonCareerMotionLoadout({careerId:'KENSEI',genre:'ACTION_RPG',platform:'UNITY'});
+  assert.equal(samurai.master.sourceAnimationCount,19);
+  assert.ok(samurai.sourceGenreClipBindings.attacks.includes('SAMURAI_CRESCENT_CUT'));
+  assert.ok(samurai.sourceGenreClipBindings.defense.includes('SAMURAI_PARRY_RIPOSTE'));
+  const horror=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'HORROR',platform:'WEB'});
+  assert.equal(horror.sourceGenreClipBindings.attacks,undefined);
+  assert.ok(horror.sourceGenreClipBindings.defense.includes('SAMURAI_PARRY_RIPOSTE'));
+  const blacksmith=createCommonCareerMotionLoadout({careerId:'BLACKSMITH',genre:'TYCOON',platform:'SHARED'});
+  assert.ok(blacksmith.sourceGenreClipBindings.interactions.includes('BLACKSMITH_FORGE_REPAIR'));
+  assert.ok(blacksmith.sourceGenreClipBindings.interactions.includes('BLACKSMITH_BUILD_RAISE'));
+  assert.equal(blacksmith.sourceGenreClipBindings.attacks,undefined);
+  const serpent=createCommonMonsterActionLoadout({speciesId:'SERPENT',genre:'SURVIVAL',platform:'UNITY'});
+  assert.ok(serpent.sourceGenreClipBindings.skills.includes('SERPENT_VENOM_SPIT'));
+  assert.ok(serpent.sourceGenreClipBindings.defense.includes('DODGE_EVADE'));
+  const beetle=createCommonMonsterActionLoadout({speciesId:'BEETLE',genre:'HORROR',platform:'WEB'});
+  assert.ok(beetle.sourceGenreClipBindings.defense.includes('BEETLE_SHELL_GUARD'));
+  assert.equal(beetle.sourceGenreClipBindings.attacks,undefined);
+  const ant=createCommonMonsterActionLoadout({speciesId:'ANT',genre:'SURVIVAL',platform:'SHARED'});
+  assert.equal(ant.master,null);
+  assert.ok(Object.values(ant.sourceGenreClipBindings).every(group=>group.length===0));
+  for(const entry of [samurai,horror,blacksmith,serpent,beetle,ant]){
+    assert.equal(entry.productionVerified,false);
+    assert.equal(entry.gameplayAuthority,false);
+    assert.equal(entry.platformNativeAdaptationRequired,true);
+  }
 });
