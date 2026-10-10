@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 색채 노드를 전술적으로 선택해 동기화된 체인을 형성하며, 이로 인해 보드 위의 장애물들을 제거하고 보상을 획득하는 전략적 플레이를 경험해야 한다.",
       "coreFun": "플레이어는 색상 변환 범위와 충전 속도에 대한 전술적 선택을 통해 동기화된 색채 체인을 활성화하고, 연쇄 폭발의 강도와 크기를 결정하여 게임을 진행하게 된다."
+    },
+    "local_authoring_parts::30edae74f77755dd9b6d848f0e7e162ca81b1d18544974b0e739619fdfbb6bd6:coreLoop": {
+      "coreLoop": [
+        "플레이어는 색채 노드 선택에 따른 체인 형성 및 활성화 시 이벤트 발생",
+        "체인이 활성화되어 대규모 연쇄 폭발 발생",
+        "연쇄 폭발 강도와 크기 결정 요소로서의 색상 변환 범위와 충전 속도의 상호작용"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1249093,
-      "lastMs": 84093,
+      "totalMs": 1326019,
+      "lastMs": 76926,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:53:22.274Z"
+      "updatedAt": "2026-10-10T10:54:39.204Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:32:32.938Z",
-  "updatedAt": "2026-10-10T10:53:22.276Z",
+  "updatedAt": "2026-10-10T10:54:39.204Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1830,7 +1837,7 @@
     "0261e09bff40c0423ac75a40a4f4a375f6308669b5c590a537a339a8f242f258": true,
     "612beff329ff030ab7247757467ab51b261903290169fb3053cb1733d66d129a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:53:22.276Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:54:39.204Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
