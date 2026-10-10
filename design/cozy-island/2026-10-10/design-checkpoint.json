@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::0a53a934a86e53ce355f6748dee43ab4f73474241bd159cf099bafc03f1ac337:identity,creativeGrammar": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.",
+      "creativeGrammar": {
+        "mainIdentity": "COOP_기본게임주제_협동왕국성장",
+        "a": {
+          "system": "직접채집",
+          "material": "나무·식량",
+          "materialDomain": "서로 다른 적과 보상을 가진 5개 거점",
+          "stateChange": "직접 채집 -> 주민 자동화 -> 병영/병사 -> 다음 자원 거점 선택 -> 보이는 자동전투 -> 협동 지원 공략"
+        },
+        "b": {
+          "system": "주민자동화",
+          "material": "주민",
+          "materialDomain": "고용된 주민의 생산 직업",
+          "stateChange": "고용 -> 반복 노동 -> 자동화 -> 상태 변화"
+        },
+        "abCausality": "직접 채집 → 주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략",
+        "abEvolution": {
+          "aChangesB": "직접 채집 → 주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략",
+          "bChangesA": "주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략 → 직접 채집",
+          "lateGameChange": "협동 지원 공략 → 해전 → 대형 섬 정복 → 왕국 확장"
+        },
+        "materialFusion": {
+          "contrast": "나무·식량은 월드 노드에서 상호작용해 획득한다.",
+          "causalBridge": "직접 채집 → 주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략",
+          "removalConsequence": "직접 채집 -> 주민 자동화 -> 병영/병사 -> 다음 자원 거점 선택 -> 보이는 자동전투 -> 협동 지원 공략"
+        },
+        "storyCausalChain": {
+          "cause": "직접 채집, NPC 마을, 야생 동물/약탈병, 주민 자동화, 병영/병사, 5개 거점, 자동 전투, 협동 지원",
+          "characterConflict": "주민의 고용과 생산 직업, 병력의 강화와 모집, 자원의 점령 및 확보",
+          "playerChoice": "자원 거점 선택, 자동 전투 실행, 협동 지원 활용",
+          "worldChange": "협동 지원으로 강한 거점 공략, 해전, 대형 섬 정복, 왕국 확장",
+          "nextEvent": "해전 이후 왕국 확장, 새로운 자원 거점 확보"
+        },
+        "cThemes": [
+          {
+            "name": "나무·식량",
+            "kind": "MATERIAL",
+            "gameplayEffect": "월드 노드 상호작용로 획득됨."
+          },
+          {
+            "name": "주민",
+            "kind": "GENRE",
+            "gameplayEffect": "고용된 주민의 생산 직업으로 반복 노동이 자동화됨."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "직접 채집",
+            "gameplayEffect": "월드 노드에서 직접 상호작용하여 자원 획득."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "주민 자동화",
+            "gameplayEffect": "고용된 주민을 생산 직업에 배치하고 반복 노동을 자동화함."
+          }
+        ],
+        "cGenreInterlock": "직접 채집 → 주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략",
+        "cWorldAndGameplayEffect": "협동 지원으로 강한 거점 공략, 해전, 대형 섬 정복, 왕국 확장",
+        "delveDiscoveries": [
+          {
+            "clue": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+            "discovery": "직접 채집 -> 주민 자동화 -> 병영/병사 -> 다음 자원 거점 선택 -> 보이는 자동전투 -> 협동 지원 공략",
+            "newChoice": "자원 거점 선택, 자동 전투 실행, 협동 지원 활용"
+          },
+          {
+            "clue": "주민의 고용과 생산 직업이 자동화되어 반복 노동이 이루어진다.",
+            "discovery": "주민 자동화 -> 병영/병사 -> 다음 자원 거점 선택 -> 보이는 자동전투 -> 협동 지원 공략",
+            "newChoice": "병력 강화, 모집, 전투 활용"
+          },
+          {
+            "clue": "협동 지원으로 강한 거점 공략을 통해 해전 및 대형 섬 정복이 가능하다.",
+            "discovery": "협동 지원 공략 -> 해전 -> 대형 섬 정복 -> 왕국 확장",
+            "newChoice": "해전 수행, 대형 섬 점령, 왕국 확장"
+          },
+          {
+            "clue": "5개 거점을 순차적으로 점령하며 성장감이 이어지며 왕국 확장을 통합한다.",
+            "discovery": "5개 거점 점령 -> 성장 감 -> 왕국 확장",
+            "newChoice": "성장 상태 변화, 왕국 확장"
+          }
+        ],
+        "delveGrowthRule": "협동 지원 → 해전 → 대형 섬 정복 → 왕국 확장; 직접 채집 → 주민 자동화 → 병영/병사 → 다음 자원 거점 선택 → 보이는 자동전투 → 협동 지원 공략",
+        "finalGameIdentity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임."
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300102,
-      "lastMs": 300102,
+      "totalMs": 487601,
+      "lastMs": 187499,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:44:27.273Z"
+      "updatedAt": "2026-10-10T02:47:34.774Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:39:27.152Z",
-  "updatedAt": "2026-10-10T02:44:27.273Z",
+  "updatedAt": "2026-10-10T02:47:34.775Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1438,5 +1525,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "0a53a934a86e53ce355f6748dee43ab4f73474241bd159cf099bafc03f1ac337": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T02:47:34.775Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
