@@ -95,25 +95,117 @@
         "delveGrowthRule": "플레이어 선택 → 전황 변화 → 다음 단계 대비 준비; 보상과 인과 변화를 통해 게임 정체성 확립",
         "finalGameIdentity": "실시간 지형 조작 + 동적인 속성 조합; 타워 디펜스 장르의 고유한 전략적 깊이 제공"
       }
+    },
+    "local_authoring_parts::d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하며, 유닛의 속성을 동적으로 조합하여 적의 경로 예측 및 방어선 구축에 직접 참여할 수 있는 창의적인 선택을 할 수 있습니다.",
+      "coreFun": "지형 길이 변화 → 적 이동 차단/유인; 타워 속성 병합 → 광범위 폭발 또는 느린 이동; 자원 최적화 → 방어 효율 극대화; 플레이어 선택 → 세계 상태 변화; 새로운 기술 연구/강화 → 다음 단계 대비 준비"
+    },
+    "local_authoring_parts::edae8d0187dcbe95566ed9a601eff6398fc23e79666094201d68ec3538735dc2:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 공명 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "천상의 보루 - 타워 디펜스",
+        "a": {
+          "system": "지형 변형 시스템",
+          "material": "실시간 지형 조작",
+          "materialDomain": "2D 그리드",
+          "stateChange": "지형 길이 변화 → 적 이동 차단/유인"
+        },
+        "b": {
+          "system": "속성 공명 시스템",
+          "material": "타워 속성 조합",
+          "materialDomain": "전투 효과",
+          "stateChange": "태그 병합 → 광범위 폭발 또는 느린 이동"
+        },
+        "abCausality": "지형 변형 ↔ 속성 조합; 상호 의존적 상태 교환; 주제: 전략적 자유도, 소재: 게임 정체성, 장르: 타워 디펜스",
+        "abEvolution": {
+          "aChangesB": "지형 변경 → 속성 강화 → 새로운 기술 연구",
+          "bChangesA": "속성 조합 → 타워 강화 → 방어 효율 극대화",
+          "lateGameChange": "자원 최적화 → 선택 확정 → 세계 상태 변화"
+        },
+        "materialFusion": {
+          "contrast": "실시간 지형 조작 vs. 동적인 속성 조합; 인과적으로 연결된 플레이",
+          "causalBridge": "지형 길이 변화 → 적 이동 경로 제어; 속성 조합 → 전투 효과 발생",
+          "removalConsequence": "지형 무효 → 적 유인 실패; 속성 무효 → 전투 부상"
+        },
+        "storyCausalChain": {
+          "cause": "적 웨이브 정보 확인 및 자원 배치 결정",
+          "characterConflict": "타워 속성 조합의 갈등 및 방어 선 구축",
+          "playerChoice": "지형 변형 또는 속성 조합 선택, 보상으로 기술 연구/강화",
+          "worldChange": "전장 상태 변화 → 다음 단계의 더 강력한 적 대비",
+          "nextEvent": "방어선 재구축, 자원 재배열, 새로운 타워 기술 적용"
+        },
+        "cThemes": [
+          {
+            "name": "전략적 자유도",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 창의적 선택에 따른 전황 변화"
+          },
+          {
+            "name": "게임 정체성",
+            "kind": "MATERIAL",
+            "gameplayEffect": "타워 디펜스 장르의 고유한 경험 제공"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "타워 디펜스",
+            "gameplayEffect": "실시간 지형 조작과 동적인 속성 조합을 통한 전략적 깊이"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "창의적 플레이",
+            "gameplayEffect": "플레이어의 선택에 따라 전황 변화"
+          }
+        ],
+        "cGenreInterlock": "타워 디펜스 ↔ 창의적 플레이; 보조 장르 제거 시 방어 선 구축 및 자원 최적화 요구 사항 변경",
+        "cWorldAndGameplayEffect": "지형 변형 → 적 이동 경로 차단/유인; 속성 공명 → 전투 효과 발생",
+        "delveDiscoveries": [
+          {
+            "clue": "지형 길이 변화를 통해 적의 이동 경로 제어",
+            "discovery": "실시간 지형 조작 기술 개발",
+            "newChoice": "지형 변형 또는 속성 조합 선택"
+          },
+          {
+            "clue": "속성 조합 갈등으로 방어선 재구축 필요",
+            "discovery": "타워 속성 강화 및 새로운 기술 연구",
+            "newChoice": "자원 최적화 및 타워 강화 선택"
+          },
+          {
+            "clue": "자원 최적화 후 세계 상태 변화",
+            "discovery": "전장 상태 변화와 다음 단계 대비 준비",
+            "newChoice": "방어선 재구축, 자원 재배열, 새로운 기술 적용"
+          },
+          {
+            "clue": "플레이어 선택에 따른 전황 변화",
+            "discovery": "창의적 플레이 경험 확보",
+            "newChoice": "선택 확정 및 세계 상태 변화"
+          }
+        ],
+        "delveGrowthRule": "플레이어 선택 → 전황 변화 → 다음 단계 대비 준비; 보상과 인과 변화를 통해 게임 정체성 확립",
+        "finalGameIdentity": "실시간 지형 조작 + 동적인 속성 조합; 타워 디펜스 장르의 고유한 전략적 깊이 제공"
+      },
+      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하며, 유닛의 속성을 동적으로 조합하여 적의 경로 예측 및 방어선 구축에 직접 참여할 수 있는 창의적인 선택을 할 수 있습니다.",
+      "coreFun": "지형 길이 변화 → 적 이동 차단/유인; 타워 속성 병합 → 광범위 폭발 또는 느린 이동; 자원 최적화 → 방어 효율 극대화; 플레이어 선택 → 세계 상태 변화; 새로운 기술 연구/강화 → 다음 단계 대비 준비"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 456150,
-      "lastMs": 156049,
+      "totalMs": 517218,
+      "lastMs": 61068,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:47:05.853Z"
+      "updatedAt": "2026-10-10T09:48:06.922Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:39:29.682Z",
-  "updatedAt": "2026-10-10T09:47:05.853Z",
+  "updatedAt": "2026-10-10T09:48:06.924Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1392,7 +1484,7 @@
   "localAuthoringSplits": {
     "d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:47:05.853Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:48:06.924Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
