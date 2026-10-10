@@ -228,25 +228,42 @@
       "name": "Arena Survival Roguelite",
       "purpose": "Player positioning, resource management, and strategic decision-making all influence the outcome of each run.",
       "playerChoice": "Select different upgrade combinations that maximize survivability or combat effectiveness in response to changing enemy density and resource availability."
+    },
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": {
+      "id": "b_arena_survival_roguelite",
+      "grammarRole": "B",
+      "stateInputs": [
+        "playerPosition",
+        "enemyDensity",
+        "resourceAvailability"
+      ],
+      "stateOutputs": [
+        "positionShift",
+        "buildConfiguration",
+        "survivabilityThresholds"
+      ],
+      "name": "Arena Survival Roguelite",
+      "purpose": "Player positioning, resource management, and strategic decision-making influence the outcome of each run.",
+      "playerChoice": "Selecting different upgrade combinations creates varied strategies and position shifts based on current environment and enemy behavior patterns."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1073901,
-      "lastMs": 103563,
+      "totalMs": 1195930,
+      "lastMs": 108502,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:34:15.322Z"
+      "updatedAt": "2026-10-10T06:36:17.357Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:21.375Z",
-  "updatedAt": "2026-10-10T06:34:15.323Z",
+  "updatedAt": "2026-10-10T06:36:17.357Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1962,6 +1979,14 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": [
       {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_arena_survival_roguelite",
+          "a_arena_survival_roguelite"
+        ]
+      },
+      {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
         "grammarRole": "B",
         "previousRuleIds": [
@@ -1980,14 +2005,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": 3
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": 4
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "1a0f8c21398ea31b10d7bc2fbf71f4648cfa8d30a34879fac9826f3b8c9e162a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:34:15.322Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T06:36:17.357Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
