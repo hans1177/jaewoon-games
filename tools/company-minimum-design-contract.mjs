@@ -146,14 +146,14 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
       UNITY:{
         platform:'UNITY',
         inputModel:'Unity Input System 터치·드래그·가상 조이스틱과 원본 행동을 연결한다.',
-        sessionModel:'Unity 모바일 앱 및 WebGL 같은 프로젝트의 세션 재진입·복구를 검증한다.',
+        sessionModel:'동일 원본 Unity 프로젝트의 WebGL 실제 브라우저 세션 진입·재시도·저장 복구를 검증한다.',
         multiplayerRuntime:single?'원본 싱글 진행을 유지하고 불필요한 네트워크 플레이를 강제하지 않는다.':'원본 '+mode+' 규칙을 Unity 쪽 권한 검증·동기화와 동일하게 적용한다.',
-        performanceBudget:'Unity 3D 세계 깊이·카메라·가림을 지키며 Android 및 WebGL 메모리·발열·프레임을 점검한다.',
+        performanceBudget:'Unity WebGL에 실제 3D 메시 월드·캐릭터·깊이·카메라·가림을 유지하고 모바일 브라우저 프레임·메모리를 검증한다.',
         uiUx:'화면 크기와 터치 안전영역에 적응하는 Unity 모바일 HUD를 제공한다.',
         saveAndNetwork:'버전 있는 저장 구조를 사용하고 '+savePolicy+' 의미를 유지한다.',
-        platformContentAdaptation:'공통 게임 규칙을 동일 Unity 프로젝트의 씬·프리팹으로 구현하며 WebGL을 별도 원본으로 만들지 않는다.',
-        internalReleaseTarget:'Unity 네이티브/브라우저 내부 검증 빌드를 별도 QA로 확인한다.',
-        validationEvidence:'실제 Unity WebGL 브라우저 플레이와 네이티브 실행·저장·독립 QA 증거가 별도로 필요하다.'
+        platformContentAdaptation:'기존 공통 규칙을 Unity 네이티브 3D 씬·메시·프리팹으로 구현하고 같은 프로젝트에서 WebGL 빌드를 생성한다. 2D·2.5D 월드는 최종 금지다.',
+        internalReleaseTarget:'Unity WebGL 3D 비공개 브라우저 검증만 진행하며 Unity Android는 오너 홀드를 유지한다.',
+        validationEvidence:'실제 Unity WebGL 3D 메시·카메라·터치·저장·브라우저 플레이와 독립 QA·회귀 증거가 별도로 필요하다.'
       }
     }
   };
