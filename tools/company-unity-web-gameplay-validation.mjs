@@ -297,6 +297,8 @@ try{
     key in enteredRegionState&&String(postRewardState[key])!==String(enteredRegionState[key]));
   if(!Object.keys(enteredRegionState).length||!Object.keys(postRewardState).length||!changedPostRewardKeys.length)
     throw new Error('UNITY_WEB_QA_REAL_GAMEPLAY_STATE_TRANSITION_MISSING');
+  const liveSystemMarkers=markers.slice(combatMarkerStart)
+    .filter(line=>line.includes('JAEWOON_UNITY_WEB_QA SYSTEM_STATE ')&&line.includes('game='+gameId));
   const preciseActionEvidence={
     actionAfterLiveEntry:actions.length>0,
     rewardAfterLiveActions:rewardFirstIndex>=combatMarkerStart,
@@ -588,6 +590,8 @@ try{
       version:1,scenarioId,pass:true,gameId,
       distinctRoute:gameplayStartInput,
       liveActionState:preciseActionEvidence,
+      liveSystemMarkers,
+      systemTraceCaptureWindow:'POST_REAL_USER_INPUT_PRE_RELOAD',
       saveRestoreConfirmed:true,
       secondaryCycleRequired:scenarioId==='regression',
       secondaryCycle:postReloadReplay,
