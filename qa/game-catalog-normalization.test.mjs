@@ -1,3 +1,4 @@
+// 파일명: qa/game-catalog-normalization.test.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -329,6 +330,38 @@ console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconc
 }
 
 assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
+
+// 홈페이지: 실제 로블록스·유니티 원본 프로젝트가 있는 개발 카드 전체를 유지한다.
+{
+  const sourceIds=[
+    'seed-roblox-roleplay-life-avat-brookhaven-rp',
+    'seed-roblox-simulator-tycoon-i-adopt-me',
+    'seed-roblox-story-rpg-adventur-blox-fruits',
+    'seed-roblox-survival-horror-es-doors'
+  ];
+  const sourceCatalog={games:catalog.games.map(game=>structuredClone(game))};
+  normalizeCatalog(sourceCatalog);
+  for(const id of sourceIds){
+    const game=sourceCatalog.games.find(game=>game.id===id);
+    assert(game,'original registered native game must exist: '+id);
+    assert.equal(game.robloxProjectPath,'roblox-games/'+id);
+    assert.equal(game.canonical.sources.roblox.projectPath,'roblox-games/'+id);
+    assert.equal(game.canonical.sources.web.playable,false,'HTML prototype is never promoted');
+  }
+  for(const id of ['bug-defense','amusement-tycoon','daechung-rpg','survival']){
+    const game=sourceCatalog.games.find(game=>game.id===id);
+    assert.equal(game.unityProjectPath,'unity-games/'+id);
+    assert.equal(game.canonical.sources.unity.projectPath,'unity-games/'+id);
+  }
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const ui=vm.runInNewContext(renderer+';({developmentRows,setExposure(value){platformExposure=value}})',{
+    document:{readyState:'loading',addEventListener(){}}
+  });
+  ui.setExposure({unityWebEnabled:true,games:[]});
+  const cards=ui.developmentRows(sourceCatalog,{});
+  assert.equal(cards.length,sourceCatalog.games.length,'all native-source game cards are shown without claiming release');
+  assert.equal(new Set(Array.from(cards,game=>game.id)).size,sourceCatalog.games.length);
+}
 
 // Cover bytes, titles and per-game typography must survive the canonical/runtime merge.
 {
