@@ -7,7 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
@@ -2316,7 +2316,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const availableCareerRecipes=registeredCareerAsset?.availableCareerMotionRecipes||[];
   // 공용 클립은 원본 1개 + 모션 1개 단위로 승인한다. 14개 후보를 한 작업에 일괄 실행하지 않는다.
   const validCareerPath=requestedCareerId
-    ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED'}).careerPath:[];
+    ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED',
+      bodyPlan:clean(task?.characterBodyPlan||task?.bodyPlan)||'HUMANOID',
+      rigProfile:clean(task?.characterRigProfile||task?.rigProfile)||'HUMANOID'}).careerPath:[];
   const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length&&(requestedCareerId||requestedCareerClip)
     ?availableCareerRecipes.filter(recipe=>
       (!requestedCareerClip||recipe.clipId===requestedCareerClip)
@@ -2325,8 +2327,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   requestedCareerCandidates.sort((a,b)=>
     validCareerPath.indexOf(clean(b.careerId).toUpperCase())-validCareerPath.indexOf(clean(a.careerId).toUpperCase())
     ||clean(a.id).localeCompare(clean(b.id)));
-  if(requestedCareerClip&&(!availableCareerRecipes.some(recipe=>recipe.clipId===requestedCareerClip)
-    ||(requestedCareerId&&requestedCareerCandidates.length===0&&!declaredTaskRecipes.length)))
+  if(requestedCareerClip&&!declaredTaskRecipes.length&&(!availableCareerRecipes.some(recipe=>recipe.clipId===requestedCareerClip)
+    ||(requestedCareerId&&requestedCareerCandidates.length===0)))
     throw new Error('COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED:'+requestedCareerClip);
   const selectedCareerRecipe=requestedCareerCandidates[0]||null;
   const explicitRecipeRows=selectedCareerRecipe?[selectedCareerRecipe]:declaredTaskRecipes;
@@ -4190,18 +4192,22 @@ export function buildVibeAssetProductionPlan({
   });
   // 기존 GRAPHICS_PRODUCTION 플래너가 공용 계열·종족의 동작 원본을 장르별로 요청한다.
   // 게임별 판정/체력/쿨다운과 저장은 건드리지 않는다. 알 수 없는 장르는 자동으로 RPG로 바꾸지 않는다.
-  const sharedMotionGenre=clean(task.commonMotionGenre||task.genre||task.gameplayGenre).toUpperCase();
+  const sharedMotionGenre=resolveCommonMotionGenre(task.commonMotionGenre||task.genre||task.gameplayGenre);
   const sharedCareerId=clean(task.commonCareerId).toUpperCase();
   const sharedSpeciesId=clean(task.commonMonsterSpeciesId).toUpperCase();
   const sharedMotionGenreValid=Boolean(COMMON_GENRE_MOTION_CONTEXTS[sharedMotionGenre]);
   const sharedMotionCareer=sharedCareerId&&sharedMotionGenreValid
     ?createCommonCareerMotionLoadout({
       careerId:sharedCareerId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+      bodyPlan:task.characterBodyPlan||task.bodyPlan||'HUMANOID',
+      rigProfile:task.characterRigProfile||task.rigProfile||'HUMANOID',
+      weaponFamily:task.characterWeaponFamily||'',
       styleFamily:task.styleFamily||'STYLIZED_FANTASY'
     }):null;
   const sharedMotionMonster=sharedSpeciesId&&sharedMotionGenreValid
     ?createCommonMonsterActionLoadout({
       speciesId:sharedSpeciesId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+      bodyPlan:task.monsterBodyPlan||'',rigProfile:task.monsterRigProfile||'',
       styleFamily:task.styleFamily||'STYLIZED_FANTASY'
     }):null;
   const sharedMotionRequestState=(sharedCareerId||sharedSpeciesId)
