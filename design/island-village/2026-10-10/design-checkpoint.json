@@ -370,25 +370,38 @@
       "name": "Gather a focused set of island resources",
       "purpose": "To collect and store essential resources for future construction and improvement",
       "playerChoice": "Choose specific island resources to focus on for the current turn"
+    },
+    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Resources collected and stored in village storage system"
+      ],
+      "stateOutputs": [
+        "Select new building material or method"
+      ],
+      "name": "Gather a focused set of island resources",
+      "purpose": "Enable structural development through resource collection",
+      "playerChoice": "Select new building material or method"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1043735,
-      "lastMs": 76659,
+      "totalMs": 1141998,
+      "lastMs": 98263,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:01:53.367Z"
+      "updatedAt": "2026-10-10T02:03:31.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T02:01:53.367Z",
+  "updatedAt": "2026-10-10T02:03:31.632Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2121,7 +2134,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:01:53.367Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:03:31.632Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
