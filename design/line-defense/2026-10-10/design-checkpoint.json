@@ -134,25 +134,40 @@
       "name": "Battlefield Layout and Economic Management System",
       "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
       "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
+    },
+    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "defensiveStrategyAdaptation",
+        "resourceAllocationDecision"
+      ],
+      "stateOutputs": [
+        "newDefensiveStrategyImplementation",
+        "adjustedResourceBudget"
+      ],
+      "name": "Battlefield Layout and Economic Management System",
+      "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
+      "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 440611,
-      "lastMs": 67507,
+      "totalMs": 506916,
+      "lastMs": 66305,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:45:56.943Z"
+      "updatedAt": "2026-10-10T02:47:03.249Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:45:56.943Z",
+  "updatedAt": "2026-10-10T02:47:03.249Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1858,7 +1873,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:45:56.943Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:47:03.249Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
