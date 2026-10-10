@@ -90,31 +90,28 @@ test('system AI edits only assigned system file and leaves completion for superv
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
-test('system AI may edit explicitly assigned game source only as an isolated reviewed candidate',async()=>{
+test('system AI rejects assigned game source edits and leaves the original intact',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
     write('web-games/demo/index.html','x');
-    write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'implement assigned gameplay change',responsibleFiles:['web-games/demo/index.html'],acceptanceCriteria:['assigned game source changes']}));
-    write('response.json',JSON.stringify({summary:'update assigned game source',edits:[{path:'web-games/demo/index.html',find:'x',replace:'y'}],newFiles:[],recommendedTests:['game-specific QA'],risks:[]}));
-    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
-    assert.equal(fs.readFileSync('web-games/demo/index.html','utf8'),'y');
-    assert.equal(result.gameSourceWrite,true);
-    assert.equal(result.gameSourceWriteMode,'ISOLATED_ASSIGNED_CANDIDATE_ONLY');
-    assert.equal(result.workerSelfAcceptance,false);
-    assert.equal(result.supervisorReviewRequired,true);
-    assert.equal(result.learningCandidate,true);
-    assert.equal(result.learningRoute,'EXISTING_VIBE_LEARNING_MOTOR');
+    write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'implement assigned gameplay change',responsibleFiles:['web-games/demo/index.html']}));
+    write('response.json',JSON.stringify({summary:'unapproved game source change',edits:[{path:'web-games/demo/index.html',find:'x',replace:'y'}]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'}),/SYSTEM_AI_GAME_SOURCE_WRITE_FORBIDDEN/);
+    assert.equal(fs.readFileSync('web-games/demo/index.html','utf8'),'x');
+    assert.equal(fs.existsSync('result.json'),false);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
-test('system AI still refuses unassigned game source edits',async()=>{
+test('system AI rejects unassigned game source edits at preflight, including all supported game roots',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
-    write('web-games/demo/index.html','x');
-    write('web-games/other/index.html','a');
-    write('task.json',JSON.stringify({id:'scoped-game-dev',status:'running',goal:'only demo',responsibleFiles:['web-games/demo/index.html']}));
-    write('response.json',JSON.stringify({summary:'bad scope expansion',edits:[{path:'web-games/other/index.html',find:'a',replace:'b'}],newFiles:[],recommendedTests:[],risks:[]}));
-    await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_UNASSIGNED_FILE/);
+    for(const prefix of ['web-games','roblox-games','unity-games','unreal-games','godot-games']){
+      const target=`${prefix}/demo/main.txt`;
+      write(target,'protected');
+      write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'game source repair',responsibleFiles:[target]}));
+      await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_GAME_SOURCE_WRITE_FORBIDDEN/);
+      assert.equal(fs.readFileSync(target,'utf8'),'protected');
+    }
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
