@@ -716,6 +716,28 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             const header=fs.readFileSync(videoFile).subarray(0,12);
             if(header.length<12||header.toString('ascii',4,8)!=='ftyp')
               throw new Error('NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID:'+clean(recipe?.id));
+            // [VIDEO QA] Container header and file hash are insufficient: decode real frames.
+            let videoProbe;
+            try{
+              videoProbe=JSON.parse(execFileSync(clean(process.env.VIBE2_FFPROBE_BINARY)||'ffprobe',[
+                '-v','error','-count_frames',
+                '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+                '-of','json','-i',videoFile
+              ],{cwd,encoding:'utf8',timeout:60000,maxBuffer:1024*1024,stdio:['ignore','pipe','pipe']}));
+            }catch(error){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED:'+clean(recipe?.id)+':'+clean(error?.code||'DECODE_FAILED'));
+            }
+            const streams=Array.isArray(videoProbe?.streams)?videoProbe.streams:[];
+            const stream=streams.find(row=>row.codec_type==='video');
+            const rate=clean(stream?.r_frame_rate).split('/').map(Number);
+            const decodedFps=rate.length===2&&rate[1]>0?rate[0]/rate[1]:0;
+            const decodedDuration=Number(videoProbe?.format?.duration);
+            if(streams.length!==1||stream?.codec_name!=='mpeg4'
+              ||stream?.width!==resolution||stream?.height!==resolution
+              ||Number(stream?.nb_read_frames)!==24||Math.abs(decodedFps-12)>0.001
+              ||!Number.isFinite(decodedDuration)||Math.abs(decodedDuration-2)>0.1){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID:'+clean(recipe?.id));
+            }
           }
         }
 
