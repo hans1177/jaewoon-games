@@ -2424,7 +2424,7 @@ export function buildGameSpecificBuildUpDirective({
   let availableLibraryPaths=[];
   try{
     availableLibraryPaths=fs.readdirSync(path.join(repoRoot,'assets'),{withFileTypes:true})
-      .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\\.js$/i.test(entry.name))
+      .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
       .map(entry=>'assets/'+entry.name).sort();
   }catch{}
   const productionPlan=buildRobloxProductionPlan({
