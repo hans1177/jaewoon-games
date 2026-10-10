@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::b09c1758ae1d280a4a3601ff6304e88fb8675d6891056a434cbf880cf1b36047:identity,creativeGrammar": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "기본 게임 주제/정체성: 작은 세계에서 살아남는 생존 게임",
+        "a": {
+          "system": "게임 시스템+해당 축 창작 소재: 생명, 자원, 전투, 이동, 위협",
+          "material": "신화, 역사, 철학, 과학, 예술 등 제한 없음",
+          "materialDomain": "생명, 자원, 전투, 이동, 위협",
+          "stateChange": "생물의 진입, 자원 수집, 위협 회피, 전략 수립"
+        },
+        "b": {
+          "system": "다른 시스템+해당 축 창작 소재: 적, 경로, 목표, 보상, 장비",
+          "material": "신화, 역사, 철학, 과학, 예술 등 제한 없음",
+          "materialDomain": "적, 경로, 목표, 보상, 장비",
+          "stateChange": "적 상대, 경로 선택, 목표 달성, 보상 획득"
+        },
+        "abCausality": "양방향 실제 상태 교환: 생물의 진입 -> 적 상대 -> 경로 선택 -> 목표 달성 -> 보상 획득",
+        "abEvolution": {
+          "aChangesB": "적 상대 변화, 경로 선택 변화, 목표 달성 변화, 보상 획득 변화",
+          "bChangesA": "생물의 진입 변화, 경로 선택 변화, 목표 달성 변화, 보상 획득 변화",
+          "lateGameChange": "생물의 진입과 경로 선택이 새로운 규칙으로 바뀌는 조건과 피드백"
+        },
+        "materialFusion": {
+          "contrast": "원인 → 인물 갈등 → 플레이어 선택 → 실질 세계 상태 변화 → 다음 사건",
+          "causalBridge": "플레이어 선택은 원인과 인물 갈등을 통해 세계 상태를 변화시킨다.",
+          "removalConsequence": "보조 장르 제거 시 게임 규칙과 플레이어 선택이 바뀐다."
+        },
+        "storyCausalChain": {
+          "cause": "생물의 진입, 자원 수집, 위협 회피, 전략 수립",
+          "characterConflict": "적 상대, 경로 선택, 목표 달성, 보상 획득",
+          "playerChoice": "적 상대 대응, 경로 선택, 목표 달성, 보상 획득",
+          "worldChange": "생물의 진입 -> 적 상대 -> 경로 선택 -> 목표 달성 -> 보상 획득",
+          "nextEvent": "전략 수립, 보상 획득, 경로 변경, 새로운 규칙 생성"
+        },
+        "cThemes": [
+          {
+            "name": "생명",
+            "kind": "MATERIAL",
+            "gameplayEffect": "생물의 진입, 자원 수집, 위협 회피, 전략 수립"
+          },
+          {
+            "name": "자원",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자원 수집, 이동, 전투, 위협 회피"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "생물의 진입, 자원 수집, 위협 회피, 전략 수립"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "전략",
+            "gameplayEffect": "경로 선택, 목표 달성, 보상 획득, 전략 수립"
+          }
+        ],
+        "cGenreInterlock": "보조 장르 제거 시 게임 규칙과 플레이어 선택이 바뀐다.",
+        "cWorldAndGameplayEffect": "생물의 진입 -> 적 상대 -> 경로 선택 -> 목표 달성 -> 보상 획득",
+        "delveDiscoveries": [
+          {
+            "clue": "생물의 진입, 자원 수집, 위협 회피, 전략 수립",
+            "discovery": "적 상대 대응, 경로 선택, 목표 달성, 보상 획득",
+            "newChoice": "전략 수립, 보상 획득, 경로 변경, 새로운 규칙 생성"
+          },
+          {
+            "clue": "자원 수집, 이동, 전투, 위협 회피",
+            "discovery": "적 상대 대응, 경로 선택, 목표 달성, 보상 획득",
+            "newChoice": "전략 수립, 보상 획득, 경로 변경, 새로운 규칙 생성"
+          },
+          {
+            "clue": "생명, 자원, 전투, 이동, 위협",
+            "discovery": "적 상대 대응, 경로 선택, 목표 달성, 보상 획득",
+            "newChoice": "전략 수립, 보상 획득, 경로 변경, 새로운 규칙 생성"
+          },
+          {
+            "clue": "생존, 전략, 조합, 숙련",
+            "discovery": "보상 획득, 경로 변경, 새로운 규칙 생성",
+            "newChoice": "전략 수립, 보상 획득, 경로 변경, 새로운 규칙 생성"
+          }
+        ],
+        "delveGrowthRule": "플레이어 선택은 원인과 인물 갈등을 통해 세계 상태를 변화시킨다.",
+        "finalGameIdentity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다."
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 270002,
-      "lastMs": 270002,
+      "totalMs": 465226,
+      "lastMs": 195224,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:26:40.790Z"
+      "updatedAt": "2026-10-10T10:29:56.015Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:22:10.686Z",
-  "updatedAt": "2026-10-10T10:26:40.790Z",
+  "updatedAt": "2026-10-10T10:29:56.015Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1753,5 +1840,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "b09c1758ae1d280a4a3601ff6304e88fb8675d6891056a434cbf880cf1b36047": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T10:29:56.015Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
