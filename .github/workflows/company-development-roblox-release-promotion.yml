@@ -1361,6 +1361,38 @@ jobs:
             echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS'
           fi
 
+      - name: Publish exact game image to Roblox experience detail page
+        working-directory: main
+        env:
+          GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/roblox-detail-evidence
+          media_failed=()
+          for game_id in $GAME_IDS; do
+            echo "ROBLOX_DETAIL_MEDIA_START=$game_id"
+            if node tools/company-roblox-thumbnail-sync.mjs \
+              --detail-only=true \
+              --game-id="$game_id" \
+              --catalog=game-catalog.json \
+              --queue=../runtime/development-queue.json \
+              --output=".tmp/roblox-detail-evidence/$game_id.json"; then
+              echo "ROBLOX_DETAIL_MEDIA_EVIDENCE_WRITTEN=$game_id"
+            else
+              media_failed+=("$game_id")
+              echo "ROBLOX_DETAIL_MEDIA_REPAIR_REQUIRED=$game_id"
+            fi
+          done
+          if [ "${#media_failed[@]}" -ne 0 ]; then
+            echo "ROBLOX_DETAIL_MEDIA_INCOMPLETE_GAMES=${media_failed[*]}"
+          else
+            echo 'ROBLOX_DETAIL_MEDIA_IMAGE_SYNC_SUBMITTED_OR_EXISTING'
+          fi
+          echo 'ROBLOX_DETAIL_GAMEPLAY_VIDEO_IS_NOT_WEB_COMPANION=YES'
+
       - name: Persist verified thumbnail evidence to runtime
         working-directory: main
         env:
@@ -1375,6 +1407,11 @@ jobs:
           if [ "${#evidence_files[@]}" -gt 0 ]; then
             cp "${evidence_files[@]}" /tmp/roblox-thumbnail-evidence/
           fi
+          mkdir -p /tmp/roblox-detail-evidence
+          detail_files=(.tmp/roblox-detail-evidence/*.json)
+          if [ "${#detail_files[@]}" -gt 0 ]; then
+            cp "${detail_files[@]}" /tmp/roblox-detail-evidence/
+          fi
           for attempt in 1 2 3 4 5; do
             git -C ../runtime fetch --no-tags origin "$RUNTIME_BRANCH"
             git -C ../runtime reset --hard "origin/$RUNTIME_BRANCH"
@@ -1384,17 +1421,25 @@ jobs:
           const queue=JSON.parse(fs.readFileSync(queuePath,'utf8').replace(/^\uFEFF/,''));
           let latest=queue.updatedAt||null;
           for(const gameId of String(process.env.GAME_IDS||'').trim().split(/\s+/).filter(Boolean)){
-            const evidencePath='/tmp/roblox-thumbnail-evidence/'+gameId+'.json';
-            if(!fs.existsSync(evidencePath)){
-              console.log('ROBLOX_THUMBNAIL_EVIDENCE_SKIPPED_NON_BLOCKING='+gameId);
+            const thumbnailPath='/tmp/roblox-thumbnail-evidence/'+gameId+'.json';
+            const detailPath='/tmp/roblox-detail-evidence/'+gameId+'.json';
+            if(!fs.existsSync(thumbnailPath)&&!fs.existsSync(detailPath)){
+              console.log('ROBLOX_MEDIA_EVIDENCE_SKIPPED_NON_BLOCKING='+gameId);
               continue;
             }
-            const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
             const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
-            if(!item)throw new Error('ROBLOX_THUMBNAIL_RUNTIME_ITEM_MISSING:'+gameId);
-            item.robloxThumbnailEvidence=evidence;
-            item.updatedAt=evidence.uploadedAt;
-            if(!latest||Date.parse(evidence.uploadedAt)>Date.parse(latest))latest=evidence.uploadedAt;
+            if(!item)throw new Error('ROBLOX_MEDIA_RUNTIME_ITEM_MISSING:'+gameId);
+            for(const [file,field] of [[thumbnailPath,'robloxThumbnailEvidence'],[detailPath,'robloxDetailMediaEvidence']]){
+              if(!fs.existsSync(file))continue;
+              const evidence=JSON.parse(fs.readFileSync(file,'utf8'));
+              if(String(evidence.gameId||'')!==gameId)throw new Error('ROBLOX_MEDIA_GAME_ID_MISMATCH:'+gameId);
+              item[field]=evidence;
+              const stamp=evidence.uploadedAt||evidence.checkedAt;
+              if(stamp){
+                item.updatedAt=stamp;
+                if(!latest||Date.parse(stamp)>Date.parse(latest))latest=stamp;
+              }
+            }
           }
           queue.updatedAt=latest||new Date().toISOString();
           fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
