@@ -194,41 +194,25 @@
         "게임 규칙 변경 시 세계 상태 변화 인식 → 새로운 선택 및 게임 진행 방향 재설정",
         "중후반 두 시스템 간 관계 변화 및 피드백 제공"
       ]
-    },
-    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_early_choice",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "생존 기록: 0일차, 무기 선택: 기본 무기",
-        "플레이어 선택: 첫 번째 시스템 진입"
-      ],
-      "stateOutputs": [
-        "세계 상태: 생존 기록 1개, 무기 종류 변경됨",
-        "플레이어 행동: 초기 전투 전략 결정",
-        "보상: 경험치 + 기본 무기 확률 증가"
-      ],
-      "name": "초기 무기 선택",
-      "purpose": "플레이어의 첫 번째 선택에 따른 세계 상태 변화 및 보상 제공",
-      "playerChoice": "무기 선택(기본 무기)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 906121,
-      "lastMs": 39899,
+      "totalMs": 916900,
+      "lastMs": 10779,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:50:44.764Z"
+      "updatedAt": "2026-10-10T10:50:55.545Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:35:38.613Z",
-  "updatedAt": "2026-10-10T10:50:44.764Z",
+  "updatedAt": "2026-10-10T10:50:55.545Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1960,14 +1944,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": 1
+    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": 2
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:50:44.764Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:50:55.545Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
