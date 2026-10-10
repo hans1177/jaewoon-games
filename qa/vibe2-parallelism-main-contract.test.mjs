@@ -134,7 +134,7 @@ test('repeat development is fixed at 128 while physical provider capacity and co
   assert.equal(architectureRegressionPreflight.contractIdentity,'EXACT_RESERVE_MAIN_SHA');
   assert.equal(architectureRegressionPreflight.failureAction,'BLOCK_RESERVATION_BEFORE_GAME_WORKERS');
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION/);
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
