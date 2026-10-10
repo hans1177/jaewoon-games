@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "unity-web-monster-adventure-enable-native-animation-module-20261010",
+  "requestId": "owner-monster-adventure-real-library-mesh-materials-unity3d-20261010",
   "gameId": "monster-adventure",
   "projectPath": "unity-games/monster-adventure",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
@@ -13,5 +13,8 @@
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
   "homepageCardVisibleRegardlessOfBuildResult": true,
-  "repairCause": "SOURCE_USES_NATIVE_ANIMATOR_BUILTIN_ANIMATION_MODULE_NOW_ENABLED"
+  "repairCause": "NATIVE_ASSET_BINDING_PREVIOUSLY_MISSING_AND_PRIMITIVE_PLACEHOLDERS",
+  "assetBindingAuthority": "EXISTING_LIBRARY_MESH_AND_MTL_TO_UNITY_SCENE",
+  "visualRuntimeProof": "REQUIRED_AFTER_WEBGL_BUILD",
+  "noStudioQualityPassClaim": true
 }
