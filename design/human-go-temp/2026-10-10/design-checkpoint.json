@@ -245,25 +245,191 @@
       "name": "Arena Survival Roguelite",
       "purpose": "Player positioning, resource management, and strategic decision-making influence the outcome of each run.",
       "playerChoice": "Selecting different upgrade combinations creates varied strategies and position shifts based on current environment and enemy behavior patterns."
+    },
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": {
+      "id": "delve_arena_survival_roguelite",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "positionShift",
+        "buildConfiguration",
+        "survivabilityThresholds"
+      ],
+      "stateOutputs": [
+        "playerPosition",
+        "enemyDensity",
+        "resourceAvailability"
+      ],
+      "name": "Arena Survival Roguelite - Dynamic Positioning & Strategic Evolution",
+      "purpose": "Enables player-driven adaptive positioning, resource allocation, and build progression in a real-time survival context.",
+      "playerChoice": "Selects different upgrade combinations to maximize survivability or combat effectiveness based on current position and available resources."
+    },
+    "local_authoring_parts::ddb49ff1a461e8cead628c69439b13c909e4bffede25ec6bd496313bb2ed75ad:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "main_arena_survival_roguelite",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "stateOutputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Dynamic positioning, resource management, and strategic decision-making influence game outcome",
+          "playerChoice": "Selecting different upgrade combinations creates varied strategies for survival and combat efficiency"
+        },
+        {
+          "id": "a_arena_survival_roguelite",
+          "grammarRole": "A",
+          "stateInputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "stateOutputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Player positioning, resource management, and strategic decision-making all influence the outcome of each run.",
+          "playerChoice": "Select different upgrade combinations that maximize survivability or combat effectiveness in response to changing enemy density and resource availability."
+        },
+        {
+          "id": "b_arena_survival_roguelite",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "stateOutputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Player positioning, resource management, and strategic decision-making influence the outcome of each run.",
+          "playerChoice": "Selecting different upgrade combinations creates varied strategies and position shifts based on current environment and enemy behavior patterns."
+        },
+        {
+          "id": "delve_arena_survival_roguelite",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "stateOutputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "name": "Arena Survival Roguelite - Dynamic Positioning & Strategic Evolution",
+          "purpose": "Enables player-driven adaptive positioning, resource allocation, and build progression in a real-time survival context.",
+          "playerChoice": "Selects different upgrade combinations to maximize survivability or combat effectiveness based on current position and available resources."
+        }
+      ]
+    },
+    "local_authoring_parts::faca7d41dd57b8d61f6f7f9bd5fdb829ece3f3cb2ae32d7f23919ea97329fb46:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "플레이어 위치 동적으로 변환하여 적 압박에 대한 전략적 결정 및 자원 배분을 유도",
+        "초기 설정에서 특정 위치로 정해져 있으며, 적 밀도와 자원 부족 상황에 따라 움직임이 변경됨"
+      ],
+      "signatureSystems": [
+        {
+          "id": "main_arena_survival_roguelite",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "stateOutputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Dynamic positioning, resource management, and strategic decision-making influence game outcome",
+          "playerChoice": "Selecting different upgrade combinations creates varied strategies for survival and combat efficiency"
+        },
+        {
+          "id": "a_arena_survival_roguelite",
+          "grammarRole": "A",
+          "stateInputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "stateOutputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Player positioning, resource management, and strategic decision-making all influence the outcome of each run.",
+          "playerChoice": "Select different upgrade combinations that maximize survivability or combat effectiveness in response to changing enemy density and resource availability."
+        },
+        {
+          "id": "b_arena_survival_roguelite",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "stateOutputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "name": "Arena Survival Roguelite",
+          "purpose": "Player positioning, resource management, and strategic decision-making influence the outcome of each run.",
+          "playerChoice": "Selecting different upgrade combinations creates varied strategies and position shifts based on current environment and enemy behavior patterns."
+        },
+        {
+          "id": "delve_arena_survival_roguelite",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "positionShift",
+            "buildConfiguration",
+            "survivabilityThresholds"
+          ],
+          "stateOutputs": [
+            "playerPosition",
+            "enemyDensity",
+            "resourceAvailability"
+          ],
+          "name": "Arena Survival Roguelite - Dynamic Positioning & Strategic Evolution",
+          "purpose": "Enables player-driven adaptive positioning, resource allocation, and build progression in a real-time survival context.",
+          "playerChoice": "Selects different upgrade combinations to maximize survivability or combat effectiveness based on current position and available resources."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1397716,
-      "lastMs": 99810,
+      "totalMs": 1495647,
+      "lastMs": 97931,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:39:39.147Z"
+      "updatedAt": "2026-10-10T06:41:17.083Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:21.375Z",
-  "updatedAt": "2026-10-10T06:39:39.150Z",
+  "updatedAt": "2026-10-10T06:41:17.085Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1976,28 +2142,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_arena_survival_roguelite",
-          "a_arena_survival_roguelite",
-          "b_arena_survival_roguelite"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_arena_survival_roguelite",
-          "a_arena_survival_roguelite",
-          "b_arena_survival_roguelite"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": 4,
     "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": 2
@@ -2006,8 +2151,8 @@
   "localAuthoringSplits": {
     "1a0f8c21398ea31b10d7bc2fbf71f4648cfa8d30a34879fac9826f3b8c9e162a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:39:39.147Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T06:41:17.085Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
