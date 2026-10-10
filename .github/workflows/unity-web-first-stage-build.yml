@@ -446,6 +446,7 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4187 \
+            --scenario=actual-play \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-gameplay-validation.json" \
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
@@ -463,6 +464,7 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4188 \
+            --scenario=independent-qa \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-independent-qa.json" \
             --screenshot="/tmp/unity-web/independent-qa-mobile.png"
 
@@ -480,6 +482,7 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4189 \
+            --scenario=regression \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-regression.json" \
             --screenshot="/tmp/unity-web/regression-mobile.png"
 
@@ -575,7 +578,8 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
-          import {evaluateUnityWebBuildUpGrowth} from './tools/company-upper-platform-admission.mjs';
+          import {evaluateUnityWebBuildUpGrowth,evaluateUnityWebPrecisionQa,
+            auditUnityWebNativeSystems} from './tools/company-upper-platform-admission.mjs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
           const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
@@ -655,14 +659,31 @@ jobs:
             &&fs.existsSync(path.join(root,'unity-web-deploy-manifest.json'));
           const actualPlayPass=play.pass===true&&play.mobile?.pass===true&&play.coreFun?.pass===true;
           const designSource=String(item.minimumDesignContract?.source||'');
-          let multiplayerRequired=false;
+          let multiplayerRequired=false,verifiedDesignRecord=null;
           if(designSource){
             try{
-              const raw=JSON.parse(execFileSync('git',['show','origin/company-runtime:'+designSource],{encoding:'utf8'}));
-              const mode=String(raw?.content?.multiplayerMode||'').toUpperCase();
+              verifiedDesignRecord=JSON.parse(execFileSync('git',['show',
+                'origin/company-runtime:'+designSource],{encoding:'utf8',maxBuffer:16*1024*1024}));
+              const mode=String(verifiedDesignRecord?.content?.multiplayerMode||'').toUpperCase();
               multiplayerRequired=Boolean(mode&&mode!=='SINGLE'&&mode!=='SINGLE_PLAYER');
-            }catch{}
+            }catch(error){
+              console.error('UNITY_WEB_VERIFIED_DESIGN_LOAD_FAILED='+String(error?.message||error));
+            }
           }
+          const precisionQa=evaluateUnityWebPrecisionQa({gameId,play,independent,regression});
+          const nativeSystemAudit=auditUnityWebNativeSystems({
+            repoRoot:process.cwd(),gameId,
+            designRecord:verifiedDesignRecord||{},play,independent,regression
+          });
+          console.log('UNITY_WEB_REAL_SYSTEM_IMPLEMENTATION='+(nativeSystemAudit.pass?'PASS':'REPAIR_REQUIRED'));
+          console.log('UNITY_WEB_REAL_SYSTEM_STATIC_COVERAGE='+(nativeSystemAudit.staticCoverageComplete?'PASS':'REPAIR_REQUIRED'));
+          console.log('UNITY_WEB_NATIVE_SYSTEM_METHOD_COUNT='+nativeSystemAudit.nativeMethodCount);
+          console.log('UNITY_WEB_NATIVE_SYSTEM_REACHABLE_METHODS='+nativeSystemAudit.interactiveReachableMethodCount);
+          console.log('UNITY_WEB_MISSING_SYSTEM_BEHAVIOR='+JSON.stringify(
+            nativeSystemAudit.roles.filter(row=>!row.runtimeComplete).map(row=>({
+              role:row.role,id:row.systemId,failures:row.failures
+            })).slice(0,12)));
+          console.log('UNITY_WEB_PRECISE_PLAYTEST='+(precisionQa.pass?'PASS':'REPAIR_REQUIRED'));
           const multiplayerEvidence=item.unityWebMultiplayerQaEvidence||null;
           const multiplayerPass=!multiplayerRequired
             ||(multiplayerEvidence?.pass===true&&Number(multiplayerEvidence?.participantCount||0)>=2&&multiplayerEvidence?.authoritativeSync===true);
@@ -691,6 +712,12 @@ jobs:
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
             portability:{pass:portabilityPass},
+            precisionQa:{pass:precisionQa.pass,status:precisionQa.status,
+              scenarioStages:precisionQa.checks.map(row=>row.stage)},
+            nativeSystems:{pass:nativeSystemAudit.pass,status:nativeSystemAudit.status,
+              staticCoverageComplete:nativeSystemAudit.staticCoverageComplete,
+              authoredRoles:nativeSystemAudit.roles.length,
+              verifiedRoles:nativeSystemAudit.roles.filter(row=>row.runtimeComplete).length},
             ...(buildUpGrowthRequired?{buildUpGrowth:{pass:growth.verifiedGrowth,status:growth.status,focus:taskFocus}}:{})
           };
           const pass=Object.values(criteria).every(row=>row.pass===true);
@@ -708,6 +735,11 @@ jobs:
             criteria,
             buildUpGrowth:growth,
             buildUpGrowthRequired,
+            precisionQa,
+            precisionQaRequired:true,
+            nativeSystemAudit,
+            nativeSystemAuditRequired:true,
+            nativeSystemAuditSourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
             failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
             releaseOrDeploymentAuthority:false,
@@ -727,6 +759,15 @@ jobs:
           manifest.buildUpGrowth={status:growth.status,verifiedGrowth:growth.verifiedGrowth,required:buildUpGrowthRequired,
             previousSourceTreeSha256:growth.previousSourceTreeSha256,
             sourceTreeSha256:growth.sourceTreeSha256};
+          manifest.nativeSystemAudit={
+            required:true,pass:nativeSystemAudit.pass,
+            staticCoverageComplete:nativeSystemAudit.staticCoverageComplete,
+            authoredRoles:nativeSystemAudit.roles.length,
+            verifiedRoles:nativeSystemAudit.roles.filter(row=>row.runtimeComplete).length,
+            sourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA
+          };
+          manifest.precisionQa={required:true,pass:precisionQa.pass,
+            scenarios:precisionQa.checks.map(row=>row.scenarioId)};
           manifest.homepageVerified=pass;
           manifest.browserVerification={
             actualBrowserPlay:play.pass===true,
