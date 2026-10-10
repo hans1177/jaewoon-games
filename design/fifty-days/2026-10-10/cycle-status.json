@@ -1,0 +1,231 @@
+{
+  "version": 6,
+  "date": "2026-10-10",
+  "gameId": "fifty-days",
+  "gameName": "50일",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "flow": "GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ALL-DESIGN-RESET-FIFTY-DAYS-20260917",
+    "category": "ACTION_SURVIVAL_ROGUELITE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "DESIGN_AUTHOR_CHECKPOINT",
+    "model": "vibe-native:causal-design-v1",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 0,
+    "roles": [],
+    "leadModels": {},
+    "distinctLeadModels": [],
+    "distinctLeadModelCount": 0,
+    "leadModelsDistinct": false,
+    "modelAudit": {},
+    "reviewMode": "DETERMINISTIC_EVIDENCE",
+    "aiReviewRequired": false,
+    "repeatedFatalReview": false
+  },
+  "meeting": {
+    "required": false,
+    "mode": "DETERMINISTIC_EVIDENCE",
+    "conflictCount": 0,
+    "holdCount": 0,
+    "allResolved": true,
+    "deterministicEvidenceOnly": true
+  },
+  "disposition": {
+    "version": 2,
+    "state": "DETERMINISTIC_EVIDENCE",
+    "sameDesignerRevisionAttempted": false,
+    "repeatedFiveDepartmentReview": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicGateReviewCompleted": true,
+    "unanimousFatalDiscard": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "source": "deterministic_pre_gate"
+  },
+  "runtimeMetrics": {
+    "source": "design-checkpoint.json",
+    "checkpointReused": true,
+    "completedPhases": 3,
+    "deterministicGateScore": 80,
+    "deterministicGatePhase": "deterministic_pre_gate"
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "deterministicRecovery": {
+    "enabled": true,
+    "source": "design-checkpoint.json",
+    "phase": "deterministic_pre_gate",
+    "totalScore": 80,
+    "passMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "appliedRepairs": [],
+    "recoveredAt": "2026-10-10T12:03:38.177Z"
+  },
+  "baselineGate": {
+    "policyDocument": "company-learning/platform-release-roadmap.json",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ALL-DESIGN-RESET-FIFTY-DAYS-20260917",
+        "source": "game-seed-state.json",
+        "designerSeed": null
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "COOP",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "deterministicDesignGate": {
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/fifty-days/2026-10-10/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "minimumDesign": {
+        "required": false,
+        "pass": true,
+        "source": "design/fifty-days/2026-10-10/design-revised.json",
+        "date": "2026-10-10"
+      },
+      "upperPlatformReadiness": {
+        "required": false,
+        "pass": false,
+        "source": "web-games/fifty-days/upper-platform-development-readiness.json",
+        "reason": "MISSING",
+        "state": null,
+        "unitySourceTreeSha256": null,
+        "currentUnitySourceTreeSha256": null
+      },
+      "webGameplay": {
+        "required": false,
+        "supportingOnly": true,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "UNITY",
+        "present": false,
+        "path": null,
+        "projectField": "unityProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "UNITY",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "unity-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
+      "aiReviewIsGateAuthority": false,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsDirectNative": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresMinimumDualPlatformDesign": true,
+      "developmentConfirmedRequiresUpperPlatformReadinessBeforeNewNativeStart": true,
+      "existingNativeTechnicalEvidenceGrandfathered": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookRunsInParallel": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-10-10T12:03:38.466Z"
+  },
+  "artbookUi": {
+    "status": "WRITING",
+    "label": "작성중",
+    "path": "artbook-submissions/fifty-days/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
+  }
+}
