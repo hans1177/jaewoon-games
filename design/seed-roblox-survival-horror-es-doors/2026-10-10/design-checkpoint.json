@@ -120,25 +120,41 @@
       "name": "Last Lantern - Player's Journey Through a Living Board Game",
       "purpose": "A dynamic board game where each decision creates an immediate consequence that affects future actions and goals.",
       "playerChoice": "Players choose new strategies, face new risks, and unlock new levels based on their choices."
+    },
+    "local_authoring_parts::5aff463b74b588564e69356fbb60ffe8a9c3d013a971e673519ca8d06f81a1e5:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "playerStartsWithClearGoal",
+        "limitedMovesAndObstaclesOnBoardOrGrid"
+      ],
+      "stateOutputs": [
+        "deliberateMatchesCreated",
+        "combosGenerated",
+        "immediateFeedbackReceived"
+      ],
+      "name": "Last Lantern - Player's Journey Through a Living Board Game",
+      "purpose": "Define the core gameplay mechanics and their causal relationships.",
+      "playerChoice": "Players make deliberate matches, create combos, and receive immediate feedback for each action."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265387,
-      "lastMs": 36801,
+      "totalMs": 300640,
+      "lastMs": 35253,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:24:42.222Z"
+      "updatedAt": "2026-10-10T02:25:17.478Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:20:16.789Z",
-  "updatedAt": "2026-10-10T02:24:42.222Z",
+  "updatedAt": "2026-10-10T02:25:17.478Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1728,7 +1744,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:42.222Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:25:17.478Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
