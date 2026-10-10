@@ -309,13 +309,19 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
   if(!designGames.length)throw new Error('NO_DESIGN_ONLY_GAMES_IN_CATALOG');
   const state=readJson(path.join(root,seedFile),{version:2,policyDocument:'company-learning/platform-release-roadmap.json',seeds:[]});
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
+  const before=JSON.stringify(state);
+  const previousReset=state.ownerAllGamesDesignReset||{};
+  const sameRevision=clean(previousReset.revision)===RESET_REVISION;
+  // 같은 오너 초기화 재실행은 완료된 설계·신규 지시·검수 기준 시각을 보존한다.
   // 설계 초기화 대상과 무관하게, 정식 카탈로그에 있는 개발 진행 게임은 일시정지시키지 않는다.
   const catalogIds=new Set((catalog.games||[]).map(game=>clean(game?.id)).filter(Boolean));
   const existingByGame=new Map();
   for(const seed of state.seeds){const id=clean(seed?.gameId);if(id&&!existingByGame.has(id))existingByGame.set(id,seed);}
   let created=0,reactivated=0,paused=0;
   for(const game of designGames){
-    const id=clean(game.id),existing=existingByGame.get(id),next=resetSeed(game,existing||{},timestamp);
+    const id=clean(game.id),existing=existingByGame.get(id);
+    if(sameRevision&&existing)continue;
+    const next=resetSeed(game,existing||{},timestamp);
     if(existing){if(clean(existing.status).toUpperCase()!=='ACTIVE')reactivated++;Object.keys(existing).forEach(key=>delete existing[key]);Object.assign(existing,next);}
     else{state.seeds.push(next);existingByGame.set(id,next);created++;}
   }
@@ -334,8 +340,13 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
   }
   state.version=Math.max(2,Number(state.version)||0);
   state.policyDocument='company-learning/platform-release-roadmap.json';
-  state.ownerAllGamesDesignReset={revision:RESET_REVISION,source:RESET_SOURCE,gameCount:designGames.length,gameIds:designGames.map(game=>game.id),updatedAt:timestamp};
-  writeJson(path.join(root,seedFile),state);
+  const priorTimestamp=Date.parse(previousReset.updatedAt||'');
+  state.ownerAllGamesDesignReset={
+    revision:RESET_REVISION,source:RESET_SOURCE,gameCount:designGames.length,
+    gameIds:designGames.map(game=>game.id),
+    updatedAt:sameRevision&&Number.isFinite(priorTimestamp)?previousReset.updatedAt:timestamp
+  };
+  if(JSON.stringify(state)!==before)writeJson(path.join(root,seedFile),state);
   return{count:designGames.length,created,reactivated,paused,gameIds:designGames.map(game=>game.id)};
 }
 function arg(name){

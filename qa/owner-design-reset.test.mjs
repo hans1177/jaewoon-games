@@ -153,6 +153,50 @@ test('all-games reset preserves active developed games and existing seed save me
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('repeated all-games reset is idempotent and preserves newer design checkpoints and review cutoff',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-idempotent-'));
+  try{
+    const catalog={games:[
+      {id:'design-game',productionClass:'DESIGN_ONLY'},
+      {id:'developed-game',productionClass:'DEVELOPMENT_CONFIRMED'}
+    ]};
+    const source={version:2,seeds:[
+      {gameId:'design-game',seedId:'existing-design',status:'ACTIVE',productionClass:'DESIGN_ONLY',checkpoint:{tasks:{draft:'saved'}}},
+      {gameId:'developed-game',seedId:'developed',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',checkpoint:{stage:'F4'}}
+    ]};
+    const catalogPath=path.join(root,'game-catalog.json');
+    const statePath=path.join(root,'game-seed-state.json');
+    fs.writeFileSync(catalogPath,JSON.stringify(catalog));
+    fs.writeFileSync(statePath,JSON.stringify(source));
+    runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T01:00:00.000Z'});
+    const first=JSON.parse(fs.readFileSync(statePath,'utf8'));
+    assert.equal(first.ownerAllGamesDesignReset.updatedAt,'2026-10-10T01:00:00.000Z');
+    first.seeds[0].ownerResetRevision='NEW_OWNER_DESIGN_EVENT';
+    first.seeds[0].strictDesignReview={verdict:'PASS',totalScore:92,hardFailures:[]};
+    first.seeds[0].checkpoint={tasks:{draft:'newly-authored'}};
+    fs.writeFileSync(statePath,JSON.stringify(first,null,2)+'\n');
+    const before=fs.readFileSync(statePath,'utf8');
+    runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T02:00:00.000Z'});
+    assert.equal(fs.readFileSync(statePath,'utf8'),before,'same revision cannot reset authored evidence or advance review cutoff');
+    catalog.games.push({id:'new-game',productionClass:'DESIGN_ONLY'});
+    fs.writeFileSync(catalogPath,JSON.stringify(catalog));
+    runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T03:00:00.000Z'});
+    const after=JSON.parse(fs.readFileSync(statePath,'utf8'));
+    assert.deepEqual(after.seeds.find(seed=>seed.gameId==='design-game'),first.seeds[0]);
+    assert.ok(after.seeds.some(seed=>seed.gameId==='new-game'&&seed.status==='ACTIVE'));
+    assert.equal(after.ownerAllGamesDesignReset.updatedAt,'2026-10-10T01:00:00.000Z');
+    assert.deepEqual(after.seeds.find(seed=>seed.gameId==='developed-game'),source.seeds[1]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('no-op reset does not dispatch another competing design runtime',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.match(workflow,/id: persist_reset/);
+  assert.match(workflow,/owner_reset_changed=false/);
+  assert.match(workflow,/owner_reset_changed=true/);
+  assert.match(workflow,/if: steps\.persist_reset\.outputs\.owner_reset_changed == 'true'/);
+});
+
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/const activeResetSeeds=active\.filter/);

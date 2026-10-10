@@ -56,6 +56,7 @@ jobs:
           node --test qa/owner-design-reset.test.mjs qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
       - name: Persist canonical DESIGN_ONLY seed state
+        id: persist_reset
         shell: bash
         run: |
           set -euo pipefail
@@ -82,12 +83,14 @@ jobs:
             if git diff --cached --quiet; then
               pushed=1
               echo 'OWNER_ALL_GAMES_DESIGN_RESET_RUNTIME_CHANGE=NO'
+              echo 'owner_reset_changed=false' >> "$GITHUB_OUTPUT"
               break
             fi
             git commit -m 'runtime: reset all catalog games to DESIGN_ONLY'
             if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               pushed=1
               echo 'OWNER_ALL_GAMES_DESIGN_RESET_RUNTIME_CHANGE=PERSISTED'
+              echo 'owner_reset_changed=true' >> "$GITHUB_OUTPUT"
               break
             fi
             sleep $((attempt * 2))
@@ -110,6 +113,7 @@ jobs:
           console.log('OWNER_ALL_GAMES_DESIGN_RESET_CATALOG_BINDING=PASS');
           NODE
       - name: Dispatch canonical design pipeline
+        if: steps.persist_reset.outputs.owner_reset_changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
