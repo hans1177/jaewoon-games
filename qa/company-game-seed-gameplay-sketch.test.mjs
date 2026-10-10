@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {computeVibeSeedProposal,normalizeGameplaySketch} from '../tools/company-game-seed-bootstrap.mjs';
+import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 
 const legacySeed=()=>({
   GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
@@ -359,4 +361,40 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
     connectsTo:['MAIN','A','B']
   })));
   assert.equal(validateGameSeed(deep).pass,true);
+});
+
+test('Vibe native composer computes schema-valid MAIN A B C delve seeds without external models',()=>{
+  const ids=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
+    const target={requestId:'native-'+category,category,platform:'ROBLOX',materials:[
+      {materialId:'MAT-001',causalDNA:ids.slice(0,3)},
+      {materialId:'MAT-002',causalDNA:ids.slice(2,5)}
+    ]};
+    const proposal=computeVibeSeedProposal(target);
+    const sketch=normalizeGameplaySketch(target,proposal,proposal.coreLoop,proposal.gameName);
+    const seed={...legacySeed(),
+      GAME_CATEGORY:category,
+      REFERENCE_INPUTS:[{type:'ORIGINAL_MATERIAL',value:'Verified causal source material'}],
+      CORE_FUN_TO_LEARN:proposal.coreFunToLearn,CORE_LOOP:proposal.coreLoop,
+      DISTINCT_IDENTITY:proposal.distinctIdentity,
+      GAMEPLAY_SKETCH:sketch,
+      INITIAL_TARGET_PLATFORM:proposal.initialTargetPlatform,
+      INITIAL_PLAY_MODE:proposal.initialPlayMode,
+      MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode,
+      CROSS_PLATFORM_EXPANSION_VALUE:proposal.crossPlatformExpansionValue
+    };
+    const result=validateGameSeed(seed);
+    assert.equal(result.pass,true,category+': '+result.errors.join('; '));
+    const grammar=sketch.novelGameGrammar,fusion=grammar.gameplaySystemFusion;
+    assert.equal(fusion.formula,'MAIN × A × B × C');
+    assert.deepEqual(fusion.majorAxes.map(row=>row.key),['A','B']);
+    assert.ok(fusion.majorAxes.every(row=>row.sourceMaterial&&row.sourceDomain&&row.materialRule));
+    assert.equal(fusion.themeFusion.themes.length,2);
+    assert.equal(fusion.themeFusion.genres.length,2);
+    assert.deepEqual(fusion.themeFusion.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+    assert.ok(grammar.delveLayer.elements.length>=4);
+    assert.equal(sketch.source,'VIBE_NATIVE_CAUSAL_COMPOSITION');
+    assert.ok(['COOP','COMPETITIVE','HYBRID'].includes(proposal.multiplayerDesignMode));
+    assert.deepEqual(computeVibeSeedProposal(target),proposal,'identical inputs must produce identical design proposals');
+  }
 });
