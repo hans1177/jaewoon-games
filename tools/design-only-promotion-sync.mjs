@@ -47,9 +47,19 @@ const clearLegacyQueueCaps=queue=>{
 function assertCanonicalDirectNativePolicy(root='.'){
   const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
   const d=roadmap?.directNativeDualPlatformDevelopment||{};
-  const web=d?.unityWebValidationSurface||{};
-  const ok=d.status==='OWNER_DIRECT_LOCKED'
+  const web=d.unityWebValidationSurface||{};
+  const pairing=d.automaticPairing||d.autoPairRules||{};
+  const development=d.development||{};
+  const gate=d.upperPlatformDevelopmentReadinessGate||{};
+  // 메인: 최신 중앙정책의 최소 설계 우선·Roblox/Unity Web 병렬 개발을 정확히 검사한다.
+  // Android/Unity 앱은 오너 홀드이며, 오래된 Unity Web 선행 입장 관문을 되살리지 않는다.
+  const ok=roadmap.authority==='MACHINE_EXECUTION_CONTRACT'
+    &&roadmap.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+    &&roadmap.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED'
+    &&roadmap.developmentAccess?.UNITY==='OWNER_HOLD'
+    &&d.status==='OWNER_DIRECT_LOCKED'
     &&d.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
+    &&d.ownerActiveDevelopmentScope20261009?.activeTargets?.join(',')==='ROBLOX,UNITY_WEB'
     &&d.canonicalDevelopmentAdmissionAuthority===true
     &&d.minimumDesignRequired===true
     &&d.strictDesignScoreRequiredForDevelopmentAdmission===false
@@ -57,13 +67,22 @@ function assertCanonicalDirectNativePolicy(root='.'){
     &&d.webDevelopmentStageRemoved===false
     &&d.unityWebEnabled===true
     &&d.unityWebRequired===true
-    &&d.unityWebGateRequired===true
+    &&d.unityWebGateRequired===false
     &&d.unityWebMode==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&web.requiredForDevelopmentAdmission===true
-    &&d.automaticPairing?.ROBLOX?.join(',')==='UNITY_WEB_FLOOR,ROBLOX,UNITY'
-    &&d.automaticPairing?.UNITY?.join(',')==='UNITY_WEB_FLOOR,UNITY,ROBLOX'
+    &&d.upperPlatformAdmission==='MINIMUM_DESIGN_READY'
+    &&web.requiredForDevelopmentAdmission===false
+    &&development.unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart===false
+    &&development.upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass===false
+    &&gate.gateId==='UPPER_PLATFORM_DEVELOPMENT_READY'
+    &&gate.allCriteriaRequired===true
+    &&Array.isArray(gate.targets)
+    &&gate.targets.join(',')==='ROBLOX,UNITY'
     &&Array.isArray(d.supportedDevelopmentPlatforms)
-    &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY';
+    &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY'
+    &&Array.isArray(pairing.ROBLOX)
+    &&pairing.ROBLOX.join(',')==='ROBLOX,UNITY_WEB_FLOOR'
+    &&Array.isArray(pairing.UNITY)
+    &&pairing.UNITY.join(',')==='UNITY_WEB_FLOOR';
   if(!ok)throw new Error('CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED');
   return d;
 }
