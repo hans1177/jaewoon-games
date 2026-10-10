@@ -389,25 +389,40 @@
       "name": "디지털 직조",
       "purpose": "디지털 시스템에 직접 참여하여 세계의 구조를 변형",
       "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다."
+    },
+    "local_authoring_parts::88d923a25af36fabe6015600bf5549ae892aeba5a033f917faf2493eda76aa58:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "디지털 시스템 투입",
+        "역사적 사건 재해석"
+      ],
+      "stateOutputs": [
+        "세계의 관문 재정의",
+        "플레이어 선택 변형"
+      ],
+      "name": "디지털 공간의 재구성",
+      "purpose": "디지털 시스템에 직접 참여하여 세계의 구조를 변형하며, 역사적 사건을 재해석함으로써 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다.",
+      "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 553693,
-      "lastMs": 39189,
+      "totalMs": 596182,
+      "lastMs": 42489,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:53:13.150Z"
+      "updatedAt": "2026-10-10T01:53:55.640Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:43:59.422Z",
-  "updatedAt": "2026-10-10T01:53:13.150Z",
+  "updatedAt": "2026-10-10T01:53:55.640Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2015,7 +2030,7 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:53:13.150Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:53:55.640Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
