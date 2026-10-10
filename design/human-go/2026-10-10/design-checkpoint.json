@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb:identity": {
       "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다."
+    },
+    "local_authoring_parts::0bbd8ca53939917470a7b28cbd8a9d88d56937d42aa1749ee91eb5e33357584c:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+      "a": {
+        "system": "게임 시스템",
+        "material": "해당 축 창작 소재",
+        "materialDomain": "게임 메인 장르",
+        "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+      },
+      "b": {
+        "system": "다른 시스템",
+        "material": "해당 축 창작 소재",
+        "materialDomain": "게임 보조 장르",
+        "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+      },
+      "abCausality": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 주제/소재가 서로 다른 경우 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 709428,
-      "lastMs": 109226,
+      "totalMs": 763053,
+      "lastMs": 53625,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:45:05.824Z"
+      "updatedAt": "2026-10-10T08:45:59.451Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:45:05.824Z",
+  "updatedAt": "2026-10-10T08:45:59.451Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1556,7 +1572,7 @@
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:45:05.824Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:45:59.451Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
