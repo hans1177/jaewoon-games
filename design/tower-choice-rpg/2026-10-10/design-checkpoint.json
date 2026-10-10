@@ -634,25 +634,31 @@
     },
     "local_authoring_parts::9f568ae5ad963508e9d2faf8e475af1da414fd60b4d5c0c2996be70a6d09b1ae:fromSystem": {
       "fromSystem": "BASE_TERRAIN"
+    },
+    "local_authoring_parts::9f568ae5ad963508e9d2faf8e475af1da414fd60b4d5c0c2996be70a6d09b1ae:toSystem": {
+      "toSystem": "INTERMEDIATE_ENVIRONMENT"
+    },
+    "local_authoring_parts::9f568ae5ad963508e9d2faf8e475af1da414fd60b4d5c0c2996be70a6d09b1ae:trigger": {
+      "trigger": "Dynamic Threat Evolution from Base to Boss Tier"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1626433,
-      "lastMs": 8955,
+      "totalMs": 1646807,
+      "lastMs": 9888,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:23:13.484Z"
+      "updatedAt": "2026-10-10T03:23:33.861Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:23:13.484Z",
+  "updatedAt": "2026-10-10T03:23:33.861Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2448,7 +2454,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:23:13.484Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:23:33.861Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
