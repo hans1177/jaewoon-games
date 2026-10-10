@@ -243,7 +243,7 @@ const ALL_LIBRARY_CATEGORY_MATCHERS=Object.freeze({
   PROP:/prop|decoration|pickup|container|chest|object|소품|장식|상자|오브젝트/i,
   WEAPON:/weapon|sword|spear|bow|blade|gun|equipment|무기|검|창|활/i,
   SKILL:/skill|ability|spell|cast|spellbook|스킬|마법|능력/i,
-  UI:/ui|hud|menu|panel|button|screen|inventory|canvas|dialogue|메뉴|화면|인벤|버튼/i,
+  UI:/\bui\b|ui(?:controller|root|view|panel|screen|button|manager|overlay|widget)|hud|menu|panel|button|screen|inventory|canvas|dialogue|메뉴|화면|인벤|버튼/i,
   MOTION:/animator|animation|motion|rig|blend|idle|walk|run|attackanim|모션|애니메이션|리그/i,
   VFX:/vfx|particle|trail|impact|effect|flash|spark|이펙트|파티클|타격효과/i,
   MATERIAL:/material|texture|shader|pbr|surface|lighting|재질|텍스처|셰이더|조명/i,
@@ -271,7 +271,7 @@ const ALL_LIBRARY_CODE_ALIASES=Object.freeze({
 });
 const NON_GAME_LIBRARY_PREFIX=/^assets\/(?:company-|department-|homepage-|artbook-|godot-|asset-library|asset-selector|vibe-company-|vibe-orchestrator|vibe-development-|vibe-continuous-|vibe-local-|vibe-diagnostics|vibe-project|vibe-helper|vibe-change-set)/i;
 const ENGINE_LIBRARY_PREFIX=/^assets\/(?:vibe-|jaewoon-|game-)/i;
-const GENERIC_LIBRARY_NAME_TOKENS=new Set(['assets','asset','lib','library','common','shared','game','games','vibe','jaewoon','core','engine','runtime','system','director','pipeline','rendering','utility','tools','helper','module','default','generic','native','roblox','unity','web','v1','v2','v3','v4','v5','v6','pack']);
+const GENERIC_LIBRARY_NAME_TOKENS=new Set(['assets','asset','lib','library','common','shared','game','games','vibe','jaewoon','core','engine','runtime','system','director','pipeline','rendering','utility','tools','helper','module','default','generic','native','roblox','unity','web','part','parts','skin','skins','base','template','templates','model','models','v1','v2','v3','v4','v5','v6','pack']);
 const safeLibraryPath=value=>/^assets\/[a-z0-9][a-z0-9/_-]*\.(?:js|luau?|json|glb|gltf|fbx|obj|png|webp|svg|mat|anim|controller)$/i.test(clean(value).replace(/^\//,''))
   ?clean(value).replace(/^\//,''):null;
 const codeTokenPatterns=name=>name.toLowerCase().split(/[-_.]+/)
@@ -289,7 +289,7 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
   const matchingFiles=regex=>unique(anchors.filter(row=>regex.test(anchorText(row))).map(row=>row.file));
   const codePaths=unique(list(availableLibraryPaths).map(safeLibraryPath))
     .filter(file=>/^assets\/[a-z][a-z0-9-]*\.js$/i.test(file));
-  const codeCandidates=codePaths.filter(file=>!NON_GAME_LIBRARY_PREFIX.test(file)).map(library=>{
+  const allCodeCandidates=codePaths.filter(file=>!NON_GAME_LIBRARY_PREFIX.test(file)).map(library=>{
     const name=library.slice(7,-3),patterns=codeTokenPatterns(name);
     const matching=anchors.filter(row=>patterns.some(re=>re.test(anchorText(row))));
     if(!matching.length)return null;
@@ -305,7 +305,9 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
       licensing:'REPOSITORY_LICENSE_AND_DEPENDENCY_REVIEW_REQUIRED',runtimeVerified:false,productionVerified:false,
       score:(engineOnly?0:2)+Math.min(4,matching.length)
     };
-  }).filter(Boolean).sort((a,b)=>b.score-a.score||a.library.localeCompare(b.library)).slice(0,14);
+  }).filter(Boolean).sort((a,b)=>b.score-a.score||a.library.localeCompare(b.library));
+  const codeCandidates=[...allCodeCandidates.filter(row=>row.category==='GAME_RUNTIME_MODULE').slice(0,9),
+    ...allCodeCandidates.filter(row=>row.category==='CANONICAL_ENGINE_CAPABILITY').slice(0,4)];
   const assetRows=list(catalogAssets).filter(row=>row&&typeof row==='object');
   const licenseOk=row=>/^(?:project-original|cc0|public-domain|mit|cc-by|commercial-no-attribution)$/i.test(clean(row.license));
   const platformOk=row=>['SHARED_MASTER','SHARED_NATIVE_SOURCE','SHARED_REFERENCE'].includes(clean(row.platform).toUpperCase())
@@ -327,7 +329,7 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
     if(!id)continue;
     const specificTokens=id.toLowerCase().split(/[-_.]+/).filter(token=>token.length>=4
       &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&!token.startsWith(category.toLowerCase()));
-    const specific=anchors.filter(anchor=>specificTokens.some(token=>anchorText(anchor).toLowerCase().includes(token)));
+    const specific=anchors.filter(anchor=>regex.test(anchorText(anchor))&&specificTokens.some(token=>anchorText(anchor).toLowerCase().includes(token)));
     // 'shared-quest-v1' 같은 특정 기능 팩을 UI라는 이유만으로 전체 게임에 추천하지 않는다.
     // 순수 공용 카테고리 팩만 추가 기능 요구 없이 카테고리 소스 근거로 후보를 낸다.
     const pack=/-v\d+$/i.test(id);
