@@ -407,7 +407,7 @@ const invalidRoleStateTasks=Object.entries(designCheckpoint.tasks||{}).filter(([
   const outputs=Array.isArray(row.stateOutputs)?row.stateOutputs:[];
   const states=[...inputs,...outputs];
   return !inputs.length||!outputs.length||states.some(key=>typeof key!=='string'
-    ||!/^[^\\s:→]{1,80}$/u.test(key)||/→|->|\\b(?:INPUT|SELECT|OUTPUT|STATE)\\s*:/i.test(key));
+    ||!/^[^\s:→]{1,80}$/u.test(key)||/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(key));
 }).map(([key])=>key);
 if(invalidRoleStateTasks.length){
   for(const key of invalidRoleStateTasks){
