@@ -2784,25 +2784,264 @@
       "name": "개미 시뮬레이터 DELVE 규칙",
       "traversal": "DELVE_PHASE",
       "riskReward": "STATE_CHANGE_AND_PROGRESSION,"
+    },
+    "local_authoring_parts::893baffc509e516d18f5aa71b7daebed5d001060c33d0d6a3a23a665bb710b78:landmark,encounterPattern,resourcePressure,storyContext": {
+      "landmark": "거대한 정원",
+      "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+      "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+      "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+    },
+    "local_authoring_parts::398b9d6a37d8bafbbfd294cd8cea3fde3a1a4c2b8860308d8268e9fc923ea4a9:regions:1": {
+      "id": "ANT_SIMULATOR_DELVE",
+      "ruleIds": [
+        "CORE_FUN_04"
+      ],
+      "name": "개미 시뮬레이터 DELVE 규칙",
+      "traversal": "DELVE_PHASE",
+      "riskReward": "STATE_CHANGE_AND_PROGRESSION,",
+      "landmark": "거대한 정원",
+      "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+      "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+      "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+    },
+    "local_authoring_parts::ca1eedfd0ea578c72093879f6d8020bd00d0df2777aa2b6cc9aecef68c0aeb3a:regions": {
+      "regions": [
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        },
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION,",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::b021013ed102f71322f5c2a2e5ddf0bfb80d003323f507d9ba6c2a1f06ff19df:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "개미 시뮬레이터 기본 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_BASELINE",
+          "ruleId": "CORE_FUN_01",
+          "trigger": "OPENING_PHASE",
+          "range": 1,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 0,
+          "cooldownSeconds": 60,
+          "telegraph": "MONTHLY_UPDATE",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "BASE_RANGE",
+          "costKey": "BASE_COST",
+          "cooldownKey": "BASE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_2",
+          "name": "개미 시뮬레이터 주요 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN_02",
+          "trigger": "MAIN_PHASE",
+          "range": 3,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 5,
+          "cooldownSeconds": 120,
+          "telegraph": "YEARLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "CORE_RANGE",
+          "costKey": "CORE_COST",
+          "cooldownKey": "CORE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_3",
+          "name": "개미 시뮬레이터 주요 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN_03",
+          "trigger": "MAIN_PHASE",
+          "range": 4,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 7,
+          "cooldownSeconds": 180,
+          "telegraph": "MONTHLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "CORE_RANGE",
+          "costKey": "CORE_COST",
+          "cooldownKey": "CORE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_4",
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_DELVE",
+          "ruleId": "CORE_FUN_04",
+          "trigger": "DELVE_PHASE",
+          "range": 2,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 3,
+          "cooldownSeconds": 90,
+          "telegraph": "YEARLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "DELVE_RANGE",
+          "costKey": "DELVE_COST",
+          "cooldownKey": "DELVE_COOLDOWN"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER_1",
+          "humanTool": "OPENING",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "retainedState": "START_OR_WORLD_ENTRY",
+          "removedState": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "changedChoice": "REAL_PLAYER_INPUT"
+        },
+        {
+          "humanId": "ENEMY_1",
+          "humanTool": "MAIN_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        {
+          "humanId": "ENEMY_2",
+          "humanTool": "MAIN_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        {
+          "humanId": "ENEMY_3",
+          "humanTool": "DELVE_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_4",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_4",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        }
+      ],
+      "regions": [
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        },
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION,",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 98,
-      "successes": 92,
+      "calls": 99,
+      "successes": 93,
       "failures": 6,
       "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 4754885,
-      "lastMs": 23599,
+      "totalMs": 4790396,
+      "lastMs": 35511,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:12:21.078Z"
+      "updatedAt": "2026-10-10T01:12:56.591Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-10T01:12:21.078Z",
+  "updatedAt": "2026-10-10T01:12:56.596Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4510,7 +4749,7 @@
     "b021013ed102f71322f5c2a2e5ddf0bfb80d003323f507d9ba6c2a1f06ff19df": true,
     "ca1eedfd0ea578c72093879f6d8020bd00d0df2777aa2b6cc9aecef68c0aeb3a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:12:21.078Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:12:56.596Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
