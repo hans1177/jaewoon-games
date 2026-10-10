@@ -1582,13 +1582,13 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-10T03:17:25.405Z",
+      "updatedAt": "2026-10-10T03:32:16.320Z",
       "robloxSourceCommit": "5674e7daa44634e631bf2e3801c11ebc7c35c233",
       "robloxSourceBootstrapPassedAt": "2026-10-09T20:08:14.102Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -6520,13 +6520,13 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-10-02T14:09:33.395Z",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "updatedAt": "2026-10-10T03:23:10.816Z",
+      "updatedAt": "2026-10-10T03:32:16.320Z",
       "robloxSourceCommit": "5674e7daa44634e631bf2e3801c11ebc7c35c233",
       "robloxSourceBootstrapPassedAt": "2026-10-09T20:08:14.102Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -45395,7 +45395,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-10T03:23:10.816Z",
+  "updatedAt": "2026-10-10T03:32:16.320Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -45461,6 +45461,5 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1,
-  "robloxTechnicalParallelism": null
+  "executionContractVersion": 1
 }
