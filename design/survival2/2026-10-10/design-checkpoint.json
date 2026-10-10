@@ -715,25 +715,40 @@
       "name": "Forest Resource Dynamics",
       "purpose": "Model ecological adaptation through resource distribution and group readiness",
       "playerChoice": "Prioritize one member over another for survival based on resource availability and environmental risk assessment"
+    },
+    "local_authoring_parts::b3c92f2c3ca7b5032d95d71b5c66d970d359eca21d8c08f21c78152914f99a2a:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Interdependent goal achievement"
+      ],
+      "name": "Forest Resource Dynamics",
+      "purpose": "Establish the ecological and strategic foundation for resource acquisition, risk assessment, and shelter progression.",
+      "playerChoice": "Player selects a resource to collect, evaluates environmental risk, and decides on shelter strategy."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1992303,
-      "lastMs": 20562,
+      "totalMs": 2058544,
+      "lastMs": 66241,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:59:34.545Z"
+      "updatedAt": "2026-10-10T01:00:40.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-10T00:59:34.545Z",
+  "updatedAt": "2026-10-10T01:00:40.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2572,7 +2587,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:59:34.545Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:00:40.787Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
