@@ -224,25 +224,40 @@
       "name": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
       "purpose": "게임 정체성을 형성하며 역사와 예술의 상태 교환을 통해 플레이어가 선택하는 대상을 결정하고 세계의 정체성을 이끌어낸다.",
       "playerChoice": "플레이어의 선택 - 실제 세계 상태 변화를 유발하여 다음 사건을 설정한다."
+    },
+    "local_authoring_parts::07cded765ed9864ef332ccd39306ac01456c8ae8880dec55ddd875b677a099b5:signatureSystems:2": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-3",
+      "grammarRole": "B",
+      "stateInputs": [
+        "역사",
+        "예술"
+      ],
+      "stateOutputs": [
+        "역사",
+        "예술"
+      ],
+      "name": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
+      "purpose": "역사와 예술의 상태 교환 - 역사가 예술에 영향을 주고, 예술이 역사에 기반을 두며 서로 다른 방식으로 성장",
+      "playerChoice": "플레이어의 선택 - 실제 세계 상태 변화 및 역적 선택의 실행됨으로 인해 역사의 전개와 예술의 발전이 함께 움직임을 생성함으로써 세계의 정체성이 형성됨니다।"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1139303,
-      "lastMs": 101642,
+      "totalMs": 1244551,
+      "lastMs": 105248,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:25:41.784Z"
+      "updatedAt": "2026-10-10T03:27:27.033Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:06:42.448Z",
-  "updatedAt": "2026-10-10T03:25:41.784Z",
+  "updatedAt": "2026-10-10T03:27:27.033Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1982,17 +1997,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::07cded765ed9864ef332ccd39306ac01456c8ae8880dec55ddd875b677a099b5:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::07cded765ed9864ef332ccd39306ac01456c8ae8880dec55ddd875b677a099b5:signatureSystems:1": 1
   },
@@ -2000,7 +2005,7 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:25:41.784Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:27:27.033Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
