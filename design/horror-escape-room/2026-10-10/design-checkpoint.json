@@ -1567,25 +1567,76 @@
       "stateInputs": [
         "학교"
       ]
+    },
+    "local_authoring_parts::2878679b075c9394bef9738d84ea316fa52f1ce960118d45538218e70200d40b:stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::87f7abbec65a007a14122ad99a1939dca059ecb4efdbb527550fce53e2b05472:cooldownSeconds,telegraph,avoidance,effect,stateInputs,stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "cooldownSeconds": 7,
+      "telegraph": "돌진 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 충격 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::34ee3eaa215f531fb7c61932d65225e8e6fc007da46b0f27c9f49ae84132d656:abilities:7:bb42f91eb8b98b44": {
+      "id": "RUSH",
+      "name": "돌진",
+      "kind": "INFECTED",
+      "ownerId": "COURIER",
+      "ruleId": "RUSH_RU1234567890123456789012345678901234567890123456789012345678901234567890123",
+      "trigger": "돌진 실행",
+      "range": 0,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45,
+      "cooldownSeconds": 7,
+      "telegraph": "돌진 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 충격 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 85,
-      "successes": 82,
+      "calls": 86,
+      "successes": 83,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2545489,
-      "lastMs": 16330,
+      "totalMs": 2556943,
+      "lastMs": 11454,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:16:46.893Z"
+      "updatedAt": "2026-10-10T10:16:58.349Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:16:46.893Z",
+  "updatedAt": "2026-10-10T10:16:58.353Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2920,7 +2971,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:16:46.893Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:16:58.353Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
