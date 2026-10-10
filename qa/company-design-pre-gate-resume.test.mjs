@@ -1163,3 +1163,85 @@ test('native design repairs only failing fields and requires scored improvement 
   assert.match(design,/ownerBrief:clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
   assert.doesNotMatch(design,/KARMA_RETURN','TRICKSTER_REVERSAL','TESTIMONY_CONSENSUS_REALITY','EXILE_RETURN'/);
 });
+
+
+// 회귀검증: 기본 설계 원본의 형식만 채워진 규칙을 실제 상태 그래프 없이 재사용하지 않는다.
+test('native design authoring reuses only validated original grammar and causal role graph',()=>{
+  const start=design.indexOf('function computeVibeNativeDesign(){');
+  const end=design.indexOf('  const rulePlan=originalRoles?',start);
+  assert.ok(start>=0&&end>start);
+  const originalChoice=design.slice(start,end);
+  assert.match(originalChoice,/validateDesignAuthoringContent\(\{design:\{creativeGrammar:original\.creativeGrammar\}/);
+  assert.match(originalChoice,/validateDesignAuthoringContent\(\{design:\{signatureSystems:signature\}/);
+  const source=originalChoice+'\nreturn {originalRoles,preserved};\n}\ncomputeVibeNativeDesign';
+  const evaluate=(signatureSystems,creativeGrammar=null)=>runInNewContext(source,{
+    seed:{
+      gameName:'원본 검증 게임',GAME_CATEGORY:'CASUAL',INITIAL_TARGET_PLATFORM:'ROBLOX',
+      originalDesignContext:{content:{signatureSystems,creativeGrammar}}
+    },
+    game:{name:'원본 검증 게임'},gameId:'native-grammar-test',
+    seedState:{seedMaterials:[]},seedGameplaySketch:null,pendingSeedGrammarNotAuthored:true,
+    allGamesMultiplayerRequired:false,originalMultiplayerMode:'COOP',
+    clean:value=>String(value??'').trim(),
+    validateDesignAuthoringContent,
+    computeVibeSeedProposal:()=>({gameplaySketch:{novelGameGrammar:{
+      gameplaySystemFusion:{majorAxes:[{key:'A'},{key:'B'}],themeFusion:{},main:{name:'메인'}},
+      delveLayer:{elements:[]}
+    }}})
+  })();
+  const valid=['MAIN','A','B','DELVE'].map(role=>({
+    id:'RULE_'+role,grammarRole:role,
+    name:role+' 고유 동작',purpose:role+' 선택의 목표와 세계 결과를 구체적으로 연결한다.',
+    playerChoice:role+' 상황에서 서로 다른 다음 행동을 선택한다.',
+    stateInputs:['SharedRunState'],stateOutputs:['SharedRunState']
+  }));
+  assert.equal(evaluate(valid).originalRoles,true,'연결된 검증 원본은 보존');
+  assert.equal(evaluate(valid,{a:{material:'옛 소재'},b:{material:'다른 소재'}}).preserved,false,
+    '소재명만 있고 인과 문법이 없으면 보존 대상으로 보지 않는다');
+  const disconnected=valid.map(row=>row.grammarRole==='A'
+    ?{...row,stateInputs:['IsolatedAState'],stateOutputs:['IsolatedBState']}
+    :row);
+  assert.equal(evaluate(disconnected).originalRoles,false,
+    '상태 입출력 배열의 존재만으로 끊어진 원본을 재사용할 수 없다');
+});
+
+// 회귀검증: 오래된 PASS가 현재 기본 설계 문법 결함을 감추지 않으며 동일 게임은 한 번만 검사한다.
+test('design runtime scheduler requeues structurally stale strict PASS and memoizes game lookup',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const stage=workflow.slice(workflow.indexOf('- name: Resolve central-policy active incomplete GAME_SEED targets'));
+  assert.match(stage,/import \{evaluateMinimumDesignContract\} from '\.\/tools\/company-minimum-design-contract\.mjs';/);
+  const start=stage.indexOf('const latestStrictPassCache=new Map();');
+  const end=stage.indexOf('const strictPassFor=seed=>',start);
+  assert.ok(start>=0&&end>start);
+  const scheduler=stage.slice(start,end)+'\nlatestStrictPassFor';
+  assert.match(scheduler,/evaluateMinimumDesignContract\(revised,\{seed,requireGrammar:true\}\)\.pass/);
+  const files=new Map([
+    ['design/demo/2026-10-10/cycle-status.json',JSON.stringify({baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}})],
+    ['design/demo/2026-10-10/strict-design-review.json',JSON.stringify({
+      verdict:'PASS',totalScore:91,hardFailures:[],reviewedAt:'2026-10-10T10:00:00Z'
+    })],
+    ['design/demo/2026-10-10/design-revised.json',JSON.stringify({
+      gameId:'demo',ownerDesignEventId:'owner-1',content:{}
+    })]
+  ]);
+  let reads=0;
+  const check=allowed=>runInNewContext(scheduler,{
+    fs:{
+      existsSync:file=>file==='design/demo'||files.has(file),
+      readdirSync:()=>[{name:'2026-10-10',isDirectory:()=>true}],
+      readFileSync:file=>{reads++;return files.get(file);}
+    },
+    path,resetGameIds:new Set(),resetTimestamp:0,
+    evaluateMinimumDesignContract:()=>({pass:allowed})
+  });
+  const invalid=check(false);
+  assert.equal(invalid({gameId:'demo'}),null,'과거 PASS도 현재 설계 문법 결함이면 재작성 대상');
+  const firstReads=reads;
+  assert.equal(invalid({gameId:'demo'}),null);
+  assert.equal(reads,firstReads,'동일 실행의 중복 실패 검사 제거');
+  const valid=check(true);
+  assert.equal(valid({gameId:'demo'}).ownerDesignEventId,'owner-1');
+  const passingReads=reads;
+  assert.equal(valid({gameId:'demo'}).date,'2026-10-10');
+  assert.equal(reads,passingReads,'동일 실행의 중복 성공 검사 제거');
+});
