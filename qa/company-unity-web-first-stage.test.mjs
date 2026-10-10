@@ -263,3 +263,37 @@ test('owner-directed Daechung public WebGL test does not mislabel graphics or mu
   assert.match(headers,/\/web-games\/\*\/unity\/Build\/\*\.wasm\.gz/);
   assert.match(headers,/Content-Encoding: gzip/);
 });
+
+test('Unity monster adventure keeps real UV-less source meshes and uses triplanar physical material rendering',()=>{
+  const root=path.join(repo,'unity-games','monster-adventure','Assets');
+  const editor=fs.readFileSync(path.join(root,'Editor','UnityWebFloorBuild.cs'),'utf8');
+  const shader=fs.readFileSync(path.join(root,'Materials','LibrarySurface.shader'),'utf8');
+  assert.match(shader,/Shader "Jaewoon\/LibrarySurface"/);
+  assert.match(shader,/#pragma surface surf StandardSpecular fullforwardshadows/);
+  assert.match(shader,/#pragma target 3\.0/);
+  for(const axis of ['yz','zx','xy'])assert.ok(shader.includes('tex2D(_DetailMap, p.'+axis+')'));
+  for(const field of ['Albedo','Specular','Smoothness','Emission'])assert.ok(shader.includes('o.'+field+' ='));
+  assert.ok(editor.includes('EnsureDetailTexture();'));
+  assert.ok(editor.includes('TextureFormat.RGBA32,true,true'));
+  assert.ok(editor.includes('TextureWrapMode.Repeat'));
+  assert.ok(editor.includes('FilterMode.Trilinear'));
+  assert.ok(editor.includes('tokens[0]=="Ks"'));
+  assert.ok(editor.includes('Mathf.Sqrt(2f/(ns+2f))'));
+  assert.ok(editor.includes('material.SetTexture("_DetailMap",detailTexture)'));
+  assert.ok(!editor.includes('Shader.Find("Standard")'));
+  const binds=[...editor.matchAll(/BindModel\(scene,"[^"]+","([^"]+)","([^"]+)"/g)];
+  assert.ok(binds.length>=18,'original scene meshes preserved');
+  const palettes=new Map();
+  for(const match of binds){
+    const [,asset,palette]=match;
+    const obj=fs.readFileSync(path.join(root,'Art',asset+'.obj'),'utf8');
+    const mtl=fs.readFileSync(path.join(root,'Art',palette+'.mtl'),'utf8');
+    if(!palettes.has(palette))palettes.set(palette,new Set([...mtl.matchAll(/^newmtl\s+(\S+)/gm)].map(m=>m[1])));
+    const parts=[...new Set([...obj.matchAll(/^usemtl\s+(\S+)/gm)].map(m=>m[1]))];
+    assert.ok(parts.length>0,asset+' includes assigned material parts');
+    assert.match(obj,/^v\s+/m);
+    assert.match(obj,/^f\s+/m);
+    assert.doesNotMatch(obj,/^vt\s+/m,'UV-less asset demands triplanar material');
+    for(const part of parts)assert.ok(palettes.get(palette).has(part),asset+' / '+part);
+  }
+});
