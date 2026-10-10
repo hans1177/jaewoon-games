@@ -2,6 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
@@ -421,4 +425,58 @@ test('completion history reports total separately from ten recent evidence links
   assert.equal(result.lastCompletedAt,rows.at(-1).publishedAt);
   assert.equal(verifiedCompletionHistory({unityInternalReleaseReady:true,unityInternalReleaseEvidence:rows[0]},'UNITY').count,0);
   assert.equal(verifiedCompletionHistory({unityCanonicalReleaseEvidence:{...rows[0],regressionRunId:null}},'UNITY').count,0);
+});
+
+test('실제 플레이 슬라이드는 원본 게임·화면비·해시 일치 시에만 표시',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-frames-'));
+  const id='verified-frames';
+  try{
+    const save=(relative,bytes)=>{
+      const filename=path.join(root,relative);
+      fs.mkdirSync(path.dirname(filename),{recursive:true});
+      fs.writeFileSync(filename,bytes);
+      return {src:relative,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex')};
+    };
+    const html='web-games/'+id+'/index.html';
+    const htmlInfo=save(html,Buffer.from('<html><canvas></canvas></html>'));
+    const artifactIdentity=webTreeFingerprint(fs,path.join(root,'web-games',id));
+    const small=save('assets/homepage-covers/'+id+'-480.webp',Buffer.from('original-card-webp'));
+    const cover=save('assets/homepage-covers/'+id+'.webp',Buffer.from('original-hero-webp'));
+    const movie=save('assets/homepage-media/'+id+'.mp4',Buffer.from('real-mp4-test'));
+    const capturedAt='2026-10-11T00:00:00.000Z';
+    const sourceRevision='a'.repeat(40),platform='WEB';
+    const video={...movie,gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,seconds:11,
+      dependencies:[{path:html,sha256:htmlInfo.sha256}],runtimeVerification:{pass:true,inputEvents:9,visualChangeObserved:true}};
+    const screenshots=[2,6,10].map((second,index)=>{
+      const bytes=Buffer.concat([Buffer.from([255,216,255]),Buffer.from('frame-'+second),Buffer.from([255,217])]);
+      return {...save('assets/homepage-media/'+id+'-'+(index+1)+'.jpg',bytes),
+        gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,second,
+        source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',width:1920,height:1080};
+    });
+    const entry={gameId:id,titleEn:'Test',titleKo:'시험',small,cover,video,screenshots};
+    const accepted=validatedHomepageMedia(id,entry,{root});
+    assert.equal(accepted.video.src,movie.src);
+    assert.equal(accepted.screenshots.length,3);
+    assert.equal(accepted.kind,'MARKETING_ARTWORK');
+    assert.equal(validatedHomepageMedia(id,{...entry,screenshots:[{...screenshots[0],platform:'ROBLOX'}]},{root}).screenshots,undefined);
+    assert.equal(validatedHomepageMedia(id,{...entry,screenshots:[{...screenshots[0],width:960}]},{root}).screenshots,undefined);
+    fs.appendFileSync(path.join(root,screenshots[1].src),'changed');
+    assert.equal(validatedHomepageMedia(id,entry,{root}).screenshots,undefined);
+    fs.writeFileSync(path.join(root,html),'modified-game-source');
+    const stale=validatedHomepageMedia(id,entry,{root});
+    assert.equal(stale.video,undefined);
+    assert.equal(stale.screenshots,undefined);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('기존 홈페이지 매니저가 원본 타이틀을 보존하면서 영상에서만 사진을 추출',()=>{
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.match(manager,/recordVideo:\{dir:temp,size:\{width:1920,height:1080\}/);
+  assert.match(manager,/const captureVersion=3;/);
+  assert.match(manager,/scale=1920:1080:flags=lanczos,setsar=1/);
+  assert.match(manager,/media\.games\[id\]\.screenshots=frames\.map/);
+  assert.match(manager,/source:'ACTUAL_GAMEPLAY_VIDEO_FRAME'/);
+  assert.match(workflow,/node tools\/homepage-manager\.mjs --capture-release-media/);
+  assert.match(manager,/const captureVersion=3;/);
 });
