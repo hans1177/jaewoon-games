@@ -136,8 +136,23 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
   for(const platform of central.supportedPlatforms){
     if(typeof PLATFORM_STATE_BUILDERS[platform]!=='function')throw new Error('HOMEPAGE_PLATFORM_ADAPTER_MISSING:'+platform);
   }
-  const byId=new Map((catalog.games||[]).map(g=>[clean(g.id),g]));
-  const games=(queue.items||[]).map(item=>{
+  const byId=new Map((catalog.games||[]).map(g=>[clean(g?.canonical?.identity?.gameId||g.id),g]));
+  const queueItems=(queue.items||[]).filter(item=>clean(item?.gameId));
+  const queuedIds=new Set(queueItems.map(item=>clean(item.gameId)));
+  // 메인: 대기열에 아직 없는 등록 게임도 플랫폼 현황을 빠짐없이 표시한다.
+  // 유효한 실행 증거가 없으면 출시·검증 완료로 처리하지 않는다.
+  const catalogOnly=(catalog.games||[])
+    .filter(row=>{
+      const id=clean(row?.canonical?.identity?.gameId||row?.id);
+      const lifecycle=clean(row?.canonical?.lifecycle?.state||row?.lifecycleState).toUpperCase();
+      return id&&!queuedIds.has(id)&&!['RETIRED','REMOVED','ARCHIVED'].includes(lifecycle);
+    })
+    .map(row=>({
+      gameId:clean(row?.canonical?.identity?.gameId||row?.id),
+      gameName:clean(row?.canonical?.identity?.name||row?.name),
+      updatedAt:clean(row?.homepageInfo?.updatedAt||catalog.updatedAt)
+    }));
+  const games=[...queueItems,...catalogOnly].map(item=>{
     const gameId=clean(item.gameId); if(!gameId)return null;
     const platforms=central.supportedPlatforms.map(platform=>PLATFORM_STATE_BUILDERS[platform](item,policy));
     const externalPublicReleaseState=platforms.some(row=>row.publicRelease)?'PUBLIC_RELEASE'

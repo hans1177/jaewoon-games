@@ -120,6 +120,24 @@ test('card gallery uses the exact shared Roblox thumbnail and verified video fra
   assert.match(source,/scroll-snap-type:x mandatory/);
 });
 
+// 검증: 기존 대기열에 없는 게임도 홈피에 나오고, 실행 증거가 없으면 버튼은 잠긴다.
+test('homepage platform exposure covers all active registered games without inventing releases',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const catalog={games:[
+    {id:'queued-game',name:'대기열 게임',lifecycleState:'ACTIVE'},
+    {id:'catalog-only',name:'목록 전용 게임',lifecycleState:'ACTIVE'},
+    {id:'retired-game',name:'종료 게임',lifecycleState:'RETIRED'}
+  ]};
+  const queue={items:[{gameId:'queued-game',gameName:'대기열 게임',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const snap=buildHomepagePlatformExposure({policy,queue,catalog});
+  assert.deepEqual(snap.games.map(game=>game.gameId),['catalog-only','queued-game']);
+  assert.equal(snap.games[0].gameName,'목록 전용 게임');
+  assert.deepEqual(snap.games[0].platforms.map(p=>p.platform),['ROBLOX','UNITY']);
+  assert.ok(snap.games[0].platforms.every(p=>p.internalReleaseReady===false&&p.executionAvailable===false));
+  assert.ok(snap.games[0].platforms.every(p=>p.publicUrl===null&&p.internalUrl===null));
+  assert.equal(snap.games.filter(game=>game.gameId==='queued-game').length,1);
+});
+
 test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
