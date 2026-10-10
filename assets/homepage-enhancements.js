@@ -175,7 +175,10 @@ async function bindAvailableUnityWebSurfaces(catalog){
     const id=gameIdOf(game);
     const unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
-    return /^[a-z0-9][a-z0-9-]*$/.test(id)&&projectPath===`unity-games/${id}`;
+    // 배포된 게임은 Unity Web 빌드가 나중에 추가되어도 등록된 게임 ID로 찾는다.
+    // QA와 3D 검증은 아래의 실제 링크 활성화 조건에 그대로 적용한다.
+    return /^[a-z0-9][a-z0-9-]*$/.test(id)
+      &&(projectPath===`unity-games/${id}`||(activeLifecycle(game)&&canonicalWebHref(game)===`/web-games/${id}/`));
   }):[];
   const available=new Map();
   await Promise.all(candidates.map(async game=>{
@@ -505,6 +508,8 @@ async function refresh(){
     };
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
+    // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
+    if(!lastSignature)renderCatalog(catalog);
     const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
     renderCatalog(boundCatalog);
   }finally{refreshInFlight=false;}

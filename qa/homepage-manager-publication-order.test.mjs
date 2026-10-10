@@ -138,7 +138,7 @@ test('homepage fallback stays neutral until current runtime data renders',()=>{
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
 
-test('homepage shows native, Unity Web, and server-catalog playable web actions',()=>{
+test('homepage lists native and verified Unity Web actions without legacy HTML play',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -152,7 +152,7 @@ test('homepage shows native, Unity Web, and server-catalog playable web actions'
   assert.match(homepage,/unityWebAction/);
   assert.match(homepage,/Unity Web · 개발중/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.match(homepage,/웹 플레이/);
+  assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
   assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -187,7 +187,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
+  assert.match(homepage,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -241,18 +241,19 @@ test('PR creation failure remains a blocking publication failure inside Director
   assert.ok(director.includes('exit 1'));
 });
 
-test('new native development admission requires Unity Web upper-platform readiness',()=>{
+test('Unity Web floor remains independent of native development admission',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
   assert.equal(dual.unityWebEnabled,true);
   assert.equal(dual.unityWebRequired,true);
-  assert.equal(dual.unityWebGateRequired,true);
+  assert.equal(dual.unityWebGateRequired,false);
   assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(dual.upperPlatformAdmission,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(dual.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
   assert.equal(dual.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(dual.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
   assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_READY');
+  assert.equal(roadmap.ownerActiveDevelopmentScope20261009?.robloxRequiresUnityWebReadiness,false);
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
@@ -436,25 +437,30 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.match(runtime,/Unity Web · 개발중/);
-  assert.match(runtime,/웹 플레이/);
-  assert.match(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.unityWeb,'Unity Web · 개발중'/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
-test('Unity Web homepage links require a deployable manifest or verified Unity index bundle, not QA gate PASS',()=>{
+test('Unity Web homepage links reject incomplete bundles and require native 3D QA evidence',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(block,/index\.html\?ts=/);
   assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
-  assert.match(block,/bundleComplete===true/);
-  assert.match(block,/bundleGroupsFromUnityIndex/);
-  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),2500\)/);
+  assert.match(block,/manifest\.bundleComplete!==true/);
+  assert.match(block,/manifest\.requiredDimension!=='3D'/);
+  assert.match(block,/manifest\.canonicalSourceRoot!==`unity-games\/\$\{id\}`/);
+  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),5000\)/);
   assert.match(block,/method:'HEAD'/);
   assert.match(block,/\['loader','data','framework','wasm'\]/);
   assert.match(block,/unityWebAvailable:true/);
   assert.match(block,/unityWebAvailable:false/);
-  assert.doesNotMatch(block,/unity-web-build\.json|unity-web-gameplay-validation\.json|bootSmoke|initialRealGameplayQa|noCriticalRuntimeError/);
+  assert.match(block,/unity-web-build\.json/);
+  assert.match(block,/unity-web-gameplay-validation\.json/);
+  assert.match(block,/readiness\.criteria\?\.graphics\?\.native3dVerified!==true/);
+  assert.match(block,/qa\.every\(qaPassed\)/);
+  assert.match(block,/build\.upperPlatformGateCandidate!==true/);
   const display=roadmap.serverHomepageIntegration?.managerContract?.developmentProgressDisplay||{};
   const surface=roadmap.serverHomepageIntegration?.unityWebValidationSurface||{};
   assert.equal(display.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
@@ -516,7 +522,7 @@ test('platform availability uses current release evidence or verified historical
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.match(runtime,/웹 플레이/);
+  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
   assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
