@@ -13,3 +13,11 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-app
 .externalSourceList small{display:block;color:var(--muted);font-size:11px;line-height:1.5}
 @media(max-width:760px){.externalSources{padding:16px}.externalSourceList{grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+
+// 원본 3D 메시 검사: 기존 뷰어 조작부에 포함하고 모바일 터치 간격을 확보한다.
+.meshControls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:6px 24px 0;color:var(--muted);font-size:12px}
+.meshControls label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;color:var(--ink);min-height:44px}
+.meshControls input{width:18px;height:18px;accent-color:var(--blue)}
+#assetCanvas canvas{touch-action:none;display:block}
+#motionControls .clipRow>div{max-height:138px;overflow-y:auto;scrollbar-width:thin}
+@media(max-width:760px){.meshControls{padding:6px 16px 0;gap:4px 12px}.meshControls span{font-size:11px;flex-basis:100%}}
