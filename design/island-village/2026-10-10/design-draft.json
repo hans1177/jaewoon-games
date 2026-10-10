@@ -1,0 +1,2592 @@
+{
+  "version": 5,
+  "gameId": "island-village",
+  "date": "2026-10-10",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
+  "gameSeedSource": "design/island-village/2026-10-10/design-seed.json",
+  "gameSeedInputSource": "game-seed-state.json",
+  "gameplaySketchVersion": 5,
+  "inputGameplaySketchVersion": 5,
+  "gameplaySketch": {
+    "version": 5,
+    "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
+    "worldModel": "무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.",
+    "actors": [
+      "플레이어: Gather a focused set of island resources.",
+      "위협/상대 또는 월드 엔티티: 플레이어 행동에 상태와 결과로 반응"
+    ],
+    "interactionChains": [
+      "플레이어가 대상/공간을 선택한다 -> 실제 입력을 수행한다 -> 대상 또는 월드 상태가 바뀐다 -> 보상·위험·목표 결과가 바뀐다"
+    ],
+    "stateMachine": [
+      "START_OR_WORLD_ENTRY",
+      "REAL_PLAYER_INPUT",
+      "CORE_GAMEPLAY_ACTION",
+      "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE"
+    ],
+    "firstPlayableCycle": [
+      "월드에 진입하고 현재 목표를 확인한다",
+      "Gather a focused set of island resources.",
+      "Use them to build or improve one village function.",
+      "보상 또는 의미 있는 선택을 적용한다",
+      "위험·실패·자원 압박을 실제로 겪는다",
+      "Unlock a new resident, activity or area and choose the next village goal."
+    ],
+    "identityCore": {
+      "oneLineFantasy": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
+      "playerRole": "무인도 마을에서 플레이어는 Gather a focused set of island resources.의 주체가 되어 세계 상태와 다음 선택을 바꾼다.",
+      "representativeAction": "Gather a focused set of island resources.",
+      "representativeChoice": "Use them to build or improve one village function.",
+      "signatureWorldRule": "플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "signatureSystemPromise": [
+        "Gather a focused set of island resources.과 Use them to build or improve one village function.의 결과가 같은 월드 상태에서 서로 영향을 주는 시그니처 상호작용"
+      ],
+      "growthIdentity": "성장은 수치 증가만이 아니라 새 행동·경로·조합·관계·발견 또는 대응법을 열어 같은 콘텐츠를 다르게 사용하게 한다.",
+      "identityCoherence": {
+        "worldCulture": "세계의 역사·생활·경제·지역 기능이 핵심 플레이 행동이 존재할 이유를 같은 논리로 설명한다.",
+        "visualLanguage": "지역·캐릭터·적·아이템·UI가 역할과 위험·보상 차이를 같은 시각 언어로 보여준다.",
+        "audioLanguage": "탐험·위험·성공·실패·성장 상태의 소리와 음악이 핵심 행동과 세계 분위기를 일관되게 강화한다.",
+        "enemyItemNpcCoherence": "적·아이템·NPC는 이름만 다른 장식이 아니라 세계의 원인과 플레이 규칙, 보상·정보·관계에 연결된다."
+      },
+      "threeSentenceTest": {
+        "whatGame": "무인도 마을은 Gather a focused set of island resources.을 중심으로 선택 결과가 다음 월드 상태를 바꾸는 CASUAL 게임이다.",
+        "whatDifferent": "대표 선택과 세계 규칙이 결합되어 같은 장르의 단순 반복과 다른 경로·위험·결과를 만든다.",
+        "whatGrowthUnlocks": "성장할수록 새 행동 조합·경로·관계·발견·대응법 중 장르에 맞는 가능성이 실제 플레이에 열린다."
+      },
+      "genreAdaptationRule": "CASUAL의 핵심 재미를 최우선으로 두고 RPG식 시스템을 강제하지 않으며, 정체성 질문만 장르에 맞게 적용한다."
+    },
+    "novelGameGrammar": {
+      "toneBlend": [
+        "GAME_SPECIFIC_TONE"
+      ],
+      "familiarAnchor": "상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.",
+      "causalDNAs": [
+        {
+          "id": "KARMA_RETURN",
+          "source": "EAST_ASIAN_RELIGION_PHILOSOPHY",
+          "principle": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.",
+          "gameplayConversion": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+          "fusionRole": "보조 인과축으로 기존 게임 문법을 비튼다."
+        },
+        {
+          "id": "MANDATE_LEGITIMACY",
+          "source": "EAST_ASIAN_POLITICAL_HISTORY",
+          "principle": "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.",
+          "gameplayConversion": "영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+          "fusionRole": "보조 인과축으로 기존 게임 문법을 비튼다."
+        }
+      ],
+      "brokenGenreAssumption": "기존 CASUAL 관습을 최종 장르로 고정하지 않고 빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다.",
+      "newPrimaryVerb": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다",
+      "worldRule": "플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+      "causalFusion": [
+        "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 때문에 MAIN의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.",
+        "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다. 때문에 A/B/c의 선택은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다."
+      ],
+      "irreducibilityTest": {
+        "removeFirstAxis": "KARMA_RETURN 소재를 제거하면 MAIN 정체성과 A/B 시스템·C 장르의 인과 구조가 약해지거나 사라진다.",
+        "removeSecondAxis": "MANDATE_LEGITIMACY 인과를 제거하면 일반 시스템 융복합이 재료에서 나온 새 인과문법과 분리된다.",
+        "verdict": "A/B 시스템별 소재와 C의 메인·보조 장르를 어느 하나 빼도 선택·위험·스토리 결과가 변하며 단순 기능 합산으로 분리할 수 없다."
+      },
+      "storyWorldBindings": {
+        "emotionalConflict": "플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.",
+        "characterRule": "주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.",
+        "monsterRule": "몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.",
+        "regionRule": "지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.",
+        "storyRule": "스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.",
+        "plausibility": "낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다."
+      },
+      "gameplaySystemFusion": {
+        "formula": "MAIN × A × B × C",
+        "main": {
+          "name": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
+          "purpose": "MAIN은 게임의 주제와 정체성이다. 플레이어가 누구이며 어떤 게임을 운영·진행하는지를 명확히 한다.",
+          "playerAction": "Gather a focused set of island resources.",
+          "stateContribution": "MAIN의 세계·정체성과 반복 목표가 A/B 시스템의 선택과 C 창작 장르 및 @ 발견에 의미를 부여한다."
+        },
+        "majorAxes": [
+          {
+            "key": "A",
+            "name": "Use them to build or improve one village function.",
+            "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+            "playerChoice": "Use them to build or improve one village function.",
+            "stateContribution": "MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
+            "systemFamily": "",
+            "sourceMaterial": "",
+            "sourceDomain": "",
+            "materialRule": ""
+          },
+          {
+            "key": "B",
+            "name": "Unlock a new resident, activity or area and choose the next village goal.",
+            "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+            "playerChoice": "Unlock a new resident, activity or area and choose the next village goal.",
+            "stateContribution": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결한다.",
+            "systemFamily": "",
+            "sourceMaterial": "",
+            "sourceDomain": "",
+            "materialRule": ""
+          }
+        ],
+        "themeFusion": {
+          "themes": [],
+          "genres": [],
+          "genreInterlock": "",
+          "jointWorldRule": "",
+          "abGameplayEffect": ""
+        },
+        "subElements": [
+          {
+            "name": "상황 규칙",
+            "role": "MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 보조 규칙.",
+            "supports": [
+              "MAIN",
+              "A"
+            ],
+            "variationEffect": "같은 MAIN 행동도 현재 상황 상태에 따라 비용·위험·효율이 달라진다."
+          },
+          {
+            "name": "환경 또는 이벤트 변주",
+            "role": "A/B 관계에 일시적 조건·기회·압박을 추가하는 서브요소.",
+            "supports": [
+              "A",
+              "B"
+            ],
+            "variationEffect": "같은 A/B 조합이라도 이벤트·지역·타이밍에 따라 다른 대응을 요구한다."
+          },
+          {
+            "name": "보조 자원 또는 정보",
+            "role": "MAIN/A/B 사이 선택의 우선순위를 바꾸는 작은 상태층.",
+            "supports": [
+              "MAIN",
+              "B"
+            ],
+            "variationEffect": "보조 정보나 자원 상태가 다음 선택 순서와 기회비용을 바꾼다."
+          }
+        ],
+        "crossSystemRules": [
+          "MAIN의 결과가 A의 선택 비용·위험·보상 중 하나를 바꾼다.",
+          "A의 선택 결과가 B의 가능 행동·상태·우선순위를 바꾼다.",
+          "c 서브요소가 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다.",
+          "B와 c의 누적 결과가 다시 MAIN의 목적·효율·위험 또는 사용법을 바꿔 순환한다."
+        ]
+      },
+      "delveLayer": {
+        "formulaSuffix": "+ @",
+        "role": "DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS",
+        "elements": []
+      },
+      "emergentGenre": {
+        "name": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다 복합장르",
+        "definition": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 정체성을 중심으로 A/B의 시스템×소재가 서로 상태를 바꾸고 C의 두 소재·메인·보조 장르가 사건과 규칙을 생성하며 @ 파고들기가 계속 확장되는 복합장르다.",
+        "whyNotSingleConventionalGenre": "기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.",
+        "grammarFormula": "MAIN × A × B × C + @",
+        "categoryRole": "SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE"
+      },
+      "expansionVectors": [
+        "새 지역은 같은 소재와 MAIN×A×B×C 관계를 새로운 지역 법칙과 상황에서 다시 결합한다.",
+        "새 몬스터는 체력 배수가 아니라 A/B/c 관계의 상태 전달을 방해·증폭·반전한다.",
+        "새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.",
+        "새 아이템/능력은 MAIN/A/B/c 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다."
+      ],
+      "culturalAbstractionRule": "동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 높낮이 없이 동등한 재료이며 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다."
+    },
+    "playerPromise": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+    "funDrivers": [
+      "핵심 행동은 입력 직후 읽을 수 있는 상태 변화와 피드백을 만든다",
+      "안전·속도·보상·자원 중 최소 하나의 실제 트레이드오프가 다음 선택을 바꾼다",
+      "숙련과 성장은 숫자 상승뿐 아니라 새 행동 조합·경로·대응법을 연다"
+    ],
+    "balanceRules": [
+      "하나의 지배 전략이 모든 상황을 해결하지 못하도록 상황별 비용·카운터·기회비용을 둔다",
+      "플레이어 파워 성장과 위협·목표 복잡도 상승을 함께 조정해 성장 체감을 지우지 않는다",
+      "실패는 다음 선택이 가능한 복구 경로를 남기고 반복 손실로 진행을 완전히 봉쇄하지 않는다",
+      "경제·자원은 획득원과 소비처를 함께 두고 무한 무료 루프나 의미 없는 과잉 축적을 막는다"
+    ],
+    "pacingPlan": {
+      "first5Minutes": "0~5분에 조작·목표·핵심 행동을 이해하고 첫 성공과 첫 위험/선택을 경험한다.",
+      "minutes5To15": "5~15분에 핵심 루프를 반복하되 첫 성장·장비·경로·전략 선택으로 행동 결과가 달라진다.",
+      "minutes15To25": "15~25분에 새 압박 유형·지역 규칙·적 행동·목표 또는 시스템 연결을 열어 같은 루프의 단순 반복을 피한다.",
+      "minutes25To30": "25~30분에 이전 선택과 성장을 조합해 중간 목표·시그니처 상황을 해결하고 다음 플레이 동기를 연다.",
+      "midLateGame": "중후반은 여러 시스템을 결합하고 빌드·경로·플레이스타일 차이가 실제 결과를 갈라놓으며 새로운 규칙 조합을 요구한다.",
+      "replayMotivation": "재플레이는 다른 빌드·경로·위험 선택·월드 결과·정보 발견으로 새 전략 결과를 만들며 단순 보상 반복에 의존하지 않는다."
+    },
+    "progressionLayers": [
+      "세션 성장: 현재 플레이에서 자원·위치·장비·전술 선택이 즉시 다음 행동 가능성을 바꾼다",
+      "중기 성장: 해금·지역·시스템 연결 또는 빌드 선택이 새로운 전략 경로를 연다",
+      "장기 성장: 숙련·월드 상태·수집·관계·메타 목표 중 장르에 맞는 축이 다음 세션의 선택 폭을 넓힌다"
+    ],
+    "expansionPlan": [
+      "새 적·위협은 행동 패턴·대응 우선순위·공간 사용을 바꾼다",
+      "새 공간·경로는 이동·자원·가시성·위험보상 중 실제 규칙 차이를 만든다",
+      "새 목표·상호작용·정보는 기존 시스템과 연결되어 다른 결정 순서를 만든다",
+      "새 빌드·플레이스타일·전략 결과는 동일 콘텐츠를 다른 수치로 반복하는 것이 아니라 행동 조합을 바꾼다"
+    ],
+    "longGoalScenario": [
+      "초기 핵심 루프와 첫 성장 선택을 완료한다",
+      "새 경로·위협·시스템 상호작용으로 플레이 방식을 확장한다",
+      "여러 시스템과 누적 선택을 조합해 중간/장기 목표 또는 시그니처 상황을 해결한다"
+    ],
+    "completionCriteria": [
+      "첫 5분 안에 실제 입력·핵심 행동·상태 변화·첫 성공과 위험이 연결된다",
+      "15~25분 사이 새 결정 공간·압박 유형·시스템 연결이 열린다",
+      "30분 이상 플레이는 반복/대기 없이 시스템 조합과 장기 목표로 이어진다",
+      "실패·재시도·회복·세이브·소프트락 복구 경로가 게임 규칙과 충돌하지 않는다"
+    ],
+    "codingGrowthHooks": [
+      "확장 콘텐츠 정의는 가능한 한 기존 설정/데이터 테이블과 안정적인 ID를 사용한다",
+      "게임 상태 변경은 기존 책임 함수와 소유권 API를 재사용하고 중복 authoritative 시스템을 만들지 않는다",
+      "지역·웨이브·적·퀘스트·보상 확장은 기존 진행/경제/월드 이벤트와 연결 가능한 선언형 슬롯을 우선한다",
+      "저장되는 데이터 구조가 바뀌면 버전과 마이그레이션을 포함하고 기존 키 의미를 보존한다"
+    ],
+    "validationRisks": [
+      "버튼/라벨/파일 크기만으로 구현 완료를 가장하지 않는다",
+      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+    ],
+    "flowArchitecture": {
+      "version": 3,
+      "source": "DERIVED_GAME_FLOW_ARCHITECT",
+      "gameId": "seed:canonical:island-village",
+      "genre": "CASUAL",
+      "flowDNA": [
+        "PUZZLE_DISCOVERY",
+        "LIFE_SCHEDULE"
+      ],
+      "phaseArc": [
+        {
+          "phase": "EARLY",
+          "dominantFlow": "PUZZLE_DISCOVERY",
+          "purpose": "teach the world and core agency",
+          "requiredChange": "establish control, first meaningful choice, first consequence"
+        },
+        {
+          "phase": "MID",
+          "dominantFlow": "LIFE_SCHEDULE",
+          "purpose": "change the decision structure instead of only scaling numbers",
+          "requiredChange": "open parallel goals, route or system interaction, and a new pressure type"
+        },
+        {
+          "phase": "LATE",
+          "dominantFlow": "PUZZLE_DISCOVERY",
+          "purpose": "resolve accumulated world consequences through a different pressure/goal structure",
+          "requiredChange": "combine prior systems, expose irreversible or high-stakes choice, reach distinct terminal outcome"
+        }
+      ],
+      "transitionEvents": [
+        {
+          "trigger": "FIRST_MEANINGFUL_PROGRESSION_OR_WORLD_CHANGE",
+          "effect": "EARLY_TO_MID_FLOW_CHANGE"
+        },
+        {
+          "trigger": "MAJOR_REGION_BOSS_NPC_ECONOMY_OR_SYSTEM_THRESHOLD",
+          "effect": "MID_TO_LATE_FLOW_CHANGE"
+        },
+        {
+          "trigger": "PLAYER_CHOICE_OR_WORLD_FAILURE_WHEN_DESIGN_SUPPORTS_IT",
+          "effect": "ROUTE_OR_RULESET_BRANCH"
+        }
+      ],
+      "parallelGoals": {
+        "required": true,
+        "minConcurrentThreads": 3,
+        "threads": [
+          "PRIMARY_OBJECTIVE",
+          "GROWTH_OR_EQUIPMENT",
+          "WORLD_OR_REGION_CHANGE",
+          "OPTIONAL_RELATIONSHIP_COLLECTION_OR_ECONOMY"
+        ]
+      },
+      "branching": {
+        "required": true,
+        "contract": "CHOICE_MUST_CHANGE_NEXT_ROUTE_TARGET_RISK_REWARD_OR_WORLD_STATE_NOT_ONLY_TEXT"
+      },
+      "returnStructure": {
+        "allowedModes": [
+          "HUB_RETURN",
+          "CONTINUOUS_FORWARD",
+          "EXTRACTION_DECISION",
+          "MULTI_BASE_ROTATION"
+        ],
+        "selectedMode": "EXTRACTION_DECISION",
+        "sameReturnLoopEveryGameForbidden": true
+      },
+      "failureModel": {
+        "modes": [
+          "TIME_OR_OPPORTUNITY_COST",
+          "FORCED_ROUTE_CHANGE"
+        ],
+        "contract": "FAILURE_COSTS_MUST_DIFFER_BY_CONTEXT_AND_PRESERVE_A_REAL_RECOVERY_OR_RETRY_PATH"
+      },
+      "victoryModel": {
+        "modes": [
+          "RELATIONSHIP_OR_SOCIAL_RESOLUTION",
+          "SURVIVAL_OR_DURATION_TARGET",
+          "BOSS_OR_THREAT_RESOLUTION"
+        ],
+        "contract": "TERMINAL_SUCCESS_MUST_NOT_DEFAULT_TO_BOSS_KILL_WHEN_ANOTHER OUTCOME FITS THE GAME"
+      },
+      "worldReactivity": {
+        "required": true,
+        "contract": "PLAYER_ACTION_OR_NEGLECT_CHANGES_WORLD_NPC_ENEMY_ECONOMY_ACCESS_OR_REGION_STATE_AND_LATER_PLAY"
+      },
+      "npcInitiative": {
+        "required": true,
+        "contract": "WHEN_NPCS_EXIST_AT_LEAST_ONE NPC_OR_WORLD_ACTOR_MAY_INITIATE_EVENT_MOVE_REQUEST_CONFLICT_OR_STATE_CHANGE_WITHOUT_PLAYER_BUTTON_PROXY"
+      },
+      "riskCurve": {
+        "required": true,
+        "types": [
+          "ENEMY_PRESSURE",
+          "RESOURCE_SCARCITY",
+          "TIME_PRESSURE"
+        ],
+        "contract": "MID_OR_LATE_PRESSURE_MUST_CHANGE TYPE OR COMBINATION_NOT ONLY NUMERIC SCALE"
+      },
+      "playstyleRoutes": {
+        "required": true,
+        "styles": [
+          "ECONOMY_AND_BUILD",
+          "EXPLORATION_AND_DISCOVERY",
+          "SOCIAL_OR_QUEST"
+        ],
+        "contract": "AT_LEAST_TWO PLAYSTYLES MUST REACH MEANINGFUL PROGRESS THROUGH DIFFERENT ACTION MIXES"
+      },
+      "regionalRuleVariation": {
+        "required": true,
+        "contract": "MAJOR_REGIONS_MUST DIFFER BY AT_LEAST ONE REAL MOVEMENT_COMBAT_RESOURCE_VISIBILITY_INTERACTION_OR_RISK_RULE"
+      },
+      "sessionStructure": {
+        "short": "5_MINUTES_HAS_MEANINGFUL_MICRO_GOAL_AND_STATE_CHANGE",
+        "medium": "15_TO_25_MINUTES_OPENS_NEW_ROUTE_SYSTEM_OR_PRESSURE",
+        "long": "30_PLUS_MINUTES_COMBINES_FLOW_TRANSITION_AND_LONG_GOAL_WITHOUT_PADDING"
+      },
+      "metaProgression": {
+        "mode": "CONDITIONAL_ON_GAME_DESIGN",
+        "contract": "IF_PRESENT_SEPARATE_CURRENT_SESSION_GAIN_FROM_PERSISTENT_LONG_TERM_CHANGE"
+      },
+      "playerAuthoredGoals": {
+        "mode": "OPTIONAL",
+        "contract": "WHEN_ENABLED_SYSTEMS_SUPPORT SELF_SELECTED BUILD_COLLECTION_RELATIONSHIP_EXPLORATION_OR_ECONOMY GOALS"
+      },
+      "tensionRhythm": {
+        "required": true,
+        "contract": "ALTERNATE_PRESSURE_DISCOVERY_REWARD_RECOVERY_OR_DECISION_BEATS; CONTINUOUS SAME_INTENSITY_ACTION_FORBIDDEN"
+      },
+      "informationProgression": {
+        "required": true,
+        "modes": [
+          "SCOUTING_OR_SENSOR",
+          "ITEM_OR_ABILITY_REVEAL",
+          "CAUSE_AND_EFFECT_LEARNING"
+        ],
+        "contract": "SOME USEFUL INFORMATION IS EARNED THROUGH PLAY AND CHANGES LATER DECISIONS"
+      },
+      "revisitValue": {
+        "required": true,
+        "contract": "WHEN BACKTRACKING EXISTS PRIOR SPACE MUST GAIN NEW ACCESS_STATE_EVENT_RISK_REWARD_OR_INFORMATION; EMPTY RETURN TRAVEL DOES NOT COUNT"
+      },
+      "endingModel": {
+        "required": true,
+        "multipleOutcomeCapable": true,
+        "contract": "WHEN DESIGN HAS BRANCHING_OR_WORLD_STATE ENDING OR TERMINAL STATE MUST REFLECT ACCUMULATED CHOICES_OR_WORLD_STATE"
+      },
+      "diversityRules": {
+        "minFlowArchetypes": 2,
+        "maxFlowArchetypes": 4,
+        "phaseDominantFlowMustChange": true,
+        "parallelGoalThreadsMin": 3,
+        "failureModesMin": 2,
+        "victoryModesMin": 2,
+        "worldReactionRequired": true,
+        "regionalRuleDifferenceRequired": true,
+        "sameMacroLoopAcrossAllPhasesForbidden": true,
+        "renameOnlyVariationForbidden": true
+      },
+      "systemBlueprint": {
+        "version": 1,
+        "profile": "CASUAL",
+        "routingProfileRole": "SEED_DISCOVERY_AND_COMPATIBILITY_HINT_ONLY_NOT_FINAL_GENRE",
+        "target": "CONCEPT_MATCHED_INTERCONNECTED_SYSTEM_BUNDLE",
+        "requiredSystems": [
+          {
+            "id": "UPGRADE_BRANCH",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "PROGRESSION",
+              "ECONOMY"
+            ],
+            "reusableLibraryHints": [],
+            "purpose": "upgrades create branching roles and tradeoffs rather than linear stat inflation",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "ITEM_LOOT",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "ECONOMY",
+              "PROGRESSION"
+            ],
+            "reusableLibraryHints": [
+              "assets/economy-loot-shop.js",
+              "assets/inventory-equipment.js"
+            ],
+            "purpose": "drops and rewards have source tables rarity roles and meaningful use",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "HOUSING_BUILDING",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "WORLD",
+              "PLACEMENT",
+              "ECONOMY",
+              "SAVE"
+            ],
+            "reusableLibraryHints": [],
+            "purpose": "player-built shelter base or structures change access safety production storage or planning",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "NPC_INTERACTION",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "NARRATIVE",
+              "INTERACTION",
+              "AI"
+            ],
+            "reusableLibraryHints": [
+              "assets/quest-dialogue.js",
+              "assets/common-ai.js"
+            ],
+            "purpose": "NPCs have world roles knowledge boundaries reactions and meaningful interactions",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "QUEST_DIALOGUE",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "NARRATIVE",
+              "PROGRESSION",
+              "SAVE"
+            ],
+            "reusableLibraryHints": [
+              "assets/quest-dialogue.js"
+            ],
+            "purpose": "quests prerequisites dialogue consequences and rewards remain causal and persistent",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "FACTION_WORLD_STATE",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "NARRATIVE",
+              "WORLD",
+              "PROGRESSION"
+            ],
+            "reusableLibraryHints": [
+              "assets/quest-dialogue.js"
+            ],
+            "purpose": "faction and world-state consequences change access conflict support or region behavior",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "SOCIAL_RELATIONSHIP",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "NARRATIVE",
+              "AI",
+              "SAVE"
+            ],
+            "reusableLibraryHints": [
+              "assets/quest-dialogue.js",
+              "assets/common-ai.js"
+            ],
+            "purpose": "relationships change causally and unlock reactions quests information or access",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "WEATHER_ENVIRONMENT",
+            "priority": "REQUIRED",
+            "ownerSystems": [
+              "WORLD",
+              "PRESENTATION"
+            ],
+            "reusableLibraryHints": [],
+            "purpose": "environment state changes readability traversal pressure or presentation without visual-only fake depth",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          }
+        ],
+        "expansionSystems": [
+          {
+            "id": "CODEX_COLLECTION",
+            "priority": "EXPANSION",
+            "ownerSystems": [
+              "PROGRESSION",
+              "NARRATIVE"
+            ],
+            "reusableLibraryHints": [],
+            "purpose": "discovery collection or bestiary knowledge rewards observation and mastery",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          },
+          {
+            "id": "INVENTORY_EQUIPMENT",
+            "priority": "EXPANSION",
+            "ownerSystems": [
+              "PLAYER",
+              "ECONOMY",
+              "SAVE"
+            ],
+            "reusableLibraryHints": [
+              "assets/inventory-equipment.js"
+            ],
+            "purpose": "acquire compare equip replace and persist items without shadow inventory authority",
+            "reuseRule": "REUSE_EXISTING_COMPATIBLE_SYSTEM_OR_REAUTHOR_SEMANTICS_INSIDE_EXISTING_NATIVE_RESPONSIBILITY",
+            "shadowSystemForbidden": true,
+            "gameplayAuthorityMustStayWithExistingResponsibleSystem": true
+          }
+        ],
+        "phasePlan": {
+          "EARLY": [
+            "ITEM_LOOT"
+          ],
+          "MID": [
+            "UPGRADE_BRANCH"
+          ],
+          "LATE": [
+            "NPC_INTERACTION",
+            "QUEST_DIALOGUE",
+            "CODEX_COLLECTION"
+          ]
+        },
+        "interconnectionChains": [
+          "ITEM_LOOT->UPGRADE_BRANCH->CODEX_COLLECTION"
+        ],
+        "novelGrammarContract": {
+          "toneBlend": [
+            "GAME_SPECIFIC_TONE"
+          ],
+          "familiarAnchor": "상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.",
+          "newPrimaryVerb": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다",
+          "brokenGenreAssumption": "기존 CASUAL 관습을 최종 장르로 고정하지 않고 빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다.",
+          "worldRule": "플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다.",
+          "causalDNAs": [
+            {
+              "id": "KARMA_RETURN",
+              "source": "EAST_ASIAN_RELIGION_PHILOSOPHY",
+              "principle": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.",
+              "gameplayConversion": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+              "fusionRole": "보조 인과축으로 기존 게임 문법을 비튼다."
+            },
+            {
+              "id": "MANDATE_LEGITIMACY",
+              "source": "EAST_ASIAN_POLITICAL_HISTORY",
+              "principle": "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.",
+              "gameplayConversion": "영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+              "fusionRole": "보조 인과축으로 기존 게임 문법을 비튼다."
+            }
+          ],
+          "causalFusion": [
+            "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 때문에 MAIN의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.",
+            "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다. 때문에 A/B/c의 선택은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다."
+          ],
+          "storyWorldBindings": {
+            "emotionalConflict": "플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.",
+            "characterRule": "주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.",
+            "monsterRule": "몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.",
+            "regionRule": "지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.",
+            "storyRule": "스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.",
+            "plausibility": "낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다."
+          },
+          "gameplaySystemFusion": {
+            "formula": "MAIN × A × B × C",
+            "main": {
+              "name": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
+              "purpose": "MAIN은 게임의 주제와 정체성이다. 플레이어가 누구이며 어떤 게임을 운영·진행하는지를 명확히 한다.",
+              "playerAction": "Gather a focused set of island resources.",
+              "stateContribution": "MAIN의 세계·정체성과 반복 목표가 A/B 시스템의 선택과 C 창작 장르 및 @ 발견에 의미를 부여한다."
+            },
+            "majorAxes": [
+              {
+                "key": "A",
+                "name": "Use them to build or improve one village function.",
+                "purpose": "MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.",
+                "playerChoice": "Use them to build or improve one village function.",
+                "stateContribution": "MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.",
+                "systemFamily": "",
+                "sourceMaterial": "",
+                "sourceDomain": "",
+                "materialRule": ""
+              },
+              {
+                "key": "B",
+                "name": "Unlock a new resident, activity or area and choose the next village goal.",
+                "purpose": "A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.",
+                "playerChoice": "Unlock a new resident, activity or area and choose the next village goal.",
+                "stateContribution": "A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결한다.",
+                "systemFamily": "",
+                "sourceMaterial": "",
+                "sourceDomain": "",
+                "materialRule": ""
+              }
+            ],
+            "themeFusion": {
+              "themes": [],
+              "genres": [],
+              "genreInterlock": "",
+              "jointWorldRule": "",
+              "abGameplayEffect": ""
+            },
+            "subElements": [
+              {
+                "name": "상황 규칙",
+                "role": "MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 보조 규칙.",
+                "supports": [
+                  "MAIN",
+                  "A"
+                ],
+                "variationEffect": "같은 MAIN 행동도 현재 상황 상태에 따라 비용·위험·효율이 달라진다."
+              },
+              {
+                "name": "환경 또는 이벤트 변주",
+                "role": "A/B 관계에 일시적 조건·기회·압박을 추가하는 서브요소.",
+                "supports": [
+                  "A",
+                  "B"
+                ],
+                "variationEffect": "같은 A/B 조합이라도 이벤트·지역·타이밍에 따라 다른 대응을 요구한다."
+              },
+              {
+                "name": "보조 자원 또는 정보",
+                "role": "MAIN/A/B 사이 선택의 우선순위를 바꾸는 작은 상태층.",
+                "supports": [
+                  "MAIN",
+                  "B"
+                ],
+                "variationEffect": "보조 정보나 자원 상태가 다음 선택 순서와 기회비용을 바꾼다."
+              }
+            ],
+            "crossSystemRules": [
+              "MAIN의 결과가 A의 선택 비용·위험·보상 중 하나를 바꾼다.",
+              "A의 선택 결과가 B의 가능 행동·상태·우선순위를 바꾼다.",
+              "c 서브요소가 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다.",
+              "B와 c의 누적 결과가 다시 MAIN의 목적·효율·위험 또는 사용법을 바꿔 순환한다."
+            ]
+          },
+          "delveLayer": {
+            "formulaSuffix": "+ @",
+            "role": "DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS",
+            "elements": []
+          },
+          "emergentGenre": {
+            "name": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다 복합장르",
+            "definition": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 정체성을 중심으로 A/B의 시스템×소재가 서로 상태를 바꾸고 C의 두 소재·메인·보조 장르가 사건과 규칙을 생성하며 @ 파고들기가 계속 확장되는 복합장르다.",
+            "whyNotSingleConventionalGenre": "기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.",
+            "grammarFormula": "MAIN × A × B × C + @",
+            "categoryRole": "SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE"
+          },
+          "expansionVectors": [
+            "새 지역은 같은 소재와 MAIN×A×B×C 관계를 새로운 지역 법칙과 상황에서 다시 결합한다.",
+            "새 몬스터는 체력 배수가 아니라 A/B/c 관계의 상태 전달을 방해·증폭·반전한다.",
+            "새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.",
+            "새 아이템/능력은 MAIN/A/B/c 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다."
+          ],
+          "irreducibilityTest": {
+            "removeFirstAxis": "KARMA_RETURN 소재를 제거하면 MAIN 정체성과 A/B 시스템·C 장르의 인과 구조가 약해지거나 사라진다.",
+            "removeSecondAxis": "MANDATE_LEGITIMACY 인과를 제거하면 일반 시스템 융복합이 재료에서 나온 새 인과문법과 분리된다.",
+            "verdict": "A/B 시스템별 소재와 C의 메인·보조 장르를 어느 하나 빼도 선택·위험·스토리 결과가 변하며 단순 기능 합산으로 분리할 수 없다."
+          },
+          "culturalAbstractionRule": "동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 높낮이 없이 동등한 재료이며 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다.",
+          "rule": "MAIN × A × B × C + @; MAIN identity; A/B system + independent material; C two creative materials plus PRIMARY and SECONDARY genres; @ unbounded delve",
+          "categoryRole": "SEED_DISCOVERY_AND_ROUTING_HINT_ONLY_NOT_FINAL_GENRE",
+          "atRole": "DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS"
+        },
+        "awardCaliberPrinciples": [
+          "SYSTEMS_INTERLOCK_AROUND_THE_CORE_FANTASY_INSTEAD_OF_EXISTING_AS_A_FEATURE_CHECKLIST",
+          "PROGRESSION_UNLOCKS_NEW_VERBS_COMBINATIONS_ROUTES_OR_RELATIONSHIPS_NOT_ONLY_LARGER_NUMBERS",
+          "SIDE_CONTENT_FEEDS_BACK_INTO_CORE_PLAY_WORLD_STATE_CHARACTER_RELATIONSHIPS_OR_BUILD_OPTIONS",
+          "WORLD_NPCS_ENEMIES_ECONOMY_AND_ACCESS_REACT_TO_PLAYER_ACTION_OR_NEGLECT",
+          "EARLY_MID_LATE_PLAY_CHANGE_DECISION_STRUCTURE_PRESSURE_OR_SYSTEM_COMBINATION",
+          "AUTHORED_PEAK_MOMENTS_AND_SYSTEMIC_REPLAY_VALUE_COEXIST",
+          "FAILURE_CREATES_RECOVERY_ADAPTATION_OR_NEW_INFORMATION_INSTEAD_OF_EMPTY_REPETITION",
+          "OPTIONAL_SYSTEMS_RESPECT_THE_GAME_CONCEPT_AND_DO_NOT_DILUTE_THE_CORE_FANTASY",
+          "CONTENT_EXPANSION_ADDS_NEW_ROLES_RULES_INTERACTIONS_OR_CONSEQUENCES_NOT_RESKINS_ONLY",
+          "QUALITY_OF_LIFE_REDUCES_FRICTION_WITHOUT_REMOVING_MEANINGFUL_DECISIONS"
+        ],
+        "libraryReusePolicy": {
+          "existingCompatibleLibraryFirst": true,
+          "directCrossPlatformCodeCopyForbidden": true,
+          "platformNativeReauthoringWhenNeeded": true,
+          "existingGameplayAuthorityWins": true,
+          "wrapperOrShadowSystemForbidden": true,
+          "knownReusableLibraries": [
+            "assets/economy-loot-shop.js",
+            "assets/inventory-equipment.js",
+            "assets/quest-dialogue.js",
+            "assets/common-ai.js"
+          ]
+        },
+        "expansionPolicy": {
+          "contentBundlesMustConnectAtLeastTwoSystems": true,
+          "newContentMustChangeDecisionStateRouteRelationshipOrBuild": true,
+          "statOnlyReskinOnlyAndMenuOnlyExpansionDoesNotCount": true,
+          "sideContentMustFeedCoreFantasyOrWorldState": true,
+          "laterUpdatesMayAddSystemsWithoutRewritingValidatedCore": true,
+          "causalGrammarMustMutateAcrossExpansion": true,
+          "expansionShouldChangeHowTheCoreRuleBehavesNotOnlyAddObjects": true,
+          "mainABCFormulaRequiredWhenNovelGrammarExists": true,
+          "aAndBEachNeedSystemAndCreativeMaterial": true,
+          "cNeedsTwoCreativeThemesAndTwoDistinctGenres": true,
+          "supportingGenreMustCausallyChangeGameplay": true,
+          "subElementsAreNotCThemeSlot": true,
+          "atDelveLayerRequiredAndNotAGeneralSystemAxis": true,
+          "emergentGenreComesFromCombinedGrammarNotRoutingCategory": true,
+          "characterMonsterRegionStoryShouldExpressTheSameCausalWorldLawWhenApplicable": true
+        },
+        "sourceFlowDNA": [
+          "PUZZLE_DISCOVERY",
+          "LIFE_SCHEDULE"
+        ]
+      },
+      "assetFlow": {
+        "version": 1,
+        "mode": "FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION",
+        "requirements": [
+          {
+            "family": "PROP",
+            "subfamily": "INTERACTIVE",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "PUZZLE_DISCOVERY"
+            ],
+            "systemRoles": [],
+            "phases": [
+              "EARLY",
+              "LATE"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "UI",
+            "subfamily": "ICON",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "PUZZLE_DISCOVERY"
+            ],
+            "systemRoles": [
+              "UPGRADE_BRANCH",
+              "ITEM_LOOT",
+              "HOUSING_BUILDING",
+              "QUEST_DIALOGUE",
+              "CODEX_COLLECTION",
+              "INVENTORY_EQUIPMENT"
+            ],
+            "phases": [
+              "EARLY",
+              "LATE",
+              "MID"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "VFX",
+            "subfamily": "IMPACT",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "PUZZLE_DISCOVERY"
+            ],
+            "systemRoles": [],
+            "phases": [
+              "EARLY",
+              "LATE"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "AUDIO",
+            "subfamily": "UI",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "PUZZLE_DISCOVERY"
+            ],
+            "systemRoles": [],
+            "phases": [
+              "EARLY",
+              "LATE"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "CHARACTER",
+            "subfamily": "BODY",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "LIFE_SCHEDULE"
+            ],
+            "systemRoles": [
+              "NPC_INTERACTION",
+              "SOCIAL_RELATIONSHIP"
+            ],
+            "phases": [
+              "MID",
+              "LATE"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "MOTION",
+            "subfamily": "ACTING",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "LIFE_SCHEDULE"
+            ],
+            "systemRoles": [
+              "NPC_INTERACTION",
+              "SOCIAL_RELATIONSHIP"
+            ],
+            "phases": [
+              "MID",
+              "LATE"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "PROP",
+            "subfamily": "FURNITURE",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "LIFE_SCHEDULE"
+            ],
+            "systemRoles": [
+              "HOUSING_BUILDING"
+            ],
+            "phases": [
+              "MID"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "UI",
+            "subfamily": "HUD",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [
+              "LIFE_SCHEDULE"
+            ],
+            "systemRoles": [],
+            "phases": [
+              "MID"
+            ],
+            "reason": "FLOW_DNA",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "UI",
+            "subfamily": "FRAME",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "UPGRADE_BRANCH",
+              "NPC_INTERACTION",
+              "QUEST_DIALOGUE",
+              "CODEX_COLLECTION"
+            ],
+            "phases": [
+              "MID",
+              "LATE"
+            ],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "PROP",
+            "subfamily": "RESOURCE",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "ITEM_LOOT"
+            ],
+            "phases": [
+              "EARLY"
+            ],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "BUILDING",
+            "subfamily": "MODULAR_EXTERIOR",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "HOUSING_BUILDING"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "BUILDING",
+            "subfamily": "INTERIOR",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "HOUSING_BUILDING"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "CHARACTER",
+            "subfamily": "ACCESSORY",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "FACTION_WORLD_STATE",
+              "INVENTORY_EQUIPMENT"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "UI",
+            "subfamily": "STATUS",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "FACTION_WORLD_STATE",
+              "SOCIAL_RELATIONSHIP"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "ENVIRONMENT",
+            "subfamily": "LANDMARK",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "FACTION_WORLD_STATE"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "ENVIRONMENT",
+            "subfamily": "WEATHER",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "WEATHER_ENVIRONMENT"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "VFX",
+            "subfamily": "WEATHER",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "WEATHER_ENVIRONMENT"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "AUDIO",
+            "subfamily": "WEATHER",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "WEATHER_ENVIRONMENT"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_REQUIRED",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "UI",
+            "subfamily": "INVENTORY",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [
+              "INVENTORY_EQUIPMENT"
+            ],
+            "phases": [],
+            "reason": "CONCEPT_SYSTEM_EXPANSION",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "WEAPON",
+            "subfamily": "MELEE",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [],
+            "phases": [],
+            "reason": "SEMANTIC_WEAPON",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          },
+          {
+            "family": "ENVIRONMENT",
+            "subfamily": "BIOME",
+            "required": true,
+            "priority": "FLOW_CRITICAL",
+            "flowRoles": [],
+            "systemRoles": [],
+            "phases": [],
+            "reason": "SEMANTIC_WORLD",
+            "resolution": "LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME",
+            "libraryEligibility": "CROSS_GENRE_COMPATIBLE_ASSETS",
+            "genreRestriction": false,
+            "crossGenreReuseAllowed": true,
+            "genreUse": "PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE",
+            "allowedReuseModes": [
+              "USE_AS_IS",
+              "LIGHT_THEME_ADAPT",
+              "STYLE_ADAPT",
+              "RECOMBINE_PARTS",
+              "NATIVE_REAUTHOR_BASE"
+            ],
+            "assetIdPinned": false,
+            "gameplayAuthority": false,
+            "balanceAuthority": false,
+            "saveAuthority": false
+          }
+        ]
+      },
+      "qualityGrowthContract": {
+        "version": 1,
+        "target": "AWARD_CALIBER_SYSTEMIC_GAME_COMPLETENESS",
+        "playerPromise": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+        "funDrivers": [
+          "CORE_ACTION_HAS_IMMEDIATE_READABLE_RESPONSE",
+          "CHOICES_CHANGE_RISK_REWARD_ROUTE_OR_SYSTEM_STATE",
+          "MASTERY_OPENS_NEW_ACTION_COMBINATIONS_NOT_ONLY_BIGGER_NUMBERS",
+          "WORLD_OR_OPPONENT_RESPONSE_CREATES_ADAPTATION"
+        ],
+        "balanceRules": [
+          "NO_SINGLE_DOMINANT_STRATEGY_WITHOUT_CONTEXTUAL_COUNTERPRESSURE",
+          "POWER_GROWTH_AND_CHALLENGE_GROWTH_ARE_CHECKED_TOGETHER",
+          "FAILURE_COST_PRESERVES_RECOVERY_AND_NEXT_DECISION",
+          "ECONOMY_HAS_DECLARED_SOURCES_SINKS_AND_NO_FREE_INFINITE_LOOP",
+          "LATE_GAME_DIFFICULTY_CHANGES_DECISION_STRUCTURE_NOT_ONLY_HP_DAMAGE"
+        ],
+        "pacing": {
+          "EARLY": "teach core agency, first success, first meaningful choice, first recoverable risk",
+          "MID": "open parallel goals, new system interaction, route/playstyle divergence, new pressure type",
+          "LATE": "combine mastered systems, high-stakes choice, distinct encounter or terminal structure, replay hook",
+          "phases": [
+            "EARLY",
+            "MID",
+            "LATE"
+          ]
+        },
+        "expansionRules": [
+          "ADD_NEW_ENEMY_OR_ACTOR_BEHAVIOR_ROLE",
+          "ADD_NEW_SPACE_ROUTE_OR_REGIONAL_RULE",
+          "ADD_NEW_OBJECTIVE_INTERACTION_OR_INFORMATION_LAYER",
+          "ADD_NEW_STRATEGY_BUILD_OR_PLAYSTYLE_OUTCOME",
+          "CONNECT_NEW_CONTENT_TO_EXISTING_PROGRESSION_ECONOMY_AND_WORLD_STATE",
+          "REPETITION_RESKIN_AND_STAT_ONLY_VARIANTS_DO_NOT_COUNT_AS_DEPTH"
+        ],
+        "completionCriteria": [
+          "FIRST_5_MINUTES_READABLE_AND_PLAYABLE",
+          "15_TO_25_MINUTES_OPENS_NEW_DECISION_SPACE",
+          "30_PLUS_MINUTES_HAS_SYSTEM_COMBINATION_AND_LONG_GOAL_WITHOUT_PADDING",
+          "FAIL_RETRY_RECOVERY_SAVE_AND_SOFTLOCK_PATHS_ARE_DEFINED",
+          "MOBILE_INPUT_READABILITY_AND_PERFORMANCE_REMAIN_PLAYABLE",
+          "CONTENT_HAS_EARLY_MID_LATE_ROLE_DIFFERENTIATION"
+        ],
+        "codingGrowthContract": {
+          "dataDrivenExtensionPreferred": true,
+          "stableIdsForExpandableContent": true,
+          "existingResponsibilityFunctionsFirst": true,
+          "duplicateGameplayAuthorityForbidden": true,
+          "saveMigrationRequiredWhenPersistedShapeChanges": true,
+          "extensionPoints": [
+            "CONTENT_DEFINITIONS",
+            "ENCOUNTER_OR_WAVE_DEFINITIONS",
+            "REGION_OR_ROUTE_RULES",
+            "PROGRESSION_REWARD_TABLES",
+            "PRESENTATION_ASSET_BINDINGS"
+          ]
+        },
+        "sourceHint": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. settlement growth visibility resource-to-village progression relaxed daily goals 세션 성장: 현재 플레이에서 자원·위치·장비·전술 선택이 즉시 다음 행동 가능성을 바꾼다 중기 성장: 해금·지역·시스템 연결 또는 빌드 선택이 새로운 전략 경로를 연다 장기 성장: 숙련·월드 상태·수집·관계·메타 목표 중 장르에 맞는 축이 다음 세션의 선택 폭을 넓힌다 Gather a focused set of island resources. Use them to build or improve one village function. Unlock a new resident, activity or area and choose the next village goal. {\"toneBlend\":[\"GAME_SPECIFIC_TONE\"],\"familiarAnchor\":\"상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.\",\"causalDNAs\":[{\"id\":\"KARMA_RETURN\",\"source\":\"EAST_ASIAN_RELIGION_PHILOSOPHY\",\"principle\":\"행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.\",\"gameplayConversion\":\"현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.\",\"fusionRole\":\"보조 인과축으로 기존 게임 문법을 비튼다.\"},{\"id\":\"MANDATE_LEGITIMACY\",\"source\":\"EAST_ASIAN_POLITICAL_HISTORY\",\"principle\":\"통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.\",\"gameplayConversion\":\"영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.\",\"fusionRole\":\"보조 인과축으로 기존 게임 문법을 비튼다.\"}],\"brokenGenreAssumption\":\"기존 CASUAL 관습을 최종 장르로 고정하지 않고 빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다.\",\"newPrimaryVerb\":\"빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다\",\"worldRule\":\"플레이어의 Gather a focused set of island resources.과 선택이 무인도 마을의 실제 플레이 공간은 CASUAL 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.의 다음 상태와 접근 가능성을 실제로 바꾼다.\",\"causalFusion\":[\"행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 때문에 MAIN의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.\",\"통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다. 때문에 A/B/c의 선택은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다.\"],\"irreducibilityTest\":{\"removeFirstAxis\":\"KARMA_RETURN 소재를 제거하면 MAIN 정체성과 A/B 시스템·C 장르의 인과 구조가 약해지거나 사라진다.\",\"removeSecondAxis\":\"MANDATE_LEGITIMACY 인과를 제거하면 일반 시스템 융복합이 재료에서 나온 새 인과문법과 분리된다.\",\"verdict\":\"A/B 시스템별 소재와 C의 메인·보조 장르를 어느 하나 빼도 선택·위험·스토리 결과가 변하며 단순 기능 합산으로 분리할 수 없다.\"},\"storyWorldBindings\":{\"emotionalConflict\":\"플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.\",\"characterRule\":\"주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.\",\"monsterRule\":\"몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.\",\"regionRule\":\"지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.\",\"storyRule\":\"스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.\",\"plausibility\":\"낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.\"},\"gameplaySystemFusion\":{\"formula\":\"MAIN × A × B × C\",\"main\":{\"name\":\"빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.\",\"purpose\":\"MAIN은 게임의 주제와 정체성이다. 플레이어가 누구이며 어떤 게임을 운영·진행하는지를 명확히 한다.\",\"playerAction\":\"Gather a focused set of island resources.\",\"stateContribution\":\"MAIN의 세계·정체성과 반복 목표가 A/B 시스템의 선택과 C 창작 장르 및 @ 발견에 의미를 부여한다.\"},\"majorAxes\":[{\"key\":\"A\",\"name\":\"Use them to build or improve one village function.\",\"purpose\":\"MAIN의 결과를 다음 선택과 비용 구조로 연결하는 첫 번째 대축.\",\"playerChoice\":\"Use them to build or improve one village function.\",\"stateContribution\":\"MAIN의 결과를 다음 위험·보상·자원 또는 경로 상태로 바꾼다.\",\"systemFamily\":\"\",\"sourceMaterial\":\"\",\"sourceDomain\":\"\",\"materialRule\":\"\"},{\"key\":\"B\",\"name\":\"Unlock a new resident, activity or area and choose the next village goal.\",\"purpose\":\"A와 MAIN의 결과를 다른 핵심 판단 구조로 연결하는 두 번째 대축.\",\"playerChoice\":\"Unlock a new resident, activity or area and choose the next village goal.\",\"stateContribution\":\"A의 결과를 월드·상대·목표 또는 관계 상태 변화와 연결한다.\",\"systemFamily\":\"\",\"sourceMaterial\":\"\",\"sourceDomain\":\"\",\"materialRule\":\"\"}],\"themeFusion\":{\"themes\":[],\"genres\":[],\"genreInterlock\":\"\",\"jointWorldRule\":\"\",\"abGameplayEffect\":\"\"},\"subElements\":[{\"name\":\"상황 규칙\",\"role\":\"MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 보조 규칙.\",\"supports\":[\"MAIN\",\"A\"],\"variationEffect\":\"같은 MAIN 행동도 현재 상황 상태에 따라 비용·위험·효율이 달라진다.\"},{\"name\":\"환경 또는 이벤트 변주\",\"role\":\"A/B 관계에 일시적 조건·기회·압박을 추가하는 서브요소.\",\"supports\":[\"A\",\"B\"],\"variationEffect\":\"같은 A/B 조합이라도 이벤트·지역·타이밍에 따라 다른 대응을 요구한다.\"},{\"name\":\"보조 자원 또는 정보\",\"role\":\"MAIN/A/B 사이 선택의 우선순위를 바꾸는 작은 상태층.\",\"supports\":[\"MAIN\",\"B\"],\"variationEffect\":\"보조 정보나 자원 상태가 다음 선택 순서와 기회비용을 바꾼다.\"}],\"crossSystemRules\":[\"MAIN의 결과가 A의 선택 비용·위험·보상 중 하나를 바꾼다.\",\"A의 선택 결과가 B의 가능 행동·상태·우선순위를 바꾼다.\",\"c 서브요소가 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다.\",\"B와 c의 누적 결과가 다시 MAIN의 목적·효율·위험 또는 사용법을 바꿔 순환한다.\"]},\"delveLayer\":{\"formulaSuffix\":\"+ @\",\"role\":\"DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS\",\"elements\":[]},\"emergentGenre\":{\"name\":\"빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 결과를 이용해 다음 세계 규칙을 설계한다 복합장르\",\"definition\":\"빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다. 정체성을 중심으로 A/B의 시스템×소재가 서로 상태를 바꾸고 C의 두 소재·메인·보조 장르가 사건과 규칙을 생성하며 @ 파고들기가 계속 확장되는 복합장르다.\",\"whyNotSingleConventionalGenre\":\"기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.\",\"grammarFormula\":\"MAIN × A × B × C + @\",\"categoryRole\":\"SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE\"},\"expansionVectors\":[\"새 지역은 같은 소재와 MAIN×A×B×C 관계를 새로운 지역 법칙과 상황에서 다시 결합한다.\",\"새 몬스터는 체력 배수가 아니라 A/B/c 관계의 상태 전달을 방해·증폭·반전한다.\",\"새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.\",\"새 아이템/능력은 MAIN/A/B/c 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다.\"],\"culturalAbstractionRule\":\"동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 높낮이 없이 동등한 재료이며 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다.\"}"
+      }
+    }
+  },
+  "ownerDesignEventId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
+  "designEvolutionLoopVersion": 1,
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "vibe-native:causal-design-v1",
+  "singleAuthor": true,
+  "preGate": {
+    "pass": true,
+    "totalScore": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "attempts": 0
+  },
+  "content": {
+    "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 업보와 인과응보의 생활 세계에서 사회관계 선택 × 업보와 인과응보과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.",
+    "creativeGrammar": {
+      "mainIdentity": "업보와 인과응보의 생활 세계: 빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.. 사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.과 사회관계 선택의 결과를 생활 공간 탐색로 전환하고 달라진 조건을 다시 활용한다.를 반복하는 게임이다.",
+      "a": {
+        "system": "사회관계 선택 × 업보와 인과응보",
+        "material": "업보와 인과응보",
+        "materialDomain": "east asian religion philosophy의 문화·역사 인과 소재",
+        "stateChange": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 다음 행동 조건이 달라진다."
+      },
+      "b": {
+        "system": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "material": "신화 속 트릭스터의 질서 역전",
+        "materialDomain": "world trickster myth의 문화·역사 인과 소재",
+        "stateChange": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. 플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 그 결과 사회관계 선택 × 업보와 인과응보의 선택 비용과 경로가 달라진다."
+      },
+      "abCausality": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 바뀌고 플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다.",
+      "abEvolution": {
+        "aChangesB": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 선택이 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 행동 가능성·비용·위험을 변화시킨다. 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다.",
+        "bChangesA": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 결과가 다음 사회관계 선택 × 업보와 인과응보의 지형 접근·자원 판단·상대 대응을 바꾼다. 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다.",
+        "lateGameChange": "후반에는 업보와 인과응보와 신화 속 트릭스터의 질서 역전의 상반된 조건을 역이용해 같은 장소도 서로 다른 경로와 결말로 해결한다."
+      },
+      "materialFusion": {
+        "contrast": "업보와 인과응보의 원인 규칙과 신화 속 트릭스터의 질서 역전의 반작용을 사회관계 선택·생활 공간 탐색의 서로 다른 선택에 결합한다.",
+        "causalBridge": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 그 결과 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.의 가능성이 달라지고 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. 다시 첫 시스템의 결과를 바꾼다.",
+        "removalConsequence": "업보와 인과응보를 제거하면 A의 선행 조건이 사라지고 신화 속 트릭스터의 질서 역전를 제거하면 B의 결과가 A에 돌아오는 대가와 학습이 사라진다."
+      },
+      "storyCausalChain": {
+        "cause": "업보와 인과응보의 원칙을 지키는 인물과 신화 속 트릭스터의 질서 역전의 책임을 지려는 인물이 목표를 놓고 충돌한다. 업보와 인과응보에 의해 바뀐 인물·지역의 상태는 신화 속 트릭스터의 질서 역전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+        "characterConflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+        "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 또는 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 중 무엇을 우선할지 판단한다.",
+        "worldChange": "업보와 인과응보의 흔적이 남은 지역은 신화 속 트릭스터의 질서 역전의 선택에 따라 새로운 출입·보상 조건을 갖는다. 증언과 합의된 현실와 서사시의 추방과 귀환가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다.",
+        "nextEvent": "관계의 갈등이 플레이어의 실제 선택을 통해 해결되거나 심화되고, 그 결과가 다음 사건의 원인이 된다. 다음 사건은 직전 세계·관계 상태를 읽고 발생한다."
+      },
+      "cThemes": [
+        {
+          "name": "증언과 합의된 현실",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 그 결과 A와 B가 공유하는 조건이 바뀐다."
+        },
+        {
+          "name": "서사시의 추방과 귀환",
+          "kind": "MATERIAL",
+          "gameplayEffect": "떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 그 결과 사건의 비용과 다음 선택이 달라진다."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "생활",
+          "gameplayEffect": "사회관계 선택와 생활 공간 탐색를 통한 중심 목표와 위험·보상을 판단한다."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "추리",
+          "gameplayEffect": "증언과 합의된 현실의 단서와 서사시의 추방과 귀환의 반응 때문에 같은 목표의 정보·행동·결과가 달라진다."
+        }
+      ],
+      "cGenreInterlock": "생활 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
+      "cWorldAndGameplayEffect": "업보와 인과응보에 의해 바뀐 인물·지역의 상태는 신화 속 트릭스터의 질서 역전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다. 증언과 합의된 현실와 서사시의 추방과 귀환가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 그 결과 생활 공간 탐색의 가능 행동과 위험이 바뀌며, 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 다시 사회관계 선택의 조건을 바꾼다.",
+      "delveDiscoveries": [
+        {
+          "clue": "금기와 기회의 교차: 업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+          "discovery": "금기와 기회의 교차: 행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 상황을 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 방식으로 해석한다.",
+          "newChoice": "금기와 기회의 교차: 사회관계 선택에서 평소에는 불가능했던 대안 경로와 선택을 연다."
+        },
+        {
+          "clue": "되돌아온 선택: 생활 공간 탐색를 완료한 뒤 처음 사회관계 선택 지역을 다시 방문해 달라진 증거를 찾는다.",
+          "discovery": "되돌아온 선택: 약자·광대·사기꾼이 규칙의 빈틈을 이용해 질서를 뒤집는다. 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.",
+          "newChoice": "되돌아온 선택: 보상이 아닌 관계·정보의 복원과 다른 해결 경로를 선택한다."
+        },
+        {
+          "clue": "두 소재의 숨은 규칙: 증언과 합의된 현실와 서사시의 추방과 귀환의 조건을 동시에 만족시키는 행동 순서를 실험한다.",
+          "discovery": "두 소재의 숨은 규칙: 무엇이 사실로 인정되는가는 기록·증언·권력의 합의와 충돌한다. 원리와 추방과 귀환은 같은 장소를 다른 권리와 시선으로 다시 보게 만든다. 원리가 동시에 작동함을 파악한다.",
+          "newChoice": "두 소재의 숨은 규칙: 주 장르의 목표를 보조 장르의 정보 판단으로 우회하는 선택을 연다."
+        },
+        {
+          "clue": "역전된 종착점: 사회관계 선택의 결과를 의도적으로 반대로 선택한 뒤 생활 공간 탐색를 수행해 후속 변화를 확인한다.",
+          "discovery": "역전된 종착점: 한쪽의 불리한 결과가 다른 쪽의 고급 활용 조건이 되는 인과 반전을 학습한다.",
+          "newChoice": "역전된 종착점: 같은 공간과 자원으로도 다른 결말·동선·운용법에 도달한다."
+        }
+      ],
+      "delveGrowthRule": "금기와 기회의 교차 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.",
+      "finalGameIdentity": "업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 사회관계 선택과 생활 공간 탐색의 왕복 결과에 증언과 합의된 현실·서사시의 추방과 귀환와 추리 판단이 개입해 다음 월드 상태가 변하는 복합 장르다."
+    },
+    "playerFantasy": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 플레이어는 사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.을 결정하고 두 소재가 만드는 반작용을 책임진다.",
+    "coreFun": "사회관계 선택의 결과를 생활 공간 탐색로 전환하고 달라진 조건을 다시 활용한다. 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 바뀌고 플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다. 생활 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [
+      {
+        "id": "VIBE_MAIN",
+        "grammarRole": "MAIN",
+        "name": "업보와 인과응보의 생활 세계",
+        "purpose": "생활 게임에서 업보와 인과응보과 신화 속 트릭스터의 질서 역전의 인과법칙을 이용해 세계를 바꾸는 사회관계 선택·생활 공간 탐색 복합 게임에서 플레이어는 선택을 누적해 목적을 완수한다. 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.",
+        "playerChoice": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다.",
+        "stateInputs": [
+          "WorldAccessState",
+          "IntentState"
+        ],
+        "stateOutputs": [
+          "RouteState",
+          "WorldAccessState"
+        ]
+      },
+      {
+        "id": "VIBE_A",
+        "grammarRole": "A",
+        "name": "사회관계 선택 × 업보와 인과응보",
+        "purpose": "플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 선택의 결과를 위험과 자원 경로에 반영한다.",
+        "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다.",
+        "stateInputs": [
+          "RouteState",
+          "RiskState"
+        ],
+        "stateOutputs": [
+          "RiskState",
+          "ResourceState"
+        ]
+      },
+      {
+        "id": "VIBE_B",
+        "grammarRole": "B",
+        "name": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "purpose": "플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. 앞선 행동의 결과를 다음 접근 조건으로 되돌린다.",
+        "playerChoice": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다.",
+        "stateInputs": [
+          "RiskState",
+          "ResourceState"
+        ],
+        "stateOutputs": [
+          "RouteState",
+          "RiskState"
+        ]
+      },
+      {
+        "id": "VIBE_DELVE",
+        "grammarRole": "DELVE",
+        "name": "금기와 기회의 교차",
+        "purpose": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 상황을 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 방식으로 해석한다. 숨겨진 조건을 실험한 뒤 새로운 선택과 경로를 연다.",
+        "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.",
+        "stateInputs": [
+          "RouteState",
+          "RiskState"
+        ],
+        "stateOutputs": [
+          "WorldAccessState",
+          "IntentState"
+        ]
+      }
+    ],
+    "multiplayerMode": "COOP",
+    "systemInterconnections": [
+      {
+        "fromId": "VIBE_MAIN",
+        "toId": "VIBE_A",
+        "stateKeys": [
+          "RouteState"
+        ],
+        "fromSystem": "업보와 인과응보의 생활 세계",
+        "toSystem": "사회관계 선택 × 업보와 인과응보",
+        "trigger": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "RouteState의 결과를 사회관계 선택 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      },
+      {
+        "fromId": "VIBE_A",
+        "toId": "VIBE_B",
+        "stateKeys": [
+          "RiskState"
+        ],
+        "fromSystem": "사회관계 선택 × 업보와 인과응보",
+        "toSystem": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "trigger": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "RiskState의 결과를 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      },
+      {
+        "fromId": "VIBE_B",
+        "toId": "VIBE_A",
+        "stateKeys": [
+          "RouteState"
+        ],
+        "fromSystem": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "toSystem": "사회관계 선택 × 업보와 인과응보",
+        "trigger": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "RouteState의 결과를 사회관계 선택 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      },
+      {
+        "fromId": "VIBE_B",
+        "toId": "VIBE_DELVE",
+        "stateKeys": [
+          "RouteState"
+        ],
+        "fromSystem": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "toSystem": "금기와 기회의 교차",
+        "trigger": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      },
+      {
+        "fromId": "VIBE_DELVE",
+        "toId": "VIBE_MAIN",
+        "stateKeys": [
+          "WorldAccessState"
+        ],
+        "fromSystem": "금기와 기회의 교차",
+        "toSystem": "업보와 인과응보의 생활 세계",
+        "trigger": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "WorldAccessState의 결과를 업보와 인과응보의 생활 세계의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      },
+      {
+        "fromId": "VIBE_A",
+        "toId": "VIBE_DELVE",
+        "stateKeys": [
+          "RiskState"
+        ],
+        "fromSystem": "사회관계 선택 × 업보와 인과응보",
+        "toSystem": "금기와 기회의 교차",
+        "trigger": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
+        "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+      }
+    ],
+    "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "사회관계 선택 × 업보와 인과응보의 변화가 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전에서 새로운 선택을 열고 다음 A의 경로에 영향을 준다.",
+      "resourceFlow": "현재 게임의 실제 획득원과 소비처를 소스에 연결한 후 선택 비용을 검증한다. 임의 보상이나 저장값을 추가하지 않는다.",
+      "balanceRules": "한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
+        "newGameplay": "사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
+        "systemImpact": "이전 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+      },
+      {
+        "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
+        "newGameplay": "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
+        "systemImpact": "이전 사회관계 선택 × 업보와 인과응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+      },
+      {
+        "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
+        "newGameplay": "증언과 합의된 현실과 서사시의 추방과 귀환의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
+        "systemImpact": "이전 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+      },
+      {
+        "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
+        "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
+        "systemImpact": "이전 사회관계 선택 × 업보와 인과응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "사회관계 선택 × 업보와 인과응보의 위험을 읽지 못해 유효 행동과 진입 경로가 막힌다.",
+        "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 반작용을 잘못 선택해 목표 접근 조건이 사라진다."
+      ],
+      "retryFlow": "직전 유효 목표 상태를 다시 확인하고 얻은 정보를 이용해 다른 경로·시스템 선택으로 재시도한다. 기존 저장 정책을 보존한다.",
+      "riskPressure": "초반에는 A의 선택 위험을, 중반에는 B의 반작용을, 후반에는 C 장르의 정보·관계 제약을 함께 판단하게 한다.",
+      "recoveryRules": "진행이 막히면 이전 안전 구역과 재선택 가능한 행동을 제공하며 저장·보상 손실 수치는 원본 규칙만 따른다."
+    },
+    "contentVarietyPlan": {
+      "regions": [
+        {
+          "id": "VIBE_ORIGIN",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A"
+          ],
+          "name": "업보와 인과응보의 첫 선택 공간",
+          "traversal": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.를 시작하는 출발 위치와 복귀 동선을 제공한다.",
+          "riskReward": "안전한 진행을 선택하면 발견 속도가 늦어지고 어려운 경로에서는 다른 단서를 얻는다.",
+          "landmark": "업보와 인과응보의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "encounterPattern": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 결과를 읽고 위험·정보 반응이 변화한다.",
+          "resourcePressure": "선택 결과에 따른 자원 접근 가능성과 기회비용을 분리해 보여준다.",
+          "storyContext": "업보와 인과응보의 흔적이 남은 지역은 신화 속 트릭스터의 질서 역전의 선택에 따라 새로운 출입·보상 조건을 갖는다."
+        },
+        {
+          "id": "VIBE_REVISIT",
+          "ruleIds": [
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "name": "신화 속 트릭스터의 질서 역전의 되돌림 공간",
+          "traversal": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.의 결과가 이전 구역의 통로를 열거나 닫는다.",
+          "riskReward": "이전 상태를 역이용한 고급 대응은 짧은 경로와 추가 위험 중 하나를 선택하게 한다.",
+          "landmark": "신화 속 트릭스터의 질서 역전의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "encounterPattern": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. 결과를 기준으로 다른 대응법을 요구한다.",
+          "resourcePressure": "처음 얻은 자원을 유지할지 새로운 접근에 재투자할지 기회비용을 제시한다.",
+          "storyContext": "관계의 갈등이 플레이어의 실제 선택을 통해 해결되거나 심화되고, 그 결과가 다음 사건의 원인이 된다."
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "업보와 인과응보의 제약",
+          "behavior": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다.",
+          "counterplay": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+          "positioning": "초반 경로에 접근할 때 읽을 수 있다.",
+          "timing": "A의 첫 입력 이후 B의 대응 전까지 노출된다.",
+          "mobility": "플레이어가 다른 길로 이동하면 반응 위치가 달라진다.",
+          "groupRole": "A의 선택을 검증하는 첫 위험·조건이다.",
+          "identity": "사회관계 선택 × 업보와 인과응보",
+          "rewardMeaning": "한 번의 결과가 다음 대응에 유용한 정보를 남긴다."
+        },
+        {
+          "name": "신화 속 트릭스터의 질서 역전의 반작용",
+          "behavior": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다.",
+          "counterplay": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+          "positioning": "후반 되돌림 공간에서 관찰된다.",
+          "timing": "이전 A의 상태에 반응한 뒤 다음 선택 전에 나타난다.",
+          "mobility": "다른 접근 경로와 세계 상태에 따라 대응 위치가 바뀐다.",
+          "groupRole": "B의 결과를 A로 되돌려 주는 반작용 역할이다.",
+          "identity": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+          "rewardMeaning": "새로운 우회 경로와 숨은 조합을 알게 한다."
+        }
+      ],
+      "objectives": [
+        {
+          "role": "A의 주요 목표",
+          "variation": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.가 B의 대응 가능성을 변화시키는지 확인한다."
+        },
+        {
+          "role": "B의 반작용",
+          "variation": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 다시 A의 안전·정보 선택을 변화시키는지 확인한다."
+        }
+      ],
+      "antiMonotonyRule": "같은 적 체력이나 수치만 반복하지 않고 접근 경로·정보·인물 관계·대응 규칙이 초중후반에 변한다.",
+      "abilities": [
+        {
+          "id": "VIBE_CHOOSE",
+          "name": "첫 시스템의 경로 선택",
+          "kind": "INTERACTION",
+          "ownerId": "PLAYER",
+          "ruleId": "VIBE_A",
+          "trigger": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 실행 전에 접근 가능성과 비용을 확인한다.",
+          "range": 0,
+          "rangeUnit": "선택 입력",
+          "resource": "행동 기회",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택지의 변화 조건과 현재 위험을 화면에 알린다.",
+          "avoidance": "다른 경로를 선택하거나 실행하지 않고 되돌아간다.",
+          "effect": "선택 경로와 반응 위험을 계획 상태에 반영한다.",
+          "stateInputs": [
+            "RouteState"
+          ],
+          "stateOutputs": [
+            "RiskState"
+          ],
+          "source": "시드 인과문법 A의 설계 계약 (실제 구현 전)",
+          "rangeKey": "",
+          "costKey": "",
+          "cooldownKey": ""
+        },
+        {
+          "id": "VIBE_RESPOND",
+          "name": "두 번째 시스템의 대응 선택",
+          "kind": "INTERACTION",
+          "ownerId": "PLAYER",
+          "ruleId": "VIBE_B",
+          "trigger": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 실행 전에 A의 이전 결과를 읽는다.",
+          "range": 0,
+          "rangeUnit": "선택 입력",
+          "resource": "행동 기회",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "상대의 다음 반응과 예상되는 선택 비용을 알린다.",
+          "avoidance": "대응을 취소하고 이전 안전 단계로 돌아간다.",
+          "effect": "대응 결과를 다음 A의 계획 조건으로 되돌려 보낸다.",
+          "stateInputs": [
+            "RiskState"
+          ],
+          "stateOutputs": [
+            "RouteState"
+          ],
+          "source": "시드 인과문법 B의 설계 계약 (실제 구현 전)",
+          "rangeKey": "",
+          "costKey": "",
+          "cooldownKey": ""
+        }
+      ],
+      "roleTransitions": []
+    },
+    "designAlternatives": [
+      {
+        "label": "PLAN_A",
+        "strategy": {
+          "routeEdges": [
+            {
+              "from": "VIBE_ORIGIN",
+              "to": "VIBE_REVISIT"
+            }
+          ],
+          "resourceSites": [
+            {
+              "stateKey": "WorldAccessState",
+              "regionId": "VIBE_ORIGIN"
+            }
+          ],
+          "cooperation": [
+            {
+              "ruleId": "VIBE_A",
+              "regionId": "VIBE_REVISIT",
+              "abilityId": "VIBE_CHOOSE"
+            }
+          ],
+          "advantage": "A의 안전한 조건부터 확인해 다음 판단의 위험과 비용을 예측한다.",
+          "cost": "초기 발견 속도가 느려지고 되돌림 공간의 정보를 나중에 얻게 된다.",
+          "bestSituation": "첫 진입에서 위험을 읽고 다음 선택의 조건을 안전하게 학습할 때."
+        },
+        "concept": "업보와 인과응보의 조건을 우선 학습하는 정방향 탐색 계획",
+        "playerFantasy": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.의 결과를 축적해 다음 결정을 통제한다.",
+        "genreDirection": "중심 생활 진행 속에서 보조 추리가 숨겨진 단서를 제공한다.",
+        "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+        "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+        "landmarksTraversal": "업보와 인과응보의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+        "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+        "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+        "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+        "questStoryEventFlow": "업보와 인과응보의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+        "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+        "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+        "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+        "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+      },
+      {
+        "label": "PLAN_B",
+        "strategy": {
+          "routeEdges": [
+            {
+              "from": "VIBE_REVISIT",
+              "to": "VIBE_ORIGIN"
+            }
+          ],
+          "resourceSites": [
+            {
+              "stateKey": "WorldAccessState",
+              "regionId": "VIBE_REVISIT"
+            }
+          ],
+          "cooperation": [
+            {
+              "ruleId": "VIBE_B",
+              "regionId": "VIBE_ORIGIN",
+              "abilityId": "VIBE_RESPOND"
+            }
+          ],
+          "advantage": "B의 반작용을 먼저 확인해 숨은 정보와 역이용 경로를 확보한다.",
+          "cost": "초기 위험을 충분히 파악하지 못해 대응 선택이 실패할 수 있다.",
+          "bestSituation": "반작용의 단서가 이미 알려져 있고 다른 접근 경로를 찾아야 할 때."
+        },
+        "concept": "신화 속 트릭스터의 질서 역전의 반작용부터 읽는 역방향 탐색 계획",
+        "playerFantasy": "정보 부족을 감수하고 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.를 먼저 실험한다.",
+        "genreDirection": "보조 추리 판단이 앞서 중심 생활 목표의 순서를 뒤집는다.",
+        "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+        "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+        "landmarksTraversal": "신화 속 트릭스터의 질서 역전의 반작용과 발견 단서를 시각적으로 구분한다.",
+        "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+        "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+        "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+        "questStoryEventFlow": "신화 속 트릭스터의 질서 역전의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+        "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+        "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+        "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+        "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+      }
+    ],
+    "selectedDesignPlan": {
+      "label": "PLAN_A",
+      "rationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+      "identityPreserved": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.의 대표 목표와 두 인과 소재·세계법칙은 동일하다.",
+      "creativeDeviation": "두 장르의 정보·위험 상호작용을 기존 A/B 상태 연결에서 직접 확대한다.",
+      "genreChange": false,
+      "reversibility": "새 설계는 후보이며 기존 코드·밸런스·저장은 수정하거나 버리지 않는다.",
+      "playthrough": [
+        {
+          "phase": "OPENING",
+          "entryState": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+          "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+          "actionAndResponse": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 플레이어 입력의 결과로 B의 대응 가능성이 변한다.",
+          "exitState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "DEVELOPMENT의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 0,
+          "endSeconds": 60,
+          "timeReason": "OPENING에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 1
+            },
+            {
+              "key": "RouteState",
+              "value": 2
+            },
+            {
+              "key": "RiskState",
+              "value": 3
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 30,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "ONGOING"
+        },
+        {
+          "phase": "DEVELOPMENT",
+          "entryState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+          "actionAndResponse": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. A의 다음 선택 상태가 달라진다.",
+          "exitState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "RESOLUTION의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 60,
+          "endSeconds": 120,
+          "timeReason": "DEVELOPMENT에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_RESPOND",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 90,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "B의 선택 결과가 다음 A의 위험과 경로에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "outcome": "ONGOING"
+        },
+        {
+          "phase": "RESOLUTION",
+          "entryState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+          "actionAndResponse": "사회관계 선택에서 평소에는 불가능했던 대안 경로와 선택을 연다. 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.",
+          "exitState": "한 판의 결과와 다음 선택을 기록한다.",
+          "nextDecision": "획득한 정보와 현재 원본 규칙의 실패·복구 경로에서 다음 플레이를 선택한다.",
+          "startSeconds": 120,
+          "endSeconds": 180,
+          "timeReason": "RESOLUTION에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 3
+            },
+            {
+              "key": "IntentState",
+              "value": 4
+            },
+            {
+              "key": "RouteState",
+              "value": 5
+            },
+            {
+              "key": "RiskState",
+              "value": 6
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 150,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "SUCCESS"
+        }
+      ],
+      "roundSeconds": 180,
+      "sessionSeconds": 1800,
+      "durationRationale": "한 판의 상태 전이를 연속된 장면으로 나누고 30분 세션의 탐색·반작용·발견을 분리한다. 시간 배분은 설계 가정이며 실제 플레이 측정 전이다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX",
+      "inputModel": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
+      "performanceBudget": "로블록스 모바일과 유니티 웹용 각각의 렌더·메모리·화면 내 오브젝트 예산을 실기기 측정으로 확정한다.",
+      "sessionConstraints": "1분 첫 행동, 5분 첫 인과 피드백, 15분 교차 선택, 30분 이상 발견의 실제 지속성은 런타임에서 측정한다."
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
+        "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 생활·건설·마을 성장의 잔잔한 누적을 선호하는 글로벌 플레이어.",
+        "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
+        "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
+        "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
+        "saveAndNetwork": "Roblox DataStore-backed versioned save meaning plus server-validated remotes and rate limits when persistence/networking is required.",
+        "platformContentAdaptation": "Preserve 사회관계 선택의 결과를 생활 공간 탐색로 전환하고 달라진 조건을 다시 활용한다. 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 바뀌고 플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다. 생활 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.; adapt pacing, avatar scale, social discovery and short-session Roblox conventions without changing core rules.",
+        "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
+        "validationEvidence": "Roblox publish identity + exact source revision + real runtime + independent QA + regression + private-play evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first controls, safe-area UI, gamepad/keyboard fallback and app lifecycle-safe input recovery.",
+        "sessionModel": "유니티 3차원 웹 세션에서 현재 목표와 지역·진행 상태를 유지하며 일시중단과 재진입을 검증한다.",
+        "multiplayerRuntime": "Unity app COOP networking using validated transport/session ownership, reconnect and join/leave synchronization.",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, loading, texture/compression, pooling and GC pressure.",
+        "uiUx": "Responsive Unity UI with device safe areas, touch targets, orientation/readability rules and native-app pause/resume behavior.",
+        "saveAndNetwork": "Versioned local save plus validated backend/cloud synchronization only when required by the approved multiplayer/persistence design.",
+        "platformContentAdaptation": "같은 유니티 원본 프로젝트의 3차원 장면·카메라·메시·조명·동작을 웹 브라우저에 맞게 적응한다.",
+        "internalReleaseTarget": "실제 유니티 웹 빌드를 독립 브라우저와 모바일에서 검증한 뒤 상위 단계로 전달한다.",
+        "validationEvidence": "정확한 유니티 웹 빌드로 3차원 장면·모바일 터치·저장 및 실제 플레이를 독립 검사한다.",
+        "unityWebSpatialPresentation": {
+          "dimension": "3D",
+          "worldDepth": "실제 메시와 삼각형·입체 건물·캐릭터가 월드 좌표의 전후 깊이에서 이동하고 상호작용한다.",
+          "cameraAndOcclusion": "3차원 카메라가 실제 원근·높낮이·앞뒤 가림을 표현하며 2차원 스프라이트를 공간 객체로 위장하지 않는다.",
+          "lightingAndMaterials": "3차원 기하에 표면 재질과 광원·그림자 반응을 적용하고 모바일 그래픽 한계를 실기기에서 확인한다.",
+          "mobileWebglEvidence": "같은 유니티 원본에서 생성한 웹 빌드를 실제 모바일 브라우저로 플레이하고 깊이·터치·화면 잘림을 캡처 검증한다."
+        }
+      }
+    },
+    "visualDirection": "증언과 합의된 현실와 서사시의 추방과 귀환의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
+    "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.",
+      "touchAndInput": "이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.",
+      "readability": "장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.",
+      "accessibility": "글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.",
+      "menuStructure": "타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.",
+      "convenienceDecisions": "같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.",
+      "audioIdentity": "탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.",
+      "gameplayFeedbackSync": "실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.",
+      "assetBindings": [
+        {
+          "family": "AUDIO",
+          "role": "AUDIO의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_MAIN"
+          ],
+          "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "BUILDING",
+          "role": "BUILDING의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "CHARACTER",
+          "role": "CHARACTER의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "ENVIRONMENT",
+          "role": "ENVIRONMENT의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_DELVE"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "MATERIAL",
+          "role": "MATERIAL의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_MAIN"
+          ],
+          "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "MOTION",
+          "role": "MOTION의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "PROP",
+          "role": "PROP의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "UI",
+          "role": "UI의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_DELVE"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "VFX",
+          "role": "VFX의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_MAIN"
+          ],
+          "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "WEAPON",
+          "role": "WEAPON의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        }
+      ]
+    },
+    "marketTargetDirection": "모바일에서 선택과 결과가 명확한 세계 반응형 게임을 원하는 플레이어를 대상으로 하되 미검증 시장 점수로 출시에 합격시키지 않는다.",
+    "steamExpansionDecision": "웹과 로블록스 런타임 및 독립 QA를 먼저 확인하며 다른 플랫폼 확장은 검증된 원본을 유지할 때 검토한다.",
+    "multiplayerExpansionDecision": "COOP에서 두 이용자가 같은 세계 상태를 읽고 선택 결과를 서버에서 확인하며 이탈·재접속 후 정확히 동기화해야 한다.",
+    "narrativeDialoguePlan": {
+      "applicable": true,
+      "worldRules": [
+        "업보와 인과응보에 의해 바뀐 인물·지역의 상태는 신화 속 트릭스터의 질서 역전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다."
+      ],
+      "characterGoals": [
+        "업보와 인과응보의 원칙을 지키는 인물과 신화 속 트릭스터의 질서 역전의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+      ],
+      "plotBeats": [
+        "업보와 인과응보의 원칙을 지키는 인물과 신화 속 트릭스터의 질서 역전의 책임을 지려는 인물이 목표를 놓고 충돌한다. 업보와 인과응보에 의해 바뀐 인물·지역의 상태는 신화 속 트릭스터의 질서 역전의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+        "인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 또는 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 중 무엇을 우선할지 판단한다.",
+        "업보와 인과응보의 흔적이 남은 지역은 신화 속 트릭스터의 질서 역전의 선택에 따라 새로운 출입·보상 조건을 갖는다. 증언과 합의된 현실와 서사시의 추방과 귀환가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+      ],
+      "questStates": [
+        "이전 선택 조건을 확인한다.",
+        "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+      ],
+      "foreshadowing": [
+        "업보와 인과응보의 작은 변화가 신화 속 트릭스터의 질서 역전의 큰 반작용을 예고한다."
+      ],
+      "payoffs": [
+        "신화 속 트릭스터의 질서 역전의 결과가 다시 업보와 인과응보의 앞선 의미를 바꾼다."
+      ],
+      "twists": [
+        "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+      ],
+      "dialogueRules": [
+        "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+      ],
+      "characterVoiceProfiles": [
+        {
+          "character": "업보와 인과응보의 이해관계자",
+          "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+          "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+          "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+          "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+          "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+          "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+        },
+        {
+          "character": "신화 속 트릭스터의 질서 역전의 이해관계자",
+          "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+          "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+          "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+          "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+          "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+          "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+        }
+      ],
+      "sceneBeats": [
+        {
+          "scene": "첫 진입",
+          "purpose": "세계의 조건을 알아차리게 한다.",
+          "characterGoals": "무엇을 지킬지 정한다.",
+          "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+          "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+          "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+          "stateChange": "A의 상태가 B의 조건을 바꾼다."
+        },
+        {
+          "scene": "귀환과 해결",
+          "purpose": "이전 선택의 결과를 확인한다.",
+          "characterGoals": "손실과 관계를 재조정한다.",
+          "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+          "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+          "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+          "stateChange": "세계 접근과 위험 상태가 갱신된다."
+        }
+      ]
+    },
+    "referenceHomagePlan": {
+      "inspirations": [
+        {
+          "titleOrTradition": "EAST_ASIAN_RELIGION_PHILOSOPHY",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다.",
+          "transformation": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        },
+        {
+          "titleOrTradition": "WORLD_TRICKSTER_MYTH",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "약자·광대·사기꾼이 규칙의 빈틈을 이용해 질서를 뒤집는다.",
+          "transformation": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        }
+      ],
+      "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다."
+    },
+    "designIntegrityPlan": {
+      "movementAndControlReachable": true,
+      "spawnToFirstActionReachable": true,
+      "progressionReachable": true,
+      "questPrerequisitesSatisfiable": true,
+      "sessionEndReachable": true,
+      "failureRecoveryReachable": true,
+      "mapObjectivesReachable": true,
+      "economyFeasible": true,
+      "counterplayFeasible": true,
+      "bossPhaseTransitionsReachable": true,
+      "multiplayerLifecycleFeasible": true,
+      "saveCompatible": true,
+      "narrativeCausalityConsistent": true,
+      "authoringVersion": 2,
+      "flowAudit": [
+        {
+          "phase": "OPENING",
+          "reachableBy": [
+            "VIBE_CHOOSE"
+          ],
+          "blockedCase": "OPENING 도중 접근 조건이나 현재 입력이 충족되지 않으면 상태 변화가 발생하지 않는다.",
+          "recovery": "직전 유효 세계 상태와 플레이어 선택으로 돌아가 다른 경로를 고른다.",
+          "nextPhase": "DEVELOPMENT"
+        },
+        {
+          "phase": "DEVELOPMENT",
+          "reachableBy": [
+            "VIBE_RESPOND"
+          ],
+          "blockedCase": "DEVELOPMENT 도중 접근 조건이나 현재 입력이 충족되지 않으면 상태 변화가 발생하지 않는다.",
+          "recovery": "직전 유효 세계 상태와 플레이어 선택으로 돌아가 다른 경로를 고른다.",
+          "nextPhase": "RESOLUTION"
+        },
+        {
+          "phase": "RESOLUTION",
+          "reachableBy": [
+            "VIBE_CHOOSE"
+          ],
+          "blockedCase": "RESOLUTION 도중 접근 조건이나 현재 입력이 충족되지 않으면 상태 변화가 발생하지 않는다.",
+          "recovery": "직전 유효 세계 상태와 플레이어 선택으로 돌아가 다른 경로를 고른다.",
+          "nextPhase": "END"
+        }
+      ],
+      "notes": [
+        "이 결과는 정해진 설계 규칙의 도달성 계산이며 실제 게임 실행 결과를 의미하지 않는다.",
+        "저장·동기화·실제 조작은 기존 개발 및 독립 QA 과정에서 추가 검증해야 한다."
+      ]
+    },
+    "stabilityPriorityPlan": {
+      "signals": [],
+      "priorityRule": "실제 재현된 진행 막힘·저장 손상·터치 입력 실패·멀티 동기화 오류를 우선 분류하고 원인에 해당하는 기존 책임 함수만 수정한다."
+    },
+    "technicalAssumptions": [
+      "설계 인과 원형 KARMA_RETURN·TRICKSTER_REVERSAL·TESTIMONY_CONSENSUS_REALITY의 선택과 세계 반응을 독자적으로 적용한다.",
+      "원본의 전투·보상·저장·멀티 권한은 기존 책임 함수가 가진다. 설계 계획 상태는 새 저장 키가 아니며 실제 구현 전 소스 확인이 필요하다.",
+      "기존 검토 가능한 모듈 assets/economy-loot-shop.js, assets/inventory-equipment.js, assets/quest-dialogue.js, assets/common-ai.js은 라이선스·역할·실제 코드와 일치할 때만 사용한다. 신규 외부 복사는 금지한다.",
+      "현재 문서는 모델 출력이나 실행 확인이 아닌 바이브 설계 함수의 계산 후보이며 실제 게임 플레이 검증과 구별한다."
+    ],
+    "validationQuestions": [
+      "A의 실제 출력 상태가 B의 입력을 바꾸고 B의 결과가 다시 A의 다음 선택을 바꾸는가?",
+      "보조 장르의 정보 규칙을 제거하면 동일 행동의 비용·동선·결말 중 하나가 달라지는가?",
+      "실제 모바일 입력·3차원 공간·실패 복구·저장 및 멀티 동기화가 원본 밸런스와 양립하는가?"
+    ],
+    "implementationTraceability": [
+      {
+        "designElement": "사회관계 선택 × 업보와 인과응보",
+        "responsibleSystem": "사회관계 선택 × 업보와 인과응보의 기존 책임 함수와 코드 모듈",
+        "validationEvidence": "같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다."
+      },
+      {
+        "designElement": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전",
+        "responsibleSystem": "생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 기존 책임 함수와 코드 모듈",
+        "validationEvidence": "B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다."
+      },
+      {
+        "designElement": "생활 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
+        "responsibleSystem": "세계 상태·스토리 반응의 기존 책임 시스템",
+        "validationEvidence": "보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다."
+      },
+      {
+        "designElement": "금기와 기회의 교차",
+        "responsibleSystem": "진행·탐색·발견을 연결하는 기존 책임 함수",
+        "validationEvidence": "숨은 발견 조건 이전/이후의 새로운 선택과 재방문 결과를 검증한다."
+      }
+    ],
+    "openQuestions": [],
+    "webCanonicalDesign": {
+      "role": "SHARED_DESIGN_WEB_APPLICATION",
+      "designAuthority": "GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY",
+      "playerFlow": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+        "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다."
+      ],
+      "worldAndTraversal": "id: VIBE_ORIGIN; ruleIds: VIBE_MAIN / VIBE_A; name: 업보와 인과응보의 첫 선택 공간; traversal: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.를 시작하는 출발 위치와 복귀 동선을 제공한다.; riskReward: 안전한 진행을 선택하면 발견 속도가 늦어지고 어려운 경로에서는 다른 단서를 얻는다.; landmark: 업보와 인과응보의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.; encounterPattern: 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 결과를 읽고 위험·정보 반응이 변화한다.; resourcePressure: 선택 결과에 따른 자원 접근 가능성과 기회비용을 분리해 보여준다.; storyContext: 업보와 인과응보의 흔적이 남은 지역은 신화 속 트릭스터의 질서 역전의 선택에 따라 새로운 출입·보상 조건을 갖는다. / id: VIBE_REVISIT; ruleIds: VIBE_B / VIBE_DELVE; name: 신화 속 트릭스터의 질서 역전의 되돌림 공간; traversal: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.의 결과가 이전 구역의 통로를 열거나 닫는다.; riskReward: 이전 상태를 역이용한 고급 대응은 짧은 경로와 추가 위험 중 하나를 선택하게 한다.; landmark: 신화 속 트릭스터의 질서 역전의 반작용과 발견 단서를 시각적으로 구분한다.; encounterPattern: 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 생활 공간 탐색의 정보·대응이 바뀐다. 결과를 기준으로 다른 대응법을 ",
+      "systemsAndContent": "id: VIBE_MAIN; grammarRole: MAIN; name: 업보와 인과응보의 생활 세계; purpose: 생활 게임에서 업보와 인과응보과 신화 속 트릭스터의 질서 역전의 인과법칙을 이용해 세계를 바꾸는 사회관계 선택·생활 공간 탐색 복합 게임에서 플레이어는 선택을 누적해 목적을 완수한다. 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.; playerChoice: 사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다.; stateInputs: WorldAccessState / IntentState; stateOutputs: RouteState / WorldAccessState / id: VIBE_A; grammarRole: A; name: 사회관계 선택 × 업보와 인과응보; purpose: 플레이어가 사회관계 선택을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 사회관계 선택의 경로와 비용이 바뀐다. 선택의 결과를 위험과 자원 경로에 반영한다.; playerChoice: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다.; stateInputs: RouteState / RiskState; stateOutputs: RiskState / ResourceState / id: VIBE_B; grammarRole: B; name: 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전; purpose: 플레이어가 생활 공간 탐색을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음",
+      "combatAndInteraction": "id: VIBE_CHOOSE; name: 첫 시스템의 경로 선택; kind: INTERACTION; ownerId: PLAYER; ruleId: VIBE_A; trigger: 인물과 대상의 요청 가운데 우선순위를 결정하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 실행 전에 접근 가능성과 비용을 확인한다.; range: 0; rangeUnit: 선택 입력; resource: 행동 기회; cost: 0; cooldownSeconds: 0; telegraph: 선택지의 변화 조건과 현재 위험을 화면에 알린다.; avoidance: 다른 경로를 선택하거나 실행하지 않고 되돌아간다.; effect: 선택 경로와 반응 위험을 계획 상태에 반영한다.; stateInputs: RouteState; stateOutputs: RiskState; source: 시드 인과문법 A의 설계 계약 (실제 구현 전); rangeKey: ; costKey: ; cooldownKey: / id: VIBE_RESPOND; name: 두 번째 시스템의 대응 선택; kind: INTERACTION; ownerId: PLAYER; ruleId: VIBE_B; trigger: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 실행 전에 A의 이전 결과를 읽는다.; range: 0; rangeUnit: 선택 입력; resource: 행동 기회; cost: 0; cooldownSeconds: 0; telegraph: 상대의 다음 반응과 예상되는 선택 비용을 알린다.; avoidance: 대응을 취소하고 이전 안전 단계로 돌아간다.; effect: 대응 결과를 다음 A의 계획 조건으로 되돌려 보낸다.; stateInputs: RiskState; state",
+      "progressionAndEconomy": "progressionLoop: 사회관계 선택 × 업보와 인과응보의 변화가 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전에서 새로운 선택을 열고 다음 A의 경로에 영향을 준다.; resourceFlow: 현재 게임의 실제 획득원과 소비처를 소스에 연결한 후 선택 비용을 검증한다. 임의 보상이나 저장값을 추가하지 않는다.; balanceRules: 한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다.",
+      "sessionFailureRecovery": "failureStates: 사회관계 선택 × 업보와 인과응보의 위험을 읽지 못해 유효 행동과 진입 경로가 막힌다. / 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 반작용을 잘못 선택해 목표 접근 조건이 사라진다.; retryFlow: 직전 유효 목표 상태를 다시 확인하고 얻은 정보를 이용해 다른 경로·시스템 선택으로 재시도한다. 기존 저장 정책을 보존한다.; riskPressure: 초반에는 A의 선택 위험을, 중반에는 B의 반작용을, 후반에는 C 장르의 정보·관계 제약을 함께 판단하게 한다.; recoveryRules: 진행이 막히면 이전 안전 구역과 재선택 가능한 행동을 제공하며 저장·보상 손실 수치는 원본 규칙만 따른다.",
+      "uiMenuAndOnboarding": "hudPriorities: 세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.; touchAndInput: 이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.; readability: 장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.; accessibility: 글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.; menuStructure: 타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.; convenienceDecisions: 같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다.",
+      "inputCameraAccessibility": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
+      "presentationAndAudio": "visualIdentity: 캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.; audioIdentity: 탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.; gameplayFeedbackSync: 실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.; assetBindings: family: AUDIO; role: AUDIO의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태; behavior: 사회관계 선택 × 업보와 인과응보와 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.; presentation: 증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.; ruleIds: VIBE_MAIN; useLocation: 업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.; assetId: ; decision: AUTHOR; selectionReason: 확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.; improvement: 실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.; platformAdaptation: 내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.; validation: 실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다. / family: BUILDING; role: BUILDING의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태; behavior",
+      "multiplayerPersistence": "COOP; COOP에서 두 이용자가 같은 세계 상태를 읽고 선택 결과를 서버에서 확인하며 이탈·재접속 후 정확히 동기화해야 한다.",
+      "expansionSpace": "milestone: 초반 선택에 따른 접근 경로와 위험 재구성; newGameplay: 사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.; systemImpact: 이전 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다. / milestone: 중반 두 시스템의 반작용과 대응 조건 충돌; newGameplay: 생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.; systemImpact: 이전 사회관계 선택 × 업보와 인과응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다. / milestone: 숨겨진 세계 인과법칙을 이용한 새로운 접근; newGameplay: 증언과 합의된 현실과 서사시의 추방과 귀환의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.; systemImpact: 이전 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다. / milestone: 누적된 관계를 되짚는 재방문과 장기 숙련; newGameplay: 발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.; systemImpact: 이전 사회관계 선택 × 업보와 인과응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+    },
+    "platformExpansionPolicy": {
+      "mode": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION",
+      "sharedLargeFrame": [
+        "CORE_IDENTITY",
+        "CORE_FUN_AND_REPRESENTATIVE_LOOP",
+        "WORLD_AND_PROGRESSION_DIRECTION",
+        "SAVE_PERSISTENCE_MEANING",
+        "MULTIPLAYER_INTENT"
+      ],
+      "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
+      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
+      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
+    }
+  }
+}
