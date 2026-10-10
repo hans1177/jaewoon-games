@@ -70,6 +70,20 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
         const frames=Array.from({length:access.count},(_,i)=>original.readFloatLE(start+i*16));
         assert.ok(Math.max(...frames)-Math.min(...frames)>.001,species+':'+name+' must articulate body');
       }
+      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature];
+      const distinctMotionTracks=new Set(actionVariants.map(name=>{
+        const clip=doc.animations.find(a=>a.name===name),hash=createHash('sha256');
+        for(const joint of [1,2,3]){
+          const channel=clip.channels.find(ch=>ch.target.node===joint&&ch.target.path==='rotation');
+          assert.ok(channel,species+':'+name+' missing articulated joint '+joint);
+          const accessor=doc.accessors[clip.samplers[channel.sampler].output];
+          const view=doc.bufferViews[accessor.bufferView];
+          const byteStart=20+jsonLen+8+(view.byteOffset||0)+(accessor.byteOffset||0);
+          hash.update(original.subarray(byteStart,byteStart+accessor.count*4*4));
+        }
+        return hash.digest('hex');
+      }));
+      assert.equal(distinctMotionTracks.size,5,species+' must have five genuinely different attack/skill animations');
       visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
     }
     assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');
