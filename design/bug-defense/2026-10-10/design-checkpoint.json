@@ -814,25 +814,28 @@
         "resourceFlow": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지",
         "balanceRules": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
       }
+    },
+    "local_authoring_parts::10eafebd595a1380ff23b04853c31bcdb29e8c38686a76ec549c76e1a91dfa43:milestone": {
+      "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1189866,
-      "lastMs": 38458,
+      "totalMs": 1224627,
+      "lastMs": 34761,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:58:35.860Z"
+      "updatedAt": "2026-10-10T10:59:10.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:58:35.862Z",
+  "updatedAt": "2026-10-10T10:59:10.625Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2522,7 +2525,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:58:35.862Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:59:10.625Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
