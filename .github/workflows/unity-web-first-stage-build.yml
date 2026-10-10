@@ -268,6 +268,22 @@ jobs:
           [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret missing' >&2; exit 21; }
           [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret missing' >&2; exit 22; }
 
+      # Exact Unity version + revision is shared by all games. Hosted runners are disposable;
+      # the editor archive, unlike a transient runner install, survives across workflows.
+      - name: Prepare reusable Unity WebGL editor directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /opt/unity/editors
+          sudo chown -R "$(id -u):$(id -g)" /opt/unity
+
+      - name: Restore installed Unity WebGL editor
+        id: editor_cache
+        uses: actions/cache/restore@v4
+        with:
+          path: /opt/unity/editors
+          key: unity-webgl-editor-v1-${{ runner.os }}-${{ steps.request.outputs.unity_version }}-${{ steps.request.outputs.unity_revision }}
+
       - name: Install Unity Hub and WebGL Editor
         id: unity
         shell: bash
@@ -290,8 +306,13 @@ jobs:
           echo 'deb https://archive.ubuntu.com/ubuntu jammy main universe' | sudo tee /etc/apt/sources.list.d/unity-jammy-compat.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends unityhub xvfb libgtk2.0-0 libglu1-mesa libgconf-2-4 libncurses5
-          sudo rm -rf /opt/unityhub
-          sudo ln -s /usr/lib/unityhub /opt/unityhub
+          if [[ ! -e /opt/unityhub/unityhub ]]; then
+            if [[ -e /opt/unityhub || -L /opt/unityhub ]]; then
+              echo 'Unity Hub path already exists but is unusable; preserving installed files' >&2
+              exit 26
+            fi
+            sudo ln -s /usr/lib/unityhub /opt/unityhub
+          fi
           sudo tee /usr/local/bin/unity-hub >/dev/null <<'EOF'
           #!/bin/bash
           set -e
@@ -299,13 +320,27 @@ jobs:
           EOF
           sudo chmod 755 /usr/local/bin/unity-hub
           install_root=/opt/unity/editors
-          sudo mkdir -p "$install_root"
-          sudo chown -R "$(id -u):$(id -g)" /opt/unity
           unity-hub install-path --set "$install_root"
-          unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m webgl --cm
-          editor="$(find "$install_root" -type f -path '*/Editor/Unity' -perm -111 2>/dev/null | head -n1 || true)"
-          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity editor missing' >&2; exit 25; }
+          editor="$(find "$install_root" -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n1 || true)"
+          if [[ -n "$editor" && -d "$(dirname "$editor")/Data/PlaybackEngines/WebGLSupport" ]]; then
+            echo "UNITY_WEB_EDITOR_REUSED=YES version=$UNITY_VERSION revision=$UNITY_REVISION"
+          else
+            echo "UNITY_WEB_EDITOR_REUSED=NO version=$UNITY_VERSION revision=$UNITY_REVISION"
+            unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m webgl --cm
+            editor="$(find "$install_root" -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n1 || true)"
+          fi
+          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity editor missing for requested version' >&2; exit 25; }
+          [[ -d "$(dirname "$editor")/Data/PlaybackEngines/WebGLSupport" ]] || { echo 'Unity WebGL Build Support missing' >&2; exit 27; }
           echo "editor=$editor" >> "$GITHUB_OUTPUT"
+
+      # Save immediately after installation: browser QA/release failures must not erase the
+      # reusable editor. A successful build remains subject to every existing quality gate.
+      - name: Retain installed Unity WebGL editor for future builds
+        if: steps.editor_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /opt/unity/editors
+          key: unity-webgl-editor-v1-${{ runner.os }}-${{ steps.request.outputs.unity_version }}-${{ steps.request.outputs.unity_revision }}
 
       - name: Activate Unity Personal
         id: license
