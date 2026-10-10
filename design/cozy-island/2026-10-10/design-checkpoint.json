@@ -540,25 +540,40 @@
         "병력 전환 → 지역 기지 확보",
         "고급 병종 확보 → 해전 · 공성 정복 순서로 진행됨"
       ]
+    },
+    "local_authoring_parts::5ca6cadd964a242b36b91aa0d558ce1bf5efdf42f2610c4429346d5d68ae0af7:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"type\": \"collect\", \"item\": \"wood\", \"location\": \"world_node\"}",
+        "{\"type\": \"collect\", \"item\": \"grain\", \"location\": \"world_node\"}"
+      ],
+      "stateOutputs": [
+        "{\"type\": \"assign\", \"job\": \"forestry\", \"worker\": \"assigned\"}",
+        "{\"type\": \"upgrade\", \"level\": \"1\", \"resource\": \"soldier\"}"
+      ],
+      "name": "직접 채집 → 주민 자동화",
+      "purpose": "나무/식량 획득 → 주민 생산 → 병력 전환 → 지역 기지 확보 → 고급 병종 확보 → 해전 · 공성 정복 순서로 진행됨.",
+      "playerChoice": "월드 노드에서 직접 나무와 식량을 모으고, 고용된 주민을 생산 직업에 배치하여 반복 노동을 자동화하며, 병력을 통해 자원을 전환하고 레벨별 전투력을 확장함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
+      "calls": 10,
+      "successes": 8,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1510517,
-      "lastMs": 87864,
+      "totalMs": 1566351,
+      "lastMs": 55834,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:10:19.377Z"
+      "updatedAt": "2026-10-10T10:11:15.214Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:45:08.683Z",
-  "updatedAt": "2026-10-10T10:10:19.378Z",
+  "updatedAt": "2026-10-10T10:11:15.214Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1622,7 +1637,7 @@
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true,
     "eb01898a3b729b92d8d3856ec1406e7d6425ed9eff6547af95b6d21ef1ccb5d6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:10:19.377Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:11:15.214Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
