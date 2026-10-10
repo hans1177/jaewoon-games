@@ -2257,7 +2257,13 @@ export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
     types:freezeList(['background','environment','item','weapon','prop'])}),
   medical:freeze({source:'https://github.com/Slicer/Slicer',
     license:'BSD-style',engine:'SLICER_SANITIZED_SURFACE_IN_BLENDER',
-    requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])})
+    requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])}),
+  animation:freeze({source:'https://github.com/blender/blender',
+    license:'GPL-2.0-or-later',engine:'BLENDER_KEYFRAMES_NLA_AND_GLTF_ANIMATION',
+    types:freezeList(['animation','motion','prop','item','weapon','environment','background'])}),
+  video:freeze({source:'https://ffmpeg.org',
+    license:'LGPL-2.1-or-later-or-GPL-depending-on-build',engine:'BLENDER_FRAME_SEQUENCE_TO_FFMPEG_MP4',
+    types:freezeList(['animation','motion','prop','item','weapon','environment','background'])})
 });
 function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',requiredTypes=[]){
   const executor=clean(recipe?.executor||recipe?.engine).toUpperCase();
@@ -2305,7 +2311,9 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const taskModule=clean(task.assetAuthoring?.modulesByType?.[typeName]||task.assetAuthoring?.module||task.assetModule).toLowerCase().replaceAll('_','-');
   const aliases={'mesh':'mesh-ai','image-to-3d':'mesh-ai','garment':'clothing','apparel':'clothing',
     'cad':'design','parametric':'design','prop':'object','game-object':'object','slicer':'medical','anatomy':'medical','medical-3d':'medical',
-    'body':'human','humanoid':'human','character':'human'};
+    'body':'human','humanoid':'human','character':'human',
+    'animate':'animation','keyframes':'animation','motion-preview':'animation',
+    'render-video':'video','movie':'video','cinematic':'video'};
   const selected=aliases[taskModule]||taskModule;
   if(selected&&selected!=='auto'&&!Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,selected))
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
@@ -2316,6 +2324,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
   if(module!=='auto'&&!VIBE_NATIVE_OPEN_SOURCE_MODULES[module].types.includes(typeName))return null;
   if(imageRequested&&module==='human')throw new Error('HUMAN_MPFB_REQUIRES_MODEL_OR_LOCAL_ADDON');
+  if(imageRequested&&['animation','video'].includes(module))throw new Error('VIDEO_IMAGE_TO_3D_SEPARATE_AUTHORING_STAGE_REQUIRED');
   if(imageRequested&&module==='medical')throw new Error('MEDICAL_RAW_IMAGE_PROCESSING_FORBIDDEN');
   const gameSlug=(clean(task?.gameId)||'game').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'game';
   const typeSlug=typeName.replace(/[^a-z0-9._-]+/g,'-')||'asset';
@@ -2388,11 +2397,13 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
       ...(modelRequested?['--source-model',sourceModel]:[]),
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
-      ...(module==='object'?['--object-kind',objectKind]:[])],
+      ...(module==='object'?['--object-kind',objectKind]:[]),
+      ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway']:[])],
     outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
       `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
       `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
-      ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[])],
+      ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[]),
+      ...(['animation','video'].includes(module)?[`${outputRoot}/preview-motion.mp4`]:[])],
     evidenceJson:`${outputRoot}/evidence.json`,
     preview:`${outputRoot}/preview.png`,runMode:'VERIFY_ONLY'
   };
