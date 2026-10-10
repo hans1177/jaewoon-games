@@ -624,25 +624,41 @@
       "name": "게임 진입 및 기본적 성공/실패 결과",
       "purpose": "플레이어가 즉시 시작할 수 있는 단순한 행동 패턴과 점수/거리 기반의 피드백 제공",
       "playerChoice": "플레이어가 선택한 새로운 경로 연동 결과 발생 및 실제 세계 상태 변화 적용됨"
+    },
+    "local_authoring_parts::a4f2eb91dfce733b54683c883b0a81c4d0846b56e06199ad272f4a27a7ecc707:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "START_ACTION",
+        "SCORE_VALUE",
+        "DISTANCE_VALUE"
+      ],
+      "stateOutputs": [
+        "GAME_INITIATION",
+        "ACTION_RESULT"
+      ],
+      "name": "게임 진입 및 기본적 성공/실패 결과",
+      "purpose": "플레이어가 즉시 시작할 수 있는 단순한 행동 패턴, 사전 결정된 위험 또는 선택 사례와의 갈등, 새로운 경로 연동 결과",
+      "playerChoice": "플레이어가 선택한 새로운 경로 연동 결과에 따라 실제 세계 상태 변화 발생됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 21,
+      "calls": 23,
+      "successes": 22,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2499575,
-      "lastMs": 101427,
+      "totalMs": 2599720,
+      "lastMs": 100145,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:44:41.465Z"
+      "updatedAt": "2026-10-10T00:46:21.612Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:23:41.588Z",
-  "updatedAt": "2026-10-10T00:44:41.466Z",
+  "updatedAt": "2026-10-10T00:46:21.612Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2341,7 +2357,7 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:44:41.465Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:46:21.612Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
