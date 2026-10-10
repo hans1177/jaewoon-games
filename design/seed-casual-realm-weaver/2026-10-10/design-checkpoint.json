@@ -105,25 +105,40 @@
         "완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험",
         "모바일 환경에서의 런타임 절차적 조각 생성 및 파티클 효과 발현"
       ]
+    },
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road_sign",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "scene",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "environmentChange",
+        "scoreIncrease"
+      ],
+      "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+      "purpose": "플레이어가 무작위로 배치된 조각을 선택 및 연결하여 시각적 피드백과 성취감을 경험하며, 그 과정에서 주변 환경이 변화합니다.",
+      "playerChoice": "조각의 위치 또는 색상/형태 변경을 결정하여 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 218804,
-      "lastMs": 22537,
+      "totalMs": 240411,
+      "lastMs": 21607,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:52:28.394Z"
+      "updatedAt": "2026-10-10T06:52:50.002Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T06:52:28.395Z",
+  "updatedAt": "2026-10-10T06:52:50.002Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1400,8 +1415,8 @@
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:0:4f53cda18c2baa0c": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:52:28.394Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T06:52:50.002Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
