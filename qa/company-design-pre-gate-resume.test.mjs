@@ -409,6 +409,9 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
   const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
     seedGameplaySketchVersion:4,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
     localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    gameId:'qa-resource-game',game:{name:'자원 수집 게임'},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'실제 자원 채집과 고유한 대응 선택',CORE_LOOP:['채집','자원 사용','실패 복구'],OWNER_LATEST_DESIGN_REQUEST:'원본 자원·저장·멀티 규칙 보존'},
+    clip:(value,n)=>JSON.stringify(value).slice(0,n),
     designCheckpoint:checkpoint,modelCallStats:[],console:{log:line=>logs.push(line)},
     clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,
     assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
@@ -417,11 +420,12 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
       calls.push({role,prompt,idPattern:contract.properties.id?.pattern});
       const attempt=calls.filter(row=>row.role===role).length;
       const cloned=role==='A'&&attempt<=2;
+      const duplicateMeaning=role==='MAIN'||cloned;
       const id=cloned?'RULE_MAIN':'RULE_'+role;
       return JSON.stringify({
-        id,grammarRole:role,name:cloned?'주요 자원 규칙':'원본 '+role+' 규칙',
-        purpose:cloned?'원본 주요 자원 전환을 설계한다':'원본 '+role+' 규칙에서 고유한 상태 판단을 수행한다',
-        playerChoice:cloned?'플레이어가 주요 자원 배분을 선택한다':'플레이어가 '+role+'의 대응 순서를 선택한다',
+        id,grammarRole:role,name:duplicateMeaning?'주요 자원 규칙':'원본 '+role+' 규칙',
+        purpose:duplicateMeaning?'원본 주요 자원 전환을 설계한다':'원본 '+role+' 규칙에서 고유한 상태 판단을 수행한다',
+        playerChoice:duplicateMeaning?'플레이어가 주요 자원 배분을 선택한다':'플레이어가 '+role+'의 대응 순서를 선택한다',
         stateInputs:role==='c'&&attempt===1?['INPUT: 채집 → STATE: 나무 증가']:['WoodCount'],
         stateOutputs:['WoodCount']
       });
@@ -435,7 +439,7 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
   assert.ok(calls.every(row=>row.idPattern===`^${row.role.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`),
     'role-scoped model schema keeps local rule IDs distinct without changing gameplay state');
   assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
-  assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_RULE_ID_REUSED'));
+  assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'));
   assert.ok(calls[6].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
   assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
   assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
