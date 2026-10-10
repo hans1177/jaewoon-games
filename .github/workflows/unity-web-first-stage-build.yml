@@ -1036,6 +1036,25 @@ jobs:
             echo "VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:$unity_source_tree_sha:$web_source_tree_sha"
           fi
 
+          # After verified main deployment, wake the existing game-primary source loop.
+          # Vibe-owned publications already emit a callback. QA repair remains fail-closed.
+          if [ -z "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = 'true' ]; then
+            refill_payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "$GAME_ID" \
+              --arg source "$promotion_sha" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,execution_lane:"game-primary",game_id:$game,source_revision:$source,reason:"unity-web-main-deployed-next-build-up"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$refill_payload"
+            echo "UNITY_WEB_POST_DEPLOY_NEXT_BUILD_UP=REFILL_REQUESTED:$GAME_ID:$promotion_sha"
+          fi
+
       - name: Mark Unity Web floor repair requirement
         id: repair
         if: steps.readiness.outputs.pass != 'true'
