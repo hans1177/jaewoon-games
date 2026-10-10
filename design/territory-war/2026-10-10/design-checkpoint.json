@@ -236,25 +236,164 @@
       "name": "지역 관리 시스템",
       "purpose": "전선 이동 및 자원 분배 결정의 인과적 영향을 전술적으로 표현하며, 군사 전술에 실질적인 영향을 미칩니다.",
       "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 중인 실제 플레이어 역할입니다."
+    },
+    "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "입력: 전선 위치 변경 및 자원 분배 결정"
+      ],
+      "stateOutputs": [
+        "선택: 전선 병합 또는 단독 확장",
+        "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+      ],
+      "name": "지역 관리 시스템",
+      "purpose": "전선 위치와 자원 배분의 인과적 연결 및 군사적 조치의 실질적 영향을 나타냄",
+      "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 실제 세계 상태로 반영됨"
+    },
+    "local_authoring_parts::1277ba8cf39f8aecb08f61efa2918dda01479e88dabd6d8c33c7eefe893feb03:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결을 통해 실제 세계 상태로 반영하는 영토 전략 게임의 핵심 구조",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행에 대한 실질적인 역할 수행 및 실제 세계 상태 반영"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정 과정에서의 실질적 선택과 그에 따른 군사적 결과 생성",
+          "playerChoice": "전선 병합 또는 단독 확장 선택"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정의 인과적 영향을 전술적으로 표현하며, 군사 전술에 실질적인 영향을 미칩니다.",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 중인 실제 플레이어 역할입니다."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결 및 군사적 조치의 실질적 영향을 나타냄",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 실제 세계 상태로 반영됨"
+        }
+      ]
+    },
+    "local_authoring_parts::da5563a19b364640ae5254e7c11fcd944524d9ecb2abd5ff05f56e35f60867e0:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 전선 위치 변경 및 자원 분배 결정",
+        "선택: 전선 병합 또는 단독 확장",
+        "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결을 통해 실제 세계 상태로 반영하는 영토 전략 게임의 핵심 구조",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행에 대한 실질적인 역할 수행 및 실제 세계 상태 반영"
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정 과정에서의 실질적 선택과 그에 따른 군사적 결과 생성",
+          "playerChoice": "전선 병합 또는 단독 확장 선택"
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 이동 및 자원 분배 결정의 인과적 영향을 전술적으로 표현하며, 군사 전술에 실질적인 영향을 미칩니다.",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 중인 실제 플레이어 역할입니다."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "입력: 전선 위치 변경 및 자원 분배 결정"
+          ],
+          "stateOutputs": [
+            "선택: 전선 병합 또는 단독 확장",
+            "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+          ],
+          "name": "지역 관리 시스템",
+          "purpose": "전선 위치와 자원 배분의 인과적 연결 및 군사적 조치의 실질적 영향을 나타냄",
+          "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 실제 세계 상태로 반영됨"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 961355,
-      "lastMs": 70108,
+      "totalMs": 1032929,
+      "lastMs": 71574,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:19:12.248Z"
+      "updatedAt": "2026-10-10T02:20:23.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:19:12.249Z",
+  "updatedAt": "2026-10-10T02:20:23.835Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1786,19 +1925,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "signatureSystems_0",
-          "signatureSystems_1",
-          "signatureSystems_2"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": 1
   },
@@ -1806,8 +1933,8 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:19:12.248Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-10T02:20:23.835Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
