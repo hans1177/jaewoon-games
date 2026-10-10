@@ -605,25 +605,73 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::3870c3a42aa8f8a567143a6ddd9083f413bb916339dbd9c0a04b38ee792dab57:systemInterconnections:0:4f53cda18c2baa0c": {
+      "fromId": "a_road_sign",
+      "toId": "main_road_sign",
+      "stateKeys": [
+        "scene",
+        "playerAction"
+      ],
+      "fromSystem": "A",
+      "toSystem": "MAIN",
+      "trigger": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생",
+      "stateChange": "완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험 발현"
+    },
+    "local_authoring_parts::3870c3a42aa8f8a567143a6ddd9083f413bb916339dbd9c0a04b38ee792dab57:systemInterconnections:1:2501670f50b966d3": {
+      "fromId": "a_road_sign",
+      "toId": "main_road_sign",
+      "stateKeys": [
+        "scene",
+        "playerAction"
+      ],
+      "fromSystem": "A",
+      "toSystem": "MAIN",
+      "trigger": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생",
+      "stateChange": "완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험 발현"
+    },
+    "local_authoring_parts::3870c3a42aa8f8a567143a6ddd9083f413bb916339dbd9c0a04b38ee792dab57:systemInterconnections:2:a468342132c0af19": {
+      "fromId": "a_road_sign",
+      "toId": "main_road_sign",
+      "stateKeys": [
+        "scene",
+        "playerAction"
+      ],
+      "fromSystem": "A",
+      "toSystem": "MAIN",
+      "trigger": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생",
+      "stateChange": "완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험 발현"
+    },
+    "local_authoring_parts::3870c3a42aa8f8a567143a6ddd9083f413bb916339dbd9c0a04b38ee792dab57:systemInterconnections:3:ef02f3711c2e0e19": {
+      "fromId": "c_road_sign",
+      "toId": "main_road_sign",
+      "stateKeys": [
+        "scene",
+        "playerAction"
+      ],
+      "fromSystem": "c",
+      "toSystem": "MAIN",
+      "trigger": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
+      "stateChange": "주변 환경의 색상/패턴 변화와 점수 증대가 발생하며, 플레이어가 선택한 조각 위치 또는 색상/형태 변경으로 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 23,
+      "successes": 23,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1011003,
-      "lastMs": 144881,
+      "totalMs": 1113481,
+      "lastMs": 23966,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:05:40.626Z"
+      "updatedAt": "2026-10-10T07:07:23.117Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T07:05:40.630Z",
+  "updatedAt": "2026-10-10T07:07:23.117Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1959,10 +2007,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:05:40.626Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:07:23.117Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
