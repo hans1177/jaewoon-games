@@ -567,21 +567,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 22,
-      "successes": 21,
+      "calls": 23,
+      "successes": 22,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2095574,
-      "lastMs": 75518,
+      "totalMs": 2168598,
+      "lastMs": 73024,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:59:24.317Z"
+      "updatedAt": "2026-10-10T01:00:37.344Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-10T00:59:24.319Z",
+  "updatedAt": "2026-10-10T01:00:37.349Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2328,6 +2328,13 @@
         "previousRuleIds": [
           "identity-core"
         ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "identity-core"
+        ]
       }
     ]
   },
@@ -2337,7 +2344,7 @@
     "local_authoring_parts::31f3996698a02d169a6f29bc3a71957eec804685d5de0c278e6e75db856e18cf:signatureSystems:3": 1,
     "designer_draft_slices::identity-core": 2,
     "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": 4,
-    "local_authoring_parts::1146e971b61cb36f2bf5f0a82a53fb7709cc349a5b866a32dc5de0ceb8a41f2b:signatureSystems:1": 1
+    "local_authoring_parts::1146e971b61cb36f2bf5f0a82a53fb7709cc349a5b866a32dc5de0ceb8a41f2b:signatureSystems:1": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2438,10 +2445,10 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:59:24.317Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:00:37.344Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
