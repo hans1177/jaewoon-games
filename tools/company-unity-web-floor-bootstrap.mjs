@@ -732,7 +732,7 @@ ${worldData?`        // 편집기에서 실제 참조되는 Lit 재질을 자산
 #endif
 `;
 
-fs.writeFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),runtime);
+fs.writeFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),runtime.replace(/^[ \t]+$/gm,''));
 fs.writeFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),build);
 fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify({
   version:1,gameId,gameName,identity,coreLoop,category,multiplayerMode,
