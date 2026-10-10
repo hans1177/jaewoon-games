@@ -83,6 +83,7 @@ import {
   COMMON_SKILL_MOTION_GRAMMAR,
   COMMON_MONSTER_ACTION_SPECIES,
   COMMON_MONSTER_SPECIES_JOINT_POSES,
+  COMMON_MONSTER_SKINNED_MASTERS,
   createCommonCareerMotionLoadout,
   createCommonMonsterActionLoadout
 } from '../assets/vibe-motion-director.js';
@@ -757,6 +758,37 @@ test('twenty monster body plans use distinct 3D joint curves, not speed-scaled h
   assert.ok(wyvern.some(action=>action.jointTracks.some(row=>row.part==='WINGS')));
   const slime=createCommonMonsterActionLoadout({speciesId:'SLIME'}).choreography;
   assert.ok(slime.some(action=>action.jointTracks.some(row=>row.part==='LOBES')));
+});
+
+test('five actual cross-genre creature masters bind 3D skinned action clips while others stay semantic',()=>{
+  const ready={
+    WOLF:['QUADRUPED_CANINE',17],SPIDER:['ARACHNID',29],BEETLE:['HEXAPOD_INSECT',23],
+    GOLEM:['HEAVY_GOLEM_OR_BOSS',15],SERPENT:['REPTILE_OR_SERPENT',17]
+  };
+  assert.equal(Object.keys(COMMON_MONSTER_SKINNED_MASTERS).length,5);
+  for(const [species,[bodyPlan,joints]] of Object.entries(ready)){
+    const loadout=createCommonMonsterActionLoadout({speciesId:species,platform:'UNITY',genre:'SURVIVAL'});
+    assert.ok(loadout.master,species);
+    assert.equal(loadout.master.bodyPlan,bodyPlan);
+    assert.equal(loadout.master.rigJointCount,joints);
+    assert.equal(loadout.master.id,'shared-creature-'+species.toLowerCase());
+    assert.equal(loadout.master.path,'assets/shared/creature-'+species.toLowerCase()+'.glb');
+    assert.equal(loadout.master.sourceAnimationClips.length,11);
+    assert.equal(loadout.rigProfile,loadout.master.rigProfile);
+    assert.ok(loadout.master.sourceAnimationClips.includes('SKILL_PREPARE'));
+    assert.ok(loadout.master.sourceAnimationClips.includes('ATTACK_A'));
+    assert.equal(loadout.master.sourceHasActualSkinnedMesh,true);
+    assert.equal(loadout.master.runtimeVerified,false);
+    assert.equal(loadout.productionVerified,false);
+    assert.equal(loadout.gameplayAuthority,false);
+    const web=createCommonMonsterActionLoadout({speciesId:species,platform:'WEB',genre:'HORROR'});
+    assert.equal(web.master.path,loadout.master.path,'same master provenance, distinct platform adaptation');
+    assert.equal(web.platformNativeAdaptationRequired,true);
+  }
+  const ghost=createCommonMonsterActionLoadout({speciesId:'GHOST'});
+  assert.equal(ghost.master,null);
+  assert.equal(ghost.masterActuallyExistsInSharedRepository,false);
+  assert.equal(ghost.productionVerified,false);
 });
 
 test('canonical motion director directly exposes shared class and creature motion authoring requests',()=>{
