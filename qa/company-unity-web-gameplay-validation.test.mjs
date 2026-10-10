@@ -189,6 +189,21 @@ test('Unity Web scene screenshots retain boot and gameplay canvas pixels indepen
   assert.match(source,/visualBlocked[\s\S]*renderSurfaceVerified\|\|!sceneScreenVerified/);
 });
 
+test('canonical Unity Web build refuses approval without three real canvas screenshots and their hashes',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const renderScreenPass=checks\.every\(e=>e\.approvedEnvironment\?\.required!==true\|\|\(/);
+  assert.match(workflow,/renderedScene\.sceneCapturePersisted===true/);
+  assert.match(workflow,/renderedScene\.pixels\?\.source==='REAL_UNITY_CANVAS_SCREENSHOT'/);
+  assert.match(workflow,/renderedScene\.nativeRenderProof\?\.litMaterials===e\.visualQa\.renderedScene\.nativeRenderProof\?\.materials/);
+  assert.match(workflow,/UNITY_WEB_RENDERED_SCENE_SCREEN_EVIDENCE_REQUIRED/);
+  assert.match(workflow,/gameplay-mobile-scene\.png/);
+  assert.match(workflow,/independent-qa-mobile-scene\.png/);
+  assert.match(workflow,/regression-mobile-scene\.png/);
+  assert.match(workflow,/const graphicsPass=!bootstrapGraphicsBlocked/);
+  assert.match(workflow,/&&native3dVerified;/);
+  assert.doesNotMatch(workflow,/pass=\(renderScreenPass\|\|true\)/);
+});
+
 test('Unity Web approved world screenshot gate rejects unlit, incomplete normals, flat canvas and magenta frames',()=>{
   const start=source.indexOf('  const worldRenderMarker=');
   const end=source.indexOf('  const shaderLikelyMissing=',start);
