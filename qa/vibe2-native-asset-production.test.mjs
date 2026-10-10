@@ -1952,6 +1952,42 @@ test('animation and video select a real existing Blender DCC authoring recipe wi
   assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
 });
 
+test('licensed DeepMotion-style FBX uses the existing Blender motion authoring path while retaining textures',()=>{
+  const task={
+    gameId:'source-mocap-motion',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경 애니메이션',
+    assetAuthoring:{module:'animation',sourceModel:'assets/shared/mocap/walk.fbx',sourceLicense:'project-original'}
+  };
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.module==='animation');
+    assert.ok(recipes.length>0,target);
+    for(const recipe of recipes){
+      assert.equal(recipe.sourceModel,'assets/shared/mocap/walk.fbx');
+      assert.equal(recipe.sourceLicense,'project-original');
+      assert.ok(recipe.args.includes('--source-model'));
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.equal(recipe.runtimeVerificationRequired,true);
+    }
+  }
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,module:'object'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE/);
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,sourceLicense:'CC-BY-NC'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
+  const script=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(script,/bpy\.ops\.import_scene\.fbx/);
+  assert.match(script,/NATIVE_MOCAP_SKINNED_RIG_REQUIRED/);
+  assert.match(script,/NATIVE_MOCAP_CLIP_REQUIRED/);
+  assert.match(script,/SOURCE_UV_PRESERVED/);
+  assert.match(script,/NATIVE_SOURCE_UV_INVALID/);
+  assert.match(script,/textureIndicesValid/);
+  assert.match(script,/sourceUvPreserved/);
+  assert.match(script,/SOURCE_MOCAP/);
+});
+
 test('unlicensed TRELLIS.2 dependencies block commercial asset authoring before GPU execution',()=>{
   const task={gameId:'high-fidelity-scene',
     goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
