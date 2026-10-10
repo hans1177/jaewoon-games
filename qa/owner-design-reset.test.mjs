@@ -222,6 +222,28 @@ test('design queue preserves pending runs and stale engine snapshots cannot modi
   assert.match(workflow,/if: needs\.resolve-seed-targets\.outputs\.run == 'true'/);
 });
 
+test('latest design bootstrap is not blocked by queued stale engine runs',()=>{
+  const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
+  const from=bootstrap.indexOf('      - name: Continue active DESIGN_ONLY work from latest main');
+  const to=bootstrap.indexOf('      - name: Summary',from);
+  const continuation=bootstrap.slice(from,to);
+  assert.ok(from>=0&&to>from);
+  assert.match(continuation,/export LATEST_MAIN_SHA=/);
+  assert.match(continuation,/sha=process\.env\.LATEST_MAIN_SHA/g);
+  assert.doesNotMatch(continuation,/if \[ "\$total_active" -gt 0 \]/);
+  assert.match(continuation,/if \[ "\$current_active" -gt 0 \]; then/);
+  assert.match(continuation,/GAME_SEED_DESIGN_STALE_RUNS_NON_BLOCKING=YES/);
+  assert.match(continuation,/gh workflow run company-seed-design-runtime\.yml --ref main/);
+  const statusSet=new Set(['queued','in_progress','pending','waiting','requested']);
+  const old=[{head_sha:'older',status:'queued'},{head_sha:'older',status:'pending'}];
+  const activeFor=(runs,sha)=>runs.filter(run=>run.head_sha===sha&&statusSet.has(run.status)).length;
+  assert.equal(activeFor(old,'current'),0,'stale jobs cannot count as current main design work');
+  assert.equal(activeFor([...old,{head_sha:'current',status:'pending'}],'current'),1);
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/r\.head_sha===sha&&\['queued','in_progress','pending','waiting','requested'\]/);
+});
+
+
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/const activeResetSeeds=active\.filter/);

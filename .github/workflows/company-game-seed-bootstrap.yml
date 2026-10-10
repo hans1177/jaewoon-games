@@ -222,23 +222,24 @@ jobs:
             echo 'GAME_SEED_DESIGN_CONTINUATION=NO_ACTIVE_DESIGN_ONLY'
             exit 0
           fi
+          export LATEST_MAIN_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          echo "GAME_SEED_CURRENT_DESIGN_MAIN_SHA=$LATEST_MAIN_SHA"
           runs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?branch=main&per_page=100")"
-          current_active="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha===sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
-          stale_ids="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;for(const r of (j.workflow_runs||[]))if(r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha!==sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status))console.log(r.id);})")"
+          current_active="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.LATEST_MAIN_SHA;const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha===sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          stale_ids="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.LATEST_MAIN_SHA;for(const r of (j.workflow_runs||[]))if(r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha!==sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status))console.log(r.id);})")"
           stale_active="$(printf '%s\n' "$stale_ids" | sed '/^$/d' | wc -l | tr -d ' ')"
           echo "ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=$current_active"
           echo "ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=$stale_active"
-          total_active=$((current_active + stale_active))
-          echo 'GAME_SEED_STALE_DESIGN_RUN_POLICY=FINISH_PINNED_ENGINE'
-          if [ "$total_active" -gt 0 ]; then
+          echo 'GAME_SEED_STALE_DESIGN_RUN_POLICY=KEEP_PINNED_ENGINE_BUT_DO_NOT_BLOCK_LATEST'
+          if [ "$current_active" -gt 0 ]; then
             echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
-            if [ "$current_active" -gt 0 ]; then
-              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
-            else
-              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_PINNED_ENGINE_ACTIVE'
-            fi
+            echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
             echo 'GAME_SEED_DESIGN_RUNNING_BATCH_CANCELLED=NO'
             exit 0
+          fi
+          if [ "$stale_active" -gt 0 ]; then
+            echo 'GAME_SEED_DESIGN_STALE_RUNS_NON_BLOCKING=YES'
+            echo 'GAME_SEED_DESIGN_CONTINUATION=DISPATCH_LATEST_HEAD_WHILE_STALE_QUEUED'
           fi
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'

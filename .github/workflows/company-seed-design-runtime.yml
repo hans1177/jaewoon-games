@@ -1134,7 +1134,7 @@ jobs:
           NODE
           )"
           echo "DESIGN_GATE_REPAIR_PENDING=$pending"
-          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?branch=main&per_page=100" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID),sha=process.env.GITHUB_SHA;const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&r.head_sha===sha&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "DESIGN_GATE_ACTIVE_OTHER_RUNS=$active_other"
           echo 'DESIGN_EXTERNAL_AI_WAIT=DISABLED'
           gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
