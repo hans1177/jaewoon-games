@@ -379,7 +379,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     checkpointMigration:{
       fromContractVersion:previousContractVersion,
       toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
-      reason:checkpointThreePlatformPolicyMigrationEligible?'THREE_PLATFORM_COUNT_EXACT_POLICY_IDENTITY_MIGRATION':checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
+      reason:homepageOnlyDesignCheckpointEligible?'HOMEPAGE_ONLY_POLICY_COMPATIBLE_DESIGN_REVALIDATION':checkpointThreePlatformPolicyMigrationEligible?'THREE_PLATFORM_COUNT_EXACT_POLICY_IDENTITY_MIGRATION':checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
       previousEngineDigest,
       preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
       preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
@@ -387,7 +387,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     },
     updatedAt:new Date().toISOString()
   };
-  if(checkpointThreePlatformPolicyMigrationEligible||previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
+  if(checkpointThreePlatformPolicyMigrationEligible||homepageOnlyDesignCheckpointEligible||previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
     // 작성 응답 조각은 유지하고 기존 완성 단계만 새로운 내용 검사로 재검토한다.
     delete designCheckpoint.phases.designer_draft;
     designCheckpoint.completedPhases=designCheckpoint.completedPhases.filter(phase=>phase!=='designer_draft');
