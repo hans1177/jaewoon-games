@@ -362,7 +362,7 @@ export function auditUnityWebNativeSystems({
   const inputEntrypoints=[...clickable].filter(ref=>callbackReachable.has(ref));
   const eventReachable=bfs(inputEntrypoints);
   const callbackMethods=methods.filter(row=>callbackReachable.has(row.id));
-  const outputPat=key=>new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%|&^=-]?=(?!=))','g');
+  const outputPat=key=>new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%|&^-]?=(?!=))','g');
   const readPat=key=>new RegExp('\\b'+key+'\\b');
   const noOpAssignment=key=>new RegExp('\\b'+key+'\\s*=\\s*(?:this\\.)?'+key+'\\s*;','g');
   const stateMethods=(key,kind)=>{
