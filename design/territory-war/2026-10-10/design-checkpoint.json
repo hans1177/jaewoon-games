@@ -444,25 +444,38 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::48d32cc31a187257db5c9473c7fab3a8ee46457293b730dda375af618ce7265c:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "전선 위치 변경"
+      ],
+      "stateOutputs": [
+        "자원 투입"
+      ],
+      "name": "영토 확장 전략",
+      "purpose": "전선 이동 및 자원 분배 결정",
+      "playerChoice": "전선 병합 또는 단독 확장 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1088584,
-      "lastMs": 55655,
+      "totalMs": 1151580,
+      "lastMs": 62996,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:21:19.492Z"
+      "updatedAt": "2026-10-10T02:22:22.496Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:21:19.499Z",
+  "updatedAt": "2026-10-10T02:22:22.496Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2131,10 +2144,10 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:21:19.494Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:22:22.496Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
