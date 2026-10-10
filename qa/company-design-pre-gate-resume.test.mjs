@@ -23,17 +23,23 @@ const authoredHandoffSource=design.slice(design.indexOf('function authoredStateH
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
 // 메인: 문법 작성 대기와 최종 설계 검증을 혼동해 설계 엔진을 멈추지 않도록 회귀 검사.
-test('canonical un-authored V5 @ intake does not block the designer but still rejects unrelated schema errors',()=>{
+test('canonical un-authored V5 A/B/C/@ input starts design without weakening completed-seed validation',()=>{
   const sketch={version:5,novelGameGrammar:{delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[]}}};
   const input={GAMEPLAY_SKETCH:sketch,novelGrammarBackfill:{source:'CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009',authoringPending:true}};
   const blocked=validateGameSeed({...input,novelGrammarBackfill:{...input.novelGrammarBackfill,authoringPending:false}});
   const pending=validateGameSeed(input);
-  const missing='GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements';
-  assert.ok(blocked.errors.includes(missing),'fully authored sketch must still contain 4 @ elements');
-  assert.ok(!pending.errors.includes(missing),'canonical intake has not authored those discoveries yet');
-  assert.deepEqual(pending.errors,blocked.errors.filter(error=>error!==missing),'all other seed checks stay enforced');
+  const authoredOnly=new Set([
+    'GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements',
+    'GAMEPLAY_SKETCH C requires two creative theme sources',
+    'GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay',
+    'GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world'
+  ]);
+  const isAuthoredOnly=error=>authoredOnly.has(error)||/^GAMEPLAY_SKETCH A\/B [AB] missing (?:systemFamily|sourceMaterial|sourceDomain|materialRule): system plus unique creative source required$/.test(error);
+  assert.ok(blocked.errors.some(isAuthoredOnly),'authored designs must have A/B/C/@ creative content');
+  assert.ok(!pending.errors.some(isAuthoredOnly),'canonical seed intake cannot invent un-authored grammar');
+  assert.deepEqual(pending.errors,blocked.errors.filter(error=>!isAuthoredOnly(error)),'every unrelated input validation remains enforced');
   const untrusted=validateGameSeed({...input,novelGrammarBackfill:{source:'UNVERIFIED_INPUT',authoringPending:true}});
-  assert.ok(untrusted.errors.includes(missing),'only canonical pending designer input qualifies');
+  assert.ok(untrusted.errors.some(isAuthoredOnly),'unverified flags cannot bypass any grammar requirement');
 });
 
 test('V5 role generation revalidates authored reciprocal handoffs and invalidates stale per-role cache',()=>{
