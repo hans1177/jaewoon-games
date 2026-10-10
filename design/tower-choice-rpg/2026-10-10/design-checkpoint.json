@@ -104,25 +104,41 @@
         "플레이어 선택에 따른 실제 상태 변화 및 피드백 제공",
         "주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성"
       ]
+    },
+    "local_authoring_parts::8200cf1ea45145f151bd90da95ed4827eba7c8e645d03913acca240938890eca:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT/SELECT",
+        "STATE CHANGE",
+        "REWARD/RISK/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "PLAYER'S STRATEGIC DECISION",
+        "SYSTEM INTEGRATION AND ADAPTIVE COMBAT LOGIC UPDATE"
+      ],
+      "name": "Survival Action System Integration with Strategic Positioning Mechanics",
+      "purpose": "Player's strategic decision-making that affects the outcome of each wave, integrating real-time combat and resource management with tactical positioning.",
+      "playerChoice": "Adaptive Risk Management through Resource Allocation and Dynamic Threat Evolution from Base to Boss Tier"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 343879,
-      "lastMs": 47745,
+      "totalMs": 382250,
+      "lastMs": 38371,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:01:50.888Z"
+      "updatedAt": "2026-10-10T03:02:29.261Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:01:50.888Z",
+  "updatedAt": "2026-10-10T03:02:29.261Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1848,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:01:50.888Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:02:29.261Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
