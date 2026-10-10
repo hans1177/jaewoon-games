@@ -3,595 +3,37 @@
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-SEED-SINGLE-DEFENSE-STRAT-CELESTIAL-BASTION",
-  "fingerprint": "ad35ef07cd67ea6dae0e7e157979b72c5a36fe28420f9dc2403b19a6e7d8fa6b",
+  "fingerprint": "94ad59d1e228acad26e0374f6035826997aeec61984264ddba24e3e560868191",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::0faac48f35217f31444de766e3ca4b8abac87d4d97e91cba0b78cfe8974c9471:identity": {
-      "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 공명 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다."
-    },
-    "local_authoring_parts::7cdfac577f50cfa39400bf3d9e43b538fd8a333fb26dbb6809c0e62858e4d4fa:mainIdentity,a,b,abCausality": {
-      "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-      "a": {
-        "system": "지형 변형 시스템",
-        "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-        "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-        "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-      },
-      "b": {
-        "system": "속성 공명 시스템",
-        "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-        "materialDomain": "타워의 속성 조합 및 강화",
-        "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-      },
-      "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다."
-    },
-    "local_authoring_parts::7cdfac577f50cfa39400bf3d9e43b538fd8a333fb26dbb6809c0e62858e4d4fa:abEvolution,materialFusion,storyCausalChain": {
-      "abEvolution": {
-        "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-        "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-        "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-      },
-      "materialFusion": {
-        "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-        "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-        "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-        "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-        "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-        "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-        "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-      }
-    },
-    "local_authoring_parts::61f49a0775e6513b6f6b40f8292b308ad5e0a99f64d0a2ed82f0eca5fc0565ec:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
-      "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-      "a": {
-        "system": "지형 변형 시스템",
-        "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-        "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-        "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-      },
-      "b": {
-        "system": "속성 공명 시스템",
-        "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-        "materialDomain": "타워의 속성 조합 및 강화",
-        "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-      },
-      "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다.",
-      "abEvolution": {
-        "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-        "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-        "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-      },
-      "materialFusion": {
-        "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-        "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-        "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-        "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-        "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-        "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-        "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-      }
-    },
-    "local_authoring_parts::fa63729af707301378657f5edce00001b732cff082bb5dea8d641df984ddbf73:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
-      "cThemes": [
-        {
-          "name": "지형 변형",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-        },
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "타워 디펜스",
-          "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "창의적 전투",
-          "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-        }
-      ],
-      "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-      "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐."
-    },
-    "local_authoring_parts::fa63729af707301378657f5edce00001b732cff082bb5dea8d641df984ddbf73:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "delveDiscoveries": [
-        {
-          "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-          "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-          "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-        },
-        {
-          "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-          "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-          "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-        },
-        {
-          "clue": "무한 보상 악용과 진입 장벽",
-          "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-          "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-        },
-        {
-          "clue": "발견 단서와 새로운 실제 선택",
-          "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-          "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-        }
-      ],
-      "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-      "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-    },
-    "local_authoring_parts::61f49a0775e6513b6f6b40f8292b308ad5e0a99f64d0a2ed82f0eca5fc0565ec:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "cThemes": [
-        {
-          "name": "지형 변형",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-        },
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "타워 디펜스",
-          "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "창의적 전투",
-          "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-        }
-      ],
-      "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-      "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐.",
-      "delveDiscoveries": [
-        {
-          "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-          "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-          "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-        },
-        {
-          "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-          "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-          "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-        },
-        {
-          "clue": "무한 보상 악용과 진입 장벽",
-          "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-          "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-        },
-        {
-          "clue": "발견 단서와 새로운 실제 선택",
-          "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-          "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-        }
-      ],
-      "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-      "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-    },
-    "local_authoring_parts::ab6a01891b1a853804ca381e9a5617ed5f6d2731424eea9f93871e67d8475760:creativeGrammar": {
-      "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-      "a": {
-        "system": "지형 변형 시스템",
-        "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-        "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-        "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-      },
-      "b": {
-        "system": "속성 공명 시스템",
-        "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-        "materialDomain": "타워의 속성 조합 및 강화",
-        "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-      },
-      "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다.",
-      "abEvolution": {
-        "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-        "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-        "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-      },
-      "materialFusion": {
-        "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-        "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-        "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-        "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-        "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-        "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-        "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-      },
-      "cThemes": [
-        {
-          "name": "지형 변형",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-        },
-        {
-          "name": "속성 공명",
-          "kind": "MATERIAL",
-          "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "타워 디펜스",
-          "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "창의적 전투",
-          "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-        }
-      ],
-      "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-      "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐.",
-      "delveDiscoveries": [
-        {
-          "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-          "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-          "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-        },
-        {
-          "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-          "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-          "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-        },
-        {
-          "clue": "무한 보상 악용과 진입 장벽",
-          "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-          "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-        },
-        {
-          "clue": "발견 단서와 새로운 실제 선택",
-          "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-          "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-        }
-      ],
-      "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-      "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-    },
-    "local_authoring_parts::0faac48f35217f31444de766e3ca4b8abac87d4d97e91cba0b78cfe8974c9471:creativeGrammar": {
-      "creativeGrammar": {
-        "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-        "a": {
-          "system": "지형 변형 시스템",
-          "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-          "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-          "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-        },
-        "b": {
-          "system": "속성 공명 시스템",
-          "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-          "materialDomain": "타워의 속성 조합 및 강화",
-          "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-        },
-        "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다.",
-        "abEvolution": {
-          "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-          "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-          "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-        },
-        "materialFusion": {
-          "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-          "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-          "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-          "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-          "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-          "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-          "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-        },
-        "cThemes": [
-          {
-            "name": "지형 변형",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-          },
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "타워 디펜스",
-            "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "창의적 전투",
-            "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-          }
-        ],
-        "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-        "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐.",
-        "delveDiscoveries": [
-          {
-            "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-            "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-            "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-          },
-          {
-            "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-            "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-            "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-          },
-          {
-            "clue": "무한 보상 악용과 진입 장벽",
-            "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-            "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-          },
-          {
-            "clue": "발견 단서와 새로운 실제 선택",
-            "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-            "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-          }
-        ],
-        "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-        "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-      }
-    },
-    "local_authoring_parts::18d274db69d5ef35d08bfb1737f63da5a715e10fb3f9b1c0afb3f2b3fa079cdc:identity,creativeGrammar": {
-      "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 공명 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-        "a": {
-          "system": "지형 변형 시스템",
-          "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-          "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-          "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-        },
-        "b": {
-          "system": "속성 공명 시스템",
-          "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-          "materialDomain": "타워의 속성 조합 및 강화",
-          "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-        },
-        "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다.",
-        "abEvolution": {
-          "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-          "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-          "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-        },
-        "materialFusion": {
-          "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-          "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-          "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-          "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-          "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-          "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-          "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-        },
-        "cThemes": [
-          {
-            "name": "지형 변형",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-          },
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "타워 디펜스",
-            "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "창의적 전투",
-            "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-          }
-        ],
-        "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-        "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐.",
-        "delveDiscoveries": [
-          {
-            "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-            "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-            "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-          },
-          {
-            "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-            "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-            "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-          },
-          {
-            "clue": "무한 보상 악용과 진입 장벽",
-            "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-            "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-          },
-          {
-            "clue": "발견 단서와 새로운 실제 선택",
-            "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-            "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-          }
-        ],
-        "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-        "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-      }
-    },
-    "local_authoring_parts::18d274db69d5ef35d08bfb1737f63da5a715e10fb3f9b1c0afb3f2b3fa079cdc:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하며, 유닛의 속성을 동적으로 조합하여 전략적인 선택을 하게 됩니다. 이러한 창의적 결정은 적의 이동 경로 예측 및 방어선 구축에 직접 영향을 미칩니다.",
-      "coreFun": "지형 변형 시스템은 플레이어가 특정 구역의 높이 값을 조절하거나, 타워의 속성 배열을 재배열함으로써, 적의 이동 경로를 최적화합니다. 동시에, 인접한 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시켜 전술적 깊이를 더합니다."
-    },
-    "local_authoring_parts::f308c3cdb6e69ae2b7e875e64c8385d33e8cb718b399663c2c4246b7b83e2867:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 공명 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다.",
-        "a": {
-          "system": "지형 변형 시스템",
-          "material": "플레이어가 특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인하는 선택",
-          "materialDomain": "2D 그리드 기반의 높이 값과 속성 배열",
-          "stateChange": "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영"
-        },
-        "b": {
-          "system": "속성 공명 시스템",
-          "material": "화염 타워와 전기 타워를 인접하게 배치하여 광범위한 폭발 효과를 노릴지, 혹은 냉기 타워를 배치하여 적의 이동 속도를 늦출지 선택",
-          "materialDomain": "타워의 속성 조합 및 강화",
-          "stateChange": "타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화"
-        },
-        "abCausality": "지형 변형 시스템과 속성 공명 시스템 간의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라집니다. 지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더합니다.",
-        "abEvolution": {
-          "aChangesB": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생",
-          "bChangesA": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨",
-          "lateGameChange": "플레이어의 창의적 선택에 따라 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장"
-        },
-        "materialFusion": {
-          "contrast": "지형 변형 시스템과 속성 공명 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐",
-          "causalBridge": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함",
-          "removalConsequence": "보조 장르 제거 시 게임의 전략적 자유도와 전술적 깊이가 감소하지만, 주제와 메인 장르의 핵심 루프는 유지됨"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 지형 변형 및 속성 공명 선택",
-          "characterConflict": "전략적 자유도와 전술적 깊이의 경쟁을 유발",
-          "playerChoice": "창의적인 선택으로 지형 변형 시스템과 속성 공명 시스템 간의 상태 교환을 결정",
-          "worldChange": "방어선 구축 효율 증대와 적의 약점 확보로 전황 조절 능력 강화",
-          "nextEvent": "상호작용 결과에 따른 새로운 타워 기술 연구 또는 타워 속성 강화"
-        },
-        "cThemes": [
-          {
-            "name": "지형 변형",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어"
-          },
-          {
-            "name": "속성 공명",
-            "kind": "MATERIAL",
-            "gameplayEffect": "인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "타워 디펜스",
-            "gameplayEffect": "전략적 자유도와 전술적 깊이를 결합한 타워 디펜스 장르"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "창의적 전투",
-            "gameplayEffect": "플레이어의 창의적인 선택에 따라 상태 변화 및 보상 제공"
-          }
-        ],
-        "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템은 플레이어의 창의적 선택에 따라 양방향 상태 교환을 수행하며, 전략적 자유도와 전술적 깊이를 함께 증대한다.",
-        "cWorldAndGameplayEffect": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더함. 이 두 시스템의 상호작용은 플레이어의 창의적 선택에 따라 달라짐.",
-        "delveDiscoveries": [
-          {
-            "clue": "지형 변형 시스템과 속성 공명 시스템의 양방향 상태 교환",
-            "discovery": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 제어하거나, 인접 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시킴",
-            "newChoice": "지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화되며, 속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생"
-          },
-          {
-            "clue": "전략적 자유도와 전술적 깊이의 경쟁",
-            "discovery": "플레이어가 전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적 선택을 하게 되며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐",
-            "newChoice": "속성 공명 시스템의 타워 속성이 다른 타워의 성능에 영향을 미치는 즉각적인 변화가 발생하며, 지형 변형 시스템의 경로 탐색 알고리즘에 의해 방어선 구축 효율이 극대화됨"
-          },
-          {
-            "clue": "무한 보상 악용과 진입 장벽",
-            "discovery": "플레이어가 상태 교환을 통해 전략적 자유도와 전술적 깊이를 확장하면서, 무한 보상 악용으로 인해 게임 진행이 막히거나, 진입 장벽이 형성되지만, 이는 주제와 메인 장르의 핵심 루프를 유지함",
-            "newChoice": "지형 변형 시스템은 방어선 구축 효율을 극대화하고, 속성 공명 시스템은 적의 약점을 공략하는 전술적 깊이를 더하며, 플레이어의 창의적 선택에 따라 양방향 상태 교환이 이루어짐"
-          },
-          {
-            "clue": "발견 단서와 새로운 실제 선택",
-            "discovery": "플레이어는 지형 변형 및 속성 공명 선택을 하며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화를 수행하게 되고, 이는 전략적 자유도와 전술적 깊이를 더욱 발전시킴",
-            "newChoice": "지형 변형 시스템과 속성 공명 시스템 간의 상태 교환은 양방향으로 이뤄지고, 전술적 깊이와 전황 조절 능력이 확장됨"
-          }
-        ],
-        "delveGrowthRule": "플레이어가 지형 변형 시스템과 속성 공명 시스템의 상호작용을 통해 전략적 자유도와 전술적 깊이를 동시에 활용하면서, 무한 보상 악용이나 진입 장벽이 발생할 수 있지만, 주제와 메인 장르의 핵심 루프는 유지된다.",
-        "finalGameIdentity": "지형 변형과 속성 공명 시스템의 양방향 상태 교환은 플레이어의 창의적 선택에 따라 달라짐. 전략적 자유도와 전술적 깊이를 결합하여 타워 디펜스 장르와 창의적 전투를 함께 증대시키며, 이 과정에서 새로운 타워 기술 연구 또는 타워 속성 강화가 이루어짐."
-      },
-      "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하며, 유닛의 속성을 동적으로 조합하여 전략적인 선택을 하게 됩니다. 이러한 창의적 결정은 적의 이동 경로 예측 및 방어선 구축에 직접 영향을 미칩니다.",
-      "coreFun": "지형 변형 시스템은 플레이어가 특정 구역의 높이 값을 조절하거나, 타워의 속성 배열을 재배열함으로써, 적의 이동 경로를 최적화합니다. 동시에, 인접한 타워들의 속성이 조합되어 강력한 시너지 효과를 발생시켜 전술적 깊이를 더합니다."
-    },
-    "local_authoring_parts::8b2b72b2460ddd9df21894cf05315f0f17002cf80533d32ec43e6f480c89f24d:coreLoop": {
-      "coreLoop": [
-        "입력 -> 선택 -> 상태변화 -> 보상/위험 -> 다음 선택",
-        "플레이어가 실시간으로 전장의 지형을 변형하여 적의 이동 경로를 예측하고, 타워 속성 배열을 재배열하여 방어선 구축 효율을 극대화",
-        "지형 변형 시스템에 의해 경로 탐색 알고리즘에 반영된 선택은 플레이어의 창의적 결정에 따라 즉각적인 결과를 생성"
-      ]
-    },
-    "local_authoring_parts::88524850daf2cda9bf01eec11d19da61a3508d0550fa21d99f74fd3761abc8e4:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_earthform_synthesis",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "입력",
-        "선택",
-        "상태변화"
-      ],
-      "stateOutputs": [
-        "보상/위험"
-      ],
-      "name": "지형 변형 시스템",
-      "purpose": "플레이어가 전장의 지형을 실시간으로 변형하여 적의 이동 경로를 예측하고, 타워 속성 배열을 재배열하여 방어선 구축 효율을 극대화",
-      "playerChoice": "전략적 자유도와 전술적 깊이를 동시에 활용하는 창의적인 선택을 하게 됩니다"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 22,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 2540849,
-      "lastMs": 61690,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:55:48.427Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:13:27.513Z",
-  "updatedAt": "2026-10-10T06:55:48.428Z",
+  "createdAt": "2026-10-10T08:51:05.498Z",
+  "updatedAt": "2026-10-10T08:51:05.512Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
-          "VFX",
-          "WEAPON"
+          "UI",
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
@@ -604,6 +46,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -620,10 +63,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -677,6 +122,217 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -706,12 +362,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -739,28 +389,36 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -773,14 +431,14 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
-          "VFX",
-          "WEAPON"
+          "UI",
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
@@ -793,6 +451,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -809,10 +468,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -866,6 +527,217 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -895,12 +767,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -928,28 +794,36 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -962,14 +836,14 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
-          "VFX",
-          "WEAPON"
+          "UI",
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
@@ -982,6 +856,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -998,10 +873,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1055,6 +932,217 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -1084,12 +1172,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1117,13 +1199,32 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1136,52 +1237,53 @@
               "matchedRoles": [],
               "verifiedRoleMatch": false
             }
-          },
-          {
-            "family": "WEAPON",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
           }
         ]
       }
     },
-    "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::88524850daf2cda9bf01eec11d19da61a3508d0550fa21d99f74fd3761abc8e4:signatureSystems:1:92618e555b6b91e7": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_earthform_synthesis"
-        ]
+    "assetFacts": {
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_earthform_synthesis"
-        ]
+      "roblox-common-ui-character-detail-screen": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "CHARACTER_DETAIL_SCREEN",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::88524850daf2cda9bf01eec11d19da61a3508d0550fa21d99f74fd3761abc8e4:signatureSystems:1:92618e555b6b91e7": 14
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "18d274db69d5ef35d08bfb1737f63da5a715e10fb3f9b1c0afb3f2b3fa079cdc": true,
-    "0faac48f35217f31444de766e3ca4b8abac87d4d97e91cba0b78cfe8974c9471": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:55:48.427Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+    }
+  }
 }
