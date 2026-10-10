@@ -4480,6 +4480,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     UDim2.fromOffset(12,12),UDim2.new(1,-24,0,52),theme.MutedText,14,false)
 
   local menuButtons,rows,stack={}, {}, {}
+  local focusByMenu=setmetatable({},{__mode="v"})
+  local guiService=game:GetService("GuiService")
   local selectedId=""
   local presets={
     RPG={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","SKILL_TREE","QUEST_LOG","PARTY","MAP_FULL_SCREEN","CODEX_SCREEN","JOURNAL_TIMELINE","TRADE_ESCROW_REVIEW","SETTINGS_PANEL"},
@@ -4564,14 +4566,19 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
         button.LayoutOrder=i;button.Parent=nav;menuButtons[i]=button
         button.Activated:Connect(function()
           local current=rows[index]
-          if type(current)~="table"or current.enabled==false then return end
+          if type(current)~="table"or current.enabled==false or type(options.onSelect)~="function"then return end
           local nextId=tostring(current.id or "")
           if nextId==""or nextId==selectedId then return end
-          if selectedId~=""then table.insert(stack,selectedId)end
+          if selectedId~=""then
+            table.insert(stack,selectedId)
+            focusByMenu[selectedId]=guiService.SelectedObject
+          end
           selectedId=nextId
           root:SetAttribute("MenuBackDepth",#stack)
           sync({menus=rows,selectedId=nextId})
-          if type(options.onSelect)=="function"then options.onSelect(nextId,current)end
+          options.onSelect(nextId,current)
+          local previousFocus=focusByMenu[nextId]
+          if previousFocus and previousFocus:IsDescendantOf(root) then guiService.SelectedObject=previousFocus end
         end)
       end
       local button=menuButtons[i]
@@ -4579,7 +4586,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
       local enabled=type(row)=="table"and row.enabled~=false and id~=""
       button.Text=type(row)=="table"and tostring(row.title or row.label or id)or ""
       button.Visible=type(row)=="table"
-      button.Selectable=enabled;button.Active=enabled
+      button.Selectable=enabled and type(options.onSelect)=="function"
+      button.Active=button.Selectable
       button.BackgroundColor3=id~=""and id==selectedId and theme.Primary or theme.PanelRaised
       button:SetAttribute("BoundMenuId",id)
       button:SetAttribute("GameReportedEnabled",enabled)
@@ -4593,11 +4601,14 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     refreshLayout()
   end
   back.Activated:Connect(function()
-    if #stack==0 then return end
+    if #stack==0 or type(options.onSelect)~="function"then return end
+    focusByMenu[selectedId]=guiService.SelectedObject
     local previous=table.remove(stack)
     selectedId=previous
     sync({menus=rows,selectedId=previous})
-    if type(options.onSelect)=="function"then options.onSelect(previous,{fromBack=true})end
+    options.onSelect(previous,{fromBack=true})
+    local previousFocus=focusByMenu[previous]
+    if previousFocus and previousFocus:IsDescendantOf(root)then guiService.SelectedObject=previousFocus end
   end)
   local function setScreen(ui)
     for _,child in ipairs(screen:GetChildren())do
@@ -4606,6 +4617,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     if typeof(ui)=="Instance"and ui:IsA("GuiObject")then
       ui.Parent=screen;ui.Position=UDim2.fromOffset(0,0);ui.Size=UDim2.fromScale(1,1)
       title.Visible=false
+      local previousFocus=focusByMenu[selectedId]
+      if previousFocus and previousFocus:IsDescendantOf(ui)then guiService.SelectedObject=previousFocus end
     else
       title.Visible=true
     end
@@ -4916,17 +4929,18 @@ function RobloxCommonUI.CreateEventCinematicCard(options)
     detail.Text=tostring(state.description or state.subtitle or "")
     local show=state.active==true
     root.Visible=show
-    local allow=state.skippable~=false
+    local allow=state.skippable~=false and type(options.onSkip)=="function"
     skip.Visible=show and allow
     skip.Active=allow;skip.Selectable=allow
+    skip.Text="연출 건너뛰기"
     root:SetAttribute("BoundCinematicEventId",tostring(state.eventId or ""))
     root:SetAttribute("ReducedMotionAvailable",true)
     root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
   end
   skip.Activated:Connect(function()
-    if state.active~=true or state.skippable==false then return end
-    root.Visible=false
-    if type(options.onSkip)=="function"then options.onSkip(state.eventId)end
+    if state.active~=true or state.skippable==false or type(options.onSkip)~="function"then return end
+    skip.Active=false;skip.Selectable=false;skip.Text="건너뛰기 요청 중"
+    options.onSkip(state.eventId)
   end)
   sync(options.state or {})
   root:SetAttribute("OwnsCameraAuthority",false)
