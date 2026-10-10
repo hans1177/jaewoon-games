@@ -169,21 +169,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 429047,
-      "lastMs": 31516,
+      "totalMs": 463946,
+      "lastMs": 34899,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:55:58.653Z"
+      "updatedAt": "2026-10-10T06:56:33.553Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T06:55:58.653Z",
+  "updatedAt": "2026-10-10T06:56:33.554Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1447,15 +1447,29 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "main_road_sign",
+          "a_road_sign",
+          "b_road_sign",
+          "c_road_sign"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:0:4f53cda18c2baa0c": 1,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:1:291aa520ed65de38": 1,
-    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:2:f264711b51c41141": 4
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:2:f264711b51c41141": 4,
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:55:58.653Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T06:56:33.553Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
