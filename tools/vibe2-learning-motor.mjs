@@ -1120,7 +1120,7 @@ const OFFICIAL_GAME_CODING_REFERENCES=Object.freeze([
   },
   {
     id:'roblox-profile-before-optimization',platform:'ROBLOX',
-    match:/performance|lag|fps|frame|render|slow|npc|enemy|ai|physics|network|memory|optimi|최적|지연|렉|프레임|메모리|적|몬스터|물리|성능/i,
+    match:/performance|\\blag\\b|\\bfps\\b|\\bframe\\b|render|slow|\\bnpc\\b|enemy|\\bai\\b|physics|network|memory|optimi|최적|지연|렉|프레임|메모리|몬스터|물리|성능/i,
     source:'https://create.roblox.com/docs/performance-optimization/improve',
     principle:'Profile high-frequency Luau work and replication traffic before changing a hot path.',
     apply:'Optimize only measured loops or unnecessary network traffic; preserve gameplay and server state.',
@@ -1241,7 +1241,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     task.unityWebDevelopment===true||/unity.?web|webgl|unity[-_ ]web|web[-_ ]floor|web[-_ ]build|유니티.?웹|유니티.?브라우저/i.test(codingScopeText)
   );
   const unityAndroidScope=(engine==='unity'||engine==='android')&&
-    /android|apk|aab|gradle|안드로이드|구글.?플레이/i.test(codingScopeText);
+    /android|apk|aab|gradle|안드로이드|구글.?플레이/i.test(codingScopeText)
+    &&(!unityWebScope||/apk|aab|gradle|android.?native|android.?player|안드로이드.?앱|네이티브.?안드로이드/i.test(codingScopeText));
   const officialGameCodingReferences=OFFICIAL_GAME_CODING_REFERENCES
     .filter(row=>{
       const applicable=row.platform==='ROBLOX'?engine==='roblox'
