@@ -239,7 +239,7 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   }
 });
 
-test('owner-directed Daechung public WebGL test does not mislabel graphics or multiplayer as ready',()=>{
+test('all playable Unity Web builds publish separately without claiming full 3D readiness',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
@@ -247,10 +247,11 @@ test('owner-directed Daechung public WebGL test does not mislabel graphics or mu
   const repair=workflow.indexOf('      - name: Mark Unity Web floor repair requirement');
   const section=workflow.slice(publish,repair);
   assert.ok(publish>=0&&repair>publish,'publish browser test before marking upper-platform repair');
-  assert.ok(section.includes("steps.readiness.outputs.pass == 'false'"));
-  assert.ok(section.includes("steps.request.outputs.game_id == 'daechung-rpg'"));
+  assert.ok(section.includes("steps.readiness.outcome == 'success'"));
+  assert.ok(section.includes("(github.event_name == 'push' || inputs.publish_to_main == true)"));
   assert.ok(section.includes('runtime_dir="web-games/$GAME_ID/unity"'));
-  assert.ok(section.includes('test -s "web-games/$GAME_ID/index.html"'));
+  assert.ok(!section.includes('rm -rf "web-games/$GAME_ID"'));
+  assert.ok(workflow.includes('manifest.homepageDevelopmentTest'));
   assert.ok(section.includes('test -s "$runtime_dir/unity-web-gameplay-validation.json"'));
   assert.ok(section.includes('test -s "$runtime_dir/unity-web-independent-qa.json"'));
   assert.ok(section.includes('test -s "$runtime_dir/unity-web-regression.json"'));

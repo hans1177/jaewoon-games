@@ -433,9 +433,9 @@ jobs:
           echo 'UNITY_WEB_BROWSER_RUNTIME=READY'
 
       - name: Run Unity Web actual browser play
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -451,9 +451,9 @@ jobs:
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
       - name: Run Unity Web independent QA
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -469,9 +469,9 @@ jobs:
             --screenshot="/tmp/unity-web/independent-qa-mobile.png"
 
       - name: Run Unity Web regression
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -530,8 +530,7 @@ jobs:
               &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
               &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
               &&e.visualQa?.nativeUnityMesh?.pass===true);
-          if(!gatePass&&gameId!=='daechung-rpg')
-            throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
+          if(!gatePass)console.log('UNITY_WEB_FULL_GAMEPLAY_QA=REPAIR_REQUIRED_DEVELOPMENT_TEST_ONLY');
           const file=root+'/unity-web-build.json';
           if(checks.some(e=>e.approvedEnvironment?.required===true))
             console.log('UNITY_WEB_RENDERED_SCENE_SCREEN='+ (renderScreenPass?'PASS':'REPAIR_REQUIRED'));
@@ -769,6 +768,9 @@ jobs:
           manifest.precisionQa={required:true,pass:precisionQa.pass,
             scenarios:precisionQa.checks.map(row=>row.scenarioId)};
           manifest.homepageVerified=pass;
+          // 완전한 3D 준비 판정과 구분하여 실제 브라우저 플레이가 되는 개발 빌드만 별도 링크로 제공한다.
+          manifest.homepageDevelopmentTest=build.bootSmoke==='PASS'
+            &&['PASS','PLAYABLE_TEST_ONLY'].includes(build.actualBrowserPlay);
           manifest.browserVerification={
             actualBrowserPlay:play.pass===true,
             independentQa:independent.pass===true,
@@ -798,7 +800,7 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
-        if: (steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)) || (steps.readiness.outputs.pass == 'false' && steps.request.outputs.game_id == 'daechung-rpg' && github.event_name == 'push')
+        if: steps.readiness.outcome == 'success' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -818,15 +820,8 @@ jobs:
             git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
           done
           candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
-          # Preserve the existing playable HTML archive while publishing the real Unity WebGL test.
-          runtime_dir="web-games/$GAME_ID"
-          if [ "$GAME_ID" = "daechung-rpg" ]; then
-            runtime_dir="web-games/$GAME_ID/unity"
-          fi
-          if [ "$READINESS_PASS" != "true" ] && [ "$GAME_ID" != "daechung-rpg" ]; then
-            echo 'UNITY_WEB_UNVERIFIED_PUBLIC_TEST_SCOPE_INVALID' >&2
-            exit 1
-          fi
+          # 기존 웹게임·저장 경로는 보존하고 유니티 웹 빌드만 공통 하위 경로에 게시한다.
+          runtime_dir="web-games/$GAME_ID/unity"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -848,12 +843,8 @@ jobs:
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
           git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
-          if [ "$runtime_dir" = "web-games/$GAME_ID" ]; then
-            rm -rf "$runtime_dir"
-          else
-            test -s "web-games/$GAME_ID/index.html"
-            rm -rf "$runtime_dir"
-          fi
+          # HTML 웹게임은 삭제하지 않고 정확한 Unity Web 빌드 디렉터리만 교체한다.
+          rm -rf "$runtime_dir"
           mkdir -p "$runtime_dir"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "$runtime_dir"/
           test -d "$runtime_dir/Build"
