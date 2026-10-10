@@ -653,25 +653,37 @@
       "toSystem": "MAIN",
       "trigger": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
       "stateChange": "주변 환경의 색상/패턴 변화와 점수 증대가 발생하며, 플레이어가 선택한 조각 위치 또는 색상/형태 변경으로 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
+    },
+    "local_authoring_parts::3870c3a42aa8f8a567143a6ddd9083f413bb916339dbd9c0a04b38ee792dab57:systemInterconnections:4:be975c6263f6ff59": {
+      "fromId": "c_road_sign",
+      "toId": "main_road_sign",
+      "stateKeys": [
+        "scene",
+        "playerAction"
+      ],
+      "fromSystem": "c",
+      "toSystem": "MAIN",
+      "trigger": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
+      "stateChange": "주변 환경의 색상/패턴 변화와 점수 증대가 발생하며, 플레이어가 선택한 조각 위치 또는 색상/형태 변경으로 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 23,
+      "calls": 24,
+      "successes": 24,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1113481,
-      "lastMs": 23966,
+      "totalMs": 1138955,
+      "lastMs": 25474,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:07:23.117Z"
+      "updatedAt": "2026-10-10T07:07:48.593Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T07:07:23.117Z",
+  "updatedAt": "2026-10-10T07:07:48.598Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1941,16 +1953,16 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
       {
-        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
           "path": "systemInterconnections",
-          "detail": "a_road_sign→main_road_sign의 출력과 입력 상태가 연결되지 않는다"
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
         },
-        "requiredAction": "systemInterconnections: a_road_sign→main_road_sign의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
         "bypassAllowed": false,
         "source": "STAGE_GATE_SCORING_V2",
         "fields": [
@@ -1964,7 +1976,7 @@
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:1:291aa520ed65de38": 1,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:2:f264711b51c41141": 4,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": 4,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2007,10 +2019,10 @@
       }
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:07:23.117Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T07:07:48.595Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
