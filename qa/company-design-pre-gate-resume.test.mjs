@@ -1366,7 +1366,7 @@ test('V5 focused handoff repair keeps unique authored role states',async()=>{
     seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
     localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
     gameId:'v5-repair',game:{name:'검증용 게임'},
-    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'세계 상태의 원본 유지',CORE_LOOP:['이동','채집','복구']},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'세계 상태의 원본 유지',CORE_LOOP:['이동','채집','복구'],OWNER_LATEST_DESIGN_REQUEST:'기존 규칙 유지'},
     clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
     console:{log(){}},clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,
     assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
