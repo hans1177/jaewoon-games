@@ -1065,6 +1065,7 @@ test('Roblox coding reads the same game Unity Web C# origin with exact change fi
     assert.equal(first.unityWebSourceSync.unityWebScriptCount,1);
     assert.deepEqual(first.unityWebSourceSync.sourceFiles,[unityFile]);
     assert.ok(first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='ApplyDamage'&&method.file===unityFile));
+    assert.ok(first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='ApplyDamage'&&method.stateChangeSource.includes('Health--')),'actual Unity operation is carried as read-only context');
     assert.ok(!first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='TransferSecret'));
     assert.equal(first.unityWebSourceSync.sourceImplementationPassed,false);
     assert.equal(first.unityWebSourceSync.robloxRuntimeVerified,false);
@@ -1074,6 +1075,7 @@ test('Roblox coding reads the same game Unity Web C# origin with exact change fi
     write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health -= 2; }\n  public void RestoreState() { Health++; }\n}\n');
     const second=buildDesignToPlatformCodingTrace(args);
     assert.notEqual(second.unityWebSourceSync.unityWebScriptsFingerprint,initial,'C# source change must invalidate stale Roblox sync context');
+    assert.ok(second.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='ApplyDamage'&&method.stateChangeSource.includes('Health -= 2')),'native coding context must observe modified C# state behavior');
     assert.equal(second.designFingerprint,first.designFingerprint,'source edit must not silently redefine shared design');
     const directive=buildGameSpecificBuildUpDirective({
       gameId,gameName:'통합 소스 테스트',platform:'ROBLOX',repoRoot:root,
