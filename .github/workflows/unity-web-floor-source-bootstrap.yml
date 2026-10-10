@@ -64,7 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin main
-          if git cat-file -e "origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt" 2>/dev/null; then
+          if git cat-file -e "origin/main:unity-games/$GAME_ID" 2>/dev/null; then
             echo 'already_on_main=true' >> "$GITHUB_OUTPUT"
             echo "UNITY_WEB_BOOTSTRAP_SOURCE_ALREADY_ON_MAIN=$GAME_ID"
             exit 0
@@ -84,7 +84,8 @@ jobs:
           git fetch --no-tags --depth=1 origin "refs/heads/$pr_branch"
           git show "FETCH_HEAD:unity-games/$GAME_ID/unity-web-floor-source.json" > /tmp/unity-web-pending-source.json
           export GAME_ID
-          if ! node --input-type=module <<'NODE'
+          set +e
+          node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
           import {createHash} from 'node:crypto';
@@ -104,10 +105,18 @@ jobs:
             ||source.identity!==identity||JSON.stringify(source.coreLoop)!==JSON.stringify(coreLoop)
             ||JSON.stringify(source.unityPlatformProfile)!==JSON.stringify(design.platformProfiles?.UNITY)
             ||source.upperPlatformReady!==false||source.releaseOrDeploymentAuthority!==false)
-            throw new Error('UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_SUPERSEDED_BY_CURRENT_DESIGN');
+            {
+              console.error('UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_SUPERSEDED_BY_CURRENT_DESIGN');
+              process.exit(77);
+            }
           console.log('UNITY_WEB_BOOTSTRAP_PENDING_DESIGN_REUSE=PASS:'+gameId);
           NODE
-          then
+          validation_rc=$?
+          set -e
+          # Only proven stale design content may close a generated candidate.
+          # A missing authority file, network error, or runtime exception must fail closed.
+          if (( validation_rc != 0 && validation_rc != 77 )); then exit "$validation_rc"; fi
+          if (( validation_rc == 77 )); then
             echo "UNITY_WEB_BOOTSTRAP_STALE_PR_CLOSED=$GAME_ID:$pr_url"
             gh pr close "$pr_url" --repo "$GITHUB_REPOSITORY" --comment 'Generated source no longer matches current design/profile or generator. The canonical bootstrap will create a fresh source candidate.'
             echo 'reuse=false' >> "$GITHUB_OUTPUT"
