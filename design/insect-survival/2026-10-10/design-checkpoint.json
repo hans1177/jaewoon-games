@@ -3,156 +3,31 @@
   "gameId": "insect-survival",
   "date": "2026-10-10",
   "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
-  "fingerprint": "6cd56a266ce7183200e0287a02290faafe2c710afc8483b8a88001e1c3d4789c",
+  "fingerprint": "5f34f636e4530b6fb75bc594531d8e69d0624ac212738c69c97d0c9632f73cc4",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::9916481dccaa6d5351dc446c1dd0d7d13cab8cb29fd084a49a099e3ff13ea175:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "생존, 제작, 탐험 기반의 실질적인 생존 플레이어 역할",
-        "a": {
-          "system": "생존",
-          "material": "곤충 생태 및 먹이 사슬의 진화적 구조",
-          "materialDomain": "실제 선택과 위험",
-          "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
-        },
-        "b": {
-          "system": "게임 내 콘텐츠 확장",
-          "material": "플레이어의 심리적 성장과 전략적 결정",
-          "materialDomain": "실제 선택과 위험",
-          "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
-        },
-        "abCausality": "선택 -> 상태변화 -> 보상/위험/다음 선택 양방향 교환 시스템",
-        "abEvolution": {
-          "aChangesB": "선택 변화로 인한 상태 변동을 예측하고 반영하는 게임 메커니즘",
-          "bChangesA": "보상 변화로 인한 선택 방향을 재설정하는 게임 로직",
-          "lateGameChange": "중후반에만 적용되는 상호작용 조건과 피드백 기능"
-        },
-        "materialFusion": {
-          "contrast": "생태, 먹이 사슬, 생존 전략의 구조적 연결 및 진화적 관계",
-          "causalBridge": "선택 -> 상태변화 -> 보상/위험/다음 선택으로 이어지는 실질적인 인과 연결",
-          "removalConsequence": "원본 규칙과 수치를 유지하면서 창작 소재와 메인/보조 장르를 융합하여 새로운 플레이 스타일을 제시"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 심리적 성장과 전략적 결정",
-          "characterConflict": "게임 내 콘텐츠 확장을 통한 갈등 형성",
-          "playerChoice": "실제 선택과 위험의 균형 잡힌 결과 생성",
-          "worldChange": "생각과 행동의 실제 변화로 인해 세계 규칙의 재설정",
-          "nextEvent": "다음 사건 발생 시점 예측 및 반영된 게임 로직"
-        },
-        "cThemes": [
-          {
-            "name": "생태",
-            "kind": "GENRE",
-            "gameplayEffect": "생존 전략의 진화적 구조 조정"
-          },
-          {
-            "name": "먹이 사슬",
-            "kind": "GENRE",
-            "gameplayEffect": "선택 -> 상태변화 -> 보상/위험/다음 선택으로 이어지는 실질적인 인과 연결"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "생존",
-            "gameplayEffect": "생존 전략의 진화적 구조 조정"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "게임 내 콘텐츠 확장",
-            "gameplayEffect": "플레이어 심리적 성장과 전략적 결정에 대한 상호작용 조건"
-          }
-        ],
-        "cGenreInterlock": "생태와 먹이 사슬의 관계를 통해 플레이어의 심리적 성장을 유도하고, 보조 장르 제거 시 새로운 플레이 스타일을 생성한다.",
-        "cWorldAndGameplayEffect": "생태 및 먹이 사슬의 진화적 구조 조정은 게임 세계 규칙의 재설정을 요구하며, 생존 전략의 진화는 게임 로직의 변화를 반영해야 한다.",
-        "delveDiscoveries": [
-          {
-            "clue": "생각과 행동의 실제 변화로 인해 세계 규칙의 재설정",
-            "discovery": "선택 -> 상태변화 -> 보상/위험/다음 선택으로 이어지는 실질적인 인과 연결",
-            "newChoice": "실제 선택과 위험의 균형 잡힌 결과 생성"
-          },
-          {
-            "clue": "게임 내 콘텐츠 확장의 갈등 형성",
-            "discovery": "플레이어 심리적 성장과 전략적 결정에 대한 상호작용 조건",
-            "newChoice": "실제 선택과 위험의 균형 잡힌 결과 생성"
-          },
-          {
-            "clue": "생태와 먹이 사슬의 관계를 통해 플레이어의 심리적 성장을 유도하는 새로운 플레이 스타일",
-            "discovery": "생태 및 먹이 사슬의 진화적 구조 조정",
-            "newChoice": "실제 선택과 위험의 균형 잡힌 결과 생성"
-          },
-          {
-            "clue": "생존 전략의 진화는 게임 로직의 변화를 반영해야 한다.",
-            "discovery": "생태 및 먹이 사슬의 진화적 구조 조정",
-            "newChoice": "실제 선택과 위험의 균형 잡힌 결과 생성"
-          }
-        ],
-        "delveGrowthRule": "생각 -> 행동 -> 세계 규칙 재설정, 선택 -> 상태변화 -> 보상/위험/다음 선택으로 이어지는 실질적인 인과 연결을 유지한다.",
-        "finalGameIdentity": "생태, 먹이 사슬, 생존 전략의 진화적 구조 조정으로 이루어진 새 정체성"
-      },
-      "playerFantasy": "플레이어가 실제 선택과 위험에 직면하며, 생태와 먹이 사슬의 진화적 구조를 통해 새로운 플레이 스타일을 형성하고, 게임 내 콘텐츠 확장을 통한 갈등 형성을 경험하는 독자적 생존 플레이어 역할이다.",
-      "coreFun": "선택 -> 상태변화 -> 보상/위험/다음 선택으로 이어지는 실질적인 인과 연결을 유지하며, 생태와 먹이 사슬의 진화적 구조 조정을 반영해야 한다."
-    },
-    "local_authoring_parts::7ba59b708d304d906b0d468f65a5e2c685093e83c680bb71e0436afbe8141764:coreLoop": {
-      "coreLoop": [
-        "플레이어가 생태와 먹이 사슬의 진화적 구조에 직면하며, 선택 -> 상태변화 -> 보상/위험/다음 선택의 순환을 통해 실질적인 인과 연결을 형성해야 한다.",
-        "생각과 행동의 실제 변화로 인해 세계 규칙의 재설정이 발생할 때, 선택 -> 상태변화 -> 보상/위험/다음 선택의 양방향 교환이 이루어져야 한다.",
-        "생존 전략의 진화는 게임 로직의 변화를 반영하면서, 플레이어의 심리적 성장과 전략적 결정에 대한 상호작용 조건이 유지되어야 한다."
-      ]
-    },
-    "local_authoring_parts::6835e1335ccf0648b73b4f5bd320d4020886d9c19a96a4424c6ba5bb9ad8a0b1:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential_choice",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "선택",
-        "상태변화",
-        "보상/위험/다음 선택"
-      ],
-      "stateOutputs": [
-        "생각",
-        "행동",
-        "세계 규칙 재설정"
-      ],
-      "name": "실질적인 인과 연결 유지",
-      "purpose": "플레이어가 생태와 먹이 사슬의 진화적 구조에 직면하며, 선택 -> 상태변화 -> 보상/위험/다음 선택의 순환을 통해 실질적인 인과 연결을 형성해야 한다.",
-      "playerChoice": "실제 선택과 위험의 균형 잡힌 결과 생성 및 세계 규칙의 실제 변화를 경험할 수 있는 플레이어 역할이다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 189,
-      "successes": 189,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2622904,
-      "lastMs": 11445,
-      "lastError": null,
-      "updatedAt": "2026-10-10T06:57:06.232Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:13:22.428Z",
-  "updatedAt": "2026-10-10T06:57:06.233Z",
+  "createdAt": "2026-10-10T09:09:32.110Z",
+  "updatedAt": "2026-10-10T09:09:32.125Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -189,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -212,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -615,13 +493,13 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -652,14 +530,15 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-minimap",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "objective",
-                "danger"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -667,13 +546,17 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -690,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -728,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -751,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1154,13 +1040,13 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1191,14 +1077,15 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-minimap",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "objective",
-                "danger"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1206,13 +1093,17 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1229,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1267,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1290,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1693,13 +1587,13 @@
           {
             "family": "MOTION",
             "action": "USE",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1730,14 +1624,15 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-minimap",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "objective",
-                "danger"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1745,13 +1640,17 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1769,17 +1668,17 @@
       }
     },
     "assetFacts": {
-      "roblox-common-motion-gather-swing": {
+      "roblox-common-motion-run": {
         "family": "MOTION",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "gather"
+            "run"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "GATHER_SWING",
+        "role": "RUN",
         "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1790,18 +1689,19 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-minimap": {
+      "roblox-common-ui-wave-forecast-ribbon": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "objective",
-            "danger"
+            "current",
+            "next",
+            "boss"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "MINIMAP",
+        "role": "WAVE_FORECAST_RIBBON",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1811,42 +1711,28 @@
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
+      },
+      "roblox-common-vfx-boss-warning-pulse": {
+        "family": "VFX",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "BOSS",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::6835e1335ccf0648b73b4f5bd320d4020886d9c19a96a4424c6ba5bb9ad8a0b1:signatureSystems:1:36c00629f01cba0d": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential_choice"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential_choice"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential_choice"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::6835e1335ccf0648b73b4f5bd320d4020886d9c19a96a4424c6ba5bb9ad8a0b1:signatureSystems:0:4f53cda18c2baa0c": 1,
-    "local_authoring_parts::6835e1335ccf0648b73b4f5bd320d4020886d9c19a96a4424c6ba5bb9ad8a0b1:signatureSystems:1:36c00629f01cba0d": 185
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:57:06.232Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
