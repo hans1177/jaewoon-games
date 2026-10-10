@@ -239,25 +239,173 @@
       "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
       "purpose": "Establishes the core gameplay mechanics of adaptive strategy through dynamic build progression and event-driven decision making.",
       "playerChoice": "Strategic Adaptation through Multiple Build Combinations in a Real-Time Survival Scenario with Environmental Pressure and Resource Scarcity."
+    },
+    "local_authoring_parts::7740715ff92c7fc9abba777bbfa1a0764e3c5dd312de7984e4f0c63a85d3925c:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Build Upgrade",
+        "Event Trigger"
+      ],
+      "stateOutputs": [
+        "New Strategy",
+        "Multi-Stage Decision Making"
+      ],
+      "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+      "purpose": "Establishes the core gameplay mechanics through dynamic build progression and adaptive pathfinding.",
+      "playerChoice": "Strategic adaptation through multiple build combinations in a dynamically evolving survival scenario."
+    },
+    "local_authoring_parts::1df3a31216e8183ce7aeb9ce9f7b29439bc74704346121d3d996fb201f8f05ef:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "To enable dynamic playstyle, adaptive gameplay, and player agency through real-time survival mechanics and randomized world events.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in Real-Time Survival Scenario with Environmental Feedback Loop and Evolving Threat Levels and Reward Structures."
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Define the core gameplay mechanics and their causal relationships in a mobile survival roguelite game.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations, Dynamic Environmental Feedback, and Player Agency in Real-Time Scenario Management."
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics of adaptive strategy through dynamic build progression and event-driven decision making.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in a Real-Time Survival Scenario with Environmental Pressure and Resource Scarcity."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics through dynamic build progression and adaptive pathfinding.",
+          "playerChoice": "Strategic adaptation through multiple build combinations in a dynamically evolving survival scenario."
+        }
+      ]
+    },
+    "local_authoring_parts::3714205117c4f2b7b645c1da3a522aa5745c8910782fe37cfc514043aae213ba:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어는 매 순간 빠르게 진입하는 현실 세계 속에서 전략적 선택을 하며, 그 선택에 따라 환경이 변하고 새로운 도전이 등장합니다.",
+        "주제: 모바일 생존 Roguelite 게임, 주요 시스템: 생존 + 경로 선택, 보조 시스템: 적의 행동 패턴 및 환경 변화"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "To enable dynamic playstyle, adaptive gameplay, and player agency through real-time survival mechanics and randomized world events.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in Real-Time Survival Scenario with Environmental Feedback Loop and Evolving Threat Levels and Reward Structures."
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Define the core gameplay mechanics and their causal relationships in a mobile survival roguelite game.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations, Dynamic Environmental Feedback, and Player Agency in Real-Time Scenario Management."
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics of adaptive strategy through dynamic build progression and event-driven decision making.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in a Real-Time Survival Scenario with Environmental Pressure and Resource Scarcity."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics through dynamic build progression and adaptive pathfinding.",
+          "playerChoice": "Strategic adaptation through multiple build combinations in a dynamically evolving survival scenario."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 854453,
-      "lastMs": 100207,
+      "totalMs": 953692,
+      "lastMs": 99239,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:59:41.351Z"
+      "updatedAt": "2026-10-10T03:01:20.592Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:26.864Z",
-  "updatedAt": "2026-10-10T02:59:41.351Z",
+  "updatedAt": "2026-10-10T03:01:20.595Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1970,7 +2118,7 @@
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:59:41.351Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:01:20.595Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
