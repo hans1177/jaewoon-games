@@ -362,13 +362,13 @@ assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeature
     const bytes=Buffer.from('fixture: only metadata binding is exercised here');
     const src=`assets/homepage-media/${row.gameId}.mp4`;
     fs.mkdirSync(path.join(temp,'assets/homepage-media'),{recursive:true});fs.writeFileSync(path.join(temp,src),bytes);
-    const video={gameId:row.gameId,platform:'WEB',sourceRevision:'a'.repeat(40),artifactIdentity:webTreeFingerprint(fs,root),capturedAt:'2026-10-05T00:00:00Z',src,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),dependencies:[{path:`web-games/${row.gameId}/index.html`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex')}],runtimeVerification:{pass:true,inputEvents:2,visualChangeObserved:true}};
+    const video={gameId:row.gameId,platform:'WEB',sourceRevision:'a'.repeat(40),artifactIdentity:webTreeFingerprint(fs,root),capturedAt:'2026-10-05T00:00:00Z',seconds:8,src,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),dependencies:[{path:`web-games/${row.gameId}/index.html`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex')}],runtimeVerification:{pass:true,inputEvents:2,visualChangeObserved:true}};
     assert(validatedHomepageMedia(row.gameId,{...row,video},{root:temp}).video);
     const photoBytes=Buffer.from([0xff,0xd8,0xff,0xe0,0x11,0x22,0xff,0xd9]);
     const imageSrc='assets/homepage-media/'+row.gameId+'-1.jpg';
     fs.writeFileSync(path.join(temp,imageSrc),photoBytes);
     const screenshot={gameId:row.gameId,platform:'WEB',artifactIdentity:video.artifactIdentity,sourceRevision:video.sourceRevision,
-      source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',src:imageSrc,second:2,width:1920,height:1080,
+      source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',src:imageSrc,capturedAt:video.capturedAt,second:2,width:1920,height:1080,
       bytes:photoBytes.length,sha256:crypto.createHash('sha256').update(photoBytes).digest('hex')};
     const slides=validatedHomepageMedia(row.gameId,{...row,video,screenshots:[screenshot]},{root:temp});
     assert.equal(slides.screenshots.length,1);
