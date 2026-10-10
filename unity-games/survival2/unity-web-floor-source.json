@@ -1,0 +1,393 @@
+{
+  "version": 1,
+  "gameId": "survival2",
+  "gameName": "숲의 생존자들",
+  "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.",
+  "coreLoop": [
+    "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+    "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+    "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+  ],
+  "category": "SURVIVAL",
+  "multiplayerMode": "COOP",
+  "canonicalSourceRoot": "unity-games/survival2",
+  "buildMethod": "UnityWebFloorBuild.BuildWeb",
+  "futureNativeBuildMethod": "UnityWebFloorBuild.Build",
+  "generatorFingerprint": "f0643f0545b7dc668b4a87a883aa64d3c6dd58336415a4aff00e0e701e06b71c",
+  "proceduralEnvironment": null,
+  "buildUpDirectiveId": null,
+  "buildUpGeneration": null,
+  "buildUpGoal": null,
+  "buildUpDirectiveFingerprint": null,
+  "buildUpDirectiveConsumed": false,
+  "buildUpDirectiveCompletionClaim": false,
+  "verifiedLearningApplication": {
+    "source": "vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json",
+    "sourceRevision": "6b46c10cd3c2364960ab9d914f336534f83bf5ad",
+    "generatedFrom": "VERIFIED_MEMORY_ONLY",
+    "verifiedPlaybooks": [
+      "unity",
+      "graphics",
+      "coding",
+      "general"
+    ],
+    "externalLearningIds": [
+      "external-black-box-block-blast-run-30",
+      "external-black-box-cavern-cravers-run-47",
+      "external-black-box-idle-fantasy-run-42",
+      "external-black-box-luanti-run-10",
+      "external-black-box-revengate-run-59",
+      "external-black-box-sgtpuzzles-run-29",
+      "external-black-box-shattered-pixel-dungeon-run-4"
+    ],
+    "externalLearning": [
+      {
+        "id": "external-black-box-block-blast-run-30",
+        "project": "block-blast",
+        "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=native-arm64-redroid-is-valid-free-server-route; scope=android-runtime-compatibility; lesson=A GitHub-hosted native ARM64 runner can provide a working Android 14 Redroid runtime for this ARM64 commercial package when Android userspace boots with the container's own Binder devices.; apply=Prefer proven native-architecture execution over returning to an exhausted x86-to-ARM translation path when a native hosted runner is available.",
+          "id=separate-system-overlay-consent-and-game-entry; scope=black-box-playtest-automation; lesson=A workflow can satisfy process and foreground checks while still being blocked by an Android system overlay or first-run consent screen. Visual stage evidence is required before claiming gameplay entry.; apply=Capture and validate LAUNCH, CONSENT_OR_SYSTEM_OVERLAY, GAME_ENTRY and INPUT_RESPONSE as separate visual stages.",
+          "id=visual-state-change-plus-process-survival-strengthens-input-evidence; scope=qa-evidence; lesson=Meaningful black-box input evidence is stronger when the post-input frame visibly changes in the expected interaction area while the target process remains alive and foreground.; apply=Do not treat injected input alone as gameplay evidence; bind input to a correlated visual state change and runtime survival check."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=android-hosted-x86-arm-translation-native-crash; scope=android-runtime-compatibility; lesson=A successful ARM64 split-APK install on an x86_64 Android guest does not prove sustained runtime compatibility. Native translation can still fail after launch or game entry in JNI/native-library or application initialization paths.; apply=Do not promote install or game-entry success to stable runtime success. Preserve the partial success boundary, then require process survival, foreground state and crash-free input evidence for full runtime pass.",
+          "id=adb-streaming-install-finalization-fragility; scope=android-package-install; lesson=Large split-APK streaming installs can fail at session finalization even when transfer appears complete; no-streaming materially changed the failure boundary and allowed installation to complete.; apply=When a split install fails at finalization or package-service transport, test a no-streaming path before changing Android API levels or application payload assumptions.",
+          "id=nested-virtualization-unavailable-on-hosted-macos-arm64; scope=hosted-emulator-infrastructure; lesson=A native ARM64 CI host does not imply nested hardware virtualization is available to an Android ARM64 emulator.; apply=Probe acceleration capability before downloading or booting a large ARM64 system image; treat HV_UNSUPPORTED as an infrastructure blocker, not an app failure.",
+          "id=abi-list-and-native-bridge-must-be-proven; scope=android-abi-validation; lesson=Host architecture and guest architecture labels are insufficient. The guest must explicitly expose a compatible ABI or a proven native bridge before package installation is treated as meaningful runtime evidence.; apply=Gate ARM64 package installation on observed guest ABI compatibility instead of host labels alone.",
+          "id=hosted-arm64-binder-ready-does-not-guarantee-redroid-boot; scope=android-container-runtime; lesson=On GitHub-hosted ubuntu-24.04-arm, native aarch64, 4K pages, Docker availability and Binder devices can all be valid while Redroid userspace still fails to boot if the Android container/device setup is wrong.; apply=Separate host-capability PASS from Android-userspace-boot PASS and preserve boot diagnostics before changing the app payload.",
+          "id=ephemeral-transfer-expiry-is-not-runtime-regression; scope=artifact-transfer; lesson=A one-use or short-lived proprietary APK transfer URL may expire after Android runtime preparation succeeds. That failure must be classified as transfer infrastructure, not application runtime regression.; apply=Refresh only the ephemeral transfer reference while preserving the package hash and already-proven runtime configuration.",
+          "id=avoid-random-api-cycling-after-repeated-class-failure; scope=experiment-strategy; lesson=Repeated failures sharing the same compatibility class should narrow the search space instead of causing random Android API cycling.; apply=After two or more materially similar failures, require a new hypothesis or infrastructure capability before retrying another API/image variant.",
+          "id=runtime-pass-evidence-gate; scope=qa-evidence; lesson=Install PASS, process creation or injected input are staged evidence but are not individually equivalent to verified gameplay runtime. Run 30 demonstrates the complete gate with correlated visual game entry, meaningful input response, foreground/process survival and no captured fatal crash or ANR.; apply=runtimePass:true requires launch, foreground ownership, process survival, input exercise, correlated game-entry evidence and absence of fatal exception/native crash/ANR in the captured evidence window."
+        ],
+        "distilledLearningUseAllowed": [
+          "runtime-infrastructure failure classification",
+          "ABI/native-bridge preflight design",
+          "split-APK install recovery strategy",
+          "host capability versus guest readiness separation",
+          "staged runtime evidence gating",
+          "partial success boundary preservation",
+          "actual launch/game-entry fact distillation",
+          "directly observed tutorial-board interaction",
+          "directly observed drag-input response and visible state change",
+          "failure-to-next-experiment decision quality",
+          "positive gameplay pattern distillation limited to directly captured black-box behavior"
+        ]
+      },
+      {
+        "id": "external-black-box-cavern-cravers-run-47",
+        "project": "cavern-cravers",
+        "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=tutorial-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=A first-run tutorial or How to Play screen is a distinct pre-game state and should not be counted as live gameplay entry until the interactive dungeon state is visible.; apply=For RPG QA, preserve separate milestones for tutorial presentation, tutorial exit and first live interactive gameplay state.",
+          "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view.",
+          "id=semantic-gameplay-input-plus-survival; scope=qa-evidence; lesson=A gameplay input becomes useful evidence when the before/after frames show a meaningful game-state change and the target process remains foreground and crash-free.; apply=Bind RPG interaction evidence to semantic before/after frames plus process, focus and crash checks."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=missed-coordinate-is-not-game-failure; scope=black-box-input-automation; lesson=A prior probe reached live gameplay but tapped just outside an actionable card and therefore produced no visible change; unchanged output did not prove that the game or interaction system was broken.; apply=When game entry is visually verified but an input produces no change, distinguish an automation-target miss from a product failure and re-target a directly visible control before judging the game."
+        ],
+        "distilledLearningUseAllowed": [
+          "mobile RPG tutorial-to-gameplay stage separation",
+          "compact tactical choice presentation",
+          "immediate visible feedback after a bounded gameplay action",
+          "input-to-visible-state evidence binding",
+          "foreground/process/crash correlation",
+          "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification"
+        ]
+      },
+      {
+        "id": "external-black-box-idle-fantasy-run-42",
+        "project": "idle-fantasy",
+        "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Permission prompts, introductory slides and character creation are distinct pre-game states and should not be mistaken for successful RPG gameplay entry.; apply=For Roblox/mobile QA, preserve separate milestones for permission handling, onboarding, character setup and the first live gameplay dashboard.",
+          "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.",
+          "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.",
+          "id=semantic-input-plus-runtime-survival; scope=qa-evidence; lesson=A gameplay navigation input becomes useful evidence when the before/after screens show a meaningful semantic transition and the target process remains foreground and crash-free.; apply=Bind gameplay input evidence to semantic before/after frames plus process, focus and crash checks."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=unchanged-screen-after-tap-is-not-input-pass; scope=black-box-input-automation; lesson=A prior tap left the visible home state unchanged, so process survival alone was insufficient to claim input-response success.; apply=If the intended input does not produce a meaningful visible state change, do not promote it; target a visible semantic control and capture a new before/after pair."
+        ],
+        "distilledLearningUseAllowed": [
+          "mobile RPG onboarding stage separation",
+          "persistent primary-system navigation",
+          "visible progression and danger cues",
+          "input-to-visible-state evidence binding",
+          "foreground/process/crash correlation",
+          "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification"
+        ]
+      },
+      {
+        "id": "external-black-box-luanti-run-10",
+        "project": "luanti",
+        "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=content-setup-is-separate-from-3d-game-entry; scope=sandbox-onboarding-observation; lesson=Installing content, creating a world and selecting that world are meaningful setup milestones but are not equivalent to actual sandbox gameplay entry.; apply=For Roblox flows with lobbies, loadouts or world selection, preserve setup milestones separately and require the real controllable 3D play state before claiming gameplay entry.",
+          "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances.",
+          "id=world-entry-needs-load-window-before-input-proof; scope=mobile-runtime-evidence; lesson=The world launch needed a bounded loading window before first-person gameplay could be visually verified and exercised.; apply=Do not inject or judge gameplay input before the target Roblox play state is visibly ready; bind input evidence to the post-load playable frame."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=nearby-menu-actions-require-visual-coordinate-correction; scope=black-box-input-automation; lesson=Earlier bounded probes hit neighboring menu actions such as content-page or new-world controls even though the application runtime was healthy.; apply=When adjacent mobile controls are close together, classify a mis-tap as an automation-coordinate failure, correct it from the captured frame, and rerun the responsible stage without lowering the game-entry gate."
+        ],
+        "distilledLearningUseAllowed": [
+          "setup versus actual 3D-play boundary separation",
+          "mobile first-person look-input evidence",
+          "load-readiness before input validation",
+          "foreground/process/crash correlation",
+          "automation coordinate-failure classification",
+          "portable mobile 3D-control lessons that may inform later Roblox-specific implementation and verification"
+        ]
+      },
+      {
+        "id": "external-black-box-revengate-run-59",
+        "project": "revengate",
+        "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=narrative-onboarding-is-not-game-entry; scope=rpg-onboarding-qa; lesson=A story or dialogue sequence after New Game is still a pre-game state; live gameplay entry should be recorded only once the interactive world and player state are visible.; apply=For Roblox RPG QA, keep narrative onboarding and first controllable world entry as separate milestones.",
+          "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design.",
+          "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=visible-onboarding-control-must-be-hit-before-judging-entry; scope=black-box-input-automation; lesson=Run 58 reached the narrative onboarding screen but missed the visible Next control, so lack of game entry there was an automation-targeting failure rather than evidence that gameplay could not be entered. Run 59 corrected only that visible-control targeting and reached live gameplay.; apply=When a clearly visible onboarding control is the only observed blocker, allow one minimal coordinate correction before abandoning the target; do not lower the game-entry criterion."
+        ],
+        "distilledLearningUseAllowed": [
+          "narrative onboarding versus actual game-entry separation",
+          "persistent essential RPG state around the core world view",
+          "immediate visible movement feedback",
+          "semantic before-and-after gameplay input validation",
+          "foreground process and crash correlation",
+          "portable RPG UX and QA lessons for later Roblox-specific implementation"
+        ]
+      },
+      {
+        "id": "external-black-box-sgtpuzzles-run-29",
+        "project": "sgtpuzzles",
+        "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=gameplay-state-must-be-visually-distinct-from-selection-state; scope=mobile-runtime-evidence; lesson=A mobile title or game-selection screen is not equivalent to gameplay entry; the first verified playable state should expose the game-specific interaction surface and controls together.; apply=For Roblox mobile verification, define GAME_ENTRY using visible gameplay-specific state rather than process launch or menu completion alone.",
+          "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers.",
+          "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change.",
+          "id=before-after-plus-runtime-survival-evidence; scope=qa-evidence; lesson=A mobile input becomes strong black-box evidence when the same gameplay state is captured immediately before and after the input and the target process remains foreground and crash-free.; apply=Bind mobile interaction evidence to semantic before/after frames plus process, focus, fatal-crash and ANR checks; never promote screen-hash change alone."
+        ],
+        "distilledAvoidancePrinciples": [],
+        "distilledLearningUseAllowed": [
+          "mobile gameplay-entry boundary detection",
+          "contextual mobile action availability",
+          "spatially anchored input feedback",
+          "input-to-visible-state evidence binding",
+          "foreground/process/crash correlation",
+          "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification"
+        ]
+      },
+      {
+        "id": "external-black-box-shattered-pixel-dungeon-run-4",
+        "project": "shattered-pixel-dungeon",
+        "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6",
+        "sourcePlaybooks": [
+          "unity",
+          "graphics",
+          "coding",
+          "general"
+        ],
+        "distilledApplicationPrinciples": [
+          "id=separate-android-overlay-onboarding-and-gameplay-entry; scope=black-box-playtest-automation; lesson=A mobile game can be running correctly while an Android immersive-mode overlay, title action, character selection or tutorial screen still blocks actual gameplay entry.; apply=Preserve separate visual evidence for system overlay, title/onboarding, character selection, tutorial transition and actual gameplay entry before claiming a playable state.",
+          "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence.",
+          "id=input-visual-transition-plus-foreground-survival; scope=qa-evidence; lesson=A bounded touch or swipe becomes useful black-box evidence only when a corresponding visible gameplay-state transition is captured and the target process remains foreground and crash-free.; apply=Bind mobile input evidence to before/after frames plus process, focus and crash checks; never infer success from input injection alone."
+        ],
+        "distilledAvoidancePrinciples": [
+          "id=coordinate-miss-must-not-be-promoted-as-game-failure; scope=black-box-input-automation; lesson=A bounded input can miss a visible control even when the application is healthy; the resulting lack of transition is an automation-coordinate failure, not a game runtime failure.; apply=Use captured frames to correct the observed control coordinate and rerun the responsible input stage without lowering evidence gates."
+        ],
+        "distilledLearningUseAllowed": [
+          "mobile onboarding stage separation",
+          "contextual touch-control guidance timing",
+          "actual gameplay-entry boundary detection",
+          "input-to-visible-state evidence binding",
+          "foreground/process/crash correlation",
+          "runtime infrastructure and automation failure classification",
+          "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification"
+        ]
+      }
+    ],
+    "externalApplicationPrinciples": [
+      "id=native-arm64-redroid-is-valid-free-server-route; scope=android-runtime-compatibility; lesson=A GitHub-hosted native ARM64 runner can provide a working Android 14 Redroid runtime for this ARM64 commercial package when Android userspace boots with the container's own Binder devices.; apply=Prefer proven native-architecture execution over returning to an exhausted x86-to-ARM translation path when a native hosted runner is available.",
+      "id=separate-system-overlay-consent-and-game-entry; scope=black-box-playtest-automation; lesson=A workflow can satisfy process and foreground checks while still being blocked by an Android system overlay or first-run consent screen. Visual stage evidence is required before claiming gameplay entry.; apply=Capture and validate LAUNCH, CONSENT_OR_SYSTEM_OVERLAY, GAME_ENTRY and INPUT_RESPONSE as separate visual stages.",
+      "id=visual-state-change-plus-process-survival-strengthens-input-evidence; scope=qa-evidence; lesson=Meaningful black-box input evidence is stronger when the post-input frame visibly changes in the expected interaction area while the target process remains alive and foreground.; apply=Do not treat injected input alone as gameplay evidence; bind input to a correlated visual state change and runtime survival check.",
+      "id=tutorial-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=A first-run tutorial or How to Play screen is a distinct pre-game state and should not be counted as live gameplay entry until the interactive dungeon state is visible.; apply=For RPG QA, preserve separate milestones for tutorial presentation, tutorial exit and first live interactive gameplay state.",
+      "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view.",
+      "id=semantic-gameplay-input-plus-survival; scope=qa-evidence; lesson=A gameplay input becomes useful evidence when the before/after frames show a meaningful game-state change and the target process remains foreground and crash-free.; apply=Bind RPG interaction evidence to semantic before/after frames plus process, focus and crash checks.",
+      "id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Permission prompts, introductory slides and character creation are distinct pre-game states and should not be mistaken for successful RPG gameplay entry.; apply=For Roblox/mobile QA, preserve separate milestones for permission handling, onboarding, character setup and the first live gameplay dashboard.",
+      "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.",
+      "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.",
+      "id=semantic-input-plus-runtime-survival; scope=qa-evidence; lesson=A gameplay navigation input becomes useful evidence when the before/after screens show a meaningful semantic transition and the target process remains foreground and crash-free.; apply=Bind gameplay input evidence to semantic before/after frames plus process, focus and crash checks.",
+      "id=content-setup-is-separate-from-3d-game-entry; scope=sandbox-onboarding-observation; lesson=Installing content, creating a world and selecting that world are meaningful setup milestones but are not equivalent to actual sandbox gameplay entry.; apply=For Roblox flows with lobbies, loadouts or world selection, preserve setup milestones separately and require the real controllable 3D play state before claiming gameplay entry.",
+      "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances.",
+      "id=world-entry-needs-load-window-before-input-proof; scope=mobile-runtime-evidence; lesson=The world launch needed a bounded loading window before first-person gameplay could be visually verified and exercised.; apply=Do not inject or judge gameplay input before the target Roblox play state is visibly ready; bind input evidence to the post-load playable frame.",
+      "id=narrative-onboarding-is-not-game-entry; scope=rpg-onboarding-qa; lesson=A story or dialogue sequence after New Game is still a pre-game state; live gameplay entry should be recorded only once the interactive world and player state are visible.; apply=For Roblox RPG QA, keep narrative onboarding and first controllable world entry as separate milestones.",
+      "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design.",
+      "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames.",
+      "id=gameplay-state-must-be-visually-distinct-from-selection-state; scope=mobile-runtime-evidence; lesson=A mobile title or game-selection screen is not equivalent to gameplay entry; the first verified playable state should expose the game-specific interaction surface and controls together.; apply=For Roblox mobile verification, define GAME_ENTRY using visible gameplay-specific state rather than process launch or menu completion alone.",
+      "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers.",
+      "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change.",
+      "id=before-after-plus-runtime-survival-evidence; scope=qa-evidence; lesson=A mobile input becomes strong black-box evidence when the same gameplay state is captured immediately before and after the input and the target process remains foreground and crash-free.; apply=Bind mobile interaction evidence to semantic before/after frames plus process, focus, fatal-crash and ANR checks; never promote screen-hash change alone.",
+      "id=separate-android-overlay-onboarding-and-gameplay-entry; scope=black-box-playtest-automation; lesson=A mobile game can be running correctly while an Android immersive-mode overlay, title action, character selection or tutorial screen still blocks actual gameplay entry.; apply=Preserve separate visual evidence for system overlay, title/onboarding, character selection, tutorial transition and actual gameplay entry before claiming a playable state.",
+      "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence.",
+      "id=input-visual-transition-plus-foreground-survival; scope=qa-evidence; lesson=A bounded touch or swipe becomes useful black-box evidence only when a corresponding visible gameplay-state transition is captured and the target process remains foreground and crash-free.; apply=Bind mobile input evidence to before/after frames plus process, focus and crash checks; never infer success from input injection alone."
+    ],
+    "externalAvoidancePrinciples": [
+      "id=android-hosted-x86-arm-translation-native-crash; scope=android-runtime-compatibility; lesson=A successful ARM64 split-APK install on an x86_64 Android guest does not prove sustained runtime compatibility. Native translation can still fail after launch or game entry in JNI/native-library or application initialization paths.; apply=Do not promote install or game-entry success to stable runtime success. Preserve the partial success boundary, then require process survival, foreground state and crash-free input evidence for full runtime pass.",
+      "id=adb-streaming-install-finalization-fragility; scope=android-package-install; lesson=Large split-APK streaming installs can fail at session finalization even when transfer appears complete; no-streaming materially changed the failure boundary and allowed installation to complete.; apply=When a split install fails at finalization or package-service transport, test a no-streaming path before changing Android API levels or application payload assumptions.",
+      "id=nested-virtualization-unavailable-on-hosted-macos-arm64; scope=hosted-emulator-infrastructure; lesson=A native ARM64 CI host does not imply nested hardware virtualization is available to an Android ARM64 emulator.; apply=Probe acceleration capability before downloading or booting a large ARM64 system image; treat HV_UNSUPPORTED as an infrastructure blocker, not an app failure.",
+      "id=abi-list-and-native-bridge-must-be-proven; scope=android-abi-validation; lesson=Host architecture and guest architecture labels are insufficient. The guest must explicitly expose a compatible ABI or a proven native bridge before package installation is treated as meaningful runtime evidence.; apply=Gate ARM64 package installation on observed guest ABI compatibility instead of host labels alone.",
+      "id=hosted-arm64-binder-ready-does-not-guarantee-redroid-boot; scope=android-container-runtime; lesson=On GitHub-hosted ubuntu-24.04-arm, native aarch64, 4K pages, Docker availability and Binder devices can all be valid while Redroid userspace still fails to boot if the Android container/device setup is wrong.; apply=Separate host-capability PASS from Android-userspace-boot PASS and preserve boot diagnostics before changing the app payload.",
+      "id=ephemeral-transfer-expiry-is-not-runtime-regression; scope=artifact-transfer; lesson=A one-use or short-lived proprietary APK transfer URL may expire after Android runtime preparation succeeds. That failure must be classified as transfer infrastructure, not application runtime regression.; apply=Refresh only the ephemeral transfer reference while preserving the package hash and already-proven runtime configuration.",
+      "id=avoid-random-api-cycling-after-repeated-class-failure; scope=experiment-strategy; lesson=Repeated failures sharing the same compatibility class should narrow the search space instead of causing random Android API cycling.; apply=After two or more materially similar failures, require a new hypothesis or infrastructure capability before retrying another API/image variant.",
+      "id=runtime-pass-evidence-gate; scope=qa-evidence; lesson=Install PASS, process creation or injected input are staged evidence but are not individually equivalent to verified gameplay runtime. Run 30 demonstrates the complete gate with correlated visual game entry, meaningful input response, foreground/process survival and no captured fatal crash or ANR.; apply=runtimePass:true requires launch, foreground ownership, process survival, input exercise, correlated game-entry evidence and absence of fatal exception/native crash/ANR in the captured evidence window.",
+      "id=missed-coordinate-is-not-game-failure; scope=black-box-input-automation; lesson=A prior probe reached live gameplay but tapped just outside an actionable card and therefore produced no visible change; unchanged output did not prove that the game or interaction system was broken.; apply=When game entry is visually verified but an input produces no change, distinguish an automation-target miss from a product failure and re-target a directly visible control before judging the game.",
+      "id=unchanged-screen-after-tap-is-not-input-pass; scope=black-box-input-automation; lesson=A prior tap left the visible home state unchanged, so process survival alone was insufficient to claim input-response success.; apply=If the intended input does not produce a meaningful visible state change, do not promote it; target a visible semantic control and capture a new before/after pair.",
+      "id=nearby-menu-actions-require-visual-coordinate-correction; scope=black-box-input-automation; lesson=Earlier bounded probes hit neighboring menu actions such as content-page or new-world controls even though the application runtime was healthy.; apply=When adjacent mobile controls are close together, classify a mis-tap as an automation-coordinate failure, correct it from the captured frame, and rerun the responsible stage without lowering the game-entry gate.",
+      "id=visible-onboarding-control-must-be-hit-before-judging-entry; scope=black-box-input-automation; lesson=Run 58 reached the narrative onboarding screen but missed the visible Next control, so lack of game entry there was an automation-targeting failure rather than evidence that gameplay could not be entered. Run 59 corrected only that visible-control targeting and reached live gameplay.; apply=When a clearly visible onboarding control is the only observed blocker, allow one minimal coordinate correction before abandoning the target; do not lower the game-entry criterion.",
+      "id=coordinate-miss-must-not-be-promoted-as-game-failure; scope=black-box-input-automation; lesson=A bounded input can miss a visible control even when the application is healthy; the resulting lack of transition is an automation-coordinate failure, not a game runtime failure.; apply=Use captured frames to correct the observed control coordinate and rerun the responsible input stage without lowering evidence gates."
+    ],
+    "externalLearningUseAllowed": [
+      "runtime-infrastructure failure classification",
+      "ABI/native-bridge preflight design",
+      "split-APK install recovery strategy",
+      "host capability versus guest readiness separation",
+      "staged runtime evidence gating",
+      "partial success boundary preservation",
+      "actual launch/game-entry fact distillation",
+      "directly observed tutorial-board interaction",
+      "directly observed drag-input response and visible state change",
+      "failure-to-next-experiment decision quality",
+      "positive gameplay pattern distillation limited to directly captured black-box behavior",
+      "mobile RPG tutorial-to-gameplay stage separation",
+      "compact tactical choice presentation",
+      "immediate visible feedback after a bounded gameplay action",
+      "input-to-visible-state evidence binding",
+      "foreground/process/crash correlation",
+      "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification",
+      "mobile RPG onboarding stage separation",
+      "persistent primary-system navigation",
+      "visible progression and danger cues",
+      "setup versus actual 3D-play boundary separation",
+      "mobile first-person look-input evidence",
+      "load-readiness before input validation",
+      "automation coordinate-failure classification",
+      "portable mobile 3D-control lessons that may inform later Roblox-specific implementation and verification",
+      "narrative onboarding versus actual game-entry separation",
+      "persistent essential RPG state around the core world view",
+      "immediate visible movement feedback",
+      "semantic before-and-after gameplay input validation",
+      "foreground process and crash correlation",
+      "portable RPG UX and QA lessons for later Roblox-specific implementation",
+      "mobile gameplay-entry boundary detection",
+      "contextual mobile action availability",
+      "spatially anchored input feedback",
+      "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification",
+      "mobile onboarding stage separation",
+      "contextual touch-control guidance timing",
+      "actual gameplay-entry boundary detection",
+      "runtime infrastructure and automation failure classification"
+    ],
+    "checklist": [
+      "bind-current-source-tree-and-build",
+      "require-android-runtime-pass",
+      "require-independent-qa",
+      "preserve-save-and-core-design-lock",
+      "rights-gate-before-derivative",
+      "never-overwrite-original",
+      "generate-3-to-5-derived-variants",
+      "score-style-silhouette-quality-animation-mobile-performance",
+      "rank-responsible-source-before-edit",
+      "generate-3-to-5-independent-candidates",
+      "prefer-smallest-behavior-preserving-diff",
+      "run-syntax-tests-runtime-regression",
+      "retrieve-verified-success-and-failure-memory",
+      "rank-responsible-context",
+      "compare-candidates",
+      "require-verifiable-completion"
+    ],
+    "retrievedCount": 7,
+    "appliedCount": 7,
+    "applicationCoveragePct": 100,
+    "mandatoryApplicationCoveragePct": 100,
+    "allRetrievedVerifiedExternalLearningApplied": true,
+    "applicationOrder": "VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_GAME_SPECIFIC_TRANSFORMATIVE_APPLICATION",
+    "applyAxes": [
+      "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+      "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+      "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+      "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+      "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+      "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+      "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+    ],
+    "rawCommercialCodeCopyForbidden": true,
+    "rawCommercialAssetCopyForbidden": true,
+    "distinctiveExpressionCloneForbidden": true,
+    "gameSpecificReauthoringRequired": true,
+    "runtimeQaAndLearningReturnRequired": true
+  },
+  "designBaseline": "/tmp/unity-web-bootstrap-design/survival2/design-revised.json",
+  "unityPlatformProfile": {
+    "platform": "UNITY",
+    "inputModel": "Unity Input System with touch-first controls, safe-area UI, gamepad/keyboard fallback and app lifecycle-safe input recovery.",
+    "sessionModel": "유니티 3차원 웹 세션에서 현재 목표와 지역·진행 상태를 유지하며 일시중단과 재진입을 검증한다.",
+    "multiplayerRuntime": "Unity app COOP networking using validated transport/session ownership, reconnect and join/leave synchronization.",
+    "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, loading, texture/compression, pooling and GC pressure.",
+    "uiUx": "Responsive Unity UI with device safe areas, touch targets, orientation/readability rules and native-app pause/resume behavior.",
+    "saveAndNetwork": "Versioned local save plus validated backend/cloud synchronization only when required by the approved multiplayer/persistence design.",
+    "platformContentAdaptation": "같은 유니티 원본 프로젝트의 3차원 장면·카메라·메시·조명·동작을 웹 브라우저에 맞게 적응한다.",
+    "internalReleaseTarget": "실제 유니티 웹 빌드를 독립 브라우저와 모바일에서 검증한 뒤 상위 단계로 전달한다.",
+    "validationEvidence": "정확한 유니티 웹 빌드로 3차원 장면·모바일 터치·저장 및 실제 플레이를 독립 검사한다.",
+    "unityWebSpatialPresentation": {
+      "dimension": "3D",
+      "worldDepth": "실제 메시와 삼각형·입체 건물·캐릭터가 월드 좌표의 전후 깊이에서 이동하고 상호작용한다.",
+      "cameraAndOcclusion": "3차원 카메라가 실제 원근·높낮이·앞뒤 가림을 표현하며 2차원 스프라이트를 공간 객체로 위장하지 않는다.",
+      "lightingAndMaterials": "3차원 기하에 표면 재질과 광원·그림자 반응을 적용하고 모바일 그래픽 한계를 실기기에서 확인한다.",
+      "mobileWebglEvidence": "같은 유니티 원본에서 생성한 웹 빌드를 실제 모바일 브라우저로 플레이하고 깊이·터치·화면 잘림을 캡처 검증한다."
+    }
+  },
+  "purpose": "UNITY_WEB_DEVELOPMENT_FLOOR",
+  "developmentFloor": true,
+  "presentationState": "BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP",
+  "upperPlatformReady": false,
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-10-10T19:18:28.706Z"
+}
