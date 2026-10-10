@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 동료들과 함께 숲속에서 자원을 수집하며, 위협과 리스크를 읽고 선택하는 경험을 반복한다.\n\n주요 행동: '산책하면서 자원을 찾고, 위험을 읽으며 선택' → 상태 변화: '위험 농도 증가' → 보상: '새로운 장비/선택 가능성' → 다음 선택: '더 복잡한 전략 또는 새로운 경로 탐색'\n\n게임 정체성: '생존, 동료', 플레이어 역할: '생존자', 대표 행동: '자원 수집 및 위험 판단', 시그니처 세계 규칙: '자연적 위험과 조건적 선택'",
       "coreFun": "{\"identity\": \"숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\",\n\"creativeGrammar\": {\"mainIdentity\": \"생존, 동료, 자원 수집 및 위험 판단\", \"a\": {\"system\": \"환경 시스템\", \"material\": \"자연적 위험\", \"materialDomain\": \"생태학\", \"stateChange\": \"위험 농도 증가(0-100%)로 상태 전환\"}, \"b\": {\"system\": \"전략 시스템\", \"material\": \"선택 가능성\", \"materialDomain\": \"게임 메타데이터\", \"stateChange\": \"새로운 장비/선택 가능성이 추가됨(기존: 없음)\"}},\n\"abCausality\": \"위험 농도 상승 → 선택 가능성 확대 → 새로운 전략 경로 탐색(양방향)\",\n\"abEvolution\": {\"aChangesB\": \"환경 위험 증가 -> 선택 가능성 확대 -> 전략 경로 개발\", \"bChangesA\": \"선택 가능성 확대 -> 자원 수집 강화 -> 위험 판단 정量化\", \"lateGameChange\": \"전략 경로 탐색 -> 새로운 게임 메타데이터 생성 -> 세계 상태 변환\"},\n\"materialFusion\": {\"contrast\": \"생태학적 위험 소재 vs. 게임 메타데이터 소재\", \"causalBridge\": \"위험 농도 상승 → 선택 가능성 확대 → 전략 경로 탐색\", \"removalConsequence\": \"자연적 위험 제거 시 선택 가능성 감소, 게임 메타데이터 손실\"},\n\"storyCausalChain\": {\"cause\": \"플레이어의 자원 수집 행동으로 인해 환경 위험 증가\", \"characterConflict\": \"자연적 위험과 조건적 선택 갈등 발생\", \"playerChoic"
+    },
+    "local_authoring_parts::36bb72dbf3e3969296736fb35c315e00bbd98adf24a22a853b3e51b3de4f697a:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어의 자원 수집 행동 → 상태변화: 자연적 위험 증가(0-100%) → 보상: 새로운 장비/선택 가능성 추가",
+        "입력: 선택 가능성 확대 → 상태변화: 전략 경로 개발 → 보상: 위험 판단 정量化 및 새로운 전략 경로 탐색",
+        "입력: 전략 경로 탐색 → 상태변化: 게임 메타데이터 생성 → 보상: 세계 상태 변환"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1278343,
-      "lastMs": 222474,
+      "totalMs": 1341193,
+      "lastMs": 62850,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:50:18.942Z"
+      "updatedAt": "2026-10-10T08:51:21.796Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:29:00.323Z",
-  "updatedAt": "2026-10-10T08:50:18.944Z",
+  "updatedAt": "2026-10-10T08:51:21.806Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2279,8 +2286,8 @@
     "8d1400d7007c78eaea4288dad042a8899b877b73238f6fb8a77088cf407da541": true,
     "2127637d6f7a83d7f7dc5a02a0a73f5a78a5c9944401b43c34c1376249304cb9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:50:18.944Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:51:21.796Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
