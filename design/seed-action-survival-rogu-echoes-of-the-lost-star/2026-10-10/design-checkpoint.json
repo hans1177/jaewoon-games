@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다.",
       "coreFun": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다."
+    },
+    "local_authoring_parts::40fd491d2c2fd236ea9a6595c1302173ffc98993a3aa559add51f8f85e6f64af:coreLoop": {
+      "coreLoop": [
+        "INPUT: PLAYER_CHOICE_OF_ENTROPY_LEVEL → STATE CHANGE: REAL_TIME_ATTACK_EFFECT_SELECTION",
+        "STATE CHANGE: REAL_TIME_ATTACK_EFFECT_SELECTION → REWARD: ACTION_BASED_GROWTH",
+        "REWARD: ACTION_BASED_GROWTH → NEXT CHOICE: TIME_SPACE_MANIPULATION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 471348,
-      "lastMs": 49483,
+      "totalMs": 576195,
+      "lastMs": 10433,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:47:08.933Z"
+      "updatedAt": "2026-10-10T10:48:53.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:39:17.565Z",
-  "updatedAt": "2026-10-10T10:47:08.934Z",
+  "updatedAt": "2026-10-10T10:48:53.787Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1532,14 +1539,24 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::c8ad0753fd8584ed0b86f09b23a73308b7bc6121887d58ced92c8fdba8827116:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::c8ad0753fd8584ed0b86f09b23a73308b7bc6121887d58ced92c8fdba8827116:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "1f30f12b39909e602952ec08079f1c88c893a0f8c384b83fb136dade20f3eb94": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:47:08.934Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:48:53.787Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
