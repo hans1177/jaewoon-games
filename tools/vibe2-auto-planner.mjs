@@ -1459,13 +1459,28 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
       const actionable=hits.some(row=>/(?:\(|=>|=|<button|ScreenGui|Canvas|GUILayout|VisualElement|SetActive|addEventListener|onclick|Activated)/i.test(row));
       return{file,context:actionable?hits.join(' ').slice(0,8000):'',sourceHash:stableHash(content)};
     }).filter(row=>row.context);
+  // 게임의 실제 소스와 현재 1차 라이브러리 인덱스를 기존 매칭 경로에서 직접 사용한다.
+  const observed=gameRoot&&fs.existsSync(sourceFile(repoRoot,gameRoot))
+    ?inspectGameSources({repoRoot,sourceRoots:[gameRoot]}):{};
+  let availableLibraryPaths=[];
+  try{
+    availableLibraryPaths=fs.readdirSync(sourceFile(repoRoot,'assets'),{withFileTypes:true})
+      .filter(row=>row.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(row.name))
+      .map(row=>'assets/'+row.name).sort();
+  }catch{}
   const nativeUI=clean(project.engine).toLowerCase()==='unity'?(studioQualityLane(project)==='unity-web'?'UNITY_WEB':'UNITY_APP'):clean(project.engine).toUpperCase();
-  const uiContract=uiSources.length?buildInterfaceBlueprintContract({
+  const uiContract=(uiSources.length||(observed.sourceAnchors||[]).length)?buildInterfaceBlueprintContract({
     design:{identity:project.name||project.gameId,genre:project.genre||project.category||project.gameCategory||''},
-    source:{sourceAnchors:uiSources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context}))},
-    files:uiSources.map(row=>row.file),mode:'EXISTING_PLAY_PRESENTATION',focus:'PRESENTATION',enabled:true,platform:nativeUI
+    source:{
+      sourceAnchors:[...uiSources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context})),...(observed.sourceAnchors||[])],
+      signals:observed.signals||{}
+    },
+    files:[...new Set([...uiSources.map(row=>row.file),...(observed.topFiles||[]).map(row=>row.file)])],
+    mode:'EXISTING_PLAY_PRESENTATION',focus:'PRESENTATION',enabled:true,platform:nativeUI,availableLibraryPaths
   }):null;
-  const algorithms=(uiContract?.externalAlgorithms||[]).filter(row=>row.matchEvidence?.sourceAnchor).map(row=>({
+  const algorithms=(uiContract?.externalAlgorithms||[])
+    .filter(row=>uiSources.some(src=>INTERFACE_EXTERNAL_ALGORITHMS.some(candidate=>candidate.id===row.id&&candidate.match.test(src.context))))
+    .map(row=>({
     id:row.id,principle:row.principle,sourceUrl:row.sourceUrl,
     sourceFiles:uiSources.filter(source=>INTERFACE_EXTERNAL_ALGORITHMS.some(candidate=>candidate.id===row.id&&candidate.match.test(source.context))).map(source=>source.file),
     optional:true,runtimeVerified:false
@@ -1473,11 +1488,16 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
   const internalTools=(uiContract?.internalToolMatches||[]).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED').map(row=>({
     id:row.id,library:row.library,screens:row.screens,integration:row.integration,optional:true,automaticImport:false,runtimeVerified:false
   }));
+  const internalLibraryMatches=(uiContract?.internalLibraryMatches||[]).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED')
+    .map(row=>({id:row.id,library:row.library,sourceFiles:row.sourceFiles,
+      integration:row.integration,optional:true,automaticImport:false,runtimeVerified:false}));
   const existingGameInterfaceSync=Object.freeze({
     version:1,mode:'OPTIONAL_EXISTING_GAME_INTERFACE_AUTO_MATCH',sourceFingerprint:stableHash(uiSources.map(row=>row.file+':'+row.sourceHash).join('|')),
     sourceFiles:uiSources.map(row=>row.file),platformBinding:menuPlatformBindingProfile(project),
     externalAlgorithms:algorithms,internalToolMatches:internalTools,
-    status:algorithms.length||internalTools.length?'SOURCE_MATCH_CANDIDATES_NOT_APPLIED':'NO_SOURCE_MATCH',
+    internalLibraryMatches,firstPartyLibraryCount:uiContract?.firstPartyLibraryCount||0,
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',
+    status:algorithms.length||internalTools.length||internalLibraryMatches.length?'SOURCE_MATCH_CANDIDATES_NOT_APPLIED':'NO_SOURCE_MATCH',
     optional:true,designMutation:false,noNewGameplaySystem:true,noShadowUiPipeline:true,nativeUiOnly:true,runtimeVerified:false,
     applicationRule:'APPLY_ONLY_ON_CONFIRMED_EXISTING_UI_FRICTION_AND_OWNED_HANDLER'
   });
@@ -1607,9 +1627,9 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
   const contract=buildAdaptiveGraphicsReplacementContract(project,normalizedPass,repoRoot);
   const sync=contract.menuDiversity.existingGameInterfaceSync;
-  const matched=[...sync.externalAlgorithms.map(row=>row.id),...sync.internalToolMatches.map(row=>row.id)];
+  const matched=[...new Set([...sync.externalAlgorithms.map(row=>row.id),...sync.internalToolMatches.map(row=>row.id),...sync.internalLibraryMatches.map(row=>row.id)])];
   const marker='[EXISTING_GAME_INTERFACE_AUTO_MATCH]';
-  const hint=matched.length?'\n'+marker+'\n현재 게임 UI 소스 '+sync.sourceFiles.join(', ')+'에서 외부 UX 및 내부 라이브러리 후보 '+matched.join(', ')+'를 자동 매칭했다. 실제 불편이 확인되고 현 작업의 기존 UI 핸들러에 적용 가능할 때만 직접 개선하며 관련 없으면 건너뛴다. 설계·저장·경제·전투·권한은 유지하고 Unity WebGL은 Unity C# UI를 공유한다. 후보만으로 적용/검증 완료라 표시하지 않는다.\n[/EXISTING_GAME_INTERFACE_AUTO_MATCH]':'';
+  const hint=matched.length?'\n'+marker+'\n현재 게임 소스 '+sync.sourceFiles.join(', ')+'에서 외부 UX 및 내부 라이브러리 후보 '+matched.join(', ')+'를 자동 매칭했다. 실제 불편이 확인되고 현 작업의 기존 UI 핸들러에 적용 가능할 때만 직접 개선하며 관련 없으면 건너뛴다. 설계·저장·경제·전투·권한은 유지하고 Unity WebGL은 Unity C# UI를 공유한다. 후보만으로 적용/검증 완료라 표시하지 않는다.\n[/EXISTING_GAME_INTERFACE_AUTO_MATCH]':'';
   if(taskInput.graphicsReplacementContract&&existingEvidence.has('adaptive-graphics-replacement:v1')){
     const old=taskInput.graphicsReplacementContract;
     return{
