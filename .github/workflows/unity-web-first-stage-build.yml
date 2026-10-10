@@ -108,6 +108,8 @@ jobs:
     timeout-minutes: 75
     outputs:
       repair_required: ${{ steps.repair.outputs.required }}
+      failure_stage: ${{ steps.repair.outputs.failure_stage }}
+      failure_signature: ${{ steps.repair.outputs.failure_signature }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1088,15 +1090,34 @@ jobs:
 
       - name: Mark Unity Web floor repair requirement
         id: repair
-        if: steps.readiness.outputs.pass != 'true'
+        if: ${{ always() && !cancelled() && steps.readiness.outputs.pass != 'true' }}
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
           echo 'required=true' >> "$GITHUB_OUTPUT"
+          failure_stage=UNITY_WEB_BUILD_OR_READINESS
+          failure_signature=REPAIR_REQUIRED
+          # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
+          for filename in unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
+            evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
+            if [ -f "$evidence_file" ]; then
+              evidence_line="$(jq -r 'select(.observedRuntimeFailure == true) | [.failureStage, .failureSignature] | @tsv' "$evidence_file" 2>/dev/null || true)"
+              if [ -n "$evidence_line" ]; then
+                IFS=$'\t' read -r failure_stage failure_signature <<< "$evidence_line"
+                break
+              fi
+            fi
+          done
+          failure_stage="$(printf '%s' "$failure_stage" | tr -cd 'a-zA-Z0-9_:' | cut -c1-96)"
+          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:-' | cut -c1-128)"
+          echo "failure_stage=${failure_stage:-UNITY_WEB_UNKNOWN}" >> "$GITHUB_OUTPUT"
+          echo "failure_signature=${failure_signature:-UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
           echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
+          echo "UNITY_WEB_REPAIR_FAILURE_STAGE=${failure_stage:-UNITY_WEB_UNKNOWN}"
+          echo "UNITY_WEB_REPAIR_FAILURE_SIGNATURE=${failure_signature:-UNKNOWN}"
           echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
           exit 42
 
@@ -1114,6 +1135,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
           VIBE2_CANDIDATE_BRANCH: ${{ inputs.vibe2_candidate_branch }}
+          UNITY_WEB_FAILURE_STAGE: ${{ needs.build.outputs.failure_stage }}
+          UNITY_WEB_FAILURE_SIGNATURE: ${{ needs.build.outputs.failure_signature }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1130,7 +1153,7 @@ jobs:
             attempt=$((attempt+1))
             git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --blocker=unity-web-runtime-or-promotion-failed --evidence="execution-surface:UNITY_WEB,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --blocker=unity-web-runtime-or-promotion-failed --evidence="execution-surface:UNITY_WEB,unity-web-failure-stage:${UNITY_WEB_FAILURE_STAGE:-UNITY_WEB_UNKNOWN},unity-web-failure-signature:${UNITY_WEB_FAILURE_SIGNATURE:-UNKNOWN},unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,actions-run-${GITHUB_RUN_ID}"
             git -C /tmp/vibe2-control add .vibe2/queue.json
             if git -C /tmp/vibe2-control diff --cached --quiet; then
               settled=1

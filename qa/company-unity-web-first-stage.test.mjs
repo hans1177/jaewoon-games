@@ -438,3 +438,22 @@ test('Unity Web successful publication and causal failure never strand the exist
   assert.match(promoted,/vibe2-fanin-refill/);
   assert.match(failure,/vibe2-fanin-refill/);
 });
+
+
+test('Unity Web actual browser failure signatures reach the existing Vibe repair queue',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const repair=workflow.slice(workflow.indexOf('      - name: Mark Unity Web floor repair requirement'),workflow.indexOf('\n  settle-vibe2-failure:'));
+  const settlement=workflow.slice(workflow.indexOf('  settle-vibe2-failure:'),workflow.indexOf('\n  repair-vibe2:'));
+  assert.match(workflow,/failure_stage: \$\{\{ steps\.repair\.outputs\.failure_stage \}\}/);
+  assert.match(workflow,/failure_signature: \$\{\{ steps\.repair\.outputs\.failure_signature \}\}/);
+  assert.match(repair,/always\(\) && !cancelled\(\) && steps\.readiness\.outputs\.pass != 'true'/);
+  assert.match(repair,/unity-web-gameplay-validation\.json unity-web-independent-qa\.json unity-web-regression\.json/);
+  assert.match(repair,/\.observedRuntimeFailure == true/);
+  assert.match(repair,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);
+  assert.match(settlement,/UNITY_WEB_FAILURE_STAGE: \$\{\{ needs\.build\.outputs\.failure_stage \}\}/);
+  assert.match(settlement,/UNITY_WEB_FAILURE_SIGNATURE: \$\{\{ needs\.build\.outputs\.failure_signature \}\}/);
+  assert.match(settlement,/unity-web-failure-stage:\$\{UNITY_WEB_FAILURE_STAGE:-UNITY_WEB_UNKNOWN\}/);
+  assert.match(settlement,/unity-web-failure-signature:\$\{UNITY_WEB_FAILURE_SIGNATURE:-UNKNOWN\}/);
+  assert.match(settlement,/vibe2-queue-control\.mjs fail/);
+  assert.doesNotMatch(settlement,/vibe2-queue-control\.mjs pass/);
+});
