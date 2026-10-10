@@ -3,28 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-19fn5zb",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/server/Game.server.luau"
-      ],
-      "baseSha": "b11c914c9d9655f1cc5ed510a4675f677865378d",
-      "runId": "38087188803",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T22:25:49.900Z",
-      "expiresAt": "2026-10-10T23:10:49.900Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
       "id": "wl-1q2wjrr",
       "worker": "vibe2",
       "taskId": "insect-survival-studio-evolution-roblox-usability-v1",
@@ -624,6 +602,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-karakasa-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1aa09wu",
+      "worker": "vibe2",
+      "taskId": "internal-motion-tengu-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/tengu/init.luau"
+      ],
+      "baseSha": "398cd2031ba66c72765a80ed77115ea634147841",
+      "runId": "38090227358",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T23:10:52.384Z",
+      "expiresAt": "2026-10-10T23:55:52.384Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-tengu-walk-v1"
       ]
     }
   ]
