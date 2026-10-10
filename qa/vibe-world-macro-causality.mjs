@@ -532,4 +532,62 @@ assert.equal(livingAuto.livingBiomePopulation.actorPlacements[0].raidTargetAutho
 assert.equal(livingAuto.livingBiomePopulation.actorPlacements[2].evolution.nextTierProposal,'LEGENDARY');
 assert.equal(livingAuto.livingBiomePopulation.actorPlacements[2].evolution.tierMutationPerformed,false);
 
+
+ 
+// 오토 바이옴: 혼합 수계·연대 지층·먹이망·런타임 권한·행동 주기 정밀 회귀.
+const earthDesign={seed:'earth-era-dungeon-qa',width:28,height:28,cellSize:3,density:.98,mobile:true,
+  approvedDesign:true,biome:'EARTH_SYSTEM',buildingStyle:'HYBRID',season:'WINTER'};
+const earthBase=createVibeProceduralWorldLayout(earthDesign);
+const earthRoster=[
+  {id:'merchant',kind:'NPC',tier:'NORMAL',approved:true,allowedActions:['WORK','TRADE','REST','RAID']},
+  {id:'hunter',kind:'MONSTER',tier:'ELITE',approved:true,tierAuthorized:true,allowedActions:['PATROL','HUNT','REST'],
+    authorizedTierTransitions:[{from:'ELITE',to:'BOSS',ownerApproved:true}]},
+  {id:'rare',kind:'BOSS',tier:'RARE_BOSS',approved:true,tierAuthorized:true,dungeonId:'ruin',
+    allowedActions:['DUNGEON_GUARD','DEFEND'],
+    authorizedTierTransitions:[{from:'RARE_BOSS',to:'LEGENDARY',ownerApproved:false}]},
+  {id:'fish',kind:'CREATURE',approved:true,aquatic:true,
+    allowedHabitats:['FRESHWATER_LAKE'],allowedActions:['FORAGE','MIGRATE']}
+];
+const earthApproved={...earthDesign,ecologyActors:earthRoster,
+  authoredDungeonSites:[{id:'ruin',approved:true,cell:earthBase.landmark.cell}]};
+const earthWorld=createVibeProceduralWorldLayout(earthApproved);
+assert.equal(earthWorld.status,'STATIC_LAYOUT_PROPOSED',JSON.stringify(earthWorld.issues));
+assert.equal(earthWorld.oceansAndLakes.selectedWaterMode,'WATERSHED');
+assert.ok(earthWorld.oceansAndLakes.oceanCount>0&&earthWorld.oceansAndLakes.lakeCount>0);
+assert.equal(earthWorld.oceansAndLakes.mixedOceanAndLakeMode,true);
+assert.ok(earthWorld.terrain.some(tile=>tile.hydroVisual?.kind==='OCEAN'));
+assert.ok(earthWorld.terrain.some(tile=>tile.hydroVisual?.kind==='LAKE'));
+assert.ok(earthWorld.terrain.some(tile=>tile.hydroVisual?.riverCorridor));
+assert.ok(earthWorld.earthBiomes.categories.FRESHWATER_LAKE>0);
+assert.ok(earthWorld.eraAndCulture.usedEras.length>=2);
+assert.equal(earthWorld.eraAndCulture.totalVisualEraStrata,earthWorld.buildings.length*4);
+assert.ok(earthWorld.buildings.every(item=>
+  item.construction.eraArchitecture.visualStrata[2].era===item.era
+  &&item.construction.eraArchitecture.visualStrata[0].level==='GEOLOGICAL'));
+assert.ok(earthWorld.ecologyBalance.habitats.every(item=>
+  item.foodWebVisual.visualOnly&&item.foodWebVisual.realCreatureCountChanged===false
+  &&item.foodWebVisual.preyIndex>=0&&item.foodWebVisual.preyIndex<=1
+  &&item.foodWebVisual.predatorIndex>=0&&item.foodWebVisual.predatorIndex<=1));
+assert.equal(earthWorld.livingBiomePopulation.plannedActorCount,earthRoster.length);
+assert.equal(earthWorld.livingBiomePopulation.scheduledBehaviorPhases,earthRoster.length*4);
+assert.equal(earthWorld.livingBiomePopulation.uniquePlacementCells,earthRoster.length);
+const earthSites=earthWorld.livingBiomePopulation.actorPlacements;
+assert.ok(earthSites.every(item=>item.backgroundSync.season==='WINTER'&&
+  item.behaviorCycle.length===4&&item.behaviorCycle.every(step=>step.actionExecuted===false)));
+assert.equal(earthSites.find(item=>item.actorId==='hunter').evolution.nextTierProposal,'BOSS');
+assert.equal(earthSites.find(item=>item.actorId==='rare').evolution.nextTierProposal,null);
+assert.equal(earthSites.find(item=>item.actorId==='rare').authoredDungeonId,'ruin');
+assert.equal(earthSites.find(item=>item.actorId==='fish').habitat,'FRESHWATER_LAKE');
+assert.equal(earthSites.find(item=>item.actorId==='merchant').raidTargetAuthorized,false);
+assert.equal(earthWorld.livingBiomePopulation.actualMonsterRankChanges,0);
+assert.equal(earthWorld.livingBiomePopulation.actualRaidsLaunched,0);
+assert.equal(earthWorld.environmentLifeSync.actualNativeLifeAndWaterBindingsVerified,false);
+assert.equal(earthWorld.gameplayRuleMutation,false);
+assert.equal(earthWorld.saveMeaningMutation,false);
+assert.equal(earthWorld.runtimeVerified,false);
+assert.deepEqual(earthWorld,createVibeProceduralWorldLayout(earthApproved),
+  'same seed and authorized roster must reproduce era, water, life and visual cues');
+const refusedEarth=createVibeProceduralWorldLayout({...earthApproved,approvedDesign:false});
+assert.equal(refusedEarth.status,'APPROVED_DESIGN_REQUIRED');
+
 console.log('vibe-world-macro-causality: ok');
