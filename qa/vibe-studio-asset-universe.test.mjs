@@ -758,6 +758,7 @@ test('building reference image expands into detailed task-local building volume 
   const ideas=plan.imageAssetCreation.ideaWorklist;
   assert.ok(ideas.length>=16);
   assert.ok(ideas.every(row=>row.domain==='BUILDING'));
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.imageToMesh),false);
   for(const axis of ['MASSING_FAMILY','ROOF_PROFILE','FACADE_PROFILE','FLOOR_HEIGHT_RATIO','BAY_SPACING','FOUNDATION_WALL_ROOF_JOINERY','WINDOW_DOOR_TRIM','LANDMARK_ACCENT']){
     assert.ok(ideas.some(row=>row.customizationAxis===axis),axis);
   }
@@ -819,6 +820,7 @@ test('one mixed reference image can seed multiple internal asset domains without
     repoRoot:path.resolve(here,'..')
   });
   const domains=new Set(plan.imageAssetCreation.ideaWorklist.map(row=>row.domain));
+  assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.imageToMesh),false);
   assert.ok(domains.has('BUILDING'));
   assert.ok(domains.has('WORLD_PROP'));
   assert.ok(domains.has('ENVIRONMENT'));

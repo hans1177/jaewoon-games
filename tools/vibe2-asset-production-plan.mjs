@@ -2346,6 +2346,17 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const selected=selectedExplicit||inferred||'';
   if(selected&&selected!=='auto'&&!Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,selected))
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
+  // 검증된 대화 참고 이미지는 제작 아이디어의 근거일 뿐, 로컬 파일이나 라이선스가 아니다.
+  // 실제 메시 생성 요청과 분리해 기존 참고 이미지 기획을 오류 없이 진행하고, 실행 단계의 검사는 보존한다.
+  const referenceRows=Array.isArray(task.referenceImages)?task.referenceImages:[];
+  const referenceObservationOnly=task.imageToAsset===true
+    &&referenceRows.some(row=>row?.verifiedAgainstSource===true&&row?.observation&&clean(row?.imageRef))
+    &&!clean(task.assetAuthoring?.sourceImage||task.assetImagePath)
+    &&!referenceRows.some(row=>clean(row?.path||row?.imagePath))
+    &&!clean(task.assetAuthoring?.mode)
+    &&!clean(task.assetAuthoring?.module||task.assetModule)
+    &&!clean(task.assetAuthoring?.meshModel);
+  if(referenceObservationOnly)return null;
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
   const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
