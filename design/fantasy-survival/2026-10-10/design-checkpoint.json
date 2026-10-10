@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어가 마력 숲 연결 지역을 탐험하며, 퀘스트 읽기와 생존 위험을 해석해 자원/단서/적을 선택하여 전략을 실행하는 게임 역할입니다. 플레이어는 인물 갈등, 세계 상태 변화, 새로운 선택 및 결과로 이어지는 주요 경로를 구성합니다.",
       "coreFun": "{\n \"input\": {\n \"identity\": \"마력숲 생존기 - 플레이어가 마력숲과 연결 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원/단서/적을 선택하여 전략을 실행하는 게임 정체성입니다.\",\n \"creativeGrammar\": \"마력숲 생존기 - 플레이어가 마력숲과 연결 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원/단서/적을 선택하여 전략을 실행하는 게임 정체성입니다.\",\n \"playerFantasy\": \"플레이어가 마력숲과 연결 지역을 탐험하며, 퀘스트 읽기와 생존 위험을 해석해 자원/단서/적을 선택하여 전략을 실행하는 게임 역할입니다.\" \n },\n \"output\": {\n \"identity\": \"마력숲 생존기 - 플레이어가 마력 숲 연결 지역을 탐험하며, 퀘스트 읽기와 생존 위험을 읽고 자원/단서/적을 선택하여 전략을 실행하는 게임 정체성입니다.\",\n \"creativeGrammar\": \"마력숲 생존기 - 플레이어가 마력 숲 연결 지역을 탐험하며, 퀘스트 읽기와 생존 위험을 읽고 자원/단서/적을 선택하여 전략을 실행하는 게임 정체성입니다.\",\n \"playerFantasy\": \"플레이어가 마력 숲 연결 지역을 탐험하며, 퀘스트 읽기와 생존 위험을 해석해 자원/단서/적을 선택하여 전략을 실행하는 게임 역할입니다.\" \n }\n}"
+    },
+    "local_authoring_parts::bad37c3a01bd0a47ff8257934c36613d6eb575a295b4173bdf54360b8858737a:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어 선택 → 상태변화 → 보상/위험 발생",
+        "첫 번째 단계: 자원 수집, 단서 획득, 적 대응 → 세계 상태 변화",
+        "두 번째 단계: 전투 시스템 작동, 보상 확보, 위험 증대 → 다음 선택 결정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1255005,
-      "lastMs": 111453,
+      "totalMs": 1320248,
+      "lastMs": 65243,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:45:07.609Z"
+      "updatedAt": "2026-10-10T10:46:12.855Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:24:12.395Z",
-  "updatedAt": "2026-10-10T10:45:07.610Z",
+  "updatedAt": "2026-10-10T10:46:12.855Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2279,7 +2286,7 @@
     "5c7ebb65646723cc29c3bbe40a24092d8caa5a9b4f362ebe2cc33eabf35dc17e": true,
     "ddc5ce7410b320fc12361be41cd3ebcceb3dc492ba2b33ca3df22ae1381ccd51": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:45:07.610Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:46:12.855Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
