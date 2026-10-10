@@ -427,6 +427,12 @@ if ARGS.cinematic:
     shot_objects = [obj for obj in bpy.data.objects if obj not in imported_before]
     if not any(obj.type == 'MESH' for obj in shot_objects):
         raise RuntimeError('CINEMATIC_REIMPORTED_MESH_REQUIRED')
+    # [ANIMATION] Animate an isolated presentation root, never the exported source mesh.
+    presentation_root = bpy.data.objects.new('CinematicPresentationRoot', None)
+    SCENE.collection.objects.link(presentation_root)
+    for obj in shot_objects:
+        if obj.parent is None:
+            obj.parent = presentation_root
     try:
         SCENE.frame_start = 1
         SCENE.frame_end = frame_count
@@ -449,6 +455,17 @@ if ARGS.cinematic:
             (frame_count, 'HERO_RESOLVE', 1.12, 1.65, 1.17, 50),
         ]
         shotlist = []
+        presentation_keys = [
+            (1, 0.0, 0.0),
+            (max(2, frame_count // 3), math.radians(4), 0.025),
+            (max(3, frame_count * 2 // 3), math.radians(-3), 0.012),
+            (frame_count, 0.0, 0.0),
+        ]
+        for frame, yaw, lift in presentation_keys:
+            presentation_root.rotation_euler = (0.0, 0.0, yaw)
+            presentation_root.location = (0.0, 0.0, lift)
+            presentation_root.keyframe_insert(data_path='rotation_euler', frame=frame)
+            presentation_root.keyframe_insert(data_path='location', frame=frame)
         for frame, intent, azimuth, distance, elevation, lens in shot_specs:
             cam.location = target + Vector((
                 math.sin(azimuth) * radius * distance,
@@ -475,7 +492,12 @@ if ARGS.cinematic:
             'videoFile': 'cinematic.mp4', 'codec': 'H264', 'container': 'MP4',
             'fps': ARGS.video_fps, 'frameCount': frame_count,
             'durationSeconds': ARGS.video_seconds, 'resolution': {'width': width, 'height': height},
-            'shots': shotlist, 'audioAuthoringOwner': 'audio',
+            'shots': shotlist,
+            'presentationAnimation': {'type': 'ROOT_SWAY_AND_MICRO_LIFT', 'keyframes': [
+                {'frame': frame, 'yawRadians': yaw, 'liftMeters': lift}
+                for frame, yaw, lift in presentation_keys
+            ], 'sourceMeshUnchanged': True},
+            'audioAuthoringOwner': 'audio',
             'audioTracks': [], 'gameplayMutationAllowed': False,
             'nativeRuntimeVerified': False,
         }
@@ -496,6 +518,7 @@ if ARGS.cinematic:
     finally:
         for obj in shot_objects:
             bpy.data.objects.remove(obj, do_unlink=True)
+        bpy.data.objects.remove(presentation_root, do_unlink=True)
 
 
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
