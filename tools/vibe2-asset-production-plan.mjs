@@ -2515,11 +2515,22 @@ function verifiedCompanyManifestAssets(registry={}){
     .filter(asset=>asset.id);
 }
 
-function mergeManifestWithCompanyLibrary(manifest={},registry={}){
-  // 외부 매니페스트는 연구 및 내부 라이브러리 수급 단계에만 사용한다.
-  // 게임 후보는 회사 내부 등록자산에서만 구성한다.
+function mergeManifestWithCompanyLibrary(manifest={},registry={},sameGameSourceAssets=[],repoRoot=process.cwd()){
+  // 외부 임의 매니페스트는 연구·수급 단계에만 사용한다.
+  // 회사 등록 자산과 실제 기존 게임 소스에서 검색한 자산 식별자만 게임 후보로 유지한다.
   const byId=new Map();
   for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,asset);
+  for(const asset of sameGameSourceAssets){
+    const id=clean(asset?.id),reference=clean(asset?.path).replaceAll('\\','/');
+    if(!id||byId.has(id)||asset?.sameGameExistingRoblox!==true
+      ||asset?.runtimeVerificationState!=='SOURCE_BOUND_UNVERIFIED'
+      ||!/^\d{6,}$/.test(clean(asset?.robloxAssetId))
+      ||!/^(?:roblox-games)\/[^/]+\/.+\.(?:lua|luau|json)$/i.test(reference)
+      ||reference.split('/').includes('..')||clean(asset?.source)!==reference
+      ||!fs.existsSync(path.join(repoRoot,reference)))continue;
+    // 선택 후보일 뿐 운영용 에셋·권한·게임 실행 PASS로 승격하지 않는다.
+    byId.set(id,asset);
+  }
   return {...manifest,assets:[...byId.values()]};
 }
 
@@ -3314,7 +3325,9 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
   // 먼저 현재 게임에 이미 연결된 준비 자산을 살리고, 같은 비용 단계에서 호환성을 비교한다.
   // 실제 품질 통과 전까지는 최종 에셋 선정 또는 런타임 검증으로 취급하지 않는다.
-  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>a.bindingCost-b.bindingCost||b.compatibilityScore-a.compatibilityScore||a.id.localeCompare(b.id)));
+  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>
+    Number(b.productionVerified===true)-Number(a.productionVerified===true)
+    ||a.bindingCost-b.bindingCost||b.compatibilityScore-a.compatibilityScore||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
@@ -3721,7 +3734,7 @@ export function buildVibeAssetProductionPlan({
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry,sameGameRobloxAssets,repoRoot);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
   const duelCombatRequested=Boolean(task.combatTraditions?.length)||/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수|사무라이|samurai|발도|iaido|무협|murim|wuxia|경공|장풍|닌자|ninja|판타지.*(?:모션|전투|스킬)|fantasy.*(?:motion|combat|skill))/i.test(request);
