@@ -3,249 +3,31 @@
   "gameId": "wild-survival",
   "date": "2026-10-10",
   "seedId": "AUTO-MISSING-DESIGN-WILD-SURVIVAL",
-  "fingerprint": "6f9c2c0ebf489fb3be8c893f53953aeb5a4c55dbdb631b6cc34519dc37b67bb4",
+  "fingerprint": "382cc9d3dfa301fa75938db9208dcf3a54941ab29c6bd8b57bb2a0d765a3d0cb",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::8da40d9f5557483e704fbacfe8dbabf9eaf22634c791d7aead24b4086cf8ba7b:identity,creativeGrammar": {
-      "identity": "야생 생존",
-      "creativeGrammar": {
-        "mainIdentity": "야생 생존의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력/피드백/실패/재도전 흐름",
-        "a": {
-          "system": "생존",
-          "material": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "materialDomain": "월드·대상·자원·위험·진행 상태",
-          "stateChange": "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
-        },
-        "b": {
-          "system": "반응 시스템",
-          "material": "플레이어 행동에 상태와 결과로 반응",
-          "materialDomain": "플레이어 행동 및 반응",
-          "stateChange": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 생성된다."
-        },
-        "abCausality": "양방향 실제 상태 교환: MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다., A/B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. C=변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
-        "abEvolution": {
-          "aChangesB": "A→B 양방향 경로, B→A도 가능하다. 주요 변화는 월드·대상·자원·위험·진행 상태의 변화이다.",
-          "bChangesA": "B→A도 가능하다. 주요 변화는 플레이어 행동에 대한 반응 및 결과이다.",
-          "lateGameChange": "최종 게임은 A→B→A→B 순으로 진행하며, 각 단계에서 새로운 목표·지역·상호작용·전략 선택이 발생해야 한다."
-        },
-        "materialFusion": {
-          "contrast": "C의 두 창작 소재와 메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명된다.",
-          "causalBridge": "MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다., A=B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "removalConsequence": "C의 두 창작 소재와 메인/보조 장르 효과는 실제 상태 변화로 인해 보상 또는 실패가 발생하게 된다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 대상/공간을 선택하고 실제 입력을 수행하여 월드·대상·자원·위험·진행 상태가 바뀐다.",
-          "characterConflict": "플레이어의 선택은 월드 상태에 영향을 미치며, 이는 새로운 목표·지역·상호작용·전략 선택으로 이어진다.",
-          "playerChoice": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-          "worldChange": "월드 상태는 플레이어의 선택에 의해 변화하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
-          "nextEvent": "새로운 목표·지역·상호작용·전략 선택이 생성되어 게임은 계속 진행된다."
-        },
-        "cThemes": [
-          {
-            "name": "야생 생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-          },
-          {
-            "name": "반응 시스템",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 발생"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "생존",
-            "gameplayEffect": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "반응 시스템",
-            "gameplayEffect": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 생성"
-          }
-        ],
-        "cGenreInterlock": "C의 두 창작 소재는 MAIN/A/B를 통해 인과적으로 연결되어야 하며, 보조 장르 제거 시 플레이 변화가 명확히 나타나야 한다.",
-        "cWorldAndGameplayEffect": "월드 상태는 실제 입력을 바탕으로 변화하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          }
-        ],
-        "delveGrowthRule": "C의 두 창작 소재와 메인/보조 장르 효과는 실제 상태 변화를 통해 보상 또는 실패가 발생하며, 이는 새로운 목표·지역·상호작용·전략 선택으로 이어진다.",
-        "finalGameIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태가 변하고, 이는 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어지는 반복 가능한 게임 루프."
-      }
-    },
-    "local_authoring_parts::8da40d9f5557483e704fbacfe8dbabf9eaf22634c791d7aead24b4086cf8ba7b:playerFantasy,coreFun": {
-      "playerFantasy": "야생 생존에서 플레이어는 야생 환경의 실제 상황과 동물 행동, 날씨, 체온, 식수 및 부상을 관리하는 오픈월드 생존 게임에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
-      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실질적인 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하고, 이는 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어지는 반복 가능한 게임 루프"
-    },
-    "local_authoring_parts::08d765b4f622727f53e18be7a3b64bb31292df3d7cdae66503b38f22d40cc81b:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "야생 생존",
-      "creativeGrammar": {
-        "mainIdentity": "야생 생존의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력/피드백/실패/재도전 흐름",
-        "a": {
-          "system": "생존",
-          "material": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "materialDomain": "월드·대상·자원·위험·진행 상태",
-          "stateChange": "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다."
-        },
-        "b": {
-          "system": "반응 시스템",
-          "material": "플레이어 행동에 상태와 결과로 반응",
-          "materialDomain": "플레이어 행동 및 반응",
-          "stateChange": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 생성된다."
-        },
-        "abCausality": "양방향 실제 상태 교환: MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다., A/B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다. C=변화된 상태와 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
-        "abEvolution": {
-          "aChangesB": "A→B 양방향 경로, B→A도 가능하다. 주요 변화는 월드·대상·자원·위험·진행 상태의 변화이다.",
-          "bChangesA": "B→A도 가능하다. 주요 변화는 플레이어 행동에 대한 반응 및 결과이다.",
-          "lateGameChange": "최종 게임은 A→B→A→B 순으로 진행하며, 각 단계에서 새로운 목표·지역·상호작용·전략 선택이 발생해야 한다."
-        },
-        "materialFusion": {
-          "contrast": "C의 두 창작 소재와 메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명된다.",
-          "causalBridge": "MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다., A=B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "removalConsequence": "C의 두 창작 소재와 메인/보조 장르 효과는 실제 상태 변화로 인해 보상 또는 실패가 발생하게 된다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 대상/공간을 선택하고 실제 입력을 수행하여 월드·대상·자원·위험·진행 상태가 바뀐다.",
-          "characterConflict": "플레이어의 선택은 월드 상태에 영향을 미치며, 이는 새로운 목표·지역·상호작용·전략 선택으로 이어진다.",
-          "playerChoice": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-          "worldChange": "월드 상태는 플레이어의 선택에 의해 변화하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
-          "nextEvent": "새로운 목표·지역·상호작용·전략 선택이 생성되어 게임은 계속 진행된다."
-        },
-        "cThemes": [
-          {
-            "name": "야생 생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-          },
-          {
-            "name": "반응 시스템",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 발생"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "생존",
-            "gameplayEffect": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "반응 시스템",
-            "gameplayEffect": "플레이어 행동에 상태와 결과로 반응하여 새로운 목표·지역·상호작용·전략 선택이 생성"
-          }
-        ],
-        "cGenreInterlock": "C의 두 창작 소재는 MAIN/A/B를 통해 인과적으로 연결되어야 하며, 보조 장르 제거 시 플레이 변화가 명확히 나타나야 한다.",
-        "cWorldAndGameplayEffect": "월드 상태는 실제 입력을 바탕으로 변화하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          },
-          {
-            "clue": "플레이어는 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-            "discovery": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-            "newChoice": "새로운 목표·지역·상호작용·전략 선택이 발생"
-          }
-        ],
-        "delveGrowthRule": "C의 두 창작 소재와 메인/보조 장르 효과는 실제 상태 변화를 통해 보상 또는 실패가 발생하며, 이는 새로운 목표·지역·상호작용·전략 선택으로 이어진다.",
-        "finalGameIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드·대상·자원·위험·진행 상태가 변하고, 이는 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어지는 반복 가능한 게임 루프."
-      },
-      "playerFantasy": "야생 생존에서 플레이어는 야생 환경의 실제 상황과 동물 행동, 날씨, 체온, 식수 및 부상을 관리하는 오픈월드 생존 게임에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
-      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실질적인 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하고, 이는 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어지는 반복 가능한 게임 루프"
-    },
-    "local_authoring_parts::7c7cc11b8f7e949324957d4a7967c3fc1800da64e6e3f9ee36bdbb86717e98a9:coreLoop": {
-      "coreLoop": [
-        "플레이어가 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
-        "MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
-        "A/B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 이는 보상 또는 실패를 통해 다음 목표·지역·상호작용·전략 선택으로 이어진다."
-      ]
-    },
-    "local_authoring_parts::f17ebccc9105879cb184c2a6f7fdf03caa405ca90f643abb027c517616178fde:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_road",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "currentWorldState",
-        "playerGoal",
-        "availableResources",
-        "potentialThreats"
-      ],
-      "stateOutputs": [
-        "nextGoal",
-        "newLocation",
-        "updatedResourcePool",
-        "modifiedRiskProfile"
-      ],
-      "name": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
-      "purpose": "플레이어가 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
-      "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 53,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2582913,
-      "lastMs": 34203,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:03:28.433Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T05:20:25.395Z",
-  "updatedAt": "2026-10-10T06:03:28.434Z",
+  "createdAt": "2026-10-10T08:28:02.513Z",
+  "updatedAt": "2026-10-10T08:28:02.527Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -282,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -305,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -707,13 +492,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -740,24 +529,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -774,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -812,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -835,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1237,13 +1039,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1270,24 +1076,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1304,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1342,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1365,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1767,13 +1586,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1800,24 +1623,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1834,36 +1667,72 @@
         ]
       }
     },
-    "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::f17ebccc9105879cb184c2a6f7fdf03caa405ca90f643abb027c517616178fde:signatureSystems:1:df79814d7946e180": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_road"
-        ]
+    "assetFacts": {
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_road"
-        ]
+      "roblox-common-ui-wave-forecast-ribbon": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "current",
+            "next",
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "WAVE_FORECAST_RIBBON",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-boss-warning-pulse": {
+        "family": "VFX",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "BOSS",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::f17ebccc9105879cb184c2a6f7fdf03caa405ca90f643abb027c517616178fde:signatureSystems:1:df79814d7946e180": 49
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "8da40d9f5557483e704fbacfe8dbabf9eaf22634c791d7aead24b4086cf8ba7b": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:03:28.433Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+    }
+  }
 }
