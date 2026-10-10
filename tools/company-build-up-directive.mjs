@@ -869,14 +869,34 @@ export function buildDesignToPlatformCodingTrace({
     const inspected=inspectGameSource({repoRoot:rootReal,sourceRoot:scriptsRoot});
     const candidates=(inspected?.topFiles||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
       &&clean(row?.file).toLowerCase().endsWith('.cs'));
-    const anchors=(inspected?.sourceAnchors||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
-      &&clean(row?.file).toLowerCase().endsWith('.cs')
+    // 일반 WebGL 기술 틀만 존재하면 Roblox의 게임 규칙 원본이라고 주장하지 않는다.
+    // 다른 소스 워커와 동일한 범용 틀 서명을 검사하며 권한은 기존 디자인과 Roblox 원본에 둔다.
+    let genericFloorCount=0;
+    const gameplaySources=candidates.filter(row=>{
+      try{
+        const full=path.resolve(rootReal,posix(row.file));
+        const original=fs.realpathSync(full);
+        const ownerRoot=fs.realpathSync(path.resolve(rootReal,scriptsRoot));
+        if(!original.startsWith(ownerRoot+path.sep)||!fs.statSync(original).isFile()
+          ||fs.statSync(original).size>1024*1024)return false;
+        const text=fs.readFileSync(original,'utf8');
+        const generic=/\bclass\s+UnityWebFloorGame\b/.test(text)
+          &&/\bprivate\s+int\s+progress\s*;/.test(text)
+          &&/\bprivate\s+void\s+PerformAction\s*\(\s*bool\s+mobile\s*\)/.test(text)
+          &&/\bconst\s+string\s+CoreLoop\s*=/.test(text);
+        if(generic)genericFloorCount+=1;
+        return !generic;
+      }catch{return false;}
+    });
+    const acceptedFiles=new Set(gameplaySources.map(row=>posix(row.file)));
+    const anchors=(inspected?.sourceAnchors||[]).filter(row=>acceptedFiles.has(posix(row?.file))
       &&['METHOD','FUNCTION'].includes(row?.kind))
       .slice(0,16).map(row=>Object.freeze({
         file:posix(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),
         signature:clean(row.context).slice(0,180)
       }));
-    const available=Number(inspected?.fileCount||0)>0&&candidates.length>0;
+    const available=gameplaySources.length>0;
+    const genericOnly=!available&&genericFloorCount>0&&genericFloorCount===candidates.length;
     return Object.freeze({
       version:1,kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',
       canonicalGameId:id,canonicalDesignFingerprint:sha(JSON.stringify(design)),
@@ -884,10 +904,11 @@ export function buildDesignToPlatformCodingTrace({
       unityWebBuildOutputRoot:`web-games/${id}`,
       unityWebSourceAvailable:available,
       unityWebScriptsFingerprint:available?clean(inspected.sourceTreeFingerprint):null,
-      unityWebScriptCount:available?Number(inspected.fileCount||0):0,
-      sourceFiles:Object.freeze(available?candidates.slice(0,8).map(row=>posix(row.file)):[]),
+      unityWebScriptCount:available?gameplaySources.length:0,
+      sourceFiles:Object.freeze(available?gameplaySources.slice(0,8).map(row=>posix(row.file)):[]),
       sourceMethods:Object.freeze(available?anchors:[]),
-      referenceStatus:available?'SOURCE_READ_ONLY_UNVERIFIED':'SOURCE_NOT_AVAILABLE',
+      referenceStatus:available?'SOURCE_READ_ONLY_UNVERIFIED':
+        genericOnly?'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY':'SOURCE_NOT_AVAILABLE',
       verificationTransferred:false,sourceImplementationPassed:false,robloxRuntimeVerified:false,
       ruleOwner:'COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT',
       codeConversion:'REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS',
