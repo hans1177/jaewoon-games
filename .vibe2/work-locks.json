@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1wrly7l",
-      "worker": "vibe2",
-      "taskId": "defense-studio-evolution-roblox-usability-v1",
-      "gameId": "defense",
-      "files": [
-        "roblox-games/defense/client/Game.client.luau",
-        "roblox-games/defense/shared/GameConfig.luau",
-        "roblox-games/defense/server/Game.server.luau"
-      ],
-      "baseSha": "b11c914c9d9655f1cc5ed510a4675f677865378d",
-      "runId": "38087188803",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T22:34:18.825Z",
-      "expiresAt": "2026-10-10T23:19:18.825Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:defense-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-bziqvt",
       "worker": "vibe2",
       "taskId": "territory-war-studio-evolution-roblox-usability-v1",
@@ -194,6 +173,26 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-ushioni-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-608zb6",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "398cd2031ba66c72765a80ed77115ea634147841",
+      "runId": "38091196680",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T23:19:21.882Z",
+      "expiresAt": "2026-10-11T00:04:21.882Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
       ]
     }
   ]
