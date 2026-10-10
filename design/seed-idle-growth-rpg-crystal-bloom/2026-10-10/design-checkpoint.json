@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
       "coreFun": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다."
+    },
+    "local_authoring_parts::7e31e43c2343db7305be8cbcfd3d395314ea8d219037407186c062690dd6cb88:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT → NODE EXPANSION/RESONANT SKILL TRIGGER → ENERGY CONVERSION/RESOURCE ALLOCATION → MULTI-STEP BOSS CHALLENGE → NEW ELEMENT DISCOVERY",
+        "INPUT/SELECT → RESOURCE REDISTRIBUTION → NODE ACTIVATION → IMMEDIATE SKILL RECONFIGURATION → ADAPTIVE BATTLE SCENARIO WITH DYNAMIC RESOURCE MANAGEMENT",
+        "INPUT/SELECT → ELEMENTAL NODE PRIORITIZATION → RESONANCE CONFLICT BETWEEN PLAYER AND AI → SKILL CHAIN CONFIGURATION FOR OPTIMAL COMBAT STRATEGY → ADAPTED BATTLE SCENARIO WITH EVOLVING RESOURCE MANAGEMENT"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 448915,
-      "lastMs": 47831,
+      "totalMs": 505973,
+      "lastMs": 57058,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T04:49:45.783Z"
+      "updatedAt": "2026-10-10T04:50:42.844Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:16.847Z",
-  "updatedAt": "2026-10-10T04:49:45.785Z",
+  "updatedAt": "2026-10-10T04:50:42.844Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -898,7 +905,7 @@
   "localAuthoringSplits": {
     "c1b976b2903c206cf2e5dc3c83ed5f94df4bdd372d0f60a01887059eca0b756b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T04:49:45.785Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:50:42.844Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
