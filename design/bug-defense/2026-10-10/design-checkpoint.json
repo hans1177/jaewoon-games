@@ -793,25 +793,28 @@
     },
     "local_authoring_parts::620519e6d06c9f0dea539a4875f27e01f3363b57b8bdab8e937516c75531a6f5:progressionDirection": {
       "progressionDirection": "선형적"
+    },
+    "local_authoring_parts::b2b511c9a1295127d34bb5e057c311549d6115224712f189d28ede825892f2c7:progressionLoop": {
+      "progressionLoop": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 결정 → 위험/보상 발생 → 다음 선택 기반 전략 결정의 순차적 흐름을 설계하여 경제적 가치와 방어력 간의 균형 유지"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 36,
+      "calls": 37,
+      "successes": 37,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1074099,
-      "lastMs": 33105,
+      "totalMs": 1112823,
+      "lastMs": 38724,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:56:40.089Z"
+      "updatedAt": "2026-10-10T10:57:18.815Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:56:40.089Z",
+  "updatedAt": "2026-10-10T10:57:18.815Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2501,7 +2504,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:56:40.089Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:57:18.815Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
