@@ -28,9 +28,10 @@ PARSER.add_argument('--genre', default='')
 PARSER.add_argument('--source-image', default='')
 PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
-PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical'], default='auto')
+PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical','animation','video'], default='auto')
 PARSER.add_argument('--source-model', default='')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
+PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
@@ -110,6 +111,8 @@ OPEN_SOURCE_MODULES = {
     'clothing': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderMeshAndCloth', 'license': 'GPL-2.0-or-later'},
     'design': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderParametricGeometry', 'license': 'GPL-2.0-or-later'},
     'medical': {'source': 'https://github.com/Slicer/Slicer', 'engine': 'SlicerCompatibleSurfaceImportAndBlender', 'license': 'BSD-style-Slicer-GPL-Blender'},
+    'animation': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderKeyframesAndNLA', 'license': 'GPL-2.0-or-later'},
+    'video': {'source': 'https://ffmpeg.org', 'engine': 'BlenderFramesAndFFmpeg', 'license': 'LGPL-2.1-or-later-or-GPL-depending-on-build'},
 }
 if ARGS.module == 'medical' and (ARGS.source_image or not ARGS.source_model):
     raise RuntimeError('MEDICAL_SOURCE_SURFACE_MODEL_REQUIRED')
@@ -577,6 +580,8 @@ elif ARGS.module == 'object':
     object_asset()
 elif ARGS.module == 'design':
     design_asset()
+elif ARGS.module in ('animation','video'):
+    object_asset()
 elif ARGS.subject=='rock':
     rock_asset()
 elif ARGS.subject=='crate' or ARGS.profile=='prop' and not TECH:
@@ -587,6 +592,49 @@ elif ARGS.profile in ('item','weapon'):
     weapon_asset()
 else:
     prop_asset()
+
+# 애니메이션·영상 내장 모듈: 실제 메시/관절에 프레임별 키를 넣고 GLB에 포함한다.
+# 포즈 이동은 시각 표현으로만 사용하고 게임의 데미지·물리 판정을 변경하지 않는다.
+MOTION_CLIPS=[]
+if ARGS.module in ('animation','video'):
+    if ARGS.module=='video' and ARGS.source_sanitized=='yes':
+        raise RuntimeError('MEDICAL_VIDEO_EXPORT_NOT_SUPPORTED')
+    if not ASSET_ARMATURES:
+        for mesh in ASSET_OBJECTS:
+            mesh.rotation_mode='XYZ'
+            original_rotation=tuple(mesh.rotation_euler)
+            original_height=float(mesh.location.z)
+            action=bpy.data.actions.new('ASSET_SHOWCASE_'+ARGS.motion_kind.upper())
+            mesh.animation_data_create()
+            mesh.animation_data.action=action
+            for frame,phase in ((1,0),(13,1),(25,0)):
+                if ARGS.motion_kind=='turntable':
+                    mesh.rotation_euler.z=original_rotation[2]+math.tau*(frame-1)/24
+                    mesh.keyframe_insert(data_path='rotation_euler',frame=frame)
+                elif ARGS.motion_kind=='bounce':
+                    mesh.location.z=original_height+phase*.11
+                    mesh.keyframe_insert(data_path='location',frame=frame)
+                else:
+                    mesh.rotation_euler.y=original_rotation[1]+phase*.10
+                    mesh.keyframe_insert(data_path='rotation_euler',frame=frame)
+            track=mesh.animation_data.nla_tracks.new()
+            track.name='SHOWCASE'
+            track.strips.new('SHOWCASE',1,action)
+            mesh.animation_data.action=None
+            mesh.rotation_euler=original_rotation
+            mesh.location.z=original_height
+        MOTION_CLIPS.append('SHOWCASE')
+    else:
+        for rig in ASSET_ARMATURES:
+            if not rig.animation_data or not rig.animation_data.nla_tracks:
+                human_motion(rig)
+            MOTION_CLIPS.extend([track.name for track in rig.animation_data.nla_tracks])
+    MODULE_PROVENANCE={'kind':ARGS.module,'source':OPEN_SOURCE_MODULES[ARGS.module],
+        'method':'BLENDER_KEYFRAMED_NATIVE_GLTF_PLUS_FFMPEG_MP4_PREVIEW',
+        'generatedGeometry':not bool(SOURCE_PROVENANCE),
+        'clipNames':MOTION_CLIPS,
+        'videoEncoding':'FFMPEG_MPEG4_LGPL_PATH' if ARGS.module=='video' else None,
+        'runtimeVerified':False}
 
 # Apply authored geometry before measuring it. Smart UVs include bevel faces.
 for obj in ASSET_OBJECTS:
