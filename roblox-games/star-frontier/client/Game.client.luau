@@ -23,6 +23,49 @@ local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpe
 local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 2
+local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
+end
+local function hasStudioAssetAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
+end
+local STUDIO_ASSET_SELECTION = {
+  CHARACTER = studioAssetFamily("CHARACTER"),
+  CREATURE = studioAssetFamily("CREATURE"),
+  BUILDING = studioAssetFamily("BUILDING"),
+  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
+  WEAPON = studioAssetFamily("WEAPON"),
+  SKILL = studioAssetFamily("SKILL"),
+  MATERIAL = studioAssetFamily("MATERIAL"),
+  AUDIO = studioAssetFamily("AUDIO"),
+  VFX = studioAssetFamily("VFX"),
+  UI = studioAssetFamily("UI"),
+  MOTION = studioAssetFamily("MOTION"),
+  PROP = studioAssetFamily("PROP"),
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "NOT_APPLICABLE",
+  CREATURE = "NOT_APPLICABLE",
+  BUILDING = "APPLIED",
+  ENVIRONMENT = "APPLIED",
+  WEAPON = "NOT_APPLICABLE",
+  SKILL = "APPLIED",
+  MATERIAL = "APPLIED",
+  AUDIO = "NOT_APPLICABLE",
+  VFX = "APPLIED",
+  UI = "APPLIED",
+  MOTION = "APPLIED",
+  PROP = "NOT_APPLICABLE",
+}
+-- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 pcall(function()
@@ -98,6 +141,19 @@ end
 -- 상단 상태 HUD
 -- =========================================================
 local topPanel = Instance.new("Frame")
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = topPanel
+end
+
+topPanel:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+topPanel:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
+topPanel:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
+
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")

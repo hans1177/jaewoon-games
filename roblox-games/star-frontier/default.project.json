@@ -18,6 +18,19 @@
           "$path": "client"
         }
       }
+    },
+    "Lighting": {
+      "$properties": {
+        "Technology": "Voxel",
+        "LightingStyle": "Soft",
+        "PrioritizeLightingQuality": false
+      },
+      "CompatibilityToneMap": {
+        "$className": "ColorGradingEffect",
+        "$properties": {
+          "TonemapperPreset": "Retro"
+        }
+      }
     }
   }
 }
