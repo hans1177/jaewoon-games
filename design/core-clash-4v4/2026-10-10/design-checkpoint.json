@@ -3,246 +3,31 @@
   "gameId": "core-clash-4v4",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-CORE-CLASH-4V4-20260917",
-  "fingerprint": "31676c3b13c3d3ac60091710917d07d0c739edaea6c13605ae2bb47fae1657c4",
+  "fingerprint": "b923864e15aa0e7a167a5711a5ba91a50f7fa3fa9d0cd8b6d494ef1f6d26dd52",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82:identity,creativeGrammar": {
-      "identity": "코어 전장 4대4",
-      "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "a": {
-          "system": "Survival Run",
-          "material": "Upgrades, Perks, Weapons, Skills",
-          "materialDomain": "Real-Time Strategy",
-          "stateChange": "Build Combination → Wave Survival → Boss Conquest"
-        },
-        "b": {
-          "system": "Progression System",
-          "material": "Run Rewards, Experience Points",
-          "materialDomain": "Experience and Mastery",
-          "stateChange": "Reward Collection → Skill/Upgrade Selection → Next Progression Choice"
-        },
-        "abCausality": "Upgraded Build → Harder Waves → Boss Conquest → New Progression Path",
-        "abEvolution": {
-          "aChangesB": "New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio",
-          "bChangesA": "New Skill Tree → New Perception Mechanics → New State Transition",
-          "lateGameChange": "Dynamic Enemy Behavior → Adaptive Playstyle Shift → Multi-System Integration"
-        },
-        "materialFusion": {
-          "contrast": "Enemy Pressure → Player Agency → Dynamic World State Change",
-          "causalBridge": "Skill Upgrades → Real-Time Decision Making → Multi-Stage Survival Loop",
-          "removalConsequence": "Unlocked Perks → Expanded Playstyle Options → Rebalanced Risk Reward Structure"
-        },
-        "storyCausalChain": {
-          "cause": "Player Input → State Change → Reward / Risk → Next Action",
-          "characterConflict": "Enemy Strategy → Player Adaptation → System Interaction",
-          "playerChoice": "Build Combination → Wave Survival → Boss Conquest",
-          "worldChange": "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance",
-          "nextEvent": "New Progression Path → New Gameplay Role → New Narrative Layer"
-        },
-        "cThemes": [
-          {
-            "name": "Survival",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Real-Time Combat"
-          },
-          {
-            "name": "Adaptation",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Playstyle Evolution"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Action-Survival-Roguelite",
-            "gameplayEffect": "Dynamic Enemy Behavior"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Progression System",
-            "gameplayEffect": "Multi-Stage Survival Loop"
-          }
-        ],
-        "cGenreInterlock": "Enemy Pressure → Player Agency → System Interaction → Playstyle Evolution",
-        "cWorldAndGameplayEffect": "Survival Mechanics → Adaptive Playstyle → Multi-System Integration",
-        "delveDiscoveries": [
-          {
-            "clue": "Player Input → State Change → Reward / Risk → Next Action",
-            "discovery": "Upgraded Build → Harder Waves → Boss Conquest → New Progression Path",
-            "newChoice": "New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio"
-          },
-          {
-            "clue": "Skill Upgrades → Real-Time Decision Making → Multi-Stage Survival Loop",
-            "discovery": "New Skill Tree → New Perception Mechanics → New State Transition",
-            "newChoice": "New Playstyle Option → New World State Change"
-          },
-          {
-            "clue": "Enemy Strategy → Player Adaptation → System Interaction",
-            "discovery": "Dynamic Enemy Behavior → Adaptive Playstyle Shift → Multi-System Integration",
-            "newChoice": "New Gameplay Role → New Narrative Layer"
-          },
-          {
-            "clue": "Build Combination → Wave Survival → Boss Conquest",
-            "discovery": "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance",
-            "newChoice": "New Progression Path → New Gameplay Role → New Narrative Layer"
-          }
-        ],
-        "delveGrowthRule": "Player Agency → System Interaction → Multi-System Integration → Dynamic Risk Reward Balance",
-        "finalGameIdentity": "Survival Mechanic Evolutionary Framework with Adaptive Playstyle and Multi-System Integration"
-      }
-    },
-    "local_authoring_parts::095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 전장에서 단순히 '투사'가 아닌, 적의 압박에 맞서는 **지속적인 선택**과 **실제 세계 상태 변화**로 인해 진입하는 빌드 조합을 숙련하고, 그 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 게임 정체성과 플레이어 역할을 동시에 확립한다.",
-      "coreFun": "{\"identity\": \"코어 전장 4대4\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival Run\", \"material\": \"Upgrades, Perks, Weapons, Skills\", \"materialDomain\": \"Real-Time Strategy\", \"stateChange\": \"Build Combination → Wave Survival → Boss Conquest\"}, \"b\": {\"system\": \"Progression System\", \"material\": \"Run Rewards, Experience Points\", \"materialDomain\": \"Experience and Mastery\", \"stateChange\": \"Reward Collection → Skill/Upgrade Selection → Next Progression Choice\"}, \"abCausality\": \"Upgraded Build → Harder Waves → Boss Conquest → New Progression Path\", \"abEvolution\": {\"aChangesB\": \"New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio\", \"bChangesA\": \"New Skill Tree → New Perception Mechanics → New State Transition\", \"lateGameChange\": \"Dynamic Enemy Behavior → Adaptive Playst"
-    },
-    "local_authoring_parts::3f3357b0134970908784705307e9486145ef8536cf6102df9c18a9294cdee42d:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "코어 전장 4대4",
-      "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "a": {
-          "system": "Survival Run",
-          "material": "Upgrades, Perks, Weapons, Skills",
-          "materialDomain": "Real-Time Strategy",
-          "stateChange": "Build Combination → Wave Survival → Boss Conquest"
-        },
-        "b": {
-          "system": "Progression System",
-          "material": "Run Rewards, Experience Points",
-          "materialDomain": "Experience and Mastery",
-          "stateChange": "Reward Collection → Skill/Upgrade Selection → Next Progression Choice"
-        },
-        "abCausality": "Upgraded Build → Harder Waves → Boss Conquest → New Progression Path",
-        "abEvolution": {
-          "aChangesB": "New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio",
-          "bChangesA": "New Skill Tree → New Perception Mechanics → New State Transition",
-          "lateGameChange": "Dynamic Enemy Behavior → Adaptive Playstyle Shift → Multi-System Integration"
-        },
-        "materialFusion": {
-          "contrast": "Enemy Pressure → Player Agency → Dynamic World State Change",
-          "causalBridge": "Skill Upgrades → Real-Time Decision Making → Multi-Stage Survival Loop",
-          "removalConsequence": "Unlocked Perks → Expanded Playstyle Options → Rebalanced Risk Reward Structure"
-        },
-        "storyCausalChain": {
-          "cause": "Player Input → State Change → Reward / Risk → Next Action",
-          "characterConflict": "Enemy Strategy → Player Adaptation → System Interaction",
-          "playerChoice": "Build Combination → Wave Survival → Boss Conquest",
-          "worldChange": "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance",
-          "nextEvent": "New Progression Path → New Gameplay Role → New Narrative Layer"
-        },
-        "cThemes": [
-          {
-            "name": "Survival",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Real-Time Combat"
-          },
-          {
-            "name": "Adaptation",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Playstyle Evolution"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Action-Survival-Roguelite",
-            "gameplayEffect": "Dynamic Enemy Behavior"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Progression System",
-            "gameplayEffect": "Multi-Stage Survival Loop"
-          }
-        ],
-        "cGenreInterlock": "Enemy Pressure → Player Agency → System Interaction → Playstyle Evolution",
-        "cWorldAndGameplayEffect": "Survival Mechanics → Adaptive Playstyle → Multi-System Integration",
-        "delveDiscoveries": [
-          {
-            "clue": "Player Input → State Change → Reward / Risk → Next Action",
-            "discovery": "Upgraded Build → Harder Waves → Boss Conquest → New Progression Path",
-            "newChoice": "New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio"
-          },
-          {
-            "clue": "Skill Upgrades → Real-Time Decision Making → Multi-Stage Survival Loop",
-            "discovery": "New Skill Tree → New Perception Mechanics → New State Transition",
-            "newChoice": "New Playstyle Option → New World State Change"
-          },
-          {
-            "clue": "Enemy Strategy → Player Adaptation → System Interaction",
-            "discovery": "Dynamic Enemy Behavior → Adaptive Playstyle Shift → Multi-System Integration",
-            "newChoice": "New Gameplay Role → New Narrative Layer"
-          },
-          {
-            "clue": "Build Combination → Wave Survival → Boss Conquest",
-            "discovery": "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance",
-            "newChoice": "New Progression Path → New Gameplay Role → New Narrative Layer"
-          }
-        ],
-        "delveGrowthRule": "Player Agency → System Interaction → Multi-System Integration → Dynamic Risk Reward Balance",
-        "finalGameIdentity": "Survival Mechanic Evolutionary Framework with Adaptive Playstyle and Multi-System Integration"
-      },
-      "playerFantasy": "플레이어는 전장에서 단순히 '투사'가 아닌, 적의 압박에 맞서는 **지속적인 선택**과 **실제 세계 상태 변화**로 인해 진입하는 빌드 조합을 숙련하고, 그 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하며, 게임 정체성과 플레이어 역할을 동시에 확립한다.",
-      "coreFun": "{\"identity\": \"코어 전장 4대4\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival Run\", \"material\": \"Upgrades, Perks, Weapons, Skills\", \"materialDomain\": \"Real-Time Strategy\", \"stateChange\": \"Build Combination → Wave Survival → Boss Conquest\"}, \"b\": {\"system\": \"Progression System\", \"material\": \"Run Rewards, Experience Points\", \"materialDomain\": \"Experience and Mastery\", \"stateChange\": \"Reward Collection → Skill/Upgrade Selection → Next Progression Choice\"}, \"abCausality\": \"Upgraded Build → Harder Waves → Boss Conquest → New Progression Path\", \"abEvolution\": {\"aChangesB\": \"New Weapon Set → New Upgrade Synergy → New Risk Reward Ratio\", \"bChangesA\": \"New Skill Tree → New Perception Mechanics → New State Transition\", \"lateGameChange\": \"Dynamic Enemy Behavior → Adaptive Playst"
-    },
-    "local_authoring_parts::cb1bd3652ab4cbc83cc480ddd6d6d5f61a48e289e7455bcee4fcd08725745ff9:coreLoop": {
-      "coreLoop": [
-        "Player Input → State Change → Reward/Risk → Next Action",
-        "Enemy Strategy → Player Adaptation → System Interaction",
-        "Build Combination → Wave Survival → Boss Conquest",
-        "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance"
-      ]
-    },
-    "local_authoring_parts::c7f23ecf25f36e916773b290ac3019f6a061a0a27e2fe51b3aa7bbe866bdf20b:signatureSystems:0": {
-      "id": "core-clash-4v4",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Player Input",
-        "Enemy Strategy"
-      ],
-      "stateOutputs": [
-        "State Change",
-        "Reward/Risk",
-        "Next Action"
-      ],
-      "name": "코어 전장 4대4",
-      "purpose": "Player Input → State Change → Reward/Risk → Next Action",
-      "playerChoice": "Build Combination → Wave Survival → Boss Conquest"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 889123,
-      "lastMs": 96173,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:24:31.507Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:09:42.351Z",
-  "updatedAt": "2026-10-10T02:24:31.516Z",
+  "createdAt": "2026-10-10T06:50:55.985Z",
+  "updatedAt": "2026-10-10T06:50:56.114Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -266,6 +51,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -320,6 +106,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -783,8 +570,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -808,6 +595,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -862,6 +650,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1325,8 +1114,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1350,6 +1139,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1404,6 +1194,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1934,28 +1725,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::c7f23ecf25f36e916773b290ac3019f6a061a0a27e2fe51b3aa7bbe866bdf20b:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "core-clash-4v4"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::c7f23ecf25f36e916773b290ac3019f6a061a0a27e2fe51b3aa7bbe866bdf20b:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:31.507Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  }
 }
