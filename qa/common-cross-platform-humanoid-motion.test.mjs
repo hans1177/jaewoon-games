@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -173,4 +175,87 @@ test('shared 3D library mutations wake the existing 24H producer instead of a sh
   assert.match(continuous,/asset-development/);
   assert.match(continuous,/Execute declared native DCC authoring verification/);
   assert.equal(catalog.productionVerified,false);
+});
+
+
+test('six career 3D masters contain distinct skinned geometry and actual joint animation on the shared rig',()=>{
+  const roles={
+    samurai:'SAMURAI_IAI_DRAW',archer:'ARCHER_DRAW_RELEASE',mage:'MAGE_AREA_CAST',
+    rogue:'ROGUE_BACKSTEP_CUT',lancer:'LANCER_SPEAR_THRUST',blacksmith:'BLACKSMITH_FORGE_HAMMER'
+  };
+  const company=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const sharedSource=path.join(root,'assets','native-authoring','build-shared-humanoid.mjs');
+  assert.ok(fs.existsSync(sharedSource));
+  const geometryHashes=new Set();
+  const binaryHashes=new Set();
+  for(const [role,clip] of Object.entries(roles)){
+    const relative='assets/shared/humanoid-'+role+'.glb';
+    const bytes=fs.readFileSync(path.join(root,relative));
+    const doc=glbJson(bytes);
+    assert.ok(bytes.length>150000,role);
+    assert.equal(doc.skins.length,1,role);
+    assert.equal(doc.skins[0].joints.length,19,role);
+    assert.equal(doc.animations.length,16,role);
+    assert.ok(doc.meshes[0].name.toLowerCase().includes(role),role);
+    assert.ok(doc.meshes[0].primitives.every(p=>p.attributes.POSITION!==undefined
+      &&p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),role);
+    const specific=doc.animations.find(a=>a.name===clip);
+    assert.ok(specific,'role animation missing: '+role);
+    const skinNodes=new Set(doc.skins[0].joints);
+    const activeJoints=new Set(specific.channels
+      .filter(c=>c.target?.path==='rotation'&&skinNodes.has(c.target?.node))
+      .map(c=>c.target.node));
+    assert.ok(activeJoints.size>=12,role+' must rotate actual skinned joints');
+    const jsonBytes=bytes.readUInt32LE(12);
+    const geometryStart=20+jsonBytes+8;
+    const geometry=createHash('sha256');
+    for(const primitive of doc.meshes[0].primitives){
+      const accessor=doc.accessors[primitive.attributes.POSITION];
+      const view=doc.bufferViews[accessor.bufferView];
+      const offset=geometryStart+view.byteOffset+(accessor.byteOffset||0);
+      geometry.update(bytes.subarray(offset,offset+view.byteLength));
+    }
+    geometryHashes.add(geometry.digest('hex'));
+    binaryHashes.add(createHash('sha256').update(bytes).digest('hex'));
+    const registered=company.assets.find(x=>x.id==='shared-humanoid-'+role);
+    assert.ok(registered,'not registered '+role);
+    const gitBlobHash=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+    assert.equal(registered.masterGlbGitBlobSha,gitBlobHash,role);
+    assert.equal(registered.masterGlb,relative,role);
+    assert.equal(registered.jointCount,19,role);
+    assert.equal(registered.animationClipCount,16,role);
+    assert.ok(registered.visualIdentityAxes.length>=4,role);
+    assert.equal(registered.productionVerified,false,role);
+    assert.equal(registered.verifiedCompanyReusable,false,role);
+    assert.equal(registered.nativeRuntimeVerified,false,role);
+    assert.equal(registered.masterGlbStaticQaPass,false,role);
+    assert.equal(registered.platformNativeDerivativeRequired,true,role);
+  }
+  assert.equal(geometryHashes.size,6,'distinct character silhouettes require distinct vertex geometry');
+  assert.equal(binaryHashes.size,6,'no duplicated models under different filenames');
+});
+
+test('shared 3D master generator reproduces role models and preserves the original traveler and guardian bytes',()=>{
+  const generator=path.join(root,'assets','native-authoring','build-shared-humanoid.mjs');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'shared-career-master-'));
+  const roles=['samurai','archer','mage','rogue','lancer','blacksmith'];
+  try{
+    const produced=spawnSync(process.execPath,[generator,dir,'--roles='+roles.join(',')],{encoding:'utf8',timeout:90000});
+    assert.equal(produced.status,0,produced.stderr||produced.stdout);
+    assert.equal(produced.stdout.trim().split(/\r?\n/).length,6);
+    for(const role of roles){
+      const name='humanoid-'+role+'.glb';
+      assert.ok(fs.readFileSync(path.join(dir,name)).equals(fs.readFileSync(path.join(root,'assets','shared',name))),
+        'source regeneration changed '+role);
+    }
+    const legacy=path.join(dir,'original');
+    const initial=spawnSync(process.execPath,[generator,legacy],{encoding:'utf8',timeout:90000});
+    assert.equal(initial.status,0,initial.stderr||initial.stdout);
+    assert.deepEqual(fs.readdirSync(legacy).sort(),['humanoid-guardian.glb','humanoid-traveler.glb']);
+    for(const role of ['traveler','guardian']){
+      const name='humanoid-'+role+'.glb';
+      assert.ok(fs.readFileSync(path.join(legacy,name)).equals(fs.readFileSync(path.join(root,'assets','shared',name))),
+        'original master changed '+role);
+    }
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
