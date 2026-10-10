@@ -534,25 +534,40 @@
     },
     "local_authoring_parts::b69a8845523e5266cc2d88a08059c7312db3add6cdc779576ab7de423fc22ce2:fromSystem": {
       "fromSystem": "Main Defensive Strategy"
+    },
+    "local_authoring_parts::b69a8845523e5266cc2d88a08059c7312db3add6cdc779576ab7de423fc22ce2:toSystem": {
+      "toSystem": "Game Designer AI"
+    },
+    "local_authoring_parts::b69a8845523e5266cc2d88a08059c7312db3add6cdc779576ab7de423fc22ce2:trigger": {
+      "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::b69a8845523e5266cc2d88a08059c7312db3add6cdc779576ab7de423fc22ce2:stateChange": {
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::b144450b5335a2a2e6a29033f190938015c5d2c717cfaddb2f6cd5d6e521204f:systemInterconnections:0:4f53cda18c2baa0c": {
+      "fromSystem": "Main Defensive Strategy",
+      "toSystem": "Game Designer AI",
+      "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 13,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 481061,
-      "lastMs": 47101,
+      "totalMs": 501661,
+      "lastMs": 7805,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:09:04.725Z"
+      "updatedAt": "2026-10-10T09:09:25.328Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:09:04.725Z",
+  "updatedAt": "2026-10-10T09:09:25.329Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2245,7 +2260,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:09:04.725Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:09:25.329Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
