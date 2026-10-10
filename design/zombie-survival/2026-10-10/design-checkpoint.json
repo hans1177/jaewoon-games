@@ -95,25 +95,117 @@
         "delveGrowthRule": "Every Discovery Adds a New Strategic Layer to the Core Loop",
         "finalGameIdentity": "Survival Run + Reward System = Survival Strategy"
       }
+    },
+    "local_authoring_parts::f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 매일 선택을 내리며 30일 동안 좀비 아포칼립스 생존 게임에서 살아남아야 한다. 선택은 전략, 장비, 스킬, 퀘스트 등 다양한 요소로 구성된다.",
+      "coreFun": "{\"identity\": \"좀비 생존기\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival Run\", \"material\": \"Upgrades, Perks, Weapons, Skills\", \"materialDomain\": \"Build Composition\", \"stateChange\": \"Upgrade Build -> Survive Harder Waves/Boss -> Next Progression Choice\"}, \"b\": {\"system\": \"Reward System\", \"material\": \"Run Rewards/Experience\", \"materialDomain\": \"Progression Fuel\", \"stateChange\": \"Collect Reward -> Choose Upgrade -> New Build -> Next Progression Choice\"}, \"abCausality\": \"Build Composition → Reward System → Survival Strategy\"}, \"abEvolution\": {\"aChangesB\": \"Add New Weapon/Perk -> Change Build -> New Strategy -> Next Progression Choice\", \"bChangesA\": \"Add New Reward -> Modify Build -> New Strategy -> Next Progression Choice\", \"lateGameChange\": \"Combine Multiple Builds -> "
+    },
+    "local_authoring_parts::eb533ce609a5933659044cab1bc553eff6888872f18cf3e97bb71cbe70706e22:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "좀비 생존기",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival Run",
+          "material": "Upgrades, Perks, Weapons, Skills",
+          "materialDomain": "Build Composition",
+          "stateChange": "Upgrade Build -> Survive Harder Waves/Boss -> Next Progression Choice"
+        },
+        "b": {
+          "system": "Reward System",
+          "material": "Run Rewards/Experience",
+          "materialDomain": "Progression Fuel",
+          "stateChange": "Collect Reward -> Choose Upgrade -> New Build -> Next Progression Choice"
+        },
+        "abCausality": "Build Composition → Reward System → Survival Strategy",
+        "abEvolution": {
+          "aChangesB": "Add New Weapon/Perk -> Change Build -> New Strategy -> Next Progression Choice",
+          "bChangesA": "Add New Reward -> Modify Build -> New Strategy -> Next Progression Choice",
+          "lateGameChange": "Combine Multiple Builds -> Create New Strategy -> Reconfigure Game State -> Final Outcome"
+        },
+        "materialFusion": {
+          "contrast": "Enemy Pressure vs. Player Mastery",
+          "causalBridge": "Player Action → Enemy Response → World State Change",
+          "removalConsequence": "Remove Old Build -> Add New Strategy -> Reinforce Core Loop"
+        },
+        "storyCausalChain": {
+          "cause": "Player's Initial Decision",
+          "characterConflict": "Enemy Reaction and Environmental Constraints",
+          "playerChoice": "Upgrade Selection and Strategic Positioning",
+          "worldChange": "New Wave Pattern, Boss Appearance, or Terrain Shift",
+          "nextEvent": "Next Progression Choice with Enhanced Strategy"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Build Composition"
+          },
+          {
+            "name": "Strategy",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Progression Fuel"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival Run",
+            "gameplayEffect": "Build Composition"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Reward System",
+            "gameplayEffect": "Progression Fuel"
+          }
+        ],
+        "cGenreInterlock": "Survival Run + Reward System = Survival Strategy",
+        "cWorldAndGameplayEffect": "Build Composition → Progression Fuel → Survival Strategy",
+        "delveDiscoveries": [
+          {
+            "clue": "Enemy Pressure vs. Player Mastery",
+            "discovery": "New Weapon/Perk -> New Build -> New Strategy -> Next Progression Choice",
+            "newChoice": "Combine Multiple Builds -> Create New Strategy -> Reconfigure Game State -> Final Outcome"
+          },
+          {
+            "clue": "Player Action → Enemy Response → World State Change",
+            "discovery": "New Wave Pattern, Boss Appearance, or Terrain Shift",
+            "newChoice": "Next Progression Choice with Enhanced Strategy"
+          },
+          {
+            "clue": "Survival vs. Mastery",
+            "discovery": "Add New Reward -> Modify Build -> New Strategy -> Next Progression Choice",
+            "newChoice": "Combine Multiple Builds -> Create New Strategy -> Reconfigure Game State -> Final Outcome"
+          },
+          {
+            "clue": "Mastery vs. Environment",
+            "discovery": "Remove Old Build -> Add New Strategy -> Reinforce Core Loop",
+            "newChoice": "Final Outcome with Reinforced Core Loop"
+          }
+        ],
+        "delveGrowthRule": "Every Discovery Adds a New Strategic Layer to the Core Loop",
+        "finalGameIdentity": "Survival Run + Reward System = Survival Strategy"
+      },
+      "playerFantasy": "플레이어는 매일 선택을 내리며 30일 동안 좀비 아포칼립스 생존 게임에서 살아남아야 한다. 선택은 전략, 장비, 스킬, 퀘스트 등 다양한 요소로 구성된다.",
+      "coreFun": "{\"identity\": \"좀비 생존기\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival Run\", \"material\": \"Upgrades, Perks, Weapons, Skills\", \"materialDomain\": \"Build Composition\", \"stateChange\": \"Upgrade Build -> Survive Harder Waves/Boss -> Next Progression Choice\"}, \"b\": {\"system\": \"Reward System\", \"material\": \"Run Rewards/Experience\", \"materialDomain\": \"Progression Fuel\", \"stateChange\": \"Collect Reward -> Choose Upgrade -> New Build -> Next Progression Choice\"}, \"abCausality\": \"Build Composition → Reward System → Survival Strategy\"}, \"abEvolution\": {\"aChangesB\": \"Add New Weapon/Perk -> Change Build -> New Strategy -> Next Progression Choice\", \"bChangesA\": \"Add New Reward -> Modify Build -> New Strategy -> Next Progression Choice\", \"lateGameChange\": \"Combine Multiple Builds -> "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 463089,
-      "lastMs": 162989,
+      "totalMs": 550643,
+      "lastMs": 87554,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:57:29.231Z"
+      "updatedAt": "2026-10-10T02:58:56.787Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:49:45.936Z",
-  "updatedAt": "2026-10-10T02:57:29.231Z",
+  "updatedAt": "2026-10-10T02:58:56.788Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1826,7 +1918,7 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:57:29.231Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:58:56.788Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
