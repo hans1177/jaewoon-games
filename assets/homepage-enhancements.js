@@ -297,7 +297,7 @@ function mergeGame(row){
   const generic=/^assets\/(?:pwa-icon-(?:192|512)\.png|mock\.webp|page-bg(?:-v\d+)?\.webp|card-rpg(?:-v\d+)?\.webp|portal\.webp)$/i;
   const raw=canonicalThumbnail||String(row?.marketingThumbnail||row?.image||'').trim();
   const actual=generic.test(raw)?'':raw;
-  const originalLogo=!sharedRobloxThumbnail&&!small&&Boolean(originalTitleArt);
+  const originalLogo=!sharedRobloxThumbnail&&!small&&generic.test(raw)&&Boolean(originalTitleArt);
   const image=sharedRobloxThumbnail?canonicalThumbnail:(small||(originalLogo?originalTitleArt:actual));
   const heroImage=sharedRobloxThumbnail?canonicalThumbnail:(cover||image);
   const name=identity.name||row?.name||media?.titleKo||media?.titleEn||id;
