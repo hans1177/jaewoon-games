@@ -588,25 +588,33 @@
     },
     "local_authoring_parts::19913cdc204a45de28fd1941cd7b2992bfd6995c6118abef36ccf21a6f7c1ae6:kind": {
       "kind": "MATERIAL"
+    },
+    "local_authoring_parts::19913cdc204a45de28fd1941cd7b2992bfd6995c6118abef36ccf21a6f7c1ae6:gameplayEffect": {
+      "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::7b0dbc9d4dce044eb101bfbb73f0100747bad302be72b2b90faba7e4416b84e3:cThemes:0:4f53cda18c2baa0c": {
+      "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "kind": "MATERIAL",
+      "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 34,
+      "calls": 36,
+      "successes": 35,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1972552,
-      "lastMs": 55907,
+      "totalMs": 2032531,
+      "lastMs": 59979,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:05:34.979Z"
+      "updatedAt": "2026-10-10T10:06:34.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T10:05:34.980Z",
+  "updatedAt": "2026-10-10T10:06:34.961Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2617,7 +2625,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:05:34.979Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:06:34.961Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
