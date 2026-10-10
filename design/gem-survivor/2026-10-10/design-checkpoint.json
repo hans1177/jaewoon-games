@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::358a628e47628bd5d6e25d25ec1b1c31c0488c8b4b7024ab3172577022d8ed38:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "보석 생존전",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Horde Pressure, Upgrade Choices, Build Synergy",
+          "materialDomain": "Action & Survival",
+          "stateChange": "Build Combination -> Wave Survival -> Boss Conversion"
+        },
+        "b": {
+          "system": "Progression",
+          "material": "Run Rewards, Experience, Skill Upgrades",
+          "materialDomain": "Gameplay & Progression",
+          "stateChange": "Reward Collection -> Skill Mastery -> Next Progression Choice"
+        },
+        "abCausality": "Build Combination → Reward Collection → Skill Mastery → Next Progression Choice",
+        "abEvolution": {
+          "aChangesB": "Upgrade Selection → Run Result → New Strategy Outcome",
+          "bChangesA": "Skill Mastery → Experience Gain → New Playstyle Outcomes",
+          "lateGameChange": "Build Synthesis → World State Change → Terminal Structure"
+        },
+        "materialFusion": {
+          "contrast": "Horse Pressure vs. Resource Scarcity",
+          "causalBridge": "Enemy Positioning → Player Adaptation → System Interaction",
+          "removalConsequence": "Wave Difficulty → Skill Requirement → Multi-System Integration"
+        },
+        "storyCausalChain": {
+          "cause": "Player Movement and Enemy Positioning",
+          "characterConflict": "Adaptation to Environmental Pressures",
+          "playerChoice": "Upgrading Builds for Survival",
+          "worldChange": "New Wave Difficulty and Boss Encounter",
+          "nextEvent": "Progression Choice with New Strategy"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Enemy Pressure, Wave Difficulty"
+          },
+          {
+            "name": "Progression",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Run Rewards, Skill Upgrades"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Action & Survival",
+            "gameplayEffect": "Horse Pressure, Upgrade Choices"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Gameplay & Progression",
+            "gameplayEffect": "Run Rewards, Skill Mastery"
+          }
+        ],
+        "cGenreInterlock": "Build Combination → Reward Collection → Skill Mastery → Next Progression Choice",
+        "cWorldAndGameplayEffect": "Enemy Positioning → Player Adaptation → System Interaction",
+        "delveDiscoveries": [
+          {
+            "clue": "Player Movement and Enemy Positioning",
+            "discovery": "Adaptation to Environmental Pressures",
+            "newChoice": "Upgrade Selection"
+          },
+          {
+            "clue": "Upgrading Builds for Survival",
+            "discovery": "Skill Mastery",
+            "newChoice": "Experience Gain"
+          },
+          {
+            "clue": "New Wave Difficulty and Boss Encounter",
+            "discovery": "Progression Choice with New Strategy",
+            "newChoice": "Multi-System Integration"
+          },
+          {
+            "clue": "Player Action and Neglect Change World State",
+            "discovery": "New Playstyle Outcomes",
+            "newChoice": "Terminal Structure"
+          }
+        ],
+        "delveGrowthRule": "When Backtracking Exists Prior Space Must Gain New Access/Event/Risk/Reward/Information; Empty Return Travel Does Not Count",
+        "finalGameIdentity": "Survival Build Synthesis → Run Result → Multi-System Integration → Terminal Structure"
+      },
+      "playerFantasy": "보석 생존전은 플레이어가 실제 경험을 통해 흔히 보는 게임의 핵심 재미를 숙련하고 선택으로 반복하며, 새로운 전략과 경로를 만들어내는 빌드·경로·위험·보상이 서로 연결되는 반복 가능한 핵심 루프이다.",
+      "coreFun": "플레이어는 단순한 입력 후 즉각적인 상태 변화와 피드백을 경험하여, 다양한 상황에서 적응하는 능력을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다. 이 과정에서는 기존의 구조를 벗어나 새로운 시스템 및 장르에 대한 인식을 형성하고, 무한하게 발전할 수 있는 창작 소재를 만든다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 144303,
+      "lastMs": 144303,
+      "lastError": null,
+      "updatedAt": "2026-10-10T01:59:07.192Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:56:42.762Z",
-  "updatedAt": "2026-10-10T01:56:42.835Z",
+  "updatedAt": "2026-10-10T01:59:07.192Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1719,5 +1820,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T01:59:07.192Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
