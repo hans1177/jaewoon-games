@@ -674,21 +674,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 28,
-      "successes": 27,
+      "calls": 29,
+      "successes": 28,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2601817,
-      "lastMs": 31440,
+      "totalMs": 2636733,
+      "lastMs": 34916,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:51:27.753Z"
+      "updatedAt": "2026-10-10T00:52:02.670Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-10T00:51:27.753Z",
+  "updatedAt": "2026-10-10T00:52:02.672Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2347,11 +2347,22 @@
           "signatureSystems"
         ]
       }
+    ],
+    "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:2": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "signatureSystems[0]",
+          "signatureSystems[1]"
+        ]
+      }
     ]
   },
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 5,
-    "local_authoring_parts::7fbdff75d9ef99358f68bd9870736aac568e8831b54d8d58805c8c35573f479a:signatureSystems:2": 1
+    "local_authoring_parts::7fbdff75d9ef99358f68bd9870736aac568e8831b54d8d58805c8c35573f479a:signatureSystems:2": 1,
+    "local_authoring_parts::5d96d1a2a4241ce9f33896a89a5408df02b56303857b21561d1d886914d590ec:signatureSystems:2": 1
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2452,10 +2463,10 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:51:27.753Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:52:02.670Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
