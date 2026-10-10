@@ -52,10 +52,56 @@ test('shared source is a real animated skinned GLB, not a Roblox-only marker',()
 
 test('shared humanoid authoring source defines distinct motion and combat variants with one object/clip',()=>{
   const clips=catalog.sourceAuthoredClips.map(x=>x.name);
-  assert.equal(clips.length,31);
+  assert.equal(clips.length,48);
   assert.equal(new Set(clips).size,31);
-  assert.equal(catalog.authoring.actionSourceDefinitions,14);
+  assert.equal(catalog.authoring.actionSourceDefinitions,31);
   assert.equal(catalog.authoring.locomotionSourceDefinitions,17);
+});
+
+
+test('source contains distinct bone-keyed career action and non-combat job motions',()=>{
+  const names=[
+    'common_samurai_iaido_hq','common_samurai_parry_hq','common_spear_lunge_hq',
+    'common_bow_draw_hq','common_bow_release_hq','common_rogue_backstab_hq',
+    'common_caster_channel_hq','common_healer_ritual_hq','common_summon_call_hq',
+    'common_forge_hammer_hq','common_build_place_hq','common_farm_harvest_hq',
+    'common_command_rally_hq','common_merchant_trade_hq','common_vehicle_steer_hq',
+    'common_fishing_cast_hq','common_potion_mix_hq'
+  ];
+  for(const name of names){
+    assert.ok(catalog.sourceAuthoredClips.some(x=>x.name===name),name);
+    assert.ok(producer.includes("    '"+name+"':"),name);
+  }
+  assert.match(producer,/CLASS_ACTION_POSES = \{/);
+  assert.match(producer,/elif name in CLASS_ACTION_POSES:/);
+  assert.match(producer,/profile\['anticipation'\]/);
+  assert.match(producer,/profile\['release'\]/);
+  assert.match(producer,/rot\(bone_name,\*angles\)/);
+  assert.match(producer,/loc\('Hips'/);
+  assert.match(producer,/FOCUSED_ACTION_ARTICULATION_STATIC|COMMON_ACTION_ARTICULATION_STATIC/);
+  assert.equal(catalog.crossGenreReuse.scope,'COMMON_ASSET_NOT_ROBLOX_ONLY');
+  assert.equal(catalog.crossGenreReuse.directCrossPlatformNativeBinaryReuseForbidden,true);
+  assert.equal(catalog.authoredSourceIsBakedProductionPass,false);
+  const script=String.raw`import ast,sys,json
+source=open(sys.argv[1],encoding='utf8').read()
+root=ast.parse(source)
+assignment=next(node for node in root.body if isinstance(node,ast.Assign) and any(isinstance(target,ast.Name) and target.id=='CLASS_ACTION_POSES' for target in node.targets))
+motions=ast.literal_eval(assignment.value)
+assert len(motions)==17,len(motions)
+signature=set()
+for name,row in motions.items():
+    a,b=row['anticipation'],row['release']
+    assert len(a)>=8 and len(b)>=8,name
+    assert all(isinstance(point,(tuple,list)) and 1<=len(point)<=3 for point in list(a.values())+list(b.values())),name
+    assert all(-1.6 <= v <= 1.6 for point in list(a.values())+list(b.values()) for v in point),name
+    assert all(j in a and j in b for j in ('Hips','Spine','Chest','UpperArmL','UpperArmR','ThighL','ThighR')),name
+    assert any(abs(a['UpperArmL'][0]-b['UpperArmL'][0])>.22 or abs(a['UpperArmR'][0]-b['UpperArmR'][0])>.22 for _ in [0]),name
+    signature.add(tuple(sorted((k,tuple(v)) for k,v in a.items())))
+assert len(signature)==17,len(signature)
+print('CLASS_ARTICULATED_POSES=PASS')
+`;
+  const checked=spawnSync('python3',['-c',script,path.join(dir,'author-motion.py')],{encoding:'utf8',timeout:30000});
+  assert.equal(checked.status,0,checked.stderr||checked.stdout);
 });
 
 test('common source has per-motion baked bones, original foot contact QA, and cross-platform pending gates',()=>{
