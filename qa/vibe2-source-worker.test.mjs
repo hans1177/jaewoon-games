@@ -59,7 +59,7 @@ test('Roblox build-up uses exact same-game Unity Web C# source as read-only nati
     assert.ok(before.includes(hash));
     assert.match(before,/TakeDamage/);
     assert.match(before,/SaveState/);
-    assert.match(before,/runtimeVerified\\":false/);
+    assert.ok(before.includes('\"runtimeVerified\":false'));
     assert.doesNotMatch(before,/BadSync/);
     assert.match(before,/Allowed edit paths: server\/Game\.server\.luau/);
     assert.doesNotMatch(before,/Allowed edit paths:.*GameCore\.cs/);
@@ -96,7 +96,7 @@ test('generic Unity Web floor never becomes verified Roblox gameplay authority o
     ].join('\n'));
     const generic=buildPrompt(order,context,['server/Game.server.luau'],options);
     assert.match(generic,/GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY/);
-    assert.doesNotMatch(generic,/unityWebSourceReference=.*\\"methods\\":\\[\\{.*PerformAction/);
+    assert.ok(generic.includes('\"methods\":[]'));
     assert.match(generic,/Missing\/unverified Unity Web does not block independent Roblox development/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
