@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 실시간 모바일 플레이에서 단순한 입력/피드백 루프를 통해 좀비 아포칼립스 생존 게임을 숙련하며, 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
       "coreFun": "플레이어가 실시간 모바일 플레이 중에 주요 행동은 다음과 같다: 1) 적 대응 및 위치 조절 → 2) 업그레이드 선택 및 건축 결합 → 3) 새로운 전략 또는 경로 개발 → 4) 보상 수집 및 다음 선택 결정. 이 과정에서 플레이어는 지속적으로 성장하여 다양한 상황에서 즉각적인 결과와 피드백을 받으며 게임의 핵심 재미를 증대시킨다."
+    },
+    "local_authoring_parts::76ffbb45886dc6dfa98a5f2942063ed4c513d422a7fd5ed43af5a7ffe45b2b1a:coreLoop": {
+      "coreLoop": [
+        "Player selects upgrades and strategies in real time",
+        "Reward system influences next playstyle and strategy choices",
+        "Build progression is determined by the combination of upgrades and wave difficulty"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 486304,
-      "lastMs": 59013,
+      "totalMs": 536230,
+      "lastMs": 49926,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:01:09.761Z"
+      "updatedAt": "2026-10-10T09:01:59.690Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:03.435Z",
-  "updatedAt": "2026-10-10T09:01:09.762Z",
+  "updatedAt": "2026-10-10T09:01:59.698Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "9fd8fc43119584443f7069c705b650d04170cd59bac3b572b847532b30374905": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:01:09.762Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:01:59.690Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
