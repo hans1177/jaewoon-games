@@ -1347,25 +1347,42 @@
         "전략적 동기 부여"
       ],
       "fromSystem": "identity-core"
+    },
+    "local_authoring_parts::f0b4a50c8eb99a5a3169d9b4ef0abb0f704a3551ecc7077a7faa3faf5516c2b7:toSystem,trigger,stateChange": {
+      "toSystem": "signatureSystems-1",
+      "trigger": "전선 상태 변화",
+      "stateChange": "전략적 동기 부여"
+    },
+    "local_authoring_parts::9a3421561b383848af18118edf8434ea5d58b7b7e85204e3c6017984f3529f36:systemInterconnections:4": {
+      "fromId": "identity-core",
+      "toId": "signatureSystems-1",
+      "stateKeys": [
+        "전선 상태 변화",
+        "전략적 동기 부여"
+      ],
+      "fromSystem": "identity-core",
+      "toSystem": "signatureSystems-1",
+      "trigger": "전선 상태 변화",
+      "stateChange": "전략적 동기 부여"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 47,
+      "calls": 52,
+      "successes": 48,
       "failures": 4,
       "timeouts": 4,
       "jsonFailures": 0,
-      "totalMs": 5826607,
-      "lastMs": 93387,
+      "totalMs": 5867448,
+      "lastMs": 40841,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:19:26.283Z"
+      "updatedAt": "2026-10-10T00:20:07.126Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:16:09.688Z",
-  "updatedAt": "2026-10-10T00:19:26.284Z",
+  "updatedAt": "2026-10-10T00:20:07.135Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3010,7 +3027,7 @@
     "local_authoring_parts::2874d366d46805cf234d953cab76997151d7fa45c6aa3a0d8a9a2cf859ea592c:signatureSystems:1": 1,
     "designer_draft_slices::identity-core": 1,
     "local_authoring_parts::25a8f2cccccb6b8f837e574120f4f1f2d6cd7d28f9804fa97c1e032e2ecba4c5:signatureSystems:1": 1,
-    "designer_draft_slices::systems-progression": 2
+    "designer_draft_slices::systems-progression": 3
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -3055,10 +3072,10 @@
     "e3991c91af100edb3449564f0fd5cdb1d6b7611be364ff8e8ee43cd3c66c82e3": true,
     "6590538dd7d43630a2db0bc448a401acf5e0771c40df0c9d596698a6a3dd0908": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:19:26.283Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:20:07.129Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
