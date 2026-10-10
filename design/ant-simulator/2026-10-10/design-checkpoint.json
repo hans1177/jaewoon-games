@@ -3023,25 +3023,303 @@
           "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
         }
       ]
+    },
+    "local_authoring_parts::b021013ed102f71322f5c2a2e5ddf0bfb80d003323f507d9ba6c2a1f06ff19df:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "거대한 정원",
+          "behavior": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "counterplay": "월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "positioning": "주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "timing": "순차적 진행",
+          "mobility": "월드 탐험 및 자원 확보",
+          "groupRole": "경험 제공",
+          "identity": "개미 시뮬레이터 DELVE 규칙",
+          "rewardMeaning": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        {
+          "name": "개미 종족",
+          "behavior": "세 개미 종족 중 하나를 골라 거대한 정원을 탈출하고 굴을 지키는 역할이 수행된다",
+          "counterplay": "플레이어 행동에 상태와 결과로 반응",
+          "positioning": "장르 핵심 행동 선택",
+          "timing": "선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정",
+          "mobility": "종족 선택과 월드 탐험",
+          "groupRole": "역할 수행",
+          "identity": "개미 시뮬레이터 기본 규칙",
+          "rewardMeaning": "STATE_CHANGE"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "PLAYER_1",
+          "variation": "OPENING_PHASE, MAIN_PHASE, DELVE_PHASE, START_OR_WORLD_ENTRY, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_1",
+          "variation": "MAIN_PHASE, DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_2",
+          "variation": "MAIN_PHASE, DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_3",
+          "variation": "DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        }
+      ],
+      "antiMonotonyRule": "{\"name\": \"세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션\", \"behavior\": \"플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다\", \"counterplay\": \"월드 상태 변환, 보상/위험 발생 후 다음 목표 결정\", \"positioning\": \"주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생\", \"timing\": \"순차적 진행\", \"mobility\": \"월드 탐험 및 자원 확보\", \"groupRole\": \"경험 제공\", \"identity\": \"개미 시뮬레이터 DELVE 규칙\", \"rewardMMeaning\": \"STATE_CHANGE_AND_PROGRESSION\"}"
+    },
+    "local_authoring_parts::d77474f462d7b049570253bdf8a36b3d3b4d16292c1c59eb224f6812d8c486b8:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "개미 시뮬레이터 기본 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_BASELINE",
+          "ruleId": "CORE_FUN_01",
+          "trigger": "OPENING_PHASE",
+          "range": 1,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 0,
+          "cooldownSeconds": 60,
+          "telegraph": "MONTHLY_UPDATE",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "BASE_RANGE",
+          "costKey": "BASE_COST",
+          "cooldownKey": "BASE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_2",
+          "name": "개미 시뮬레이터 주요 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN_02",
+          "trigger": "MAIN_PHASE",
+          "range": 3,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 5,
+          "cooldownSeconds": 120,
+          "telegraph": "YEARLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "CORE_RANGE",
+          "costKey": "CORE_COST",
+          "cooldownKey": "CORE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_3",
+          "name": "개미 시뮬레이터 주요 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN_03",
+          "trigger": "MAIN_PHASE",
+          "range": 4,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 7,
+          "cooldownSeconds": 180,
+          "telegraph": "MONTHLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "CORE_RANGE",
+          "costKey": "CORE_COST",
+          "cooldownKey": "CORE_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_4",
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "kind": "INTERACTION",
+          "ownerId": "ANT_SIMULATOR_DELVE",
+          "ruleId": "CORE_FUN_04",
+          "trigger": "DELVE_PHASE",
+          "range": 2,
+          "rangeUnit": "UNIT",
+          "resource": "WORLD_STATE",
+          "cost": 3,
+          "cooldownSeconds": 90,
+          "telegraph": "YEARLY_REVISION",
+          "avoidance": "NONE",
+          "effect": "STATE_CHANGE_AND_PROGRESSION",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "ORIGINAL_GAME_RULES",
+          "rangeKey": "DELVE_RANGE",
+          "costKey": "DELVE_COST",
+          "cooldownKey": "DELVE_COOLDOWN"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER_1",
+          "humanTool": "OPENING",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "retainedState": "START_OR_WORLD_ENTRY",
+          "removedState": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "changedChoice": "REAL_PLAYER_INPUT"
+        },
+        {
+          "humanId": "ENEMY_1",
+          "humanTool": "MAIN_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        {
+          "humanId": "ENEMY_2",
+          "humanTool": "MAIN_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        {
+          "humanId": "ENEMY_3",
+          "humanTool": "DELVE_PHASE",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_4",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_4",
+          "retainedState": "REAL_PLAYER_INPUT",
+          "removedState": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "changedChoice": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        }
+      ],
+      "regions": [
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        },
+        {
+          "id": "ANT_SIMULATOR_DELVE",
+          "ruleIds": [
+            "CORE_FUN_04"
+          ],
+          "name": "개미 시뮬레이터 DELVE 규칙",
+          "traversal": "DELVE_PHASE",
+          "riskReward": "STATE_CHANGE_AND_PROGRESSION,",
+          "landmark": "거대한 정원",
+          "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "거대한 정원",
+          "behavior": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+          "counterplay": "월드 상태 변환, 보상/위험 발생 후 다음 목표 결정",
+          "positioning": "주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+          "timing": "순차적 진행",
+          "mobility": "월드 탐험 및 자원 확보",
+          "groupRole": "경험 제공",
+          "identity": "개미 시뮬레이터 DELVE 규칙",
+          "rewardMeaning": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        {
+          "name": "개미 종족",
+          "behavior": "세 개미 종족 중 하나를 골라 거대한 정원을 탈출하고 굴을 지키는 역할이 수행된다",
+          "counterplay": "플레이어 행동에 상태와 결과로 반응",
+          "positioning": "장르 핵심 행동 선택",
+          "timing": "선택 -> 월드 상태 변화 -> 보상/위험 발생 -> 다음 목표 결정",
+          "mobility": "종족 선택과 월드 탐험",
+          "groupRole": "역할 수행",
+          "identity": "개미 시뮬레이터 기본 규칙",
+          "rewardMeaning": "STATE_CHANGE"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "PLAYER_1",
+          "variation": "OPENING_PHASE, MAIN_PHASE, DELVE_PHASE, START_OR_WORLD_ENTRY, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_1",
+          "variation": "MAIN_PHASE, DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_2",
+          "variation": "MAIN_PHASE, DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        },
+        {
+          "role": "ENEMY_3",
+          "variation": "DELVE_PHASE, REAL_PLAYER_INPUT, OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE, STATE_CHANGE, STATE_CHANGE_AND_PROGRESSION, PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE, REWARD_METER, RISK_METER, RESOURCE_METER, WORLD_RELATIONSHIP, OPTIONAL_MASTERY, NEXT_OPEN_QUESTION"
+        }
+      ],
+      "antiMonotonyRule": "{\"name\": \"세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션\", \"behavior\": \"플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다\", \"counterplay\": \"월드 상태 변환, 보상/위험 발생 후 다음 목표 결정\", \"positioning\": \"주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생\", \"timing\": \"순차적 진행\", \"mobility\": \"월드 탐험 및 자원 확보\", \"groupRole\": \"경험 제공\", \"identity\": \"개미 시뮬레이터 DELVE 규칙\", \"rewardMMeaning\": \"STATE_CHANGE_AND_PROGRESSION\"}"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 99,
-      "successes": 93,
+      "calls": 100,
+      "successes": 94,
       "failures": 6,
       "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 4790396,
-      "lastMs": 35511,
+      "totalMs": 5041531,
+      "lastMs": 251135,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:12:56.591Z"
+      "updatedAt": "2026-10-10T01:17:07.733Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-10T01:12:56.596Z",
+  "updatedAt": "2026-10-10T01:17:07.747Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4647,6 +4925,363 @@
   "sliceRepairFeedback": {
     "designer_draft_slices::content-rules": [
       {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[0].source",
+          "value": "ORIGINAL_GAME_RULES"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[0].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[1].effect",
+          "value": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[1].effect의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[1].source",
+          "value": "ORIGINAL_GAME_RULES"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[1].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[2].effect",
+          "value": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[2].effect의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[2].source",
+          "value": "ORIGINAL_GAME_RULES"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[2].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[3].effect",
+          "value": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[3].effect의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.abilities[3].source",
+          "value": "ORIGINAL_GAME_RULES"
+        },
+        "requiredAction": "contentVarietyPlan.abilities[3].source의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[0].retainedState",
+          "value": "START_OR_WORLD_ENTRY"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[0].retainedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[0].removedState",
+          "value": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[0].removedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[0].changedChoice",
+          "value": "REAL_PLAYER_INPUT"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[0].changedChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[1].retainedState",
+          "value": "REAL_PLAYER_INPUT"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[1].retainedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[1].removedState",
+          "value": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[1].removedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[1].changedChoice",
+          "value": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[1].changedChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[2].retainedState",
+          "value": "REAL_PLAYER_INPUT"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[2].retainedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[2].removedState",
+          "value": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[2].removedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[2].changedChoice",
+          "value": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[2].changedChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[3].retainedState",
+          "value": "REAL_PLAYER_INPUT"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[3].retainedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[3].removedState",
+          "value": "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[3].removedState의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.roleTransitions[3].changedChoice",
+          "value": "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE"
+        },
+        "requiredAction": "contentVarietyPlan.roleTransitions[3].changedChoice의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.regions[0].riskReward",
+          "value": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        "requiredAction": "contentVarietyPlan.regions[0].riskReward의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "contentVarietyPlan.enemiesOrChallenges[0].rewardMeaning",
+          "value": "STATE_CHANGE_AND_PROGRESSION"
+        },
+        "requiredAction": "contentVarietyPlan.enemiesOrChallenges[0].rewardMeaning의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
         "code": "DESIGN_ABILITY_CONTRACT_MISSING",
         "kind": "HARD_GATE",
         "axis": "CORE_LOOP_DESIGN",
@@ -4736,7 +5371,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::f4a9c5a18982eb65807252906a4da96dd22919231519f12926409335b3793840:signatureSystems:2": 1,
     "designer_draft_slices::identity-core": 2,
-    "designer_draft_slices::content-rules": 3
+    "designer_draft_slices::content-rules": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
@@ -4749,10 +5384,10 @@
     "b021013ed102f71322f5c2a2e5ddf0bfb80d003323f507d9ba6c2a1f06ff19df": true,
     "ca1eedfd0ea578c72093879f6d8020bd00d0df2777aa2b6cc9aecef68c0aeb3a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:12:56.596Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:17:07.739Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

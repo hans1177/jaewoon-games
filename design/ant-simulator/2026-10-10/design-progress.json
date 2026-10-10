@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 114,
-  "lastSuccessfulModelCallAt": "2026-10-10T01:12:56.596Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 116,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:17:07.739Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "designerSeed": {
     "file": "design/ant-simulator/2026-10-10/design-seed.json",
     "contentDigest": "872503c1fc5713dead8acdaa798b4c665fc1e7c90dbcfa94a60b79e452e4e299",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 99,
-      "successes": 93,
+      "calls": 100,
+      "successes": 94,
       "failures": 6,
       "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 4790396,
-      "lastMs": 35511,
+      "totalMs": 5041531,
+      "lastMs": 251135,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:12:56.591Z"
+      "updatedAt": "2026-10-10T01:17:07.733Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T01:12:56.598Z"
+  "updatedAt": "2026-10-10T01:17:07.749Z"
 }
