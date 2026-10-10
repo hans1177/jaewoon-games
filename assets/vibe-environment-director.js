@@ -557,7 +557,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const wallHeight=+(cellSize*(1.3+shapeSeed*.9)).toFixed(3);
       const roofRise=roof==='FLAT_ROOF'?0:+(wallHeight*(.24+shapeSeed*.15)).toFixed(3);
       const sourceBinding=pickSource('BUILDING',zone,x,z);
-      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false,
+      const baseMaterial=/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
+      const materialBindings=Object.freeze({
+        foundation:pickSource('MATERIAL',terrain[at(x,z)].surface?.stratum||'STONE',x,z),
+        wall:pickSource('MATERIAL',baseMaterial,x,z),
+        roof:pickSource('MATERIAL',roof,x,z)
+      });
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,verifiedStructuralEngineering:false,
         structure3d:dimension==='3D'?Object.freeze({footprintWidthMeters:cellSize*2,footprintDepthMeters:cellSize*2,wallHeightMeters:wallHeight,wallThicknessMeters:+Math.max(.12,cellSize*.08).toFixed(3),foundationThicknessMeters:+Math.max(.15,cellSize*.12).toFixed(3),
           roofRiseMeters:roofRise,doorOpeningWidthMeters:+(cellSize*.46).toFixed(3),doorOpeningHeightMeters:+(wallHeight*.7).toFixed(3),
           geometryRoles:Object.freeze(['FOUNDATION','WALL_OPENINGS','STRUCTURAL_JOINTS','DOOR_DEPTH','ROOF_GEOMETRY','INTERIOR_SHELL']),realNative3dMeshRequired:true,geometryGenerated:false}):null},
@@ -592,7 +598,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
     const stableObjectId=objectNamespace+':NATURE:'+kind+':'+tile.x+':'+tile.z;
     const sourceBinding=pickSource(kind==='ROCK'?'PROP':'ENVIRONMENT',kind,tile.x,tile.z);
-    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false,sourceBinding};
+    const surfaceMaterialBinding=pickSource('MATERIAL',tile.surface?.primary||'GRASS_SOIL',tile.x,tile.z);
+    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false,sourceBinding,surfaceMaterialBinding,habitat:tile.ecology?.habitat||null};
     vegetation.push(placement);placedNatureCells.add(at(tile.x,tile.z));
     const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
     group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
