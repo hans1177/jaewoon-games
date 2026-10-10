@@ -241,11 +241,11 @@ namespace JaewoonGames.DaechungRpg
                 if (npc.Id == "scout" && _scoutAccompanying)
                 {
                     // NPC 동행은 별개 네트워크 플레이어를 위조하지 않고 연출만 보조한다.
-                    var destination = _player.Position + new Vector3(-0.9f, 0f, -0.35f);
-                    var at = npc.Actor.Position;
-                    npc.Actor.Position = Vector3.MoveTowards(at, destination, Mathf.Min(dt, 0.05f) * 1.5f);
-                    npc.Actor.FaceRight(destination.x >= at.x);
-                    npc.Actor.Play(Vector3.Distance(at, destination) < 0.07f ? "idle" : "walk", true);
+                    var scoutDestination = _player.Position + new Vector3(-0.9f, 0f, -0.35f);
+                    var scoutPosition = npc.Actor.Position;
+                    npc.Actor.Position = Vector3.MoveTowards(scoutPosition, scoutDestination, Mathf.Min(dt, 0.05f) * 1.5f);
+                    npc.Actor.FaceRight(scoutDestination.x >= scoutPosition.x);
+                    npc.Actor.Play(Vector3.Distance(scoutPosition, scoutDestination) < 0.07f ? "idle" : "walk", true);
                     npc.Actor.Tick(Time.time);
                     continue;
                 }
