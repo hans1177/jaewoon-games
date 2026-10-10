@@ -35,8 +35,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GAME_SEED_LOCAL_MODEL: gemma3:1b
-  OLLAMA_VERSION: '0.33.3'
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
@@ -151,22 +149,14 @@ jobs:
           echo "request_count=$count" >> "$GITHUB_OUTPUT"
           if [ "$reason" = IDLE_24H_AUTONOMOUS_PRODUCTION ]; then echo 'idle_target_count=3' >> "$GITHUB_OUTPUT"; else echo 'idle_target_count=0' >> "$GITHUB_OUTPUT"; fi
 
-      - name: Verified free budget preflight
+      - name: Verified native design budget preflight
         if: steps.finalneed.outputs.model == 'true'
         run: |
-          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=1 --runner-minutes=20 --output=.autonomous/free-budget-telemetry.json
+          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=0 --runner-minutes=10 --output=.autonomous/free-budget-telemetry.json
           node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
-          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
+          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=0'
 
-      - name: Prepare free local GAME_SEED model
-        if: steps.finalneed.outputs.model == 'true'
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: ${{ env.GAME_SEED_LOCAL_MODEL }}
-          version: ${{ env.OLLAMA_VERSION }}
-          pull-model: 'true'
-
-      - name: Compose GAME_SEED from mixed materials
+      - name: Compute GAME_SEED from canonical Vibe design grammar
         if: steps.finalneed.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
