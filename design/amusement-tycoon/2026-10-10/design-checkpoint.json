@@ -539,40 +539,25 @@
         "감정 상태 유도 → 수익 증가 및 시설 업그레이드",
         "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임"
       ]
-    },
-    "local_authoring_parts::9e063a96b3f7bb1d8dae443a95f824bbb2486433fb6c0fc2f9109b025e3521ea:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_roadmap",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "손님의 감정 상태가 긍정적일 때, 놀이기구의 스릴 강도를 증가시키며 테마 장식을 추가하여 만족도를 높인다.",
-        "공원의 수용 능력이 낮아질 경우, 플레이어는 놀이기구 입구 위치와 길의 너비를 재설계하여 효율적인 동선 배치를 구축한다."
-      ],
-      "stateOutputs": [
-        "감정 기반 만족도 엔진에서 손님의 만족도 점수가 80% 이상으로 상승했을 때, 공원의 평판이 +5점 증가하며 수익 재투자 프로세스 시작됨.",
-        "동선 최적화 시스템에서 공원의 수용 능력이 70% 이상 하락할 경우, 놀이기구 입구 위치 및 길의 너비가 자동 조정되어 전체 흐름 개선됨."
-      ],
-      "name": "주요 전략 로드맵",
-      "purpose": "플레이어의 선택에 따라 감정 상태 변화와 공원의 수용 능력/수익성 간 양방향 영향을 실시간으로 반영하는 게임 내 핵심 메커니즘입니다.",
-      "playerChoice": "손님의 감정 상태를 조절하기 위한 놀이기구 배치와 동선 설계 결정, 그리고 이 선택이 공원의 전체 흐름과 수익성에 미치는 즉각적인 결과"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1690598,
-      "lastMs": 79155,
+      "totalMs": 1711598,
+      "lastMs": 21000,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:14:37.411Z"
+      "updatedAt": "2026-10-10T11:14:58.413Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:46:26.756Z",
-  "updatedAt": "2026-10-10T11:14:37.411Z",
+  "updatedAt": "2026-10-10T11:14:58.425Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1862,8 +1847,8 @@
     "f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8": true,
     "aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:14:37.411Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T11:14:58.413Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_NO_PROGRESS MAIN DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
