@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='LOCAL',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -338,10 +338,24 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const seasonKey=String(season).toUpperCase();
   if(!['ANNUAL','SPRING','SUMMER','AUTUMN','WINTER'].includes(seasonKey))
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['SEASON_INVALID']),...noMutation});
-  const eraKey=String(era).toUpperCase(),waterKey=String(waterMode).toUpperCase();
-  const supportedEras=['LOCAL','ANCIENT','MEDIEVAL','MODERN','FUTURE','HYBRID'];
+  const requestedEra=String(era).toUpperCase(),requestedWater=String(waterMode).toUpperCase();
+  const worldWords=String(biome+' '+climate).toUpperCase(),buildingWords=String(buildingStyle).toUpperCase();
+  // 사용자가 옵션을 설정할 필요 없이 승인된 세계관·지리·건축 정보를 읽어 자동 선택한다.
+  const inferredEra=/HYBRID|MIXED|COMPOSITE|복합/.test(buildingWords)?'HYBRID'
+    :/FUTURE|SCI.?FI|CYBER|SPACE|미래/.test(buildingWords)?'FUTURE'
+    :/MODERN|URBAN|CONTEMPORARY|현대/.test(buildingWords)?'MODERN'
+    :/ANCIENT|ROMAN|GREEK|EGYPT|고대/.test(buildingWords)?'ANCIENT'
+    :/MEDIEVAL|CASTLE|FEUDAL|GOTHIC|중세/.test(buildingWords)?'MEDIEVAL':'LOCAL';
+  const inferredWater=/ARCHIPELAGO|군도/.test(worldWords)?'ARCHIPELAGO'
+    :/ISLAND|섬/.test(worldWords)?'ISLAND'
+    :/LAKE|호수/.test(worldWords)?'LAKES'
+    :/COAST|BEACH|SEASHORE|해안/.test(worldWords)?'COASTAL'
+    :/OCEAN|SEA|MARINE|바다|해양/.test(worldWords)?'OCEAN':'AUTO';
+  const eraKey=requestedEra==='AUTO'?inferredEra:requestedEra;
+  const waterKey=requestedWater==='AUTO'?inferredWater:requestedWater;
+  const supportedEras=['AUTO','LOCAL','ANCIENT','MEDIEVAL','MODERN','FUTURE','HYBRID'];
   const supportedWaters=['AUTO','OCEAN','COASTAL','ISLAND','ARCHIPELAGO','LAKES'];
-  if(!supportedEras.includes(eraKey)||!supportedWaters.includes(waterKey)||
+  if(!supportedEras.includes(requestedEra)||!supportedWaters.includes(requestedWater)||
     !eraByZone||typeof eraByZone!=='object'||Array.isArray(eraByZone)||
     Object.entries(eraByZone).some(([key,value])=>!['RESIDENTIAL','COMMERCIAL','WORKSHOP'].includes(key)||!supportedEras.includes(String(value).toUpperCase()))||
     !Array.isArray(ecologyActors)||!Array.isArray(authoredDungeonSites)){
@@ -684,9 +698,10 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
       // 시대·기술 수준은 건축 모델과 문화층에만 적용한다. 전투·기술 해금·경제 단계는 바꾸지 않는다.
       const eraRequest=String(eraByZone[zone]||eraKey).toUpperCase();
+      const localEra=eraRequest==='AUTO'?inferredEra:eraRequest;
       const eras=['ANCIENT','MEDIEVAL','MODERN','FUTURE'];
-      const eraResolved=eraRequest==='HYBRID'
-        ?eras[proceduralCellHash(hash^0xe2a,x,z)%eras.length]:eraRequest;
+      const eraResolved=localEra==='HYBRID'
+        ?eras[proceduralCellHash(hash^0xe2a,x,z)%eras.length]:localEra;
       const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
       const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':
         eraResolved==='ANCIENT'||eraResolved==='MODERN'||eraResolved==='FUTURE'||/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
@@ -701,7 +716,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const wallHeight=+(floorHeight*storeys).toFixed(3);
       const roofRise=roof==='FLAT_ROOF'?0:+(wallHeight*(.24+shapeSeed*.15)).toFixed(3);
       const sourceBinding=pickSource('BUILDING',eraResolved==='LOCAL'?zone:eraResolved+':'+zone,x,z);
-      const baseMaterial=eraResolved==='ANCIENT'?'STONE':eraResolved==='MEDIEVAL'?'TIMBER_STONE':
+      const baseMaterial=eraResolved==='ANCIENT'?'STONE':eraResolved==='MEDIEVAL'?
+        (/GOTHIC|CASTLE/.test(style)?'STONE':'TIMBER_STONE'):
         eraResolved==='MODERN'?'STEEL_GLASS':eraResolved==='FUTURE'?'ENGINEERED_COMPOSITE':
         /GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
       const eraModules=eraResolved==='ANCIENT'?['COLUMN','COURT','STONE_ARCH','ROOF_DRAIN']
@@ -889,9 +905,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const homeAnchor=playerRelevant&&buildings.length?buildings[proceduralCellHash(hash^0xa773,rosterIndex,7)%buildings.length]:null;
     let placements=terrain.filter(tile=>{
       const id=at(tile.x,tile.z),isWater=tile.biome==='WATER';
-      if(blocked.has(id)||occupied.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
+      if(blocked.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
       if(playerRelevant)return !isWater&&roadSet.has(id);
-      if(aquatic!==isWater)return false;
+      if(occupied.has(id)||aquatic!==isWater)return false;
       if(!isWater&&(roadSet.has(id)||sightCells.has(id)))return false;
       if(allowedHabitatSet.size&&!allowedHabitatSet.has(tile.ecology.habitat)&&
          !allowedHabitatSet.has(tile.earthBiome.name)&&!allowedHabitatSet.has(tile.earthBiome.climateClass))return false;
@@ -988,7 +1004,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       actualAiActorSpawns:0,actualMonsterRankChanges:0,actualNpcDungeonsCreated:0,actualRaidsLaunched:0,
       noBossMonsterStatsLootSaveBalanceMutation:true}),
     oceansAndLakes:Object.freeze({algorithm:'FLOOD_FILL_WATER_BODY_SALINITY_COASTAL_BIOME_CLASSIFICATION',
-      requestedWaterMode:waterKey,waterBodies:Object.freeze(waterComponents),
+      requestedWaterMode:requestedWater,selectedWaterMode:waterKey,
+      waterSelectionMode:requestedWater==='AUTO'?'WORLD_GEOGRAPHY_AUTO':'EXPLICIT_APPROVED_DESIGN',
+      waterBodies:Object.freeze(waterComponents),
       oceanCount:waterComponents.filter(row=>row.kind==='OCEAN').length,lakeCount:waterComponents.filter(row=>row.kind==='LAKE').length,
       coastlineCells:terrain.filter(tile=>tile.aquatic?.tidalInfluence).length,
       nativeWaterAndMarineCreatureRuntimeQaRequired:true,actualOceanLakeRenderingVerified:false,
@@ -1003,7 +1021,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       season:seasonKey,seasonalThermal,habitatDistribution:Object.freeze(Object.fromEntries([...habitatCounts].sort(([a],[b])=>a.localeCompare(b)))),
       habitats:Object.freeze(habitatBalance),feedbackAccepted,resourceAndCreatureSpawnAuthority:false,
       originalGameplaySpeciesAndPopulationPreserved:true,realBiologySimulationClaimed:false,nativeVisualsVerified:false}),
-    eraAndCulture:Object.freeze({requestedEra:eraKey,eraByZone:Object.freeze({...eraByZone}),
+    eraAndCulture:Object.freeze({requestedEra,selectedEra:eraKey,eraSelectionMode:requestedEra==='AUTO'?'WORLD_DESIGN_AUTO':'EXPLICIT_APPROVED_DESIGN',eraByZone:Object.freeze({...eraByZone}),
       supportedEras:Object.freeze(supportedEras),usedEras:Object.freeze([...new Set(buildings.map(row=>row.era))].sort()),
       buildingCountByEra:Object.freeze(Object.fromEntries([...new Set(buildings.map(row=>row.era))].sort().map(period=>
         [period,buildings.filter(row=>row.era===period).length]))),
