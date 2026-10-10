@@ -9,13 +9,13 @@ const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runti
 const source=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
 
 test('canonical design runtime dedupes execution without cancelling active work',()=>{
-  assert.match(designRuntime,/group:\s*company-seed-design-runtime/);
+  assert.match(designRuntime,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}/);
   assert.match(designRuntime,/cancel-in-progress:\s*false/);
-  assert.doesNotMatch(designRuntime,/group: company-seed-design-runtime-\$\{\{/);
+  assert.match(designRuntime,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
 });
 
 test('V5 authored identity core is promoted during detailed design, without a new pipeline',()=>{
-  assert.match(designRuntime,/group: company-seed-design-runtime\s+cancel-in-progress: false\s+queue: max/);
+  assert.match(designRuntime,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}\s+cancel-in-progress: false\s+queue: max/);
   assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest/);
   assert.match(designRuntime,/GH_TOKEN: \$\{\{ github\.token \}\}/);
   const persist=designRuntime.indexOf('DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES');
