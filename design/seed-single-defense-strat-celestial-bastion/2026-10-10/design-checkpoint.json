@@ -80,25 +80,53 @@
         "worldChange": "전장 상태 변화 → 다음 단계의 적 경로 예측 및 자원 재배분 결정",
         "nextEvent": "자원 최적화 과정에서 새로운 타워 기술 연구 및 방어선 강화 실행"
       }
+    },
+    "local_authoring_parts::a208d9fc9cf7c598d75da39414bf8e3d0fa90c4d85eaa93f5dc374155a7f2ee6:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "지형 변형",
+          "kind": "MATERIAL",
+          "gameplayEffect": "실시간 전장 상태 변화 및 방어선 재구축"
+        },
+        {
+          "name": "속성 공명",
+          "kind": "MATERIAL",
+          "gameplayEffect": "타워 속성 조합에 따른 효과 증대 및 방어력 강화"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "타워 디펜스",
+          "gameplayEffect": "전략적 지형 변형과 속성 조합의 융합"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "플레이어 역할",
+          "gameplayEffect": "창의적인 선택이 전장 상황을 뒤바꾸는 과정"
+        }
+      ],
+      "cGenreInterlock": "지형 변형 시스템과 속성 공명 시스템의 상호작용으로 인해 플레이어가 창의적으로 전장 상황을 재구축하는 구조를 형성함.",
+      "cWorldAndGameplayEffect": "실시간 지형 변형과 타워 속성 조합은 방어 선 배치와 자원 최적화 과정에서 즉각적인 파괴 피드백을 제공하여 전술적 깊이를 생성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 844765,
-      "lastMs": 116954,
+      "totalMs": 956574,
+      "lastMs": 111809,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:53:45.095Z"
+      "updatedAt": "2026-10-10T10:55:36.913Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:39:40.109Z",
-  "updatedAt": "2026-10-10T10:53:45.096Z",
+  "updatedAt": "2026-10-10T10:55:36.913Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1378,7 +1406,7 @@
     "904b3f79eed8cdc9acf0c32d55b775cf24d52fd500e6d26e228e70023646d3ad": true,
     "984900b356f2235204f37c319f6ce94857e44c9cff57a62d872b45dc180711da": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:53:45.096Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:55:36.913Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
