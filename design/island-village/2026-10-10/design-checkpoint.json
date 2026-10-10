@@ -3,431 +3,31 @@
   "gameId": "island-village",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
-  "fingerprint": "02ff353bcdae69d628647bc006d7bd3f971f38c0e456d6de5cc9a9e8c150d336",
+  "fingerprint": "9b641bd031831b4f52cebddbd2bbeee2526440b6faf5a1744f0962ab491d5909",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::0500e9c6174352337f4fc7f50e094d136a443b1095ea651ae228c6b5bdaee829:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Gather a focused set of island resources.",
-        "a": {
-          "system": "Resource Management",
-          "material": "Island Resources",
-          "materialDomain": "Economy",
-          "stateChange": "Resources collected and stored in village storage system"
-        },
-        "b": {
-          "system": "Village Construction",
-          "material": "Building Materials",
-          "materialDomain": "Engineering",
-          "stateChange": "Build new structures or improve existing ones"
-        },
-        "abCausality": "Resource collection → structure building → improved village function",
-        "abEvolution": {
-          "aChangesB": "Increase resource quantity",
-          "bChangesA": "Enhance construction quality",
-          "lateGameChange": "Introduce dynamic resource distribution system"
-        },
-        "materialFusion": {
-          "contrast": "Resource management vs. architectural design",
-          "causalBridge": "Collecting resources enables structural development",
-          "removalConsequence": "Loss of resource access leads to reduced construction capabilities"
-        },
-        "storyCausalChain": {
-          "cause": "Player collects resources",
-          "characterConflict": "Village needs expansion",
-          "playerChoice": "Select new building material or method",
-          "worldChange": "New structures added, village grows",
-          "nextEvent": "Player decides on next goal"
-        },
-        "cThemes": [
-          {
-            "name": "Material Innovation",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Improved construction efficiency"
-          },
-          {
-            "name": "Economic Growth",
-            "kind": "GENRE",
-            "gameplayEffect": "Increased resource availability"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Resource Management",
-            "gameplayEffect": "Enables construction and improvement"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Architectural Design",
-            "gameplayEffect": "Improves structure functionality"
-          }
-        ],
-        "cGenreInterlock": "Resource management supports architectural design; architectural design enhances resource utilization.",
-        "cWorldAndGameplayEffect": "Resources enable construction, construction improves village function.",
-        "delveDiscoveries": [
-          {
-            "clue": "Player discovers new materials",
-            "discovery": "Enhances construction quality",
-            "newChoice": "Use advanced materials for buildings"
-          },
-          {
-            "clue": "Player learns about economic distribution",
-            "discovery": "Increases resource access",
-            "newChoice": "Optimize resource allocation"
-          },
-          {
-            "clue": "Player finds a new building technique",
-            "discovery": "Improves structural durability",
-            "newChoice": "Implement innovative construction methods"
-          },
-          {
-            "clue": "Player unlocks a new area of the island",
-            "discovery": "Expands village territory",
-            "newChoice": "Select new region to build in"
-          }
-        ],
-        "delveGrowthRule": "Discovery leads to choice, choice leads to growth, growth leads to deeper exploration.",
-        "finalGameIdentity": "Village Growth through Resource Management and Architectural Innovation."
-      },
-      "playerFantasy": "Player becomes a master builder and strategist, shaping the island with every resource they collect. They decide which structures to build, how to improve the village, and where to expand next. Each decision impacts the world around them, creating a dynamic and evolving landscape.",
-      "coreFun": "Collect resources → Build structures → Improve village function → Unlock new goals → Continue growing the community. This process is repeated until all possible outcomes are explored. The player gains mastery over their environment while facing challenges that test their strategic thinking and adaptability. Every action has immediate consequences, and each choice affects future possibilities. The game encourages deep engagement through discovery, learning, and progression across multiple levels of complexity and difficulty.', "
-    },
-    "local_authoring_parts::6d65c7225a72ae8daea5396fc31f6a576f9127e7b2550d8cd2059db576027fab:coreLoop": {
-      "coreLoop": [
-        "Input: Player collects island resources",
-        "State Change: Resources are gathered and stored in the village storage system",
-        "Reward: Improved construction efficiency",
-        "Risk: Limited resource access leads to reduced building capabilities",
-        "Next Choice: Select new building material or method"
-      ]
-    },
-    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Player collects island resources"
-      ],
-      "stateOutputs": [
-        "Resources are gathered and stored in the village storage system"
-      ],
-      "name": "Resource Management System",
-      "purpose": "Enables construction and improvement of the village through resource collection and structural development.",
-      "playerChoice": "Select new building material or method for optimal construction quality and efficiency."
-    },
-    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "Player discovers new materials"
-      ],
-      "stateOutputs": [
-        "Enhances construction quality"
-      ],
-      "name": "Material Innovation System",
-      "purpose": "Enables strategic resource utilization and structural development through innovation.",
-      "playerChoice": "Select advanced building materials or methods to optimize construction efficiency and durability."
-    },
-    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "Player discovers new materials"
-      ],
-      "stateOutputs": [
-        "Enhances construction quality"
-      ],
-      "name": "Material Innovation System",
-      "purpose": "Enables structural development through material innovation",
-      "playerChoice": "Select new building material or method"
-    },
-    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:3": {
-      "id": "signatureSystems[3]",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "Player discovers new materials"
-      ],
-      "stateOutputs": [
-        "Enhances construction quality"
-      ],
-      "name": "Material Innovation Expansion System",
-      "purpose": "Enables further development of architectural design through the introduction of new building materials and techniques.",
-      "playerChoice": "Implement innovative construction methods or optimize resource allocation based on discovered materials and their properties."
-    },
-    "local_authoring_parts::6d65c7225a72ae8daea5396fc31f6a576f9127e7b2550d8cd2059db576027fab:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "Player collects island resources"
-          ],
-          "stateOutputs": [
-            "Resources are gathered and stored in the village storage system"
-          ],
-          "name": "Resource Management System",
-          "purpose": "Enables construction and improvement of the village through resource collection and structural development.",
-          "playerChoice": "Select new building material or method for optimal construction quality and efficiency."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables strategic resource utilization and structural development through innovation.",
-          "playerChoice": "Select advanced building materials or methods to optimize construction efficiency and durability."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables structural development through material innovation",
-          "playerChoice": "Select new building material or method"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation Expansion System",
-          "purpose": "Enables further development of architectural design through the introduction of new building materials and techniques.",
-          "playerChoice": "Implement innovative construction methods or optimize resource allocation based on discovered materials and their properties."
-        }
-      ]
-    },
-    "local_authoring_parts::6b1507a9f1e0ff321b1cd049f6f607d43d35ff37129accf87c88a574926d7b8a:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "Input: Player collects island resources",
-        "State Change: Resources are gathered and stored in the village storage system",
-        "Reward: Improved construction efficiency",
-        "Risk: Limited resource access leads to reduced building capabilities",
-        "Next Choice: Select new building material or method"
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "Player collects island resources"
-          ],
-          "stateOutputs": [
-            "Resources are gathered and stored in the village storage system"
-          ],
-          "name": "Resource Management System",
-          "purpose": "Enables construction and improvement of the village through resource collection and structural development.",
-          "playerChoice": "Select new building material or method for optimal construction quality and efficiency."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables strategic resource utilization and structural development through innovation.",
-          "playerChoice": "Select advanced building materials or methods to optimize construction efficiency and durability."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables structural development through material innovation",
-          "playerChoice": "Select new building material or method"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation Expansion System",
-          "purpose": "Enables further development of architectural design through the introduction of new building materials and techniques.",
-          "playerChoice": "Implement innovative construction methods or optimize resource allocation based on discovered materials and their properties."
-        }
-      ]
-    },
-    "local_authoring_parts::6b1507a9f1e0ff321b1cd049f6f607d43d35ff37129accf87c88a574926d7b8a:multiplayerMode": {
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::0500e9c6174352337f4fc7f50e094d136a443b1095ea651ae228c6b5bdaee829:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "Input: Player collects island resources",
-        "State Change: Resources are gathered and stored in the village storage system",
-        "Reward: Improved construction efficiency",
-        "Risk: Limited resource access leads to reduced building capabilities",
-        "Next Choice: Select new building material or method"
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "Player collects island resources"
-          ],
-          "stateOutputs": [
-            "Resources are gathered and stored in the village storage system"
-          ],
-          "name": "Resource Management System",
-          "purpose": "Enables construction and improvement of the village through resource collection and structural development.",
-          "playerChoice": "Select new building material or method for optimal construction quality and efficiency."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables strategic resource utilization and structural development through innovation.",
-          "playerChoice": "Select advanced building materials or methods to optimize construction efficiency and durability."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation System",
-          "purpose": "Enables structural development through material innovation",
-          "playerChoice": "Select new building material or method"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "Player discovers new materials"
-          ],
-          "stateOutputs": [
-            "Enhances construction quality"
-          ],
-          "name": "Material Innovation Expansion System",
-          "purpose": "Enables further development of architectural design through the introduction of new building materials and techniques.",
-          "playerChoice": "Implement innovative construction methods or optimize resource allocation based on discovered materials and their properties."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Resources collected and stored in village storage system"
-      ],
-      "stateOutputs": [
-        "Select new building material or method"
-      ],
-      "name": "Gather a focused set of island resources",
-      "purpose": "Enable construction and improvement",
-      "playerChoice": "Select new building material or method','gameplayEffect':'Improved construction efficiency','riskFactor':'Limited resource access leads to reduced building capabilities','rewardFactor':'Increased resource availability','nextEvent':'Player decides on next goal','coreFun':'Collect resources → Build structures → Improve village function → Unlock new goals → Continue growing the community'}<tool_call> ملحوظة: هذا الإجابة تُعرض فقط عنصر واحد"
-    },
-    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "Resources collected and stored in village storage system"
-      ],
-      "stateOutputs": [
-        "Select new building material or method"
-      ],
-      "name": "Gather a focused set of island resources",
-      "purpose": "To collect and store essential resources for future construction and improvement",
-      "playerChoice": "Choose specific island resources to focus on for the current turn"
-    },
-    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "Resources collected and stored in village storage system"
-      ],
-      "stateOutputs": [
-        "Select new building material or method"
-      ],
-      "name": "Gather a focused set of island resources",
-      "purpose": "Enable structural development through resource collection",
-      "playerChoice": "Select new building material or method"
-    },
-    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:3": {
-      "id": "signatureSystems[3]",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "Resources collected and stored in village storage system"
-      ],
-      "stateOutputs": [
-        "Select new building material or method"
-      ],
-      "name": "Delve into Resource Management and Architectural Innovation",
-      "purpose": "Player discovers new materials, learns about economic distribution, finds new building techniques, unlocks new areas of the island, and selects new regions to build in.",
-      "playerChoice": "Select new building material or method based on discovered resources and learned strategies for optimal construction efficiency and improved village function."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1242498,
-      "lastMs": 100500,
-      "lastError": null,
-      "updatedAt": "2026-10-10T02:05:12.133Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T02:05:12.139Z",
+  "createdAt": "2026-10-10T06:45:01.194Z",
+  "updatedAt": "2026-10-10T06:45:01.220Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -450,6 +50,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -515,6 +116,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -863,25 +465,29 @@
           },
           {
             "family": "MATERIAL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-material-ice",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "ice"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -901,14 +507,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -939,8 +544,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -963,6 +568,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1028,6 +634,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1376,25 +983,29 @@
           },
           {
             "family": "MATERIAL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-material-ice",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "ice"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1414,14 +1025,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1452,8 +1062,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1476,6 +1086,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1541,6 +1152,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1889,25 +1501,29 @@
           },
           {
             "family": "MATERIAL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "MOTION",
             "action": "USE",
-            "assetId": "roblox-common-motion-gather-swing",
+            "assetId": "roblox-common-material-ice",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "gather"
+                "ice"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1927,14 +1543,13 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1966,17 +1581,38 @@
       }
     },
     "assetFacts": {
-      "roblox-common-motion-gather-swing": {
-        "family": "MOTION",
+      "roblox-common-material-ice": {
+        "family": "MATERIAL",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "gather"
+            "ice"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "GATHER_SWING",
+        "role": "ICE",
+        "sourcePath": "/assets/roblox/common-materials-v1/RobloxCommonMaterials.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 916.3,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
         "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1987,18 +1623,17 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-item-context-menu": {
+      "roblox-common-ui-character-detail-screen": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "use",
-            "lock"
+            "progress"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "ITEM_CONTEXT_MENU",
+        "role": "CHARACTER_DETAIL_SCREEN",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -2010,147 +1645,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-        "kind": "HARD_GATE",
-        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "aToB": false,
-          "bToA": false,
-          "unconnected": [
-            "A",
-            "B",
-            "DELVE"
-          ],
-          "ruleIds": [
-            "signatureSystems[0]",
-            "signatureSystems[1]",
-            "signatureSystems[2]",
-            "signatureSystems[3]"
-          ]
-        },
-        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Gather a focused set of island resources.",
-        "a": {
-          "system": "Resource Management",
-          "material": "Island Resources",
-          "materialDomain": "Economy",
-          "stateChange": "Resources collected and stored in village storage system"
-        },
-        "b": {
-          "system": "Village Construction",
-          "material": "Building Materials",
-          "materialDomain": "Engineering",
-          "stateChange": "Build new structures or improve existing ones"
-        },
-        "abCausality": "Resource collection → structure building → improved village function",
-        "abEvolution": {
-          "aChangesB": "Increase resource quantity",
-          "bChangesA": "Enhance construction quality",
-          "lateGameChange": "Introduce dynamic resource distribution system"
-        },
-        "materialFusion": {
-          "contrast": "Resource management vs. architectural design",
-          "causalBridge": "Collecting resources enables structural development",
-          "removalConsequence": "Loss of resource access leads to reduced construction capabilities"
-        },
-        "storyCausalChain": {
-          "cause": "Player collects resources",
-          "characterConflict": "Village needs expansion",
-          "playerChoice": "Select new building material or method",
-          "worldChange": "New structures added, village grows",
-          "nextEvent": "Player decides on next goal"
-        },
-        "cThemes": [
-          {
-            "name": "Material Innovation",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Improved construction efficiency"
-          },
-          {
-            "name": "Economic Growth",
-            "kind": "GENRE",
-            "gameplayEffect": "Increased resource availability"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Resource Management",
-            "gameplayEffect": "Enables construction and improvement"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Architectural Design",
-            "gameplayEffect": "Improves structure functionality"
-          }
-        ],
-        "cGenreInterlock": "Resource management supports architectural design; architectural design enhances resource utilization.",
-        "cWorldAndGameplayEffect": "Resources enable construction, construction improves village function.",
-        "delveDiscoveries": [
-          {
-            "clue": "Player discovers new materials",
-            "discovery": "Enhances construction quality",
-            "newChoice": "Use advanced materials for buildings"
-          },
-          {
-            "clue": "Player learns about economic distribution",
-            "discovery": "Increases resource access",
-            "newChoice": "Optimize resource allocation"
-          },
-          {
-            "clue": "Player finds a new building technique",
-            "discovery": "Improves structural durability",
-            "newChoice": "Implement innovative construction methods"
-          },
-          {
-            "clue": "Player unlocks a new area of the island",
-            "discovery": "Expands village territory",
-            "newChoice": "Select new region to build in"
-          }
-        ],
-        "delveGrowthRule": "Discovery leads to choice, choice leads to growth, growth leads to deeper exploration.",
-        "finalGameIdentity": "Village Growth through Resource Management and Architectural Innovation."
-      },
-      "playerFantasy": "Player becomes a master builder and strategist, shaping the island with every resource they collect. They decide which structures to build, how to improve the village, and where to expand next. Each decision impacts the world around them, creating a dynamic and evolving landscape.",
-      "coreFun": "Collect resources → Build structures → Improve village function → Unlock new goals → Continue growing the community. This process is repeated until all possible outcomes are explored. The player gains mastery over their environment while facing challenges that test their strategic thinking and adaptability. Every action has immediate consequences, and each choice affects future possibilities. The game encourages deep engagement through discovery, learning, and progression across multiple levels of complexity and difficulty.', ",
-      "coreLoop": [
-        "Input: Player collects island resources",
-        "State Change: Resources are gathered and stored in the village storage system",
-        "Reward: Improved construction efficiency",
-        "Risk: Limited resource access leads to reduced building capabilities",
-        "Next Choice: Select new building material or method"
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:05:12.134Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  }
 }
