@@ -24,6 +24,32 @@ const baseItem=gameId=>({
   currentStep:'TARGET_PLATFORM_SOURCE_BIND',
 });
 
+const withNativeSystemAndPrecisionEvidence=(evidence,id,sourceTree)=>({
+  ...evidence,nativeSystemAuditRequired:true,precisionQaRequired:true,
+  nativeSystemAuditSourceTreeSha256:sourceTree,
+  criteria:{...evidence.criteria,
+    nativeSystems:{pass:true},precisionQa:{pass:true}},
+  nativeSystemAudit:{
+    gameId:id,platform:'UNITY_WEB',pass:true,
+    staticCoverageComplete:true,runtimeValid:true,
+    status:'SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED',
+    inputEntrypointCount:1,
+    roles:[{
+      systemId:'RULE_A',role:'MAIN',staticComplete:true,runtimeComplete:true,
+      reachableOutputWriters:[{key:'GameState',runtimeObserved:true,writers:[
+        {file:'unity-games/'+id+'/Assets/Scripts/Game.cs',symbol:'Act',line:12}
+      ]}]
+    }],
+    edges:[]
+  },
+  precisionQa:{
+    gameId:id,platform:'UNITY_WEB',pass:true,
+    status:'VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS',
+    checks:['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({stage,pass:true}))
+  }
+});
+
+
 test('Unity Web C# code audit verifies two different authored systems through real input, state def-use, feedback and 3-run state transitions',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-native-system-audit-'));
   const id='native-systems';
@@ -366,9 +392,13 @@ test('Unity Web required growth gate fails closed without main source-bound runt
     };
     write(root,evidence,record);
     result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
+    assert.equal(result.web.reason,'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED');
+    const complete=withNativeSystemAndPrecisionEvidence(record,gameId,sourceTree);
+    write(root,evidence,complete);
+    result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
     assert.equal(result.web.state,'UNITY_WEB_VERIFIED');
-    record.buildUpGrowth.previousSourceTreeSha256=sourceTree;
-    write(root,evidence,record);
+    complete.buildUpGrowth.previousSourceTreeSha256=sourceTree;
+    write(root,evidence,complete);
     result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
     assert.equal(result.web.reason,'READINESS_BUILD_UP_GROWTH_EVIDENCE_REQUIRED');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -386,13 +416,13 @@ test('new upper-platform entry stays in Unity Web floor until readiness exists',
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('seven-domain pass with exact current Unity source opens Roblox and Unity upper platforms',()=>{
+test('seven-domain pass only opens Unity Web after exact native C# system and precision evidence',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-ready-'));
   try{
     write(root,'unity-games/new-game/Assets/Scripts/Game.cs','public class Game {}');
     write(root,'unity-games/new-game/Assets/Editor/WebBuild.cs',`namespace Demo { public static class WebBuild { public static void BuildWeb(){} } }`);
     const tree=unitySourceTreeSha256(path.join(root,'unity-games/new-game'));
-    write(root,'web-games/new-game/upper-platform-development-readiness.json',{
+    const readiness={
       version:1,gameId:'new-game',state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
       unitySourceTreeSha256:tree,releaseOrDeploymentAuthority:false,
       criteria:{
@@ -405,8 +435,13 @@ test('seven-domain pass with exact current Unity source opens Roblox and Unity u
         ]},webglBuild:{pass:true},
         actualPlay:{pass:true},qa:{pass:true},portability:{pass:true}
       }
-    });
-    const result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    };
+    const file='web-games/new-game/upper-platform-development-readiness.json';
+    write(root,file,readiness);
+    let result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
+    assert.equal(result.web.reason,'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED');
+    write(root,file,withNativeSystemAndPrecisionEvidence(readiness,'new-game',tree));
+    result=classifyUpperPlatformAdmission(baseItem('new-game'),{repoRoot:root});
     assert.equal(result.state,'UPPER_PLATFORM');
     assert.equal(result.reason,'MINIMUM_DESIGN_READY');
     assert.equal(result.grandfathered,false);
