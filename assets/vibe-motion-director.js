@@ -963,6 +963,140 @@ export function createDuelCombatMotionLoadout({
   });
 }
 
+
+// 공용 캐릭터 계층: 역할-전문직-상위직이 같은 모션/스킬 연출 부품을 상속한다.
+// 전직 조건, 능력치, 판정, 체력, 보상, 저장, 쿨다운은 각 게임의 책임이다.
+export const COMMON_CLASS_ACTION_MODULES=Object.freeze({
+  BLADE:{stance:['SWORD_READY'],move:['SWORD_STEP','SWORD_STRAFE'],attack:['SWORD_SLASH_R','SWORD_SLASH_L','SWORD_THRUST'],defense:['SWORD_PARRY'],skill:['BLADE_ARC'],interaction:['DRAW_SWORD','SHEATHE_SWORD'],vfx:['BLADE_TRAIL']},
+  IAI:{stance:['IAI_SHEATH_READY'],move:['IAI_DRAW_STEP'],attack:['IAI_DRAW_SLASH','IAI_REVERSE_CUT'],defense:['IAI_COUNTER_PARRY'],skill:['IAI_FOCUS_BURST'],interaction:['SHEATHE_CLEAN'],vfx:['IAI_SLASH_TRAIL']},
+  KENSEI:{stance:['KENSEI_BREATH'],move:['KENSEI_FLOW_STEP'],attack:['KENSEI_CROSS_CUT'],defense:['KENSEI_DEFLECT'],skill:['KENSEI_FINAL_DRAW'],vfx:['KENSEI_ARC']},
+  SHIELD:{stance:['SHIELD_READY'],move:['SHIELD_BRACE_STEP'],attack:['SHIELD_BASH'],defense:['HIGH_GUARD','LOW_GUARD'],skill:['GUARD_PULSE'],interaction:['EQUIP_SHIELD'],vfx:['GUARD_IMPACT']},
+  DUEL:{stance:['DUEL_SIDE_STANCE'],move:['DUEL_CIRCLE'],attack:['DUEL_THRUST','DUEL_RIPOSTE'],defense:['DUEL_EVADE'],skill:['DUEL_FINISHER'],vfx:['RIPOSTE_SPARK']},
+  BRUISER:{stance:['BRAWLER_GUARD'],move:['HEAVY_STEP'],attack:['HOOK','UPPERCUT','KNEE'],defense:['BODY_BLOCK'],skill:['GROUND_IMPACT'],vfx:['FIST_IMPACT']},
+  RAGE:{stance:['RAGE_THREAT'],attack:['RAGE_SMASH','RAGE_SWEEP'],skill:['BERSERK_ROAR'],vfx:['RAGE_AURA']},
+  MARTIAL:{stance:['MARTIAL_READY'],move:['MARTIAL_PIVOT'],attack:['PALM_STRIKE','FRONT_KICK'],defense:['HAND_DEFLECT'],skill:['MARTIAL_COMBO'],vfx:['PALM_WAVE']},
+  SPEAR:{stance:['SPEAR_READY'],move:['SPEAR_PIVOT'],attack:['SPEAR_LUNGE','SPEAR_SWEEP'],defense:['SPEAR_DEFLECT'],skill:['SPEAR_DRIVE'],vfx:['SPEAR_TIP_TRAIL']},
+  DRAGOON:{move:['DRAGOON_LEAP'],attack:['DRAGOON_FALLING_THRUST'],skill:['DRAGOON_DIVE'],vfx:['LANDING_RIPPLE']},
+  BOW:{stance:['BOW_READY'],move:['BOW_STRAFE'],attack:['BOW_DRAW','BOW_RELEASE'],defense:['ARCHER_DODGE'],skill:['BOW_POWER_SHOT'],interaction:['QUIVER_REACH'],vfx:['ARROW_TRAIL']},
+  GUN:{stance:['GUN_READY'],move:['GUN_STRAFE'],attack:['GUN_AIM','GUN_SHOOT','GUN_RELOAD'],defense:['GUN_DODGE'],skill:['PRECISION_SHOT'],vfx:['MUZZLE_FLASH']},
+  STEALTH:{stance:['STEALTH_CROUCH'],move:['STEALTH_STEP','STEALTH_ROLL'],attack:['DAGGER_STRIKE','ROGUE_BACKSTAB'],defense:['SIDE_EVADE'],skill:['SHADOW_STEP'],interaction:['PICK_LOCK'],vfx:['SHADOW_TRAIL']},
+  NINJA:{move:['NINJA_WALL_STEP'],attack:['NINJA_SPIN_STRIKE'],skill:['NINJA_SMOKE_ESCAPE'],vfx:['SMOKE_BURST']},
+  ELEMENT:{stance:['SPELL_READY'],move:['CASTER_STRAFE'],attack:['STAFF_STRIKE'],defense:['SPELL_WARD'],skill:['ELEMENT_CHANNEL','ELEMENT_RELEASE'],vfx:['ELEMENT_CHARGE','ELEMENT_BURST']},
+  SUMMON:{stance:['SUMMON_FOCUS'],skill:['SUMMON_INVOCATION','SUMMON_RELEASE'],interaction:['SUMMON_COMMAND'],vfx:['SUMMON_CIRCLE']},
+  CURSE:{stance:['CURSE_WHISPER'],skill:['CURSE_CHANNEL','CURSE_RELEASE'],vfx:['CURSE_SIGIL']},
+  HEAL:{stance:['HEAL_READY'],skill:['HEAL_RITUAL','REVIVE_GESTURE'],interaction:['TEND_WOUND'],vfx:['HEAL_RUNE']},
+  BARD:{stance:['PERFORM_READY'],skill:['BARD_CHANT'],interaction:['PLAY_INSTRUMENT','BOW_TO_CROWD'],vfx:['RHYTHM_NOTES']},
+  MACHINE:{stance:['TOOL_READY'],move:['ENGINEER_CARRY'],attack:['TOOL_SWING'],skill:['DEPLOY_DEVICE'],interaction:['REPAIR_MACHINE','OPERATE_CONSOLE'],vfx:['DEVICE_SPARK']},
+  VEHICLE:{stance:['DRIVER_READY'],move:['MOUNT_VEHICLE'],skill:['VEHICLE_CONTROL_GESTURE'],interaction:['STEER','BRAKE_GESTURE','DISMOUNT_VEHICLE'],vfx:['DUST_TRAIL']},
+  CRAFT:{stance:['CRAFT_IDLE'],interaction:['HAMMER_FORGE','CRAFT_ASSEMBLE','POLISH','INSPECT_ITEM'],skill:['CRAFT_FOCUS'],vfx:['FORGE_SPARK']},
+  ALCHEMY:{stance:['ALCHEMY_READY'],interaction:['MIX_POTION','POUR_FLASK'],skill:['ALCHEMY_MIX'],vfx:['BUBBLE_EFFECT']},
+  COOK:{interaction:['CHOP_FOOD','STIR_POT','PLATE_FOOD'],skill:['CHEF_PRESENTATION'],vfx:['COOK_STEAM']},
+  HUNT:{stance:['TRACKER_ALERT'],move:['TRACKER_STALK'],attack:['HUNTING_STRIKE'],skill:['TRACKING_FOCUS'],interaction:['READ_TRACKS','HARVEST_PREY'],vfx:['TRACK_HIGHLIGHT']},
+  TRAP:{stance:['TRAPPER_KNEEL'],skill:['TRAP_DEPLOY_GESTURE'],interaction:['SET_TRAP','INSPECT_TRAP'],vfx:['TRAP_MARK']},
+  BEAST:{stance:['TAMER_CALM'],skill:['BEAST_COMMAND_GESTURE'],interaction:['PET_COMPANION','FEED_COMPANION'],vfx:['BOND_PULSE']},
+  BUILD:{stance:['BUILD_READY'],move:['CARRY_MATERIAL'],interaction:['PLACE_FRAME','HAMMER_BUILD','INSPECT_PLAN','REPAIR_STRUCTURE'],skill:['CONSTRUCTION_FOCUS'],vfx:['BUILD_DUST']},
+  CARPENTRY:{interaction:['SAW_PLANK','PLANE_WOOD','JOIN_WOOD'],skill:['CARPENTER_FINISH'],vfx:['WOOD_SHAVINGS']},
+  FARM:{stance:['FARM_REST'],move:['CARRY_HARVEST'],interaction:['SOW','WATER','HARVEST','TILL_SOIL'],skill:['FARMING_FOCUS'],vfx:['SOIL_PARTICLES']},
+  HERD:{stance:['HERDER_READY'],skill:['HERD_CALL'],interaction:['FEED_LIVESTOCK','BRUSH_ANIMAL'],vfx:['HERD_PULSE']},
+  HERBAL:{stance:['HERBALIST_SEARCH'],interaction:['PICK_HERBS','SORT_HERBS','DRY_HERBS'],skill:['BOTANICAL_FOCUS'],vfx:['LEAF_PARTICLES']},
+  TRADE:{stance:['MERCHANT_WELCOME'],interaction:['HANDOVER_ITEM','COUNT_COINS','DISPLAY_GOODS'],skill:['BARGAIN_GESTURE'],vfx:['TRADE_GLEAM']},
+  DIPLOMACY:{stance:['DIPLOMAT_READY'],interaction:['GREET_FORMAL','NEGOTIATE_GESTURE','SIGN_AGREEMENT'],skill:['DIPLOMACY_ADDRESS'],vfx:['SPEECH_ACCENT']},
+  SCHOLAR:{stance:['SCHOLAR_IDLE'],interaction:['READ_BOOK','WRITE_NOTES','INSPECT_ARTIFACT'],skill:['ANALYSIS_FOCUS'],vfx:['KNOWLEDGE_GLYPH']},
+  COMMAND:{stance:['COMMANDER_READY'],move:['MARCH'],skill:['RALLY_COMMAND'],interaction:['POINT_DIRECTION','SALUTE'],vfx:['COMMAND_SIGNAL']},
+  TACTICS:{stance:['TACTICIAN_OBSERVE'],interaction:['MARK_MAP','ISSUE_ORDER'],skill:['FORMATION_SIGNAL'],vfx:['TACTIC_MARK']},
+  RULER:{stance:['ROYAL_PRESENCE'],interaction:['PUBLIC_ADDRESS','CEREMONY_GESTURE'],skill:['LEADERSHIP_PRESENCE'],vfx:['ROYAL_EMBLEM']},
+  SAIL:{stance:['DECK_BALANCE'],move:['SHIP_ROLL_STEP'],interaction:['PULL_ROPE','RAISE_SAIL','USE_COMPASS'],skill:['NAVIGATION_SIGNAL'],vfx:['WIND_TRAIL']},
+  FISH:{stance:['FISHERMAN_READY'],interaction:['FISH_CAST','REEL_IN','NET_THROW'],skill:['FISHING_FOCUS'],vfx:['WATER_SPLASH']},
+  PIRATE:{stance:['PIRATE_READY'],attack:['CUTLASS_SLASH'],skill:['BOARDING_SHOUT'],interaction:['BOARD_SHIP'],vfx:['BOARDING_DUST']}
+});
+
+// 동일한 직업을 액션RPG·생존·경영·농장·전략 등에서 재사용하며,
+// 장르별 차이는 표현 강조점만 바꾼다. 직업명만 늘리는 구조가 아니다.
+export const COMMON_CLASS_FAMILY_TREES=Object.freeze({
+  SWORD:{base:'SWORD_TRAINEE',modules:['BLADE'],weapon:'ONE_HAND_SWORD',paths:{SAMURAI:{classes:['SWORD_TRAINEE','SAMURAI','KENSEI'],modules:['IAI','KENSEI'],weapon:'KATANA'},KNIGHT:{classes:['SWORD_TRAINEE','KNIGHT','ROYAL_GUARD'],modules:['SHIELD','COMMAND']},DUELIST:{classes:['SWORD_TRAINEE','DUELIST','BLADE_MASTER'],modules:['DUEL','KENSEI']}}},
+  FIGHTER:{base:'FIGHTER_TRAINEE',modules:['BRUISER'],weapon:'UNARMED',paths:{BERSERKER:{classes:['FIGHTER_TRAINEE','BERSERKER','WARLORD'],modules:['RAGE','COMMAND']},MARTIAL_ARTIST:{classes:['FIGHTER_TRAINEE','MARTIAL_ARTIST','GRANDMASTER'],modules:['MARTIAL','KENSEI']},GUARDIAN:{classes:['FIGHTER_TRAINEE','GUARDIAN','FORTRESS_GUARD'],modules:['SHIELD','COMMAND']}}},
+  POLEARM:{base:'SPEAR_TRAINEE',modules:['SPEAR'],weapon:'SPEAR',paths:{LANCER:{classes:['SPEAR_TRAINEE','LANCER','PIKE_MASTER'],modules:['DRAGOON','TACTICS']},DRAGOON:{classes:['SPEAR_TRAINEE','DRAGOON','SKY_LANCER'],modules:['DRAGOON','KENSEI']}}},
+  RANGED:{base:'RANGED_TRAINEE',modules:['BOW'],weapon:'BOW',paths:{ARCHER:{classes:['RANGED_TRAINEE','ARCHER','MARKSMAN'],modules:['HUNT','TACTICS']},GUNSLINGER:{classes:['RANGED_TRAINEE','GUNSLINGER','GUNMASTER'],modules:['GUN','TACTICS'],weapon:'FIREARM'},HUNTER:{classes:['RANGED_TRAINEE','HUNTER','BEAST_RANGER'],modules:['HUNT','BEAST']}}},
+  ROGUE:{base:'ROGUE_TRAINEE',modules:['STEALTH'],weapon:'DAGGER',paths:{ASSASSIN:{classes:['ROGUE_TRAINEE','ASSASSIN','SHADOW_MASTER'],modules:['NINJA','KENSEI']},NINJA:{classes:['ROGUE_TRAINEE','NINJA','SHINOBI_MASTER'],modules:['NINJA','IAI']},SCOUT:{classes:['ROGUE_TRAINEE','SCOUT','INFILTRATOR'],modules:['HUNT','TACTICS']}}},
+  MAGIC:{base:'MAGIC_APPRENTICE',modules:['ELEMENT'],weapon:'STAFF_OR_WAND',paths:{ELEMENTALIST:{classes:['MAGIC_APPRENTICE','ELEMENTALIST','ARCHMAGE'],modules:['ELEMENT','KENSEI']},SUMMONER:{classes:['MAGIC_APPRENTICE','SUMMONER','GRAND_SUMMONER'],modules:['SUMMON','BEAST']},NECROMANCER:{classes:['MAGIC_APPRENTICE','NECROMANCER','SOUL_WEAVER'],modules:['CURSE','SUMMON']}}},
+  SUPPORT:{base:'SUPPORT_APPRENTICE',modules:['HEAL'],weapon:'STAFF_OR_WAND',paths:{CLERIC:{classes:['SUPPORT_APPRENTICE','CLERIC','SAINT'],modules:['HEAL','BARD']},PALADIN:{classes:['SUPPORT_APPRENTICE','PALADIN','HOLY_GUARDIAN'],modules:['SHIELD','BLADE'],weapon:'ONE_HAND_SWORD'},BARD:{classes:['SUPPORT_APPRENTICE','BARD','MAESTRO'],modules:['BARD','DIPLOMACY']}}},
+  TECHNOLOGY:{base:'TECH_TRAINEE',modules:['MACHINE'],paths:{MECHANIC:{classes:['TECH_TRAINEE','MECHANIC','MASTER_ENGINEER'],modules:['CRAFT','BUILD']},GADGETEER:{classes:['TECH_TRAINEE','GADGETEER','DEVICE_MASTER'],modules:['TRAP','ALCHEMY']},PILOT:{classes:['TECH_TRAINEE','PILOT','ACE_PILOT'],modules:['VEHICLE','TACTICS']}}},
+  CRAFTSMAN:{base:'CRAFT_APPRENTICE',modules:['CRAFT'],paths:{BLACKSMITH:{classes:['CRAFT_APPRENTICE','BLACKSMITH','MASTER_SMITH'],modules:['MACHINE','BUILD']},ALCHEMIST:{classes:['CRAFT_APPRENTICE','ALCHEMIST','MASTER_ALCHEMIST'],modules:['ALCHEMY','HERBAL']},CHEF:{classes:['CRAFT_APPRENTICE','CHEF','MASTER_CHEF'],modules:['COOK','TRADE']}}},
+  SURVIVOR:{base:'SURVIVAL_NOVICE',modules:['HUNT'],paths:{TRACKER:{classes:['SURVIVAL_NOVICE','TRACKER','MASTER_TRACKER'],modules:['HUNT','TACTICS']},TRAPPER:{classes:['SURVIVAL_NOVICE','TRAPPER','WILDERNESS_EXPERT'],modules:['TRAP','HERBAL']},TAMER:{classes:['SURVIVAL_NOVICE','TAMER','BEAST_MASTER'],modules:['BEAST','HERD']}}},
+  BUILDER:{base:'BUILD_TRAINEE',modules:['BUILD'],paths:{ARCHITECT:{classes:['BUILD_TRAINEE','ARCHITECT','CITY_PLANNER'],modules:['SCHOLAR','TACTICS']},CARPENTER:{classes:['BUILD_TRAINEE','CARPENTER','MASTER_CARPENTER'],modules:['CARPENTRY','CRAFT']},CONTRACTOR:{classes:['BUILD_TRAINEE','CONTRACTOR','BUILDING_MASTER'],modules:['MACHINE','COMMAND']}}},
+  AGRICULTURE:{base:'FARM_TRAINEE',modules:['FARM'],paths:{FARMER:{classes:['FARM_TRAINEE','FARMER','AGRONOMIST'],modules:['HERBAL','SCHOLAR']},RANCHER:{classes:['FARM_TRAINEE','RANCHER','LIVESTOCK_MASTER'],modules:['HERD','BEAST']},HERBALIST:{classes:['FARM_TRAINEE','HERBALIST','BOTANIST'],modules:['HERBAL','ALCHEMY']}}},
+  SOCIETY:{base:'CITIZEN',modules:['TRADE'],paths:{MERCHANT:{classes:['CITIZEN','MERCHANT','GUILD_MASTER'],modules:['TRADE','DIPLOMACY']},DIPLOMAT:{classes:['CITIZEN','DIPLOMAT','AMBASSADOR'],modules:['DIPLOMACY','COMMAND']},SCHOLAR:{classes:['CITIZEN','SCHOLAR','RESEARCH_MASTER'],modules:['SCHOLAR','ALCHEMY']}}},
+  LEADERSHIP:{base:'SQUAD_MEMBER',modules:['COMMAND'],paths:{CAPTAIN:{classes:['SQUAD_MEMBER','CAPTAIN','GENERAL'],modules:['TACTICS','RULER']},TACTICIAN:{classes:['SQUAD_MEMBER','TACTICIAN','STRATEGIST'],modules:['TACTICS','SCHOLAR']},RULER:{classes:['SQUAD_MEMBER','RULER','SOVEREIGN'],modules:['RULER','DIPLOMACY']}}},
+  SEAFARING:{base:'DECKHAND',modules:['SAIL'],paths:{NAVIGATOR:{classes:['DECKHAND','NAVIGATOR','FLEET_CAPTAIN'],modules:['TACTICS','COMMAND']},FISHERMAN:{classes:['DECKHAND','FISHERMAN','MASTER_ANGLER'],modules:['FISH','TRADE']},PIRATE:{classes:['DECKHAND','PIRATE','PIRATE_CAPTAIN'],modules:['PIRATE','COMMAND']}}}
+});
+
+export const COMMON_CLASS_GENRE_BINDINGS=Object.freeze({
+  ACTION_RPG:{focus:['stance','move','attack','defense','skill'],motionStyle:'COMBAT_READABILITY'},
+  OPEN_WORLD_SURVIVAL:{focus:['move','interaction','defense','skill'],motionStyle:'GROUND_AND_TOOL_CONTACT'},
+  TACTICAL_STRATEGY:{focus:['stance','skill','interaction'],motionStyle:'SQUAD_ROLE_SILHOUETTE'},
+  CITY_BUILDER:{focus:['move','interaction','skill'],motionStyle:'WORKER_ACTIVITY_AND_CONSTRUCTION'},
+  TYCOON:{focus:['stance','interaction','skill'],motionStyle:'STAFF_AND_CUSTOMER_READABILITY'},
+  FARMING_SIM:{focus:['move','interaction','skill'],motionStyle:'FARMING_TOOL_AND_CREATURE_CONTACT'},
+  HORROR:{focus:['stance','move','defense','interaction'],motionStyle:'ALERTNESS_STEALTH_AND_REACTION'},
+  PUZZLE_ADVENTURE:{focus:['interaction','move','skill'],motionStyle:'OBJECT_MANIPULATION_AND_CUES'},
+  RACING:{focus:['stance','move','interaction'],motionStyle:'VEHICLE_DRIVER_AND_PIT_CREW'},
+  SOCIAL_SIM:{focus:['stance','interaction','skill'],motionStyle:'NPC_WORK_DIALOGUE_AND_GESTURE'},
+  TOWER_DEFENSE:{focus:['stance','attack','skill','interaction'],motionStyle:'DEFENSE_ROLE_AND_SKILL_TELEGRAPH'},
+  SANDBOX:{focus:['move','interaction','skill'],motionStyle:'GENERIC_CREATION_AND_INTERACTION'}
+});
+
+export const COMMON_CLASS_AUTHORING_CLIPS=Object.freeze({
+  IAI_DRAW_SLASH:'common_samurai_iaido_hq',
+  IAI_COUNTER_PARRY:'common_samurai_parry_hq',
+  SPEAR_LUNGE:'common_spear_lunge_hq',
+  BOW_DRAW:'common_bow_draw_hq',
+  BOW_RELEASE:'common_bow_release_hq',
+  ROGUE_BACKSTAB:'common_rogue_backstab_hq',
+  ELEMENT_CHANNEL:'common_caster_channel_hq',
+  HEAL_RITUAL:'common_healer_ritual_hq',
+  SUMMON_INVOCATION:'common_summon_call_hq'
+});
+
+export function createCommonClassMotionLoadout({
+  family='SWORD',path='SAMURAI',tier=1,genre='ACTION_RPG',
+  platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY'
+}={}){
+  const familyKey=upper(family),pathKey=upper(path),genreKey=upper(genre),body=upper(bodyPlan);
+  const tree=COMMON_CLASS_FAMILY_TREES[familyKey],lineage=tree?.paths?.[pathKey],genreProfile=COMMON_CLASS_GENRE_BINDINGS[genreKey];
+  const validTier=Number.isInteger(tier)&&tier>=0&&tier<=2;
+  const rigCompatible=['HUMANOID','HUMANOID_UNDEAD','SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER'].includes(body);
+  if(!tree||!lineage||!genreProfile||!validTier||!rigCompatible)
+    return Object.freeze({valid:false,reason:!tree?'UNKNOWN_CLASS_FAMILY':!lineage?'UNKNOWN_CLASS_PATH':!genreProfile?'UNKNOWN_GAME_GENRE':!validTier?'INVALID_CLASS_TIER':'INCOMPATIBLE_BODY_PLAN',productionVerified:false,gameplayAuthority:false});
+  const modules=unique([...tree.modules,...lineage.modules.slice(0,tier)]);
+  const names=['stance','move','attack','defense','skill','interaction','vfx'];
+  const groups=Object.freeze(Object.fromEntries(names.map(group=>[group,freezeList(unique(modules.flatMap(id=>COMMON_CLASS_ACTION_MODULES[id]?.[group]||[])))])));
+  const sourceClipBindings=Object.freeze(Object.entries(COMMON_CLASS_AUTHORING_CLIPS)
+    .filter(([motionId])=>Object.values(groups).some(ids=>ids.includes(motionId)))
+    .map(([motionId,clipId])=>Object.freeze({
+      motionId,clipId,source:'assets/shared/humanoid-motion-v1/author-motion.py',
+      authoringState:'DEFINED_NOT_BAKED',nativeRuntimeVerified:false
+    })));
+  const skills=Object.freeze(groups.skill.map(id=>Object.freeze({
+    id,kind:'PRESENTATION_INTENT',motionRole:id,sequence:buildSkillMotionSequence(),
+    visualRoles:groups.vfx,actualEffectRequiresGameBinding:true,
+    damageAuthority:false,cooldownAuthority:false,gameplayAuthority:false
+  })));
+  const weapon=upper(lineage.weapon||tree.weapon||'');
+  return Object.freeze({
+    valid:true,version:1,family:familyKey,path:pathKey,tier,
+    entryClass:tree.base,currentClass:lineage.classes[tier],
+    lineage:freezeList(lineage.classes.slice(0,tier+1)),inheritedModules:freezeList(modules),
+    genre:genreKey,genreBinding:Object.freeze({...genreProfile,focus:freezeList(genreProfile.focus)}),
+    compatibleAcrossGenres:true,bodyPlan:body,rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
+    platform:upper(platform),weaponFamily:weapon||null,
+    groups,skills,combatLoadout:weapon?createDuelCombatMotionLoadout({weaponFamily:weapon,platform}):null,
+    sourceClipBindings,sourceOnly:true,productionVerified:false,
+    nativeRuntimeVerificationRequired:true,platformNativeRetargetRequired:true,
+    directCrossPlatformBinaryReuseForbidden:true,gameOwnsClassProgression:true,
+    gameOwnsSkillBehavior:true,gameplayAuthority:false
+  });
+}
+
 export function createMotionDNA(input={}) {
   const dna={
     MOTION_ID:text(input.MOTION_ID||input.motionId||input.id),
@@ -2970,7 +3104,8 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null,
+  classRole=null,genre='ACTION_RPG'
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -3007,6 +3142,7 @@ export function createMotionDirectorPlan({
       measuredTransitionQa:transition?evaluateMotionTransition(transition).verdict:'UNVERIFIED',
       runtimeVerified:false
     }),
+    classLoadout:classRole?createCommonClassMotionLoadout({platform,genre,bodyPlan,rigProfile,styleFamily,...classRole}):null,
     skillSequence:buildSkillMotionSequence(skill),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,
