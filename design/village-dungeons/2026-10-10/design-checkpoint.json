@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 위기 상황에서 마을의 의뢰를 해결하기 위해 5개의 던전을 진입하여 직관적인 원서클 모바일 액션 전투를 수행해야 한다. 수집품은 마을 복구 시설에 환원되어 전투 빌드를 고유하게 완성하며, 이 과정에서는 실시간 회피 및 평타 연계 기술이 중요하다.",
       "coreFun": "직관적 회피로 인해 몬스터를 격퇴하는 순간의 즉각적인 손맛과, 한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관하는 선택은 전투 빌드 최종화의 핵심이다."
+    },
+    "local_authoring_parts::896f569aa7d1b474f3a845ec0d49ab7cd3aa52c1fdbcfc7897b5ddd27807f36f:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "실시간 회피 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 최종화",
+        "보스전 도전 -> 고도화된 전투 빌드 생성 -> 게임 종료"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 541835,
-      "lastMs": 75487,
+      "totalMs": 613625,
+      "lastMs": 71790,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:29:37.010Z"
+      "updatedAt": "2026-10-10T05:30:48.804Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:20:35.149Z",
-  "updatedAt": "2026-10-10T05:29:37.012Z",
+  "updatedAt": "2026-10-10T05:30:48.804Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1882,7 +1889,7 @@
   "localAuthoringSplits": {
     "6ad9b2f1db65a21ec1efc44a5fb583e3181c351c3ea30c442c3d0009050ea52b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:29:37.012Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:30:48.804Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
