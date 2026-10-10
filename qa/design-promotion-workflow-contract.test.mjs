@@ -165,3 +165,13 @@ test('canonical promotion safely discards ephemeral LFS art modifications before
   assert.match(persist,/node tools\/design-only-promotion-sync\.mjs/);
   assert.match(persist,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
 });
+
+test('promotion imports the canonical V5 grammar validator and all transitive seed dependencies from main',()=>{
+  const checkout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
+  const reset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
+  for(const file of ['tools/company-minimum-design-contract.mjs','tools/company-game-seed-contract.mjs','tools/company-design-gate-scoring-v2.mjs']){
+    assert.ok(checkout.split(/\s+/).includes(file),'missing source import in runtime checkout: '+file);
+    assert.ok(reset.split(/\s+/).includes(file),'runtime must never commit code modules: '+file);
+  }
+  assert.match(promotion,/node tools\/design-only-promotion-sync\.mjs/);
+});
