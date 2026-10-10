@@ -194,25 +194,40 @@
         "단서 해석을 통한 고대 문자 해독 및 지름길 개척",
         "속성 공명 시스템 사용 또는 고대 유물 파편 활용"
       ]
+    },
+    "local_authoring_parts::e122d2a2d7bbd0357fec960dcd307e4495834283dea76c326ba984a9d12b95b4:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 턴별로 특정 속성 스킬을 우선 사용하거나 동료와 속성 연계를 발동시킬 선택",
+        "유물 에너지 소모 및 지형 복구/길 열기 결정"
+      ],
+      "stateOutputs": [
+        "캐릭터 스킬 트리의 속성 구성 변경",
+        "맵 접근성 및 이후 전투 난이도 변환"
+      ],
+      "name": "속성 공명 시스템",
+      "purpose": "전투 시 캐릭터의 스킬 속성을 조합하여 시너지를 발생시키고, 적의 방어 체계를 무력화하여 전략적 우위를 점하기 위해 설계되었습니다.",
+      "playerChoice": "플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지 결정하며, 이 선택이 전투의 텀포와 피해량을 즉각적으로 변화시킵니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 705011,
-      "lastMs": 12196,
+      "totalMs": 758664,
+      "lastMs": 53653,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:48:36.348Z"
+      "updatedAt": "2026-10-10T10:49:30.003Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:36:51.303Z",
-  "updatedAt": "2026-10-10T10:48:36.349Z",
+  "updatedAt": "2026-10-10T10:49:30.003Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1750,8 +1765,8 @@
   "localAuthoringSplits": {
     "1c49f902ae7f6e55966a696147b665c64769f1cd4474acbd85ae2df4ac45ba33": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:48:36.348Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:49:30.003Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
