@@ -105,25 +105,41 @@
         "상태변화: 사회적 구조 변화 및 정보 전달",
         "보상: 플레이어의 숙련된 선택에 기반하여 결정되는 새로운 경로"
       ]
+    },
+    "local_authoring_parts::40d18b53d4a2fd87ae01aad1a1672f370fa4f1530e46d20374f70cf4e6e1d580:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "resource_position_change",
+        "visibility_increase",
+        "risk_reduction"
+      ],
+      "stateOutputs": [
+        "social_structure_change",
+        "information_exchange"
+      ],
+      "name": "생존자의 선택과 사회적 관계의 변화",
+      "purpose": "자원 수집 과정에서 발생하는 위험 감소 및 가시성 증대가 사회적 구조와 정보 공유에 영향을 미친다.",
+      "playerChoice": "자원 확보 방식 또는 협력 전략의 변화를 선택하여 새로운 경로를 연다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 222608,
-      "lastMs": 34970,
+      "totalMs": 261488,
+      "lastMs": 38880,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:56:54.657Z"
+      "updatedAt": "2026-10-10T04:57:33.539Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:53:11.716Z",
-  "updatedAt": "2026-10-10T04:56:54.657Z",
+  "updatedAt": "2026-10-10T04:57:33.539Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1835,7 +1851,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:56:54.657Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:57:33.539Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
