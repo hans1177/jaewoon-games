@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::6a051168627491fc17dc38309a37a0bd0e90e2a8e3f559b36cc2cfe578f8c131:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "좀비 생존기",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Hordes of undead enemies with dynamic behavior and adaptive strategies.",
+          "materialDomain": "ACTION_SURVIVAL_ROGUELITE",
+          "stateChange": "Enemy density increases, new terrain types appear, and player strategy shifts."
+        },
+        "b": {
+          "system": "Build System",
+          "material": "Upgrades, perks, weapons, and skills that dynamically change the player's build over time.",
+          "materialDomain": "BUILD_SYSTEM",
+          "stateChange": "Player gains new abilities, upgrades their current build, or selects different playstyles based on risk/reward analysis."
+        },
+        "abCausality": "Enemy density increase → Player selects new builds → New terrain appears → Player adapts to new challenges → Enemy behavior changes → Player adjusts strategy again.",
+        "abEvolution": {
+          "aChangesB": "New enemy type introduces new risks and rewards; B responds by adapting the player's build.",
+          "bChangesA": "Player selects a new build that better handles the increased threat level; A updates its rules accordingly.",
+          "lateGameChange": "The game introduces a boss fight that requires a completely new combination of builds and strategies."
+        },
+        "materialFusion": {
+          "contrast": "Enemy behavior is more complex than previously thought, requiring players to adapt their strategies in real-time.",
+          "causalBridge": "Players must choose between different builds while facing increasing pressure from enemies with evolving tactics.",
+          "removalConsequence": "If a player chooses a build that doesn't handle the new enemy types well, they face higher failure costs but also gain new opportunities for progression."
+        },
+        "storyCausalChain": {
+          "cause": "Player starts with a basic survival setup",
+          "characterConflict": "Enemies become more aggressive and unpredictable as the game progresses",
+          "playerChoice": "Player decides to upgrade their current build or switch playstyles based on risk/reward analysis",
+          "worldChange": "New terrain appears, new enemy types are introduced, and the overall difficulty increases",
+          "nextEvent": "Player faces a boss battle that requires a complete rethinking of their strategy"
+        },
+        "cThemes": [
+          {
+            "name": "Enemy Behavior",
+            "kind": "MATERIAL",
+            "gameplayEffect": "More dynamic and adaptive enemy patterns"
+          },
+          {
+            "name": "Survival Mechanics",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Improved resource management and combat efficiency"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Build System",
+            "gameplayEffect": "Dynamic upgrades and skill selection"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Enemy Design",
+            "gameplayEffect": "Adaptive behavior and evolving tactics"
+          }
+        ],
+        "cGenreInterlock": "Enemy design changes affect player choices; if a player's chosen build doesn't handle the new enemy types well, they face higher failure costs but also gain new opportunities for progression.",
+        "cWorldAndGameplayEffect": "Players must adapt their builds while facing increasing pressure from enemies with more complex behaviors. The game introduces new challenges that require players to think strategically about how to best utilize their resources and abilities in real-time.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player starts with a basic survival setup",
+            "discovery": "New terrain appears, new enemy types are introduced, and the overall difficulty increases",
+            "newChoice": "Player decides to upgrade their current build or switch playstyles based on risk/reward analysis"
+          },
+          {
+            "clue": "Enemies become more aggressive and unpredictable as the game progresses",
+            "discovery": "Player chooses between different builds to better handle the increased threat level",
+            "newChoice": "Player selects a new build that better handles the new enemy patterns"
+          },
+          {
+            "clue": "The game introduces a boss fight that requires a complete rethinking of strategy",
+            "discovery": "Player faces a challenge that demands a completely new combination of builds and strategies",
+            "newChoice": "Player adapts their approach by selecting a new build that is specifically designed to combat this boss"
+          },
+          {
+            "clue": "Enemy behavior becomes even more dynamic and adaptive",
+            "discovery": "Player must choose between different builds while facing increasing pressure from enemies with evolving tactics",
+            "newChoice": "Player adjusts their strategy in real-time based on how well their chosen build can handle the new enemy behaviors"
+          }
+        ],
+        "delveGrowthRule": "Players must adapt their builds while facing increasing pressure from enemies with more complex behaviors. The game introduces new challenges that require players to think strategically about how to best utilize their resources and abilities in real-time.",
+        "finalGameIdentity": "A dynamic survival experience where players must constantly adapt their strategies, manage resources, and face increasingly difficult challenges as they progress through the game."
+      },
+      "playerFantasy": "In this game, you are not just surviving—you're actively shaping your destiny. Every choice you make affects your progression, and every risk/reward analysis determines whether you'll continue forward or retreat. You're not just fighting zombies; you're mastering the art of adaptation and strategy in a rapidly changing world.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice. Preserve or migrate before swap. Single. Maintain core gameplay mechanics and ensure consistency across all playstyles and difficulty levels. Ensure that each decision is grounded in risk/reward analysis and that the player's choices lead to meaningful progression and growth opportunities throughout the game."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 155815,
+      "lastMs": 155815,
+      "lastError": null,
+      "updatedAt": "2026-10-10T10:15:13.988Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:12:38.104Z",
-  "updatedAt": "2026-10-10T10:12:38.118Z",
+  "updatedAt": "2026-10-10T10:15:13.988Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1734,5 +1835,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T10:15:13.988Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
