@@ -104,25 +104,38 @@
         "Adaptive Strategy → Resource Management → Positioning → Run Outcome → New Play Style",
         "Player's Initial Positioning and Resource Distribution → System Evolves Due to Player Adaptation → New Strategic Build Influences Future Gameplay"
       ]
+    },
+    "local_authoring_parts::e18e75e4cafee826e3c7113be1076db07a1cea543a84e88215b55bd399c68486:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player's Initial Positioning and Resource Distribution"
+      ],
+      "stateOutputs": [
+        "System Evolves Due to Player Adaptation"
+      ],
+      "name": "Adaptive Strategy",
+      "purpose": "Player's Strategy Shapes System Evolution",
+      "playerChoice": "New Strategic Build Influences Future Gameplay"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 306568,
-      "lastMs": 37751,
+      "totalMs": 336384,
+      "lastMs": 29816,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:47:28.638Z"
+      "updatedAt": "2026-10-10T02:47:58.457Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:42:22.053Z",
-  "updatedAt": "2026-10-10T02:47:28.639Z",
+  "updatedAt": "2026-10-10T02:47:58.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1845,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:47:28.639Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:47:58.457Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
