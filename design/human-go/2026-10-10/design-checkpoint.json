@@ -187,25 +187,49 @@
       },
       "playerFantasy": "플레이어는 가벼운 사회적 상호작용과 수집을 통해 자연 속에서 단순한 활동 공간을 탐험하며, 그 주변에 숨겨진 기회와 의미를 발견하는 과정을 거쳐 성장합니다.",
       "coreFun": "{\"identity\": \"사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.\", \"creativeGrammar\": {\"mainIdentity\": \"Explore a compact activity space and discover a person, task or collectible opportunity.\"}, \"a\": {\"system\": \"Social Interaction\", \"material\": \"A mysterious figure with an unknown purpose appears in the forest at dawn.\", \"materialDomain\": \"Person\", \"stateChange\": \"Player discovers a hidden room behind the tree.\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"A glowing crystal emits light when touched.\", \"materialDomain\": \"Collectible\", \"stateChange\": \"Player gains access to a secret map of the world.\"}, \"abCausality\": \"The figure's presence changes the environment, affecting resource availability and social interactions.\", \"abEvolution\": {\"aChangesB\": \"The figure becomes more elusive as the player progresses.\", \"bChangesA\": \"The crystal starts to glow brighter whenthe"
+    },
+    "local_authoring_parts::86a0088b83775b257ed9887777a34d51ccd949abcae12fb7c83ed1b669658516:coreLoop": {
+      "coreLoop": [
+        "INPUT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
+        "PLAYER DISCOVERS FIGURE IN FOREST AT DAWN",
+        "FIGURE'S PRESENCE CHANGES ENVIRONMENT, AFFECTING RESOURCE AVAILABILITY AND SOCIAL INTERACTIONS",
+        "PLAYER GAINS ACCESS TO SECRET MAP OF THE WORLD WITH HIDDEN PATHS AND DANGERS",
+        "MAP TAKES FORM AS PLAYER PROGRESSES, NEW OPPORTUNITIES AND RISKS APPEAR"
+      ]
+    },
+    "local_authoring_parts::686f603973e7e25bb9d16e3a92d2bb4f61e42450493420d04f6cd7444cbb2831:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER DISCOVERS FIGURE IN FOREST AT DAWN",
+        "FIGURE'S PRESENCE CHANGES ENVIRONMENT, AFFECTING RESOURCE AVAILABILITY AND SOCIO"
+      ],
+      "stateOutputs": [
+        "PLAYER GAINS ACCESS TO SECRET MAP OF THE WORLD WITH HIDDEN PATHS AND DANGERS",
+        "MAP TAKES FORM AS PLAYER PROGRESSES, NEW OPPORTUNITIES AND RISKS APPEAR"
+      ],
+      "name": "Essential Discovery Loop",
+      "purpose": "A dynamic and evolving experience where players discover their place in a mysterious world filled with challenges and relationships.",
+      "playerChoice": "Player decides whether to follow the figure or leave it behind."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 510683,
-      "lastMs": 75574,
+      "totalMs": 680453,
+      "lastMs": 103236,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:01:46.870Z"
+      "updatedAt": "2026-10-10T06:04:36.644Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:53:16.163Z",
-  "updatedAt": "2026-10-10T06:01:46.872Z",
+  "updatedAt": "2026-10-10T06:04:36.644Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1728,7 +1752,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:01:46.872Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:04:36.644Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
