@@ -212,7 +212,7 @@ export async function syncRobloxHomepageThumbnail({
     const samePreviousUpload=previous.gameId===target.gameId
       &&previous.universeId===target.universeId
       &&previous.sourceSha256===validated.sha256
-      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD'].includes(previous.imageStatus);
+      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD','VERIFIED_GAME_DETAIL_IMAGE','EXISTING_UNBOUND_GAME_DETAIL_IMAGE'].includes(previous.imageStatus);
     const media=await syncRobloxExperienceDetailMedia({
       universeId:target.universeId,pngPath,cookie:robloxCookie,
       skipDuplicateUpload:samePreviousUpload,
