@@ -6,7 +6,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
-import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
+import {latestMinimumDesign,materializeVibeMinimumDesign} from './company-minimum-design-contract.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -337,6 +337,23 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
   const resetIds=new Set(Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds.map(String):[]);
 
+  // 메인: 디자이너 정밀 설계를 기다리는 동안 바이브의 원본 근거 기반 최소 설계 한 건을 먼저 만든다.
+  // 기존 설계·실행 진행도·저장 의미를 덮어쓰지 않으며, 정밀 설계 PASS/QA/출시 증거는 생성하지 않는다.
+  const vibeMinimumCreated=[];
+  for(const seed of state.seeds){
+    const gameId=clean(seed?.gameId);
+    if(clean(seed?.status).toUpperCase()!=='ACTIVE'||clean(seed?.productionClass).toUpperCase()==='RELEASE_CONFIRMED')continue;
+    const catalogGame=catalogById.get(gameId);
+    const lifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState||'ACTIVE').toUpperCase();
+    if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
+    if(latestMinimumDesign(root,gameId))continue;
+    const result=materializeVibeMinimumDesign({root,seed,catalogGame});
+    if(result.created){
+      vibeMinimumCreated.push({gameId,file:result.file});
+      break;
+    }
+  }
+
   for(const seed of state.seeds){
     const gameId=clean(seed?.gameId); if(!gameId)continue;
     const seedStatus=clean(seed?.status).toUpperCase();
@@ -387,6 +404,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   return {
     promoted,
+    vibeMinimumCreated,
     reconciledExisting:[],
     reconciledPromotedSeeds:reconciled,
     demoted,
@@ -399,6 +417,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const result=promoteReadyDesignSeeds();
+  console.log(`VIBE_MINIMUM_DESIGN_CREATED=${result.vibeMinimumCreated.map(item=>item.gameId+':'+item.file).join(',')||'NONE'}`);
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_CONFIRMED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
