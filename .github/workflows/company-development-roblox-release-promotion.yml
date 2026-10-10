@@ -8,6 +8,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
+      - 'tools/company-roblox-thumbnail-sync.mjs'
+      - 'assets/roblox-thumbnails/**'
+  schedule:
+    - cron: '17 */6 * * *'
   workflow_dispatch:
     inputs:
       game_id:
@@ -1241,7 +1245,7 @@ jobs:
   thumbnail-sync:
     name: sync canonical Roblox and homepage thumbnails
     needs: release
-    if: ${{ always() && (github.event_name == 'push' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    if: ${{ always() && (github.event_name == 'push' || github.event_name == 'schedule' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -1333,6 +1337,8 @@ jobs:
           mkdir -p .tmp/roblox-thumbnail-evidence
           failures=()
           scope_blocked=()
+          reused_count=0
+          uploaded_count=0
           for game_id in $GAME_IDS; do
             echo "ROBLOX_THUMBNAIL_SYNC_START=$game_id"
             log_file=".tmp/roblox-thumbnail-evidence/$game_id.log"
@@ -1342,6 +1348,11 @@ jobs:
               --queue=../runtime/development-queue.json \
               --output=".tmp/roblox-thumbnail-evidence/$game_id.json" 2>&1 | tee "$log_file"; then
               cat ".tmp/roblox-thumbnail-evidence/$game_id.json"
+              if grep -Fq 'ROBLOX_THUMBNAIL_REUSED_VALID_OPERATION=' "$log_file"; then
+                reused_count=$((reused_count+1))
+              else
+                uploaded_count=$((uploaded_count+1))
+              fi
             elif grep -Eq 'ROBLOX_THUMBNAIL_UPLOAD_FAILED:403:.*Scope not authorized' "$log_file"; then
               rm -f ".tmp/roblox-thumbnail-evidence/$game_id.json"
               scope_blocked+=("$game_id")
@@ -1357,8 +1368,10 @@ jobs:
           if [ "${#scope_blocked[@]}" -ne 0 ]; then
             echo "ROBLOX_THUMBNAIL_SCOPE_BLOCKED_GAMES=${scope_blocked[*]}"
             echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=INCOMPLETE_SCOPE_403'
+          elif [ "$uploaded_count" -eq 0 ]; then
+            echo "ROBLOX_THUMBNAIL_BATCH_UPLOAD=NO_NEW_UPLOAD_REUSED:$reused_count"
           else
-            echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS'
+            echo "ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS:uploaded=$uploaded_count:reused=$reused_count"
           fi
 
       - name: Publish exact game image to Roblox experience detail page
