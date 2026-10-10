@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 전장의 지형을 실시간으로 변형하고 유닛의 속성을 동적으로 조합하여, 적의 웨이브 경로 예측부터 방어선 구축까지 전략적인 결정을 내리는 창의적인 플레이를 경험할 수 있습니다.",
       "coreFun": "{\n \"input\": {\n \"state\": \"지형 변형\",\n \"action\": \"타워 속성 조합\",\n \"resource\": \"적 웨이브 정보\"\n },\n \"output\": {\n \"effect\": \"격차 패턴 생성\",\n \"reward\": \"방어 효율 극대화\",\n \"nextStep\": \"자원 최적화 전략 수립\"\n }\n}"
+    },
+    "local_authoring_parts::de68befad905dfe61b24abc45263302a1ede9a8f4c6ea9c97a5ab277bc8ab7cf:coreLoop": {
+      "coreLoop": [
+        "입력: 지형 변형, 선택: 타워 속성 조합, 상태변화: 적 이동 경로 차단/유도, 보상: 방어 효율 극대화, 다음 선택: 자원 최적화 전략 수립",
+        "입력: 적 웨이브 정보 확인, 선택: 타워 강화 또는 지형 추가 변형, 상태변화: 타워 성능 향상, 보상: 방어 선 구성, 다음 선택: 자원 재배분 전략 수립",
+        "입력: 보상 기반의 새로운 타워 기술 연구, 선택: 타워 속성 강화 또는 지형 추가 변형, 상태변化: 전술적 대응 유도, 보상: 게임 진행 단계 전환, 다음 선택: 전략적 판단 및 다음 단계 전략 수립"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 544632,
-      "lastMs": 68927,
+      "totalMs": 627318,
+      "lastMs": 82686,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:00:10.152Z"
+      "updatedAt": "2026-10-10T09:01:32.841Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:51:05.498Z",
-  "updatedAt": "2026-10-10T09:00:10.153Z",
+  "updatedAt": "2026-10-10T09:01:32.841Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1484,7 +1491,7 @@
   "localAuthoringSplits": {
     "d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:00:10.153Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:01:32.841Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
