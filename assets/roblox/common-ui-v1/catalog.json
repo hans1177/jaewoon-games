@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "packId": "roblox-common-ui-v1",
   "family": "UI",
   "platform": "ROBLOX",
@@ -2593,9 +2593,101 @@
         "RECOVERING",
         "RESTORED"
       ]
+    },
+    {
+      "atomId": "GAME_WINDOW_LAYOUT",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateGameWindowLayout",
+      "role": "RESPONSIVE_GENRE_MENU",
+      "surface": "GAME_WINDOW",
+      "states": [
+        "COMPACT_TOUCH",
+        "DESKTOP",
+        "EMPTY",
+        "ACTIVE",
+        "BACK"
+      ]
+    },
+    {
+      "atomId": "STATUS_OVERVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateStatusOverview",
+      "role": "AUTHORITATIVE_STATUS_READOUT",
+      "surface": "STATUS_OVERVIEW",
+      "states": [
+        "EMPTY",
+        "LIVE",
+        "REFRESHED"
+      ]
+    },
+    {
+      "atomId": "SKILL_TREE_SCREEN",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateSkillTreeScreen",
+      "role": "PREREQUISITE_GRAPH_PRESENTATION",
+      "surface": "SKILL_TREE",
+      "states": [
+        "LOCKED",
+        "AVAILABLE",
+        "UNLOCKED",
+        "INVALID_GRAPH"
+      ]
+    },
+    {
+      "atomId": "JOURNAL_TIMELINE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateJournalTimeline",
+      "role": "VERIFIED_EVENT_CHRONICLE",
+      "surface": "JOURNAL",
+      "states": [
+        "EMPTY",
+        "RECORDED",
+        "DEDUPED",
+        "SORTED"
+      ]
+    },
+    {
+      "atomId": "WORLD_EVENT_TIMELINE",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateWorldEventTimeline",
+      "role": "BIOME_NPC_EVENT_FEED",
+      "surface": "WORLD_EVENT",
+      "states": [
+        "EMPTY",
+        "ACTIVE",
+        "EXPIRED",
+        "PRIORITIZED"
+      ]
+    },
+    {
+      "atomId": "TRADE_ESCROW_REVIEW",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateTradeEscrowReview",
+      "role": "TWO_SIDED_TRADE_CONFIRMATION_VIEW",
+      "surface": "TRADE_ESCROW",
+      "states": [
+        "REVIEW",
+        "WAITING",
+        "READY",
+        "EXPIRED",
+        "REVISED"
+      ]
+    },
+    {
+      "atomId": "EVENT_CINEMATIC_CARD",
+      "source": "RobloxCommonUI.luau",
+      "factory": "CreateEventCinematicCard",
+      "role": "NON_AUTHORITATIVE_EVENT_PRESENTATION",
+      "surface": "EVENT_CINEMATIC",
+      "states": [
+        "HIDDEN",
+        "ACTIVE",
+        "SKIPPED",
+        "REDUCED_MOTION"
+      ]
     }
   ],
-  "title": "Roblox 회사 공용 UI·인벤토리·메뉴·시스템 깊이 204종 v10",
+  "title": "Roblox 회사 공용 UI·장르별 메뉴·게임창·시스템 211종 v11",
   "internalAudit": {
     "version": 1,
     "maxScore": 1000,
@@ -2702,7 +2794,14 @@
     "MOUNT_STATUS",
     "TRAVEL",
     "PARRY_FEEDBACK",
-    "WORLD_PROP_INTERACTION"
+    "WORLD_PROP_INTERACTION",
+    "GAME_WINDOW",
+    "STATUS_OVERVIEW",
+    "SKILL_TREE",
+    "JOURNAL",
+    "WORLD_EVENT",
+    "TRADE_ESCROW",
+    "EVENT_CINEMATIC"
   ],
   "requiredInputModes": [
     "TOUCH",
@@ -2862,7 +2961,10 @@
     "fullScreenSystemDepth": 1,
     "destructiveActionsRequireConfirmation": true,
     "colorOnlyStateForbidden": true,
-    "focusLossOnTransitionForbidden": true
+    "focusLossOnTransitionForbidden": true,
+    "genreAwareOnlyFromGameCapabilities": true,
+    "recommendedMaxMenuDepth": 3,
+    "focusBackStackPreserved": true
   },
   "fullScreenSurfaceIds": [
     "MAIN_MENU",
@@ -2879,11 +2981,15 @@
     "POPUP_PANEL",
     "LOADING_STATE",
     "FAILURE_STATE",
-    "LOCKED_STATE"
+    "LOCKED_STATE",
+    "GAME_WINDOW_LAYOUT",
+    "STATUS_OVERVIEW",
+    "SKILL_TREE_SCREEN",
+    "JOURNAL_TIMELINE"
   ],
   "deepSystemContract": {
-    "version": 2,
-    "componentCount": 150,
+    "version": 3,
+    "componentCount": 157,
     "requiredFlows": [
       "PICKUP>NEW_STATE>DETAIL>USE_OR_EQUIP",
       "DETAIL>COMPARE>SET_SOCKET_UPGRADE",
@@ -2893,7 +2999,12 @@
       "GEAR>LOADOUT>COMPARE>UPGRADE_OR_REPAIR_OR_DISMANTLE",
       "CRAFT_TREE>RECIPE_DETAIL>MATERIAL_TRACKING>CRAFT",
       "SHOP>BUY_OR_SELL>BUYBACK",
-      "DISCOVERY>CODEX>COLLECTION_PROGRESS"
+      "DISCOVERY>CODEX>COLLECTION_PROGRESS",
+      "GAME_SNAPSHOT>GENRE_CAPABILITY_FILTER>RESPONSIVE_MENU>FOCUS_PRESERVED",
+      "SKILL_DAG>VISUAL_PREREQUISITE_CHECK>SERVER_UNLOCK_REQUEST",
+      "GAME_EVENT>JOURNAL_ID_DEDUPE>CODEX_QUEST_LINK",
+      "TRADE_SERVER_OFFER>BOTH_CONFIRM>ATOMIC_GAME_SETTLEMENT",
+      "BIOME_NPC_EVENT>PRIORITY_VIEW>CINEMATIC_SKIP_SAFE"
     ],
     "requiredItemStates": [
       "NEW",
@@ -2944,7 +3055,34 @@
       "REDUCED_FLASH",
       "COLOR_BLIND_SHAPE_BACKUP",
       "FAILURE_RECOVERY"
-    ]
+    ],
+    "genreMenuContract": {
+      "version": 1,
+      "profiles": [
+        "RPG",
+        "SURVIVAL",
+        "STRATEGY",
+        "DEFENSE",
+        "TYCOON",
+        "HORROR",
+        "CASUAL"
+      ],
+      "gameDeclaredCapabilitiesOnly": true,
+      "hideUnavailableMenus": true,
+      "compactBottomNavigation": true,
+      "desktopSideNavigation": true,
+      "safeAreaAware": true,
+      "focusPreservingNavigation": true,
+      "nonAuthoritativeDataViews": true,
+      "externalPatterns": [
+        "TOPOLOGICAL_SORT",
+        "EVENT_ID_IDEMPOTENCY",
+        "TWO_PARTY_COMMIT_REQUEST",
+        "FINITESTATE_EVENT_UI",
+        "RESPONSIVE_LAYOUT"
+      ],
+      "noExternalCodeRuntimeDependency": true
+    }
   },
   "housingSandboxContract": {
     "version": 1,
