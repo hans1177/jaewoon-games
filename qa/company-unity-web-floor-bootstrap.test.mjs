@@ -272,7 +272,7 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
 
 test('Unity Web source bootstrap uses slim control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
-  assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
+  assert.match(workflow,/\n  bootstrap:\n\s+concurrency:\n\s+group: unity-web-bootstrap-source-\$\{\{ inputs\.game_id \}\}\n\s+cancel-in-progress: false\n\s+runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
 
@@ -567,4 +567,22 @@ test('approved procedural Unity bootstrap never overwrites an existing gameplay 
     process.chdir(original);
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+test('Unity Web admits current design independently of Roblox F0 and promotes bootstrap without bypassing WebGL QA',()=>{
+  const planner=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const bootstrap=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  assert.match(planner,/item\.minimumDesignContract\?\.pass===true&&[\s\S]*?item\.concurrentTargetPlatforms\.includes\('UNITY'\)/);
+  assert.match(planner,/const nativeAdmitted=platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
+  assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
+  assert.match(bootstrap,/Reuse pending design-bound Unity source PR/);
+  assert.match(bootstrap,/source\.generatorFingerprint!==generator/);
+  assert.match(bootstrap,/source\.identity!==identity/);
+  assert.match(bootstrap,/JSON\.stringify\(source\.unityPlatformProfile\)!==JSON\.stringify\(design\.platformProfiles\?\.UNITY\)/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_REUSED/);
+  assert.match(bootstrap,/node tools\/company-unity-web-first-stage\.mjs/);
+  assert.match(bootstrap,/gh pr merge "\$PR_URL" --repo "\$GITHUB_REPOSITORY" --squash --delete-branch/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=NOT_YET_VERIFIED/);
+  assert.doesNotMatch(bootstrap,/git push origin HEAD:main/);
 });
