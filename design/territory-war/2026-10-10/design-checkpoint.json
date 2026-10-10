@@ -483,25 +483,38 @@
       "name": "전략적 선택",
       "purpose": "전선 변화에 따른 군사적 조치 결정",
       "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 전략적 변환 적용"
+    },
+    "local_authoring_parts::48d32cc31a187257db5c9473c7fab3a8ee46457293b730dda375af618ce7265c:signatureSystems:3": {
+      "id": "signatureSystems_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "전선 위치 변경"
+      ],
+      "stateOutputs": [
+        "군사적 결과"
+      ],
+      "name": "전략적 선택 및 군사적 결과",
+      "purpose": "전선 변화에 따른 실질적인 군사적 조치와 전략적 결정의 실행",
+      "playerChoice": "전선 병합 또는 단독 확장 선택의 실행"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
+      "calls": 14,
+      "successes": 13,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1278205,
-      "lastMs": 64610,
+      "totalMs": 1343902,
+      "lastMs": 65697,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:24:29.183Z"
+      "updatedAt": "2026-10-10T02:25:34.881Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:24:29.183Z",
+  "updatedAt": "2026-10-10T02:25:34.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2069,7 +2082,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:3": 1,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2170,10 +2183,10 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:29.183Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T02:25:34.882Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
