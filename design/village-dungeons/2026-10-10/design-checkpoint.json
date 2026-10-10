@@ -618,25 +618,38 @@
       "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
       "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프의 양방향 실제 상태 교환",
       "playerChoice": "실제 세계 상태 변화에 따라 새로운 전략/경로/성장 가능성이 발생하며, 이는 기존 시스템과 인과적으로 연계됨"
+    },
+    "local_authoring_parts::61b2fdd46905ab47d8c530420c61e26d9db50a0051e6cd0f21edce63bccc596b:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "입력(손 tap/swipe)"
+      ],
+      "stateOutputs": [
+        "첫 성공, 첫 위험/선택"
+      ],
+      "name": "기본 게임 주제/정체성: 마을 퀘스트와 5개 던전을 오가는 3D 액션 RPG",
+      "purpose": "플레이어가 즉시 이해할 수 있는 기본 루프의 구성 및 상태 교환 규칙",
+      "playerChoice": "실질적 인과 변화에 기반하여 새로운 전략/경로/성장 가능성이 실제로 달라지는 경험"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 23,
+      "calls": 25,
+      "successes": 24,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2335614,
-      "lastMs": 101827,
+      "totalMs": 2436677,
+      "lastMs": 101063,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:47:01.533Z"
+      "updatedAt": "2026-10-10T00:48:42.598Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:01:05.982Z",
-  "updatedAt": "2026-10-10T00:47:01.533Z",
+  "updatedAt": "2026-10-10T00:48:42.598Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2400,7 +2413,7 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:47:01.533Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:48:42.598Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
