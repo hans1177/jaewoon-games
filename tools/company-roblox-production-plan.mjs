@@ -258,7 +258,8 @@ export function buildInterfaceBlueprintContract({design={},source={},files=[],mo
     state:/state|phase|status|상태|단계/i
   });
   const excludedTokens=new Set(['game','common','jaewoon','kit','core','runtime','system','engine','content','presets']);
-  const observed=anchors+' '+Object.entries(signals).filter(([,value])=>Number(value)>0).map(([key])=>key).join(' ');
+  // 개수 신호만으로 실제 라이브러리 바인딩을 주장할 수 없으므로 소스 심볼을 요구한다.
+  const observed=anchors;
   const internalLibraryMatches=runtimeLibraries.map(library=>{
     const name=library.slice('assets/'.length,-3);
     const patterns=name.split('-').filter(token=>token.length>=3&&!excludedTokens.has(token))
